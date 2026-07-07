@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -84,7 +85,7 @@ struct OmniboxState : public base::SupportsUserData::Data {
 // Views-implementation of OmniboxView.
 class OmniboxViewViews
     : public OmniboxView,
-      public views::Textfield,
+      public OmniboxContextMenuMixin<views::Textfield>,
 #if BUILDFLAG(IS_CHROMEOS)
       public ash::input_method::InputMethodManager::CandidateWindowObserver,
 #endif
@@ -192,14 +193,17 @@ class OmniboxViewViews
       ui::mojom::MenuSourceType source_type) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  std::u16string GetLabelForCommandId(int command_id) const override;
-  bool IsCommandIdEnabled(int command_id) const override;
   bool SupportsEmoji() const override;
 #if BUILDFLAG(IS_MAC)
   bool SupportsEditableContextMenuItems() const override;
   bool SupportsLookUp() const override;
   bool SupportsAutoFill() const override;
 #endif
+
+  // OmniboxContextMenuMixinBase:
+  bool IsContextMenuForReadOnlyOmnibox() const override;
+  const gfx::FontList& FontListForContextMenu() const override;
+  bool IsContextMenuTextEditingCommandEnabled(int command_id) const override;
 
  protected:
   // OmniboxView:
@@ -313,7 +317,6 @@ class OmniboxViewViews
   void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::Textfield:
-  bool IsItemForCommandIdDynamic(int command_id) const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -331,9 +334,9 @@ class OmniboxViewViews
 
   void UpdateAccessibleValue() override;
 
-  void ShowContextMenuForViewImplComplete(const gfx::Point& point,
-                                          ui::mojom::MenuSourceType source_type,
-                                          std::u16string text);
+  void ShowContextMenuForViewImplComplete(
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type);
 
   // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -364,9 +367,6 @@ class OmniboxViewViews
   std::unique_ptr<ui::ScopedClipboardWriter> CreateClipboardWriter() override;
   void UpdateSelectionClipboard() override;
 
-  // ui::SimpleMenuModel::Delegate:
-  bool IsCommandIdChecked(int id) const override;
-
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override;
   void OnCompositingStarted(ui::Compositor* compositor,
@@ -394,9 +394,6 @@ class OmniboxViewViews
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
-
-  // Helper method to construct part of the context menu.
-  void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
 
   // Helper for updating placeholder color depending on whether its a keyword or
   // DSE placeholder.
@@ -507,10 +504,6 @@ class OmniboxViewViews
   // "Google https://google.com location from bookmark", or
   // "cats are liquid search suggestion".
   std::u16string friendly_suggestion_text_;
-
-  // Cached clipboard text for menu paste state. This cache is only updated
-  // before a menu is shown, so it should only be used by menu delegates.
-  std::u16string clipboard_text_for_menu_;
 
   // The number of added labelling characters before editable text begins.
   // For example,  "Google https://google.com location from history",

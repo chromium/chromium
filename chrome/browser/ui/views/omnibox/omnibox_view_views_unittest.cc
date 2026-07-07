@@ -102,10 +102,6 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   void CheckUpdatePopupNotCalled();
 
-  void SetClipboardTextForTesting(const std::u16string& text) {
-    clipboard_text_for_menu_ = text;
-  }
-
   Range scheme_range() const { return scheme_range_; }
   Range emphasis_range() const { return emphasis_range_; }
   bool base_text_emphasis() const { return base_text_emphasis_; }

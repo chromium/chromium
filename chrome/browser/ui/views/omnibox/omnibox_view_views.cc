@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -72,7 +71,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -90,7 +88,6 @@
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -131,7 +128,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/selection_model.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -157,11 +153,6 @@ namespace {
 
 using ::metrics::OmniboxEventProto;
 using ::ui::mojom::DragOperation;
-
-bool IsClipboardDataMarkedAsConfidential() {
-  return ui::Clipboard::GetForCurrentThread()
-      ->IsMarkedByOriginatorAsConfidential();
-}
 
 // This function provides a logging implementation that aligns with the original
 // definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
@@ -233,6 +224,7 @@ OmniboxViewViews::OmniboxViewViews(bool popup_window_mode,
                                    LocationBarView* location_bar_view,
                                    const gfx::FontList& font_list)
     : OmniboxView(controller),
+      OmniboxContextMenuMixin<views::Textfield>(location_bar_view, controller),
       popup_window_mode_(popup_window_mode),
       saved_selection_for_focus_change_(gfx::Range::InvalidRange()),
       location_bar_view_(location_bar_view),
@@ -779,17 +771,14 @@ void OmniboxViewViews::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  GetClipboardText(
-      /*notify_if_restricted=*/false,
+  PrepareToShowContextMenu(
       base::BindOnce(&OmniboxViewViews::ShowContextMenuForViewImplComplete,
                      weak_factory_.GetWeakPtr(), point, source_type));
 }
 
 void OmniboxViewViews::ShowContextMenuForViewImplComplete(
     const gfx::Point& point,
-    ui::mojom::MenuSourceType source_type,
-    std::u16string text) {
-  clipboard_text_for_menu_ = std::move(text);
+    ui::mojom::MenuSourceType source_type) {
   // `source` is not used in `Textfield::ShowContextMenuForViewImpl()`.
   Textfield::ShowContextMenuForViewImpl(/*source=*/nullptr, point, source_type);
 }
@@ -828,6 +817,19 @@ void OmniboxViewViews::AddedToWidget() {
 void OmniboxViewViews::RemovedFromWidget() {
   views::Textfield::RemovedFromWidget();
   scoped_compositor_observation_.Reset();
+}
+
+bool OmniboxViewViews::IsContextMenuForReadOnlyOmnibox() const {
+  return GetReadOnly();
+}
+
+const gfx::FontList& OmniboxViewViews::FontListForContextMenu() const {
+  return Textfield::GetFontList();
+}
+
+bool OmniboxViewViews::IsContextMenuTextEditingCommandEnabled(
+    int command_id) const {
+  return Textfield::IsCommandIdEnabled(command_id);
 }
 
 void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
@@ -1354,72 +1356,6 @@ void OmniboxViewViews::OnMouseExited(const ui::MouseEvent& event) {
   }
 }
 
-bool OmniboxViewViews::IsItemForCommandIdDynamic(int command_id) const {
-  return command_id == IDC_PASTE_AND_GO;
-}
-
-std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
-  DCHECK_EQ(IDC_PASTE_AND_GO, command_id);
-
-  // If the originator marked the clipboard data as confidential, then
-  // paste-and-go is unavailable, so use a menu label that doesn't contain
-  // clipboard data. (The menu command is disabled in
-  // `OmniboxViewViews::IsCommandIdEnabled()`.)
-  //
-  // On the Mac, if Pasteboard Privacy is enabled, then programmatic access to
-  // the clipboard is either prohibited or will prompt the user, and we can't
-  // inline the contents of the clipboard into the label.
-  //
-  // If we were to attempt to access the clipboard contents to inline it into
-  // the label, the result would be a glitched out user window (see the
-  // screenshot attached to https://crbug.com/417683820#comment3). That's super
-  // bad.
-  //
-  // Therefore, take the less bad approach as done below, where if accessing the
-  // clipboard could block, we just turn "paste and go" into a generic menu
-  // item.
-  //
-  // The best approach would actually be to use -[NSPasteboard
-  // detectPatternsForPatterns:completionHandler:] to select a specific menu
-  // string that matches what's on the clipboard, in order to convey to the user
-  // what will happen. The usage of `/components/open_from_clipboard` might be
-  // useful. This behavior should be patterned after what Chrome iOS does, which
-  // has to work under similar restrictions. TODO(https://crbug.com/419266152):
-  // Switch to this better approach.
-  if (IsClipboardDataMarkedAsConfidential()
-#if BUILDFLAG(IS_MAC)
-      || ui::PasteMightBlockWithPrivacyAlert()
-#endif
-  )
-    return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
-
-  if (clipboard_text_for_menu_.empty()) {
-    return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
-  }
-
-  constexpr size_t kMaxSelectionTextLength = 50;
-  std::u16string selection_text = gfx::TruncateString(
-      clipboard_text_for_menu_, kMaxSelectionTextLength, gfx::WORD_BREAK);
-
-  AutocompleteMatch match;
-  controller()->edit_model()->ClassifyString(clipboard_text_for_menu_, &match,
-                                             nullptr);
-  if (AutocompleteMatch::IsSearchType(match.type)) {
-    return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
-  }
-
-  // To ensure the search and url strings began to truncate at the exact same
-  // number of characters, the pixel width at which the url begins to elide is
-  // derived from the truncated selection text. However, ideally there would be
-  // a better way to do this.
-  const float kMaxSelectionPixelWidth =
-      GetStringWidthF(selection_text, Textfield::GetFontList());
-  const std::u16string url = url_formatter::ElideUrl(
-      match.destination_url, Textfield::GetFontList(), kMaxSelectionPixelWidth);
-
-  return l10n_util::GetStringFUTF16(IDS_PASTE_AND_GO, url);
-}
-
 bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   PermitExternalProtocolHandler();
 
@@ -1852,64 +1788,6 @@ void OmniboxViewViews::OnBlur() {
   }
 
   ClearAccessibilityLabel();
-}
-
-bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
-  if (command_id ==
-      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
-    return !GetReadOnly() && !clipboard_text_for_menu_.empty();
-  }
-  if (command_id == IDC_PASTE_AND_GO) {
-    if (GetReadOnly()) {
-      return false;
-    }
-
-    // If the originator marked the clipboard data as confidential, then
-    // paste-and-go is unavailable, so disable the menu command. (The menu label
-    // is set to be generic in `GetLabelForCommandId()`.)
-    if (IsClipboardDataMarkedAsConfidential()) {
-      return false;
-    }
-
-#if BUILDFLAG(IS_MAC)
-    // On the Mac, if Pasteboard Privacy is enabled, then programmatic access to
-    // the clipboard is either prohibited or will prompt the user, and we can't
-    // use the actual clipboard text to make decisions about enabling the menu
-    // command.
-    //
-    // Therefore, for now, go with a general check for if there is a
-    // probably-valid item on the clipboard to use for paste-and-go, with a
-    // cheat of using a constant string to ensure that all the other
-    // requirements for paste-and-go are fulfilled.
-    //
-    // TODO(https://crbug.com/419266152): Switch to a better approach of using
-    // -[NSPasteboard detectPatternsForPatterns:completionHandler:] to actually
-    // know if there are valid values on the clipboard to enable paste-and-go
-    // with confidence.
-    if (ui::PasteMightBlockWithPrivacyAlert()) {
-      if (!clipboard_text_for_menu_.empty()) {
-        constexpr char16_t kSomeValidText[] = u"validtext";
-        return controller()->edit_model()->CanPasteAndGo(kSomeValidText);
-      } else {
-        return false;
-      }
-    }
-#endif
-
-    return controller()->edit_model()->CanPasteAndGo(clipboard_text_for_menu_);
-  }
-
-  // These menu items are only shown when they are valid.
-  if (command_id == IDC_SHOW_FULL_URLS ||
-      command_id == IDC_SHOW_GOOGLE_LENS_SHORTCUT ||
-      command_id == IDC_SHOW_AI_MODE_OMNIBOX_BUTTON ||
-      command_id == IDC_SHOW_SEARCH_TOOLS) {
-    return true;
-  }
-
-  return Textfield::IsCommandIdEnabled(command_id) ||
-         (location_bar_view_ &&
-          location_bar_view_->command_updater()->IsCommandEnabled(command_id));
 }
 
 bool OmniboxViewViews::SupportsEmoji() const {
@@ -2417,65 +2295,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
-  MaybeAddSendTabToSelfItem(menu_contents);
-
-  const std::optional<size_t> paste_position =
-      menu_contents->GetIndexOfCommandId(
-          std::to_underlying(ui::TouchEditable::MenuCommands::kPaste));
-  DCHECK(paste_position.has_value());
-  menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,
-                                          IDC_PASTE_AND_GO, IDS_PASTE_AND_GO);
-
-  menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  menu_contents->AddItemWithStringId(
-      IDC_EDIT_SEARCH_ENGINES,
-      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
-          ? IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS
-          : IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
-
-  if (features::IsMenuSimplificationEnabled()) {
-    menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
-  }
-
-  const PrefService::Preference* show_full_urls_pref =
-      location_bar_view_->GetProfile()->GetPrefs()->FindPreference(
-          omnibox::kPreventUrlElisionsInOmnibox);
-  if (!show_full_urls_pref->IsManaged()) {
-    menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
-                                            IDS_CONTEXT_MENU_SHOW_FULL_URLS);
-  }
-
-  // Location bar is also used in non-browser UI in production environment.
-  // The only known case so far is simple_web_view_dialog for ChromeOS to draw
-  // captive portal during OOBE signin. Null check to avoid crash before these
-  // UIs are migrated away. See crbug.com/379534750 for a production crash
-  // example. There is an effort to move simple_web_view_dialog away from
-  // location_bar_view and from this nullptr situation.
-  if (lens::features::IsOmniboxEntryPointEnabled() &&
-      location_bar_view_->browser()) {
-    if (auto* controller = lens::LensOverlayEntryPointController::From(
-            location_bar_view_->browser());
-        controller && controller->IsEnabled()) {
-      menu_contents->AddCheckItemWithStringId(
-          IDC_SHOW_GOOGLE_LENS_SHORTCUT,
-          IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
-    }
-  }
-
-  if (omnibox::ShouldShowAimContextMenuOption(
-          location_bar_view_->GetProfile())) {
-    auto* config = GetAiModeConfig();
-    if (config) {
-      menu_contents->AddCheckItem(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
-                                  config->context_menu_label);
-    }
-  }
-
-  if (omnibox_feature_configs::Toolbelt::Get().enabled) {
-    menu_contents->AddCheckItemWithStringId(IDC_SHOW_SEARCH_TOOLS,
-                                            IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS);
-  }
+  AddOmniboxSpecificItems(menu_contents);
 }
 
 std::unique_ptr<ui::ScopedClipboardWriter>
@@ -2501,26 +2321,6 @@ void OmniboxViewViews::UpdateSelectionClipboard() {
       }
     }
   }
-}
-
-bool OmniboxViewViews::IsCommandIdChecked(int id) const {
-  if (id == IDC_SHOW_FULL_URLS) {
-    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
-        omnibox::kPreventUrlElisionsInOmnibox);
-  }
-  if (id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
-    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
-        omnibox::kShowGoogleLensShortcut);
-  }
-  if (id == IDC_SHOW_SEARCH_TOOLS) {
-    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
-        omnibox::kShowSearchTools);
-  }
-  if (id == IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) {
-    return location_bar_view_->GetProfile()->GetPrefs()->GetBoolean(
-        omnibox::kShowAiModeOmniboxButton);
-  }
-  return false;
 }
 
 void OmniboxViewViews::OnCompositingDidCommit(ui::Compositor* compositor) {
@@ -2646,36 +2446,6 @@ void OmniboxViewViews::PerformDrop(
   }
   SelectAll(false);
   output_drag_op = DragOperation::kCopy;
-}
-
-void OmniboxViewViews::MaybeAddSendTabToSelfItem(
-    ui::SimpleMenuModel* menu_contents) {
-  // Only add this menu entry if SendTabToSelf feature is enabled.
-  if (!send_tab_to_self::ShouldDisplayEntryPoint(
-          location_bar_view_->GetWebContents())) {
-    return;
-  }
-
-  if (features::IsMenuSimplificationEnabled()) {
-    return;
-  }
-
-  size_t index = menu_contents->GetIndexOfCommandId(Textfield::kUndo).value();
-  // Add a separator if this is not the first item.
-  if (index) {
-    menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
-  }
-
-  menu_contents->InsertItemAt(
-      index, IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
-#if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(
-      index, ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                ? kDevicesIcon
-                                                : kDevicesOldIcon));
-#endif
-  menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
