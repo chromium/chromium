@@ -105,8 +105,7 @@ void AtomicSetFeatureState(std::atomic<FeatureStateCache>& cached_value,
       PackFeatureState(override_state, caching_context);
 
   // When updating the currently cached value, we need to preserve all of its
-  // flag bits (bits 16 through 23), which might be set concurrently by
-  // AtomicSetFeatureStateFlags(). A simple store could clear those bits.
+  // flag bits (bits 16 through 23). A simple store could clear those bits.
   Feature::FeatureStateCache current_value =
       cached_value.load(std::memory_order_relaxed);
   Feature::FeatureStateCache value_to_store;
@@ -120,26 +119,6 @@ void AtomicSetFeatureState(std::atomic<FeatureStateCache>& cached_value,
                                                std::memory_order_relaxed));
 }
 
-// Atomically sets the flags in the packed cache value. The flags are stored in
-// the 8 bits from 16 to 23. The override state and caching context in the
-// packed cache value are preserved.
-void AtomicSetFeatureStateFlags(std::atomic<FeatureStateCache>& feature_state,
-                                FeatureStateCache flags_to_set) {
-  CHECK_EQ(flags_to_set & internal::kAllFlagsMask, flags_to_set)
-      << "Only flags should be set in this function.";
-
-  FeatureStateCache current_value =
-      feature_state.load(std::memory_order_relaxed);
-  Feature::FeatureStateCache value_to_store;
-  do {
-    // Combine the new value with the flags from the current value.
-    value_to_store = current_value | flags_to_set;
-    // Note that compare_exchange_weak() will update `current_value` if the
-    // `current_value` doesn't match `feature_state`.
-  } while (!feature_state.compare_exchange_weak(current_value, value_to_store,
-                                                std::memory_order_relaxed,
-                                                std::memory_order_relaxed));
-}
 
 // Returns true if the feature is runtime mutable, i.e. if its enabled/disabled
 // state can be changed after initialization.
@@ -147,14 +126,6 @@ bool FeatureIsRuntimeMutable(FeatureStateCache feature_cached_value) {
   return HasFlags(feature_cached_value, internal::kRuntimeMutabilityMask);
 }
 
-// Returns true if the feature has runtime mutability enabled, i.e. if it is
-// a runtime mutable feature and the runtime mutability has been enabled.
-bool FeatureHasRuntimeMutabilityEnabled(
-    FeatureStateCache feature_cached_value) {
-  constexpr auto mask = internal::kRuntimeMutabilityMask |
-                        internal::kRuntimeMutabilityEnabledMask;
-  return HasFlags(feature_cached_value, mask);
-}
 
 // Returns true if the feature was accessed before the FeatureList was
 // initialized.
@@ -414,10 +385,6 @@ bool Feature::IsRuntimeMutable() const {
   return FeatureIsRuntimeMutable(cached_value.load(std::memory_order_relaxed));
 }
 
-bool Feature::HasRuntimeMutabilityEnabled() const {
-  return FeatureHasRuntimeMutabilityEnabled(
-      cached_value.load(std::memory_order_relaxed));
-}
 
 bool Feature::WasAccessedEarly() const {
   return FeatureWasAccessedEarly(cached_value.load(std::memory_order_relaxed));
@@ -541,20 +508,11 @@ void FeatureList::EnableRuntimeMutability(
 
   // Runtime mutable features must be registered exactly once, during feature
   // list initialization, and before first use.
-  CHECK(!FeatureHasRuntimeMutabilityEnabled(cached_value));
   CHECK(!FeatureWasAccessedEarly(cached_value));
   bool inserted = runtime_mutable_overrides_
                       .try_emplace(feature.name, feature, std::move(callback))
                       .second;
   CHECK(inserted);
-
-  // In principle, a correctly implemented runtime mutable feature doesn't
-  // need atomic operations to set the runtime mutability enabled flag, as
-  // initialization is done on the main sequence. We reuse the atomic helper
-  // for convenience and consistency.
-  AtomicSetFeatureStateFlags(feature.cached_value,
-                             internal::kRuntimeMutabilityEnabledMask);
-  DCHECK(feature.HasRuntimeMutabilityEnabled());
 }
 
 const base::flat_map<std::string, internal::RuntimeMutableFeatureState>&
@@ -605,7 +563,6 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
   // has its runtime mutability bits properly set.
   auto& runtime_override_entry = it->second;
   const auto& feature = runtime_override_entry.feature.get();
-  DCHECK(feature.HasRuntimeMutabilityEnabled());
 
   runtime_override_entry.override_state = override_state;
   // TODO: http://crbug.com/482450776 - Update field trial activations.
@@ -953,6 +910,12 @@ void FeatureList::ClearFeatureCachedValueForTesting(const Feature& feature) {
       std::memory_order_relaxed);
 }
 
+bool FeatureList::IsRuntimeMutabilityEnabledForTesting(
+    const Feature& feature) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return runtime_mutable_overrides_.contains(feature.name);
+}
+
 void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
   CHECK(IsEarlyAccessInstance());
   allowed_feature_names_.insert(std::move(feature_name));
@@ -1148,7 +1111,6 @@ FeatureList::MaybeGetRuntimeOverrideState(
   const bool is_runtime_mutable = FeatureIsRuntimeMutable(current_cached_value);
   if (is_runtime_mutable) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(FeatureHasRuntimeMutabilityEnabled(current_cached_value));
     // Runtime mutability is enabled, so we should use the override state if
     // it is set.
     auto it = runtime_mutable_overrides_.find(feature.name);

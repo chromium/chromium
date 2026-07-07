@@ -242,9 +242,6 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // Returns true if this feature is a runtime mutable feature.
   bool IsRuntimeMutable() const;
 
-  // Returns true if this feature has runtime mutability enabled.
-  bool HasRuntimeMutabilityEnabled() const;
-
   // Returns true if this feature has runtime mutability disabled.
   bool HasRuntimeMutabilityDisabled() const;
 

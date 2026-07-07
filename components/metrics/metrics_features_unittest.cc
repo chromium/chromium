@@ -21,21 +21,22 @@ TEST(MetricsFeaturesTest, EnableNoopRuntimeMutableFeatures) {
   base::FeatureList::ClearFeatureCachedValueForTesting(
       features::kNoopRuntimeMutableFeatureVariationsEnabled);
 
-  // Initially, they should not have runtime mutability enabled.
-  EXPECT_FALSE(features::kNoopRuntimeMutableFeatureDefaultEnabled
-                   .HasRuntimeMutabilityEnabled());
-  EXPECT_FALSE(features::kNoopRuntimeMutableFeatureVariationsEnabled
-                   .HasRuntimeMutabilityEnabled());
-
   // Register the features.
   auto feature_list = std::make_unique<base::FeatureList>();
+
+  // Initially, they should not have runtime mutability enabled.
+  EXPECT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      features::kNoopRuntimeMutableFeatureDefaultEnabled));
+  EXPECT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      features::kNoopRuntimeMutableFeatureVariationsEnabled));
+
   features::EnableNoopRuntimeMutableFeatures(feature_list.get());
 
   // Verify that they now have runtime mutability enabled.
-  EXPECT_TRUE(features::kNoopRuntimeMutableFeatureDefaultEnabled
-                  .HasRuntimeMutabilityEnabled());
-  EXPECT_TRUE(features::kNoopRuntimeMutableFeatureVariationsEnabled
-                  .HasRuntimeMutabilityEnabled());
+  EXPECT_TRUE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      features::kNoopRuntimeMutableFeatureDefaultEnabled));
+  EXPECT_TRUE(feature_list->IsRuntimeMutabilityEnabledForTesting(
+      features::kNoopRuntimeMutableFeatureVariationsEnabled));
 }
 
 }  // namespace

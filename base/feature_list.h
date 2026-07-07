@@ -468,6 +468,9 @@ class BASE_EXPORT FeatureList {
   // Clears the cached value of the given feature.
   static void ClearFeatureCachedValueForTesting(const Feature& feature);
 
+  // Returns true if runtime mutability is enabled for the given feature.
+  bool IsRuntimeMutabilityEnabledForTesting(const Feature& feature) const;
+
   // Allows a visitor to record override state, parameters, and field trial
   // associated with each feature. Optionally, provide a prefix which filters
   // the visited features.
