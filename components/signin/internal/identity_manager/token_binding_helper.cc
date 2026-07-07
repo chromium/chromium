@@ -47,8 +47,12 @@ namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 
+// We do not want to delay token binding key operations by having them
+// run at the same background priority as the spare key pool generation
+// tasks. Therefore, when the spare key pool is enabled, we elevate new
+// key generation to `kUserVisible`.
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
-    unexportable_keys::BackgroundTaskPriority::kBestEffort;
+    unexportable_keys::BackgroundTaskPriority::kUserVisible;
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
@@ -139,12 +143,13 @@ void TokenBindingHelper::MaybeInitializeRegistrationTokenHelper(
     // binding key.
     registration_token_helper_ =
         std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
-            *unexportable_key_service_,
-            std::move(wrapped_binding_key_to_reuse));
+            *unexportable_key_service_, std::move(wrapped_binding_key_to_reuse),
+            kTokenBindingPriority);
   } else {
     registration_token_helper_ =
         std::make_unique<signin::BindingKeyRegistrationTokenHelper>(
-            *unexportable_key_service_, base::ToVector(supported_algorithms));
+            *unexportable_key_service_, base::ToVector(supported_algorithms),
+            kTokenBindingPriority);
   }
 }
 

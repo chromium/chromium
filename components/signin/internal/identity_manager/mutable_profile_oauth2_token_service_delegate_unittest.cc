@@ -2263,7 +2263,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_CALL(dest_uks,
               FromWrappedSigningKeySlowlyAsync(
                   Eq(kFakeWrappedBindingKey),
-                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _));
 
   oauth2_service_delegate_->ExtractCredentials(&dest_token_service, account_id);
 
@@ -2303,7 +2303,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_CALL(dest_uks,
               FromWrappedSigningKeySlowlyAsync(
                   Eq(kFakeWrappedBindingKey),
-                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _));
 
   oauth2_service_delegate_->ExtractCredentials(&dest_token_service, account_id);
 }
