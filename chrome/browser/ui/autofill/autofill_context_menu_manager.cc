@@ -348,7 +348,11 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
   }
 
   if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI,
-                                autofill_driver->GetAutofillClient())) {
+                                autofill_driver->GetAutofillClient(),
+                                params_.page_url) ||
+      !MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI,
+                                autofill_driver->GetAutofillClient(),
+                                params_.frame_url)) {
     return;
   }
 

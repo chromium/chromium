@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
@@ -17,6 +18,7 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
@@ -118,7 +120,7 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   if (!IsPersonalContextEligible(personal_context_service)) {
     return false;
   }
-  // TODO(crbug.com/517490748) Check blocklist.
+
   // TODO(crbug.com/521270638) Check enterprise policy implementation.
 
   if (!IsSubscriptionTierEligible(subscription_eligibility_service)) {
@@ -143,14 +145,41 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   NOTREACHED();
 }
 
+[[nodiscard]] bool ActionRequiresUrl(AtMemoryAction action) {
+  switch (action) {
+    case AtMemoryAction::kShowAtMemoryInSettings:
+    case AtMemoryAction::kAllowCustomizeAtMemoryShortcut:
+      return false;
+    case AtMemoryAction::kTriggerSearchUI:
+    case AtMemoryAction::kShowIph:
+    case AtMemoryAction::kShowAutocompleteAtMemoryButton:
+      return true;
+  }
+  NOTREACHED();
+}
+
+[[nodiscard]] bool IsUrlEligible(AtMemoryAction action,
+                                 AutofillOptimizationGuideDecider* decider,
+                                 base::optional_ref<const GURL> url) {
+  if (!decider) {
+    return true;
+  }
+  if (!ActionRequiresUrl(action)) {
+    return true;
+  }
+  return url && !decider->ShouldBlockAtMemory(*url);
+}
+
 }  // namespace
 
 bool MayPerformAtMemoryAction(AtMemoryAction action,
-                              const AutofillClient& client) {
+                              const AutofillClient& client,
+                              base::optional_ref<const GURL> url) {
   return MayPerformAtMemoryAction(
       action, client.GetPersonalContextEnablementService(),
       client.GetSubscriptionEligibilityService(), client.GetPrefs(),
-      client.GetGoogleGroupsManager());
+      client.GetGoogleGroupsManager(),
+      client.GetAutofillOptimizationGuideDecider(), url);
 }
 
 bool MayPerformAtMemoryAction(
@@ -160,9 +189,15 @@ bool MayPerformAtMemoryAction(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     const PrefService* pref_service,
-    const GoogleGroupsManager* google_groups_manager) {
+    const GoogleGroupsManager* google_groups_manager,
+    AutofillOptimizationGuideDecider* decider,
+    base::optional_ref<const GURL> url) {
   if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service)) {
+    return false;
+  }
+
+  if (!IsUrlEligible(action, decider, url)) {
     return false;
   }
 

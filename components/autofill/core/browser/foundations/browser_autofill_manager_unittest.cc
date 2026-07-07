@@ -1327,6 +1327,12 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
  public:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAtMemory,
+                              features::kShowAutocompleteAtMemoryButton},
+        /*disabled_features=*/{});
+
     personal_context::prefs::RegisterProfilePrefs(
         autofill_client().GetPrefs()->registry());
     autofill_client().GetPrefs()->SetBoolean(
@@ -1342,10 +1348,10 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
  protected:
   NiceMock<personal_context::MockPersonalContextEnablementService>
       mock_personal_context_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BrowserAutofillManagerAtMemoryTest, AtMemoryTriggersEmptySuggestions) {
-  base::test::ScopedFeatureList features(features::kAutofillAtMemory);
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -1359,7 +1365,6 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, AtMemoryTriggersEmptySuggestions) {
 // Tests that when `PersonalContextEnablementState` is `kDisabledNotEligible`
 // for a given profile, the AtMemory popup doesn't trigger.
 TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
-  base::test::ScopedFeatureList features(features::kAutofillAtMemory);
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -1380,7 +1385,6 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
 // Tests that when the Personal Context toggle is off, the AtMemory popup
 // doesn't trigger.
 TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenToggleOff) {
-  base::test::ScopedFeatureList features(features::kAutofillAtMemory);
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -1398,7 +1402,6 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenToggleOff) {
 
 TEST_F(BrowserAutofillManagerAtMemoryTest,
        ComposeDelayedNudgeDoesNotHideAtMemory) {
-  base::test::ScopedFeatureList features(features::kAutofillAtMemory);
   const FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
@@ -1422,6 +1425,56 @@ TEST_F(BrowserAutofillManagerAtMemoryTest,
   EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kAtMemory);
+}
+
+// Tests that if the main frame URL is blocked, AtMemory is blocked.
+TEST_F(BrowserAutofillManagerAtMemoryTest,
+       TriggerDroppedWhenMainFrameUrlBlocked) {
+  GURL main_frame_url("https://blocked-main.com");
+  GURL field_url("https://allowed-field.com");
+
+  autofill_client().set_last_committed_primary_main_frame_url(main_frame_url);
+  const FormData form = test::GetFormData(
+      {.fields = {{.origin = url::Origin::Create(field_url)}}});
+
+  FormsSeen({form});
+
+  MockAutofillOptimizationGuideDecider* decider =
+      autofill_client().GetAutofillOptimizationGuideDecider();
+  ON_CALL(*decider, ShouldBlockAtMemory(main_frame_url))
+      .WillByDefault(Return(true));
+  ON_CALL(*decider, ShouldBlockAtMemory(field_url))
+      .WillByDefault(Return(false));
+
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kAtMemory);
+
+  // Trigger should be dropped, no suggestions returned.
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that if the field frame URL is blocked, AtMemory is blocked.
+TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenFieldUrlBlocked) {
+  GURL main_frame_url("https://allowed-main.com");
+  GURL field_url("https://blocked-field.com");
+
+  autofill_client().set_last_committed_primary_main_frame_url(main_frame_url);
+  const FormData form = test::GetFormData(
+      {.fields = {{.origin = url::Origin::Create(field_url)}}});
+
+  FormsSeen({form});
+
+  MockAutofillOptimizationGuideDecider* decider =
+      autofill_client().GetAutofillOptimizationGuideDecider();
+  ON_CALL(*decider, ShouldBlockAtMemory(main_frame_url))
+      .WillByDefault(Return(false));
+  ON_CALL(*decider, ShouldBlockAtMemory(field_url)).WillByDefault(Return(true));
+
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kAtMemory);
+
+  // Trigger should be dropped, no suggestions returned.
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

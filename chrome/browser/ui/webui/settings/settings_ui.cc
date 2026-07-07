@@ -698,11 +698,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "isAtMemoryEnabled",
       autofill::MayPerformAtMemoryAction(
-          autofill::AtMemoryAction::kShowAtMemoryInSettings, enablement_service,
-          subscription_eligibility::SubscriptionEligibilityServiceFactory::
-              GetForProfile(profile),
-          profile->GetPrefs(),
-          GoogleGroupsManagerFactory::GetForBrowserContext(profile)));
+          autofill::AtMemoryAction::kShowAtMemoryInSettings, autofill_client));
 
   html_source->AddString(
       "webuiRefresh2026",

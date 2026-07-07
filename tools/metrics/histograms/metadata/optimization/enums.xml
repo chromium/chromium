@@ -897,6 +897,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="129" label="CURINOS_CREDIT_CARD_CAR_RENTAL_BENEFITS"/>
   <int value="130" label="FILTER_TASKS_SUPPORTED"/>
   <int value="131" label="FILTER_EXTRACT_ATTRIBUTES"/>
+  <int value="132" label="AUTOFILL_AT_MEMORY_BLOCKED"/>
   <int value="133" label="FILTER_EXECUTION_STRATEGY"/>
 </enum>
 

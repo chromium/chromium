@@ -349,6 +349,51 @@ TEST_F(
       guide().ShouldBlockSingleFieldSuggestions(url, form_structure.field(0)));
 }
 
+// Test that Autofill AtMemory is blocked when the `OptimizationGuideDecider`
+// denotes that the optimization is not allowed (decision is `kFalse`) for the
+// `AUTOFILL_AT_MEMORY_BLOCKED` optimization type.
+TEST_F(AutofillOptimizationGuideDeciderTest, ShouldBlockAtMemory_Blocked) {
+  GURL url("https://example.com/");
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(url), Eq(optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(Return(OptimizationGuideDecision::kFalse));
+
+  EXPECT_TRUE(guide().ShouldBlockAtMemory(url));
+}
+
+// Test that Autofill AtMemory is not blocked when the
+// `OptimizationGuideDecider` denotes that the optimization is allowed (decision
+// is `kTrue`) for the `AUTOFILL_AT_MEMORY_BLOCKED` optimization type.
+TEST_F(AutofillOptimizationGuideDeciderTest, ShouldBlockAtMemory_Allowed) {
+  GURL url("https://example.com/");
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(url), Eq(optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(Return(OptimizationGuideDecision::kTrue));
+
+  EXPECT_FALSE(guide().ShouldBlockAtMemory(url));
+}
+
+// Test that Autofill AtMemory is not blocked when the
+// `OptimizationGuideDecider` returns `kUnknown` for the
+// `AUTOFILL_AT_MEMORY_BLOCKED` optimization type.
+TEST_F(AutofillOptimizationGuideDeciderTest, ShouldBlockAtMemory_Unknown) {
+  GURL url("https://example.com/");
+  ON_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(url), Eq(optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(Return(OptimizationGuideDecision::kUnknown));
+
+  EXPECT_FALSE(guide().ShouldBlockAtMemory(url));
+}
+
 // Test that blocking a virtual card suggestion works correctly in the VCN
 // merchant opt-out use-case for Visa.
 TEST_F(AutofillOptimizationGuideDeciderTest,
@@ -1332,6 +1377,35 @@ TEST_F(
       decider(),
       RegisterOptimizationTypes(Contains(
           optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST)))
+      .Times(0);
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test that the `AUTOFILL_AT_MEMORY_BLOCKED` optimization type is registered
+// when payments data is loaded and the AtMemory feature is enabled.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OnPaymentsDataLoaded_AutofillAtMemoryBlocked) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillAtMemory);
+
+  EXPECT_CALL(decider(),
+              RegisterOptimizationTypes(Contains(
+                  optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED)));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test that the `AUTOFILL_AT_MEMORY_BLOCKED` optimization type is not
+// registered when payments data is loaded and the AtMemory feature is disabled.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OnPaymentsDataLoaded_AutofillAtMemoryBlocked_FeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillAtMemory);
+
+  EXPECT_CALL(decider(),
+              RegisterOptimizationTypes(Contains(
+                  optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED)))
       .Times(0);
 
   guide().OnPaymentsDataLoaded(payments_data_manager());

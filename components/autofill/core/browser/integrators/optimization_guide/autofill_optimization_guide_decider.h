@@ -108,6 +108,9 @@ class AutofillOptimizationGuideDecider : public KeyedService {
   // at `url`.
   virtual bool IsUrlEligibleForOmniboxAutofill(const GURL& url) const;
 
+  // Returns whether Autofill AtMemory should be blocked on `url`.
+  virtual bool ShouldBlockAtMemory(const GURL& url) const;
+
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.

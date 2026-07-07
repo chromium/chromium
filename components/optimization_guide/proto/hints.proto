@@ -147,7 +147,7 @@ message GetHintsResponse {
 // Next ID: 134
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101, 132;
+  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -422,6 +422,9 @@ enum OptimizationType {
   // filtering based on semantic breakdown; see go/magic-filters:dd.
   FILTER_TASKS_SUPPORTED = 130;
   FILTER_EXTRACT_ATTRIBUTES = 131;
+  // This optimization helps determine if a page should be blocked for the
+  // Autofill AtMemory feature.
+  AUTOFILL_AT_MEMORY_BLOCKED = 132;
   FILTER_EXECUTION_STRATEGY = 133;
 }
 

@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_ENABLEMENT_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_ENABLEMENT_UTILS_H_
 
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
 class GoogleGroupsManager;
+class GURL;
 class PrefService;
 
 namespace personal_context {
@@ -42,13 +44,17 @@ enum class AtMemoryAction {
   kShowAutocompleteAtMemoryButton,
 };
 
+class AutofillOptimizationGuideDecider;
+
 // Returns whether all permission-related requirements are met for `action`.
 //
 // Checks that AtMemory feature flags are enabled, AtMemory eligibility
 // criteria are met and PersonalContext settings toggle is on if required by
 // the action.
-[[nodiscard]] bool MayPerformAtMemoryAction(AtMemoryAction action,
-                                            const AutofillClient& client);
+[[nodiscard]] bool MayPerformAtMemoryAction(
+    AtMemoryAction action,
+    const AutofillClient& client,
+    base::optional_ref<const GURL> url = std::nullopt);
 
 [[nodiscard]] bool MayPerformAtMemoryAction(
     AtMemoryAction action,
@@ -57,7 +63,9 @@ enum class AtMemoryAction {
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     const PrefService* pref_service,
-    const GoogleGroupsManager* google_groups_manager);
+    const GoogleGroupsManager* google_groups_manager,
+    AutofillOptimizationGuideDecider* decider,
+    base::optional_ref<const GURL> url = std::nullopt);
 
 // Returns whether the AtMemory feature is enabled.
 //

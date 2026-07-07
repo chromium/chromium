@@ -251,6 +251,8 @@ std::string_view GetStringNameForOptimizationType(
       return "FilterTasksSupported";
     case proto::OptimizationType::FILTER_EXTRACT_ATTRIBUTES:
       return "FilterExtractAttributes";
+    case proto::OptimizationType::AUTOFILL_AT_MEMORY_BLOCKED:
+      return "AutofillAtMemoryBlocked";
     case proto::OptimizationType::FILTER_EXECUTION_STRATEGY:
       return "FilterExecutionStrategy";
   }

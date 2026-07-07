@@ -366,7 +366,10 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 void ChromeAutofillClient::ShowAutofillAtMemoryPromo() {
-  if (!MayPerformAtMemoryAction(AtMemoryAction::kShowIph, *this)) {
+  // TODO(crbug.com/519061643) Double check if we also need to check a field
+  // url here.
+  if (!MayPerformAtMemoryAction(AtMemoryAction::kShowIph, *this,
+                                GetLastCommittedPrimaryMainFrameURL())) {
     return;
   }
   auto* user_education_interface =

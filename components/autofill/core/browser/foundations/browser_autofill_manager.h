@@ -646,7 +646,7 @@ class BrowserAutofillManager : public AutofillManager {
   void InitializeSuggestionGenerators(
       AutofillSuggestionTriggerSource trigger_source,
       FormGlobalId form_id,
-      FieldGlobalId field_id);
+      const FormFieldData& field);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.

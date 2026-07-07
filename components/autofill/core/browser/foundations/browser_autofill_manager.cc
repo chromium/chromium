@@ -1228,9 +1228,15 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  if (IsAtMemoryTriggerSource(trigger_source) &&
-      !MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client())) {
-    return;
+  if (IsAtMemoryTriggerSource(trigger_source)) {
+    const GURL& main_frame_url = client().GetLastCommittedPrimaryMainFrameURL();
+    const GURL& field_url = field.origin().GetURL();
+    if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
+                                  main_frame_url) ||
+        !MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
+                                  field_url)) {
+      return;
+    }
   }
 
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
@@ -1255,8 +1261,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source,
       GetAcUnrecognizedBehavior(client()));
-  InitializeSuggestionGenerators(trigger_source, form.global_id(),
-                                 field.global_id());
+  InitializeSuggestionGenerators(trigger_source, form.global_id(), field);
 
   auto barrier_callback =
       base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
@@ -3466,7 +3471,7 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
 void BrowserAutofillManager::InitializeSuggestionGenerators(
     AutofillSuggestionTriggerSource trigger_source,
     FormGlobalId form_id,
-    FieldGlobalId field_id) {
+    const FormFieldData& field) {
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
@@ -3493,18 +3498,25 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   }
   if (relevant_filling_products.contains(FillingProduct::kAutocomplete) &&
       client().GetAutocompleteHistoryManager()) {
+    const GURL& main_frame_url = client().GetLastCommittedPrimaryMainFrameURL();
+    const GURL& field_url = field.origin().GetURL();
+    const bool is_enabled = MayPerformAtMemoryAction(
+                                AtMemoryAction::kShowAutocompleteAtMemoryButton,
+                                client(), main_frame_url) &&
+                            MayPerformAtMemoryAction(
+                                AtMemoryAction::kShowAutocompleteAtMemoryButton,
+                                client(), field_url);
     suggestion_generators_.push_back(
         std::make_unique<AutocompleteSuggestionGenerator>(
             client().GetAutocompleteHistoryManager()->GetProfileDatabase(),
-            MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI,
-                                     client())));
+            is_enabled));
   }
   if (relevant_filling_products.contains(FillingProduct::kLoyaltyCard) &&
       client().GetValuablesDataManager()) {
     const PasswordFormClassification password_form_classification =
         base::FeatureList::IsEnabled(
             features::kAutofillEnableNonAffiliatedLoyaltyCardsFilling)
-            ? client().ClassifyAsPasswordForm(*this, form_id, field_id)
+            ? client().ClassifyAsPasswordForm(*this, form_id, field.global_id())
             : PasswordFormClassification();
 
     suggestion_generators_.push_back(

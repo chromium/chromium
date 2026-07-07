@@ -315,6 +315,11 @@ void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
         optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST);
   }
 
+  if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    optimization_types.insert(
+        optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED);
+  }
+
   // If we do not have any optimization types to register, do not do anything.
   if (!optimization_types.empty()) {
     decider_->RegisterOptimizationTypes(
@@ -593,6 +598,19 @@ bool AutofillOptimizationGuideDecider::IsUrlEligibleForOmniboxAutofill(
              url, optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST,
              /*optimization_metadata=*/nullptr) ==
              optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
+bool AutofillOptimizationGuideDecider::ShouldBlockAtMemory(
+    const GURL& url) const {
+  // Since the optimization guide decider integration corresponding to
+  // `AUTOFILL_AT_MEMORY_BLOCKED` lists are blocklists for the question "Can
+  // this site be optimized?", a match on the blocklist answers the question
+  // with "no". Therefore, `kFalse` indicates that `url` is blocked from the
+  // AtMemory feature.
+  return decider_->CanApplyOptimization(
+             url, optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kFalse;
 }
 
 }  // namespace autofill

@@ -310,6 +310,9 @@ chromium-metrics-reviews@google.com.
       summary="This optimization provides information about whether
                triggering autofill on an iframe with a given origin is
                allowed."/>
+  <variant name="AutofillAtMemoryBlocked"
+      summary="This optimization provides information about whether a page is
+               blocked for the Autofill AtMemory feature."/>
   <variant name="AutofillSamplingRate"
       summary="This optimization provides information about a sampling rate
                of Autofill UKM metrics per origin based on origin popularity."/>
