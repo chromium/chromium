@@ -13,15 +13,14 @@ mojom("mojo_bindings") {
   ]
 }
 
-source_set("context_hub") {
+source_set("context_hub_page_handler") {
   sources = [
     "context_hub_page_handler.cc",
     "context_hub_page_handler.h",
-    "context_hub_ui.cc",
-    "context_hub_ui.h",
   ]
 
   public_deps = [
+    ":mojo_bindings",
     "//base",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -29,16 +28,44 @@ source_set("context_hub") {
   ]
 
   deps = [
-    ":mojo_bindings",
     "//chrome/browser/context_hub",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources/context_hub:resources",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//components/personal_context/proto:personal_context_proto",
+    "//components/sessions",
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui:favicon_source" ]
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+}
+
+source_set("context_hub") {
+  sources = [
+    "context_hub_ui.cc",
+    "context_hub_ui.h",
+  ]
+
+  public_deps = [
+    ":context_hub_page_handler",
+    "//base",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/context_hub:resources",
+    "//chrome/common",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/webui:favicon_source",
+    ]
   }
 }
 
@@ -46,7 +73,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "context_hub_page_handler_unittest.cc" ]
   deps = [
-    ":context_hub",
+    ":context_hub_page_handler",
     "//base/test:test_support",
     "//chrome/browser/context_hub",
     "//chrome/browser/personal_context",

@@ -12,6 +12,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
@@ -22,6 +24,9 @@
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +37,20 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockTabProvider : public ContextHubPageHandler::TabProvider {
+ public:
+  MOCK_METHOD(std::vector<content::WebContents*>,
+              GetTabs,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              SwitchToTab,
+              (content::WebContents*, int32_t),
+              (override));
+};
+#endif
 
 class ContextHubPageHandlerTest : public testing::Test {
  public:
@@ -51,9 +70,25 @@ class ContextHubPageHandlerTest : public testing::Test {
               personal_context::MockPersonalContextService>();
         }));
 
+#if !BUILDFLAG(IS_ANDROID)
+    auto mock_tab_provider = std::make_unique<MockTabProvider>();
+    mock_tab_provider_ = mock_tab_provider.get();
     handler_ = std::make_unique<ContextHubPageHandler>(
         mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
-        &profile_, nullptr);
+        &profile_, nullptr, std::move(mock_tab_provider));
+#else
+    handler_ = std::make_unique<ContextHubPageHandler>(
+        mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
+        &profile_, nullptr, nullptr);
+#endif
+  }
+
+  void TearDown() override {
+#if !BUILDFLAG(IS_ANDROID)
+    mock_tab_provider_ = nullptr;
+#endif
+    handler_.reset();
+    testing::Test::TearDown();
   }
 
  protected:
@@ -63,8 +98,12 @@ class ContextHubPageHandlerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<MockTabProvider> mock_tab_provider_ = nullptr;
+#endif
   std::unique_ptr<ContextHubPageHandler> handler_;
 };
 
@@ -268,6 +307,98 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
       get_all_future2.Take();
   EXPECT_TRUE(entries2.empty());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextHubPageHandlerTest, GetTabs) {
+  std::unique_ptr<content::WebContents> tab1 =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContentsTester::For(tab1.get())->SetTitle(u"Tab One");
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab1.get(), sessions::SessionTabHelper::DelegateLookup());
+
+  std::unique_ptr<content::WebContents> tab2 =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContentsTester::For(tab2.get())->SetTitle(u"Tab Two");
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab2.get(), sessions::SessionTabHelper::DelegateLookup());
+
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(std::vector<content::WebContents*>{tab1.get(), tab2.get()}));
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabInfoPtr>>
+      future;
+  handler_->GetTabs(future.GetCallback());
+
+  std::vector<browser::context_hub::mojom::TabInfoPtr> tabs = future.Take();
+  ASSERT_EQ(tabs.size(), 2u);
+
+  EXPECT_EQ(tabs[0]->title, "Tab One");
+  EXPECT_EQ(tabs[0]->url, tab1->GetLastCommittedURL());
+  EXPECT_NE(tabs[0]->id, 0);
+
+  EXPECT_EQ(tabs[1]->title, "Tab Two");
+  EXPECT_EQ(tabs[1]->url, tab2->GetLastCommittedURL());
+  EXPECT_NE(tabs[1]->id, 0);
+}
+
+TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
+  EXPECT_CALL(*mock_tab_provider_, SwitchToTab(_, 42))
+      .Times(1);
+
+  handler_->SwitchToTab(42);
+}
+
+TEST_F(ContextHubPageHandlerTest, ClusterTabs_NoTabs) {
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TabClusterPtr>,
+      std::vector<int32_t>>
+      future;
+  handler_->ClusterTabs(
+      future
+          .GetCallback<std::vector<browser::context_hub::mojom::TabClusterPtr>,
+                       const std::vector<int32_t>&>());
+
+  auto [clusters, ungrouped_tab_ids] = future.Take();
+  EXPECT_TRUE(clusters.empty());
+  EXPECT_TRUE(ungrouped_tab_ids.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, ClusterTabs_WithTabs) {
+  std::vector<std::unique_ptr<content::WebContents>> test_tabs;
+  std::vector<content::WebContents*> raw_test_tabs;
+  for (int i = 0; i < 5; ++i) {
+    auto tab = content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    sessions::SessionTabHelper::CreateForWebContents(
+        tab.get(), sessions::SessionTabHelper::DelegateLookup());
+    raw_test_tabs.push_back(tab.get());
+    test_tabs.push_back(std::move(tab));
+  }
+
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(raw_test_tabs));
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TabClusterPtr>,
+      std::vector<int32_t>>
+      future;
+  handler_->ClusterTabs(
+      future
+          .GetCallback<std::vector<browser::context_hub::mojom::TabClusterPtr>,
+                       const std::vector<int32_t>&>());
+
+  auto [clusters, ungrouped_tab_ids] = future.Take();
+
+  size_t clustered_tabs_count = 0;
+  for (const auto& cluster : clusters) {
+    clustered_tabs_count += cluster->tab_ids.size();
+    EXPECT_GE(cluster->tab_ids.size(), 2u);
+  }
+  EXPECT_EQ(clustered_tabs_count + ungrouped_tab_ids.size(), 5u);
+}
+#endif
 
 }  // namespace
 }  // namespace context_hub

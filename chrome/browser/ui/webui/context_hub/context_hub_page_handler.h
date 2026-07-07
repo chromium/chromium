@@ -22,10 +22,20 @@ class WebContents;
 
 class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
  public:
-  explicit ContextHubPageHandler(
+  class TabProvider {
+   public:
+    virtual ~TabProvider() = default;
+    virtual std::vector<content::WebContents*> GetTabs(
+        content::WebContents* web_contents) = 0;
+    virtual void SwitchToTab(content::WebContents* web_contents,
+                             int32_t tab_id) = 0;
+  };
+
+  ContextHubPageHandler(
       mojo::PendingReceiver<browser::context_hub::mojom::PageHandler> receiver,
       Profile* profile,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      std::unique_ptr<TabProvider> tab_provider = nullptr);
   ~ContextHubPageHandler() override;
 
   ContextHubPageHandler(const ContextHubPageHandler&) = delete;
@@ -38,13 +48,18 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
   void DeleteMemoryBankEntries(
       const std::vector<int64_t>& ids,
       DeleteMemoryBankEntriesCallback callback) override;
+  void GetTabs(GetTabsCallback callback) override;
+  void SwitchToTab(int32_t tab_id) override;
+  void ClusterTabs(ClusterTabsCallback callback) override;
 
  private:
   void OnAutoTodosGenerated(
       GenerateAutoTodosCallback callback,
       std::optional<personal_context::proto::AutoTodosResponse> result);
+  std::vector<browser::context_hub::mojom::TabInfoPtr> GetTabsInternal();
 
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;
+  std::unique_ptr<TabProvider> tab_provider_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<ContextHubPageHandler> weak_factory_{this};

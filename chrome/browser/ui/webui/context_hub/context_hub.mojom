@@ -48,6 +48,17 @@ interface PageHandlerFactory {
   CreatePageHandler(pending_receiver<PageHandler> handler);
 };
 
+struct TabInfo {
+  int32 id;
+  string title;
+  url.mojom.Url url;
+};
+
+struct TabCluster {
+  string label;
+  array<int32> tab_ids;
+};
+
 // Provides access to context hub features.
 // The WebUI page (caller) uses this to interact with the browser
 // process (callee).
@@ -60,4 +71,14 @@ interface PageHandler {
 
   // Deletes entries from the memory bank.
   DeleteMemoryBankEntries(array<int64> ids) => ();
+
+  // Returns the list of tabs in the current window.
+  GetTabs() => (array<TabInfo> tabs);
+
+  // Performs clustering of tabs
+  ClusterTabs() =>
+      (array<TabCluster> clusters, array<int32> ungrouped_tab_ids);
+
+  // Switches to the specified tab.
+  SwitchToTab(int32 tab_id);
 };
