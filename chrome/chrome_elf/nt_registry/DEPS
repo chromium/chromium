@@ -1,6 +1,8 @@
 include_rules = [
-  # Nothing from base.
+  # Nothing from base, except compiler_specific.h which only contains macros.
   "-base",
+  "+base/compiler_specific.h",
+
   # Nothing from chrome.
   "-chrome",
   "+chrome/chrome_elf/nt_registry/nt_registry.h",

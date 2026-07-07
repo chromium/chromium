@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/compiler_specific.h"
 
 //------------------------------------------------------------------------------
 // * This code is taken from base/sha1, with small changes.
@@ -114,7 +111,7 @@ void SecureHashAlgorithm::Init() {
 void SecureHashAlgorithm::Update(const void* data, size_t nbytes) {
   const uint8_t* d = reinterpret_cast<const uint8_t*>(data);
   while (nbytes--) {
-    M[cursor++] = *d++;
+    UNSAFE_TODO(M[cursor++]) = *UNSAFE_TODO(d++);
     if (cursor >= 64)
       Process();
     l += 8;
@@ -126,7 +123,7 @@ void SecureHashAlgorithm::Final() {
   Process();
 
   for (size_t t = 0; t < 5; ++t)
-    H[t] = _byteswap_ulong(H[t]);
+    UNSAFE_TODO(H[t]) = _byteswap_ulong(UNSAFE_TODO(H[t]));
 }
 
 void SecureHashAlgorithm::Process() {
@@ -139,11 +136,13 @@ void SecureHashAlgorithm::Process() {
   // W and M are in a union, so no need to memcpy.
   // memcpy(W, M, sizeof(M));
   for (t = 0; t < 16; ++t)
-    W[t] = _byteswap_ulong(W[t]);
+    UNSAFE_TODO(W[t]) = _byteswap_ulong(UNSAFE_TODO(W[t]));
 
   // b.
   for (t = 16; t < 80; ++t)
-    W[t] = S(1, W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16]);
+    UNSAFE_TODO(W[t]) =
+        S(1, UNSAFE_TODO(W[t - 3]) ^ UNSAFE_TODO(W[t - 8]) ^
+                 UNSAFE_TODO(W[t - 14]) ^ UNSAFE_TODO(W[t - 16]));
 
   // c.
   A = H[0];
@@ -154,7 +153,7 @@ void SecureHashAlgorithm::Process() {
 
   // d.
   for (t = 0; t < 80; ++t) {
-    uint32_t TEMP = S(5, A) + f(t, B, C, D) + E + W[t] + K(t);
+    uint32_t TEMP = S(5, A) + f(t, B, C, D) + E + UNSAFE_TODO(W[t]) + K(t);
     E = D;
     D = C;
     C = S(30, B);
@@ -173,27 +172,27 @@ void SecureHashAlgorithm::Process() {
 }
 
 void SecureHashAlgorithm::Pad() {
-  M[cursor++] = 0x80;
+  UNSAFE_TODO(M[cursor++]) = 0x80;
 
   if (cursor > 64 - 8) {
     // pad out to next block
     while (cursor < 64)
-      M[cursor++] = 0;
+      UNSAFE_TODO(M[cursor++]) = 0;
 
     Process();
   }
 
   while (cursor < 64 - 8)
-    M[cursor++] = 0;
+    UNSAFE_TODO(M[cursor++]) = 0;
 
-  M[cursor++] = (l >> 56) & 0xff;
-  M[cursor++] = (l >> 48) & 0xff;
-  M[cursor++] = (l >> 40) & 0xff;
-  M[cursor++] = (l >> 32) & 0xff;
-  M[cursor++] = (l >> 24) & 0xff;
-  M[cursor++] = (l >> 16) & 0xff;
-  M[cursor++] = (l >> 8) & 0xff;
-  M[cursor++] = l & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 56) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 48) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 40) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 32) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 24) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 16) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = (l >> 8) & 0xff;
+  UNSAFE_TODO(M[cursor++]) = l & 0xff;
 }
 
 // Computes the SHA-1 hash of the |len| bytes in |data| and puts the hash
@@ -203,7 +202,7 @@ void SHA1HashBytes(const unsigned char* data, size_t len, unsigned char* hash) {
   sha.Update(data, len);
   sha.Final();
 
-  ::memcpy(hash, sha.Digest(), kSHA1Length);
+  UNSAFE_TODO(::memcpy(hash, sha.Digest(), kSHA1Length));
 }
 
 }  // namespace

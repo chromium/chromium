@@ -137,6 +137,8 @@ static_library("nt_registry") {
     "nt_registry/nt_registry_functions.h",
   ]
 
+  deps = [ "//base:compiler_specific" ]
+
   libs = [
     "kernel32.lib",
     "ntdll.lib",
@@ -148,6 +150,7 @@ source_set("pe_image_safe") {
     "pe_image_safe/pe_image_safe.cc",
     "pe_image_safe/pe_image_safe.h",
   ]
+  deps = [ "//base:compiler_specific" ]
 }
 
 source_set("security") {
@@ -168,6 +171,7 @@ source_set("sha1") {
     "sha1/sha1.cc",
     "sha1/sha1.h",
   ]
+  deps = [ "//base:compiler_specific" ]
 }
 
 source_set("third_party_dlls") {

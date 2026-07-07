@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -34,10 +30,10 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
   if (!user_data_dir_path.empty() && user_data_dir_path.EndsWithSeparator())
     user_data_dir_path = user_data_dir_path.StripTrailingSeparators();
 
-  wcsncpy_s(user_data_dir, user_data_dir_length,
-            user_data_dir_path.value().c_str(), _TRUNCATE);
-  wcsncpy_s(invalid_user_data_dir, invalid_user_data_dir_length, L"",
-            _TRUNCATE);
+  UNSAFE_TODO(wcsncpy_s(user_data_dir, user_data_dir_length,
+                        user_data_dir_path.value().c_str(), _TRUNCATE));
+  UNSAFE_TODO(wcsncpy_s(invalid_user_data_dir, invalid_user_data_dir_length,
+                        L"", _TRUNCATE));
 
   return !user_data_dir_path.empty();
 }
@@ -87,8 +83,9 @@ uint32_t DrainLog(uint8_t* buffer,
   uint8_t* tracker = buffer;
   for (const auto& test_entry : kTestLogEntries) {
     uint32_t entry_size = third_party_dlls::GetLogEntrySize(kModulePathLength);
-    if (tracker + entry_size > buffer + buffer_size)
+    if (UNSAFE_TODO(tracker + entry_size) > UNSAFE_TODO(buffer + buffer_size)) {
       break;
+    }
 
     third_party_dlls::LogEntry* log_entry =
         reinterpret_cast<third_party_dlls::LogEntry*>(tracker);
@@ -97,12 +94,13 @@ uint32_t DrainLog(uint8_t* buffer,
     log_entry->module_size = test_entry.module_size;
     log_entry->time_date_stamp = test_entry.time_date_stamp;
     log_entry->path_len = kModulePathLength;
-    ::memcpy(log_entry->path, kModulePath, log_entry->path_len + 1);
+    UNSAFE_TODO(
+        ::memcpy(log_entry->path, kModulePath, log_entry->path_len + 1));
 
-    tracker += entry_size;
+    UNSAFE_TODO(tracker += entry_size);
   }
 
-  return base::checked_cast<uint32_t>(tracker - buffer);
+  return base::checked_cast<uint32_t>(UNSAFE_TODO(tracker - buffer));
 }
 
 bool RegisterLogNotification(HANDLE event_handle) {

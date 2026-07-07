@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/chrome_elf/pe_image_safe/pe_image_safe.h"
 
 #include <assert.h>
 #include <stddef.h>
+
+#include "base/compiler_specific.h"
 
 namespace pe_image_safe {
 
@@ -52,7 +49,7 @@ PIMAGE_FILE_HEADER PEImageSafe::GetFileHeader() {
   // Note: e_lfanew is an offset from |dos_header|, which is the start of the
   //       image buffer.
   PIMAGE_NT_HEADERS nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(
-      reinterpret_cast<char*>(dos_header) + dos_header->e_lfanew);
+      UNSAFE_TODO(reinterpret_cast<char*>(dos_header) + dos_header->e_lfanew));
   if (((dos_header->e_lfanew + sizeof(IMAGE_NT_HEADERS::Signature) +
         sizeof(IMAGE_FILE_HEADER)) > image_size_) ||
       nt_headers->Signature != IMAGE_NT_SIGNATURE) {
@@ -76,10 +73,11 @@ BYTE* PEImageSafe::GetOptionalHeader() {
 
   // No bitness yet...
   PIMAGE_OPTIONAL_HEADER optional_header =
-      reinterpret_cast<PIMAGE_OPTIONAL_HEADER>(
-          reinterpret_cast<char*>(file_header) + sizeof(IMAGE_FILE_HEADER));
-  uintptr_t optional_header_offset = reinterpret_cast<char*>(optional_header) -
-                                     reinterpret_cast<char*>(dos_header_);
+      reinterpret_cast<PIMAGE_OPTIONAL_HEADER>(UNSAFE_TODO(
+          reinterpret_cast<char*>(file_header) + sizeof(IMAGE_FILE_HEADER)));
+  uintptr_t optional_header_offset =
+      UNSAFE_TODO(reinterpret_cast<char*>(optional_header) -
+                  reinterpret_cast<char*>(dos_header_));
   if (optional_header_offset + sizeof(IMAGE_OPTIONAL_HEADER::Magic) >
       image_size_) {
     return nullptr;
@@ -141,7 +139,7 @@ void* PEImageSafe::RVAToAddr(DWORD rva) {
   if (rva >= image_size_)
     return nullptr;
 
-  return reinterpret_cast<char*>(image_) + rva;
+  return UNSAFE_TODO(reinterpret_cast<char*>(image_) + rva);
 }
 
 void* PEImageSafe::GetImageDirectoryEntryAddr(int directory,
@@ -161,15 +159,15 @@ void* PEImageSafe::GetImageDirectoryEntryAddr(int directory,
         reinterpret_cast<PIMAGE_OPTIONAL_HEADER64>(optional_header);
     if (directory >= static_cast<int>(opt_header->NumberOfRvaAndSizes))
       return nullptr;
-    rva = opt_header->DataDirectory[directory].VirtualAddress;
-    size = opt_header->DataDirectory[directory].Size;
+    rva = UNSAFE_TODO(opt_header->DataDirectory[directory]).VirtualAddress;
+    size = UNSAFE_TODO(opt_header->DataDirectory[directory]).Size;
   } else {
     PIMAGE_OPTIONAL_HEADER32 opt_header =
         reinterpret_cast<PIMAGE_OPTIONAL_HEADER32>(optional_header);
     if (directory >= static_cast<int>(opt_header->NumberOfRvaAndSizes))
       return nullptr;
-    rva = opt_header->DataDirectory[directory].VirtualAddress;
-    size = opt_header->DataDirectory[directory].Size;
+    rva = UNSAFE_TODO(opt_header->DataDirectory[directory]).VirtualAddress;
+    size = UNSAFE_TODO(opt_header->DataDirectory[directory]).Size;
   }
 
   // Verify that the whole data directory is inside this PEImageSafe buffer.

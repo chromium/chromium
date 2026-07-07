@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 
 #include <assert.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry_functions.h"
 
 namespace {
@@ -47,12 +43,16 @@ bool IsThisProcSystem() {
   // If our command line starts with the "Program Files" or
   // "Program Files (x86)" path, we're system.
   DWORD ret = ::GetEnvironmentVariable(L"PROGRAMFILES", program_dir, MAX_PATH);
-  if (ret && ret < MAX_PATH && !::wcsncmp(cmd_line, program_dir, ret))
+  if (ret && ret < MAX_PATH &&
+      !UNSAFE_TODO(::wcsncmp(cmd_line, program_dir, ret))) {
     return true;
+  }
 
   ret = ::GetEnvironmentVariable(L"PROGRAMFILES(X86)", program_dir, MAX_PATH);
-  if (ret && ret < MAX_PATH && !::wcsncmp(cmd_line, program_dir, ret))
+  if (ret && ret < MAX_PATH &&
+      !UNSAFE_TODO(::wcsncmp(cmd_line, program_dir, ret))) {
     return true;
+  }
 
   return false;
 }
@@ -81,9 +81,10 @@ bool InitNativeRegApi() {
   }
 
   // Finish setting up global HKCU path.
-  ::wcsncat(g_kRegPathHKCU, current_user_reg_path.Buffer, nt::g_kRegMaxPathLen);
-  ::wcsncat(g_kRegPathHKCU, L"\\",
-            (nt::g_kRegMaxPathLen - ::wcslen(g_kRegPathHKCU)));
+  UNSAFE_TODO(::wcsncat(g_kRegPathHKCU, current_user_reg_path.Buffer,
+                        nt::g_kRegMaxPathLen));
+  UNSAFE_TODO(::wcsncat(g_kRegPathHKCU, L"\\",
+                        (nt::g_kRegMaxPathLen - ::wcslen(g_kRegPathHKCU))));
   ::RtlFreeUnicodeString(&current_user_reg_path);
 
   // Figure out if this is a system or user install.
@@ -339,8 +340,8 @@ void ProcessRedirection(nt::ROOT_KEY root,
       // Do case insensitive comparisons.
       if (!::wcsnicmp(position, current_node->to_match, current_to_match_len)) {
         // Make sure not to match on a substring.
-        if (*(position + current_to_match_len) == L'\\' ||
-            *(position + current_to_match_len) == L'\0') {
+        if (UNSAFE_TODO(position[current_to_match_len]) == L'\\' ||
+            UNSAFE_TODO(position[current_to_match_len]) == L'\0') {
           // MATCH!
           // -------------------------------------------------------------------
           // 1) Update state of redirection.
@@ -351,15 +352,15 @@ void ProcessRedirection(nt::ROOT_KEY root,
             insertion_point = position;
             insert_string = kRedirectBefore;
           } else if (redirect_state == REDIRECTED_AFTER) {
-            insertion_point = position + current_to_match_len;
+            UNSAFE_TODO(insertion_point = position + current_to_match_len);
             insert_string = kRedirectAfter;
           }
           // 2) Adjust |position| along the subkey path.
-          position += current_to_match_len;
+          UNSAFE_TODO(position += current_to_match_len);
           chars_left -= current_to_match_len;
           // 2.5) Increment the position, to move past path seperator(s).
           while (*position == L'\\') {
-            ++position;
+            UNSAFE_TODO(++position);
             --chars_left;
           }
           // 3) Move our loop parameters to the |next| array of Nodes.
@@ -373,7 +374,7 @@ void ProcessRedirection(nt::ROOT_KEY root,
     }
 
     // Move to the next node in the array if we didn't match this loop.
-    ++current_node;
+    UNSAFE_TODO(++current_node);
     ++node_index;
   }
 
@@ -381,7 +382,8 @@ void ProcessRedirection(nt::ROOT_KEY root,
     return;
 
   // Insert the redirection into |subkey_path|, at |insertion_point|.
-  subkey_path->insert((insertion_point - subkey_path->c_str()), insert_string);
+  subkey_path->insert(UNSAFE_TODO(insertion_point - subkey_path->c_str()),
+                      insert_string);
 }
 
 //------------------------------------------------------------------------------
@@ -577,9 +579,10 @@ bool CreateRegKey(ROOT_KEY root,
                   HANDLE* out_handle OPTIONAL) {
   // |key_path| can be null or empty, but it can't be longer than
   // |g_kRegMaxPathLen| at this point.
-  if (key_path &&
-      ::wcsnlen(key_path, g_kRegMaxPathLen + 1) == g_kRegMaxPathLen + 1)
+  if (key_path && UNSAFE_TODO(::wcsnlen(key_path, g_kRegMaxPathLen + 1)) ==
+                      g_kRegMaxPathLen + 1) {
     return false;
+  }
 
   if (!g_initialized && !InitNativeRegApi())
     return false;
@@ -668,9 +671,10 @@ bool OpenRegKey(ROOT_KEY root,
                 NTSTATUS* error_code OPTIONAL) {
   // |key_path| can be null or empty, but it can't be longer than
   // |g_kRegMaxPathLen| at this point.
-  if (key_path &&
-      ::wcsnlen(key_path, g_kRegMaxPathLen + 1) == g_kRegMaxPathLen + 1)
+  if (key_path && UNSAFE_TODO(::wcsnlen(key_path, g_kRegMaxPathLen + 1)) ==
+                      g_kRegMaxPathLen + 1) {
     return false;
+  }
 
   if (!g_initialized && !InitNativeRegApi())
     return false;
@@ -762,7 +766,8 @@ bool QueryRegKeyValue(HANDLE key,
   std::vector<BYTE> buffer(size_needed);
   do {
     buffer.resize(size_needed);
-    value_info = reinterpret_cast<KEY_VALUE_FULL_INFORMATION*>(buffer.data());
+    UNSAFE_TODO(value_info = reinterpret_cast<KEY_VALUE_FULL_INFORMATION*>(
+                    buffer.data()));
 
     ntstatus = ::NtQueryValueKey(key, &value_uni, KeyValueFullInformation,
                                  value_info, size_needed, &size_needed);
@@ -778,8 +783,9 @@ bool QueryRegKeyValue(HANDLE key,
 
   if (data_size) {
     // Move the data into |out_buffer| vector.
-    BYTE* data = reinterpret_cast<BYTE*>(value_info) + value_info->DataOffset;
-    out_buffer->assign(data, data + data_size);
+    BYTE* data = UNSAFE_TODO(reinterpret_cast<BYTE*>(value_info) +
+                             value_info->DataOffset);
+    out_buffer->assign(data, UNSAFE_TODO(data + data_size));
   } else {
     out_buffer->clear();
   }
@@ -802,7 +808,7 @@ bool QueryRegValueDWORD(HANDLE key,
   if (value_bytes.size() < sizeof(*out_dword))
     return false;
 
-  *out_dword = *(reinterpret_cast<DWORD*>(value_bytes.data()));
+  *out_dword = UNSAFE_TODO(*(reinterpret_cast<DWORD*>(value_bytes.data())));
 
   return true;
 }
@@ -841,7 +847,7 @@ bool QueryRegValueSZ(HANDLE key,
 
   EnsureTerminatedSZ(&value_bytes, false);
 
-  *out_sz = reinterpret_cast<wchar_t*>(value_bytes.data());
+  UNSAFE_TODO(*out_sz = reinterpret_cast<wchar_t*>(value_bytes.data()));
 
   return true;
 }
@@ -883,12 +889,13 @@ bool QueryRegValueMULTISZ(HANDLE key,
   // Make sure the out vector is empty to start.
   out_multi_sz->clear();
 
-  wchar_t* pointer = reinterpret_cast<wchar_t*>(value_bytes.data());
+  wchar_t* pointer =
+      UNSAFE_TODO(reinterpret_cast<wchar_t*>(value_bytes.data()));
   std::wstring temp = pointer;
   // Loop.  Each string is separated by '\0'.  Another '\0' at very end (so 2 in
   // a row).
   while (!temp.empty()) {
-    pointer += temp.length() + 1;
+    UNSAFE_TODO(pointer += temp.length() + 1);
     out_multi_sz->push_back(std::move(temp));
     temp = pointer;
   }
@@ -1064,9 +1071,11 @@ bool SetTestingOverride(ROOT_KEY root, const std::wstring& new_path) {
     return false;
 
   if (root == HKCU || (root == AUTO && !g_system_install))
-    ::wcsncpy(g_HKCU_override, sani_new_path.c_str(), nt::g_kRegMaxPathLen);
+    UNSAFE_TODO(::wcsncpy(g_HKCU_override, sani_new_path.c_str(),
+                          nt::g_kRegMaxPathLen));
   else
-    ::wcsncpy(g_HKLM_override, sani_new_path.c_str(), nt::g_kRegMaxPathLen);
+    UNSAFE_TODO(::wcsncpy(g_HKLM_override, sani_new_path.c_str(),
+                          nt::g_kRegMaxPathLen));
 
   return true;
 }
