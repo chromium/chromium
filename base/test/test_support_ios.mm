@@ -53,11 +53,6 @@ void PopulateUIWindow(UIWindow* window) {
   // root view controller. Set an empty one here.
   window.rootViewController = [[UIViewController alloc] init];
 }
-
-bool IsSceneStartupEnabled() {
-  return [NSBundle.mainBundle.infoDictionary
-      objectForKey:@"UIApplicationSceneManifest"];
-}
 }  // namespace
 
 @interface UIApplication (Testing)
@@ -97,9 +92,7 @@ bool IsSceneStartupEnabled() {
 
 @end
 
-@interface ChromeUnitTestDelegate : NSObject <GoogleTestRunnerDelegate> {
-  UIWindow* __strong _window;
-}
+@interface ChromeUnitTestDelegate : NSObject <GoogleTestRunnerDelegate>
 - (void)runTests;
 @end
 
@@ -131,23 +124,6 @@ bool IsSceneStartupEnabled() {
   // always shown.
   [[UIKeyboardImpl sharedInstance] setAutomaticMinimizationEnabled:NO];
 #endif  // TARGET_OS_SIMULATOR
-
-  if (!IsSceneStartupEnabled()) {
-    UIWindowScene* scene = nil;
-    for (UIScene* connectedScene in UIApplication.sharedApplication
-             .connectedScenes) {
-      scene = base::apple::ObjCCast<UIWindowScene>(connectedScene);
-      if (scene) {
-        break;
-      }
-    }
-    if (!scene) {
-      return NO;
-    }
-    _window = [[UIWindow alloc] initWithWindowScene:scene];
-    _window.frame = UIScreen.mainScreen.bounds;
-    PopulateUIWindow(_window);
-  }
 
   if ([self shouldRedirectOutputToFile]) {
     [self redirectOutput];
@@ -252,7 +228,6 @@ bool IsSceneStartupEnabled() {
   // a chance to initialize and no test results will be seen.
   [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:2.0]];
 #endif
-  _window = nil;
 
 #if !BUILDFLAG(IS_IOS_APP_EXTENSION)
   // Use the hidden selector to try and cleanly take down the app (otherwise
