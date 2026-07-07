@@ -226,17 +226,21 @@ std::u16string ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
   return l10n_util::GetStringUTF16(message_id);
 }
 
+// static
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
 ExtensionsToolbarViewModel::GetButtonState(
-    content::WebContents& web_contents) const {
-  if (!actions_model_) {
+    BrowserWindowInterface* browser,
+    content::WebContents& web_contents,
+    const ToolbarActionsModel* actions_model,
+    base::OnceCallback<bool(content::WebContents&)> has_access_callback) {
+  if (!actions_model) {
     return ExtensionsToolbarButtonState::kDefault;
   }
 
-  Profile* profile = browser_->GetProfile();
+  Profile* profile = browser->GetProfile();
   const GURL& url = web_contents.GetLastCommittedURL();
 
-  if (actions_model_->IsRestrictedUrl(url)) {
+  if (actions_model->IsRestrictedUrl(url)) {
     return ExtensionsToolbarButtonState::kAllExtensionsBlocked;
   }
 
@@ -250,11 +254,20 @@ ExtensionsToolbarViewModel::GetButtonState(
     return ExtensionsToolbarButtonState::kAllExtensionsBlocked;
   }
 
-  if (AnyActionHasCurrentSiteAccess(web_contents)) {
+  if (std::move(has_access_callback).Run(web_contents)) {
     return ExtensionsToolbarButtonState::kAnyExtensionHasAccess;
   }
 
   return ExtensionsToolbarButtonState::kDefault;
+}
+
+ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
+ExtensionsToolbarViewModel::GetButtonState(
+    content::WebContents& web_contents) const {
+  return GetButtonState(
+      browser_, web_contents, actions_model_,
+      base::BindOnce(&ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess,
+                     base::Unretained(this)));
 }
 
 void ExtensionsToolbarViewModel::ExecuteUserAction(

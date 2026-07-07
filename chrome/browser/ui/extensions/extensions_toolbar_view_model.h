@@ -164,6 +164,16 @@ class ExtensionsToolbarViewModel
   static std::u16string GetToolbarButtonTooltipText(
       ExtensionsToolbarButtonState state);
 
+  // Returns the state of the extensions toolbar button based on 'web_contents'
+  // given the provided extensions state.
+  static ExtensionsToolbarButtonState GetButtonState(
+      BrowserWindowInterface* browser,
+      content::WebContents& web_contents,
+      const ToolbarActionsModel* actions_model,
+      // Callback that returns whether any of extensions have access to the
+      // WebContents.
+      base::OnceCallback<bool(content::WebContents&)> has_access_callback);
+
   // Returns the state of the extensions toolbar button based on 'web_contents'.
   ExtensionsToolbarButtonState GetButtonState(
       content::WebContents& web_contents) const;

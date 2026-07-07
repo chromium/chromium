@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './extension.js';
+import './toolbar_divider.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';

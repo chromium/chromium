@@ -3613,6 +3613,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+  GURL default_url =
+      embedded_test_server()->GetURL("default.com", "/title1.html");
+
+  // Start at allowed site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -3627,11 +3637,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
 
   base::FilePath manifest_path =
       temp_dir.GetPath().AppendASCII("manifest.json");
+  // Request host permissions only for "allowed.com".
   std::string manifest_content = R"({
     "name": "Test Extension",
     "version": "1.0",
     "manifest_version": 3,
-    "action": {}
+    "action": {},
+    "host_permissions": ["*://allowed.com/*"]
   })";
   ASSERT_TRUE(base::WriteFile(manifest_path, manifest_content));
 
@@ -3645,6 +3657,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
       ->SetActionVisibility(extension->id(), true);
 
   std::string extension_id = extension->id();
+  // Verify extension is present.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_contents,
                            base::StringPrintf(R"(
@@ -3659,6 +3672,75 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
       })();
     )",
                                               extension_id.c_str()))
+        .ExtractBool();
+  }));
+
+  // Verify extensions button (puzzle piece) is present and has "has access"
+  // tooltip. Also verify divider is present.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        if (!app) return false;
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        if (!extensionsContainer) return false;
+        const divider = extensionsContainer.shadowRoot
+            .querySelector('toolbar-divider');
+        if (!divider) return false;
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const button = Array.from(extensionElements)
+            .find(el => el.state.id === '');
+        if (!button) return false;
+        return button.state.tooltip === "Extensions allowed on this site";
+      })();
+    )")
+        .ExtractBool();
+  }));
+
+  // Navigate to default.com (extension has no host permissions for it).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), default_url));
+
+  // Verify extensions button tooltip changes to "Extensions" (kDefault).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        if (!app) return false;
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        if (!extensionsContainer) return false;
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const button = Array.from(extensionElements)
+            .find(el => el.state.id === '');
+        if (!button) return false;
+        return button.state.tooltip === "Extensions";
+      })();
+    )")
+        .ExtractBool();
+  }));
+
+  // Navigate to chrome://version (restricted site).
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  // Verify extensions button tooltip changes to "Extensions not allowed on this
+  // site" (kAllExtensionsBlocked).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        if (!app) return false;
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        if (!extensionsContainer) return false;
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const button = Array.from(extensionElements)
+            .find(el => el.state.id === '');
+        if (!button) return false;
+        return button.state.tooltip === "Extensions not allowed on this site";
+      })();
+    )")
         .ExtractBool();
   }));
 }

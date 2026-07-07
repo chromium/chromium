@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
 #include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom.h"
 
 class BrowserWindowInterface;
 class ExtensionsContainer;
@@ -58,6 +59,10 @@ class WebUIToolbarExtensionsContainerWrapper
  private:
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void SendExtensionsState();
+  // Returns whether any of `cached_actions_` have access to `web_contents`.
+  bool AnyActionHasCurrentSiteAccess(content::WebContents& web_contents);
+  // Compute WebUI state for extensions button.
+  extensions_bar::mojom::ExtensionActionInfoPtr GetExtensionsButton();
 
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
 
