@@ -146,8 +146,8 @@ group("resources") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps += [
-      "ai_overlay_dialog:resources",
       "skills:resources",
+      "//chrome/browser/ttc/resources",
     ]
   }
 

@@ -13,8 +13,41 @@ import {getHtml} from './app.html.js';
 import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
-import {Conversation, State} from './conversation.js';
-import type {ApiConfig, ConversationConfig, OutputTranscriptionMessage, Persona} from './conversation.js';
+// <if expr="_google_chrome">
+import {Conversation, State} from './internal/conversation.js';
+import type {ApiConfig, ConversationConfig, OutputTranscriptionMessage, Persona} from './internal/conversation.js';
+// </if>
+// TODO(crbug.com/532098288): Replace `any` types with proper interfaces when sharing types between branded and unbranded builds.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Empty stub implementation of Conversation and State for non-branded (Unbranded Chromium) builds
+// where internal resources are omitted.
+// <if expr="not _google_chrome">
+enum State { STOPPED = 'stopped', LISTENING = 'listening', THINKING = 'thinking', SPEAKING = 'speaking', ERROR = 'error' }
+class Conversation {
+  connected: boolean = false;
+  pageContext: any = null;
+  constructor(_config: any, _callbacks: {
+    sendToUI: (msg: any) => void,
+    onStateChange: (state: any, oldState: any) => void,
+    onResponse: (audioData: any) => void,
+  }, _tools?: any, _router?: any, _context?: any) {}
+  sendAudio(..._args: any[]): void {}
+  sendText(..._args: any[]): void {}
+  markMockAudioEndTime(..._args: any[]): void {}
+  start(): Promise<void> { return Promise.resolve(); }
+  stop(): void {}
+}
+type ApiConfig = any;
+type ConversationConfig = {
+  persona?: any,
+  system_instruction?: string,
+  api_config?: any,
+  [key: string]: any,
+};
+type OutputTranscriptionMessage = any;
+type Persona = any;
+// </if>
+/* eslint-enable @typescript-eslint/no-explicit-any */
 import {errorLog, log, warnLog} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {AiOverlayToolsRemote} from './tools.mojom-webui.js';
