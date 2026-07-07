@@ -40,10 +40,10 @@ const char kWebContentsObserverConsistencyCheckerKey[] =
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
 GlobalRoutingID GetRoutingPair(RenderFrameHost* host) {
-  if (!host)
-    return GlobalRoutingID(0, 0);
-  return GlobalRoutingID(host->GetProcess()->GetDeprecatedID(),
-                         host->GetRoutingID());
+  if (!host) {
+    return GlobalRoutingID();
+  }
+  return GlobalRoutingID(host->GetProcess()->GetID(), host->GetRoutingID());
 }
 
 }  // namespace

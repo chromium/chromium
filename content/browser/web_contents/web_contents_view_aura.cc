@@ -360,8 +360,7 @@ blink::DragOperationsMask ConvertToDragOperationsMask(int drag_op) {
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
-  return GlobalRoutingID(rvh->GetProcess()->GetDeprecatedID(),
-                         rvh->GetRoutingID());
+  return GlobalRoutingID(rvh->GetProcess()->GetID(), rvh->GetRoutingID());
 }
 
 // Returns the host window for |window|, or nullptr if it has no host window.
@@ -698,8 +697,7 @@ WebContentsViewAura::WebContentsViewAura(
     : web_contents_(web_contents),
       delegate_(std::move(delegate)),
       drag_dest_delegate_(nullptr),
-      current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
-                            IPC::mojom::kRoutingIdNone),
+      current_rvh_for_drag_(ChildProcessId(), IPC::mojom::kRoutingIdNone),
       drag_in_progress_(false),
       init_rwhv_with_null_parent_for_testing_(false) {}
 

@@ -30,19 +30,15 @@ namespace content {
 struct CONTENT_EXPORT GlobalRoutingID {
   GlobalRoutingID() = default;
 
-  GlobalRoutingID(int child_id, int route_id)
+  GlobalRoutingID(ChildProcessId child_id, int route_id)
       : child_id(child_id), route_id(route_id) {}
 
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-  GlobalRoutingID(ChildProcessId child_id, int route_id)
-      : child_id(child_id.GetUnsafeValue()), route_id(route_id) {}
-
   // The unique ID of the child process (this is different from OS's PID / this
-  // should come from RenderProcessHost::GetDeprecatedID()).
-  int child_id = kInvalidChildProcessUniqueId;
+  // should come from RenderProcessHost::GetID()).
+  ChildProcessId child_id;
 
   // The route ID.
-  int route_id = -1;
+  int route_id = IPC::mojom::kRoutingIdNone;
 
   constexpr friend auto operator<=>(const GlobalRoutingID&,
                                     const GlobalRoutingID&) = default;
@@ -51,7 +47,7 @@ struct CONTENT_EXPORT GlobalRoutingID {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
-  os << "GlobalRoutingID(" << id.child_id << ", " << id.route_id << ")";
+  os << "GlobalRoutingID(" << id.child_id.value() << ", " << id.route_id << ")";
   return os;
 }
 

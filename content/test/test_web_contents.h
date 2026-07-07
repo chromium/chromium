@@ -254,7 +254,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture) override;
-  void ShowCreatedWidget(int process_id,
+  void ShowCreatedWidget(ChildProcessId process_id,
                          int route_id,
                          const gfx::Rect& initial_rect,
                          const gfx::Rect& initial_anchor_rect) override;

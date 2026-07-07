@@ -391,7 +391,7 @@ void TestWebContents::AddPendingContents(
     const GURL& target_url) {
   // This is normally only done in WebContentsImpl::CreateNewWindow.
   GlobalRoutingID key(
-      contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID(),
+      contents->GetRenderViewHost()->GetProcess()->GetID(),
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
   AddWebContentsDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
@@ -426,7 +426,7 @@ WebContents* TestWebContents::ShowCreatedWindow(
   return nullptr;
 }
 
-void TestWebContents::ShowCreatedWidget(int process_id,
+void TestWebContents::ShowCreatedWidget(ChildProcessId process_id,
                                         int route_id,
                                         const gfx::Rect& initial_rect,
                                         const gfx::Rect& initial_anchor_rect) {}

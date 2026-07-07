@@ -6404,8 +6404,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       event);
   run_loop1.Run();
 
-  auto first_popup_global_id =
-      GlobalRoutingID(process1->GetDeprecatedID(), routing_id1);
+  auto first_popup_global_id = GlobalRoutingID(process1->GetID(), routing_id1);
   // Add an interceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
   EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
@@ -6430,7 +6429,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // At this point, we should have two pending widgets.
   EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
   EXPECT_TRUE(web_contents()->pending_widgets_.contains(
-      GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
+      GlobalRoutingID(process2->GetID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
   // new popup widgets should match up (this led to the collision in the
@@ -6441,9 +6440,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   interceptor1.ResumeShowPopupWidget();
   interceptor2.ResumeShowPopupWidget();
   EXPECT_FALSE(web_contents()->pending_widgets_.contains(
-      GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
+      GlobalRoutingID(process1->GetID(), routing_id1)));
   EXPECT_FALSE(web_contents()->pending_widgets_.contains(
-      GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
+      GlobalRoutingID(process2->GetID(), routing_id2)));
 
   // There are posted tasks that must be run before the test shuts down, lest
   // they access deleted state.

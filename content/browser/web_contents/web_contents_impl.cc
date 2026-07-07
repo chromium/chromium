@@ -5682,9 +5682,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     int32_t main_frame_routing_id = new_contents_impl->GetPrimaryMainFrame()
                                         ->GetRenderWidgetHost()
                                         ->GetRoutingID();
-    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-    GlobalRoutingID id(render_process_id.GetUnsafeValue(),
-                       main_frame_routing_id);
+    GlobalRoutingID id(render_process_id, main_frame_routing_id);
     pending_contents_[id] =
         CreatedWindow(std::move(new_contents), params.target_url);
     AddWebContentsDestructionObserver(new_contents_impl);
@@ -5831,8 +5829,7 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
 
   // Save the created widget associated with the route so we can show it later.
   pending_widgets_.insert(
-      {GlobalRoutingID(site_instance_group->process()->GetDeprecatedID(),
-                       route_id),
+      {GlobalRoutingID(site_instance_group->process()->GetID(), route_id),
        widget_host});
   AddRenderWidgetHostDestructionObserver(widget_host);
 
@@ -5889,7 +5886,7 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
   // when it will always do so. What needs to happen in the renderer before we
   // reach here?
   std::optional<CreatedWindow> owned_created = GetCreatedWindow(
-      opener->GetProcess()->GetDeprecatedID(), main_frame_widget_route_id);
+      opener->GetProcess()->GetID(), main_frame_widget_route_id);
 
   // The browser may have rejected the request to make a new window, or the
   // renderer could be requesting to show a previously shown window (occurs when
@@ -5948,12 +5945,12 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
                                   nullptr);
 }
 
-void WebContentsImpl::ShowCreatedWidget(int process_id,
+void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
                                         int widget_route_id,
                                         const gfx::Rect& initial_rect,
                                         const gfx::Rect& initial_anchor_rect) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWidget",
-                        "process_id", process_id, "widget_route_id",
+                        "process_id", process_id.value(), "widget_route_id",
                         widget_route_id);
   RenderWidgetHostViewBase* widget_host_view =
       static_cast<RenderWidgetHostViewBase*>(
@@ -6038,10 +6035,11 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
 }
 
 std::optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
-    int process_id,
+    ChildProcessId process_id,
     int main_frame_widget_route_id) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::GetCreatedWindow",
-                        "process_id", process_id, "main_frame_widget_route_id",
+                        "process_id", process_id.value(),
+                        "main_frame_widget_route_id",
                         main_frame_widget_route_id);
 
   auto key = GlobalRoutingID(process_id, main_frame_widget_route_id);
@@ -6073,10 +6071,11 @@ std::optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
   return result;
 }
 
-RenderWidgetHostView* WebContentsImpl::GetCreatedWidget(int process_id,
-                                                        int route_id) {
+RenderWidgetHostView* WebContentsImpl::GetCreatedWidget(
+    ChildProcessId process_id,
+    int route_id) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::GetCreatedWidget",
-                        "process_id", process_id, "route_id", route_id);
+                        "process_id", process_id.value(), "route_id", route_id);
 
   auto iter = pending_widgets_.find(GlobalRoutingID(process_id, route_id));
   if (iter == pending_widgets_.end()) {

@@ -995,7 +995,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool ShouldIgnoreInputEvents() override;
   void OnIgnoredUIEvent() override;
   void Activate() override;
-  void ShowCreatedWidget(int process_id,
+  void ShowCreatedWidget(ChildProcessId process_id,
                          int widget_route_id,
                          const gfx::Rect& initial_rect,
                          const gfx::Rect& initial_anchor_rect) override;
@@ -2035,12 +2035,13 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Finds the new RenderWidgetHost and returns it. Note that this can only be
   // called once as this call also removes it from the internal map.
-  RenderWidgetHostView* GetCreatedWidget(int process_id, int route_id);
+  RenderWidgetHostView* GetCreatedWidget(ChildProcessId process_id,
+                                         int route_id);
 
   // Finds the new CreatedWindow by |main_frame_widget_route_id|, initializes
   // it for renderer-initiated creation, and returns it. Note that this can only
   // be called once as this call also removes it from the internal map.
-  std::optional<CreatedWindow> GetCreatedWindow(int process_id,
+  std::optional<CreatedWindow> GetCreatedWindow(ChildProcessId process_id,
                                                 int main_frame_widget_route_id);
 
   // Execute a PageBroadcast Mojo method.

@@ -1902,7 +1902,7 @@ TEST_F(WebContentsImplTest, PendingContentsDestroyed) {
   contents()->AddPendingContents(std::move(other_contents), GURL());
   RenderWidgetHost* widget =
       test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  int process_id = widget->GetProcess()->GetDeprecatedID();
+  ChildProcessId process_id = widget->GetProcess()->GetID();
   int widget_id = widget->GetRoutingID();
 
   // TODO(erikchen): Fix ownership semantics of WebContents. Nothing should be
@@ -1920,7 +1920,7 @@ TEST_F(WebContentsImplTest, PendingContentsShown) {
 
   RenderWidgetHost* widget =
       test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  int process_id = widget->GetProcess()->GetDeprecatedID();
+  ChildProcessId process_id = widget->GetProcess()->GetID();
   int widget_id = widget->GetRoutingID();
 
   // The first call to GetCreatedWindow pops it off the pending list.
