@@ -395,6 +395,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   // document is not yet available.
   virtual bool HasJavaScript() const;
 
+  // Returns true if the PDF requires a password to be opened. This method
+  // should be called after the document is loaded; otherwise, it returns
+  // `false` if the document is not yet available.
+  virtual bool IsPasswordProtected() const;
+
   // Returns a copy of the structure tree which describes the logical
   // organization of the PDF, if present.
   std::unique_ptr<AccessibilityStructureElement> GetStructureTree() const;
@@ -1214,6 +1219,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // to false after the user finishes getting their password.
   bool getting_password_ = false;
   int password_tries_remaining_ = 0;
+  bool is_password_protected_ = false;
 
   // Needs to be above pages_, as destroying a page may call some methods of
   // form filler.

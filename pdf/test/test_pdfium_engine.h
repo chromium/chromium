@@ -105,6 +105,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(bool, HasJavaScript, (), (const override));
 
+  MOCK_METHOD(bool, IsPasswordProtected, (), (const override));
+
   MOCK_METHOD(uint32_t, GetLoadedByteSize, (), (override));
 
   MOCK_METHOD(bool,

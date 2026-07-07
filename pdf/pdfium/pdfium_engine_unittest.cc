@@ -180,6 +180,11 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
   MOCK_METHOD(void, ScrollToX, (int, bool), (override));
   MOCK_METHOD(void, ScrollToY, (int, bool), (override));
+  MOCK_METHOD(void,
+              GetDocumentPassword,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
+  MOCK_METHOD(void, DocumentLoadFailed, (), (override));
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
@@ -705,6 +710,61 @@ TEST_P(PDFiumEngineTest, HasJavaScriptNotLoaded) {
 
   ASSERT_EQ(0, engine.GetNumberOfPages());
   EXPECT_FALSE(engine.HasJavaScript());
+}
+
+TEST_P(PDFiumEngineTest, IsNotPasswordProtected) {
+  NiceMock<MockTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_FALSE(engine->IsPasswordProtected());
+}
+
+TEST_P(PDFiumEngineTest, IsNotPasswordProtectedWithCopyRestriction) {
+  NiceMock<MockTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("hello_world2_with_copy_restriction.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_FALSE(engine->IsPasswordProtected());
+}
+
+TEST_P(PDFiumEngineTest, IsPasswordProtected) {
+  NiceMock<MockTestClient> client(GetParam());
+  ON_CALL(client, GetDocumentPassword)
+      .WillByDefault([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("userpass");
+      });
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("encrypted.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_TRUE(engine->IsPasswordProtected());
+}
+
+TEST_P(PDFiumEngineTest, IsPasswordProtectedWithWrongPassword) {
+  NiceMock<MockTestClient> client(GetParam());
+  EXPECT_CALL(client, GetDocumentPassword)
+      .WillRepeatedly(
+          [](base::OnceCallback<void(const std::string&)> callback) {
+            std::move(callback).Run("wrongpass");
+          });
+  EXPECT_CALL(client, DocumentLoadFailed);
+
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("encrypted.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(0, engine->GetNumberOfPages());
+  EXPECT_FALSE(engine->IsPasswordProtected());
+}
+
+TEST_P(PDFiumEngineTest, IsPasswordProtectedNotLoaded) {
+  NiceMock<MockTestClient> client(GetParam());
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("encrypted.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  ASSERT_EQ(0, engine.GetNumberOfPages());
+  EXPECT_FALSE(engine.IsPasswordProtected());
 }
 
 TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {

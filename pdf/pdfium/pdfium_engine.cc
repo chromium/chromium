@@ -1049,6 +1049,7 @@ void PDFiumEngine::PostPaint() {
 bool PDFiumEngine::HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
                                       const std::string& original_url) {
   password_tries_remaining_ = kMaxPasswordTries;
+  is_password_protected_ = false;
   process_when_pending_request_complete_ =
       base::FeatureList::IsEnabled(features::kPdfIncrementalLoading);
 
@@ -3331,6 +3332,7 @@ bool PDFiumEngine::TryLoadingDoc(const std::string& password,
 }
 
 void PDFiumEngine::GetPasswordAndLoad() {
+  is_password_protected_ = true;
   getting_password_ = true;
   DCHECK(!doc());
   DCHECK_EQ(static_cast<unsigned long>(FPDF_ERR_PASSWORD), FPDF_GetLastError());
@@ -5124,6 +5126,14 @@ bool PDFiumEngine::HasJavaScript() const {
   }
 
   return FPDFDoc_GetJavaScriptActionCount(doc()) > 0;
+}
+
+bool PDFiumEngine::IsPasswordProtected() const {
+  if (!document_loaded_) {
+    return false;
+  }
+
+  return is_password_protected_;
 }
 
 void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {

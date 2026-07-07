@@ -1,0 +1,49 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+>>
+endobj
+4 0 obj <<
+  /Filter /Standard
+  /Length 40
+  /P -4
+  /R 2
+  /V 1
+
+  % Owner password: "ownerpass"
+  /O <f86213eb0ced81f097947f3b343e34cac8ca92ce8f6fee2556fa31ec1fe968af>
+
+  % User password: "userpass"
+  /U <42d5dec3556574de62408780cc4b137ad56ce9edcbe92cf2b5fc12322eb028e5>
+>>
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000161 00000 n 
+0000000212 00000 n 
+trailer <<
+  /ID [<e4c50f3e9b4ba1da3c3b7ae7d381221b><e4c50f3e9b4ba1da3c3b7ae7d381221b>]
+  /Encrypt 4 0 R
+  /Root 1 0 R
+  /Size 5
+>>
+startxref
+496
+%%EOF
