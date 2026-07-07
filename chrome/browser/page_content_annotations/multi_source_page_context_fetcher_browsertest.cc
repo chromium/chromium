@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -1290,6 +1292,70 @@ IN_PROC_BROWSER_TEST_F(OtpRedactionMultiSourcePageContextFetcherBrowserTest,
 
   histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
                                 true, 1);
+}
+
+class HighDsfMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  HighDsfMultiSourcePageContextFetcherBrowserTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        kGlicTabScreenshotExperiment, {{"screenshot_timeout_ms", "10s"}});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MultiSourcePageContextFetcherBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(HighDsfMultiSourcePageContextFetcherBrowserTest,
+                       ScreenshotSizeRespectsMaxWidthInPixels) {
+  GURL url = embedded_https_test_server().GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::RenderWidgetHostView* view =
+      web_contents()->GetRenderWidgetHostView();
+  ASSERT_TRUE(view);
+  gfx::Size view_size_dips = view->GetViewBounds().size();
+  ASSERT_FALSE(view_size_dips.IsEmpty());
+
+  int expected_width_pixels = view_size_dips.width() * 2;
+  int expected_height_pixels = view_size_dips.height() * 2;
+
+  // Set max_width to be between DIP width and physical width.
+  int max_width_pixels = (view_size_dips.width() + expected_width_pixels) / 2;
+
+  ScreenshotOptions::ScreenshotCollectionOptions collection_options;
+  collection_options.max_width = max_width_pixels;
+  collection_options.max_height =
+      100000;  // Large value to avoid height limiting
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt, collection_options);
+
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+  EXPECT_FALSE(bitmap.isNull());
+
+  int expected_scaled_height =
+      expected_height_pixels * max_width_pixels / expected_width_pixels;
+
+  EXPECT_EQ(bitmap.width(), max_width_pixels);
+  EXPECT_NEAR(bitmap.height(), expected_scaled_height, 1);
 }
 
 }  // namespace page_content_annotations
