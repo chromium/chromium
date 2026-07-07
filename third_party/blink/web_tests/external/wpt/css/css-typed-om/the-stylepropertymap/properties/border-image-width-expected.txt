@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'border-image-width' to a length: -3.14em
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
-[FAIL] Can set 'border-image-width' to a percent: -3.14%
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
-[FAIL] Can set 'border-image-width' to a number: -3.14
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
-Harness: the test ran to completion.
-

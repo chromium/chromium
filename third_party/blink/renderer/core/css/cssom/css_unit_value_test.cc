@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 
 namespace blink {
 namespace {
@@ -178,6 +179,45 @@ TEST(CSSUnitValueTest, QuarterMillimeterToOtherUnit) {
       101.6,
       qValue->to(CSSPrimitiveValue::UnitType::kQuarterMillimeters)->value(),
       kEpsilon);
+}
+
+// ToCSSValueWithProperty() preserves a value that is outside the property's
+// limited numeric range by wrapping it in a calc() (a CSSMathFunctionValue),
+// per the CSS Typed OM "create an internal representation" algorithm. In-range
+// values are left as bare numeric literals.
+TEST(CSSUnitValueTest, OutOfRangeValueIsWrappedInCalc) {
+  // background-size is non-negative, so a negative percentage is out of range.
+  CSSUnitValue* negative =
+      CSSUnitValue::Create(-3.14, CSSPrimitiveValue::UnitType::kPercentage);
+  EXPECT_TRUE(negative->ToCSSValueWithProperty(CSSPropertyID::kBackgroundSize)
+                  ->IsMathFunctionValue());
+
+  // A positive percentage is in range and is not wrapped.
+  CSSUnitValue* positive =
+      CSSUnitValue::Create(3.14, CSSPrimitiveValue::UnitType::kPercentage);
+  EXPECT_TRUE(positive->ToCSSValueWithProperty(CSSPropertyID::kBackgroundSize)
+                  ->IsNumericLiteralValue());
+}
+
+TEST(CSSUnitValueTest, OutOfRangeFontWeightIsWrappedInCalc) {
+  // font-weight's numeric range is [1, 1000], so 0 is out of range.
+  CSSUnitValue* zero =
+      CSSUnitValue::Create(0, CSSPrimitiveValue::UnitType::kNumber);
+  EXPECT_TRUE(zero->ToCSSValueWithProperty(CSSPropertyID::kFontWeight)
+                  ->IsMathFunctionValue());
+}
+
+TEST(CSSUnitValueTest, OutOfRangeFlexIsNotWrappedInCalc) {
+  // Flexible lengths ('fr') have no representation inside a calc(), so an
+  // out-of-range <flex> must be left as a bare numeric literal instead of being
+  // wrapped: wrapping would build an invalid calc node (a DCHECK failure in
+  // Debug, an invalid expression in Release).
+  CSSUnitValue* negative_flex =
+      CSSUnitValue::Create(-3.14, CSSPrimitiveValue::UnitType::kFlex);
+  const CSSPrimitiveValue* result =
+      negative_flex->ToCSSValueWithProperty(CSSPropertyID::kGridAutoColumns);
+  EXPECT_TRUE(result->IsNumericLiteralValue());
+  EXPECT_FALSE(result->IsMathFunctionValue());
 }
 
 }  // namespace blink
