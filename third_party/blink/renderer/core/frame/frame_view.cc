@@ -97,7 +97,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   LayoutEmbeddedContent* owner_layout_object =
       owner_element->GetLayoutEmbeddedContent();
   bool display_locked_in_parent_frame = DisplayLockedInParentFrame();
-  if (!owner_layout_object || owner_layout_object->ContentSize().IsEmpty() ||
+  if (!owner_layout_object ||
+      owner_layout_object->PhysicalContentBoxRect().IsEmpty() ||
       (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
       display_locked_in_parent_frame) {
     // The frame, or an ancestor frame, is detached from layout, not visible, or
@@ -206,14 +207,15 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // content rect.
       // TODO(crbug.com/1266676): This should be
       //   viewport_intersection.Intersect(gfx::Rect(gfx::Point(),
-      //       owner_layout_object->ContentSize()));
+      //       owner_layout_object->PhysicalContentBoxRect().size));
       // but it exposes a bug of incorrect origin of viewport_intersection in
       // multicol.
       gfx::Point origin = viewport_intersection.origin();
       origin.SetToMax(gfx::Point());
       viewport_intersection.set_origin(origin);
       gfx::Size size = viewport_intersection.size();
-      size.SetToMin(ToRoundedSize(owner_layout_object->ContentSize()));
+      size.SetToMin(
+          ToRoundedSize(owner_layout_object->PhysicalContentBoxRect().size));
       viewport_intersection.set_size(size);
     }
 
@@ -231,14 +233,15 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       }
       // TODO(crbug.com/1266676): This should be
       //   mainframe_intersection.Intersect(gfx::Rect(gfx::Point(),
-      //       owner_layout_object->ContentSize()));
+      //       owner_layout_object->PhysicalContentBoxRect().size));
       // but it exposes a bug of incorrect origin of mainframe_intersection in
       // multicol.
       gfx::Point origin = mainframe_intersection.origin();
       origin.SetToMax(gfx::Point());
       mainframe_intersection.set_origin(origin);
       gfx::Size size = mainframe_intersection.size();
-      size.SetToMin(ToRoundedSize(owner_layout_object->ContentSize()));
+      size.SetToMin(
+          ToRoundedSize(owner_layout_object->PhysicalContentBoxRect().size));
       mainframe_intersection.set_size(size);
     }
 

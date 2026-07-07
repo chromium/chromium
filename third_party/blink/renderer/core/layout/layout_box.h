@@ -375,10 +375,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContentTop() const;
   LayoutUnit ContentWidth() const;
   LayoutUnit ContentHeight() const;
-  PhysicalSize ContentSize() const {
-    NOT_DESTROYED();
-    return PhysicalSize(ContentWidth(), ContentHeight());
-  }
 
   // CSS intrinsic sizing getters.
   // https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override

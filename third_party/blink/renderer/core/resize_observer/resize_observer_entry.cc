@@ -63,7 +63,7 @@ void ResizeObserverEntry::PopulateFromLayoutBox(
     HeapVector<Member<ResizeObserverSize>>& device_pixel_content_box_size) {
   const ComputedStyle& style = layout_box.StyleRef();
   const PhysicalRect content_rect(layout_box.PaddingOutsets().Offset(),
-                                  layout_box.ContentSize());
+                                  layout_box.PhysicalContentBoxRect().size);
   content_rect_ =
       ResizeObserverUtilities::ZoomAdjustedPhysicalRect(content_rect, style);
 
