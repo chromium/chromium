@@ -148,36 +148,16 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const Canvas2DColorParams& color_params,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
 
-  CanvasNon2DResourceProvider(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      const gfx::HDRMetadata&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate*);
-  CanvasNon2DResourceProvider(gfx::Size,
-                              viz::SharedImageFormat,
-                              SkAlphaType,
-                              const gfx::ColorSpace&,
-                              const gfx::HDRMetadata&,
-                              WebGraphicsSharedImageInterfaceProvider*,
-                              CanvasResourceProviderDelegate*);
   ~CanvasNon2DResourceProvider() override;
 
-  void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool IsSingleBuffered() const;
 
   bool IsSoftware() const { return is_software_; }
-  bool IsGpuContextLost() const;
 
   CanvasImageProvider* GetOrCreateImageProvider();
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
-
-  SkSurface* GetSkSurface() const;
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
@@ -194,31 +174,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
     };
   }
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
-
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
-  size_t GetSize() const override;
-
-  // MemoryManagedPaintRecorder::Client implementation.
-  void RecordingCleared() override;
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-
-  SkSurfaceProps GetSkSurfaceProps() const;
-
-  void EnsureWriteAccess();
-  void EndWriteAccess();
-
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
-
-  // FlushForImageObserver implementation:
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   bool IsValid() const;
   scoped_refptr<StaticBitmapImage> Snapshot(
@@ -245,8 +203,62 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
-  sk_sp<SkSurface> CreateSkSurface() const;
   gpu::raster::RasterInterface* RasterInterface() const;
+
+  CanvasResourceSharedImage* resource() {
+    return static_cast<CanvasResourceSharedImage*>(resource_.get());
+  }
+  const CanvasResourceSharedImage* resource() const {
+    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
+  }
+
+ private:
+  CanvasNon2DResourceProvider(
+      gfx::Size,
+      viz::SharedImageFormat,
+      SkAlphaType,
+      const gfx::ColorSpace&,
+      const gfx::HDRMetadata&,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      CanvasResourceProviderDelegate*);
+  CanvasNon2DResourceProvider(gfx::Size,
+                              viz::SharedImageFormat,
+                              SkAlphaType,
+                              const gfx::ColorSpace&,
+                              const gfx::HDRMetadata&,
+                              WebGraphicsSharedImageInterfaceProvider*,
+                              CanvasResourceProviderDelegate*);
+
+  void ClearUnusedResources();
+  bool IsGpuContextLost() const;
+
+  SkSurface* GetSkSurface() const;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
+
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
+
+  // MemoryManagedPaintRecorder::Client implementation.
+  void RecordingCleared() override;
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
+
+  SkSurfaceProps GetSkSurfaceProps() const;
+
+  void EnsureWriteAccess();
+  void EndWriteAccess();
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+
+  // FlushForImageObserver implementation:
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
+
+  sk_sp<SkSurface> CreateSkSurface() const;
 
   base::WeakPtr<CanvasNon2DResourceProvider> CreateWeakPtr();
 
@@ -256,13 +268,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
-
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
