@@ -360,6 +360,9 @@ class LinkerDriver(object):
         dsymutil_env['PATH'] = ':'.join(tools_paths)
         subprocess.check_call(
             self._dsymutil_cmd + [
+                # TODO(crbug.com/532150826): Switch to `--linker parallel` when
+                # we figure out how to prevent memory/thread explosion.
+                '--linker=classic',
                 # TODO(crbug.com/513203450): Until we figure out what to do
                 # with > 4GB DWARF data, pass this flag to suppress the
                 # warning
