@@ -78,7 +78,7 @@ class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->GetProfile());
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
   // Add one launchable app and one non-launchable app.
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->GetProfile());
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
 
