@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,6 +63,8 @@ import org.chromium.chrome.browser.glic.GlicNudgeDelegateBridge;
 import org.chromium.chrome.browser.glic.GlicNudgeDelegateBridgeJni;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -72,6 +76,7 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -99,15 +104,17 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
     @Mock private ChromeAndroidTask mTask;
     @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mIncognitoTabModel;
     @Mock private GlicNudgeDelegateBridge.Natives mGlicNudgeDelegateBridgeJniMock;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     @Mock private SideUiStateProvider mSideUiStateProvider;
-    @Mock private TintedCompositorButton mModelSelectorButton;
     @Captor private ArgumentCaptor<List<Animator>> mAnimatorsListCaptor;
 
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
+    private TintedCompositorButton mModelSelectorButton;
     private TintedCompositorTextButton mGlicButton;
     private TintedCompositorButton mGlicDismissButton;
     private TintedCompositorTextButton mGlicActorButton;
@@ -145,6 +152,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
 
         when(mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)).thenReturn(true);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
@@ -155,17 +164,18 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mUpdateHost,
                         mRenderHost,
                         mWindowAndroid,
-                        mGlicClickHandler,
                         /* density= */ 1.0f,
                         mToolbarContainerView,
-                        /* keyboardFocusHandler= */ null,
                         /* isAppInDesktopWindow= */ false,
                         /* isTopResumedActivity= */ false,
                         mTaskTracker,
                         mIsIncognito,
-                        () -> null,
+                        () -> mTabModelSelector,
                         mSideUiStateProviderSupplier,
-                        mModelSelectorButton,
+                        () -> {},
+                        (isFocused, view) -> {},
+                        mGlicClickHandler,
+                        /* glicKeyboardFocusHandler= */ null,
                         () -> mGlicIphShowing,
                         mObserver);
         ShadowLooper.idleMainLooper();
@@ -175,6 +185,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mGlicButton = mCoordinator.getGlicButton();
         if (mGlicButton != null) mGlicDismissButton = mGlicButton.getDismissButton();
         mGlicActorButton = mCoordinator.getGlicActorButton();
+        mModelSelectorButton = mCoordinator.getModelSelectorButton();
     }
 
     @After
@@ -182,6 +193,169 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
+    }
+
+    @Test
+    public void testModelSelectorButtonDrawX() {
+        // Set model selector button position.
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Verify model selector button x-position.
+        // width(800) - endPadding(8) - width(32) = 760
+        assertEquals(
+                "Model selector button x-position is not as expected",
+                760.f,
+                mModelSelectorButton.getDrawX(),
+                0.0);
+    }
+
+    @Test
+    public void testModelSelectorButtonDrawX_Rtl() {
+        // Set model selector button position.
+        LocalizationUtils.setRtlForTesting(true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Verify model selector button position.
+        assertEquals(
+                "Model selector button x-position is not as expected",
+                8.f, // BUTTON_END_PADDING
+                mModelSelectorButton.getDrawX(),
+                0.0);
+    }
+
+    @Test
+    public void testModelSelectorButtonDrawY() {
+        // Set model selector button position.
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Verify model selector button y-position.
+        assertEquals(
+                "Model selector button y-position is not as expected",
+                3.f,
+                mModelSelectorButton.getDrawY(),
+                0.0);
+    }
+
+    @Test
+    public void testModelSelectorButtonHoverHighlightProperties() {
+        // Set model selector button position.
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Verify model selector button background resource id.
+        assertEquals(
+                "Model selector button background resource id is not as expected",
+                R.drawable.bg_circle_tab_strip_button,
+                mModelSelectorButton.getBackgroundResourceId());
+
+        TintedCompositorButton msb = mModelSelectorButton;
+
+        // Verify model selector button hover highlight default tint.
+        msb.setHovered(true);
+        @ColorInt
+        int hoverBackgroundDefaultColor =
+                mActivity.getColor(R.color.tab_strip_button_bg_hover_tint);
+        assertEquals(
+                "Model selector button hover highlight default tint is not as expected",
+                hoverBackgroundDefaultColor,
+                msb.getBackgroundTint());
+
+        // Verify model selector button hover highlight pressed tint.
+        msb.setHovered(false);
+        msb.setPressed(true, true);
+        @ColorInt
+        int hoverBackgroundPressedColor =
+                mActivity.getColor(R.color.tab_strip_button_bg_peripheral_pressed_tint);
+        assertEquals(
+                "Model selector button hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedColor,
+                msb.getBackgroundTint());
+
+        // Verify incognito properties.
+        mCoordinator.onTabModelSwitched(/* incognito= */ true);
+
+        // Verify model selector button incognito hover highlight default tint.
+        msb.setPressed(false);
+        msb.setHovered(true);
+        @ColorInt
+        int hoverBackgroundDefaultIncognitoColor =
+                mActivity.getColor(R.color.tab_strip_button_bg_incognito_hover_tint);
+        assertEquals(
+                "Model selector button incognito hover highlight default tint is not as expected",
+                hoverBackgroundDefaultIncognitoColor,
+                msb.getBackgroundTint());
+
+        // Verify model selector button incognito hover highlight pressed tint.
+        msb.setHovered(false);
+        msb.setPressed(true, true);
+        @ColorInt
+        int hoverBackgroundPressedIncognitoColor =
+                mActivity.getColor(R.color.tab_strip_button_bg_incognito_peripheral_pressed_tint);
+        assertEquals(
+                "Model selector button incognito hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedIncognitoColor,
+                msb.getBackgroundTint());
+    }
+
+    @Test
+    public void testModelSelectorButtonHoverEnter() {
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        int x = (int) mModelSelectorButton.getDrawX();
+        // Hover enters. Mouse position within MSB range(32dp width + 12dp click slop).
+        mCoordinator.onHoverEvent(x + 1, 0);
+        assertTrue("Model selector button should be hovered", mModelSelectorButton.isHovered());
+
+        // Verify model selector button is NOT hovered when mouse is not on the button.
+        // Mouse position out of MSB range(32dp width + 12dp click slop).
+        mCoordinator.onHoverEvent(x + 45, 0);
+        assertFalse(
+                "Model selector button should NOT be hovered", mModelSelectorButton.isHovered());
+    }
+
+    @Test
+    public void testModelSelectorButtonHoverOnDown() {
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        mCoordinator.onSizeChanged(
+                /* width= */ 800f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Verify model selector button is in pressed state, not hover state, when click is from
+        // mouse.
+        mCoordinator.onDown(mModelSelectorButton.getDrawX() + 1, 0, 1);
+        assertFalse(
+                "Model selector button should not be hovered", mModelSelectorButton.isHovered());
+        assertTrue(
+                "Model selector button should be pressed from mouse",
+                mModelSelectorButton.isPressedFromMouse());
     }
 
     @Test

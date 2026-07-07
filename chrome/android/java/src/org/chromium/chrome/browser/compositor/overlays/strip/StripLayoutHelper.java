@@ -493,7 +493,7 @@ public class StripLayoutHelper
         boolean isGlicUiVisible();
 
         /** Returns the Glic button compositor instance. */
-        @Nullable CompositorButton getGlicButton();
+        @Nullable TintedCompositorButton getGlicButton();
     }
 
     public interface LeadingButtonDelegate {
@@ -1222,24 +1222,21 @@ public class StripLayoutHelper
     }
 
     /**
-     * @param trailingButtonsTouchTargetSize The combined touch target size for the trailing
-     *     buttons.
-     * @param msbTouchTargetSize The touch target size for the model selector button.
+     * @param trailingButtonsTouchTargetSize The combined touch target size of all the visible
+     *     trailing buttons.
      */
-    public void updateEndMarginForStripButtons(
-            float trailingButtonsTouchTargetSize, float msbTouchTargetSize) {
-        // There are two additional tab strip buttons: Glic & MSB
-        // When both buttons are not visible we add strip end padding here.
-        // When either is visible, the strip end padding will be included in the visible button(s)
-        // touch target, so just add padding between NTB and visible button(s) here.
-        float stripButtonsTouchTargetSize = trailingButtonsTouchTargetSize + msbTouchTargetSize;
+    public void updateEndMarginForStripButtons(float trailingButtonsTouchTargetSize) {
+        // When there are no trailing buttons visible, we add strip end padding here.
+        // When there are trailing buttons visible, the strip end padding will be included in the
+        // visible button(s) touch target, so just add padding between NTB and visible button(s)
+        // here.
         float padding =
-                stripButtonsTouchTargetSize > 0
+                trailingButtonsTouchTargetSize > 0
                         ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
                         : mFixedEndPadding;
-        mReservedEndMargin = stripButtonsTouchTargetSize + mNewTabButtonWidth + padding;
+        mReservedEndMargin = trailingButtonsTouchTargetSize + mNewTabButtonWidth + padding;
 
-        updateFades(stripButtonsTouchTargetSize);
+        updateFades(trailingButtonsTouchTargetSize);
         updateMargins(true);
     }
 
@@ -1731,7 +1728,7 @@ public class StripLayoutHelper
         }
         // Checked after tab strip visibility since a hidden strip makes Glic button visibility
         // return false, which would incorrectly discard the IPH instead of postponing it.
-        CompositorButton glicButton = mTrailingButtonDelegate.getGlicButton();
+        TintedCompositorButton glicButton = mTrailingButtonDelegate.getGlicButton();
         if (glicButton == null || !mTrailingButtonDelegate.isGlicButtonVisible()) {
             return true;
         }

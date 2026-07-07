@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper.LeadingButtonDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
@@ -126,7 +125,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.ResourceManager;
@@ -479,163 +477,12 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testModelSelectorButtonDrawX() {
-        // Set model selector button position.
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button x-position.
-        // stripWidth(800) - buttonEndPadding(8) - MsbWidth(32) = 760
-        assertEquals(
-                "Model selector button x-position is not as expected",
-                760.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
-                0.0);
-    }
-
-    @Test
-    public void testModelSelectorButtonDrawX_Rtl() {
-        // Set model selector button position.
-        LocalizationUtils.setRtlForTesting(true);
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button position.
-        assertEquals(
-                "Model selector button x-position is not as expected",
-                BUTTON_END_PADDING,
-                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
-                0.0);
-    }
-
-    @Test
-    public void testModelSelectorButtonDrawY() {
-        // Set model selector button position.
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button y-position.
-        assertEquals(
-                "Model selector button y-position is not as expected",
-                3.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getDrawY(),
-                0.0);
-    }
-
-    @Test
-    public void testModelSelectorButtonHoverHighlightProperties() {
-        // Set model selector button position.
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button background resource id.
-        assertEquals(
-                "Model selector button background resource id is not as expected",
-                R.drawable.bg_circle_tab_strip_button,
-                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
-                        .getBackgroundResourceId());
-
-        TintedCompositorButton msb =
-                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton());
-
-        // Verify model selector button hover highlight default tint.
-        msb.setHovered(true);
-        @ColorInt
-        int hoverBackgroundDefaultColor =
-                mActivity.getColor(R.color.tab_strip_button_bg_hover_tint);
-        assertEquals(
-                "Model selector button hover highlight default tint is not as expected",
-                hoverBackgroundDefaultColor,
-                msb.getBackgroundTint());
-
-        // Verify model selector button hover highlight pressed tint.
-        msb.setHovered(false);
-        msb.setPressed(true, true);
-        @ColorInt
-        int hoverBackgroundPressedColor =
-                mActivity.getColor(R.color.tab_strip_button_bg_peripheral_pressed_tint);
-        assertEquals(
-                "Model selector button hover highlight pressed tint is not as expected",
-                hoverBackgroundPressedColor,
-                msb.getBackgroundTint());
-
-        // Verify incognito properties.
-        mStripLayoutHelperManager.tabModelSwitched(/* incognito= */ true);
-
-        // Verify model selector button incognito hover highlight default tint.
-        msb.setPressed(false);
-        msb.setHovered(true);
-        @ColorInt
-        int hoverBackgroundDefaultIncognitoColor =
-                mActivity.getColor(R.color.tab_strip_button_bg_incognito_hover_tint);
-        assertEquals(
-                "Model selector button incognito hover highlight default tint is not as expected",
-                hoverBackgroundDefaultIncognitoColor,
-                msb.getBackgroundTint());
-
-        // Verify model selector button incognito hover highlight pressed tint.
-        msb.setHovered(false);
-        msb.setPressed(true, true);
-        @ColorInt
-        int hoverBackgroundPressedIncognitoColor =
-                mActivity.getColor(R.color.tab_strip_button_bg_incognito_peripheral_pressed_tint);
-        assertEquals(
-                "Model selector button incognito hover highlight pressed tint is not as expected",
-                hoverBackgroundPressedIncognitoColor,
-                msb.getBackgroundTint());
-    }
-
-    @Test
-    public void testModelSelectorButtonHoverEnter() {
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
-
-        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getDrawX();
-        mStripLayoutHelperManager
-                .getActiveStripLayoutHelper()
-                .onHoverEnter(
-                        x + 1, 0,
-                        false); // mouse position within MSB range(32dp width + 12dp click slop).
-        assertTrue(
-                "Model selector button should be hovered",
-                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
-
-        // Verify model selector button is NOT hovered when mouse is not on the button.
-        mStripLayoutHelperManager
-                .getActiveStripLayoutHelper()
-                .onHoverEnter(
-                        x + 45, 0,
-                        false); // mouse position out of MSB range(32dp width + 12dp click slop).
-        assertFalse(
-                "Model selector button should NOT be hovered",
-                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
-    }
-
-    @Test
-    public void testModelSelectorButtonHoverOnDown() {
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
-
-        // Verify model selector button is in pressed state, not hover state, when click is from
-        // mouse.
-        mStripLayoutHelperManager.simulateOnDownForTesting(
-                mStripLayoutHelperManager.getModelSelectorButton().getDrawX() + 1, 0, 1);
-        assertFalse(
-                "Model selector button should not be hovered",
-                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
-        assertTrue(
-                "Model selector button should be pressed from mouse",
-                mStripLayoutHelperManager.getModelSelectorButton().isPressedFromMouse());
-    }
-
-    @Test
     public void testButtonIconColor_DisableButtonStyle() {
         // Verify button icon color after disabling button style.
         assertEquals(
                 "Unexpected incognito button color.",
                 mActivity.getColorStateList(R.color.default_icon_color_tint_list).getDefaultColor(),
-                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
-                        .getTint());
+                mStripLayoutHelperManager.getModelSelectorButton().getTint());
     }
 
     @Test
@@ -995,7 +842,8 @@ public class StripLayoutHelperManagerTest {
                         true);
 
         // Ensure incognito icon is showing.
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+        when(mStandardTabModel.getCount()).thenReturn(1);
+        mStripLayoutHelperManager.getModelSelectorButton().setVisible(true);
 
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
@@ -1069,7 +917,7 @@ public class StripLayoutHelperManagerTest {
                         true);
 
         // Ensure incognito icon is NOT showing.
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(false);
+        mStripLayoutHelperManager.getModelSelectorButton().setVisible(false);
 
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
@@ -1115,7 +963,7 @@ public class StripLayoutHelperManagerTest {
         mTabModelStartupInfoSupplier.set(startupInfo);
 
         // Ensure incognito icon is NOT showing.
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(false);
+        mStripLayoutHelperManager.getModelSelectorButton().setVisible(false);
 
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);

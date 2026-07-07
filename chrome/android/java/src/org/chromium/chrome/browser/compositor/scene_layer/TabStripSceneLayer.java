@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -313,21 +312,21 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             actorCornerRadiusInner);
         }
 
-        CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
+        TintedCompositorButton modelSelectorButton =
+                trailingButtonsCoordinator.getModelSelectorButton();
         if (modelSelectorButton != null) {
             boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
             TabStripSceneLayerJni.get()
                     .updateModelSelectorButton(
                             mNativePtr,
                             modelSelectorButton.getResourceId(),
-                            ((TintedCompositorButton) modelSelectorButton)
-                                    .getBackgroundResourceId(),
+                            modelSelectorButton.getBackgroundResourceId(),
                             Math.round(modelSelectorButton.getDrawX() * mDpToPx),
                             Math.round(modelSelectorButton.getDrawY() * mDpToPx),
                             modelSelectorButtonVisible,
                             modelSelectorButton.getShouldApplyHoverBackground(),
-                            ((TintedCompositorButton) modelSelectorButton).getTint(),
-                            ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
+                            modelSelectorButton.getTint(),
+                            modelSelectorButton.getBackgroundTint(),
                             modelSelectorButton.getOpacity(),
                             modelSelectorButton.isKeyboardFocused(),
                             TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),

@@ -454,7 +454,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(/* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0);
         mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* trailingButtonsTouchTargetSize= */ 16f, /* msbTouchTargetSize= */ 32f);
+                /* trailingButtonsTouchTargetSize= */ 48f);
 
         // Verify end fade.
         float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
@@ -483,7 +483,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(/* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0);
         mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* trailingButtonsTouchTargetSize= */ 10f, /* msbTouchTargetSize= */ 20f);
+                /* trailingButtonsTouchTargetSize= */ 30f);
 
         // Verify end fade.
         float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
@@ -4878,7 +4878,7 @@ public class StripLayoutHelperTest {
                             }
 
                             @Override
-                            public CompositorButton getGlicButton() {
+                            public TintedCompositorButton getGlicButton() {
                                 return null;
                             }
                         },
