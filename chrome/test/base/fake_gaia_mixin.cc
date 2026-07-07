@@ -120,6 +120,8 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
 
 #if BUILDFLAG(IS_CHROMEOS)
 void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
+  SetupFakeGaiaForLoginWithDefaults();
+
   FakeGaia::AccessTokenInfo token_info;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
   token_info.scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
