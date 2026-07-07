@@ -2476,4 +2476,64 @@ TEST_F(V5StoreTest, TestCollectStoreInfo) {
   EXPECT_TRUE(updated_store_info.has_last_apply_update_time_millis());
 }
 
+TEST_F(V5StoreTest, TestRecordAndReturnFileSize) {
+  // Test with a generic store name.
+  {
+    base::HistogramTester histogram_tester;
+    V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                  /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                  /*is_extensions_blocklist=*/false,
+                  /*old_file_size=*/102400);  // 100 KB
+
+    int64_t size =
+        store.RecordAndReturnFileSize("SafeBrowsing.V5Database.Size");
+    EXPECT_EQ(102400, size);
+
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Database.Size.V5StoreTest", 100, 1);
+    histogram_tester.ExpectTotalCount(
+        "SafeBrowsing.V5Database.SizeLinear.V5StoreTest", 0);
+  }
+
+  // Test with UrlSoceng_v5 store name to verify linear histogram.
+  {
+    base::HistogramTester histogram_tester;
+    base::FilePath soceng_path =
+        temp_dir_.GetPath().AppendASCII("UrlSoceng_v5.store");
+    V5Store store(task_runner(), soceng_path, 4, v4_store_path_,
+                  /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                  /*is_extensions_blocklist=*/false,
+                  /*old_file_size=*/2097152);  // 2 MB
+
+    int64_t size =
+        store.RecordAndReturnFileSize("SafeBrowsing.V5Database.Size");
+    EXPECT_EQ(2097152, size);
+
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Database.Size.UrlSoceng_v5", 2048, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Database.SizeLinear.UrlSoceng_v5", 2, 1);
+  }
+
+  // Test with ChromeExtMalware_v5 store name to verify linear histogram.
+  {
+    base::HistogramTester histogram_tester;
+    base::FilePath malware_path =
+        temp_dir_.GetPath().AppendASCII("ChromeExtMalware_v5.store");
+    V5Store store(task_runner(), malware_path, 4, v4_store_path_,
+                  /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                  /*is_extensions_blocklist=*/false,
+                  /*old_file_size=*/512000);  // 500 KB
+
+    int64_t size =
+        store.RecordAndReturnFileSize("SafeBrowsing.V5Database.Size");
+    EXPECT_EQ(512000, size);
+
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Database.Size.ChromeExtMalware_v5", 500, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V5Database.SizeLinear.ChromeExtMalware_v5", 5, 1);
+  }
+}
+
 }  // namespace safe_browsing

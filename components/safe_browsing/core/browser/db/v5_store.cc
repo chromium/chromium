@@ -501,11 +501,6 @@ V5Store::ConvertExtensionsBlocklistFromV4ToV5(
   return ConvertExtensionBlocklistV4ToV5Result::kSuccess;
 }
 
-int64_t V5Store::RecordAndReturnFileSize(const std::string& base_metric) {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
-}
-
 void V5Store::Reset() {
   expected_checksum_.clear();
   hash_prefix_list_->Clear();

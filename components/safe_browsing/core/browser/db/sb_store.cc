@@ -30,6 +30,18 @@
 
 namespace safe_browsing {
 
+namespace {
+
+const char kUrlSocengV5UmaSuffix[] = ".UrlSoceng_v5";
+const char kChromeExtMalwareV5UmaSuffix[] = ".ChromeExtMalware_v5";
+const char kUrlMalBinV5UmaSuffix[] = ".UrlMalBin_v5";
+// TODO(crbug.com/372395685): Deprecate v4 versions.
+const char kUrlSocengV4UmaSuffix[] = ".UrlSoceng";
+const char kChromeExtMalwareV4UmaSuffix[] = ".ChromeExtMalware";
+const char kUrlMalBinV4UmaSuffix[] = ".UrlMalBin";
+
+}  // namespace
+
 SBStore::SBStore(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  const base::FilePath& store_path,
                  int64_t old_file_size)
@@ -489,6 +501,32 @@ base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
 const base::FilePath SBStore::TemporaryFileForFilename(
     const base::FilePath& filename) {
   return base::FilePath(filename.value() + FILE_PATH_LITERAL("_new"));
+}
+
+int64_t SBStore::RecordAndReturnFileSize(const std::string& base_metric) {
+  std::string suffix = GetUmaSuffixForStore(store_path_);
+  const int64_t file_size_kilobytes = file_size_ / 1024;
+  base::UmaHistogramCounts1M(base_metric + suffix, file_size_kilobytes);
+
+  // Add a linear histogram for UrlSoceng since its size is too large to be
+  // accurately represented by the histogram above.
+  if (suffix == kUrlSocengV4UmaSuffix || suffix == kUrlSocengV5UmaSuffix) {
+    const int64_t file_size_megabytes = file_size_kilobytes / 1024;
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_megabytes, /*value_max=*/50);
+  }
+
+  // Linear histogram for ChromeExtMalware + UrlMalBin, sizes in 100kB, up to
+  // ~5MB.
+  if (suffix == kChromeExtMalwareV4UmaSuffix ||
+      suffix == kChromeExtMalwareV5UmaSuffix ||
+      suffix == kUrlMalBinV4UmaSuffix || suffix == kUrlMalBinV5UmaSuffix) {
+    const int64_t file_size_100_kb = file_size_kilobytes / 100;
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_100_kb, /*value_max=*/50);
+  }
+
+  return file_size_;
 }
 
 // Explicit instantiations.

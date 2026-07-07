@@ -159,7 +159,6 @@ class V5Store : public SBStore {
   // of the hash prefixes.
   void Initialize();
 
-  int64_t RecordAndReturnFileSize(const std::string& base_metric) override;
 
   void Reset() override;
 

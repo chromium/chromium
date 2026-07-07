@@ -194,7 +194,6 @@ class V4Store : public SBStore {
                    const scoped_refptr<base::SequencedTaskRunner>& runner,
                    UpdatedStoreReadyCallback callback) override;
 
-  int64_t RecordAndReturnFileSize(const std::string& base_metric) override;
 
   std::string DebugString() const;
 

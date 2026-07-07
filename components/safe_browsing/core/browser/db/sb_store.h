@@ -300,8 +300,8 @@ class SBStore {
   int64_t file_size() const { return file_size_; }
 
   // Records (in kilobytes) and returns the size of the file on disk for this
-  // store using |base_metric| as prefix and the filename as suffix.
-  virtual int64_t RecordAndReturnFileSize(const std::string& base_metric) = 0;
+  // store using `base_metric` as prefix and the filename as suffix.
+  virtual int64_t RecordAndReturnFileSize(const std::string& base_metric);
 
   // Reset internal state.
   virtual void Reset() = 0;

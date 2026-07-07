@@ -431,8 +431,9 @@ int64_t SBDatabase::GetStoreSizeInBytes(
 }
 
 void SBDatabase::RecordFileSizeHistograms() {
-  // Logs SafeBrowsing.V4Database.Size
-  std::string size_metric = GetMetricName("SafeBrowsing.", "Database.Size");
+  // Logs SafeBrowsing.V4Database.Size or SafeBrowsing.V5Database.Size
+  std::string size_metric = GetMetricName("SafeBrowsing.", "Database.Size",
+                                          /*allow_v5_logging=*/true);
   int64_t db_size = 0;
   for (const auto& store_map_iter : *store_map_) {
     const int64_t size =
@@ -444,10 +445,12 @@ void SBDatabase::RecordFileSizeHistograms() {
 
   const int64_t db_size_megabytes =
       static_cast<int64_t>(db_size_kilobytes / 1024);
-  // Logs SafeBrowsing.V4Database.SizeLinear
+  // Logs SafeBrowsing.V4Database.SizeLinear or
+  // SafeBrowsing.V5Database.SizeLinear
   base::UmaHistogramExactLinear(
-      GetMetricName("SafeBrowsing.", "Database.SizeLinear"), db_size_megabytes,
-      50);
+      GetMetricName("SafeBrowsing.", "Database.SizeLinear",
+                    /*allow_v5_logging=*/true),
+      db_size_megabytes, /*value_max=*/50);
 }
 
 void SBDatabase::RecordDatabaseUpdateLatency() {

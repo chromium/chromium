@@ -4321,6 +4321,66 @@ risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V5Database.Size" units="KB"
+    expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The total size of the SafeBrowsing database or files on disk in kilobytes,
+    after reading it from disk on startup and after a database update has
+    occurred for V5.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5Database.SizeLinear" units="MB"
+    expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The total size of the SafeBrowsing database or files on disk in megabytes,
+    after reading it from disk on startup and after a database update has
+    occurred for V5. Linear version of V5Database.Size histogram.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5Database.SizeLinear.UrlSoceng_v5" units="MB"
+    expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of UrlSoceng SafeBrowsing database or file on disk in megabytes,
+    after reading it from disk on startup and after a database update has
+    occurred for V5. Linear version of V5Database.Size histogram.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5Database.SizeLinear{ThreatTypeKB}_v5"
+    units="100 KB" expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of {ThreatTypeKB} SafeBrowsing database or file on disk in 100 KB,
+    after reading it from disk on startup and after a database update has
+    occurred for V5. Linear version of V5Database.Size histogram.
+  </summary>
+  <token key="ThreatTypeKB">
+    <variant name=".ChromeExtMalware" summary="extension malware"/>
+    <variant name=".UrlMalBin" summary="malware"/>
+  </token>
+</histogram>
+
+<histogram name="SafeBrowsing.V5Database.Size{Store}_v5" units="KB"
+    expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of the SafeBrowsing database or file on disk in kilobytes, after
+    reading it from disk on startup and after a database update has occurred for
+    V5.
+  </summary>
+  <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
+</histogram>
+
 <histogram name="SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result{Store}_v5"
     enum="SafeBrowsingV5ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to use the Safe
