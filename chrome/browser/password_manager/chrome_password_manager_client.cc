@@ -2163,6 +2163,11 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
   if (!ui_data || !driver) {
     return;
   }
+  // The reply is renderer-controlled and may arrive after the originating RFH
+  // has been BFCached / become non-primary; do not show UI for inactive RFHs.
+  if (!CheckFrameActiveAndNotPrerendering(driver->render_frame_host())) {
+    return;
+  }
   // Check the data because it's a Mojo callback and the input isn't trusted.
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           driver->render_frame_host(), ui_data->form_data.url(),
