@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -59,8 +58,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
     : public CanvasMemoryDumpClient,
       public CanvasResourceSharedImage::Client,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public viz::ContextLostObserver,
-      public ScopedRasterTimer::Host {
+      public viz::ContextLostObserver {
  public:
   static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
       gfx::Size size,
