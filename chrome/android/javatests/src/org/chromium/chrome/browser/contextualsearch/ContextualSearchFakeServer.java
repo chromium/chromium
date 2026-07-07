@@ -88,21 +88,21 @@ class ContextualSearchFakeServer
          *
          * @param text The string to wait for the selection to become.
          */
-        void waitForSelectionToBe(final String text);
+        void waitForSelectionToBe(String text);
 
         /**
          * Waits for the Search Term Resolution to become ready.
          *
          * @param search A given FakeResolveSearch.
          */
-        void waitForSearchTermResolutionToStart(final FakeResolveSearch search);
+        void waitForSearchTermResolutionToStart(FakeResolveSearch search);
 
         /**
          * Waits for the Search Term Resolution to finish.
          *
          * @param search A given FakeResolveSearch.
          */
-        void waitForSearchTermResolutionToFinish(final FakeResolveSearch search);
+        void waitForSearchTermResolutionToFinish(FakeResolveSearch search);
 
         /**
          * @return The {@link ContextualSearchPanel}.

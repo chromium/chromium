@@ -149,7 +149,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     // TODO(crbug.com/40156023) Implement URL -> byte[] mapping rather
     // than tab id -> byte[] mapping so we don't store the same data
     // multiple times when the user has multiple tabs at the same URL.
-    private static final String getKey(int tabId, String dataId) {
+    private static String getKey(int tabId, String dataId) {
         return String.format(Locale.US, "%d-%s", tabId, dataId);
     }
 

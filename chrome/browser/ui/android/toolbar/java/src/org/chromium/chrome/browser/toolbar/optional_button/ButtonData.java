@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.AttrRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -60,7 +61,7 @@ public interface ButtonData {
         private final @Nullable Drawable mDrawable;
         private final @Nullable Drawable mCollapsedDrawable;
         // TODO(crbug.com/40753109): make mOnClickListener
-        private final @Nullable View.OnClickListener mOnClickListener;
+        private final @Nullable OnClickListener mOnClickListener;
         private final @Nullable OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;
         private final boolean mSupportsTinting;
@@ -81,7 +82,7 @@ public interface ButtonData {
         private ButtonSpec(
                 @Nullable Drawable drawable,
                 @Nullable Drawable collapsedDrawable,
-                @Nullable View.OnClickListener onClickListener,
+                @Nullable OnClickListener onClickListener,
                 @Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
                 boolean supportsTinting,
@@ -122,7 +123,7 @@ public interface ButtonData {
         public static class Builder {
             private @Nullable Drawable mDrawable;
             private @Nullable Drawable mCollapsedDrawable;
-            private @Nullable View.OnClickListener mOnClickListener;
+            private @Nullable OnClickListener mOnClickListener;
             private @Nullable OnLongClickListener mOnLongClickListener;
             private String mContentDescription;
             private boolean mSupportsTinting;
@@ -193,7 +194,7 @@ public interface ButtonData {
                 return this;
             }
 
-            public Builder setOnClickListener(@Nullable View.OnClickListener onClickListener) {
+            public Builder setOnClickListener(@Nullable OnClickListener onClickListener) {
                 mOnClickListener = onClickListener;
                 return this;
             }
@@ -313,8 +314,8 @@ public interface ButtonData {
             return mCollapsedDrawable;
         }
 
-        /** Returns the {@link View.OnClickListener} used on the button. */
-        public @Nullable View.OnClickListener getOnClickListener() {
+        /** Returns the {@link OnClickListener} used on the button. */
+        public @Nullable OnClickListener getOnClickListener() {
             return mOnClickListener;
         }
 

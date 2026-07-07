@@ -39,7 +39,7 @@ class LoadProgressSimulator {
                     @Override
                     public void handleMessage(Message msg) {
                         assert msg.what == MSG_ID_UPDATE_PROGRESS;
-                        mProgress = Math.min(1, mProgress += PROGRESS_INCREMENT);
+                        mProgress = Math.min(1.0f, mProgress + PROGRESS_INCREMENT);
                         mModel.set(LoadProgressProperties.PROGRESS, mProgress);
 
                         if (MathUtils.areFloatsEqual(mProgress, 1.0f)) {

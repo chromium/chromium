@@ -196,7 +196,7 @@ public class OfflineTestUtil {
         void getRequestsInQueue(Callback<SavePageRequest[]> callback);
 
         void getAllPages(
-                List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);
+                List<OfflinePageItem> offlinePages, Callback<List<OfflinePageItem>> callback);
 
         void getRawThumbnail(long offlineId, Callback<byte[]> callback);
 

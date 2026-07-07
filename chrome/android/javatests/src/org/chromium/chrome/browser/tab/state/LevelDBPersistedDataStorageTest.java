@@ -42,7 +42,7 @@ public class LevelDBPersistedDataStorageTest {
     private static final byte[] DATA_B = {9, 10};
     private static final byte[] EMPTY_BYTE_ARRAY = {};
 
-    private static final String NAMESPACES[] = {"namespace1", "namesapce2"};
+    private static final String[] NAMESPACES = {"namespace1", "namesapce2"};
 
     private final LevelDBPersistedDataStorage[] mPersistedDataStorage =
             new LevelDBPersistedDataStorage[2];
