@@ -364,18 +364,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         var composeBox = session.getComposeboxQueryControllerBridge();
         if (composeBox == null) return;
 
-        if (mViewHolder == null) {
-            // - If mDeferredInitialized is false - this is the first time we run beginInput and we
-            //   need to make sure the UI is built.
-            // - If mDeferredInitialized is true, but mViewHolder is null - then we already
-            //   determined that the user or scenario is not eligible (e.g. feature flag disabled).
-            if (!mDeferredInitialized) {
-                mPendingSession = session;
-                ensureDeferredInitialized();
-            }
-            return;
-        }
-
         // We can't do inclusive check due to missing `isPhone()` case in `DeviceInfo`.
         // Additionally these values may change at runtime, e.g. if the user starts Chrome on phone
         // and moves to Android Auto.
@@ -400,6 +388,26 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 || !isSupportedPageClass
                 || !mDefaultSearchEngineIsGoogle) {
             endInput();
+            return;
+        }
+
+        if (mViewHolder == null) {
+            // - If mDeferredInitialized is false - this is the first time we run beginInput and we
+            //   need to make sure the UI is built.
+            // - If mDeferredInitialized is true, but mViewHolder is null - then we already
+            //   determined that the user or scenario is not eligible (e.g. feature flag disabled).
+            if (!mDeferredInitialized) {
+                mPendingSession = session;
+                // A number of UI components, like the StatusView, depend on the FuseboxState. The
+                // FuseboxMediator will eventually control the FuseboxState, but it's is not yet
+                // created here. So, we do this initial assignment to ensure that these UI
+                // components don't show any bad intermediate states in the meantime.
+                mFuseboxStateSupplier.set(
+                        session.getAutocompleteInput().isStandby()
+                                ? FuseboxState.DISABLED
+                                : FuseboxState.COMPACT);
+                ensureDeferredInitialized();
+            }
             return;
         }
 

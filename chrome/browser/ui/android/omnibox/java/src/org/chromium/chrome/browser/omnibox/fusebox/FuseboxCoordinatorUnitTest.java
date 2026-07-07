@@ -58,6 +58,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -395,5 +396,25 @@ public class FuseboxCoordinatorUnitTest {
         verify(mMediator).activateSearchMode();
         // Verify that endInput() was called.
         verify(mMediator).endInput();
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testBeginInput_setsCompactStateEarlyIfEligible() {
+        assertEquals(
+                FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
+        mCoordinator.beginInput(createSession());
+        assertEquals(FuseboxState.COMPACT, mCoordinator.getFuseboxStateSupplier().get().intValue());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testBeginInput_remainsDisabledStateIfFeatureDisabled() {
+        assertEquals(
+                FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
+        mCoordinator.beginInput(createSession());
+        assertEquals(
+                FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
     }
 }
