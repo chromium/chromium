@@ -80,6 +80,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
+     * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
+     *     container.
      * @param topMarginSupplier The supplier for the Side UI's top margin.
      */
     /* package */ SideUiCoordinatorImpl(
@@ -88,6 +90,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
+            ViewStub webContentHairlineContainerStub,
             NonNullObservableSupplier<Integer> topMarginSupplier) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -105,6 +108,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         mTopMarginObserver = this::onTopMarginChanged;
         mTopMarginSupplier = topMarginSupplier;
         mTopMarginSupplier.addSyncObserver(mTopMarginObserver);
+
+        // TODO(crbug.com/515162490): Inflate and update the web content hairline.
+        webContentHairlineContainerStub.setLayoutResource(
+                R.layout.side_ui_web_content_hairline_container);
 
         mActivityLifecycleDispatcher.register(this);
     }

@@ -31,6 +31,8 @@ public final class SideUiCoordinatorFactory {
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
+     * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
+     *     container.
      * @param topMarginSupplier The supplier for the Side UI's top margin.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
      */
@@ -41,6 +43,7 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
+            @Nullable ViewStub webContentHairlineContainerStub,
             @Nullable NonNullObservableSupplier<Integer> topMarginSupplier) {
         if (!AndroidSidePanelEnabledFn.isEnabled()
                 && !VerticalTabUtils.isVerticalTabsEligible(parentActivity)) {
@@ -50,6 +53,7 @@ public final class SideUiCoordinatorFactory {
         assert anchorContainerParent != null;
         assert leftAnchorContainerStub != null;
         assert rightAnchorContainerStub != null;
+        assert webContentHairlineContainerStub != null;
 
         if (topMarginSupplier == null) {
             topMarginSupplier = ObservableSuppliers.createNonNull(0);
@@ -60,6 +64,7 @@ public final class SideUiCoordinatorFactory {
                 anchorContainerParent,
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
+                webContentHairlineContainerStub,
                 topMarginSupplier);
     }
 }

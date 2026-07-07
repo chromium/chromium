@@ -162,6 +162,13 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/tab_hover_card_holder"
             android:layout="@layout/tab_hover_card_holder" />
 
+        <ViewStub
+            android:id="@+id/side_ui_web_content_hairline_container_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/control_container_height"
+            android:inflatedId="@+id/side_ui_web_content_hairline_container" />
+
         <FrameLayout
             android:id="@+id/secondary_ui_container"
             android:layout_width="match_parent"

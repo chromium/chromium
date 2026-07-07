@@ -74,6 +74,7 @@ public class SideUiCoordinatorImplTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ViewStub mLeftAnchorContainerStub;
     @Mock private ViewStub mRightAnchorContainerStub;
+    @Mock private ViewStub mWebContentHairlineContainerStub;
     @Mock private SideUiObserver mSideUiObserver;
 
     private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
@@ -122,6 +123,7 @@ public class SideUiCoordinatorImplTest {
                         anchorContainerParent,
                         mLeftAnchorContainerStub,
                         mRightAnchorContainerStub,
+                        mWebContentHairlineContainerStub,
                         mTopMarginSupplier);
 
         // Initialize the SideUiContainer View.

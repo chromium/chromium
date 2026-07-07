@@ -2182,6 +2182,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.findViewById(R.id.side_ui_left_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_right_anchor_container_stub);
+        ViewStub webContentHairlineContainerStub =
+                mActivity.findViewById(R.id.side_ui_web_content_hairline_container_stub);
 
         NonNullObservableSupplier<Integer> stripBottomPxSupplier = null;
         assumeNonNull(mLayoutManager);
@@ -2198,6 +2200,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
+                        webContentHairlineContainerStub,
                         stripBottomPxSupplier);
         if (mSideUiCoordinator == null) {
             return;

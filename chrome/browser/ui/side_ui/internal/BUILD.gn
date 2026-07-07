@@ -4,6 +4,14 @@
 
 import("//build/config/android/rules.gni")
 
+android_resources("java_resources") {
+  sources = [
+    "android/java/res/drawable/vertical_hairline.xml",
+    "android/java/res/layout/side_ui_web_content_hairline_container.xml",
+    "android/java/res/values/dimens.xml",
+  ]
+}
+
 android_library("java") {
   visibility = [
     ":*",
@@ -20,6 +28,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":java_resources",
     "//base:callback_java",
     "//base:supplier_java",
     "//base:tasks_java",
@@ -36,6 +45,8 @@ android_library("java") {
     "//third_party/androidx:androidx_window_window_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.ui.side_ui"
 }
 
 robolectric_library("junit") {
