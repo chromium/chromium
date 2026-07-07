@@ -3365,6 +3365,7 @@ static_library("ui") {
         "views/profiles/feature_showcase/default_browser_step_eligibility_checker.h",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.cc",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h",
+        "views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.cc",
         "views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h",
         "views/profiles/feature_showcase/google_lens_step_eligibility_checker.cc",
         "views/profiles/feature_showcase/google_lens_step_eligibility_checker.h",

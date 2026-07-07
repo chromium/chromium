@@ -41,7 +41,8 @@ void FeatureShowcaseEligibilityTracker::EvaluateEligibleSteps(
   // Cancel any pending callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  eligible_results_.clear();
+  results_.clear();
+  results_.resize(checkers_.size());
   completed_checkers_ = 0;
 
   if (on_eligibility_evaluated_callback_) {
@@ -59,25 +60,20 @@ void FeatureShowcaseEligibilityTracker::EvaluateEligibleSteps(
       base::BindOnce(&FeatureShowcaseEligibilityTracker::FinishEvaluation,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  size_t priority = 0;
-  for (const auto& checker : checkers_) {
-    checker->CheckEligibility(
+  for (size_t i = 0; i < checkers_.size(); ++i) {
+    checkers_[i]->CheckEligibility(
         profile,
         base::BindOnce(
             &FeatureShowcaseEligibilityTracker::OnStepEligibilityDetermined,
-            weak_ptr_factory_.GetWeakPtr(), priority++,
-            checker->GetStepIdentifier()));
+            weak_ptr_factory_.GetWeakPtr(), i));
   }
 }
 
 void FeatureShowcaseEligibilityTracker::OnStepEligibilityDetermined(
-    size_t priority,
-    std::string identifier,
+    size_t index,
     bool is_eligible) {
   ++completed_checkers_;
-  if (is_eligible) {
-    eligible_results_.push_back({priority, std::move(identifier)});
-  }
+  results_[index] = is_eligible;
 
   if (completed_checkers_ == checkers_.size()) {
     FinishEvaluation();
@@ -85,15 +81,27 @@ void FeatureShowcaseEligibilityTracker::OnStepEligibilityDetermined(
 }
 
 void FeatureShowcaseEligibilityTracker::FinishEvaluation() {
+  if (!on_eligibility_evaluated_callback_) {
+    return;
+  }
+
+  // Take ownership of the callback to prevent a recursive re-entry.
+  auto completion_callback = std::move(on_eligibility_evaluated_callback_);
+
   timeout_timer_.Stop();
+
   // Cancel any pending callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  std::ranges::sort(eligible_results_, {}, &Result::priority);
-
   std::vector<std::string> eligible_steps;
-  for (const auto& result : eligible_results_) {
-    eligible_steps.push_back(result.identifier);
+  for (size_t i = 0; i < checkers_.size(); ++i) {
+    if (!results_[i].has_value()) {
+      results_[i] = checkers_[i]->OnTimeout();
+    }
+
+    if (results_[i].value()) {
+      eligible_steps.push_back(checkers_[i]->GetStepIdentifier());
+    }
   }
 
   if (eligible_steps.size() > kMaxFeatureShowcaseSteps) {
@@ -104,6 +112,6 @@ void FeatureShowcaseEligibilityTracker::FinishEvaluation() {
   // synchronously, invoking the callback could synchronously destroy this
   // tracker while `EvaluateEligibleSteps` is still iterating over `checkers_`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(on_eligibility_evaluated_callback_),
+      FROM_HERE, base::BindOnce(std::move(completion_callback),
                                 std::move(eligible_steps)));
 }
