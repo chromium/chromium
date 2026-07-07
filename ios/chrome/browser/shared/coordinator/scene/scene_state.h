@@ -24,6 +24,7 @@
 @class SceneState;
 @class SceneStatePrefs;
 class SigninInProgress;
+struct SceneStateOptions;
 @class SceneUIBlockerState;
 @class TabGridState;
 
@@ -97,7 +98,6 @@ class SigninInProgress;
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;
 
-
 // When this is YES, the scene either resumed or started up in response to an
 // external intent.
 @property(nonatomic, assign) BOOL startupHadExternalIntent;
@@ -159,6 +159,9 @@ class SigninInProgress;
 // Records that an extra sign-in process started. When the returned value is
 // destructed, the sign-in ended.
 - (std::unique_ptr<SigninInProgress>)createSigninInProgress;
+
+// Connects the SceneState with the given `options`.
+- (void)connectWithOptions:(SceneStateOptions)options;
 
 @end
 

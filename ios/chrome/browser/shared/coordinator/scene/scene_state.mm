@@ -17,6 +17,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
@@ -41,11 +42,11 @@
 @end
 
 @implementation SceneState {
-  // Cache the session identifier.
-  std::string _sceneSessionID;
-
   // The AppState passed to the initializer.
   AppState* _appState;
+
+  // Cache the connection informations.
+  SceneStateOptions _sceneStateOptions;
 
   // Container for this object's observers.
   SceneStateObserverList* _observers;
@@ -116,6 +117,22 @@
   return std::make_unique<SigninInProgress>(self);
 }
 
+- (void)connectWithOptions:(SceneStateOptions)options {
+  if (ProfileState* profileState = _sceneStateOptions.profile_state) {
+    [profileState removeObserver:self];
+    _prefs = nil;
+  }
+
+  _sceneStateOptions = std::move(options);
+  ProfileState* profileState = _sceneStateOptions.profile_state;
+  [_observers sceneState:self profileStateConnected:profileState];
+
+  if (profileState) {
+    [profileState addObserver:self];
+    [self createPrefsIfPossible];
+  }
+}
+
 #pragma mark - Setters & Getters.
 
 - (UIWindow*)window {
@@ -129,16 +146,16 @@
 }
 
 - (std::string_view)sceneSessionID {
-  return _sceneSessionID;
+  return _sceneStateOptions.identifier;
 }
 
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
   if (_scene) {
-    _sceneSessionID = SessionIdentifierForScene(_scene);
+    _sceneStateOptions.identifier = SessionIdentifierForScene(_scene);
     [self createPrefsIfPossible];
   } else {
-    _sceneSessionID.clear();
+    _sceneStateOptions.identifier.clear();
     _prefs = nil;
   }
 }
@@ -191,15 +208,13 @@
   return _numberOfSigninInProgress > 0;
 }
 
+- (ProfileState*)profileState {
+  return _sceneStateOptions.profile_state;
+}
+
 - (void)setProfileState:(ProfileState*)profileState {
-  if (_profileState) {
-    [_profileState removeObserver:self];
-  }
-  _profileState = profileState;
-  [_observers sceneState:self profileStateConnected:_profileState];
-  if (_profileState) {
-    [_profileState addObserver:self];
-  }
+  [self connectWithOptions:{.profile_state = profileState,
+                            .identifier = _sceneStateOptions.identifier}];
 }
 
 #pragma mark - UIBlockerTarget
@@ -211,7 +226,7 @@
 - (id<UIBlockerManager>)uiBlockerManagerForExtent:(UIBlockerExtent)extent {
   switch (extent) {
     case UIBlockerExtent::kProfile:
-      return _profileState;
+      return _sceneStateOptions.profile_state;
     case UIBlockerExtent::kApplication:
       return _appState;
   }
@@ -310,24 +325,26 @@
 // Will create the SceneStatePrefs if the object is ready. Can be called
 // when any condition controlling the creation of the object has changed.
 - (void)createPrefsIfPossible {
-  if (!_scene || _sceneSessionID.empty() ||
-      _profileState.initStage < ProfileInitStage::kProfileLoaded) {
+  ProfileState* profileState = _sceneStateOptions.profile_state;
+  std::string_view identifier = _sceneStateOptions.identifier;
+  if (!_scene || identifier.empty() ||
+      profileState.initStage < ProfileInitStage::kProfileLoaded) {
     return;
   }
 
   // During unit tests, the profile or the profile manager may not be
   // initialized. Avoid crashing by returning early.
-  ProfileIOS* profile = _profileState.profile;
+  ProfileIOS* profile = profileState.profile;
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   if (!profile || !manager) {
     return;
   }
 
-  [_profileState removeObserver:self];
+  [profileState removeObserver:self];
   const std::string& profile_name = profile->GetProfileName();
   _prefs = [[SceneStatePrefs alloc] initWithProfileManager:manager
                                                profileName:profile_name
-                                         sessionIdentifier:_sceneSessionID
+                                         sessionIdentifier:identifier
                                               sceneSession:_scene.session];
   [_incognitoState preferencesDidLoad];
 }
