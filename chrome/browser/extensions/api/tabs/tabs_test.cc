@@ -91,7 +91,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_OZONE)

@@ -94,8 +94,8 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

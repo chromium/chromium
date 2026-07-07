@@ -43,7 +43,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace views {

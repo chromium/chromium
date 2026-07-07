@@ -4,6 +4,8 @@
 
 #include "ui/views/test/views_test_utils.h"
 
+#include <utility>
+
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -45,6 +47,34 @@ bool IsOzoneBubblesUsingPlatformWidgets() {
 #else
   return false;
 #endif
+}
+
+PropertyWaiter::PropertyWaiter(base::RepeatingCallback<bool()> callback,
+                               bool expected_value,
+                               base::TimeDelta timeout)
+    : timeout_(timeout),
+      callback_(std::move(callback)),
+      expected_value_(expected_value) {}
+PropertyWaiter::~PropertyWaiter() = default;
+
+bool PropertyWaiter::Wait() {
+  if (callback_.Run() == expected_value_) {
+    success_ = true;
+    return success_;
+  }
+  start_time_ = base::TimeTicks::Now();
+  timer_.Start(FROM_HERE, base::TimeDelta(), this, &PropertyWaiter::Check);
+  run_loop_.Run();
+  return success_;
+}
+
+void PropertyWaiter::Check() {
+  DCHECK(!success_);
+  success_ = callback_.Run() == expected_value_;
+  if (success_ || base::TimeTicks::Now() - start_time_ > timeout_) {
+    timer_.Stop();
+    run_loop_.Quit();
+  }
 }
 
 }  // namespace views::test

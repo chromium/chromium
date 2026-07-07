@@ -32,10 +32,10 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 class ScopedAlwaysShowToolbar {
  public:

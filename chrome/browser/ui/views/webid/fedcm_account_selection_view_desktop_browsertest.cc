@@ -27,7 +27,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace webid {
 

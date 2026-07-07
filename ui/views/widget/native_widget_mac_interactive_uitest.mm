@@ -14,11 +14,11 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace views::test {
 

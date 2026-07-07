@@ -34,7 +34,7 @@
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "ui/views/test/views_test_utils.h"
 
 using extensions::AppWindow;
 using extensions::PlatformAppBrowserTest;

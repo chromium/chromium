@@ -39,8 +39,8 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/profiles/profile.h"

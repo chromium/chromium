@@ -73,7 +73,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_deletion_observer.h"
-#include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/widget/widget_removals_observer.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
