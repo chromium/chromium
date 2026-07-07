@@ -2562,14 +2562,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleDefaultActionVerbChanged(int virtualViewId) {
         if (isAccessibilityEnabled()) {
-            // TODO(crbug.com/460580025): Check if AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED
-            // is the right type to use here.
             AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
             if (event == null) {
                 return;
             }
             event.setSource(mView, virtualViewId);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
             requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE, virtualViewId);
         }
     }

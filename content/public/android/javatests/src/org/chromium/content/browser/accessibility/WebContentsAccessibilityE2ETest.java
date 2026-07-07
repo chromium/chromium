@@ -835,6 +835,45 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
         Assert.assertEquals("Paragraph2", endNode.getText().toString());
     }
 
+    @Test
+    @SmallTest
+    public void fireGeneratedEvent_defaultActionVerbChanged_firesContentChanged() throws Throwable {
+        // Create an HTML document with a disabled button (default action verb of NONE).
+        String html =
+                """
+                <html><body>
+                <button id="button" disabled>Click Me</button>
+                </body></html>
+                """;
+        setupTest(html, new NodeMatcherBuilder().setText("Click Me").build());
+
+        // Enable the button by removing the disabled attribute. This will change the default action
+        // verb of the button, as it is now clickable.
+        mActivityTestRule.executeJSAndGetResult(
+                "document.getElementById('button').removeAttribute('disabled');");
+
+        // Wait for TWCC event with ContentChangeType UNDEFINED to be fired as a result of the
+        // default action verb changing.
+        boolean eventReceived =
+                waitForEvent(
+                        new EventMatcherBuilder()
+                                .setEventType(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                .setContentChangeTypes(
+                                        AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED)
+                                .setSourceMatcher(
+                                        new NodeMatcherBuilder()
+                                                .setClassName("android.widget.Button")
+                                                .setText("Click Me")
+                                                .build())
+                                .build());
+        Assert.assertTrue("Service did not receive WINDOW_CONTENT_CHANGED event", eventReceived);
+
+        // Dump the accessibility tree, and verify that the button's AccessibilityNodeInfo now has
+        // actions including CLICK.
+        String treeDump = getAccessibilityHelperService().dumpWebContentsAccessibilityTree();
+        Assert.assertTrue("Tree dump should contain CLICK action", treeDump.contains("CLICK"));
+    }
+
     private static class WaitForParamsBuilder {
         private static final long DEFAULT_TIMEOUT_MS = 5000;
 
