@@ -38,7 +38,8 @@
             }
           }
         },
-        "description": "Site-specific block rules for Autofill features."
+        "description": "Site-specific block rules for Autofill features.",
+        "nodoc": true
       }
     ],
     "properties": {
@@ -88,7 +89,8 @@
           "autofillSettings": {
             "$ref": "types.ChromeSetting",
             "value": ["autofillSettings", {"$ref":"AutofillSettings"}],
-            "description": "If set, allows site-specific control over Autofill features by blocking specific data categories on matching URL patterns."
+            "description": "If set, allows site-specific control over Autofill features by blocking specific data categories on matching URL patterns.",
+            "nodoc": true
           },
           "passwordSavingEnabled": {
             "$ref": "types.ChromeSetting",
