@@ -46,11 +46,15 @@ suite('PermissionDashboardTest', function() {
     dashboard.dashboardState = state;
     await microtasksFinished();
 
-    const indicator = dashboard.shadowRoot.querySelector('#indicator-chip');
-    const request = dashboard.shadowRoot.querySelector('#request-chip');
+    const indicator =
+        dashboard.shadowRoot.querySelector<HTMLElement>('#indicator-chip');
+    const request =
+        dashboard.shadowRoot.querySelector<HTMLElement>('#request-chip');
 
     assertTrue(!!indicator);
-    assertFalse(!!request);
+    assertTrue(!!request);
+    assertTrue(indicator.hasAttribute('visible'));
+    assertFalse(request.hasAttribute('visible'));
   });
 
   test('Render only request chip', async function() {
@@ -62,11 +66,15 @@ suite('PermissionDashboardTest', function() {
     dashboard.dashboardState = state;
     await microtasksFinished();
 
-    const indicator = dashboard.shadowRoot.querySelector('#indicator-chip');
-    const request = dashboard.shadowRoot.querySelector('#request-chip');
+    const indicator =
+        dashboard.shadowRoot.querySelector<HTMLElement>('#indicator-chip');
+    const request =
+        dashboard.shadowRoot.querySelector<HTMLElement>('#request-chip');
 
-    assertFalse(!!indicator);
+    assertTrue(!!indicator);
     assertTrue(!!request);
+    assertFalse(indicator.hasAttribute('visible'));
+    assertTrue(request.hasAttribute('visible'));
 
     // Request chip should not have has-divider attribute
     assertFalse(request.hasAttribute('has-divider'));

@@ -14,6 +14,12 @@ import {getCss} from './permission_chip.css.js';
 import {getHtml} from './permission_chip.html.js';
 import {BUTTON_LEFT} from './toolbar_button.js';
 
+export interface PermissionChipElement {
+  $: {
+    message: HTMLSpanElement,
+  };
+}
+
 export class PermissionChipElement extends CrLitElement {
   static get is() {
     return 'permission-chip';
@@ -31,13 +37,15 @@ export class PermissionChipElement extends CrLitElement {
     return {
       chipState: {type: Object},
       hasDivider: {type: Boolean, attribute: 'has-divider', reflect: true},
+      isFullyCollapsed_: {type: Boolean},
     };
   }
 
   accessor chipState: PermissionChipState|null = null;
   accessor hasDivider: boolean = false;
+  protected accessor isFullyCollapsed_: boolean = true;
 
-  private isFullyCollapsed_: boolean = true;
+  private isTracking_: boolean = false;
   private trackedElementManager_: TrackedElementManager;
 
   constructor() {
@@ -47,24 +55,14 @@ export class PermissionChipElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    const id = this.id === 'request-chip' ?
-        'PermissionChipView::kPermissionRequestChipElementId' :
-        'PermissionChipView::kIndicatorChipElementId';
-    this.trackedElementManager_.startTracking(this, id, {
-      onHighlightChanged: (highlighted: boolean) => {
-        // Manually toggle the DOM attribute to bypass Lit's asynchronous update
-        // batching, ensuring the style updates synchronously.
-        // TODO(crbug.com/502598627): Re-evaluate how big the visual flash
-        // problem is, and whether we really need to manually toggle it or if we
-        // can use a reflected Lit property.
-        this.toggleAttribute('anchor-highlighted', highlighted);
-      },
-    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.trackedElementManager_.stopTracking(this);
+    if (this.isTracking_) {
+      this.trackedElementManager_.stopTracking(this);
+      this.isTracking_ = false;
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -72,11 +70,13 @@ export class PermissionChipElement extends CrLitElement {
     if (changedProperties.has('chipState')) {
       this.updateColors_();
       this.onChipStateChanged_();
+      this.updateTracking_();
     }
   }
 
   private onChipStateChanged_() {
-    if (!this.chipState) {
+    if (!this.chipState || !this.chipState.isVisible) {
+      this.isFullyCollapsed_ = true;
       return;
     }
 
@@ -105,14 +105,41 @@ export class PermissionChipElement extends CrLitElement {
       }
     };
 
-    const chipEl = this.shadowRoot.querySelector<HTMLElement>('#chip');
-    if (chipEl) {
-      chipEl.addEventListener('transitionend', fireIpc, {once: true});
-      // Fallback in case there is no CSS transition (e.g., hidden
-      // element) or the tab is backgrounded, which might delay or
-      // suppress transitionend. `ensureTransitionEndEvent` fetches the
-      // duration from the CSS.
-      ensureTransitionEndEvent(chipEl);
+    const messageEl = this.$.message;
+    messageEl.addEventListener('transitionend', fireIpc, {once: true});
+    // Fallback in case there is no CSS transition (e.g., hidden
+    // element) or the tab is backgrounded, which might delay or
+    // suppress transitionend. `ensureTransitionEndEvent` fetches the
+    // duration from the CSS.
+    ensureTransitionEndEvent(messageEl);
+  }
+
+  // Dynamically start/stop tracking based on visibility. Since the chips are
+  // permanently in the DOM to support exit animations, tracking them in
+  // connectedCallback would register them immediately upon connection. This
+  // occurs before the WebUI receives its initial sync state from C++, sending
+  // Mojo messages prematurely and breaking unit tests (like Sync Enabled)
+  // that assert 0 tracked elements before sync.
+  private updateTracking_() {
+    const shouldTrack = !!(this.chipState && this.chipState.isVisible);
+    if (shouldTrack && !this.isTracking_) {
+      const id = this.id === 'request-chip' ?
+          'PermissionChipView::kPermissionRequestChipElementId' :
+          'PermissionChipView::kIndicatorChipElementId';
+      this.trackedElementManager_.startTracking(this, id, {
+        onHighlightChanged: (highlighted: boolean) => {
+          // Manually toggle the DOM attribute to bypass Lit's asynchronous
+          // update batching, ensuring the style updates synchronously.
+          // TODO(crbug.com/502598627): Re-evaluate how big the visual flash
+          // problem is, and whether we really need to manually toggle it or if
+          // we can use a reflected Lit property.
+          this.toggleAttribute('anchor-highlighted', highlighted);
+        },
+      });
+      this.isTracking_ = true;
+    } else if (!shouldTrack && this.isTracking_) {
+      this.trackedElementManager_.stopTracking(this);
+      this.isTracking_ = false;
     }
   }
 

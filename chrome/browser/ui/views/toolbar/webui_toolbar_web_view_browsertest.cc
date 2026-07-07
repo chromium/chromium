@@ -6280,20 +6280,14 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_contents,
-                           base::StrCat({get_chip_js, " !== null && ",
-                                         get_chip_js, ".offsetHeight > 0"}))
+                           base::StrCat({get_chip_js, "?.offsetWidth > 0"}))
         .ExtractBool();
   }));
 
+  // Once the chip finishes its expand animation, it will automatically trigger
+  // the bubble to open. We do not need to manually click the chip.
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "PermissionPromptBubbleBaseView");
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      base::StringPrintf(
-          "%s?.dispatchEvent(new MouseEvent('click', "
-          "{bubbles: true, cancelable: true, view: window, button: 0}));",
-          get_chip_js.c_str())));
 
   views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(bubble_widget);

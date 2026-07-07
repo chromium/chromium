@@ -193,15 +193,21 @@ suite('PermissionChipTest', function() {
     await microtasksFinished();
 
     const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
-    assertFalse(!!chipEl);
+    assertTrue(!!chipEl);
+    const style = window.getComputedStyle(chipEl);
+    assertEquals('hidden', style.visibility);
+    assertEquals('0', style.opacity);
   });
 
   test('Render visible state', async function() {
+    chip.setAttribute('visible', '');
     chip.chipState = createBaseState();
     await microtasksFinished();
 
     const chipEl = chip.shadowRoot.querySelector<HTMLElement>('#chip');
     assertTrue(!!chipEl);
+    const style = window.getComputedStyle(chipEl);
+    assertEquals('visible', style.visibility);
     assertFalse(chipEl.hasAttribute('collapsed'));
 
     const iconEl = chip.shadowRoot.querySelector<HTMLElement>('#icon');

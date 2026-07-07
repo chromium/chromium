@@ -101,6 +101,10 @@ permission-dashboard {
   margin-inline-start: calc(5px - var(--border-radius));
 }
 
+permission-dashboard:not([visible]) {
+  display: none;
+}
+
 location-icon {
   flex-shrink: 0;
   margin: 4px;

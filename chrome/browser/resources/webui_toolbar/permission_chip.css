@@ -12,9 +12,22 @@
   /* Prevent parent flex containers from squishing the chip. The chip's minimum
    * size should be min(intrinsic width, animated max-width). */
   flex-shrink: 0;
+  interpolate-size: allow-keywords;
 
   /* The distance the divider spans. In C++: kLocationBarChipPadding + 2px. */
   --divider-overlap: calc(var(--location-bar-chip-padding) + 2px);
+  /* Matches native Views' gfx::Tween::EASE_OUT, which is defined as
+   * '1.0 - pow(1.0 - state, 2)' in ui/gfx/animation/tween.cc. This quadratic
+   * ease-out is exactly represented by a cubic-bezier curve with control
+   * points (1/3, 2/3) and (2/3, 1).
+   * Contrast this with standard CSS 'ease-out' (cubic-bezier(0, 0, 0.58, 1)),
+   * which starts with 0 velocity (slow acceleration phase). This custom curve
+   * starts at maximum velocity, providing a snappier, more responsive feel. */
+  --chip-transition-curve: cubic-bezier(0.33, 0.67, 0.67, 1);
+
+  /* Matches the C++ expand/collapse duration in ChipController. */
+  --chip-expand-duration: 350ms;
+  --chip-collapse-duration: 250ms;
 }
 
 #chip {
@@ -36,20 +49,16 @@
       var(--location-bar-height) -
       var(--location-bar-page-info-icon-vertical-padding) * 2);
   margin: 0;
-  /* TODO(crbug.com/502598627): max-width is an arbitrary magic number. If the
-   * translated string exceeds this, it will be truncated. Animating to a very
-   * large max-width breaks the easing curve. Investigate using CSS Grid
-   * 0fr->1fr transition to animate to the exact intrinsic width instead. */
-  max-width: 250px; /* Arbitrary large max-width for expanded state */
+  max-width: max-content;
   overflow: hidden;
   padding-block: var(--location-bar-chip-padding);
   padding-inline-end: calc(var(--location-bar-chip-padding) * 2);
   padding-inline-start: var(--location-bar-chip-padding);
   position: relative;
-  /* 350ms matches the C++ expand duration in PermissionDashboardController.
-     ease-out matches the native SlideAnimation's default Tween::EASE_OUT. */
-  transition: max-width 350ms ease-out,
-              padding-inline-end 350ms ease-out;
+  transition:
+      padding-inline-end var(--chip-expand-duration)
+          var(--chip-transition-curve),
+      opacity var(--chip-expand-duration) var(--chip-transition-curve);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -68,12 +77,8 @@
 
 #chip[collapsed] {
   padding-inline-end: var(--location-bar-chip-padding);
-  max-width: calc(
-      var(--location-bar-chip-icon-size) +
-      var(--location-bar-chip-padding) * 2);
-  /* 250ms matches the C++ collapse duration. */
-  transition: max-width 250ms ease-out,
-              padding-inline-end 250ms ease-out;
+  transition: padding-inline-end var(--chip-collapse-duration)
+      var(--chip-transition-curve);
 }
 
 /* An invisible overlay that mimics the native views::InkDrop highlight
@@ -121,18 +126,28 @@
   display: inline-block;
   flex-shrink: 0;
   height: var(--location-bar-chip-icon-size);
-  margin-inline-end: var(--location-bar-child-internal-spacing, 4px);
+  margin-inline-end: 0;
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;
   width: var(--location-bar-chip-icon-size);
+  transition: margin-inline-end var(--chip-expand-duration)
+      var(--chip-transition-curve);
+}
+
+#chip:not([collapsed]):has(#message[visible]) #icon {
+  margin-inline-end: var(--location-bar-child-internal-spacing, 4px);
 }
 
 #chip[collapsed] #icon {
   margin-inline-end: 0;
+  transition: margin-inline-end var(--chip-collapse-duration)
+      var(--chip-transition-curve);
 }
 
 #message {
+  display: inline-block;
+  interpolate-size: allow-keywords;
   overflow: hidden;
   /* TODO(crbug.com/502598627): Native Views uses
    * SetElideBehavior(gfx::ElideBehavior::FADE_TAIL). We currently use
@@ -140,6 +155,29 @@
    * strictly match the native fade-tail visual parity. */
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: max-content;
+  transition: max-width var(--chip-expand-duration)
+      var(--chip-transition-curve);
+}
+
+#message:not([visible]) {
+  max-width: 0;
+  transition: max-width var(--chip-collapse-duration)
+      var(--chip-transition-curve);
+}
+
+:host(:not([visible])) #chip {
+  max-width: 0;
+  opacity: 0;
+  padding-inline: 0;
+  pointer-events: none;
+  /* Hide instantly when visibility is lost. If we were animating a collapse,
+     the collapse transition to icon size already completed while visible.
+     This prevents jank when replacing one chip with another. */
+  transition: none;
+  /* Automatically hides from accessibility tree and removes from keyboard tab
+     focus. */
+  visibility: hidden;
 }
 
 :host([has-divider]) {

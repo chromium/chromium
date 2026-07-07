@@ -17,16 +17,13 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
     @pointercancel="${this.onChipPointercancel_}">
 </location-icon>
 ` : nothing}
-${this.locationBarState.lhsChipsState.permissionDashboard ?
-       html`
-  <permission-dashboard
-    .dashboardState="${
-           this.locationBarState.lhsChipsState.permissionDashboard}"
+<permission-dashboard
+    .dashboardState="${this.locationBarState.lhsChipsState.permissionDashboard}"
+    ?visible="${!!this.locationBarState.lhsChipsState.permissionDashboard}"
     @pointerenter="${this.onChipPointerenter_}"
     @pointerleave="${this.onChipPointerleave_}"
     @pointercancel="${this.onChipPointercancel_}">
-  </permission-dashboard>
-` : nothing}
+</permission-dashboard>
 ${this.locationBarState.selectedKeyword ? html`
   <selected-keyword
     .selectedKeywordState="${this.locationBarState.selectedKeyword}"

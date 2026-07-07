@@ -8,14 +8,13 @@ import type {PermissionChipElement} from './permission_chip.js';
 
 export function getHtml(this: PermissionChipElement) {
   // clang-format off
-  return (!this.chipState || !this.chipState.isVisible) ? nothing :
-      html`<!--_html_template_start_-->
+  return html`<!--_html_template_start_-->
 <button id="chip" type="button"
     role="button"
     tabindex="0"
-    ?collapsed="${this.chipState.isFullyCollapsed}"
-    aria-label="${this.chipState.accessibilityName}"
-    title="${this.chipState.tooltip}"
+    ?collapsed="${this.isFullyCollapsed_}"
+    aria-label="${this.chipState?.accessibilityName || ''}"
+    title="${this.chipState?.tooltip || ''}"
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
     @pointercancel="${this.onPointercancel_}"
@@ -25,8 +24,8 @@ export function getHtml(this: PermissionChipElement) {
     <div id="icon"
         style="mask-image: ${this.getIconUrl_()};">
     </div>` : nothing}
-  ${!this.chipState.isFullyCollapsed ? html`
-    <span id="message">${this.chipState.message}</span>` : nothing}
+  <span id="message" ?visible="${!this.isFullyCollapsed_}"
+  >${this.chipState?.message || ''}</span>
 </button>
 <!--_html_template_end_-->`;
   // clang-format on
