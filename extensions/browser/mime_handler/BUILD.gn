@@ -15,18 +15,22 @@ source_set("mime_handler") {
     "mime_handler_stream_delegate.h",
     "mime_handler_stream_manager.cc",
     "mime_handler_stream_manager.h",
+    "mime_handler_ui_util.cc",
+    "mime_handler_ui_util.h",
     "stream_info.cc",
     "stream_info.h",
   ]
   public_deps = [
     "//base",
     "//content/public/browser",
+    "//extensions/browser:browser_sources",
     "//extensions/common:mojom",
     "//mojo/public/cpp/bindings",
   ]
   deps = [
     ":stream_container",
     "//components/crash/core/common:crash_key",
+    "//extensions/common",
     "//extensions/common:common_constants",
   ]
 }

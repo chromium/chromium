@@ -24,6 +24,10 @@
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/mime_handler/mime_handler_ui_util.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -64,7 +68,7 @@ bool ShouldDisplayInNewTabPage(const Extension* extension,
 //  1. If `url` uses the chrome-extension:// scheme, returns the name of
 //     the extension identified by the URL's host.
 //  2. Otherwise, consults
-//     `extensions::ui_util::GetTopLevelMimeHandlerExtension(web_contents)`
+//     `extensions::mime_handler::GetTopLevelMimeHandlerExtension(web_contents)`
 //     to identify a generic MIME handler extension rendering the primary
 //     main frame. The MIME-handler branch only runs on platforms where
 //     the extensions/browser/mime_handler target is built (non-Android).
@@ -86,7 +90,7 @@ std::u16string GetEnabledExtensionNameForUrl(
     // URL: during navigation the location bar can show a pending URL that
     // doesn't yet reflect the committed content, so we skip the MIME-handler
     // check to avoid misidentifying the extension in that transient state.
-    extension = GetTopLevelMimeHandlerExtension(web_contents);
+    extension = mime_handler::GetTopLevelMimeHandlerExtension(web_contents);
 #endif
   }
   return extension ? base::CollapseWhitespace(
