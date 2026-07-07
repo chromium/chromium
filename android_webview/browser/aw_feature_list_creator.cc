@@ -255,9 +255,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     seed->country = seed_proto->country();
     seed->date = seed_date;
     seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
-    // Use the cached flag to gate the nonembedded low entropy source logic.
-    // This is required because entropy provider selection happens before
-    // the variations framework is fully initialized.
+    // Reading without checking for presence would result in a default value of
+    // 0, which would be indistinguishable from a valid low entropy source.
     if (seed_proto->has_low_entropy_source()) {
       nonembedded_low_entropy_source = seed_proto->low_entropy_source();
     }
