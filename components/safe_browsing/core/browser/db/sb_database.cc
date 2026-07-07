@@ -456,9 +456,11 @@ void SBDatabase::RecordFileSizeHistograms() {
 
 void SBDatabase::RecordDatabaseUpdateLatency() {
   if (!last_update_.is_null()) {
-    // Logs SafeBrowsing.V4Database.UpdateLatency
+    // Logs SafeBrowsing.V4Database.UpdateLatency or
+    // SafeBrowsing.V5Database.UpdateLatency
     base::UmaHistogramCustomTimes(
-        GetMetricName("SafeBrowsing.", "Database.UpdateLatency"),
+        GetMetricName("SafeBrowsing.", "Database.UpdateLatency",
+                      /*allow_v5_logging=*/true),
         base::Time::Now() - last_update_, kUmaMinTime, kUmaMaxTime,
         kUmaNumBuckets);
   }

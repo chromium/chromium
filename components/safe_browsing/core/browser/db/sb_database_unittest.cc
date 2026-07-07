@@ -851,6 +851,81 @@ TEST_F(SBDatabaseTest, TestRecordFileSizeHistogramsV5) {
       "SafeBrowsing.V5Database.Size.UrlSoceng_v5", 0, 1);
 }
 
+TEST_F(SBDatabaseTest, TestRecordDatabaseUpdateLatencyV5) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocalListsUseSBv5);
+  base::HistogramTester histogram_tester;
+
+  // Setup list_infos_ with a V5 store.
+  list_infos_.clear();
+  expected_identifiers_.clear();
+  expected_store_paths_.clear();
+
+  ListIdentifier malware_id(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  list_infos_.emplace_back(true, "UrlMalware", malware_id,
+                           SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  expected_identifiers_.push_back(malware_id);
+  expected_store_paths_.push_back(
+      database_dirname_.AppendASCII("UrlMalware_v5.store"));
+
+  // Do not register fake factory, let it use the default (V5Store).
+  WaitForSBDatabaseReady(CreateTaskRunner(), {});
+  ASSERT_TRUE(sb_database_);
+
+  // First update to set last_update_ and version to "version_1".
+  {
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    auto v5_response = std::make_unique<V5::HashList>();
+    v5_response->set_version("version_1");
+    sb_response->v5_response = std::move(v5_response);
+    update_map->insert({malware_id, std::move(sb_response)});
+
+    base::RunLoop run_loop;
+    sb_database_->ApplyUpdate(std::move(update_map), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Histogram should not be logged yet.
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Database.UpdateLatency", 0);
+
+  // Second update to "version_2" should log the histogram. Logged from
+  // `UpdatedStoreReady`.
+  {
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    auto v5_response = std::make_unique<V5::HashList>();
+    v5_response->set_version("version_2");
+    sb_response->v5_response = std::move(v5_response);
+    update_map->insert({malware_id, std::move(sb_response)});
+
+    base::RunLoop run_loop;
+    sb_database_->ApplyUpdate(std::move(update_map), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Histogram should be logged now.
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Database.UpdateLatency", 1);
+
+  // Third update to "version_2" (no change) should log the histogram again.
+  // Logged from `ApplyUpdate`.
+  {
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    auto v5_response = std::make_unique<V5::HashList>();
+    v5_response->set_version("version_2");
+    sb_response->v5_response = std::move(v5_response);
+    update_map->insert({malware_id, std::move(sb_response)});
+
+    base::RunLoop run_loop;
+    sb_database_->ApplyUpdate(std::move(update_map), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Histogram should be logged again (total 2).
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Database.UpdateLatency", 2);
+}
+
 TEST(SBDatabaseListInfoTest, TestV4ModeProperties) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kLocalListsUseSBv5);

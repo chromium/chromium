@@ -4381,6 +4381,18 @@ risk. -->
   <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
 </histogram>
 
+<histogram name="SafeBrowsing.V5Database.UpdateLatency" units="ms"
+    expires_after="2027-06-30">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The latency of updating the SafeBrowsing database for V5. This measures the
+    time difference between calls to update the SafeBrowsing V5 database. This
+    gets logged after every call for an update to the database, except for the
+    first one.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result{Store}_v5"
     enum="SafeBrowsingV5ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to use the Safe
