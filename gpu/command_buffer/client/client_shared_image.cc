@@ -668,6 +668,18 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
   return sii->GenUnverifiedSyncToken();
 }
 
+gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
+    std::unique_ptr<gfx::GpuFence> acquire_fence) {
+  CHECK(sii_holder_);
+  auto sii = GetSharedImageInterface();
+  if (!sii) {
+    return gpu::SyncToken();
+  }
+
+  sii->UpdateSharedImage(SyncToken(), std::move(acquire_fence), mailbox());
+  return sii->GenUnverifiedSyncToken();
+}
+
 void ClientSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

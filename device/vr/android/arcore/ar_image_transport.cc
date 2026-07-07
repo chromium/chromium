@@ -85,9 +85,12 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
 
   std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
   std::unique_ptr<gfx::GpuFence> gpu_fence = gl_fence->GetGpuFence();
-  mailbox_bridge_->WaitForClientGpuFence(*gpu_fence);
+  gpu::SyncToken sync_token =
+      camera_image_shared_buffer->shared_image->BackingWasExternallyUpdated(
+          std::move(gpu_fence));
+  mailbox_bridge_->VerifySyncToken(sync_token);
+  camera_image_shared_buffer->sync_token = sync_token;
 
-  mailbox_bridge_->GenSyncToken(&camera_image_shared_buffer->sync_token);
   DVLOG(3) << __func__ << ": camera_image_shared_buffer->sync_token="
            << camera_image_shared_buffer->sync_token.ToDebugString();
 

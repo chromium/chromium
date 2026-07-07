@@ -562,7 +562,10 @@ void AHardwareBufferImageBacking::SetClearedRect(
 
 void AHardwareBufferImageBacking::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
+  if (in_fence) {
+    gfx::GpuFenceHandle handle = in_fence->GetGpuFenceHandle().Clone();
+    write_sync_fd_ = handle.Release();
+  }
 }
 
 base::android::ScopedHardwareBufferHandle

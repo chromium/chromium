@@ -115,6 +115,15 @@ void MailboxToSurfaceBridgeImpl::GenSyncToken(gpu::SyncToken* out_sync_token) {
   gl_->GenSyncTokenCHROMIUM(out_sync_token->GetData());
 }
 
+void MailboxToSurfaceBridgeImpl::VerifySyncToken(
+    gpu::SyncToken& out_sync_token) {
+  TRACE_EVENT0("gpu", "VerifySyncToken");
+  DCHECK(IsConnected());
+
+  auto* sync_token_data = out_sync_token.GetData();
+  gl_->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
+}
+
 void MailboxToSurfaceBridgeImpl::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", "WaitSyncToken");
