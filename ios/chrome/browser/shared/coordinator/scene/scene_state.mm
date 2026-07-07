@@ -126,7 +126,7 @@
   return mainWindow;
 }
 
-- (const std::string&)sceneSessionID {
+- (std::string_view)sceneSessionID {
   return _sceneSessionID;
 }
 

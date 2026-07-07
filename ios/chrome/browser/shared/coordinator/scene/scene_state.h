@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <string>
+#import <string_view>
 
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
@@ -91,7 +91,7 @@ class SigninInProgress;
 
 // The persistent identifier for the scene session. This should be used instead
 // of -[UISceneSession persistentIdentifier].
-@property(nonatomic, readonly) const std::string& sceneSessionID;
+@property(nonatomic, readonly) std::string_view sceneSessionID;
 
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;
