@@ -10,22 +10,22 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- This stub is used by the bottom sheet custom tab, to add a handle and
+         make the custom tab rounded. -->
+    <ViewStub
+        android:id="@+id/custom_tabs_handle_view_stub"
+        android:inflatedId="@+id/custom_tabs_handle_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/custom_tabs_shadow_offset"
+        android:layout="@layout/custom_tabs_handle_view"
+        android:visibility="gone" />
+
     <org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" >
-
-        <!-- This stub is used by the bottom sheet custom tab, to add a handle and
-             make the custom tab rounded. -->
-        <ViewStub
-            android:id="@+id/custom_tabs_handle_view_stub"
-            android:inflatedId="@+id/custom_tabs_handle_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/custom_tabs_shadow_offset"
-            android:layout="@layout/custom_tabs_handle_view"
-            android:visibility="gone" />
 
         <include layout="@layout/compositor_view_holder"/>
 
