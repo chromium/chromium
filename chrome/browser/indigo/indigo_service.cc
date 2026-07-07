@@ -181,15 +181,14 @@ IndigoService::IndigoService(Profile* profile,
       indigo_extension_utils::GetManifest(),
       base::FilePath(FILE_PATH_LITERAL("indigo")));
 
-  // If component was already installed skip registering ready callback.
+  // If component was already installed, load from it immediately.
   if (component_updater::GetIndigoComponentInstallDir().has_value()) {
     OnIndigoComponentReady();
-  } else {
-    indigo_component_ready_subscription_ =
-        component_updater::RegisterIndigoComponentReadyCallback(
-            base::BindRepeating(&IndigoService::OnIndigoComponentReady,
-                                base::Unretained(this)));
   }
+  indigo_component_ready_subscription_ =
+      component_updater::RegisterIndigoComponentReadyCallback(
+          base::BindRepeating(&IndigoService::OnIndigoComponentReady,
+                              base::Unretained(this)));
 }
 
 IndigoService::~IndigoService() = default;
@@ -297,34 +296,28 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
 void IndigoService::OnIndigoComponentReady() {
   UpdateLocalEligibilityAndNotify();
 
-  const base::FilePath config_override_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          kIndigoConfigProtoSwitch);
-  const bool load_config_from_component_dir =
-      config_override_path.empty() && !config_loaded_;
+  std::optional<base::FilePath> install_dir =
+      component_updater::GetIndigoComponentInstallDir();
+  if (install_dir.has_value()) {
+    base::FilePath prompts_path =
+        install_dir->Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&LoadPromptsFromDisk, prompts_path),
+        base::BindOnce(&IndigoService::OnPromptsLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
 
-  if (!prompts_loaded_ || load_config_from_component_dir) {
-    std::optional<base::FilePath> install_dir =
-        component_updater::GetIndigoComponentInstallDir();
-    if (install_dir.has_value()) {
-      if (!prompts_loaded_) {
-        base::FilePath prompts_path =
-            install_dir->Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(&LoadPromptsFromDisk, prompts_path),
-            base::BindOnce(&IndigoService::OnPromptsLoaded,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }
-      if (load_config_from_component_dir) {
-        base::FilePath config_path =
-            install_dir->Append(FILE_PATH_LITERAL("indigo_config.bin"));
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(&LoadConfigFromDisk, config_path),
-            base::BindOnce(&IndigoService::OnConfigLoaded,
-                           weak_ptr_factory_.GetWeakPtr()));
-      }
+    const base::FilePath config_override_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kIndigoConfigProtoSwitch);
+    if (config_override_path.empty()) {
+      base::FilePath config_path =
+          install_dir->Append(FILE_PATH_LITERAL("indigo_config.bin"));
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&LoadConfigFromDisk, config_path),
+          base::BindOnce(&IndigoService::OnConfigLoaded,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }

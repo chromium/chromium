@@ -534,4 +534,85 @@ TEST_F(IndigoServiceTest, LoadConfigFromCommandLine) {
       url::Origin::Create(GURL("https://allowed1.com"))));
 }
 
+TEST_F(IndigoServiceTest, ComponentUpdateReloadsPromptsAndConfig) {
+  base::ScopedTempDir temp_dir1;
+  ASSERT_TRUE(temp_dir1.CreateUniqueTempDir());
+
+  // Create initial prompt and config in temp_dir1.
+  chrome::aix::indigo::IndigoPrompts prompts_proto1;
+  auto* prompt1 = prompts_proto1.add_prompts();
+  prompt1->set_key("v1");
+  prompt1->set_prompt("Prompt 1");
+  std::string serialized_prompts1;
+  ASSERT_TRUE(prompts_proto1.SerializeToString(&serialized_prompts1));
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir1.GetPath().Append(FILE_PATH_LITERAL("indigo_prompts.bin")),
+      serialized_prompts1));
+
+  chrome::aix::indigo::IndigoConfig config_proto1;
+  config_proto1.mutable_heuristic_config()->add_allowed_origins(
+      "https://allowed1.com");
+  std::string serialized_config1;
+  ASSERT_TRUE(config_proto1.SerializeToString(&serialized_config1));
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir1.GetPath().Append(FILE_PATH_LITERAL("indigo_config.bin")),
+      serialized_config1));
+
+  CreateService();
+
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"), temp_dir1.GetPath(),
+                        base::DictValue());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsConfigLoaded(); }));
+  if (service_->GetPrompt("v1") != "Prompt 1") {
+    base::test::TestFuture<void> prompts_loaded_future;
+    service_->SetPromptsLoadedCallbackForTesting(
+        prompts_loaded_future.GetCallback());
+    EXPECT_TRUE(prompts_loaded_future.Wait());
+  }
+
+  EXPECT_EQ(service_->GetPrompt("v1"), "Prompt 1");
+  EXPECT_TRUE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://allowed1.com"))));
+
+  // Now simulate component update with version 2.0 in a new directory.
+  base::ScopedTempDir temp_dir2;
+  ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
+
+  chrome::aix::indigo::IndigoPrompts prompts_proto2;
+  auto* prompt2 = prompts_proto2.add_prompts();
+  prompt2->set_key("v2");
+  prompt2->set_prompt("Prompt 2");
+  std::string serialized_prompts2;
+  ASSERT_TRUE(prompts_proto2.SerializeToString(&serialized_prompts2));
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir2.GetPath().Append(FILE_PATH_LITERAL("indigo_prompts.bin")),
+      serialized_prompts2));
+
+  chrome::aix::indigo::IndigoConfig config_proto2;
+  config_proto2.mutable_heuristic_config()->add_allowed_origins(
+      "https://allowed2.com");
+  std::string serialized_config2;
+  ASSERT_TRUE(config_proto2.SerializeToString(&serialized_config2));
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir2.GetPath().Append(FILE_PATH_LITERAL("indigo_config.bin")),
+      serialized_config2));
+
+  policy.ComponentReady(base::Version("2.0"), temp_dir2.GetPath(),
+                        base::DictValue());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return service_->IsOriginAllowed(
+        url::Origin::Create(GURL("https://allowed2.com")));
+  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return service_->GetPrompt("v2") == "Prompt 2"; }));
+
+  EXPECT_FALSE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://allowed1.com"))));
+  EXPECT_EQ(service_->GetPrompt("v1"), std::nullopt);
+}
+
 }  // namespace indigo
