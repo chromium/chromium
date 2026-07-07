@@ -7,23 +7,32 @@
 
 #include <string>
 
-enum DiskImageStatus {
-  DiskImageStatusFailure,
-  DiskImageStatusFalse,
-  DiskImageStatusTrue
+enum class DiskImageStatus {
+  kFailure,
+  kNotRunningFromDiskImage,
+  kRunningFromDiskImage
+};
+
+struct RunningFromDiskImageResult {
+  DiskImageStatus status;
+
+  // The BSD device name for the disk image's device, in "diskNsM" form. It is
+  // set if the status is `kRunningFromDiskImage`.
+  std::string dmg_bsd_device_name;
 };
 
 // Returns info about the application is located on a read-only filesystem of a
-// disk image. Returns false if not, or in the event of an error. If
-// dmg_bsd_device_name is present, it will be set to the BSD device name for
-// the disk image's device, in "diskNsM" form.
-DiskImageStatus IsAppRunningFromReadOnlyDiskImage(
-    std::string* dmg_bsd_device_name);
+// disk image.
+RunningFromDiskImageResult IsAppRunningFromReadOnlyDiskImage();
 
 // If the application is running from a read-only disk image, prompts the user
-// to install it to the hard drive.  If the user approves, the application
+// to install it to the hard drive.
+//
+// If the user approves, the application
 // will be installed and launched, and MaybeInstallFromDiskImage will return
-// true.  In that case, the caller must exit expeditiously.
+// true. In that case, the caller must exit expeditiously.
+//
+// Returns false if the user does not approve, or if any error occurs.
 bool MaybeInstallFromDiskImage();
 
 // Given a BSD device name of the form "diskN" or "diskNsM" as used by IOKit,
