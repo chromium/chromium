@@ -741,27 +741,25 @@ class DeferredPublicKeyCredentialPromise {
       Map<string, DeferredPublicKeyCredentialPromise> = new Map();
 
   constructor(timeoutMs: number = DEFAULT_TIMEOUT_MS) {
-    this.promise = Promise.race([
-      new Promise<PublicKeyCredential>((resolve, reject) => {
-        this.resolve = (value) => {
-          resolve(value);
-          DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
-        };
-
-        this.reject = (reason) => {
-          reject(reason);
-          DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
-        };
-      }),
-      new Promise<PublicKeyCredential>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error(`Promise timed out after ${timeoutMs}ms`));
-        }, timeoutMs);
-      }),
-    ]);
-
     // Assign a unique ID for this object.
     this.id = generateRandomId();
+
+    let timerId: ReturnType<typeof setTimeout>;
+    this.promise = Promise.race([
+      new Promise<PublicKeyCredential>((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+      }),
+      new Promise<PublicKeyCredential>((_, reject) => {
+        timerId = setTimeout(() => {
+          reject(new DOMException(
+              `Promise timed out after ${timeoutMs}ms`, 'NotAllowedError'));
+        }, timeoutMs);
+      }),
+    ]).finally(() => {
+      clearTimeout(timerId);
+      DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
+    });
 
     DeferredPublicKeyCredentialPromise.ongoingPromises.set(this.id, this);
   }
