@@ -1019,7 +1019,8 @@ message EventLatency {
         // Deprecated in favor of `total_raw_delta_pixels`.
         //
         // The absolute total raw (unpredicted) delta of all real scroll updates
-        // included in this frame (in pixels).
+        // included in this frame (in pixels). Non-negative regardless of
+        // whether the user scrolled up or down.
         optional float abs_total_raw_delta_pixels = 2 [deprecated = true];
 
         // The maximum absolute raw (unpredicted) delta out of all inertial
@@ -1028,7 +1029,8 @@ message EventLatency {
         optional float max_abs_inertial_raw_delta_pixels = 3;
 
         // The total raw (unpredicted) delta of all real scroll updates included
-        // in this frame (in pixels).
+        // in this frame (in pixels). Negative if the user scrolled down (swiped
+        // finger up). Positive if the user scrolled up (swiped finger down).
         optional float total_raw_delta_pixels = 4;
       }
       optional Real real = 1;
