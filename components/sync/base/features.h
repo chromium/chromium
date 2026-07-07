@@ -114,10 +114,6 @@ BASE_DECLARE_FEATURE(kSyncWalletVehicleRegistrations);
 // the local and account data separation behind this feature flag.
 BASE_DECLARE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries);
 
-// If enabled, avoids committing changes containing only favicon URL related
-// change.
-BASE_DECLARE_FEATURE(kSearchEngineAvoidFaviconOnlyCommits);
-
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -6765,14 +6765,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       /*expected_bucket_count=*/1);
 }
 
-class TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits
-    : public TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSearchEngineAvoidFaviconOnlyCommits};
-};
-
-TEST_F(TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits,
+TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
        ShouldNotCommitFaviconOnlyChanges) {
   // Add a local-only search engine.
   TemplateURL* local_turl = model()->Add(

@@ -713,7 +713,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
       TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       MergeInSyncTemplateURL);
   FRIEND_TEST_ALL_PREFIXES(
-      TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits,
+      TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       ShouldNotCommitFaviconOnlyChanges);
 
   friend class InstantUnitTestBase;
