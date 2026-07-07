@@ -18303,6 +18303,7 @@ from previous Chrome versions.
   <int value="1226782541"
       label="SharedHighlightingRefinedMaxContextWords:enabled"/>
   <int value="1226962257" label="SendTabToSelfGesture:enabled"/>
+  <int value="1227132914" label="DeclarativePerformanceObserver:disabled"/>
   <int value="1227397136" label="MahiSummarizeSelected:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228054141"
@@ -20051,6 +20052,7 @@ from previous Chrome versions.
   <int value="1779095819" label="BatchUploadDesktop:disabled"/>
   <int value="1779112232"
       label="MigrateEnhancedSbUserToEnhancedBundle:disabled"/>
+  <int value="1779160557" label="DeclarativePerformanceObserver:enabled"/>
   <int value="1779297415" label="SaasUsageReporting:enabled"/>
   <int value="1779530254"
       label="AccessibilityInternalsPageImprovements:disabled"/>

@@ -8238,6 +8238,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kElementCaptureOfOtherTabs)},
 #endif
 
+    {"declarative-performance-observer",
+     flag_descriptions::kDeclarativePerformanceObserverName,
+     flag_descriptions::kDeclarativePerformanceObserverDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kDeclarativePerformanceObserver)},
+
     {"device-posture", flag_descriptions::kDevicePostureName,
      flag_descriptions::kDevicePostureDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDevicePosture)},

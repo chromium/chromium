@@ -1385,6 +1385,13 @@ inline constexpr char kGetDisplayMediaConfersActivationDescription[] =
     "flag is enabled, then after the user chooses what to share, transient "
     "activation is conferred on the Web application.";
 
+inline constexpr char kDeclarativePerformanceObserverName[] =
+    "Declarative Performance Observer";
+inline constexpr char kDeclarativePerformanceObserverDescription[] =
+    "Enables the Declarative Performance Observer API, a browser-resident "
+    "telemetry system that captures and reliably reports end-to-end user "
+    "journey metrics using HTTP response headers.";
+
 inline constexpr char kDevicePostureName[] = "Device Posture API";
 inline constexpr char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
