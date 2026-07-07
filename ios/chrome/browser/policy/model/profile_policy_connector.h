@@ -55,9 +55,6 @@ class ProfilePolicyConnector {
   // Returns true if policies from chrome://policy/test are applied.
   bool IsUsingLocalTestPolicyProvider() const;
 
-  // Shuts this connector down in preparation for destruction.
-  void Shutdown();
-
   // Returns the PolicyService managed by this connector.  This is never
   // nullptr.
   policy::PolicyService* GetPolicyService() const {

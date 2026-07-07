@@ -91,8 +91,6 @@ bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
          local_test_policy_provider_->is_active();
 }
 
-void ProfilePolicyConnector::Shutdown() {}
-
 base::flat_set<std::string> ProfilePolicyConnector::GetUserAffiliationIds()
     const {
   if (!policy_store_ || !policy_store_->has_policy()) {

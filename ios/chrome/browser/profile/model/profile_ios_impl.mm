@@ -333,11 +333,6 @@ ProfileIOSImpl::~ProfileIOSImpl() {
     pref_proxy_config_tracker_->DetachFromPrefService();
   }
 
-  // Here, (1) the profile services may depend on `policy_connector_` and
-  // `user_cloud_policy_manager_`, and (2) `policy_connector_` depends on
-  // `user_cloud_policy_manager_`. The dependencies have to be shut down
-  // backward.
-  policy_connector_->Shutdown();
   if (user_cloud_policy_manager_) {
     user_cloud_policy_manager_->Shutdown();
   }
