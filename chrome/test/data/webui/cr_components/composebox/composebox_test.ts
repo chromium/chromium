@@ -444,6 +444,34 @@ suite('ComposeboxTest', () => {
     // Restore
     composebox.deleteFile = originalDeleteFile;
   });
+
+  test('UpdateAutoSuggestedTabContext_NullDoesNotDeleteIfSidePanel', () => {
+    loadTimeData.overrideValues({webUIOmniboxAskGAboutThisPageEnabled: false});
+    composebox.isSidePanel = true;
+    const token = {high: 0n, low: 1n} as any;
+    const mockFile =
+        new ComposeboxFile(token, 'Auto Tab', 'tab', InputType.kBrowserTab, {
+          isDeletable: true,
+          tabId: 1,
+          url: 'http://example.com',
+        });
+    composebox.setAutomaticActiveTabForTesting(mockFile);
+
+    let deleteFileCalled = false;
+    const originalDeleteFile = composebox.deleteFile;
+    composebox.deleteFile = (_uuid) => {
+      deleteFileCalled = true;
+      return null;
+    };
+
+    // Call with null, should NOT delete because isSidePanel is true.
+    composebox.updateAutoSuggestedTabContextForTesting(null);
+    assertFalse(deleteFileCalled);
+
+    // Restore
+    composebox.isSidePanel = false;
+    composebox.deleteFile = originalDeleteFile;
+  });
 });
 
 
