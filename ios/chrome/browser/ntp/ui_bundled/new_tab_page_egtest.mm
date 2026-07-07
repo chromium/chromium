@@ -373,6 +373,8 @@ enum class QuickActionsVisibility {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self validateNTPURL:expectedURL];
+
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"NTPLocation"];
 }
 
 // Verifies opening a new tab from the New Tab button on the toolbar with the
