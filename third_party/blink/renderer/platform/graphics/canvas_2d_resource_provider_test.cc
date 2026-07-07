@@ -384,53 +384,6 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
-TEST_F(Canvas2DResourceProviderTest, FlushForImage) {
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto src_provider = Canvas2DResourceProvider::CreateWithClear(
-      gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      RasterMode::kGPU, gpu::SharedImageUsageSet());
-
-  auto dst_provider = Canvas2DResourceProvider::CreateWithClear(
-      gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      RasterMode::kGPU, gpu::SharedImageUsageSet());
-
-  MemoryManagedPaintCanvas& dst_canvas = dst_provider->GetCanvasForTesting();
-
-  PaintImage paint_image =
-      src_provider->Snapshot()->PaintImageForCurrentFrame();
-  PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
-
-  EXPECT_FALSE(dst_canvas.IsCachingImage(src_content_id));
-
-  dst_canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
-
-  EXPECT_TRUE(dst_canvas.IsCachingImage(src_content_id));
-
-  // Modify the canvas to trigger OnFlushForImage
-  src_provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  // So that all the cached draws are executed
-  src_provider->RasterRecord(src_provider->Recorder().ReleaseMainRecording());
-  src_provider->ProduceCanvasResource();
-
-  // The paint canvas may have moved
-  MemoryManagedPaintCanvas& new_dst_canvas =
-      dst_provider->GetCanvasForTesting();
-
-  // TODO(aaronhk): The resource on the src_provider should be the same before
-  // and after the draw. Something about the program flow within
-  // this testing framework (but not in layout tests) makes a reference to
-  // the src_resource stick around throughout the FlushForImage call so the
-  // src_resource changes in this test. Things work as expected for actual
-  // browser code like canvas_to_canvas_draw.html.
-
-  // OnFlushForImage should detect the modification of the source resource and
-  // clear the cache of the destination canvas to avoid a copy-on-write.
-  EXPECT_FALSE(new_dst_canvas.IsCachingImage(src_content_id));
-}
-
 TEST_F(Canvas2DResourceProviderTest, ImageCacheOnContextLost) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 

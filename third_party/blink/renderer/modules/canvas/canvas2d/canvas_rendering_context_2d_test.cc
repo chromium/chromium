@@ -3836,4 +3836,47 @@ TEST_P(CanvasRenderingContext2DTest, AccessibilityCanvasAnnotation_MaxWidth) {
             "Hello World");
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated, FlushForImage) {
+  CreateContext(kNonOpaque);
+  CanvasElement().SetSize(gfx::Size(10, 10));
+  CHECK(Context2D()->InitializeResourceProvider());
+
+  auto* src_canvas_element =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("d")));
+  src_canvas_element->SetSize(gfx::Size(10, 10));
+  CreateContext(
+      kNonOpaque, kNormalLatency,
+      CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+      src_canvas_element);
+  auto* src_context = static_cast<CanvasRenderingContext2D*>(
+      src_canvas_element->RenderingContext());
+  CHECK(src_context->InitializeResourceProvider());
+
+  src_context->fillRect(0, 0, 10, 10);
+
+  PaintImage paint_image = src_context->GetSharedImageProvider()
+                               ->Snapshot()
+                               ->PaintImageForCurrentFrame();
+  PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
+
+  MemoryManagedPaintCanvas& dst_canvas = const_cast<MemoryManagedPaintCanvas&>(
+      Context2D()->Recorder()->getRecordingCanvas());
+  EXPECT_FALSE(dst_canvas.IsCachingImage(src_content_id));
+
+  dst_canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
+  EXPECT_TRUE(dst_canvas.IsCachingImage(src_content_id));
+
+  // Modify the source context to trigger OnFlushForImage
+  src_context->fillRect(0, 0, 1, 1);
+  src_context->FlushCanvas(FlushReason::kOther);
+
+  MemoryManagedPaintCanvas& new_dst_canvas =
+      const_cast<MemoryManagedPaintCanvas&>(
+          Context2D()->Recorder()->getRecordingCanvas());
+
+  // OnFlushForImage should detect the modification of the source resource and
+  // clear the cache of the destination canvas to avoid a copy-on-write.
+  EXPECT_FALSE(new_dst_canvas.IsCachingImage(src_content_id));
+}
+
 }  // namespace blink
