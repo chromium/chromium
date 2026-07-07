@@ -140,6 +140,7 @@ generate_library_loader("pipewire_loader") {
     "pw_properties_new",
     "pw_stream_new",
     "pw_stream_destroy",
+    "pw_stream_disconnect",
     "pw_stream_add_listener",
     "pw_stream_connect",
     "pw_stream_state_as_string",

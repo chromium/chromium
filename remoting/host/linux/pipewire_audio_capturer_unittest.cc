@@ -4,6 +4,11 @@
 
 #include "remoting/host/linux/pipewire_audio_capturer.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
+#include "base/test/task_environment.h"
+#include "remoting/proto/audio.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -16,6 +21,25 @@ TEST(PipewireAudioCapturerTest, Create) {
     EXPECT_TRUE(capturer);
   } else {
     EXPECT_FALSE(capturer);
+  }
+}
+
+// Verifies that a capturer can be started and immediately torn down without
+// crashing. The PipeWire stream uses a real-time data thread, so the
+// destruction sequence must ensure that thread has drained before stream
+// resources owned by the capturer are released.
+TEST(PipewireAudioCapturerTest, StartAndDestroy) {
+  if (!PipewireAudioCapturer::IsSupported()) {
+    GTEST_SKIP() << "PipeWire is not available in this environment.";
+  }
+
+  base::test::TaskEnvironment task_environment;
+  for (int i = 0; i < 5; ++i) {
+    auto capturer = PipewireAudioCapturer::Create();
+    ASSERT_TRUE(capturer);
+    capturer->Start(
+        base::BindRepeating([](std::unique_ptr<AudioPacket> packet) {}));
+    capturer.reset();
   }
 }
 

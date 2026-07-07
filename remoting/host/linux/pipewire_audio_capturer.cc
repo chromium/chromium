@@ -70,6 +70,12 @@ PipewireAudioCapturer::Core::~Core() {
   pw_->pw_thread_loop_stop(pw_main_loop_.get());
   {
     ScopedThreadLoopLock lock(pw_main_loop_.get());
+    // Disconnect first to ensure the real-time data thread has drained any
+    // in-flight process callback before `pw_stream_` is cleared and other
+    // members of this object are destroyed.
+    if (pw_stream_) {
+      pw_->pw_stream_disconnect(pw_stream_.get());
+    }
     pw_stream_ = nullptr;
     pw_core_ = nullptr;
     pw_context_ = nullptr;
