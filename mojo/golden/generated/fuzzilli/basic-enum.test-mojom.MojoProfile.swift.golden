@@ -17,9 +17,6 @@ private static let mojoPrefix = "golden."
 ///
 extension ILType {
     // Primary
-    fileprivate static let jsPrimary: ILType = .object(
-        ofGroup: "golden.Primary",
-        withProperties: ["$interfaceName"])
     fileprivate static let jsPrimaryRemote: ILType = .object(
         ofGroup: "golden.PrimaryRemote",
         withProperties: ["$"],
@@ -29,16 +26,13 @@ extension ILType {
         ])
     fileprivate static let jsPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
-        withMethods: ["close", "isBound"])
+        withMethods: ["close", "isBound", "associateAndPassReceiver"])
+    fileprivate static let jsPrimaryPendingReceiver: ILType = .object(
+        ofGroup: "golden.PrimaryPendingReceiver")
 }
-extension ObjectGroup {
-    fileprivate static let primary = ObjectGroup(
-        name: "golden.Primary",
-        instanceType: .jsPrimary,
-        properties: ["$interfaceName": .string],
-        methods: [:]
-    )
 
+extension ObjectGroup {
+    // Primary
     fileprivate static let primaryRemote = ObjectGroup(
         name: "golden.PrimaryRemote",
         instanceType: .jsPrimaryRemote,
@@ -59,8 +53,16 @@ extension ObjectGroup {
         properties: [:],
         methods: [
             "close": [] => .undefined,
-            "isBound": [] => .boolean
+            "isBound": [] => .boolean,
+            "associateAndPassReceiver": [] => .jsPrimaryPendingReceiver,
         ]
+    )
+
+    fileprivate static let primaryPendingReceiver = ObjectGroup(
+        name: "golden.PrimaryPendingReceiver",
+        instanceType: .jsPrimaryPendingReceiver,
+        properties: [:],
+        methods: [:]
     )
 }
 
@@ -83,7 +85,6 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     var targetVar = b.findVariable {
         let type = b.type(of: $0)
         return isTargetObject(type: type) && !type.methods.isEmpty
-            && type.group != "golden.Primary"
     }
 
     // If we can't find a Mojo object in scope, create the Primary remote
@@ -120,7 +121,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// the Singleton pattern, in `codePrefix`. This method ensures: (1) `getRemote`
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
-    "getOrCreatePrimaryRemote": .function([] => jsPrimaryRemote),
+    "getOrCreatePrimaryRemote": .function([] => .jsPrimaryRemote),
     "golden.Primary": .jsPrimary,
 ]
 
@@ -174,9 +175,9 @@ let mojoPrimaryProfile = Profile(
     disabledMutators: v8Profile.disabledMutators,
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
     additionalObjectGroups: [
-        .primary,
         .primaryRemote,
         .primaryRemoteWrapper,
+        .primaryPendingReceiver,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

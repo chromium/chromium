@@ -14,7 +14,6 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     var targetVar = b.findVariable {
         let type = b.type(of: $0)
         return isTargetObject(type: type) && !type.methods.isEmpty
-            && type.group != "{{primary|name_with_namespace}}"
     }
 
     // If we can't find a Mojo object in scope, create the {{primary.name}} remote
@@ -45,3 +44,37 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
         b.type(of: obj).randomProperty() ?? b.randomCustomPropertyName()
     b.getProperty(propertyName, of: obj)
 }
+
+{%- for receiver in interface_receivers %}
+    {%- if receiver.methods %}
+
+/// Generates a call to add a callback to the {{receiver.name}}CallbackRouter.
+///
+/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
+/// then tells Fuzzilli to populate the callback body with five random expressions.
+private let Mojo{{receiver.name}}RouterListenerGenerator = CodeGenerator(
+    "Mojo{{receiver.name}}RouterListenerGenerator",
+    inputs: .required(.js{{receiver.name}}CallbackRouter)
+) { b, router in
+    guard
+        let eventName = ILType.js{{receiver.name}}CallbackRouter.properties
+            .subtracting(["$"])
+            .randomElement()
+    else {
+        return
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router)
+    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
+        if probability(0.2) {
+            b.buildIf(args[0]) {
+                let wrapper = b.getProperty("$", of: args[0])
+                b.callMethod("close", on: wrapper, withArgs: [])
+            }
+        }
+        b.build(n: 5)
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+}
+    {%- endif %}
+{%- endfor %}

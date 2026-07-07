@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  SendObserver(bool param, pending_associated_remote<ObserverOne> remote) => (string result);
+  SendDelegateTwo(pending_associated_receiver<DelegateTwo> remote, int32 param);
+  GetDelegateOne() => (pending_associated_remote<DelegateOne> delegate);
+  GetObserverTwo(float param) => (pending_associated_receiver<ObserverTwo> observer, bool flag);
+};
+
+interface ObserverOne {
+  SendDelegateTwo(pending_associated_remote<DelegateOne> remote) => (bool result);
+};
+
+interface ObserverTwo {
+};
+
+interface DelegateOne {
+  Method(int32 param);
+};
+
+interface DelegateTwo {
+};

@@ -1,36 +1,63 @@
 extension ILType {
-    // {{primary.name}}
-    fileprivate static let js{{primary.name}}: ILType = .object(
-        ofGroup: "{{primary|name_with_namespace}}",
-        withProperties: ["$interfaceName"])
-    fileprivate static let {{primary|format_il_type}}: ILType = .object(
-        ofGroup: "{{primary|name_with_namespace}}Remote",
+{%- for remote in interface_remotes %}
+    // {{remote.name}}
+    fileprivate static let {{remote|format_il_type}}: ILType = .object(
+        ofGroup: "{{remote|name_with_namespace}}Remote",
         withProperties: ["$"],
         withMethods: [
-            {%- for method in primary.methods %}
+            {%- for method in remote.methods %}
             "{{method.name}}",
             {%- endfor %}
         ])
-    fileprivate static let {{primary|format_il_type}}Wrapper: ILType = .object(
-        ofGroup: "{{primary|name_with_namespace}}RemoteWrapper",
-        withMethods: ["close", "isBound"])
+    fileprivate static let {{remote|format_il_type}}Wrapper: ILType = .object(
+        ofGroup: "{{remote|name_with_namespace}}RemoteWrapper",
+        withMethods: ["close", "isBound", "associateAndPassReceiver"])
+    fileprivate static let js{{remote.name}}PendingReceiver: ILType = .object(
+        ofGroup: "{{remote|name_with_namespace}}PendingReceiver")
+{% endfor -%}
+{%- for receiver in interface_receivers %}
+    // {{receiver.name}}
+    fileprivate static let js{{receiver.name}}CallbackRouter: ILType = .object(
+        ofGroup: "{{receiver|name_with_namespace}}CallbackRouter",
+        withProperties: [
+            "$",
+            {%- for method in receiver.methods %}
+            "{{method.name}}",
+            {%- endfor %}
+        ])
+
+    {#- TODO(crbug.com/522372048): add handling for non-associated interfaces #}
+    fileprivate static let js{{receiver.name}}CallbackRouterReceiverHelper: ILType = .object(
+        ofGroup: "{{receiver|name_with_namespace}}CallbackRouterReceiverHelper",
+        withMethods: ["associateAndPassRemote", "closeBindings"])
+    fileprivate static let {{receiver|format_il_type}}: ILType = .object(
+        ofGroup: "{{receiver|name_with_namespace}}Remote",
+        withProperties: ["$"])
+    fileprivate static let {{receiver|format_il_type}}Wrapper: ILType = .object(
+        ofGroup: "{{receiver|name_with_namespace}}RemoteWrapper",
+        withMethods: ["close", "isBound", "associateAndPassReceiver"])
+    fileprivate static let js{{receiver.name}}PendingReceiver: ILType = .object(
+        ofGroup: "{{receiver|name_with_namespace}}PendingReceiver")
+
+    {%- for method in receiver.methods %}
+    fileprivate static let js{{method|callback_receiver_name}}: ILType = .object(
+        ofGroup: "{{method|callback_receiver_name}}",
+        withMethods: ["addListener"])
+    {%- endfor %}
+{% endfor -%}
 }
 
-{#- TODO(crbug.com/522372048): Include namespace in name to avoid collisions #}
+{# TODO(crbug.com/522372048): Include namespace in name to avoid collisions -#}
 extension ObjectGroup {
-    fileprivate static let {{primary.name|to_camel(True)}} = ObjectGroup(
-        name: "{{primary|name_with_namespace}}",
-        instanceType: .js{{primary.name}},
-        properties: ["$interfaceName": .string],
-        methods: [:]
-    )
-
-    fileprivate static let {{primary.name|to_camel(True)}}Remote = ObjectGroup(
-        name: "{{primary|name_with_namespace}}Remote",
-        instanceType: .{{primary|format_il_type}},
-        properties: ["$": .{{primary|format_il_type}}Wrapper],
+{%- for remote in interface_remotes %}
+    // {{remote.name}}
+    fileprivate static let {{remote.name|to_camel(True)}}Remote = ObjectGroup(
+        name: "{{remote|name_with_namespace}}Remote",
+        instanceType: .{{remote|format_il_type}},
+        properties: ["$": .{{remote|format_il_type}}Wrapper],
+        {%- if remote.methods %}
         methods: [
-        {%- for method in primary.methods %}
+        {%- for method in remote.methods %}
             "{{method.name}}": [
             {%- for parameter in method.parameters %}
                 .plain(.{{parameter.kind|format_il_type}}),
@@ -45,18 +72,99 @@ extension ObjectGroup {
                 .jsPromise
             {%- else -%}
                 .undefined
-            {%- endif -%},
+            {%- endif %},
         {%- endfor %}
         ]
+        {%- else %}
+        methods: [:]
+        {%- endif %}
     )
 
-    fileprivate static let {{primary.name|to_camel(True)}}RemoteWrapper = ObjectGroup(
-        name: "{{primary|name_with_namespace}}RemoteWrapper",
-        instanceType: .{{primary|format_il_type}}Wrapper,
+    fileprivate static let {{remote.name|to_camel(True)}}RemoteWrapper = ObjectGroup(
+        name: "{{remote|name_with_namespace}}RemoteWrapper",
+        instanceType: .{{remote|format_il_type}}Wrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
-            "isBound": [] => .boolean
+            "isBound": [] => .boolean,
+            "associateAndPassReceiver": [] => .js{{remote.name}}PendingReceiver,
         ]
     )
+
+    fileprivate static let {{remote.name|to_camel(True)}}PendingReceiver = ObjectGroup(
+        name: "{{remote|name_with_namespace}}PendingReceiver",
+        instanceType: .js{{remote.name}}PendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+{% endfor -%}
+{%- for receiver in interface_receivers %}
+    // {{receiver.name}}
+    fileprivate static let {{receiver.name|to_camel(True)}}CallbackRouter = ObjectGroup(
+        name: "{{receiver|name_with_namespace}}CallbackRouter",
+        instanceType: .js{{receiver.name}}CallbackRouter,
+        properties: [
+            "$": .js{{receiver.name}}CallbackRouterReceiverHelper,
+            {%- for method in receiver.methods %}
+            "{{method.name}}": .js{{method|callback_receiver_name}},
+            {%- endfor %}
+        ],
+        methods: [:]
+    )
+
+    fileprivate static let {{receiver.name|to_camel(True)}}CallbackRouterReceiverHelper = ObjectGroup(
+        name: "{{receiver|name_with_namespace}}CallbackRouterReceiverHelper",
+        instanceType: .js{{receiver.name}}CallbackRouterReceiverHelper,
+        properties: [:],
+        methods: [
+            "associateAndPassRemote": [] => .{{receiver|format_il_type}},
+            "closeBindings": [] => .undefined,
+        ]
+    )
+
+    {%- for method in receiver.methods %}
+
+    fileprivate static let {{(method|callback_receiver_name)|to_camel(True)}} = ObjectGroup(
+        name: "{{method|callback_receiver_name}}",
+        instanceType: .js{{method|callback_receiver_name}},
+        properties: [:],
+        methods: [
+            "addListener": [
+                .plain(
+                    .function(
+                        [
+                        {%- for parameter in method.parameters %}
+                            .plain(.{{parameter.kind|format_il_type}}),
+                        {%- endfor %}
+                        ] => .undefined))
+            ] => .integer,
+        ])
+    {%- endfor %}
+
+    fileprivate static let {{receiver.name|to_camel(True)}}Remote = ObjectGroup(
+        name: "{{receiver|name_with_namespace}}Remote",
+        instanceType: .{{receiver|format_il_type}},
+        properties: ["$": .{{receiver|format_il_type}}Wrapper],
+        methods: [:]
+    )
+
+    fileprivate static let {{receiver.name|to_camel(True)}}RemoteWrapper = ObjectGroup(
+        name: "{{receiver|name_with_namespace}}RemoteWrapper",
+        instanceType: .{{receiver|format_il_type}}Wrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+            {#- TODO(crbug.com/532195391): Investigate associateAndPassReceiver impact on correctness #}
+            "associateAndPassReceiver": [] => .js{{receiver.name}}PendingReceiver,
+        ]
+    )
+
+    fileprivate static let {{receiver.name|to_camel(True)}}PendingReceiver = ObjectGroup(
+        name: "{{receiver|name_with_namespace}}PendingReceiver",
+        instanceType: .js{{receiver.name}}PendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+{% endfor -%}
 }

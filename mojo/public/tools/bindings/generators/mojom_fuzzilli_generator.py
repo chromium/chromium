@@ -26,14 +26,22 @@ PRIMITIVES_MAPPING = {
     mojom.STRING: "string",
 }
 
+
 class Generator(generator.Generator):
 
   def __init__(self, *args, **kwargs):
     super(Generator, self).__init__(*args, **kwargs)
+
+    # The primary interface is the first interface that the renderer requests
+    # from the browser. All other interfaces, which will be bound using the
+    # primary interface, are considered secondary interfaces
     self.primary_interface = None
+    self.interface_remotes = {}
+    self.interface_receivers = {}
 
   def GetFilters(self):
     return {
+        "callback_receiver_name": self._FormatCallbackReceiverName,
         "format_il_type": self._ILTypeName,
         "name_with_namespace": self._NameWithNamespace,
         "namespace_as_array": self._NamespaceAsArray,
@@ -48,7 +56,63 @@ class Generator(generator.Generator):
     # Stylize first to get JS names (camelCase for fields/methods)
     self.module.Stylize(JavaScriptStylizer())
 
-    return {"module": self.module, "primary": self.primary_interface}
+    self._CollectInterfaceAndTypes(self.primary_interface, is_in_js=True)
+
+    return {
+        "module": self.module,
+        "primary": self.primary_interface,
+        "interface_remotes": list(self.interface_remotes.values()),
+        "interface_receivers": list(self.interface_receivers.values()),
+    }
+
+  def _CollectInterfaceAndTypes(self, kind, is_in_js):
+    if mojom.IsAnyInterfaceKind(kind):
+      self._CollectInterface(kind, is_in_js)
+
+  # Marks the interface as a remote or receiver depending on which "side"
+  # (JS or browser) the interface is used from. The `is_in_js` parameter
+  # tracks whether the current context is in the JS side and alternates
+  # accordingly
+  def _CollectInterface(self, kind, is_in_js):
+    is_pending_remote = self._IsAnyPendingRemoteKind(kind)
+    is_pending_receiver = self._IsAnyPendingReceiverKind(kind)
+
+    interface = None
+    if is_pending_remote or is_pending_receiver:
+      # TODO(crbug.com/522372048): add handling for non-associated interfaces
+      assert self._IsPendingAssociatedKind, (
+          "Only pending associated interfaces are supported.")
+      interface = kind.kind
+    else:
+      interface = kind
+
+    name = self._FuzzilliName(interface)
+    if name in self.interface_remotes or name in self.interface_receivers:
+      return
+
+    if is_pending_remote or is_pending_receiver:
+      if is_pending_remote == is_in_js:
+        # Either (1) is pending remote used in JS side OR
+        #        (2) is pending receiver used in browser side
+        # In either case, JS side keeps a receiver
+        self.interface_receivers[name] = interface
+      else:
+        # Either (1) is pending remote used in browser side OR
+        #        (2) is pending receiver used in JS side
+        # In either case, JS side keeps a remote
+        self.interface_remotes[name] = interface
+      is_in_js = not is_in_js  # interface is used from other side
+    else:
+      self.interface_remotes[name] = interface
+
+    for method in interface.methods:
+      for param in method.parameters:
+        self._CollectInterfaceAndTypes(param.kind, is_in_js)
+
+      if not method.response_parameters:
+        continue
+      for param in method.response_parameters:
+        self._CollectInterfaceAndTypes(param.kind, not is_in_js)
 
   def _FuzzilliName(self, kind):
     name = []
@@ -68,6 +132,12 @@ class Generator(generator.Generator):
 
     if mojom.IsInterfaceKind(kind):
       return f"js{self._FuzzilliName(kind)}Remote"
+
+    if self._IsAnyPendingRemoteKind(kind):
+      return f"js{self._FuzzilliName(kind.kind)}Remote"
+
+    if self._IsAnyPendingReceiverKind(kind):
+      return f"js{self._FuzzilliName(kind.kind)}PendingReceiver"
 
     if mojom.IsArrayKind(kind):
       return f"js{self._FuzzilliName(kind.kind)}Array"
@@ -93,6 +163,22 @@ class Generator(generator.Generator):
 
     file_name = "%s.MojoProfile.swift" % self.module.path
     self.WriteWithComment(self._GenerateFuzzilliModule(), file_name)
+
+  def _IsPendingAssociatedKind(self, kind):
+    return mojom.IsPendingAssociatedRemoteKind(
+        kind) or mojom.IsPendingAssociatedReceiverKind(kind)
+
+  def _IsAnyPendingRemoteKind(self, kind):
+    return mojom.IsPendingRemoteKind(
+        kind) or mojom.IsPendingAssociatedRemoteKind(kind)
+
+  def _IsAnyPendingReceiverKind(self, kind):
+    return mojom.IsPendingReceiverKind(
+        kind) or mojom.IsPendingAssociatedReceiverKind(kind)
+
+  def _FormatCallbackReceiverName(self, method):
+    return (f"{method.interface.name}"
+            f"{generator.ToCamel(method.name)}CallbackReceiver")
 
   def _NameWithNamespace(self, kind):
     parent_suffix = kind.parent_kind.name if kind.parent_kind else ""

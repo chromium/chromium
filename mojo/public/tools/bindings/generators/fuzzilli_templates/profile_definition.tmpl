@@ -3,8 +3,12 @@ private let mojoBuiltins: [String: ILType] = [
     /// the Singleton pattern, in `codePrefix`. This method ensures: (1) `getRemote`
     /// is only called once, and (2) the remote is saved to a global variable so it
     /// can be closed at the end of the program.
-    "getOrCreatePrimaryRemote": .function([] => {{primary|format_il_type}}),
+    "getOrCreatePrimaryRemote": .function([] => .{{primary|format_il_type}}),
     "{{primary|name_with_namespace}}": .js{{primary.name}},
+{%- for receiver in interface_receivers %}
+    "{{receiver|name_with_namespace}}CallbackRouter":
+       .constructor([] => .js{{receiver.name}}CallbackRouter),
+{%- endfor %}
 ]
 
 private let keepGenerators = [
@@ -51,15 +55,32 @@ let mojo{{primary.name}}Profile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
+{%- for receiver in interface_receivers %}
+    {%- if receiver.methods %}
+        (Mojo{{receiver.name}}RouterListenerGenerator, 5000),
+    {%- endif %}
+{%- endfor %}
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
     disabledMutators: v8Profile.disabledMutators,
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
     additionalObjectGroups: [
-        .{{primary.name|to_camel(True)}},
-        .{{primary.name|to_camel(True)}}Remote,
-        .{{primary.name|to_camel(True)}}RemoteWrapper,
+{%- for remote in interface_remotes %}
+        .{{remote.name|to_camel(True)}}Remote,
+        .{{remote.name|to_camel(True)}}RemoteWrapper,
+        .{{remote.name|to_camel(True)}}PendingReceiver,
+{%- endfor %}
+{%- for receiver in interface_receivers %}
+        .{{receiver.name|to_camel(True)}}CallbackRouter,
+        .{{receiver.name|to_camel(True)}}CallbackRouterReceiverHelper,
+        .{{receiver.name|to_camel(True)}}Remote,
+        .{{receiver.name|to_camel(True)}}RemoteWrapper,
+        .{{receiver.name|to_camel(True)}}PendingReceiver,
+        {%- for method in receiver.methods %}
+        .{{(method|callback_receiver_name)|to_camel(True)}},
+        {%- endfor %}
+{%- endfor %}
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,
