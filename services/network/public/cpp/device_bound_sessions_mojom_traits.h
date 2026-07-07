@@ -400,6 +400,15 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case kAttestationKeyGenerationError:
         return network::mojom::DeviceBoundSessionError::
             kAttestationKeyGenerationError;
+      case kInvalidPreProvisionedKeyInitiatorMissing:
+        return network::mojom::DeviceBoundSessionError::
+            kInvalidPreProvisionedKeyInitiatorMissing;
+      case kPreProvisionedKeyAccessNotGranted:
+        return network::mojom::DeviceBoundSessionError::
+            kPreProvisionedKeyAccessNotGranted;
+      case kPreProvisionedKeyNotFound:
+        return network::mojom::DeviceBoundSessionError::
+            kPreProvisionedKeyNotFound;
     }
   }
 
@@ -584,6 +593,14 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case network::mojom::DeviceBoundSessionError::
           kAttestationKeyGenerationError:
         return kAttestationKeyGenerationError;
+      case network::mojom::DeviceBoundSessionError::
+          kInvalidPreProvisionedKeyInitiatorMissing:
+        return kInvalidPreProvisionedKeyInitiatorMissing;
+      case network::mojom::DeviceBoundSessionError::
+          kPreProvisionedKeyAccessNotGranted:
+        return kPreProvisionedKeyAccessNotGranted;
+      case network::mojom::DeviceBoundSessionError::kPreProvisionedKeyNotFound:
+        return kPreProvisionedKeyNotFound;
     }
     NOTREACHED();
   }

@@ -610,6 +610,9 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
     case kCrossOriginRegistrationSiteNotIncluded:
+    case kInvalidPreProvisionedKeyInitiatorMissing:
+    case kPreProvisionedKeyAccessNotGranted:
+    case kPreProvisionedKeyNotFound:
       NOTREACHED();
   }
 

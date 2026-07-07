@@ -3292,6 +3292,9 @@ shown properly on the user-facing crash UI.
   <int value="82" label="Transient signing error"/>
   <int value="83" label="Cross-origin registration site not included"/>
   <int value="84" label="Attestation key generation error"/>
+  <int value="85" label="Pre-provisioned key - initiator missing"/>
+  <int value="86" label="Pre-provisioned key access not granted"/>
+  <int value="87" label="Pre-provisioned key not found"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

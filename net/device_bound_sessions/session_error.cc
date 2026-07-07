@@ -97,6 +97,9 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
     case kCrossOriginRegistrationSiteNotIncluded:
+    case kInvalidPreProvisionedKeyInitiatorMissing:
+    case kPreProvisionedKeyAccessNotGranted:
+    case kPreProvisionedKeyNotFound:
       NOTREACHED();
   }
 }
@@ -177,6 +180,9 @@ bool SessionError::IsServerError() const {
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
     case kCrossOriginRegistrationSiteNotIncluded:
+    case kInvalidPreProvisionedKeyInitiatorMissing:
+    case kPreProvisionedKeyAccessNotGranted:
+    case kPreProvisionedKeyNotFound:
       NOTREACHED();
   }
 }
@@ -269,6 +275,9 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
     case kCrossOriginRegistrationSiteNotIncluded:
+    case kInvalidPreProvisionedKeyInitiatorMissing:
+    case kPreProvisionedKeyAccessNotGranted:
+    case kPreProvisionedKeyNotFound:
       NOTREACHED();
   }
 }
