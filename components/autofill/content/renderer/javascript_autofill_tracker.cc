@@ -75,13 +75,36 @@ void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
   });
 
   if (!timer_.IsRunning()) {
-    // Safe because `timer_` is owned by `this`. Destructing it cancels the
-    // task.
     timer_.Start(
         FROM_HERE, kJsAutofillMaxTimeGap,
         base::BindOnce(&JavaScriptAutofillTracker::DetectJavaScriptAutofill,
+                       // Safe because `timer_` is owned by `this`. Destructing
+                       // it cancels the task.
                        base::Unretained(this)));
   }
+}
+
+void JavaScriptAutofillTracker::OnWillAutofillForm() {
+  // It is very unlikely to happen, but it could still happen that this timer
+  // start cancels a timer start done by `OnJavaScriptChangedValue()` if the
+  // user somehow manages to trigger both JS autofill and browser autofill at
+  // the same time.
+  // This is however still better than only starting the timer if it is not
+  // running, because otherwise refills (which are browser autofill operations
+  // fired very shortly after a previous one) could miss the timer and trigger a
+  // false positive.
+  timer_.Start(
+      FROM_HERE, kJsAutofillMaxTimeGap,
+      base::BindOnce(
+          // Autofill modifies multiple fields simultaneously, which can trigger
+          // multiple focus/blur/valuechange events, possibly leading to
+          // multiple JS modifications (formatting, clearing, etc.). This
+          // ensures that `DetectJavaScriptAutofill()` is not fired and
+          // `js_logs_` is not corrupted, avoiding false positives.
+          [](JavaScriptAutofillTracker* tracker) { tracker->js_logs_.clear(); },
+          // Safe because `timer_` is owned by `this`. Destructing it cancels
+          // the task.
+          base::Unretained(this)));
 }
 
 void JavaScriptAutofillTracker::Reset() {

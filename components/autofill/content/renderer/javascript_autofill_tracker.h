@@ -50,6 +50,11 @@ class JavaScriptAutofillTracker {
 
   void OnJavaScriptChangedValue(const blink::WebFormControlElement& element);
 
+  // Called when the browser is about to autofill a form (and not JavaScript).
+  // This is used to allow the tracker to distinguish between browser and
+  // JavaScript autofilling a form.
+  void OnWillAutofillForm();
+
   // Clears all recorded changes and stops the detection timer.
   void Reset();
 

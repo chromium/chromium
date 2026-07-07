@@ -1192,88 +1192,91 @@ void AutofillAgent::ApplyFieldsAction(
     previewed_elements_ =
         form_util::ApplyFieldsAction(document, fields, action_type,
                                      action_persistence, field_data_manager());
-  } else {
-    was_last_action_fill_ = true;
+    return;
+  }
 
-    if (document.IsAutofillEventEnabled() &&
-        action_type == mojom::FormActionType::kFill) {
-      form_util::DispatchAutofillEvent(document, fields, fill_id,
-                                       supports_refill);
+  was_last_action_fill_ = true;
+
+  if (document.IsAutofillEventEnabled() &&
+      action_type == mojom::FormActionType::kFill) {
+    form_util::DispatchAutofillEvent(document, fields, fill_id,
+                                     supports_refill);
+  }
+
+  javascript_autofill_tracker_.OnWillAutofillForm();
+
+  std::vector<WebFormControlElement> filled_elements = base::ToVector(
+      form_util::ApplyFieldsAction(document, fields, action_type,
+                                   action_persistence, field_data_manager()),
+      [](const auto& p) {
+        FieldRendererId filled_element_id = p.first;
+        return form_util::GetFormControlByRendererId(filled_element_id);
+      });
+  std::erase_if(filled_elements,
+                [](const WebFormControlElement& filled_element) {
+                  return !filled_element;
+                });
+
+  // This map contains for each filled field (returned by
+  // `form_util::ApplyFieldsAction()`) the corresponding current owning form.
+  // This information cannot be inferred from
+  // `FormFieldData::FillData::host_form_id` because after calling the filling
+  // function dynamic changes can occur to the DOM.
+  auto filled_fields_and_forms =
+      base::MakeFlatMap<FieldRendererId, FormRendererId>(
+          filled_elements, {},
+          [](const WebFormControlElement& filled_element)
+              -> std::pair<FieldRendererId, FormRendererId> {
+            return {form_util::GetFieldRendererId(filled_element),
+                    form_util::GetFormRendererId(
+                        filled_element.GetOwningFormForAutofill())};
+          });
+
+  form_tracker_->TrackAutofilledElement(filled_fields_and_forms);
+
+  base::flat_set<FormRendererId> extracted_form_ids;
+  std::vector<FormData> filled_forms;
+  for (const auto& [filled_field_id, filled_form_id] :
+       filled_fields_and_forms) {
+    // Inform the browser about all forms that were autofilled.
+    if (extracted_form_ids.insert(filled_form_id).second) {
+      std::optional<FormData> form = form_util::ExtractFormData(
+          document, form_util::GetFormByRendererId(filled_form_id),
+          field_data_manager(), GetCallTimerState(kApplyFieldsAction),
+          button_titles_cache());
+      if (!form) {
+        continue;
+      }
+      filled_forms.push_back(*form);
+      if (auto* autofill_driver = unsafe_autofill_driver()) {
+        CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+        autofill_driver->DidAutofillForm(*form);
+      }
     }
+  }
 
-    std::vector<WebFormControlElement> filled_elements = base::ToVector(
-        form_util::ApplyFieldsAction(document, fields, action_type,
-                                     action_persistence, field_data_manager()),
-        [](const auto& p) {
-          FieldRendererId filled_element_id = p.first;
-          return form_util::GetFormControlByRendererId(filled_element_id);
-        });
-    std::erase_if(filled_elements,
-                  [](const WebFormControlElement& filled_element) {
-                    return !filled_element;
-                  });
-
-    // This map contains for each filled field (returned by
-    // `form_util::ApplyFieldsAction()`) the corresponding current owning form.
-    // This information cannot be inferred from
-    // `FormFieldData::FillData::host_form_id` because after calling the filling
-    // function dynamic changes can occur to the DOM.
-    auto filled_fields_and_forms =
-        base::MakeFlatMap<FieldRendererId, FormRendererId>(
-            filled_elements, {},
-            [](const WebFormControlElement& filled_element)
-                -> std::pair<FieldRendererId, FormRendererId> {
-              return {form_util::GetFieldRendererId(filled_element),
-                      form_util::GetFormRendererId(
-                          filled_element.GetOwningFormForAutofill())};
-            });
-
-    form_tracker_->TrackAutofilledElement(filled_fields_and_forms);
-
-    base::flat_set<FormRendererId> extracted_form_ids;
-    std::vector<FormData> filled_forms;
+  // Notify Password Manager of filled fields.
+  if (password_autofill_agent_) {
     for (const auto& [filled_field_id, filled_form_id] :
          filled_fields_and_forms) {
-      // Inform the browser about all forms that were autofilled.
-      if (extracted_form_ids.insert(filled_form_id).second) {
-        std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_util::GetFormByRendererId(filled_form_id),
-            field_data_manager(), GetCallTimerState(kApplyFieldsAction),
-            button_titles_cache());
-        if (!form) {
-          continue;
-        }
-        filled_forms.push_back(*form);
-        if (auto* autofill_driver = unsafe_autofill_driver()) {
-          CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-          autofill_driver->DidAutofillForm(*form);
+      if (WebInputElement input_element =
+              form_util::GetFormControlByRendererId(filled_field_id)
+                  .DynamicTo<WebInputElement>();
+          input_element && input_element.IsTextField()) {
+        if (auto form_it = std::ranges::find(filled_forms, filled_form_id,
+                                             &FormData::renderer_id);
+            form_it != filled_forms.end()) {
+          password_autofill_agent_->UpdatePasswordStateForTextChange(
+              input_element, SynchronousFormCache(*form_it));
         }
       }
     }
+  }
 
-    // Notify Password Manager of filled fields.
-    if (password_autofill_agent_) {
-      for (const auto& [filled_field_id, filled_form_id] :
-           filled_fields_and_forms) {
-        if (WebInputElement input_element =
-                form_util::GetFormControlByRendererId(filled_field_id)
-                    .DynamicTo<WebInputElement>();
-            input_element && input_element.IsTextField()) {
-          if (auto form_it = std::ranges::find(filled_forms, filled_form_id,
-                                               &FormData::renderer_id);
-              form_it != filled_forms.end()) {
-            password_autofill_agent_->UpdatePasswordStateForTextChange(
-                input_element, SynchronousFormCache(*form_it));
-          }
-        }
-      }
-    }
-
-    if (auto* autofill_driver = unsafe_autofill_driver();
-        autofill_driver && !filled_forms.empty()) {
-      CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-      autofill_driver->FormsSeen(filled_forms, /*removed_forms=*/{});
-    }
+  if (auto* autofill_driver = unsafe_autofill_driver();
+      autofill_driver && !filled_forms.empty()) {
+    CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+    autofill_driver->FormsSeen(filled_forms, /*removed_forms=*/{});
   }
 }
 

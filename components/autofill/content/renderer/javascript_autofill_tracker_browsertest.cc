@@ -21,6 +21,8 @@
 
 namespace autofill {
 
+namespace {
+
 class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
  public:
   JavaScriptAutofillTrackerTest() = default;
@@ -91,5 +93,102 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0].modified_field_id, form_util::GetFieldRendererId(text1));
 }
+
+// Test that JS changes triggered by browser autofill are ignored.
+TEST_F(JavaScriptAutofillTrackerTest, BrowserAutofillIgnored) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="text_1">
+        <input id="text_2">
+        <input id="text_3">
+      </form>
+      <script>
+        document.getElementById('text_1').addEventListener('input', () => {
+          document.getElementById('text_1').value = 'js_1';
+          document.getElementById('text_2').value = 'js_2';
+          document.getElementById('text_3').value = 'js_3';
+        });
+      </script>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  std::optional<FormData> form = ExtractFormData("form_id");
+  ASSERT_TRUE(form);
+  EXPECT_TRUE(SimulateFillForm(
+      *form, "text_1",
+      {{u"text_1", u"autofill_1"}, {u"text_2", u"autofill_2"}}));
+
+  // Fast forward to let the clear timer fire.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  const std::vector<JavaScriptAutofillTracker::JsChangeRecord>& logs =
+      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+          .js_logs();
+  EXPECT_TRUE(logs.empty());
+}
+
+// Test that consecutive browser autofills (like refills) extend the guard
+// window, ensuring delayed JS changes are still ignored.
+TEST_F(JavaScriptAutofillTrackerTest, AutofillAndRefillIgnored) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="text_1">
+        <input id="text_2">
+        <input id="text_3">
+        <input id="text_4">
+      </form>
+      <script>
+        document.getElementById('text_1').addEventListener('input', () => {
+          // Triggered by the initial autofill operation
+          document.getElementById('text_1').value = 'js_1_1';
+          document.getElementById('text_2').value = 'js_2_1';
+          document.getElementById('text_3').value = 'js_3_1';
+        });
+        document.getElementById('text_4').addEventListener('input', () => {
+          // Triggered by the refill operation
+          document.getElementById('text_2').value = 'js_2_2';
+          setTimeout(() => {
+            document.getElementById('text_3').value = 'js_3_2';
+          }, 60);
+          setTimeout(() => {
+            document.getElementById('text_4').value = 'js_4_2';
+          }, 70);
+        });
+      </script>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  FormData form = ExtractFormData("form_id").value();
+
+  const std::vector<JavaScriptAutofillTracker::JsChangeRecord>& logs =
+      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+          .js_logs();
+
+  // 1. First Fill at t=0.
+  EXPECT_TRUE(SimulateFillForm(form, "text_1", {{u"text_1", u"autofill_1"}}));
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+
+  // 2. Refill at t=150ms.
+  // This should restart the clear timer to expire at t=350ms.
+  EXPECT_TRUE(SimulateFillForm(form, "text_4", {{u"text_4", u"autofill_4"}}));
+
+  // Advance time by 50ms (to 200ms).
+  // Logs should not have been cleared by now because the timer was restarted.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  EXPECT_EQ(logs.size(), 4u);
+
+  // Advance time by 50ms (to t=250ms).
+  // During this time:
+  // - t=210ms: text_3 is modified by JS.
+  // - t=220ms: text_4 is modified by JS.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  EXPECT_EQ(logs.size(), 6u);
+
+  // Advance time by 100ms (to t=350ms).
+  // All the logs should be cleared because of the timer firing at t=350ms.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(logs.empty());
+}
+
+}  // namespace
 
 }  // namespace autofill
