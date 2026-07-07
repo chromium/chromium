@@ -21,11 +21,14 @@ Once the mirror is set up, you can add the actual dependency into `DEPS`.
 
 ## Adding dependencies
 
-Add your entry in `DEPS`. Then run `gclient gitmodules` to generate git
-submodules; this will contain the `.gitmodule` change and gitlink. Edit the
-`OWNERS` file and add the gitlink path. Then, run `git add DEPS OWNERS` to stage
-those files for commit, followed by `git commit`. Your change is now ready to be
-sent for a review using `git cl upload`.
+1.  Add your entry in `DEPS`.
+2.  Run `gclient gitmodules` to generate git submodules; this will contain the
+    `.gitmodule` change and gitlink.
+3.  Edit the `OWNERS` file and add the gitlink path.
+
+Then, run `git add DEPS OWNERS` to stage those files for commit, followed by
+`git commit`. Your change is now ready to be sent for a review using `git cl
+upload`.
 
 For example, if your new dependency is "src/foo/bar.git", its gitlink path is
 "foo/bar", and the top level `OWNERS` entry is `per-file foo/bar=*`. You can
@@ -300,6 +303,7 @@ purpose is to define header inclusion rules.
 ### How Rules are Evaluated
 
 When `checkdeps` runs on a file, it:
+
 1.  Looks for a `DEPS` file in the same directory.
 2.  If found, it checks the `include_rules`.
 3.  If no `DEPS` file is found, or if one is found but doesn't contain the `!`
@@ -312,6 +316,7 @@ When `checkdeps` runs on a file, it:
 1.  **Analyze the Error Message:** The `checkdeps` error is highly informative.
     It tells you the exact file, the problematic include, and often the
     specific rule that caused the violation. Look for a "Because of..." clause:
+
     ```
     Error: //some/component/foo.cc:10:11: Include not allowed.
     #include "another/component/bar.h"

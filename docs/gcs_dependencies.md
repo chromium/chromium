@@ -92,3 +92,8 @@ They can also be found in pantheon when viewing the object's "Object details".
 are not using that helper script you will have to compute it on your own. You
 can test that the hash is correct by running `gclient sync` on your WIP change
 that adds the new GCS entry.
+
+### Update `//third_party/.gitignore`
+
+Add the new directory to Chromium’s `//third_party/.gitignore`, so that it won’t
+show up as “untracked files” when you run `git status` on the main repository.
