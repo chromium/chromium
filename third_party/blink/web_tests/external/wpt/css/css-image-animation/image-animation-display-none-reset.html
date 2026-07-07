@@ -3,18 +3,19 @@
 <title>image-animation reset when display: none</title>
 <link rel="help" href="https://drafts.csswg.org/css-image-animation-1/">
 <meta charset="utf-8" />
-<link rel="match" href="image-animation-display-none-reset.tentative-ref.html" />
+<link rel="match" href="image-animation-display-none-reset-ref.html" />
 <style>
   img {
     image-animation: paused;
   }
 </style>
 <script src="/common/reftest-wait.js"></script>
+<script src="resources/image-animation-utils.js"></script>
 <script>
   let count = 0;
   function loaded() {
     count++;
-    if (count < 2)
+    if (count < document.querySelectorAll('img').length)
       return;
 
     const img1 = document.getElementById('img1');
@@ -28,7 +29,7 @@
     //   Frame 3: blue
     //
     // Wait for frame 2 (green) to be reached.
-    setTimeout(() => {
+    waitForFrameTime(100).then(() => {
       img2.style.imageAnimation = 'paused';
       img1.style.display = 'none';
         requestAnimationFrame(() => {
@@ -40,7 +41,7 @@
             })
           });
       });
-    }, 100);
+    });
   }
 </script>
 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<title>stopping animated image for background image</title>
+<title>pausing animated image for background image</title>
 <link rel="help" href="https://drafts.csswg.org/css-image-animation-1/">
 <meta charset="utf-8" />
-<link rel="match" href="image-animation-background-stopped.tentative-ref.html" />
+<link rel="match" href="image-animation-background-paused-ref.html" />
 <script src="/common/reftest-wait.js"></script>
 <script>
   takeScreenshotDelayed(300);
@@ -13,7 +13,7 @@
   div {
     width:20px;
     height:10px;
-    image-animation:stopped;
+    image-animation:paused;
   }
   #box1 {
     background-image: url("../../images/anim-gr.gif");

@@ -3,13 +3,13 @@
 <title>pausing animated image for img</title>
 <link rel="help" href="https://drafts.csswg.org/css-image-animation-1/">
 <meta charset="utf-8" />
-<link rel="match" href="image-animation-img-paused.tentative-ref.html" />
+<link rel="match" href="image-animation-img-paused-ref.html" />
 <script src="/common/reftest-wait.js"></script>
 <script>
   let count = 0;
   function loaded() {
     count++;
-    if(count === 2) {
+    if (count === document.querySelectorAll('img').length) {
         takeScreenshotDelayed(300);
     }
   }
