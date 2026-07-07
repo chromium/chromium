@@ -1,10 +1,10 @@
 Name: harfbuzz
 Short Name: harfbuzz
 URL: http://harfbuzz.org
-Version: 14.2.1-22
+Version: 14.2.1-37
 CPEPrefix: cpe:/a:harfbuzz_project:harfbuzz:14.2.1
-Date: 2026-06-23
-Revision: 511df88b82e697cd2a0f1f0635787aa0b18bddbb
+Date: 2026-07-07
+Revision: 28f4dc622fef010dab12f4275ac195b5d4a4a704
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
