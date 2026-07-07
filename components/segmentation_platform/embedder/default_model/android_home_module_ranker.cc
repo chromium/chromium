@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"

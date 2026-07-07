@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 
+#include "base/containers/span.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"

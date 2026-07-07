@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
