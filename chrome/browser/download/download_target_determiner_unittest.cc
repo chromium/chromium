@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_confirmation_result.h"
@@ -929,7 +930,13 @@ TEST_F(DownloadTargetDeterminerTest,
 }
 
 // Test whether the last saved directory is used for 'Save As' downloads.
-TEST_F(DownloadTargetDeterminerTest, LastSavePath) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// https://crbug.com/531834681
+#define MAYBE_LastSavePath DISABLED_LastSavePath
+#else
+#define MAYBE_LastSavePath LastSavePath
+#endif
+TEST_F(DownloadTargetDeterminerTest, MAYBE_LastSavePath) {
   const DownloadTestCase kLastSavePathTestCasesPre[] = {
       {// 0: If the last save path is empty, then the default download directory
        //    should be used.
