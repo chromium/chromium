@@ -114,9 +114,10 @@ def headers(os):
       AllowedHeader('dlfcn.h'),
       AllowedHeader('elf.h'),
       Header('endian.h'),
+      # POSIX standard says that fcntl.h must re-export most dependencies.
       Header('fcntl.h',
              exports=[
-                 'asm_fcntl', 'asm_generic_fcntl', 'bits_fcntl',
+                 '*', 'asm_fcntl', 'asm_generic_fcntl', 'bits_fcntl',
                  'linux_fadvise', 'linux_fcntl'
              ]),
       Header('features.h'),
@@ -188,7 +189,8 @@ def headers(os):
       AllowedHeader('syscall.h'),
       Header('time.h'),
       AllowedHeader('ucontext.h'),
-      Header('unistd.h', exports=['bits_getopt']),
+      # Unistd re-exports basically everything it #includes
+      Header('unistd.h', exports=['*', 'bits_getopt']),
       # We need to re-export std::exception in std.exception.exception and type
       # info.
       Header('vcruntime_exception.h',
