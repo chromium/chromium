@@ -61,6 +61,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -191,12 +192,21 @@ void WebInstallServiceImpl::CreateIfAllowed(
 
   // This class is created only on the primary main frame.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
-    receiver.reset();
+    mojo::ReportBadMessage("WebInstall not allowed in subframes");
     return;
   }
 
   if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
-    receiver.reset();
+    return;
+  }
+
+  // TODO(crbug.com/493534965): Evaluate sandbox restrictions. In the meantime,
+  // Web Install API is not available in any sandboxed contexts, including
+  // sandboxed top-level documents, as well as frames with sandbox flags
+  // (whether from iframe sandbox attribute, CSP sandbox directive, or inherited
+  // from window.open() opener).
+  if (render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kAll)) {
+    mojo::ReportBadMessage("WebInstall not allowed in a sandboxed contexts");
     return;
   }
 

@@ -22,6 +22,8 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -354,7 +356,8 @@ TEST_F(WebInstallServiceImplTest, InstallFromElement_ElementUmaHistograms) {
 // These test the guard checks in the static factory method.
 ///////////////////////////////////////////////////////////////////////////////
 
-// CreateIfAllowed from a child iframe resets the receiver.
+// CreateIfAllowed from a child iframe reports a bad message and does not bind
+// the receiver.
 TEST_F(WebInstallServiceImplTest, CreateIfAllowed_ChildFrame) {
   content::RenderFrameHost* child_rfh =
       content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
@@ -363,17 +366,15 @@ TEST_F(WebInstallServiceImplTest, CreateIfAllowed_ChildFrame) {
   child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://child.example.com"), child_rfh);
 
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
   mojo::Remote<blink::mojom::WebInstallService> remote;
   WebInstallServiceImpl::CreateIfAllowed(child_rfh,
                                          remote.BindNewPipeAndPassReceiver());
 
-  // The receiver should have been reset because the frame is not the primary
-  // main frame.
-  base::test::TestFuture<blink::mojom::WebInstallServiceResult, const GURL&>
-      future;
-  remote->Install(/*options=*/nullptr, future.GetCallback());
-  remote.FlushForTesting();
-  EXPECT_FALSE(remote.is_connected());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "WebInstall not allowed in subframes");
 }
 
 // CreateIfAllowed with a non-HTTP(S) scheme resets the receiver.
