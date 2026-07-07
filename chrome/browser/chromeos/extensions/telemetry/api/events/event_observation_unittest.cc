@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation_crosapi.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
 
 #include <memory>
 #include <tuple>
@@ -23,7 +23,7 @@ namespace {
 
 namespace crosapi = ::crosapi::mojom;
 
-class EventDelegate : public EventObservationCrosapi::Delegate {
+class EventDelegate : public EventObservation::Delegate {
  public:
   ~EventDelegate() override = default;
 
@@ -47,15 +47,14 @@ class EventDelegate : public EventObservationCrosapi::Delegate {
 
 }  // namespace
 
-class TelemetryExtensionEventObservationCrosapiTest
-    : public extensions::ApiUnitTest {
+class TelemetryExtensionEventObservationTest : public extensions::ApiUnitTest {
  public:
-  TelemetryExtensionEventObservationCrosapiTest() = default;
+  TelemetryExtensionEventObservationTest() = default;
 
   void SetUp() override {
     extensions::ApiUnitTest::SetUp();
     event_router_ = std::make_unique<EventRouter>(browser_context());
-    event_observation_ = std::make_unique<EventObservationCrosapi>(
+    event_observation_ = std::make_unique<EventObservation>(
         extension()->id(), event_router_.get(), browser_context());
 
     event_delegate_ = new EventDelegate();
@@ -63,7 +62,7 @@ class TelemetryExtensionEventObservationCrosapiTest
   }
 
  protected:
-  EventObservationCrosapi* GetEventRouter() { return event_observation_.get(); }
+  EventObservation* GetEventRouter() { return event_observation_.get(); }
 
   EventDelegate* GetEventDelegate() { return event_delegate_; }
 
@@ -77,14 +76,13 @@ class TelemetryExtensionEventObservationCrosapiTest
  private:
   // The router, observation and its delegate live as long as the test itself.
   std::unique_ptr<EventRouter> event_router_;
-  std::unique_ptr<EventObservationCrosapi> event_observation_;
+  std::unique_ptr<EventObservation> event_observation_;
   raw_ptr<EventDelegate> event_delegate_;
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_;
 };
 
-TEST_F(TelemetryExtensionEventObservationCrosapiTest,
-       CanObserveAudioJackEvent) {
+TEST_F(TelemetryExtensionEventObservationTest, CanObserveAudioJackEvent) {
   Bind(GetEventRouter()->GetRemote());
 
   auto audio_info = crosapi::TelemetryAudioJackEventInfo::New();

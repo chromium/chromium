@@ -7,7 +7,7 @@
 #include <tuple>
 #include <utility>
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation_crosapi.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
@@ -42,7 +42,7 @@ EventRouter::GetPendingRemoteForCategoryAndExtension(
     iter_category = iter_extension->second.emplace_hint(
         iter_category, std::piecewise_construct,
         std::forward_as_tuple(category),
-        std::forward_as_tuple(std::make_unique<EventObservationCrosapi>(
+        std::forward_as_tuple(std::make_unique<EventObservation>(
             extension_id, this, browser_context_)));
   }
 

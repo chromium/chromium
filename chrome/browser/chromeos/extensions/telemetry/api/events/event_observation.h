@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_CROSAPI_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_CROSAPI_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_H_
 
 #include <memory>
 
@@ -21,7 +21,7 @@ namespace chromeos {
 
 class EventRouter;
 
-class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
+class EventObservation : public crosapi::mojom::TelemetryEventObserver {
  public:
   class Delegate {
    public:
@@ -32,14 +32,14 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
                          crosapi::mojom::TelemetryEventInfoPtr info) = 0;
   };
 
-  explicit EventObservationCrosapi(const extensions::ExtensionId& extension_id,
-                                   EventRouter* event_router,
-                                   content::BrowserContext* context);
+  explicit EventObservation(const extensions::ExtensionId& extension_id,
+                            EventRouter* event_router,
+                            content::BrowserContext* context);
 
-  EventObservationCrosapi(const EventObservationCrosapi&) = delete;
-  EventObservationCrosapi& operator=(const EventObservationCrosapi&) = delete;
+  EventObservation(const EventObservation&) = delete;
+  EventObservation& operator=(const EventObservation&) = delete;
 
-  ~EventObservationCrosapi() override;
+  ~EventObservation() override;
 
   // crosapi::mojom::TelemetryEventObserver:
   void OnEvent(crosapi::mojom::TelemetryEventInfoPtr info) override;
@@ -60,4 +60,4 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_CROSAPI_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_EVENTS_EVENT_OBSERVATION_H_

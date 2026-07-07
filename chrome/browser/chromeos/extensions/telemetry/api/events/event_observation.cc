@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation_crosapi.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
 
 #include <memory>
 #include <utility>
@@ -24,7 +24,7 @@ namespace {
 
 namespace crosapi = ::crosapi::mojom;
 
-class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
+class DefaultEventDelegate : public EventObservation::Delegate {
  public:
   explicit DefaultEventDelegate(content::BrowserContext* context)
       : browser_context_(context) {}
@@ -232,19 +232,18 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
 
 }  // namespace
 
-EventObservationCrosapi::EventObservationCrosapi(
-    const extensions::ExtensionId& extension_id,
-    EventRouter* event_router,
-    content::BrowserContext* context)
+EventObservation::EventObservation(const extensions::ExtensionId& extension_id,
+                                   EventRouter* event_router,
+                                   content::BrowserContext* context)
     : extension_id_(extension_id),
       receiver_(this),
       delegate_(std::make_unique<DefaultEventDelegate>(context)),
       event_router_(event_router),
       browser_context_(context) {}
 
-EventObservationCrosapi::~EventObservationCrosapi() = default;
+EventObservation::~EventObservation() = default;
 
-void EventObservationCrosapi::OnEvent(crosapi::TelemetryEventInfoPtr info) {
+void EventObservation::OnEvent(crosapi::TelemetryEventInfoPtr info) {
   if (!info) {
     LOG(WARNING) << "Received empty event";
     return;
@@ -254,7 +253,7 @@ void EventObservationCrosapi::OnEvent(crosapi::TelemetryEventInfoPtr info) {
 }
 
 mojo::PendingRemote<crosapi::TelemetryEventObserver>
-EventObservationCrosapi::GetRemote() {
+EventObservation::GetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 

@@ -32,8 +32,8 @@ source_set("events") {
 
 source_set("event_router") {
   sources = [
-    "event_observation_crosapi.cc",
-    "event_observation_crosapi.h",
+    "event_observation.cc",
+    "event_observation.h",
     "event_router.cc",
     "event_router.h",
   ]
@@ -145,7 +145,7 @@ source_set("unit_tests") {
 source_set("extensions_unittests") {
   testonly = true
   sources = [
-    "event_observation_crosapi_unittest.cc",
+    "event_observation_unittest.cc",
     "event_router_unittest.cc",
   ]
 
