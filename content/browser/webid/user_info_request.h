@@ -29,11 +29,12 @@ namespace webid {
 
 class ConfigFetcher;
 
-using UserInfoRequestResult = blink::mojom::FederatedAuthUserInfoRequestResult;
-
 // Fetches data for user-info request.
 class CONTENT_EXPORT UserInfoRequest {
  public:
+  using UserInfoRequestResult =
+      blink::mojom::FederatedAuthUserInfoRequestResult;
+
   // Returns an object which fetches data for user-info request.
   static std::unique_ptr<UserInfoRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
@@ -68,7 +69,7 @@ class CONTENT_EXPORT UserInfoRequest {
       IdpNetworkRequestManager::AccountsResponse accounts);
 
   void MaybeReturnAccounts(
-      const std::vector<IdentityRequestAccountPtr>& accounts);
+      const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
 
   bool IsReturningAccount(const IdentityRequestAccount& account);
 

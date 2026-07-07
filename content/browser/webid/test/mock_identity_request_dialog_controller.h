@@ -13,9 +13,6 @@
 
 namespace content {
 
-using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
-using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
-
 class MockIdentityRequestDialogController
     : public IdentityRequestDialogController {
  public:
@@ -31,9 +28,9 @@ class MockIdentityRequestDialogController
   MOCK_METHOD(bool,
               ShowAccountsDialog,
               (RelyingPartyData,
-               const std::vector<IdentityProviderDataPtr>&,
-               const std::vector<IdentityRequestAccountPtr>&,
-               const std::vector<IdentityRequestAccountPtr>&,
+               const std::vector<scoped_refptr<IdentityProviderData>>&,
+               const std::vector<scoped_refptr<IdentityRequestAccount>>&,
+               const std::vector<scoped_refptr<IdentityRequestAccount>>&,
                blink::mojom::RpMode,
                AccountSelectionCallback,
                LoginToIdPCallback,
@@ -74,8 +71,8 @@ class MockIdentityRequestDialogController
   MOCK_METHOD(bool,
               ShowVerifyingDialog,
               (const RelyingPartyData&,
-               const IdentityProviderDataPtr&,
-               const IdentityRequestAccountPtr&,
+               const scoped_refptr<IdentityProviderData>&,
+               const scoped_refptr<IdentityRequestAccount>&,
                IdentityRequestAccount::SignInMode,
                blink::mojom::RpMode,
                AccountsDisplayedCallback),

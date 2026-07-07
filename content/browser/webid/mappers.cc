@@ -16,16 +16,14 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 
-using blink::mojom::FederatedAuthRequestResult;
-using blink::mojom::RequestTokenStatus;
-using ErrorDialogResult = content::webid::ErrorDialogResult;
-using LifecycleStateImpl = content::RenderFrameHostImpl::LifecycleStateImpl;
-using FederatedApiPermissionStatus =
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-
 namespace content::webid {
 
+using FederatedApiPermissionStatus =
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 using blink::mojom::EmailVerificationRequestResult;
+using blink::mojom::FederatedAuthRequestResult;
+using blink::mojom::RequestTokenStatus;
 
 std::vector<std::string> DisclosureFieldsToStringList(
     const std::vector<IdentityRequestDialogDisclosureField>& fields) {
@@ -466,7 +464,7 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
 
 void ComputeAccountFields(
     const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
-    std::vector<IdentityRequestAccountPtr>& accounts) {
+    std::vector<scoped_refptr<IdentityRequestAccount>>& accounts) {
   for (const auto& account : accounts) {
     account->fields.clear();
     if (account->idp_claimed_login_state.value_or(

@@ -137,7 +137,7 @@ GetDisclosureFields(const std::optional<std::vector<std::string>>& fields);
 // the login state and the available account data.
 CONTENT_EXPORT void ComputeAccountFields(
     const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
-    std::vector<IdentityRequestAccountPtr>& accounts);
+    std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
 
 // Converts a FederatedAuthRequestResult to a FederatedLoginResult. The later is
 // a less granular result type used by the embedder.

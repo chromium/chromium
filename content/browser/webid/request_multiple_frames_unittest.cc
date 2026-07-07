@@ -49,12 +49,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content::webid {
+
+using ::testing::NiceMock;
 using ApiPermissionStatus =
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using AuthRequestCallbackHelper = content::FederatedRequestTokenCallbackHelper;
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using AuthRequestCallbackHelper = FederatedRequestTokenCallbackHelper;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
-using RequesterFrameType = content::webid::RequesterFrameType;
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using StartTokenRequestCallback =
     blink::mojom::FederatedRequestService::StartTokenRequestCallback;
 using blink::mojom::FederatedRequest;
@@ -62,9 +65,6 @@ using blink::mojom::FederatedRequestService;
 using blink::mojom::RequestTokenStatus;
 using blink::mojom::TokenRequestFailurePtr;
 using blink::mojom::TokenRequestSuccessPtr;
-using ::testing::NiceMock;
-
-namespace content::webid {
 
 namespace {
 
@@ -194,9 +194,10 @@ class TestDialogController
 
   bool ShowAccountsDialog(
       RelyingPartyData rp_data,
-      const std::vector<IdentityProviderDataPtr>& idp_list,
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
+      const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
       blink::mojom::RpMode rp_mode,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,

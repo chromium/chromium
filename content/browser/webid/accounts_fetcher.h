@@ -28,6 +28,7 @@ class Metrics;
 // A class that fetches accounts from a set of IDPs.
 class AccountsFetcher {
  public:
+  using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
   static constexpr char kWildcardDomainHint[] = "any";
 
   struct IdentityProviderGetInfo {
@@ -49,13 +50,14 @@ class AccountsFetcher {
     FedCmFetchingParams(blink::mojom::RpMode rp_mode,
                         int icon_ideal_size,
                         int icon_minimum_size,
-                        MediationRequirement mediation_requirement);
+                        ::password_manager::CredentialMediationRequirement
+                            mediation_requirement);
     ~FedCmFetchingParams();
 
     blink::mojom::RpMode rp_mode;
     int icon_ideal_size;
     int icon_minimum_size;
-    MediationRequirement mediation_requirement;
+    ::password_manager::CredentialMediationRequirement mediation_requirement;
   };
 
   struct Result {

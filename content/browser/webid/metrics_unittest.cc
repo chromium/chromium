@@ -13,6 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content::webid {
+
+using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+
 namespace {
 IdentityRequestAccountPtr CreateEmptyAccount() {
   std::vector<std::string> empty;

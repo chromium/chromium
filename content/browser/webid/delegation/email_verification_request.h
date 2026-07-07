@@ -43,18 +43,6 @@ namespace content::webid {
 CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
     const std::string& email);
 
-using WellKnownOrError = base::RefCountedData<
-    base::expected<EmailVerifierNetworkRequestManager::WellKnown,
-                   blink::mojom::EmailVerificationRequestResult>>;
-using AccountsOrError = base::RefCountedData<
-    base::expected<std::vector<IdentityRequestAccountPtr>,
-                   blink::mojom::EmailVerificationRequestResult>>;
-using TokenResultOrError = base::RefCountedData<
-    base::expected<EmailVerifierNetworkRequestManager::TokenResult,
-                   blink::mojom::EmailVerificationRequestResult>>;
-using JwksResultOrError = base::RefCountedData<
-    base::expected<base::DictValue,
-                   blink::mojom::EmailVerificationRequestResult>>;
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the
 // issuer.
@@ -62,6 +50,18 @@ using JwksResultOrError = base::RefCountedData<
 // to outlive it.
 class CONTENT_EXPORT EmailVerificationRequest {
  public:
+  using AccountsOrError = base::RefCountedData<
+      base::expected<std::vector<scoped_refptr<IdentityRequestAccount>>,
+                     blink::mojom::EmailVerificationRequestResult>>;
+  using JwksResultOrError = base::RefCountedData<
+      base::expected<base::DictValue,
+                     blink::mojom::EmailVerificationRequestResult>>;
+  using TokenResultOrError = base::RefCountedData<
+      base::expected<EmailVerifierNetworkRequestManager::TokenResult,
+                     blink::mojom::EmailVerificationRequestResult>>;
+  using WellKnownOrError = base::RefCountedData<
+      base::expected<EmailVerifierNetworkRequestManager::WellKnown,
+                     blink::mojom::EmailVerificationRequestResult>>;
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;

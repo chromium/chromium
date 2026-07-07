@@ -39,6 +39,8 @@ using ::testing::WithArg;
 
 namespace content::webid {
 
+using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+
 class TestIdentityCredentialSourceImpl : public IdentityCredentialSourceImpl {
  public:
   explicit TestIdentityCredentialSourceImpl(RenderFrameHost* rfh)

@@ -18,8 +18,6 @@ class Image;
 
 namespace content::webid {
 
-using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
-
 // Class representing the information about an identity provider. Populated
 // while fetching.
 class CONTENT_EXPORT IdentityProviderInfo {
@@ -40,7 +38,7 @@ class CONTENT_EXPORT IdentityProviderInfo {
   blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
   blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
   std::optional<blink::mojom::Format> format;
-  IdentityProviderDataPtr data;
+  scoped_refptr<IdentityProviderData> data;
   gfx::Image decoded_idp_brand_icon;
   bool client_is_third_party_to_top_frame_origin{false};
 };

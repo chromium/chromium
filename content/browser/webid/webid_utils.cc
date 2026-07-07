@@ -28,10 +28,9 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
 
-using blink::mojom::FederatedAuthRequestResult;
-using DisconnectStatus = content::webid::DisconnectStatus;
-
 namespace content::webid {
+
+using blink::mojom::FederatedAuthRequestResult;
 
 namespace {
 constexpr net::registry_controlled_domains::PrivateRegistryFilter

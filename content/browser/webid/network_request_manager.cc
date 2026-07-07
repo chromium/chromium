@@ -23,6 +23,9 @@
 
 namespace content::webid {
 
+using DownloadCallback = NetworkRequestManager::DownloadCallback;
+using ParseJsonCallback = NetworkRequestManager::ParseJsonCallback;
+
 namespace {
 constexpr char kApplicationJson[] = "application/json";
 // Body content types.

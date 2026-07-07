@@ -21,10 +21,6 @@ namespace content {
 
 namespace webid {
 
-using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
-using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using RpMode = blink::mojom::RpMode;
-
 // This enum describes the status of a request id token call to the FedCM API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -385,7 +381,7 @@ class CONTENT_EXPORT Metrics {
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
   // mismatch flow or active flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTime(
-      const std::vector<IdentityProviderDataPtr>& providers,
+      const std::vector<scoped_refptr<IdentityProviderData>>& providers,
       base::TimeDelta duration);
 
   // Records the time from when a call to the API was made to when the accounts
@@ -411,19 +407,19 @@ class CONTENT_EXPORT Metrics {
   // selecting any accounts. `duration` is the time from when the accounts
   // dialog was shown to when the user closed the dialog.
   void RecordCancelOnDialogTime(
-      const std::vector<IdentityProviderDataPtr>& providers,
+      const std::vector<scoped_refptr<IdentityProviderData>>& providers,
       base::TimeDelta duration);
 
   // Records the duration from when an accounts dialog is shown to when it is
   // destroyed.
   void RecordAccountsDialogShownDuration(
-      const std::vector<IdentityProviderDataPtr>& providers,
+      const std::vector<scoped_refptr<IdentityProviderData>>& providers,
       base::TimeDelta duration);
 
   // Records the duration from when a mismatch dialog is shown to when it is
   // destroyed or user triggers IDP sign-in pop-up window.
   void RecordMismatchDialogShownDuration(
-      const std::vector<IdentityProviderDataPtr>& providers,
+      const std::vector<scoped_refptr<IdentityProviderData>>& providers,
       base::TimeDelta duration);
 
   // Records the reason that closed accounts dialog without selecting any
@@ -453,11 +449,11 @@ class CONTENT_EXPORT Metrics {
   // call.
   void RecordRequestTokenStatus(
       RequestIdTokenStatus status,
-      MediationRequirement requirement,
+      ::password_manager::CredentialMediationRequirement requirement,
       const std::vector<GURL>& requested_providers,
       int num_idps_mismatch,
       const std::optional<GURL>& selected_idp_config_url,
-      const RpMode& rp_mode,
+      const blink::mojom::RpMode& rp_mode,
       std::optional<UseOtherAccountResult> use_other_account_result,
       std::optional<VerifyingDialogResult> verifying_dialog_result,
       ThirdPartyCookiesStatus tpc_status,
@@ -515,7 +511,7 @@ class CONTENT_EXPORT Metrics {
 
   // Records a sample when an accounts dialog is shown.
   void RecordAccountsDialogShown(
-      const std::vector<IdentityProviderDataPtr>& providers);
+      const std::vector<scoped_refptr<IdentityProviderData>>& providers);
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
@@ -684,7 +680,7 @@ void RecordLifecycleStateFailureReason(LifecycleStateFailureReason reason);
 
 // Records what kinds of fields we received in the accounts from the IDP.
 CONTENT_EXPORT void RecordAccountFieldsType(
-    const std::vector<IdentityRequestAccountPtr>& accounts);
+    const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
 
 void RecordCrossSiteIframeType(CrossSiteIframeType type);
 

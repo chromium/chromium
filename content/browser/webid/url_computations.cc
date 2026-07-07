@@ -16,10 +16,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
-using RpMode = blink::mojom::RpMode;
-
 namespace content {
 namespace webid {
+
+using RpMode = blink::mojom::RpMode;
 
 namespace {
 

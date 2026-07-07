@@ -22,6 +22,8 @@ using ::blink::mojom::FederatedAuthRequestResult;
 namespace content::webid {
 
 using LoginState = IdentityRequestAccount::LoginState;
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RpMode = blink::mojom::RpMode;
 using TokenStatus = RequestIdTokenStatus;
 
 namespace {

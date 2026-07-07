@@ -20,6 +20,9 @@
 #include "url/url_constants.h"
 
 namespace content::webid {
+
+using UserInfoRequestResult = UserInfoRequest::UserInfoRequestResult;
+
 namespace {
 
 std::string GetConsoleErrorMessage(UserInfoRequestResult error) {
@@ -243,7 +246,7 @@ void UserInfoRequest::OnAccountsResponseReceived(
 }
 
 void UserInfoRequest::MaybeReturnAccounts(
-    const std::vector<IdentityRequestAccountPtr>& accounts) {
+    const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts) {
   DCHECK(!accounts.empty());
 
   bool has_returning_accounts = false;

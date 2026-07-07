@@ -31,15 +31,17 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ApiPermissionStatus =
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using LoginState = content::IdentityRequestAccount::LoginState;
-using blink::mojom::RequestUserInfoStatus;
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ApiPermissionStatus =
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using LoginState = IdentityRequestAccount::LoginState;
+using UserInfoRequestResult = UserInfoRequest::UserInfoRequestResult;
+using blink::mojom::RequestUserInfoStatus;
 
-namespace content::webid {
 namespace {
 
 constexpr char kRpUrl[] = "https://rp.example";

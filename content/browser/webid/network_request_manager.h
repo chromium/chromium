@@ -22,11 +22,6 @@ class DictValue;
 
 namespace content::webid {
 
-using DownloadCallback =
-    base::OnceCallback<void(std::optional<std::string> response_body,
-                            int response_code,
-                            const std::string& mime_type,
-                            bool cors_error)>;
 enum class ParseStatus {
   kSuccess,
   kHttpNotFoundError,
@@ -49,9 +44,6 @@ struct FetchStatus {
   bool from_accounts_push = false;
 };
 
-using ParseJsonCallback =
-    base::OnceCallback<void(FetchStatus, std::optional<base::DictValue>)>;
-
 GURL ExtractEndpoint(const GURL& provider,
                      const base::DictValue& response,
                      const char* key);
@@ -70,6 +62,14 @@ CONTENT_EXPORT std::optional<GURL> ComputeWebIdentitySubdomainWellKnownUrl(
 // Base class containing some methods for creating fetches in webid APIs.
 class CONTENT_EXPORT NetworkRequestManager {
  public:
+  using DownloadCallback =
+      base::OnceCallback<void(std::optional<std::string> response_body,
+                              int response_code,
+                              const std::string& mime_type,
+                              bool cors_error)>;
+  using ParseJsonCallback =
+      base::OnceCallback<void(FetchStatus, std::optional<base::DictValue>)>;
+
   NetworkRequestManager(
       const url::Origin& relying_party_origin,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,

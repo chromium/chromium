@@ -29,18 +29,16 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using PermissionStatus =
-    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+namespace content::webid {
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using DisconnectResponse = IdpNetworkRequestManager::DisconnectResponse;
+using LoginState = IdentityRequestAccount::LoginState;
+using PermissionStatus =
+    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 
-using DisconnectResponse =
-    content::webid::IdpNetworkRequestManager::DisconnectResponse;
-using DisconnectStatus = content::webid::DisconnectStatus;
-using LoginState = content::IdentityRequestAccount::LoginState;
-
-namespace content::webid {
 namespace {
 
 constexpr char kRpUrl[] = "https://rp.example";

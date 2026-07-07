@@ -26,6 +26,8 @@
 
 namespace content::webid {
 
+using ParseJsonCallback = EmailVerifierNetworkRequestManager::ParseJsonCallback;
+
 namespace {
 
 using ::testing::_;
