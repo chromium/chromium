@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectOkResult(act_result);
 
   ActorKeyedService* actor_keyed_service =
-      ActorKeyedService::Get(browser()->profile());
+      ActorKeyedService::Get(browser()->GetProfile());
 
   TestFuture<ActorKeyedService::TabObservationResult> future;
   actor_keyed_service->RequestTabObservation(

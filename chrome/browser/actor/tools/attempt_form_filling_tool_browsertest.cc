@@ -259,7 +259,7 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
     WaitForCopyableViewInWebContents(web_contents());
     ActorKeyedService* actor_keyed_service =
-        ActorKeyedService::Get(browser()->profile());
+        ActorKeyedService::Get(browser()->GetProfile());
     TestFuture<ActorKeyedService::TabObservationResult> tab_observation_future;
     actor_keyed_service->RequestTabObservation(
         *active_tab(), actor_task().id(), std::nullopt,

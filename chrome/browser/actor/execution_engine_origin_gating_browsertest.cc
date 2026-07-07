@@ -257,7 +257,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
     return web_contents()->GetPrimaryMainFrame();
   }
   ActorKeyedService& actor_keyed_service() {
-    return *ActorKeyedService::Get(browser()->profile());
+    return *ActorKeyedService::Get(browser()->GetProfile());
   }
   ActorTask& actor_task() { return *actor_keyed_service().GetTask(task_id_); }
   tabs::TabInterface* active_tab() {

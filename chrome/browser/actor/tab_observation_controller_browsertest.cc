@@ -39,7 +39,7 @@ class TabObservationControllerBrowserTest : public InProcessBrowserTest {
   }
 
   ActorKeyedService* actor_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   TaskId CreateTask() {
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest, ObserveSingleTab) {
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {},
       TabObservationStrategy(), future.GetCallback());
   controller.Start();
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {},
       TabObservationStrategy(), future.GetCallback());
   controller.Start();
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {},
       TabObservationStrategy(), future.GetCallback());
   controller.Start();
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {},
       TabObservationStrategy(), future.GetCallback());
   controller.Start();
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {}, std::move(strategy),
       future.GetCallback());
   controller.Start();
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {}, std::move(strategy),
       future.GetCallback());
   controller.Start();
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false, {}, std::move(strategy),
       future.GetCallback());
   controller.Start();
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false,
       MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
       future.GetCallback());
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false,
       MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
       future.GetCallback());
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
                          std::unique_ptr<ObservationResult>>
       future;
   TabObservationController controller(
-      browser()->profile(), task_id, base::TimeTicks::Now(),
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
       /*skip_async_observation_information=*/false,
       MakeResultVector(MakeScriptToolActionResult()), std::move(strategy),
       future.GetCallback());

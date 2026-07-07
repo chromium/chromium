@@ -66,7 +66,7 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
   void SetUpOnMainThread() override {
     PageStabilityTest::SetUpOnMainThread();
     task_id_ =
-        ActorKeyedService::Get(browser()->profile())
+        ActorKeyedService::Get(browser()->GetProfile())
             ->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   }
 
@@ -78,7 +78,7 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
   }
 
   ActorKeyedService* actor_keyed_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   ActorTask& task() {

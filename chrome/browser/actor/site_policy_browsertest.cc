@@ -78,7 +78,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
         &histogram_tester_for_init_,
         "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
 
-    InitActionBlocklist(browser()->profile());
+    InitActionBlocklist(browser()->GetProfile());
 
     // Simulate the component loading, as the implementation checks it, but the
     // actual list is set via the command line.
@@ -99,7 +99,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-    auto* actor_service = ActorKeyedService::Get(browser()->profile());
+    auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
     MayActOnTab(
         *browser()->tab_strip_model()->GetActiveTab(),
         actor_service->GetJournal(), TaskId(),
@@ -167,7 +167,7 @@ class ActorSitePolicyMissingBlocklistBrowserTest : public InProcessBrowserTest {
 
     // Register the optimization type for the blocklist, but we do not actually
     // load a blocklist.
-    InitActionBlocklist(browser()->profile());
+    InitActionBlocklist(browser()->GetProfile());
   }
 };
 
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-  auto* actor_service = ActorKeyedService::Get(browser()->profile());
+  auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
   MayActOnTab(
       *browser()->tab_strip_model()->GetActiveTab(),
       actor_service->GetJournal(), TaskId(),
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
                        RequireSafeBrowsing) {
   // Disable SafeBrowsing.
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
   // This would otherwise be allowed, but since we don't have SafeBrowsing to
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyNoSafetyChecksBrowserTest,
                        DontRequireSafeBrowsing) {
   // Disable SafeBrowsing.
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
   // SafeBrowsing is not mandatory in this configuration.

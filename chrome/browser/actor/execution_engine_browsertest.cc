@@ -203,7 +203,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   }
 
   ActorKeyedService* actor_keyed_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   ActorTask& actor_task() { return *actor_keyed_service()->GetTask(task_id_); }
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, HistoryBackIsChecked) {
   // Disable SafeBrowsing so that MayActOnUrl rejects every non-localhost URL
   // with kSafeBrowsing.
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
   // Disable BFCache so that `history.back()` is a real navigation.
@@ -1026,11 +1026,11 @@ INSTANTIATE_TEST_SUITE_P(
 class ExecutionEngineDownloadBrowserTest : public ExecutionEngineBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
                                                  true);
     file_activity_observer_ =
         std::make_unique<DownloadTestFileActivityObserver>(
-            browser()->profile());
+            browser()->GetProfile());
     file_activity_observer_->EnableFileChooser(false);
     ExecutionEngineBrowserTest::SetUpOnMainThread();
   }
@@ -1060,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineDownloadBrowserTest,
                               "document.getElementById('download').click()"));
 
   content::DownloadTestObserverTerminal download_observer(
-      browser()->profile()->GetDownloadManager(), 2,
+      browser()->GetProfile()->GetDownloadManager(), 2,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   ClickTarget("#download", mojom::ActionResultCode::kFilePickerTriggered);

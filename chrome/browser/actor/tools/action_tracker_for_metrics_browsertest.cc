@@ -45,7 +45,7 @@ class ActionTrackerForMetricsTest : public ActorToolsTest {
   }
 
   ActorKeyedService* actor_keyed_service() {
-    return ActorKeyedService::Get(browser()->profile());
+    return ActorKeyedService::Get(browser()->GetProfile());
   }
 
   void StopAllTasks() {

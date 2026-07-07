@@ -132,7 +132,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
     const std::vector<actor::ActionResultWithLatencyInfo>& action_results =
         result_future.Get();
     actor::BuildActionsResultWithObservations(
-        *browser()->profile(), /*start_time=*/base::TimeTicks::Now(),
+        *browser()->GetProfile(), /*start_time=*/base::TimeTicks::Now(),
         action_results, actor_task(),
         /*skip_async_observation_information=*/true,
         /*screenshot_collection_options=*/std::nullopt, future.GetCallback());
@@ -343,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
                        SameSiteStrictCookieNotSent) {
   const GURL url = embedded_test_server()->GetURL("/echoheader?cookie");
 
-  ASSERT_TRUE(content::SetCookie(browser()->profile(), url,
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(), url,
                                  "strict_cookie=1; SameSite=Strict"));
-  ASSERT_TRUE(content::SetCookie(browser()->profile(), url,
+  ASSERT_TRUE(content::SetCookie(browser()->GetProfile(), url,
                                  "lax_cookie=1; SameSite=Lax"));
 
   std::unique_ptr<ToolRequest> request =
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   std::vector<GURL> urls = {url};
 
   // Create a second browser window for the tool to operate in.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   // We need a way to ensure the tool uses the second browser, the tool
