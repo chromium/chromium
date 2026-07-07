@@ -1500,8 +1500,9 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
 }
 
 void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
-  profile_->GetPrefs()->SetBoolean(contextual_search::kDriveDisclaimerAccepted,
-                                   true);
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
 }
 
 void ContextualSearchboxHandler::QueryAutocomplete(
@@ -1942,26 +1943,27 @@ void ContextualSearchboxHandler::OnDriveDisclaimerChecked(
   DVLOG(1) << "ContextualSearchboxHandler::OnDriveDisclaimerChecked: status is "
            << drive_picker::DriveDisclaimerController::DisclaimerStatusToString(
                   status);
-  if (!input_state_model_) {
-    return;
-  }
 
+  PrefService* prefs = profile_->GetPrefs();
   contextual_search::DriveConsentState consent_state =
       contextual_search::DriveConsentState::kNotReady;
   switch (status) {
     case drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted:
+      // User accepted the disclaimer.
       consent_state = contextual_search::DriveConsentState::kConsent;
       break;
     case drive_picker::DriveDisclaimerController::DisclaimerStatus::
         kNotAccepted:
+      // Disclaimer has not been accepted.
       consent_state = contextual_search::DriveConsentState::kNotConsent;
       break;
     case drive_picker::DriveDisclaimerController::DisclaimerStatus::kRestricted:
+      // Policy restricts access.
       consent_state = contextual_search::DriveConsentState::kRestricted;
       break;
   }
-
-  input_state_model_->SetDriveConsentState(consent_state);
+  prefs->SetInteger(contextual_search::kDriveConsentState,
+                    static_cast<int>(consent_state));
 }
 
 drive_picker::DriveDisclaimerController*

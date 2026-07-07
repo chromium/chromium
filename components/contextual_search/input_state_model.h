@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/omnibox/common/input_state.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
@@ -28,6 +29,8 @@ using omnibox::ModelMode;
 using omnibox::SearchboxConfig;
 using omnibox::ToolMode;
 
+// Enum values are persisted to preferences (as integers). Do not reorder,
+// delete, or reuse values.
 enum class DriveConsentState {
   kNotReady = 0,
   kRestricted = 1,
@@ -85,8 +88,6 @@ class InputStateModel {
   void SetPermanentlyDisabledInputTypes(
       const std::vector<InputType>& input_types);
 
-  // Sets the checked Drive consent state.
-  void SetDriveConsentState(DriveConsentState state);
 
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();
@@ -105,8 +106,12 @@ class InputStateModel {
     return browser_identity_matches_aim_identity_;
   }
 
+  DriveConsentState drive_consent_state_for_testing() const {
+    return drive_consent_state_;
+  }
+
   // Gets the `PrefService`.
-  void SetPrefService(const PrefService* pref_service);
+  void SetPrefService(PrefService* pref_service);
 
  private:
   // Notify all subscribers of the current `state_`.
@@ -134,6 +139,14 @@ class InputStateModel {
   // Helper to check if the Drive input type is supported.
   bool IsDriveSupported() const;
 
+  // Invoked as a callback by the PrefChangeRegistrar when the observed
+  // user preferences change. Re-reads the current preference values, updates
+  // the model's internal allowed input state, and notifies all subscribers.
+  void OnPrefChanged();
+
+  // Rebuilds allowed input types based on config, sharing, and drive status.
+  void RebuildAllowedInputTypes();
+
   // Returns the rule for a given `model`.
   const omnibox::ModelRule* GetModelRule(ModelMode model) const;
 
@@ -146,10 +159,14 @@ class InputStateModel {
       session_handle_;
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;
 
-  raw_ptr<const PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
   const bool is_off_the_record_;
   const bool browser_identity_matches_aim_identity_;
   GURL current_url_;
+
+  // Configured input types from the searchbox configuration.
+  std::vector<omnibox::InputType> configured_input_types_;
 
   // Stores tools that are permanently disabled by an external trigger and must
   // persist through state updates. Persists after Initialize() is called.

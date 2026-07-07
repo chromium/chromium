@@ -68,9 +68,8 @@ void ContextualSearchService::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       kSearchContentSharingSettings,
       static_cast<int>(kSearchContentSharingAllowedDefault));
-  registry->RegisterBooleanPref(
-      kDriveDisclaimerAccepted, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      kDriveConsentState, 0, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // static
