@@ -30,7 +30,6 @@
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/public/public_key_credential_rp_entity.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace device {
 
@@ -241,7 +240,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // The PIN for the device, or an empty string if no PIN is set.
     std::string pin;
     // The elliptic-curve key. (Not expected to be set externally.)
-    bssl::UniquePtr<EC_KEY> ecdh_key;
+    std::optional<crypto::keypair::PrivateKey> ecdh_key;
     // The random PIN token that is returned as a placeholder for the PIN
     // itself.
     uint8_t pin_token[32];

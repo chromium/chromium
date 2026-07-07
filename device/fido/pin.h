@@ -19,6 +19,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
+#include "crypto/keypair.h"
 #include "device/fido/public/fido_constants.h"
 
 namespace device {
@@ -154,12 +155,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) KeyAgreementResponse {
   // X962 returns the public key from the response in X9.62 form.
   std::array<uint8_t, kP256X962Length> X962() const;
 
-  // x and y contain the big-endian coordinates of a P-256 point. It is ensured
-  // that this is a valid point on the curve.
-  uint8_t x[32], y[32];
+  // The key recovered from the key agreement.
+  crypto::keypair::PublicKey key;
 
  private:
-  KeyAgreementResponse();
+  explicit KeyAgreementResponse(crypto::keypair::PublicKey key);
 };
 
 // SetRequest sets an initial PIN on an authenticator. (This is distinct from

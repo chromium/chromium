@@ -5,6 +5,7 @@
 #include "device/fido/pin.h"
 
 #include "components/cbor/reader.h"
+#include "crypto/keypair.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/pin_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,32 +24,21 @@ using testing::Not;
 
 class PINProtocolTest : public ::testing::TestWithParam<PINUVAuthProtocol> {
  protected:
-  void SetUp() override {
-    peer_key_.reset(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-    CHECK(EC_KEY_generate_key(peer_key_.get()));
-  }
-
   const pin::Protocol& pin_protocol() {
     return pin::ProtocolVersion(GetParam());
   }
 
   pin::KeyAgreementResponse PeerKeyAgreement() {
-    std::array<uint8_t, kP256X962Length> peer_x962;
-    CHECK_EQ(EC_POINT_point2oct(EC_KEY_get0_group(peer_key_.get()),
-                                EC_KEY_get0_public_key(peer_key_.get()),
-                                POINT_CONVERSION_UNCOMPRESSED, peer_x962.data(),
-                                peer_x962.size(), nullptr /* BN_CTX */),
-             peer_x962.size());
     const std::optional<pin::KeyAgreementResponse> peer_response =
         pin::KeyAgreementResponse::ParseFromCOSE(
-            pin::EncodeCOSEPublicKey(peer_x962));
+            pin::EncodeCOSEPublicKey(base::span<const uint8_t, kP256X962Length>(
+                peer_key_.ToUncompressedX962Point())));
     CHECK(peer_response);
     return *peer_response;
   }
 
-  EC_KEY* peer_key() { return peer_key_.get(); }
-
-  bssl::UniquePtr<EC_KEY> peer_key_;
+  crypto::keypair::PrivateKey peer_key_{
+      crypto::keypair::PrivateKey::GenerateEcP256()};
 };
 
 TEST_P(PINProtocolTest, EncapsulateDecapsulate) {
@@ -57,18 +47,13 @@ TEST_P(PINProtocolTest, EncapsulateDecapsulate) {
   const std::array<uint8_t, kP256X962Length> platform_x962 =
       pin_protocol().Encapsulate(PeerKeyAgreement(), &shared_key);
 
-  const bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  const bssl::UniquePtr<EC_POINT> platform_point(EC_POINT_new(p256.get()));
-  ASSERT_TRUE(EC_POINT_oct2point(p256.get(), platform_point.get(),
-                                 platform_x962.data(), platform_x962.size(),
-                                 /*ctx=*/nullptr));
+  std::optional<crypto::keypair::PublicKey> pubkey =
+      crypto::keypair::PublicKey::FromEcP256Point(platform_x962);
 
   EXPECT_EQ(shared_key.size(),
             GetParam() == PINUVAuthProtocol::kV1 ? 32u : 64u);
-  EXPECT_THAT(
-      pin_protocol().CalculateSharedKey(peer_key(), platform_point.get()),
-      ElementsAreArray(shared_key));
+  EXPECT_THAT(pin_protocol().CalculateSharedKey(peer_key_, *pubkey),
+              ElementsAreArray(shared_key));
 }
 
 TEST_P(PINProtocolTest, EncryptDecrypt) {

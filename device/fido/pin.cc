@@ -18,11 +18,11 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/keypair.h"
 #include "device/fido/pin_internal.h"
 #include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device {
@@ -137,7 +137,8 @@ std::optional<RetriesResponse> RetriesResponse::Parse(
   return ret;
 }
 
-KeyAgreementResponse::KeyAgreementResponse() = default;
+KeyAgreementResponse::KeyAgreementResponse(crypto::keypair::PublicKey key)
+    : key(key) {}
 
 // static
 std::optional<KeyAgreementResponse> KeyAgreementResponse::Parse(
@@ -185,34 +186,31 @@ std::optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
 
   const auto& x = x_it->second.GetBytestring();
   const auto& y = y_it->second.GetBytestring();
-  KeyAgreementResponse ret;
-  if (x.size() != sizeof(ret.x) || y.size() != sizeof(ret.y)) {
-    return std::nullopt;
-  }
-  base::span(ret.x).copy_from(x);
-  base::span(ret.y).copy_from(y);
-
-  bssl::UniquePtr<EC_GROUP> group(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-
-  // Check that the point is on the curve.
-  auto point = PointFromKeyAgreementResponse(group.get(), ret);
-  if (!point) {
+  std::array<uint8_t, kP256X962Length> x962;
+  base::SpanWriter<uint8_t> writer(x962);
+  // See https://datatracker.ietf.org/doc/html/rfc5480#section-2.2
+  writer.WriteU8BigEndian(0x04);
+  writer.Write(x);
+  writer.Write(y);
+  if (writer.num_written() != kP256X962Length) {
     return std::nullopt;
   }
 
-  return ret;
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromEcP256Point(x962);
+
+  if (!key) {
+    // Point's not on the curve.
+    return std::nullopt;
+  }
+
+  return KeyAgreementResponse(*key);
 }
 
 std::array<uint8_t, kP256X962Length> KeyAgreementResponse::X962() const {
-  std::array<uint8_t, kP256X962Length> ret;
-  static_assert(ret.size() == 1 + sizeof(x) + sizeof(y),
-                "Bad length for return type");
-  base::SpanWriter<uint8_t> writer(ret);
-  writer.WriteU8BigEndian(POINT_CONVERSION_UNCOMPRESSED);
-  writer.Write(x);
-  writer.Write(y);
-  return ret;
+  std::array<uint8_t, kP256X962Length> out;
+  base::span(out).copy_from(key.ToUncompressedX962Point());
+  return out;
 }
 
 SetRequest::SetRequest(PINUVAuthProtocol protocol,

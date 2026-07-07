@@ -45,8 +45,6 @@
 #include "device/fido/virtual_u2f_device.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
@@ -241,7 +239,7 @@ std::optional<std::vector<uint8_t>> GetPINBytestring(
   return it->second.GetBytestring();
 }
 
-std::optional<bssl::UniquePtr<EC_POINT>> GetPINKey(
+std::optional<crypto::keypair::PublicKey> GetPINKey(
     const cbor::Value::MapValue& request,
     pin::RequestKey map_key) {
   const auto it = request.find(cbor::Value(static_cast<int>(map_key)));
@@ -254,9 +252,7 @@ std::optional<bssl::UniquePtr<EC_POINT>> GetPINKey(
     return std::nullopt;
   }
 
-  bssl::UniquePtr<EC_GROUP> group(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  return pin::PointFromKeyAgreementResponse(group.get(), *response).value();
+  return crypto::keypair::PublicKey::FromEcP256Point(response->X962());
 }
 
 // ConfirmPresentedPIN checks whether |encrypted_pin_hash| is a valid proof-of-
@@ -1963,16 +1959,11 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       break;
 
     case static_cast<int>(device::pin::Subcommand::kGetKeyAgreement): {
-      std::array<uint8_t, kP256X962Length> x962;
-      CHECK_EQ(x962.size(),
-               EC_POINT_point2oct(
-                   EC_KEY_get0_group(mutable_state()->ecdh_key.get()),
-                   EC_KEY_get0_public_key(mutable_state()->ecdh_key.get()),
-                   POINT_CONVERSION_UNCOMPRESSED, x962.data(), x962.size(),
-                   nullptr /* BN_CTX */));
-
+      const std::vector<uint8_t> x962 =
+          mutable_state()->ecdh_key->ToUncompressedX962Point();
+      const auto x962_span = base::span<const uint8_t, kP256X962Length>(x962);
       response_map.emplace(static_cast<int>(pin::ResponseKey::kKeyAgreement),
-                           pin::EncodeCOSEPublicKey(x962));
+                           pin::EncodeCOSEPublicKey(x962_span));
       break;
     }
 
@@ -1998,8 +1989,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
       std::vector<uint8_t> shared_key =
           pin::ProtocolVersion(*pin_protocol)
-              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
-                                  peer_key->get());
+              .CalculateSharedKey(*mutable_state()->ecdh_key, *peer_key);
 
       CtapDeviceResponseCode err =
           SetPIN(*pin_protocol, mutable_state(), shared_key, *encrypted_pin,
@@ -2036,8 +2026,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
       std::vector<uint8_t> shared_key =
           pin::ProtocolVersion(*pin_protocol)
-              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
-                                  peer_key->get());
+              .CalculateSharedKey(*mutable_state()->ecdh_key, *peer_key);
 
       CtapDeviceResponseCode err = ConfirmPresentedPIN(
           *pin_protocol, mutable_state(), shared_key, *encrypted_pin_hash);
@@ -2104,8 +2093,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
       std::vector<uint8_t> shared_key =
           pin::ProtocolVersion(*pin_protocol)
-              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
-                                  peer_key->get());
+              .CalculateSharedKey(*mutable_state()->ecdh_key, *peer_key);
 
       CtapDeviceResponseCode err = ConfirmPresentedPIN(
           *pin_protocol, mutable_state(), shared_key, *encrypted_pin_hash);
@@ -2162,8 +2150,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
       std::vector<uint8_t> shared_key =
           pin::ProtocolVersion(*pin_protocol)
-              .CalculateSharedKey(mutable_state()->ecdh_key.get(),
-                                  peer_key->get());
+              .CalculateSharedKey(*mutable_state()->ecdh_key, *peer_key);
 
       --mutable_state()->uv_retries;
 
@@ -2907,9 +2894,7 @@ void VirtualCtap2Device::InitPendingRegistrations(
 }
 
 void VirtualCtap2Device::RegenerateKeyAgreementKey() {
-  bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_generate_key(key.get()));
-  mutable_state()->ecdh_key = std::move(key);
+  mutable_state()->ecdh_key = crypto::keypair::PrivateKey::GenerateEcP256();
 }
 
 void VirtualCtap2Device::GetNextRP(cbor::Value::MapValue* response_map) {
@@ -3002,17 +2987,15 @@ VirtualCtap2Device::DecryptRequestHMACSecret(
   const pin::Protocol& pin_protocol =
       pin::ProtocolVersion(*request_pin_protocol);
 
-  const auto& x962 = request_hmac_secret.public_key_x962;
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  bssl::UniquePtr<EC_POINT> platform_point(EC_POINT_new(p256.get()));
-  if (!EC_POINT_oct2point(p256.get(), platform_point.get(), x962.data(),
-                          x962.size(), /*ctx=*/nullptr)) {
+  std::optional<crypto::keypair::PublicKey> platform_pubkey =
+      crypto::keypair::PublicKey::FromEcP256Point(
+          request_hmac_secret.public_key_x962);
+  if (!platform_pubkey) {
     NOTREACHED();
   }
 
   std::vector<uint8_t> shared_key = pin_protocol.CalculateSharedKey(
-      mutable_state()->ecdh_key.get(), platform_point.get());
+      *mutable_state()->ecdh_key, *platform_pubkey);
 
   const auto& encrypted_salts = request_hmac_secret.encrypted_salts;
   std::vector<uint8_t> salts =
