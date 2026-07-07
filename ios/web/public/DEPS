@@ -15,3 +15,5 @@ specific_include_rules = {
     "+ios/web",
   ],
 }
+
+new_usages_require_review = False

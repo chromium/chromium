@@ -31,3 +31,5 @@ include_rules = [
   "+ios/third_party/earl_grey2/src/TestLib",
   "+mojo/core/embedder/embedder.h",
 ]
+
+new_usages_require_review = True
