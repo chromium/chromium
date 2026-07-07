@@ -632,7 +632,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(buildDownloadsItem());
 
         // Bookmarks
-        modelList.add(buildBookmarksParentItem());
+        modelList.add(buildBookmarksParentItem(currentTab));
 
         // Extensions
         if (shouldShowExtensionsItem()) {
@@ -1609,7 +1609,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
     }
 
-    private ListItem buildBookmarksParentItem() {
+    private ListItem buildBookmarksParentItem(@Nullable Tab currentTab) {
         assert shouldShowBookmarksParentItem();
 
         Supplier<List<ListItem>> submenuItemsSupplier =
@@ -1625,7 +1625,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
                     submenuItems.add(buildBookmarksItem(/* showIcon= */ false));
 
-                    submenuItems.add(buildReadingListItem());
+                    submenuItems.add(buildReadingListItem(currentTab));
 
                     submenuItems.add(
                             new ListItem(
@@ -1718,7 +1718,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return createMenuItemWithSubmenuListItem(model, /* showIcon= */ false);
     }
 
-    private ListItem buildReadingListItem() {
+    private ListItem buildReadingListItem(@Nullable Tab currentTab) {
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(
                 createStandardListItem(
@@ -1728,13 +1728,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 Resources.ID_NULL),
                         /* showIcon= */ false));
 
-        submenuItems.add(
-                createStandardListItem(
-                        buildModelForStandardMenuItem(
-                                R.id.add_to_reading_list_menu_id,
-                                R.string.menu_add_to_reading_list,
-                                Resources.ID_NULL),
-                        /* showIcon= */ false));
+        if (currentTab != null && BookmarkUtils.isReadingListSupported(currentTab.getUrl())) {
+            submenuItems.add(
+                    createStandardListItem(
+                            buildModelForStandardMenuItem(
+                                    R.id.add_to_reading_list_menu_id,
+                                    R.string.menu_add_to_reading_list,
+                                    Resources.ID_NULL),
+                            /* showIcon= */ false));
+        }
 
         PropertyModel model =
                 buildModelForMenuItemWithSubmenu(

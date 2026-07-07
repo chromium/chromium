@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -478,11 +479,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
 
         mTabbedAppMenuPropertiesDelegate.setImageFetcherForTesting(mBookmarkImageFetcher);
+        BookmarkUtils.setReadingListSupportedForTesting(true);
     }
 
     @After
     public void tearDown() {
         AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
+        BookmarkUtils.setReadingListSupportedForTesting(null);
     }
 
     @Nullable
@@ -5396,5 +5399,49 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private static MenuItem item(Object id, MenuItem... subItems) {
         return new MenuItem(id, subItems);
+    }
+
+    @Test
+    public void testReadingListMenuItem_Supported() {
+        setUpMocksForPageMenu();
+        BookmarkUtils.setReadingListSupportedForTesting(true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        List<ListItem> bookmarksSubItems =
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem readingListParent =
+                findItemById(bookmarksSubItems, R.id.reading_list_parent_menu_id);
+        List<ListItem> subItems =
+                readingListParent
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get();
+        assertNotNull(findItemById(subItems, R.id.add_to_reading_list_menu_id));
+        BookmarkUtils.setReadingListSupportedForTesting(null);
+    }
+
+    @Test
+    public void testReadingListMenuItem_NotSupported() {
+        setUpMocksForPageMenu();
+        BookmarkUtils.setReadingListSupportedForTesting(false);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
+        List<ListItem> bookmarksSubItems =
+                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem readingListParent =
+                findItemById(bookmarksSubItems, R.id.reading_list_parent_menu_id);
+        List<ListItem> subItems =
+                readingListParent
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get();
+        assertNull(findItemById(subItems, R.id.add_to_reading_list_menu_id));
+        BookmarkUtils.setReadingListSupportedForTesting(null);
     }
 }

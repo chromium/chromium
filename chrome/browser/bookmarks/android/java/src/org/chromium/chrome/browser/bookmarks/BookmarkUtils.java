@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -901,5 +902,10 @@ public class BookmarkUtils {
         @SuppressWarnings("deprecation")
         Locale locale = activity.getResources().getConfiguration().locale;
         return locale;
+    }
+
+    public static void setReadingListSupportedForTesting(Boolean supported) {
+        sReadingListSupportedForTesting = supported;
+        ResettersForTesting.register(() -> sReadingListSupportedForTesting = null);
     }
 }
