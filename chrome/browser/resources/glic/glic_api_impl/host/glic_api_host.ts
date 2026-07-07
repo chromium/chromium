@@ -547,7 +547,10 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   }
 
   async openLinkInNewTab(url: string) {
-    await this.handler.createTab(urlFromClient(url), false, null);
+    await this.handler.createTab(urlFromClient(url), {
+      openInBackground: false,
+      windowId: null,
+    });
   }
 
   async shouldAllowMediaPermissionRequest(): Promise<boolean> {

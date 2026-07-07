@@ -295,7 +295,7 @@ GlicSharingManagerImpl::CheckPreliminaryContextSharingEligibility(
 
 void GlicSharingManagerImpl::GetContextFromTab(
     tabs::TabHandle tab_handle,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   if (auto error = CheckPreliminaryContextSharingEligibility(tab_handle)) {
     std::move(callback).Run(base::unexpected(*error));
@@ -309,7 +309,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
 
 void GlicSharingManagerImpl::GetContextForActorFromTab(
     tabs::TabHandle tab_handle,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   auto* tab = tab_handle.Get();
   if (!tab) {
@@ -380,7 +380,7 @@ base::WeakPtr<GlicSharingManagerInternal> GlicSharingManagerImpl::GetWeakPtr() {
 
 void GlicSharingManagerImpl::GetContextFromTabImpl(
     tabs::TabInterface* tab,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   FetchPageContext(
       tab, options,

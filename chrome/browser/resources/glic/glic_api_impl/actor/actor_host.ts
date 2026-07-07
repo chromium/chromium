@@ -6,7 +6,7 @@
 // to the browser via mojo.
 
 import type * as actorWebUiMojom from '../../actor_webui.mojom-webui.js';
-import type {ActorClientInterface, ActorHandlerInterface, ActorTaskState as ActorTaskStateMojo, TabContext as TabContextMojo} from '../../glic.mojom-webui.js';
+import type {ActorClientInterface, ActorHandlerInterface, ActorTaskState as ActorTaskStateMojo, TabContextResult as TabContextMojo} from '../../glic.mojom-webui.js';
 import type * as api from '../../glic_api/glic_api.js';
 import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, FormFillingResponse, Journal, TabContextOptions, TaskOptions} from '../../glic_api/glic_api.js';
 import {CreateTaskErrorReason, FeatureMode, PerformActionsErrorReason} from '../../glic_api/glic_api.js';
@@ -19,7 +19,7 @@ import {assertNever} from '../transport/messaging.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageHandler, PostMessageRemote} from '../transport/post_message_transport.js';
 
-import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo, GmailOtpOptInResult as GmailOtpOptInResultMojo, GmailOtpOptInErrorReason as GmailOtpOptInErrorReasonMojo} from './../../actor_webui.mojom-webui.js';
+import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, GmailOtpOptInErrorReason as GmailOtpOptInErrorReasonMojo, GmailOtpOptInResult as GmailOtpOptInResultMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
 import type * as actorTypes from './actor_types.js';
 import type {ActorClient, ActorHost} from './actor_types.js';
 
@@ -144,16 +144,13 @@ export class ActorHostMessageHandler implements PostMessageHandler<ActorHost> {
 
   async createActorTab(request: {
     taskId: number,
-    options: {
-      initiatorTabId?: string,
-      initiatorWindowId?: string,
-      openInBackground?: boolean,
-    },
+    options: api.CreateActorTabOptions,
   }) {
-    const response = await this.actorHandler.createActorTab(
-        request.taskId, request.options.openInBackground === true,
-        idFromClient(request.options.initiatorTabId),
-        idFromClient(request.options.initiatorWindowId));
+    const response = await this.actorHandler.createActorTab(request.taskId, {
+      initiatorTabId: idFromClient(request.options.initiatorTabId),
+      initiatorWindowId: idFromClient(request.options.initiatorWindowId),
+      openInBackground: request.options.openInBackground === true,
+    });
     const tabData = response.tabData;
     if (tabData) {
       return {
@@ -507,5 +504,3 @@ function gmailOtpOptInResultToMojo(
     permissionGranted: response.permissionGranted,
   };
 }
-
-

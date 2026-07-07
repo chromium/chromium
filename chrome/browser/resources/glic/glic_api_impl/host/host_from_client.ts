@@ -167,12 +167,10 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     url: string,
     options: {openInBackground?: boolean, windowId?: string},
   }) {
-    const response = await this.handler.createTab(
-        urlFromClient(request.url),
-        request.options.openInBackground !== undefined ?
-            request.options.openInBackground :
-            false,
-        idFromClient(request.options.windowId));
+    const response = await this.handler.createTab(urlFromClient(request.url), {
+      openInBackground: request.options.openInBackground === true,
+      windowId: idFromClient(request.options.windowId),
+    });
     const tabData = response.tabData;
     if (tabData) {
       return {

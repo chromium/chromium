@@ -458,7 +458,7 @@ enum CaptureScreenshotErrorReason {
 
 union GetContextResult {
   string error_reason;
-  TabContext tab_context;
+  TabContextResult tab_context;
 };
 
 struct GetContextResultWithActionResultCode {
@@ -503,8 +503,9 @@ enum SbThreatType {
   kUnwantedSoftware = 3,
 };
 
+// @generate glic_api
 // The result from checking a page with Safe Browsing.
-struct SafeBrowsingVerdictResult {
+struct SafeBrowsingVerdict {
   string url;
   SbThreatType threat_type;
   bool show_interstitial;
@@ -513,7 +514,7 @@ struct SafeBrowsingVerdictResult {
 // @generate glic_api
 // The type of counter abuse verdict that was received.
 struct CounterAbuseVerdict {
-  SafeBrowsingVerdictResult sb_verdict_result;
+  SafeBrowsingVerdict sb_verdict_result;
 };
 
 // @generate glic_api
@@ -662,29 +663,60 @@ struct ScreenshotCollectionOptions {
   ScreenshotCompressionQuality screenshot_compression_quality;
 };
 
-// Options for getting tab context.
-struct GetTabContextOptions {
-  // Whether to include inner text in the response.
-  bool include_inner_text;
+// @generate glic_api
+// Options for getting context from a tab.
+struct TabContextOptions {
+  // If true, an innerText representation of the page will be included in the
+  // response.
+  // @glic_optional
+  bool inner_text;
+
   // Maximum size in UTF-8 bytes that the returned innerText data may contain.
+  // If exceeded, the innerText will be truncated to the nearest character that
+  // will leave the string less than or equal to the specified byte size.
+  // Defaults to DEFAULT_INNER_TEXT_BYTES_LIMIT. If it is zero or negative,
+  // the innerText will be empty.
+  // @glic_optional
   uint32 inner_text_bytes_limit;
-  // Whether to include a viewport screenshot in the response.
-  bool include_viewport_screenshot;
-  // Whether to include  in the response.
-  bool include_annotated_page_content;
-  // Maximum number of meta tags (per Document)to include in the response.
+
+  // @deprecated Use `screenshotCollectionOptions` instead.
+  //
+  // If true, a screenshot of the user visible viewport will be included in the
+  // response. If `screenshotCollectionOptions` is set, the screenshot will be
+  // captured with the specified options regardless of this field.
+  // @glic_optional
+  bool viewport_screenshot;
+
+  // If true, returns the serialized annotatedPageContent proto.
+  // @glic_optional
+  bool annotated_page_content;
+
+  // Maximum number of meta tags (per Document/Frame) to include in the
+  // response. Defaults to 0 if not provided.
+  // @glic_optional
   uint32 max_meta_tags;
-  // Whether to include PDF data in the response.
-  bool include_pdf;
-  // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
-  // data is returned.
+
+  // If true, and the focused tab contains a PDF as the top level document,
+  // returns PdfDocumentData.
+  // @glic_optional
+  bool pdf_data;
+
+  // Maximum size in bytes for returned PDF data. If this size is exceeded,
+  // PdfDocumentData is still returned, but it will not contain PDF bytes.
+  // Defaults to DEFAULT_PDF_SIZE_LIMIT. If it is zero or negative, PDF bytes
+  // will never be returned.
+  // @glic_optional
   uint32 pdf_size_limit;
+
   // The mode of the annotated page content if included in the response. This
   // maps directly to the AnnotatedPageContentMode enum in the proto.
-  //
-  // If invalid, falls back to using ANNOTATED_PAGE_CONTENT_MODE_DEFAULT.
+  // @glic_optional
   uint32 annotated_page_content_mode = 0;
-  // The screenshot collection options to use for the screenshot.
+
+  // If set, the screenshot collection options will be used to capture the
+  // screenshot. Otherwise, the screenshot will be captured with the default
+  // options.
+  // @glic_optional
   ScreenshotCollectionOptions screenshot_collection_options;
 };
 
@@ -1070,6 +1102,23 @@ interface ActorClient {
       => (actor.webui.mojom.GmailOtpOptInResult result);
 };
 
+// @generate glic_api
+// Holds optional parameters for `GlicBrowserHost#createActorTab`.
+struct CreateActorTabOptions {
+  // The tabId of the tab from which the conversation turn was initiated.
+  int32? initiator_tab_id;
+
+  // The windowId of the window which the conversation turn was initiated.
+  // This may differ from the initiatorTabId's current window if the tab is
+  // moved to a different window or closed.
+  int32? initiator_window_id;
+
+  // @glic_optional
+  // Determines if the new tab should be created in the background or not. If
+  // not provided, defaults to `false`.
+  bool open_in_background;
+};
+
 // Interface for actor-related functionality.
 interface ActorHandler {
   // Called when a form is presented in the autofill selection dialog.
@@ -1093,7 +1142,7 @@ interface ActorHandler {
   // Returns the context from the tab associated with `tab_id` for an actor.
   // This skips the focus check.
   [RuntimeFeature=glic.mojom.features.kGlicActorTabContext]
-  GetContextForActorFromTab(int32 tab_id, GetTabContextOptions options)
+  GetContextForActorFromTab(int32 tab_id, TabContextOptions options)
       => (GetContextResult result);
 
   // Creates a new task in the actor framework and returns the new task's ID.
@@ -1137,7 +1186,7 @@ interface ActorHandler {
   // reimposed. After resumption, computes the context of the tab associated
   // with the task according to the given `context_options` and returns the
   // result. Returns an error if the task doesn't exist or is not paused.
-  ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
+  ResumeActorTask(int32 task_id, TabContextOptions context_options)
       => (GetContextResultWithActionResultCode result);
 
   // Interrupts the task associated with the given id. This is
@@ -1161,10 +1210,8 @@ interface ActorHandler {
   // Note: task_id is used primarily for the journal, the new tab isn't
   // associated with the task in any way until acted on. Returns the TabData
   // for the newly created tab or undefined if tab creation failed.
-  CreateActorTab(int32 task_id,
-                 bool open_in_background,
-                 int32? initiator_tab_id,
-                 int32? initiator_window_id) => (TabData? tab_data);
+  CreateActorTab(int32 task_id, CreateActorTabOptions options)
+      => (TabData? tab_data);
 
   // Log a begin event in the journal.
   LogBeginAsyncEvent(
@@ -1216,8 +1263,7 @@ enum CancelActionsResult {
 struct CaptureRegionParams {
   // @glic_type string
   int32 tab_id;
-  // @glic_type TabContextOptions
-  GetTabContextOptions options;
+  TabContextOptions options;
 };
 
 // Interface for annotation-related functionality, used by the web client.
@@ -1285,6 +1331,16 @@ interface SkillsClient {
   NotifySkillToInvokeChanged(Skill skill);
 };
 
+// @generate glic_api
+// Holds optional parameters for `GlicBrowserHost#createTab`.
+struct CreateTabOptions {
+  // Determines if the new tab should be created in the background or not.
+  // @glic_optional
+  bool open_in_background;
+  // The windowId of the window where the new tab should be created at.
+  int32? window_id;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -1317,7 +1373,7 @@ interface WebClientHandler {
   // Creates a new tab. `url` must have a http or https protocol.
   // `tab_data` is null if the tab could not be created, which may happen if the
   // url or window_id is invalid.
-  CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
+  CreateTab(url.mojom.Url url, CreateTabOptions create_options)
       => (TabData? tab_data);
 
   // Activates an existing tab matching `exact_url` or the wildcard pattern in
@@ -1368,14 +1424,14 @@ interface WebClientHandler {
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
-  GetContextFromFocusedTab(GetTabContextOptions options)
+  GetContextFromFocusedTab(TabContextOptions options)
       => (GetContextResult result);
 
   // Returns the context from the tab associated with `tab_id`.
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
-  GetContextFromTab(int32 tab_id, GetTabContextOptions options)
+  GetContextFromTab(int32 tab_id, TabContextOptions options)
       => (GetContextResult result);
 
   // Returns raw image bytes and MIME type for an image node from the tab
@@ -1466,7 +1522,7 @@ interface WebClientHandler {
   // pref value.
   SetLocationPermissionState(bool enabled) => ();
 
-  // Set the state of the TabContext permission pref:
+  // Set the state of the TabContextResult permission pref:
   // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
@@ -2019,12 +2075,13 @@ struct ParentConversationMetadata {
 // Part of an additional context object.
 union AdditionalContextPart {
   ContextData data;
-  // The four items below can be contained by TabContext and are deprecated.
+  // The four items below can be contained by TabContextResult and are
+  // deprecated.
   Screenshot screenshot;
   WebPageData web_page_data;
   AnnotatedPageData annotated_page_data;
   PdfDocumentData pdf_document_data;
-  TabContext tab_context;
+  TabContextResult tab_context;
   CapturedRegion region;
   PendingCapturedRegion pending_region;
   ParentConversationMetadata parent_conversation_metadata;
@@ -2220,8 +2277,9 @@ interface WebClient {
       => (bool success);
 };
 
+// @generate glic_api
 // Information extracted from a tab.
-struct TabContext {
+struct TabContextResult {
   // Metadata about the tab that holds the page. Always provided.
   TabData tab_data;
   // Web page data, if requested.
@@ -2229,6 +2287,7 @@ struct TabContext {
   // A screenshot of the user-visible portion of the tab. Provided only if
   // requested.
   Screenshot? viewport_screenshot;
+  // @glic_type ReadableStream<Uint8Array>
   // Proto for ScreenshotInfo.
   // See components/optimization_guide/proto/features/common_quality_data.proto.
   // Provided if include_viewport_screenshot was requested in
@@ -2427,12 +2486,15 @@ struct PendingCapturedRegion {
   CapturedRegion region;
 };
 
+// @generate glic_api
 // The result of a successful region capture.
-// This result is deprecated, results for region capture are now
-// pushed via NotifyAdditionalContext with the source being kRegionSelection.
+/// This result is deprecated, results for region capture are now
+/// pushed via NotifyAdditionalContext with the source being kRegionSelection.
 struct CaptureRegionResult {
+  // @glic_optional
   // The ID of the tab from which the region was captured.
   int32 tab_id;
+  // @glic_optional
   // The captured region. This can be expanded with other region types like
   // polygons in the future.
   CapturedRegion region;

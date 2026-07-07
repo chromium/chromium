@@ -19,7 +19,7 @@ namespace glic {
 // region.
 void FetchPageContext(
     tabs::TabInterface* tab,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(
         base::expected<glic::mojom::GetContextResultPtr,
                        page_content_annotations::FetchPageContextErrorDetails>)>

@@ -43,16 +43,16 @@ base::Value ConvertToValue(const page_content_annotations::ScreenshotOptions::
 }
 
 template <>
-struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
-  static base::Value Convert(const glic::mojom::GetTabContextOptions& in) {
+struct TypeConverter<base::Value, glic::mojom::TabContextOptions> {
+  static base::Value Convert(const glic::mojom::TabContextOptions& in) {
     base::Value raw_out(base::Value::Type::DICT);
     base::DictValue& out = raw_out.GetDict();
-    out.Set("includeInnerText", in.include_inner_text);
+    out.Set("innerText", in.inner_text);
     out.Set("innerTextBytesLimit", static_cast<int>(in.inner_text_bytes_limit));
-    out.Set("includeViewportScreenshot", in.include_viewport_screenshot);
-    out.Set("includeAnnotatedPageContent", in.include_annotated_page_content);
+    out.Set("viewportScreenshot", in.viewport_screenshot);
+    out.Set("annotatedPageContent", in.annotated_page_content);
     out.Set("maxMetaTags", static_cast<int>(in.max_meta_tags));
-    out.Set("includePdf", in.include_pdf);
+    out.Set("pdfData", in.pdf_data);
     out.Set("pdfSizeLimit", static_cast<int>(in.pdf_size_limit));
     out.Set("annotatedPageContentMode",
             static_cast<int>(in.annotated_page_content_mode));

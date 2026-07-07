@@ -39,7 +39,7 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
     base::span<const uint8_t> thumbnail_data,
     tabs::TabHandle handle,
     const std::string& mime_type,
-    mojom::TabContextPtr tab_context) {
+    mojom::TabContextResultPtr tab_context) {
   // TODO(b:448726704): update to use an Image part.
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
@@ -167,10 +167,10 @@ void GlicShareImageHandler::OnReceivedImage(
   mime_type_ = mime_type;
   thumbnail_data_ = thumbnail_data;
 
-  auto options = mojom::GetTabContextOptions::New();
+  auto options = mojom::TabContextOptions::New();
   // Ensure we don't have a huge number; matches actor_keyed_service.cc.
   options->max_meta_tags = 32;
-  options->include_annotated_page_content = true;
+  options->annotated_page_content = true;
 
   FetchPageContext(tab, *options,
                    base::BindOnce(&GlicShareImageHandler::OnReceivedTabContext,

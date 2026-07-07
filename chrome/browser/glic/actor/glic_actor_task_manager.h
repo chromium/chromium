@@ -139,7 +139,7 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
   // mojom::ActorHandler:
   void GetContextForActorFromTab(
       int32_t tab_id,
-      mojom::GetTabContextOptionsPtr options,
+      mojom::TabContextOptionsPtr options,
       GetContextForActorFromTabCallback callback) override;
 
   // actor::mojom::ActorHandler:
@@ -156,16 +156,14 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
                       mojom::ActorTaskPauseReason pause_reason,
                       std::optional<int32_t> tab_handle) override;
   void ResumeActorTask(int32_t task_id,
-                       mojom::GetTabContextOptionsPtr context_options,
+                       mojom::TabContextOptionsPtr context_options,
                        ResumeActorTaskCallback callback) override;
   void InterruptActorTask(
       int32_t task_id,
       std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
   void UninterruptActorTask(int32_t task_id) override;
   void CreateActorTab(int32_t task_id,
-                      bool open_in_background,
-                      std::optional<int32_t> initiator_tab_id,
-                      std::optional<int32_t> initiator_window_id,
+                      mojom::CreateActorTabOptionsPtr options,
                       CreateActorTabCallback callback) override;
 
   void LogBeginAsyncEvent(uint64_t event_async_id,

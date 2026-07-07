@@ -229,7 +229,7 @@ void SelectionOverlayController::CaptureRegion(
     tabs::TabInterface* tab,
     GlicSharingManagerInternal& sharing_manager,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-    mojom::GetTabContextOptionsPtr options) {
+    mojom::TabContextOptionsPtr options) {
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
   if (!web_contents) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
@@ -285,7 +285,7 @@ void SelectionOverlayController::CaptureRegion(
   selection_overlay_controller->Show(std::move(options));
 }
 
-void SelectionOverlayController::Show(mojom::GetTabContextOptionsPtr options) {
+void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
   options_ = std::move(options);
   ShowModalUI();
 }
@@ -366,9 +366,9 @@ bool SelectionOverlayController::HandleKeyboardEvent(
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {
-  auto fallback_options = mojom::GetTabContextOptions::New();
-  fallback_options->include_viewport_screenshot = true;
-  fallback_options->include_annotated_page_content = true;
+  auto fallback_options = mojom::TabContextOptions::New();
+  fallback_options->viewport_screenshot = true;
+  fallback_options->annotated_page_content = true;
 
   const auto& options = options_ ? *options_ : *fallback_options;
 
@@ -644,7 +644,7 @@ SelectionOverlayController::CreateAdditionalContext(
                           glic::mojom::CapturedRegionPtr>> regions) {
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
-  mojom::TabContextPtr tab_context = tab_context_.Clone();
+  mojom::TabContextResultPtr tab_context = tab_context_.Clone();
   parts.push_back(glic::mojom::AdditionalContextPart::NewTabContext(
       std::move(tab_context)));
   for (auto& region : regions) {

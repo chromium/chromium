@@ -45,7 +45,7 @@ const char16_t kGlicDragIdKey[] = u"chromium/x-drag-id";
 glic::mojom::AdditionalContextPtr BuildDragDropAdditionalContext(
     const content::DropData& drop_data,
     tabs::TabInterface* source_tab,
-    glic::mojom::TabContextPtr tab_context) {
+    glic::mojom::TabContextResultPtr tab_context) {
   auto context = glic::mojom::AdditionalContext::New();
   context->source = glic::mojom::AdditionalContextSource::kWebDragDrop;
 
@@ -328,9 +328,9 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
 
   content::DropData augmented_drop_data = RestoreDragMetadata(drop_data);
 
-  auto options = mojom::GetTabContextOptions::New();
+  auto options = mojom::TabContextOptions::New();
   options->max_meta_tags = 32;
-  options->include_annotated_page_content = true;
+  options->annotated_page_content = true;
 
   FetchPageContext(
       source_tab, *options,

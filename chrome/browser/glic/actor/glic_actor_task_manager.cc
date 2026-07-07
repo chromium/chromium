@@ -703,7 +703,7 @@ void GlicActorClientSession::PauseActorTask(
 
 void GlicActorClientSession::ResumeActorTask(
     int32_t task_id,
-    mojom::GetTabContextOptionsPtr context_options,
+    mojom::TabContextOptionsPtr context_options,
     ResumeActorTaskCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
   instance_metrics().OnResumeActorTask();
@@ -779,7 +779,7 @@ void GlicActorClientSession::ResumeActorTask(
         CHECK(page_context.screenshot_result.has_value());
         CHECK(page_context.annotated_page_content_result.has_value());
 
-        auto glic_tab_context = mojom::TabContext::New();
+        auto glic_tab_context = mojom::TabContextResult::New();
 
         glic_tab_context->tab_data = std::move(tab_data);
 
@@ -905,21 +905,20 @@ void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {
 
 void GlicActorClientSession::CreateActorTab(
     int32_t task_id,
-    bool open_in_background,
-    std::optional<int32_t> initiator_tab_id,
-    std::optional<int32_t> initiator_window_id,
+    mojom::CreateActorTabOptionsPtr options,
     CreateActorTabCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
   tabs::TabHandle initiator_tab_handle =
-      initiator_tab_id.has_value() ? tabs::TabHandle(*initiator_tab_id)
-                                   : tabs::TabHandle::Null();
+      options->initiator_tab_id.has_value()
+          ? tabs::TabHandle(*options->initiator_tab_id)
+          : tabs::TabHandle::Null();
   SessionID initiator_window_session_id =
-      initiator_window_id.has_value()
-          ? SessionID::FromSerializedValue(*initiator_window_id)
+      options->initiator_window_id.has_value()
+          ? SessionID::FromSerializedValue(*options->initiator_window_id)
           : SessionID::InvalidValue();
 
   actor_keyed_service().CreateActorTab(
-      actor_task_id, open_in_background, initiator_tab_handle,
+      actor_task_id, options->open_in_background, initiator_tab_handle,
       initiator_window_session_id,
       base::BindOnce(&GlicActorClientSession::CreateActorTabFinished,
                      GetWeakPtr(), std::move(callback)));
@@ -1255,7 +1254,7 @@ mojom::ActorClient* GlicActorClientSession::GetClient() {
 
 void GlicActorClientSession::GetContextForActorFromTab(
     int32_t tab_id,
-    mojom::GetTabContextOptionsPtr options,
+    mojom::TabContextOptionsPtr options,
     GetContextForActorFromTabCallback callback) {
   GlicKeyedService* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(manager_->profile());

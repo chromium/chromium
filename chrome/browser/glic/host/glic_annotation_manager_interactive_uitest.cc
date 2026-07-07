@@ -201,8 +201,8 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
 
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
-      auto options = mojom::GetTabContextOptions::New();
-      options->include_annotated_page_content = true;
+      auto options = mojom::TabContextOptions::New();
+      options->annotated_page_content = true;
 
       FocusedTabData data =
           GetHost()->GetSharingManagerInternal().GetFocusedTabData();

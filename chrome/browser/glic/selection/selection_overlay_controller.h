@@ -77,9 +77,9 @@ class SelectionOverlayController
       tabs::TabInterface* tab,
       GlicSharingManagerInternal& sharing_manager,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-      mojom::GetTabContextOptionsPtr options);
+      mojom::TabContextOptionsPtr options);
 
-  void Show(mojom::GetTabContextOptionsPtr options);
+  void Show(mojom::TabContextOptionsPtr options);
   void Close();
 
   // `selection::SelectionOverlayPageHandler`:
@@ -167,8 +167,8 @@ class SelectionOverlayController
   bool screenshot_available_ = false;
   SkBitmap initial_rgb_screenshot_;
   SkBitmap redacted_screenshot_;
-  mojom::TabContextPtr tab_context_;
-  mojom::GetTabContextOptionsPtr options_;
+  mojom::TabContextResultPtr tab_context_;
+  mojom::TabContextOptionsPtr options_;
   // Caches the user-selected region. To be renderer on top of
   // `initial_screenshot_`.
   base::flat_map<base::UnguessableToken, selection::SelectedRegionPtr>

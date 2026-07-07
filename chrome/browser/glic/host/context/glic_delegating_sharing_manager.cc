@@ -162,7 +162,7 @@ GlicDelegatingSharingManagerBase::CheckPreliminaryContextSharingEligibility(
 
 void GlicDelegatingSharingManagerBase::GetContextFromTab(
     tabs::TabHandle tab_handle,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   if (!sharing_manager_delegate_) {
     std::move(callback).Run(base::unexpected(
@@ -177,7 +177,7 @@ void GlicDelegatingSharingManagerBase::GetContextFromTab(
 
 void GlicDelegatingSharingManagerBase::GetContextForActorFromTab(
     tabs::TabHandle tab_handle,
-    const mojom::GetTabContextOptions& options,
+    const mojom::TabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   if (!sharing_manager_delegate_) {
     std::move(callback).Run(base::unexpected(

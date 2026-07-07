@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
   tab_data->url = GURL("http://example.com");
   tab_data->document_mime_type = "text/html";
 
-  auto tab_context = glic::mojom::TabContext::New();
+  auto tab_context = glic::mojom::TabContextResult::New();
   tab_context->tab_data = std::move(tab_data);
   additional_context->parts.push_back(
       glic::mojom::AdditionalContextPart::NewTabContext(

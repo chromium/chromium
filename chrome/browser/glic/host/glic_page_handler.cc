@@ -643,9 +643,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void CreateTab(const ::GURL& url,
-                 bool open_in_background,
-                 const std::optional<int32_t> window_id,
+                 glic::mojom::CreateTabOptionsPtr create_options,
                  CreateTabCallback callback) override {
+    bool open_in_background = create_options->open_in_background;
+    std::optional<int32_t> window_id = create_options->window_id;
     if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
       if (auto* tab = GetSharingManagerInternal().GetFocusedTabData().focus()) {
         const bool replaced =
@@ -712,8 +713,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     std::optional<int32_t> win_id =
         options ? options->fallback_window_id : std::nullopt;
-    CreateTab(exact_url, /*open_in_background=*/false, win_id,
-              std::move(callback));
+    auto create_options = mojom::CreateTabOptions::New();
+    create_options->open_in_background = false;
+    create_options->window_id = win_id;
+    CreateTab(exact_url, std::move(create_options), std::move(callback));
   }
 
   void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
@@ -784,7 +787,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void GetContextFromFocusedTab(
-      glic::mojom::GetTabContextOptionsPtr options,
+      glic::mojom::TabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
     FocusedTabData ftd = GetSharingManagerInternal().GetFocusedTabData();
     if (ftd.unfocused_tab()) {
@@ -814,7 +817,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void GetContextFromTab(int32_t tab_id,
-                         glic::mojom::GetTabContextOptionsPtr options,
+                         glic::mojom::TabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
     // Extra activation gating is done in this function.
     GetSharingManagerInternal().GetContextFromTab(
@@ -945,7 +948,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion (b/494315475)
     std::optional<int32_t> tab_id =
         params ? std::optional<int32_t>(params->tab_id) : std::nullopt;
-    mojom::GetTabContextOptionsPtr tab_context_options =
+    mojom::TabContextOptionsPtr tab_context_options =
         params ? std::move(params->options) : nullptr;
     tabs::TabInterface* tab = nullptr;
     if (tab_id.has_value()) {

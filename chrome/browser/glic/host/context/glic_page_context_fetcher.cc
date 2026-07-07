@@ -138,7 +138,7 @@ void HandleFetchPageResult(
 
   page_content_annotations::FetchPageContextResult& page_context =
       **fetch_result;
-  auto tab_context = mojom::TabContext::New();
+  auto tab_context = mojom::TabContextResult::New();
   tab_context->tab_data = std::move(tab_data);
 
   if (page_context.inner_text_result) {
@@ -259,7 +259,7 @@ void HandleFetchPageResult(
 
 void FetchPageContext(
     tabs::TabInterface* tab,
-    const mojom::GetTabContextOptions& tab_context_options,
+    const mojom::TabContextOptions& tab_context_options,
     base::OnceCallback<void(
         base::expected<glic::mojom::GetContextResultPtr,
                        page_content_annotations::FetchPageContextErrorDetails>)>
@@ -296,16 +296,16 @@ void FetchPageContext(
 #endif
 
   page_content_annotations::FetchPageContextOptions options;
-  if (tab_context_options.include_inner_text) {
+  if (tab_context_options.inner_text) {
     options.inner_text_bytes_limit = tab_context_options.inner_text_bytes_limit;
   }
-  if (tab_context_options.include_pdf) {
+  if (tab_context_options.pdf_data) {
     options.pdf_options.emplace(
         page_content_annotations::PdfOptions::Format::kBytes,
         tab_context_options.pdf_size_limit);
   }
 
-  if (tab_context_options.include_viewport_screenshot) {
+  if (tab_context_options.viewport_screenshot) {
     // Disable paint preview backend for glic, and capture the viewport only.
     options.screenshot_options =
         page_content_annotations::ScreenshotOptions::ViewportOnly(
@@ -314,7 +314,7 @@ void FetchPageContext(
   }
 
   const bool on_critical_path = true;
-  if (tab_context_options.include_annotated_page_content) {
+  if (tab_context_options.annotated_page_content) {
     if (tab_context_options.annotated_page_content_mode ==
         optimization_guide::proto::
             ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS) {

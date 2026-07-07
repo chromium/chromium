@@ -640,9 +640,9 @@ MultiStep GlicActorUiTest::GetPageContextForActorTab() {
   return Steps(Do([&]() {
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
-    auto options = mojom::GetTabContextOptions::New();
-    options->include_annotated_page_content = true;
-    options->include_viewport_screenshot = include_screenshot_;
+    auto options = mojom::TabContextOptions::New();
+    options->annotated_page_content = true;
+    options->viewport_screenshot = include_screenshot_;
     // TODO (crbug.com/458415347): Look into replacing GetContextFromActorForTab
     // with an AKS::RequestTabObservation
     EXPECT_NE(tab_handle_, TabHandle::Null())

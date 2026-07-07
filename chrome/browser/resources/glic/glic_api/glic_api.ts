@@ -1149,31 +1149,6 @@ export declare interface ResizeWindowOptions {
   durationMs?: number;
 }
 
-/** Holds optional parameters for `GlicBrowserHost#createTab`. */
-export declare interface CreateTabOptions {
-  /** Determines if the new tab should be created in the background or not. */
-  openInBackground?: boolean;
-  /** The windowId of the window where the new tab should be created at. */
-  windowId?: string;
-}
-
-/** Holds optional parameters for `GlicBrowserHost#createActorTab`. */
-export declare interface CreateActorTabOptions {
-  /** The tabId of the tab from which the conversation turn was initiated. */
-  initiatorTabId?: string;
-  /**
-   * The windowId of the window which the conversation turn was initiated.
-   * This may differ from the initiatorTabId's current window if the tab is
-   * moved to a different window or closed.
-   */
-  initiatorWindowId?: string;
-  /**
-   * Determines if the new tab should be created in the background or not. If
-   * not provided, defaults to `false`.
-   */
-  openInBackground?: boolean;
-}
-
 /**
  * Provides measurement-related functionality to the Glic web client.
  *
@@ -1282,18 +1257,6 @@ export declare interface Point {
   y: number;
 }
 
-
-/** The result of a successful region capture. */
-export declare interface CaptureRegionResult {
-  /** The ID of the tab from which the region was captured. */
-  tabId?: string;
-  /**
-   * The captured region. This can be expanded with other region types like
-   * polygons in the future.
-   */
-  region?: CapturedRegion;
-}
-
 /** An encoded journal. */
 export declare interface Journal {
   /**
@@ -1389,93 +1352,6 @@ export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 
 /** The default value of TabContextOptions.innerTextBytesLimit. */
 export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
-
-/** Options for getting context from a tab. */
-export declare interface TabContextOptions {
-  /**
-   * If true, an innerText representation of the page will be included in the
-   * response.
-   */
-  innerText?: boolean;
-  /**
-   * Maximum size in UTF-8 bytes that the returned innerText data may contain.
-   * If exceeded, the innerText will be truncated to the nearest character that
-   * will leave the string less than or equal to the specified byte size.
-   * Defaults to DEFAULT_INNER_TEXT_BYTES_LIMIT. If it is zero or negative,
-   * the innerText will be empty.
-   */
-  innerTextBytesLimit?: number;
-  /**
-   * @deprecated Use `screenshotCollectionOptions` instead.
-   *
-   * If true, a screenshot of the user visible viewport will be included in the
-   * response. If `screenshotCollectionOptions` is set, the screenshot will be
-   * captured with the specified options regardless of this field.
-   */
-  viewportScreenshot?: boolean;
-  /** If true, returns the serialized annotatedPageContent proto. */
-  annotatedPageContent?: boolean;
-  /**
-   * Maximum number of meta tags (per Document/Frame) to include in the
-   * response. Defaults to 0 if not provided.
-   */
-  maxMetaTags?: number;
-  /**
-   * If true, and the focused tab contains a PDF as the top level document,
-   * returns PdfDocumentData.
-   */
-  pdfData?: boolean;
-  /**
-   * Maximum size in bytes for returned PDF data. If this size is exceeded,
-   * PdfDocumentData is still returned, but it will not contain PDF bytes.
-   * Defaults to DEFAULT_PDF_SIZE_LIMIT. If it is zero or negative, PDF bytes
-   * will never be returned.
-   */
-  pdfSizeLimit?: number;
-  /**
-   * The mode of the annotated page content if included in the response. This
-   * maps directly to the AnnotatedPageContentMode enum in the proto.
-   */
-  annotatedPageContentMode?: number;
-
-  /**
-   * If set, the screenshot collection options will be used to capture the
-   * screenshot. Otherwise, the screenshot will be captured with the default
-   * options.
-   */
-  screenshotCollectionOptions?: ScreenshotCollectionOptions;
-}
-
-/**
- * Data class holding information and contents extracted from a tab.
- */
-export declare interface TabContextResult {
-  /** Metadata about the tab that holds the page. Always provided. */
-  tabData: TabData;
-  /**
-   * Information about a web page rendered in the tab at its current state.
-   * Provided only if requested.
-   */
-  webPageData?: WebPageData;
-  /**
-   * A screenshot of the user-visible portion of the page. Provided only if
-   * requested.
-   */
-  viewportScreenshot?: Screenshot;
-  /**
-   * Serialized optimization_guide.proto.ScreenshotInfo from
-   * common_quality_data.proto. Provided if viewportScreenshot was requested and
-   * layout metadata is available.
-   */
-  screenshotInfo?: ReadableStream<Uint8Array>;
-  /**
-   * PDF document data. Provided if requested, and the top level document in the
-   * focused tab is a PDF.
-   */
-  pdfDocumentData?: PdfDocumentData;
-  /** Page content data. Provided if requested. */
-  annotatedPageData?: AnnotatedPageData;
-}
 
 /**
  * Extension of TabContextResult to include an ActionResultCode while
@@ -2937,6 +2813,15 @@ export declare interface ZssConfig {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The result from checking a page with Safe Browsing.
+export declare interface SafeBrowsingVerdict {
+  url: string;
+  threatType: SbThreatType;
+  showInterstitial: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // The type of counter abuse verdict that was received.
 export declare interface CounterAbuseVerdict {
   sbVerdictResult: SafeBrowsingVerdict;
@@ -2962,6 +2847,47 @@ export declare interface ScreenshotCollectionOptions {
   // The compression quality of the screenshot. If not set, the screenshot will
   // be returned with medium compression quality.
   screenshotCompressionQuality?: ScreenshotCompressionQuality;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for getting context from a tab.
+export declare interface TabContextOptions {
+  // If true, an innerText representation of the page will be included in the
+  // response.
+  innerText?: boolean;
+  // Maximum size in UTF-8 bytes that the returned innerText data may contain.
+  // If exceeded, the innerText will be truncated to the nearest character that
+  // will leave the string less than or equal to the specified byte size.
+  // Defaults to DEFAULT_INNER_TEXT_BYTES_LIMIT. If it is zero or negative,
+  // the innerText will be empty.
+  innerTextBytesLimit?: number;
+  // @deprecated Use `screenshotCollectionOptions` instead.
+  //
+  // If true, a screenshot of the user visible viewport will be included in the
+  // response. If `screenshotCollectionOptions` is set, the screenshot will be
+  // captured with the specified options regardless of this field.
+  viewportScreenshot?: boolean;
+  // If true, returns the serialized annotatedPageContent proto.
+  annotatedPageContent?: boolean;
+  // Maximum number of meta tags (per Document/Frame) to include in the
+  // response. Defaults to 0 if not provided.
+  maxMetaTags?: number;
+  // If true, and the focused tab contains a PDF as the top level document,
+  // returns PdfDocumentData.
+  pdfData?: boolean;
+  // Maximum size in bytes for returned PDF data. If this size is exceeded,
+  // PdfDocumentData is still returned, but it will not contain PDF bytes.
+  // Defaults to DEFAULT_PDF_SIZE_LIMIT. If it is zero or negative, PDF bytes
+  // will never be returned.
+  pdfSizeLimit?: number;
+  // The mode of the annotated page content if included in the response. This
+  // maps directly to the AnnotatedPageContentMode enum in the proto.
+  annotatedPageContentMode?: number;
+  // If set, the screenshot collection options will be used to capture the
+  // screenshot. Otherwise, the screenshot will be captured with the default
+  // options.
+  screenshotCollectionOptions?: ScreenshotCollectionOptions;
 }
 
 ///////////////////////////////////////////////
@@ -3065,6 +2991,21 @@ export declare interface UnpinTabsOptions {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Holds optional parameters for `GlicBrowserHost#createActorTab`.
+export declare interface CreateActorTabOptions {
+  // The tabId of the tab from which the conversation turn was initiated.
+  initiatorTabId?: string;
+  // The windowId of the window which the conversation turn was initiated.
+  // This may differ from the initiatorTabId's current window if the tab is
+  // moved to a different window or closed.
+  initiatorWindowId?: string;
+  // Determines if the new tab should be created in the background or not. If
+  // not provided, defaults to `false`.
+  openInBackground?: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Options used to customize region capture.
 export declare interface CaptureRegionParams {
   tabId: string;
@@ -3081,6 +3022,16 @@ export declare interface ActivateTabOptions {
   // The windowId of the window where the tab should be created if no matching
   // tab is found.
   fallbackWindowId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Holds optional parameters for `GlicBrowserHost#createTab`.
+export declare interface CreateTabOptions {
+  // Determines if the new tab should be created in the background or not.
+  openInBackground?: boolean;
+  // The windowId of the window where the new tab should be created at.
+  windowId?: string;
 }
 
 ///////////////////////////////////////////////
@@ -3235,6 +3186,32 @@ export declare interface ExperimentalTriggeringUpdate {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information extracted from a tab.
+export declare interface TabContextResult {
+  // Metadata about the tab that holds the page. Always provided.
+  tabData: TabData;
+  // Web page data, if requested.
+  webPageData?: WebPageData;
+  // A screenshot of the user-visible portion of the tab. Provided only if
+  // requested.
+  viewportScreenshot?: Screenshot;
+  // Proto for ScreenshotInfo.
+  // See components/optimization_guide/proto/features/common_quality_data.proto.
+  // Provided if include_viewport_screenshot was requested in
+  // GetTabContextOptions and layout metadata is available.
+  screenshotInfo?: ReadableStream<Uint8Array>;
+  // Information about a PDF document. Provided if the document is a PDF or
+  // contains a PDF, and PDF data was requested. Note that it is possible for
+  // a document to contain multiple PDFs using iframes. Only the first PDF
+  // document found while traversing the frame tree will be provided here.
+  pdfDocumentData?: PdfDocumentData;
+  // Information about the annotated page content. Provided if the document is
+  // a web page and annotated page content was requested.
+  annotatedPageData?: AnnotatedPageData;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Information about a web page being rendered in a tab.
 export declare interface WebPageData {
   // Main document of the page.
@@ -3318,6 +3295,17 @@ export declare interface PendingCapturedRegion {
   id: string;
   // The captured region.
   region: CapturedRegion;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The result of a successful region capture.
+export declare interface CaptureRegionResult {
+  // The ID of the tab from which the region was captured.
+  tabId?: string;
+  // The captured region. This can be expanded with other region types like
+  // polygons in the future.
+  region?: CapturedRegion;
 }
 
 ///////////////////////////////////////////////
