@@ -7054,7 +7054,8 @@
       // Experimental implementation of
       // https://www.ietf.org/archive/id/draft-hancke-tsvwg-snap-00.html
       name: "WebRtcSctpSnap",
-      status: "test",
+      origin_trial_feature_name: "WebRtcSctpSnap",
+      status: "experimental",
     },
     {
       // Restricts the sharing of SerialPort instances across different V8
