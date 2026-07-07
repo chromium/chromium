@@ -367,8 +367,9 @@ enum class PresentedState {
 }
 
 - (void)bookmarkBrowserDismissed {
-  CHECK_EQ(PresentedState::BOOKMARK_BROWSER, self.currentPresentedState,
-           base::NotFatalUntil::M144);
+  if (self.currentPresentedState != PresentedState::BOOKMARK_BROWSER) {
+    return;
+  }
   CHECK(self.bookmarkNavigationController, base::NotFatalUntil::M152)
       << [self description];
   for (UIViewController* controller in self.bookmarkNavigationController
