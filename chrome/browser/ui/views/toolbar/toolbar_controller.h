@@ -247,6 +247,12 @@ class ToolbarController : public views::MenuDelegate,
 
   OverflowButton* overflow_button() { return overflow_button_; }
 
+  // Returns the FlexLayout order that should be used by the WebUI toolbar (if
+  // enabled) for the forward and home buttons.
+  int webui_toolbar_button_flex_order() const {
+    return webui_toolbar_button_flex_order_;
+  }
+
   const base::flat_map<ui::ElementIdentifier, std::unique_ptr<PopOutState>>&
   pop_out_state_for_testing() const {
     return pop_out_state_;
@@ -287,6 +293,8 @@ class ToolbarController : public views::MenuDelegate,
 
  private:
   friend class ToolbarControllerUiTest;
+  friend class ToolbarControllerOverflowOrderingUiTest;
+  friend class ToolbarControllerHighPriorityLocationBarOverflowOrderingUiTest;
   friend class ToolbarControllerUnitTest;
 
   // Returns currently hidden elements.
@@ -349,6 +357,13 @@ class ToolbarController : public views::MenuDelegate,
   // elements that need to pop out. Set when ToolbarController is initialized.
   base::flat_map<ui::ElementIdentifier, std::unique_ptr<PopOutState>>
       pop_out_state_;
+
+  // Flex order specifically for the buttons that may appear on
+  // kWebUIToolbarElementIdentifier. Default is used when
+  // ToolbarControllerUtil::PreventOverflow() returns true, which makes order
+  // for the buttons irrelevant, since they'll always be displayed at their full
+  // size.
+  int webui_toolbar_button_flex_order_ = 1;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_CONTROLLER_H_

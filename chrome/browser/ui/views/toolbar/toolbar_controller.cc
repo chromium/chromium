@@ -214,16 +214,10 @@ ToolbarController::ToolbarController(
         overflow_id);
   }
 
-  // Adjust overflow order of WebUI toolbar. It doesn't have an entry in
-  // `responsive_elements` because it potentially adds multiple elements, so has
-  // to be handled separately.
-  auto* const web_ui_toolbar_element = FindToolbarElementWithId(
-      toolbar_container_view_, kWebUIToolbarElementIdentifier);
-  if (web_ui_toolbar_element) {
-    views::FlexSpecification flex_spec =
-        web_ui_toolbar_element->GetProperty(views::kFlexBehaviorKey)
-            ->WithOrder(id_to_order_map.at(kWebUIToolbarElementIdentifier));
-    web_ui_toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
+  const auto it = id_to_order_map.find(kWebUIToolbarElementIdentifier);
+  // There may be no `kWebUIToolbarElementIdentifier` entry in unit tests.
+  if (it != id_to_order_map.end()) {
+    webui_toolbar_button_flex_order_ = it->second;
   }
 
   responsive_elements_ = GetResponsiveElementsWithOrderedActions();
@@ -353,10 +347,12 @@ std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   std::vector<ui::ElementIdentifier> order = {
       kToolbarMediaButtonElementId, kToolbarBatterySaverButtonElementId,
-      kToolbarHomeButtonElementId, kToolbarHomeButtonElementId,
-      // The WebUIToolbarWebView is between the home and forward button in
-      // overflow order, since it can include one or both of them, and hides
-      // them on overflow.
+      kToolbarHomeButtonElementId,
+      // `kWebUIToolbarElementIdentifier` is a placeholder element representing
+      // the order it uses for both the home and forward buttons, if it's
+      // displaying them. Using a value in the middle of the two means that it
+      // uses the correct relative order, even when only one of the two buttons
+      // is being handled by the WebUI toolbar.
       kWebUIToolbarElementIdentifier, kToolbarForwardButtonElementId,
       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
       kPinnedToolbarActionShowSidePanelContextualTasksElementId};

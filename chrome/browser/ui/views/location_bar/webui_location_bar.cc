@@ -359,7 +359,7 @@ gfx::Rect WebUILocationBar::BoundsInScreen() const {
 
 gfx::Size WebUILocationBar::MinimumSize() const {
   // TODO(crbug.com/474060468): Proper calculation.
-  return gfx::Size(400, 34);
+  return gfx::Size(300, 34);
 }
 
 gfx::Size WebUILocationBar::PreferredSize() const {

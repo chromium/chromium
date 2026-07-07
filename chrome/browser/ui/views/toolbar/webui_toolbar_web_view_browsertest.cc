@@ -64,9 +64,11 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -153,9 +155,12 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -2971,6 +2976,179 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ContextMenuPositionE2E) {
   run_loop.Run();
 
   EXPECT_EQ(captured_bounds, expected_screen_bounds);
+}
+
+class WebUIToolbarLocationBarBrowserTest
+    : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIToolbarLocationBarBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIReloadButton,
+             features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
+             features::kWebUIHomeButton, features::kWebUIExtensionsContainer,
+             features::kWebUILocationBar,
+             features::kSkipIPCChannelPausingForNonGuests,
+             features::kWebUIInProcessResourceLoadingV2},
+            {features::kOmniboxResizingPrioritization}) {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+  }
+};
+
+class WebUIToolbarLocationBarPriorityBrowserTest
+    : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIToolbarLocationBarPriorityBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIReloadButton,
+             features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
+             features::kWebUIHomeButton, features::kWebUIExtensionsContainer,
+             features::kWebUILocationBar,
+             features::kOmniboxResizingPrioritization,
+             features::kSkipIPCChannelPausingForNonGuests,
+             features::kWebUIInProcessResourceLoadingV2},
+            {}) {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarLocationBarBrowserTest,
+                       FlexSpecificationBoundaryButtonsPriority) {
+  WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar);
+
+  // Enable home and forward buttons so we have multiple controls that can
+  // overflow.
+  PinButton(browser(), webui_toolbar->GetWebViewForTesting(),
+            prefs::kShowForwardButton);
+  PinButton(browser(), webui_toolbar->GetWebViewForTesting(),
+            prefs::kShowHomeButton);
+
+  const views::FlexSpecification* spec_ptr =
+      webui_toolbar->GetProperty(views::kFlexBehaviorKey);
+  ASSERT_TRUE(spec_ptr);
+  views::FlexSpecification spec = *spec_ptr;
+
+  // Get the navigation buttons' and location bar's priorities. The former is
+  // the higher priority (lower order), and should be used when there's not
+  // enough space for both buttons, and the latter should have a lower priority,
+  // and should be used when there's plenty of space for the navigation buttons.
+  const int navigation_buttons_order =
+      spec.GetRuleAndOrderForBounds(views::SizeBounds(0, 50)).second;
+  const int location_bar_order =
+      spec.GetRuleAndOrderForBounds(views::SizeBounds(10000, 50)).second;
+  EXPECT_LT(navigation_buttons_order, location_bar_order);
+
+  auto* flex_layout = static_cast<views::FlexLayout*>(
+      webui_toolbar->parent()->GetLayoutManager());
+  ASSERT_TRUE(flex_layout);
+
+  // WebUI toolbar threshold width at which the home and forward buttons and a
+  // min-sized location bar exactly fit. Reducing the width by 1 would force the
+  // home button to be hidden.
+  const int location_preferred_width =
+      webui_toolbar->GetLocationBar()->PreferredSize().width();
+  const int location_min_width =
+      webui_toolbar->GetLocationBar()->MinimumSize().width();
+  const int webui_threshold_width =
+      webui_toolbar->CalculatePreferredSize(views::SizeBounds()).width() -
+      (location_preferred_width - location_min_width);
+
+  // Use CalculateMainAxisSpaceAvailableToView() to calculate combined width of
+  // the Views toolbar controls, when assuming higher order buttons get their
+  // min size, and lower order buttons get their preferred size.
+  const int kBigWidth = 10000;
+  const int other_controls_width =
+      kBigWidth -
+      flex_layout->CalculateMainAxisSpaceAvailableToView(
+          webui_toolbar, location_bar_order, views::SizeBounds(kBigWidth, 50));
+  // The width of the entire toolbar at which we expect the order of the WebUI
+  // toolbar view to be decreased.
+  const int toolbar_threshold_width =
+      webui_threshold_width + other_controls_width;
+
+  // At `toolbar_threshold_width`, buttons fit without overflow, so use higher
+  // (lower priority) order.
+  EXPECT_EQ(spec.GetRuleAndOrderForBounds(
+                    views::SizeBounds(toolbar_threshold_width, 50))
+                .second,
+            location_bar_order);
+
+  // At `toolbar_threshold_width` - 1, the home button would overflow at higher
+  // order, so use lower (higher priority) order. The home button may or may not
+  // overflow at that order, depending on intermediate buttons.
+  EXPECT_EQ(spec.GetRuleAndOrderForBounds(
+                    views::SizeBounds(toolbar_threshold_width - 1, 50))
+                .second,
+            navigation_buttons_order);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarLocationBarPriorityBrowserTest,
+                       FlexSpecificationBoundaryLocationBarPriority) {
+  WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar);
+
+  // Unpin hideable buttons to measure baseline preferred size of non-hideable
+  // controls + preferred location bar.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                               false);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, false);
+
+  // Preferred width with neither of the overflowable buttons.
+  const int no_buttons_width =
+      webui_toolbar->CalculatePreferredSize(views::SizeBounds()).width();
+
+  PinButton(browser(), webui_toolbar->GetWebViewForTesting(),
+            prefs::kShowForwardButton);
+  PinButton(browser(), webui_toolbar->GetWebViewForTesting(),
+            prefs::kShowHomeButton);
+
+  const views::FlexSpecification* spec_ptr =
+      webui_toolbar->GetProperty(views::kFlexBehaviorKey);
+  ASSERT_TRUE(spec_ptr);
+  views::FlexSpecification spec = *spec_ptr;
+
+  // Get the location bar and navigation buttons' priorities. The former is the
+  // higher priority (lower order), and should be used when there's not enough
+  // space for a fully expanded location bar, and the latter should have a lower
+  // priority, and should be used when there's plenty of space for the location
+  // bar.
+  const int location_bar_order =
+      spec.GetRuleAndOrderForBounds(views::SizeBounds(0, 50)).second;
+  const int navigation_buttons_order =
+      spec.GetRuleAndOrderForBounds(views::SizeBounds(10000, 50)).second;
+  EXPECT_LT(location_bar_order, navigation_buttons_order);
+
+  auto* flex_layout = static_cast<views::FlexLayout*>(
+      webui_toolbar->parent()->GetLayoutManager());
+  ASSERT_TRUE(flex_layout);
+
+  // Use CalculateMainAxisSpaceAvailableToView() to calculate combined width of
+  // the Views toolbar controls, when assuming higher order buttons get their
+  // min size, and lower order buttons get their preferred size.
+  const int kBigWidth = 10000;
+  const int other_controls_width =
+      kBigWidth -
+      flex_layout->CalculateMainAxisSpaceAvailableToView(
+          webui_toolbar, location_bar_order, views::SizeBounds(kBigWidth, 50));
+  // The width of the entire toolbar at which we expect the order of the WebUI
+  // toolbar view to be decreased.
+  const int toolbar_threshold_width = no_buttons_width + other_controls_width;
+
+  // At `toolbar_threshold_width`, location bar gets preferred size, so use
+  // higher order (lower priority).
+  EXPECT_EQ(spec.GetRuleAndOrderForBounds(
+                    views::SizeBounds(toolbar_threshold_width, 50))
+                .second,
+            navigation_buttons_order);
+
+  // At `toolbar_threshold_width` - 1, location bar would be shorter than its
+  // preferred size at higher order, so use lower order (higher priority). The
+  // location bar may or may not get its preferred width at that order,
+  // depending on intermediate buttons.
+  EXPECT_EQ(spec.GetRuleAndOrderForBounds(
+                    views::SizeBounds(toolbar_threshold_width - 1, 50))
+                .second,
+            location_bar_order);
 }
 
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {

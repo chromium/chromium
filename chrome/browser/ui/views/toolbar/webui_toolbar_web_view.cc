@@ -91,7 +91,9 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -367,6 +369,13 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 }
 
 WebUIToolbarWebView::~WebUIToolbarWebView() = default;
+
+int WebUIToolbarWebView::GetLocationBarWidthForTesting() const {
+  CHECK(location_bar_);
+  ButtonOverflowInfo info;
+  ComputeLayout(bounds().width(), &info);
+  return info.location_bar_width;
+}
 
 void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
@@ -935,9 +944,72 @@ float WebUIToolbarWebView::GetScaleFactor() const {
   return 1.0f;
 }
 
-views::FlexSpecification WebUIToolbarWebView::GetFlexSpecification() {
-  return views::FlexSpecification(base::BindRepeating(
-      &WebUIToolbarWebView::FlexLayoutRule, base::Unretained(this)));
+views::FlexSpecification WebUIToolbarWebView::GetFlexSpecification(
+    int navigation_button_flex_order,
+    int location_bar_flex_order) {
+  // This is the base flex rule when using the lowest order / highest priority
+  // for the WebUIToolbarWebView. If there's enough space for all the highest
+  // priority controls, then we'll switch to the lower priority flex rule for
+  // the entire toolbar, and use a bound FlexRuleLayout call that forces the
+  // higher priority controls to be displayed.
+  const auto base_flex_rule = base::BindRepeating(
+      &WebUIToolbarWebView::FlexLayoutRule, base::Unretained(this),
+      /*force_navigation_buttons=*/false,
+      /*force_location_bar=*/false);
+
+  // If not handling the location bar, use the base FlexLayoutRule with the
+  // navigation button order for the entire toolbar.
+  if (!location_bar_) {
+    return views::FlexSpecification(base_flex_rule)
+        .WithOrder(navigation_button_flex_order);
+  }
+
+  std::vector<views::RuleAndPredicate> rules_and_predicates;
+  location_bar_takes_priority_ =
+      (location_bar_flex_order < navigation_button_flex_order);
+  if (location_bar_takes_priority_) {
+    // If RuleEnabledPredicate() determines there's not enough room to display
+    // the entire location bar, give the WebUI toolbar the location bar's higher
+    // priority, and use the default FlexLayoutRule, to provide the location bar
+    // what space we can.
+    rules_and_predicates.emplace_back(
+        location_bar_flex_order, base_flex_rule,
+        base::BindRepeating(&WebUIToolbarWebView::RuleEnabledPredicate,
+                            base::Unretained(this), location_bar_flex_order));
+    // If there is enough room for the location bar, use a flex layout rule that
+    // always displays the location bar, and use the navigation buttons' lower
+    // priority for the WebUI toolbar. The buttons will be displayed, if there's
+    // enough space at that lower priority.
+    rules_and_predicates.emplace_back(
+        navigation_button_flex_order,
+        base::BindRepeating(&WebUIToolbarWebView::FlexLayoutRule,
+                            base::Unretained(this),
+                            /*force_navigation_buttons=*/false,
+                            /*force_location_bar=*/true),
+        views::RuleEnabledPredicate());
+  } else {
+    // If RuleEnabledPredicate() determines there's not enough room to display
+    // the navigation buttons, give the WebUI toolbar the navigation buttons'
+    // higher priority, and use the default FlexLayoutRule, to try and display
+    // what navigation buttons we can.
+    rules_and_predicates.emplace_back(
+        navigation_button_flex_order, base_flex_rule,
+        base::BindRepeating(&WebUIToolbarWebView::RuleEnabledPredicate,
+                            base::Unretained(this),
+                            navigation_button_flex_order));
+    // If there is enough room for the navigation buttons, use a flex layout
+    // rule that always displays them, and use the location bar's lower priority
+    // for the WebUI toolbar. The location bar will be expanded, if possible,
+    // using the lower priority.
+    rules_and_predicates.emplace_back(
+        location_bar_flex_order,
+        base::BindRepeating(&WebUIToolbarWebView::FlexLayoutRule,
+                            base::Unretained(this),
+                            /*force_navigation_buttons=*/true,
+                            /*force_location_bar=*/false),
+        views::RuleEnabledPredicate());
+  }
+  return views::FlexSpecification(std::move(rules_and_predicates));
 }
 
 void WebUIToolbarWebView::AdjustForToolbarFocus() {
@@ -1284,7 +1356,9 @@ WebUIToolbarWebView::GetBackForwardState() const {
 
 gfx::Size WebUIToolbarWebView::ComputeLayout(
     views::SizeBound available_width,
-    ButtonOverflowInfo* button_overflow_info) const {
+    ButtonOverflowInfo* button_overflow_info,
+    bool force_navigation_buttons,
+    bool force_location_bar) const {
   // Add everything that cannot overflow.
 
   int button_count = 0;
@@ -1303,28 +1377,68 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
     width += (button_count - 1) * gap;
   }
 
-  if (location_bar_) {
-    // TODO(http://crbug.com/470042732): Where is the 4px margin from?
-    width += 4 + location_bar_->PreferredSize().width();
-  }
-
   // TODO(crbug.com/517948314): This isn't sizing the forward button correctly.
   if (features::IsWebUIBackForwardButtonEnabled()) {
     width += back_button_leading_margin_;
   }
 
-  // Handle overflowable controls here, with highest priority controls handled
-  // first. Unlike the views code, this code does not currently allow the split
-  // tab button to overflow, due to issues with relative priorities.
+  // Handle overflowable / resizable controls here, with highest priority
+  // controls handled first. Unlike the views code, this code does not currently
+  // allow the split tab button to overflow, due to issues with relative
+  // priorities.
   //
   // TODO(crbug.com/517885636): Allow the split tab button to be hidden.
 
+  if (location_bar_) {
+    // Initial location bar computation. This computes the size of the location
+    // bar, only taking into account space allocated to it that's "higher
+    // priority" than the overflowable buttons. After this block, the state of
+    // the overflowable buttons is computed, and then any remaining space is
+    // added to the location bar.
+    //
+    // This always sets `location_bar_width` to be a value between its min and
+    // preferred widths.
+
+    // TODO(http://crbug.com/470042732): Where is the 4px margin from?
+    width += 4;
+
+    int location_bar_width = 0;
+    if (!available_width.is_bounded() || force_location_bar) {
+      // If getting preferred size, or forcing the location bar to use at least
+      // its preferred size, use its preferred size.
+      location_bar_width = location_bar_->PreferredSize().width();
+    } else if (!location_bar_takes_priority_) {
+      // If location bar has low priority, use minimum width. We'll add in any
+      // extra width after dealing with overflowable buttons.
+      location_bar_width = location_bar_->MinimumSize().width();
+    } else {
+      // If location bar has high priority, use preferred width if there's
+      // enough space available for that.
+      int preferred_width = location_bar_->PreferredSize().width();
+      if (preferred_width + width < available_width.value()) {
+        location_bar_width = preferred_width;
+      } else {
+        // Otherwise, use max of min location bar width and available width,
+        // excluding width already take up by elements that can't be hidden.
+        location_bar_width = std::max(location_bar_->MinimumSize().width(),
+                                      available_width.value() - width);
+      }
+    }
+    width += location_bar_width;
+    if (button_overflow_info) {
+      button_overflow_info->location_bar_width = location_bar_width;
+    }
+  }
+
+  // Figure out if the forward button should be overflowed, and update width if
+  // it's visible.
   bool allow_overflow = !ToolbarControllerUtil::PreventOverflow();
   if (features::IsWebUIBackForwardButtonEnabled() &&
       forward_control_.IsPinned()) {
     int next_button_width = NextButtonWidth(size, gap, button_count);
     bool is_forward_button_overflowed =
-        allow_overflow && available_width.is_bounded() &&
+        !force_navigation_buttons && allow_overflow &&
+        available_width.is_bounded() &&
         next_button_width + width > available_width.value();
     if (!is_forward_button_overflowed) {
       ++button_count;
@@ -1336,10 +1450,13 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
     }
   }
 
+  // Figure out if the home button should be overflowed, and update width if
+  // it's visible.
   if (features::IsWebUIHomeButtonEnabled() && home_control_.IsPinned()) {
     int next_button_width = NextButtonWidth(size, gap, button_count);
     bool is_home_button_overflowed =
-        allow_overflow && available_width.is_bounded() &&
+        !force_navigation_buttons && allow_overflow &&
+        available_width.is_bounded() &&
         next_button_width + width > available_width.value();
     if (!is_home_button_overflowed) {
       ++button_count;
@@ -1358,12 +1475,15 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
     }
   }
 
-  // If there are bounds, there's more space available than `width` and we're
-  // displaying the location bar, we want all extra space available. Note that
-  // this means anything that's lower priority than the WebUIToolbarWebView that
-  // can be hidden may end up hidden, so will likely need to be reworked.
+  // If there are bounds, there's more space available than `width`, and we're
+  // displaying the location bar, add all remaining available width to the
+  // location bar.
   if (available_width.is_bounded() && width <= available_width.value() &&
       location_bar_) {
+    if (button_overflow_info) {
+      button_overflow_info->location_bar_width +=
+          available_width.value() - width;
+    }
     return gfx::Size(available_width.value(), size);
   }
 
@@ -1385,9 +1505,60 @@ void WebUIToolbarWebView::UpdateButtonOverflowState() {
   home_control_.SetIsOverflowed(button_overflow_info.is_home_button_overflowed);
 }
 
-gfx::Size WebUIToolbarWebView::FlexLayoutRule(const views::View*,
+gfx::Size WebUIToolbarWebView::FlexLayoutRule(bool force_navigation_buttons,
+                                              bool force_location_bar,
+                                              const views::View*,
                                               const views::SizeBounds& bounds) {
-  return ComputeLayout(bounds.width());
+  return ComputeLayout(bounds.width(), /*button_overflow_info=*/nullptr,
+                       force_navigation_buttons, force_location_bar);
+}
+
+bool WebUIToolbarWebView::RuleEnabledPredicate(
+    int current_flex_order,
+    const views::SizeBounds& bounds) {
+  // This object may not be a top-level view, or a child of a view without a
+  // LayoutManager.
+  CHECK(parent() && parent()->GetLayoutManager());
+
+  // If unbounded, order doesn't matter, as everything will get all the space
+  // they need. Use lowest order / highest priority rule in that case.
+  if (!bounds.width().is_bounded()) {
+    return true;
+  }
+
+  auto* flex_layout =
+      static_cast<views::FlexLayout*>(parent()->GetLayoutManager());
+
+  int test_width = flex_layout->CalculateMainAxisSpaceAvailableToView(
+      this, current_flex_order, bounds);
+
+  ButtonOverflowInfo button_overflow_info;
+  ComputeLayout(views::SizeBound(test_width), &button_overflow_info);
+
+  if (location_bar_takes_priority_) {
+    // If the location bar takes priority, we want to return true to use its
+    // higher priority for the entire WebUI toolbar if the location bar can't
+    // get its preferred size at the higher priority. Otherwise, we return false
+    // use the navigation buttons' lower priority for the WebUI toolbar and set
+    // the min size to include the location bar occupying its preferred size.
+    return button_overflow_info.location_bar_width <
+           location_bar_->PreferredSize().width();
+  } else {
+    // If the forward/home buttons take priority, we want to return true to use
+    // their higher priority for the entire WebUI toolbar, if either of those
+    // buttons is overflowed at the higher priority. With the higher priority,
+    // we'll try and display whatever navigation buttons we can manage, but
+    // won't force their display. Otherwise, we use the location bar's lower
+    // priority for the WebUI toolbar and use the FlexLayoutRule that forces
+    // both navigation buttons to always be displayed, if they're pinned, since
+    // we know we have space for them, and don't want to effectively give the
+    // location bar their higher priority.
+    //
+    // Note that if they're hidden due to not being pinned, they're not marked
+    // as overflowed by ComputeLayout().
+    return button_overflow_info.is_forward_button_overflowed ||
+           button_overflow_info.is_home_button_overflowed;
+  }
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)
