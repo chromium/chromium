@@ -51,7 +51,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelMojomImpl
 
   void SetForceQueueingForTesting(bool force_queueing);
 
+  void UpdateIdleTimer();
+
  private:
+  void RestartIdleTimer();
+
   // mojom::OnDeviceModel:
   void StartSession(mojo::PendingReceiver<mojom::Session> session,
                     mojom::SessionParamsPtr params) override;
@@ -72,7 +76,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelMojomImpl
                               LoadAdaptationCallback callback);
   void RunTaskIfPossible();
   void TaskFinished();
-  void RestartIdleTimer();
   void OnIdleTimeout();
 
   std::unique_ptr<BackendModel> model_;

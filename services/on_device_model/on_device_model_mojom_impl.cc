@@ -34,6 +34,8 @@ const base::FeatureParam<base::TimeDelta> kModelIdleTimeout{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_active_session_idle_timeout", kDefaultModelIdleTimeout};
 
+constexpr base::TimeDelta kAsrIdleTimerUpdateInterval = base::Seconds(10);
+
 class AsrStreamWrapper;
 
 class SessionWrapper final : public mojom::Session {
@@ -43,6 +45,12 @@ class SessionWrapper final : public mojom::Session {
                  std::unique_ptr<BackendSession> session,
                  mojom::Priority priority);
   ~SessionWrapper() override;
+
+  void UpdateIdleTimer() {
+    if (model_) {
+      model_->UpdateIdleTimer();
+    }
+  }
 
   SessionWrapper(const SessionWrapper&) = delete;
   SessionWrapper& operator=(const SessionWrapper&) = delete;
@@ -148,12 +156,21 @@ class AsrStreamWrapper final : public mojom::AsrStreamInput {
     if (!session_) {
       return;  // Session was already closed.
     }
+    auto now = base::TimeTicks::Now();
+
+    // Throttle timer resets to avoid flooding the sequence manager with dead
+    // delayed tasks.
+    if (now - last_timer_restart_ > kAsrIdleTimerUpdateInterval) {
+      session_->UpdateIdleTimer();
+      last_timer_restart_ = now;
+    }
     session_->backend().AsrAddAudioChunk(std::move(data));
   }
 
  private:
   base::WeakPtr<SessionWrapper> session_;
   mojo::Receiver<mojom::AsrStreamInput> receiver_;
+  base::TimeTicks last_timer_restart_ = base::TimeTicks::Now();
   base::WeakPtrFactory<AsrStreamWrapper> weak_ptr_factory_{this};
 };
 
@@ -481,6 +498,14 @@ void OnDeviceModelMojomImpl::RestartIdleTimer() {
   idle_timer_->Start(FROM_HERE, kModelIdleTimeout.Get(),
                      base::BindOnce(&OnDeviceModelMojomImpl::OnIdleTimeout,
                                     base::Unretained(this)));
+}
+
+void OnDeviceModelMojomImpl::UpdateIdleTimer() {
+  // Only restart if active to avoid accidentally re-enabling the timer while a
+  // standard text task is running.
+  if (idle_timer_) {
+    RestartIdleTimer();
+  }
 }
 
 void OnDeviceModelMojomImpl::OnIdleTimeout() {

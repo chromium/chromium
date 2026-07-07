@@ -320,6 +320,56 @@ TEST_F(OnDeviceModelServiceTest, IdleTimeout) {
             static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
 }
 
+TEST_F(OnDeviceModelServiceTest, AsrStreamIdleTimeout) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  base::test::TestFuture<uint32_t, const std::string&> model_future;
+  base::test::TestFuture<uint32_t, const std::string&> session_future;
+  model.set_disconnect_with_reason_handler(model_future.GetCallback());
+  session.set_disconnect_with_reason_handler(session_future.GetCallback());
+
+  class DummyResponder : public mojom::AsrStreamResponder {
+   public:
+    void OnResponse(
+        std::vector<mojom::SpeechRecognitionResultPtr> result) override {}
+  };
+  DummyResponder responder_impl;
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver(
+      &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
+
+  auto options = mojom::AsrStreamOptions::New();
+  options->sample_rate_hz = 16000;
+  mojo::Remote<mojom::AsrStreamInput> asr_input;
+  session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
+                     std::move(responder_remote));
+
+  task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
+  EXPECT_FALSE(model_future.IsReady());
+  EXPECT_FALSE(session_future.IsReady());
+
+  // An ASR chunk should reset timeout.
+  auto audio_data = mojom::AudioData::New();
+  audio_data->sample_rate = 16000;
+  audio_data->channel_count = 1;
+  audio_data->frame_count = 1;
+  audio_data->data = {0};
+  asr_input->AddAudioChunk(std::move(audio_data));
+  task_environment_.RunUntilIdle();
+
+  task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
+  EXPECT_FALSE(model_future.IsReady());
+  EXPECT_FALSE(session_future.IsReady());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(std::get<0>(model_future.Get()),
+            static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
+  EXPECT_EQ(std::get<0>(session_future.Get()),
+            static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
+}
+
 TEST_F(OnDeviceModelServiceTest, Responds) {
   auto model = LoadModel();
   EXPECT_THAT(GetResponses(*model, "bar"), ElementsAre("bar"));
