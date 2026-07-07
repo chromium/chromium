@@ -33,6 +33,9 @@
 
 namespace content::webid {
 
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RequestTokenCallback = Request::RequestTokenCallback;
+
 // static
 void NavigationInterceptor::MaybeCreateAndAdd(
     NavigationThrottleRegistry& registry) {
@@ -48,14 +51,14 @@ NavigationInterceptor::NavigationInterceptor(
     : NavigationInterceptor(
           registry,
           base::BindRepeating(
-              [](content::RenderFrameHost* rfh,
+              [](RenderFrameHost* rfh,
                  std::vector<blink::mojom::IdentityProviderGetParametersPtr>
                      idp_get_params,
                  MediationRequirement requirement,
                  NavigationHandle* navigation_handle,
                  const GURL& intercepted_url,
                  RequestTokenCallback callback) -> bool {
-                return webid::RequestService::GetOrCreateForCurrentDocument(rfh)
+                return RequestService::GetOrCreateForCurrentDocument(rfh)
                     ->StartTokenRequestFromNavigation(
                         std::move(idp_get_params), requirement,
                         navigation_handle, intercepted_url,
@@ -65,7 +68,7 @@ NavigationInterceptor::NavigationInterceptor(
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
     RequestInitiator request_initiator)
-    : content::NavigationThrottle(registry),
+    : NavigationThrottle(registry),
       request_initiator_(std::move(request_initiator)) {}
 
 NavigationInterceptor::~NavigationInterceptor() = default;
@@ -76,7 +79,7 @@ NavigationInterceptor::WillStartRequest() {
   // navigation would commit to, but we will abort that navigation, so we want
   // to initiate the request in the current RFH for the target frame, so we look
   // that up here.
-  content::RenderFrameHost* rfh = RenderFrameHost::FromID(
+  RenderFrameHost* rfh = RenderFrameHost::FromID(
       navigation_handle()->GetPreviousRenderFrameHostId());
   document_ = rfh->GetWeakDocumentPtr();
   return PROCEED;
@@ -138,7 +141,7 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
     return PROCEED;
   }
 
-  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+  RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
 
   if (!rfh) {
     return PROCEED;
@@ -204,7 +207,7 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
 void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     const GURL& intercepted_url,
     base::expected<net::structured_headers::Dictionary, std::string> result) {
-  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+  RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has
     // navigated in the meantime.
@@ -259,7 +262,7 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
 void NavigationInterceptor::OnHeaderParsed(
     const GURL& intercepted_url,
     base::expected<net::structured_headers::Dictionary, std::string> result) {
-  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+  RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has
     // navigated in the meantime.
@@ -409,7 +412,7 @@ NavigationInterceptor::RequestBuilder::Build(
   return idp_get_params_vector;
 }
 
-std::optional<content::NavigationController::LoadURLParams>
+std::optional<NavigationController::LoadURLParams>
 NavigationInterceptor::ResponseBuilder::Build(const base::Value& response) {
   if (!response.is_dict()) {
     return std::nullopt;
@@ -432,7 +435,7 @@ NavigationInterceptor::ResponseBuilder::Build(const base::Value& response) {
       return std::nullopt;
     }
 
-    content::NavigationController::LoadURLParams navigation(url);
+    NavigationController::LoadURLParams navigation(url);
     navigation.transition_type = ui::PAGE_TRANSITION_LINK;
     return navigation;
   }
@@ -464,7 +467,7 @@ NavigationInterceptor::ResponseBuilder::Build(const base::Value& response) {
     return std::nullopt;
   }
 
-  content::NavigationController::LoadURLParams submission(url);
+  NavigationController::LoadURLParams submission(url);
   submission.transition_type = ui::PAGE_TRANSITION_FORM_SUBMIT;
 
   if (method == "POST") {

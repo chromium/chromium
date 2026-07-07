@@ -52,31 +52,22 @@ namespace webid {
 
 class RequestService;
 
-using blink::mojom::IdentityProviderGetParametersPtr;
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityProviderGetInfo = AccountsFetcher::IdentityProviderGetInfo;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using RpMode = blink::mojom::RpMode;
-using TokenError = IdentityCredentialTokenError;
-
-using RequestTokenCallback =
-    base::OnceCallback<void(blink::mojom::RequestTokenStatus,
-                            const std::optional<GURL>&,
-                            std::optional<base::Value>,
-                            blink::mojom::TokenErrorPtr,
-                            bool)>;
-
-// Request handles mojo connections from the renderer to fulfill a single
-// WebID-related request. It is owned and managed by RequestService.
+// Request represents a single WebID-related request from the renderer. It is
+// owned and managed by RequestService.
 class CONTENT_EXPORT Request
     : public blink::mojom::FederatedRequest,
-      public content::FederatedIdentityPermissionContextDelegate::
+      public FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
       public IdentityRegistryDelegate,
-      public webid::AutofillSource {
+      public AutofillSource {
  public:
+  using RequestTokenCallback =
+      base::OnceCallback<void(blink::mojom::RequestTokenStatus,
+                              const std::optional<GURL>&,
+                              std::optional<base::Value>,
+                              blink::mojom::TokenErrorPtr,
+                              bool)>;
+
   Request(RenderFrameHost* rfh, RequestService& request_service);
 
   Request(const Request&) = delete;
@@ -105,10 +96,10 @@ class CONTENT_EXPORT Request
   virtual bool RequestToken(
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
           idp_get_params_ptrs,
-      MediationRequirement requirement,
+      ::password_manager::CredentialMediationRequirement requirement,
       NavigationHandle* navigation_handle,
       const GURL& intercepted_url,
-      RequestTokenCallback);
+      RequestTokenCallback callback);
 
   // blink::mojom::FederatedRequest:
   void Abort() override;
@@ -119,7 +110,7 @@ class CONTENT_EXPORT Request
 
   base::WeakPtr<Request> GetWeakPtr();
 
-  // content::FederatedIdentityModalDialogViewDelegate:
+  // FederatedIdentityModalDialogViewDelegate:
   void OnClose() override;
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
@@ -128,8 +119,8 @@ class CONTENT_EXPORT Request
                         const url::Origin& expected,
                         const url::Origin& actual) override;
 
-  // content::webid::AutofillSource
-  const std::optional<std::vector<IdentityRequestAccountPtr>>
+  // AutofillSource:
+  const std::optional<std::vector<scoped_refptr<IdentityRequestAccount>>>
   GetAutofillSuggestions() const override;
   void NotifyAutofillSuggestionAccepted(
       const GURL& idp,
@@ -144,15 +135,18 @@ class CONTENT_EXPORT Request
   // For use by the devtools protocol for browser automation.
   IdentityRequestDialogController* GetDialogController();
 
-  const std::vector<IdentityProviderDataPtr>& GetSortedIdpData() const {
+  const std::vector<scoped_refptr<IdentityProviderData>>& GetSortedIdpData()
+      const {
     return idp_data_for_display_;
   }
 
-  const std::vector<IdentityRequestAccountPtr>& GetAccounts() const {
+  const std::vector<scoped_refptr<IdentityRequestAccount>>& GetAccounts()
+      const {
     return accounts_;
   }
 
-  MediationRequirement GetMediationRequirement() const {
+  ::password_manager::CredentialMediationRequirement GetMediationRequirement()
+      const {
     return mediation_requirement_;
   }
 
@@ -206,9 +200,10 @@ class CONTENT_EXPORT Request
       blink::mojom::FederatedAuthRequestResult result,
       const std::optional<GURL>& selected_idp_config_url);
 
-  void FilterAccounts(const GURL& idp_config_url,
-                      const GURL& idp_login_url,
-                      std::vector<IdentityRequestAccountPtr>& accounts);
+  void FilterAccounts(
+      const GURL& idp_config_url,
+      const GURL& idp_login_url,
+      std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
 
   void SetIdpLoginInfo(const GURL& idp_login_url,
                        const std::string& login_hint,
@@ -266,7 +261,7 @@ class CONTENT_EXPORT Request
   // during a fetch triggered by an IdP sign-in status change.
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult result,
                        std::optional<RequestIdTokenStatus> token_status,
-                       std::optional<TokenError> token_error,
+                       std::optional<IdentityCredentialTokenError> token_error,
                        const std::optional<GURL>& selected_idp_config_url,
                        std::optional<base::Value> token_data,
                        bool should_delay_callback);
@@ -295,8 +290,8 @@ class CONTENT_EXPORT Request
     AutoReauthnInfo& operator=(const AutoReauthnInfo&);
 
     bool is_eligible = false;
-    IdentityProviderDataPtr idp = nullptr;
-    IdentityRequestAccountPtr account = nullptr;
+    scoped_refptr<IdentityProviderData> idp = nullptr;
+    scoped_refptr<IdentityRequestAccount> account = nullptr;
   };
 
   bool HasPendingRequest() const;
@@ -323,7 +318,7 @@ class CONTENT_EXPORT Request
                        const GURL& url_to_show);
   void ShowErrorDialog(const GURL& idp_config_url,
                        FetchStatus status,
-                       std::optional<TokenError> error);
+                       std::optional<IdentityCredentialTokenError> error);
   // Called when we should show a failure dialog in the case where a single IDP
   // account fetch resulted in a mismatch with its login status.
   void ShowSingleIdpFailureDialog();
@@ -340,11 +335,12 @@ class CONTENT_EXPORT Request
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
-  void CompleteTokenRequest(const GURL& idp_config_url,
-                            FetchStatus status,
-                            std::optional<base::Value> token,
-                            std::optional<TokenError> token_error,
-                            bool should_delay_callback);
+  void CompleteTokenRequest(
+      const GURL& idp_config_url,
+      FetchStatus status,
+      std::optional<base::Value> token,
+      std::optional<IdentityCredentialTokenError> token_error,
+      bool should_delay_callback);
   void OnTokenResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       FetchStatus status,
@@ -382,7 +378,7 @@ class CONTENT_EXPORT Request
 
   void CompleteRequestInternal(
       blink::mojom::FederatedAuthRequestResult result,
-      std::optional<TokenError> token_error,
+      std::optional<IdentityCredentialTokenError> token_error,
       const std::optional<GURL>& selected_idp_config_url,
       std::optional<base::Value> token_data,
       bool is_auto_selected);
@@ -399,8 +395,9 @@ class CONTENT_EXPORT Request
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning
   // accounts or no returning account.
-  bool GetAccountForAutoReauthn(IdentityProviderDataPtr* out_idp_data,
-                                IdentityRequestAccountPtr* out_account);
+  bool GetAccountForAutoReauthn(
+      scoped_refptr<IdentityProviderData>* out_idp_data,
+      scoped_refptr<IdentityRequestAccount>* out_account);
 
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
@@ -437,7 +434,7 @@ class CONTENT_EXPORT Request
   // Returns whether we'll be using an ambient UI for a passive call.
   bool IsUsingAmbient() const;
 
-  RpMode GetRpMode() const { return rp_mode_; }
+  blink::mojom::RpMode GetRpMode() const { return rp_mode_; }
 
   // If the client metadata has not been received yet the UI may not be able to
   // show a correct title, so we need to indicate that in the RelyingPartyData.
@@ -458,18 +455,19 @@ class CONTENT_EXPORT Request
   // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
   // Populated by MaybeShowAccountsDialog().
-  std::vector<IdentityProviderDataPtr> idp_data_for_display_;
+  std::vector<scoped_refptr<IdentityProviderData>> idp_data_for_display_;
 
   // Populated by OnFetchDataForIdpSucceeded(). Contains the accounts of each
   // IDP. Used to later set accounts_ in the order in which the IDPs are
   // requested.
-  base::flat_map<GURL, std::vector<IdentityRequestAccountPtr>> idp_accounts_;
-  base::flat_map<GURL, std::vector<IdentityRequestAccountPtr>>
+  base::flat_map<GURL, std::vector<scoped_refptr<IdentityRequestAccount>>>
+      idp_accounts_;
+  base::flat_map<GURL, std::vector<scoped_refptr<IdentityRequestAccount>>>
       idp_filtered_accounts_;
   // The accounts to be displayed by the UI.
-  std::vector<IdentityRequestAccountPtr> accounts_;
+  std::vector<scoped_refptr<IdentityRequestAccount>> accounts_;
   // The accounts that were filtered out during fetching.
-  std::vector<IdentityRequestAccountPtr> filtered_accounts_;
+  std::vector<scoped_refptr<IdentityRequestAccount>> filtered_accounts_;
 
   // Contains the set of account IDs of an IDP before a login URL is displayed
   // to the user. Used to compute the account ID of the account that the user
@@ -523,7 +521,8 @@ class CONTENT_EXPORT Request
   // through the multi IDP prototype implementation to make them less confusing.
 
   // Parameters passed to RequestToken().
-  base::flat_map<GURL, IdentityProviderGetInfo> token_request_get_infos_;
+  base::flat_map<GURL, AccountsFetcher::IdentityProviderGetInfo>
+      token_request_get_infos_;
 
   // Data related to in-progress FetchEndpointsForIdps() fetch.
   FetchData fetch_data_;
@@ -549,12 +548,12 @@ class CONTENT_EXPORT Request
   FetchStatus token_request_status_;
 
   // If dialog_type_ is kError, this is the token error.
-  std::optional<TokenError> token_error_;
+  std::optional<IdentityCredentialTokenError> token_error_;
 
   DialogType dialog_type_ = DialogType::kNone;
-  MediationRequirement mediation_requirement_;
+  ::password_manager::CredentialMediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
-  RpMode rp_mode_{RpMode::kPassive};
+  blink::mojom::RpMode rp_mode_{blink::mojom::RpMode::kPassive};
   IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_ =
       IdentityRequestDialogController::PassiveDialogVolume::kDefault;
 

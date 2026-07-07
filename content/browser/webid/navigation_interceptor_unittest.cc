@@ -42,6 +42,9 @@ using ::testing::WithArgs;
 
 namespace content::webid {
 
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using RequestTokenCallback = Request::RequestTokenCallback;
+
 class InterceptorMockNavigationHandle : public MockNavigationHandle {
  public:
   explicit InterceptorMockNavigationHandle(WebContents* web_contents)
@@ -57,7 +60,7 @@ class MockRequestInitiator {
 
   MOCK_METHOD(bool,
               Run,
-              (content::RenderFrameHost * rfh,
+              (RenderFrameHost * rfh,
                std::vector<blink::mojom::IdentityProviderGetParametersPtr>
                    idp_get_params,
                MediationRequirement requirement,
@@ -169,7 +172,7 @@ class NavigationInterceptorTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(NavigationInterceptorTest, SerializedHeaderFormat) {
-  auto header = webid::EncodeParams({
+  auto header = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "1234"},
       {"context", "continue"},
@@ -204,17 +207,16 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_initiator, Run).WillOnce([&]() {
@@ -225,7 +227,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   // This will block the test until run_loop.Quit() is called inside the mock.
   run_loop.Run();
@@ -253,17 +255,16 @@ TEST_F(NavigationInterceptorTest,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-Initiate-Request",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_initiator, Run).WillOnce([&]() {
@@ -274,7 +275,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   // This will block the test until run_loop.Quit() is called inside the mock.
   run_loop.Run();
@@ -306,17 +307,16 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_initiator, Run).WillOnce([&]() {
@@ -327,7 +327,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   // This will block the test until run_loop.Quit() is called inside the mock.
   run_loop.Run();
@@ -352,21 +352,20 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   // Because there was no activation, we should proceed.
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+  EXPECT_EQ(result, NavigationThrottle::PROCEED);
 }
 
 TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
@@ -391,25 +390,24 @@ TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   NavigationFinishObserver observer(web_contents());
   interceptor.WillStartRequest();
   NavigateAndCommit(GURL("https://foo.example/"), ui::PAGE_TRANSITION_TYPED);
   observer.Wait();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+  EXPECT_EQ(result, NavigationThrottle::PROCEED);
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
@@ -432,17 +430,16 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   EXPECT_CALL(*mock_initiator, Run)
       .WillOnce(
@@ -470,13 +467,13 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
   EXPECT_TRUE(was_cancelled);
   ASSERT_TRUE(cancel_result.has_value());
-  EXPECT_EQ(cancel_result->action(), content::NavigationThrottle::CANCEL);
+  EXPECT_EQ(cancel_result->action(), NavigationThrottle::CANCEL);
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderBuildsRequest) {
@@ -486,8 +483,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderBuildsRequest) {
   const char* kDomainHint = "example.com";
   const char* kParamsJson = "{\"custom_key\":\"custom_value\"}";
 
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", kconfig_url},
       {"client_id", kclient_id},
       {"context", "continue"},
@@ -522,8 +519,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderBuildsRequest) {
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderParsesAllFields) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
       {"fields",
@@ -540,8 +537,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderParsesAllFields) {
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderHandlesMissingFields) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
@@ -554,8 +551,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderHandlesMissingFields) {
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderMissingParams) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
@@ -569,8 +566,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderMissingParams) {
 
 TEST_F(NavigationInterceptorTest,
        RequestBuilderMissingContextDefaultsToSignIn) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
@@ -592,8 +589,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderParsesContext) {
   };
 
   for (const auto& test_case : kTestCases) {
-    webid::NavigationInterceptor::RequestBuilder builder;
-    auto parsed_dictionary = webid::EncodeParams({
+    NavigationInterceptor::RequestBuilder builder;
+    auto parsed_dictionary = EncodeParams({
         {"config_url", "https://idp.example/fedcm.json"},
         {"client_id", "123"},
         {"context", test_case.context_str},
@@ -607,8 +604,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderParsesContext) {
 
 TEST_F(NavigationInterceptorTest,
        RequestBuilderReturnsNulloptOnInvalidContext) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
       {"context", "invalid"},
@@ -619,8 +616,8 @@ TEST_F(NavigationInterceptorTest,
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderSupportsRelativeUrl) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "fedcm.json"},
       {"client_id", "123"},
   });
@@ -632,8 +629,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderSupportsRelativeUrl) {
 }
 
 TEST_F(NavigationInterceptorTest, RequestBuilderDisallowsCrossOriginUrl) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://cross-origin.idp.example/fedcm.json"},
       {"client_id", "123"},
   });
@@ -644,8 +641,8 @@ TEST_F(NavigationInterceptorTest, RequestBuilderDisallowsCrossOriginUrl) {
 
 TEST_F(NavigationInterceptorTest,
        RequestBuilderReturnsNulloptOnMissingconfig_url) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"client_id", "123"},
   });
   auto result = builder.Build(base_url_, parsed_dictionary);
@@ -655,8 +652,8 @@ TEST_F(NavigationInterceptorTest,
 
 TEST_F(NavigationInterceptorTest,
        RequestBuilderReturnsNulloptOnMissingclient_id) {
-  webid::NavigationInterceptor::RequestBuilder builder;
-  auto parsed_dictionary = webid::EncodeParams({
+  NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
   });
   auto result = builder.Build(base_url_, parsed_dictionary);
@@ -811,11 +808,10 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
                      "status=\"connected\", account_id=\"1234\"");
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   base::RunLoop run_loop;
   bool was_resumed = false;
@@ -826,7 +822,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -862,11 +858,10 @@ TEST_F(NavigationInterceptorTest,
                      "status=\"connected\", account_id=\"5678\"");
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   base::RunLoop run_loop;
   bool was_resumed = false;
@@ -877,7 +872,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -899,11 +894,11 @@ TEST_F(NavigationInterceptorTest,
       }));
 
   // Create a popup and set its opener.
-  std::unique_ptr<content::WebContents> popup = CreateTestWebContents();
-  content::WebContentsTester::For(popup.get())->SetOpener(web_contents());
+  std::unique_ptr<WebContents> popup = CreateTestWebContents();
+  WebContentsTester::For(popup.get())->SetOpener(web_contents());
 
   // Navigate the popup to a valid URL once.
-  content::WebContentsTester::For(popup.get())
+  WebContentsTester::For(popup.get())
       ->NavigateAndCommit(GURL("https://idp.example/"));
 
   InterceptorMockNavigationHandle mock_navigation_handle(popup.get());
@@ -918,11 +913,10 @@ TEST_F(NavigationInterceptorTest,
                      "status=\"connected\", account_id=\"1234\"");
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   base::RunLoop run_loop;
   bool was_resumed = false;
@@ -933,7 +927,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result.action(), content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result.action(), NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -970,11 +964,10 @@ TEST_F(NavigationInterceptorTest,
                      "status=\"connected\", account_id=\"1234\"");
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   base::RunLoop run_loop;
   bool was_resumed = false;
@@ -985,7 +978,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -1023,17 +1016,16 @@ TEST_F(NavigationInterceptorTest,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
                      net::structured_headers::SerializeDictionary(
-                         webid::EncodeParams({
+                         EncodeParams({
                              {"config_url", "https://idp.example/fedcm.json"},
                              {"client_id", "1234"},
                          }))
                          .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   base::RunLoop run_loop;
   bool request_token_called = false;
@@ -1055,7 +1047,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillRedirectRequest();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -1093,17 +1085,16 @@ TEST_F(NavigationInterceptorTest,
   headers->AddHeader(
       "FedCM-Intercept-Navigation",
       net::structured_headers::SerializeDictionary(
-          webid::EncodeParams({
+          EncodeParams({
               {"config_url", "https://victim.example/fedcm.json"},
               {"client_id", "1234"},
           }))
           .value());
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator->GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator->GetInitiator());
 
   base::RunLoop run_loop;
   bool request_token_called = false;
@@ -1123,7 +1114,7 @@ TEST_F(NavigationInterceptorTest,
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillRedirectRequest();
-  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+  EXPECT_EQ(result, NavigationThrottle::DEFER);
 
   run_loop.Run();
 
@@ -1165,15 +1156,14 @@ TEST_F(EmbedderLoginNavigationInterceptorTest,
                      "status=\"connected\", account_id=\"1234\"");
   mock_navigation_handle.set_response_headers(headers);
 
-  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
 
   MockRequestInitiator mock_initiator;
-  webid::NavigationInterceptor interceptor(registry,
-                                           mock_initiator.GetInitiator());
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
 
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
-  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+  EXPECT_EQ(result, NavigationThrottle::PROCEED);
 }
 
 }  // namespace content::webid
