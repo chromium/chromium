@@ -31,6 +31,8 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_ui_types.h"
@@ -910,6 +912,36 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
   // expected to gracefully reset its internal state.
   SendDndLeave();
   SendDndCancelled();
+}
+
+// Verifies the drag loop exits gracefully when the origin window is destroyed
+// while dispatching the synthetic pointer release at drag-session close.
+TEST_P(WaylandDataDragControllerTest,
+       DestroyOriginWindowDuringDragSessionClose) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Once the drag session has started, emulate a successful drop. The
+  // controller will synthesize a release for the still-pressed pointer button;
+  // have the delegate destroy the origin window from within that event's
+  // dispatch, mimicking a queued close task running in a nested loop.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+      if (event->type() == EventType::kMouseReleased) {
+        window_.reset();
+      }
+    });
+    SendDndFinished();
+  }));
+
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(sample_text_for_dnd());
+  EXPECT_CALL(drag_started_callback_, Run()).Times(1);
+  EXPECT_FALSE(window_->StartDrag(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
+      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_started_callback_.Get(),
+      drag_finished_callback_.Get(), /*location_delegate=*/nullptr));
+
+  EXPECT_FALSE(window_);
 }
 
 // Ensures drag/drop events are properly propagated to non-toplevel windows.
