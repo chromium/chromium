@@ -12,8 +12,7 @@
 namespace personal_context {
 
 // Service that manages the enablement state of the Personal Context
-// feature. It checks eligibility, listens to profile preferences, and
-// broadcasts state changes to observers.
+// feature. It checks eligibility and broadcasts state changes to observers.
 //
 // This is a Profile-keyed service (one instance per Profile). It is only
 // available for the original (non-incognito) profile. For Incognito or Guest
@@ -38,8 +37,7 @@ class PersonalContextEnablementService : public KeyedService {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Sync getter for the current enablement state. Checks whether the profile
-  // is enabled to use Personal Context. Includes feature check, eligibility
-  // check, notice acknowledgement OR setup completion.
+  // is eligible for Personal Context.
   virtual PersonalContextEnablementState GetEnablementState() = 0;
 };
 
