@@ -102,6 +102,7 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/av1_inv_txfm1d.h",
   "//third_party/libaom/source/libaom/av1/common/av1_inv_txfm1d_cfg.h",
   "//third_party/libaom/source/libaom/av1/common/av1_inv_txfm2d.c",
+  "//third_party/libaom/source/libaom/av1/common/av1_inv_txfm2d.h",
   "//third_party/libaom/source/libaom/av1/common/av1_loopfilter.c",
   "//third_party/libaom/source/libaom/av1/common/av1_loopfilter.h",
   "//third_party/libaom/source/libaom/av1/common/av1_txfm.c",
