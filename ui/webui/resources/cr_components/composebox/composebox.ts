@@ -246,6 +246,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
   }
 
+  override getLensButtonElement(): HTMLElement|null {
+    return this.shadowRoot?.querySelector('#lensIcon') || null;
+  }
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;

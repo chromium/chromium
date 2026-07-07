@@ -39,6 +39,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -919,9 +920,27 @@ TEST_F(ContextualTasksPageHandlerTest, OpenOnboardingHelpUi) {
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OnboardingTooltipDismissed) {
-  // Smoke test to ensure it doesn't crash.
+  PrefService* prefs = profile()->GetPrefs();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount),
+            0);
   page_handler_->OnboardingTooltipDismissed();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount),
+            1);
 }
+
+TEST_F(ContextualTasksPageHandlerTest, LensSearchTooltipDismissed) {
+  PrefService* prefs = profile()->GetPrefs();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount),
+            0);
+  page_handler_->LensSearchTooltipDismissed();
+  EXPECT_EQ(prefs->GetInteger(
+                contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount),
+            1);
+}
+
 
 TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
   g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");

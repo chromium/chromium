@@ -443,6 +443,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
       {"onboardingAcceptButton",
        IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
+      {"lensSearchTooltipTitle", IDS_LENS_COBROWSE_IPH_HEADER},
+      {"lensSearchTooltipBody", IDS_LENS_COBROWSE_IPH_DESCRIPTION},
+      {"lensSearchTooltipAcceptButton", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
       {"oauthErrorDialogTitle", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_TITLE},
       {"oauthErrorDialogBody", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_BODY},
       {"oauthErrorDialogReloadButton",
@@ -574,6 +577,19 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       profile->GetPrefs()->GetInteger(
           contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount) <
           contextual_tasks::GetContextualTasksOnboardingTooltipDismissedCap());
+  source->AddBoolean(
+      "isLensSearchTooltipDismissCountBelowCap",
+      profile->GetPrefs()->GetInteger(
+          contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount) <
+          contextual_tasks::GetContextualTasksLensSearchTooltipDismissedCap());
+  source->AddInteger(
+      "lensSearchTooltipSessionImpressionCap",
+      contextual_tasks::
+          GetContextualTasksLensSearchTooltipSessionImpressionCap());
+  source->AddBoolean(
+      "askGCoBrowseEnabled",
+      omnibox::kAskGCoBrowse.Get());
+
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(
       "forceHideEllipsis",

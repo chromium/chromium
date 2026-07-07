@@ -212,6 +212,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'isZeroState',
       'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
+      'lensSearchTooltipDismissed',
       'onContextMenuOpened',
       'onFileClickedFromSourcesMenu',
       'onImageClickedFromSourcesMenu',
@@ -332,6 +333,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   onboardingTooltipDismissed() {
     this.methodCalled('onboardingTooltipDismissed');
+  }
+
+  lensSearchTooltipDismissed() {
+    this.methodCalled('lensSearchTooltipDismissed');
   }
 
   moveTaskUiToNewTab() {

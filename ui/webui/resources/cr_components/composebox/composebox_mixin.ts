@@ -585,6 +585,10 @@ export const ComposeboxEmbedderMixin =
           assertNotReached();
         }
 
+        getLensButtonElement(): HTMLElement|null {
+          return null;
+        }
+
         // =====================================================================
         // Common event handlers
         // =====================================================================
@@ -2671,6 +2675,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   getSearchboxHandler(): SearchboxPageHandlerRemote;
   getContextEntrypointElement(): ContextualEntrypointButtonElement
       |ContextualEntrypointAndMenuElement|null;
+  getLensButtonElement(): HTMLElement|null;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
       onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void):

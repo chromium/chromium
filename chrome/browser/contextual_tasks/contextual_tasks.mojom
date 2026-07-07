@@ -175,6 +175,10 @@ interface PageHandler {
   // dismissed.
   OnboardingTooltipDismissed();
 
+  // Increments the counter for how many times the lens search tooltip is
+  // dismissed.
+  LensSearchTooltipDismissed();
+
   // Called when the user clicks the 'Reopen tabs' button which will be
   // displayed when user revisits an expired thread. Tabs which were added
   // to context may or may not be opened in new tabs depending upon what

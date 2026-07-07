@@ -21,6 +21,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isUserSignedIn="${this.isUserSignedIn_}"
           .enableOpenInNewTabButton="${this.isAiPage_ && !this.isErrorPageVisible_}"
           .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
+          .lensSearchTooltipShowing="${this.lensSearchTooltipShowing_}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
     </div>
@@ -55,6 +56,12 @@ export function getHtml(this: ContextualTasksAppElement) {
           @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
       </contextual-tasks-onboarding-tooltip>
     ` : ''}
+    ${this.showLensSearchTooltip_ ? html`
+      <contextual-tasks-lens-search-tooltip id="lensSearchTooltip"
+          @lens-search-tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
+      </contextual-tasks-lens-search-tooltip>
+    ` : ''}
+
     ${this.showSmartTabSharingTryItIph_ ? html`
       <contextual-tasks-banner-promo id="stsTryItPromo"
           style="${this.getBannerPromoBoundsStyles_()}"
