@@ -340,7 +340,7 @@ public class StatusView extends LinearLayout {
                     updateAnimationStartTime();
                     mIsAnimatingStatusIconChange = true;
                     keepControlsShownForAnimation();
-                    mIconView.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+                    mIconView.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
                     mIconView
                             .animate()
                             .setDuration(ICON_ROTATION_DURATION_MS)
@@ -357,6 +357,8 @@ public class StatusView extends LinearLayout {
                                         mIsAnimatingStatusIconChange = false;
                                         allowBrowserControlsHide();
                                         mIconView.setRotation(0);
+                                        mIconView.setAccessibilityLiveRegion(
+                                                ACCESSIBILITY_LIVE_REGION_NONE);
                                         // Only update status icon if it is still the current icon.
                                         if (mStatusIconDrawable == targetIcon) {
                                             mIconView.setImageDrawable(targetIcon);
