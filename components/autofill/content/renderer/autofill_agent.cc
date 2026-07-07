@@ -69,6 +69,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -342,9 +343,11 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   };
 }
 
-// @memory should be triggered if the field is not a password field, no text is
-// selected and the cursor is located behind two '@' symbols.
-bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
+// AtMemory should be triggered if the field is not a password field, no text is
+// selected and the cursor is located behind the trigger string.
+bool ShouldTriggerAtMemorySearch(
+    const blink::WebFormControlElement& element,
+    const blink::RendererPreferences* renderer_prefs) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
   }
@@ -352,22 +355,41 @@ bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
       blink::mojom::FormControlType::kInputPassword) {
     return false;
   }
+  if (!renderer_prefs || renderer_prefs->autofill_trigger_string.empty()) {
+    return false;
+  }
+  // TODO(crbug.com/494158096): Add WebString::EndsWith().
+  const WebString trigger =
+      WebString::FromUtf8(renderer_prefs->autofill_trigger_string);
   const unsigned int sel_start = element.SelectionStart();
   const unsigned int sel_end = element.SelectionEnd();
-  return sel_start == sel_end && sel_start >= 2 &&
-         element.EditingValue().Substring(sel_start - 2, 2).Equals("@@");
+  return sel_start == sel_end && sel_start >= trigger.length() &&
+         element.EditingValue()
+             .Substring(sel_start - trigger.length(), trigger.length())
+             .Equals(trigger);
 }
 
 bool ShouldTriggerAtMemorySearchForContentEditable(
     WebLocalFrame* frame,
-    const blink::WebRange& selection) {
+    const blink::WebRange& selection,
+    const blink::RendererPreferences* renderer_prefs) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
   }
+  if (!renderer_prefs || renderer_prefs->autofill_trigger_string.empty()) {
+    return false;
+  }
+  // TODO(crbug.com/494158096): Add WebString::EndsWith().
+  const WebString trigger =
+      WebString::FromUtf8(renderer_prefs->autofill_trigger_string);
+  const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
   const int sel_start = selection.StartOffset();
   const int sel_end = selection.EndOffset();
-  return sel_start == sel_end && sel_start >= 2 &&
-         frame->RangeAsText(blink::WebRange(sel_start - 2, 2)).Equals("@@");
+  return sel_start == sel_end && sel_start >= trigger_len &&
+         frame
+             ->RangeAsText(
+                 blink::WebRange(sel_start - trigger_len, trigger_len))
+             .Equals(trigger);
 }
 
 }  // namespace
@@ -968,7 +990,8 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   }
   WebLocalFrame* frame = unsafe_render_frame()->GetWebFrame();
   if (ShouldTriggerAtMemorySearchForContentEditable(
-          frame, frame->GetInputMethodController()->GetSelectionOffsets())) {
+          frame, frame->GetInputMethodController()->GetSelectionOffsets(),
+          GetRendererPreferences())) {
     ShowSuggestionsForContentEditable(
         element, AutofillSuggestionTriggerSource::kAtMemory);
     return;
@@ -996,7 +1019,7 @@ void AutofillAgent::OnTextFieldValueChanged(
   // showing up.
   ClearPreviewedForm();
 
-  if (ShouldTriggerAtMemorySearch(element)) {
+  if (ShouldTriggerAtMemorySearch(element, GetRendererPreferences())) {
     ShowSuggestions(element, AutofillSuggestionTriggerSource::kAtMemory,
                     form_cache, std::nullopt);
     return;
@@ -1392,18 +1415,23 @@ void AutofillAgent::ApplyFieldAction(
       case mojom::ActionPersistence::kPreview:
         switch (action_type) {
           case mojom::FieldActionType::kReplaceAtMemoryTrigger: {
+            const blink::RendererPreferences* prefs = GetRendererPreferences();
+            WebString trigger = WebString::FromUtf8(
+                prefs ? prefs->autofill_trigger_string : "");
             const unsigned int sel_start = form_control.SelectionStart();
             const unsigned int sel_end = form_control.SelectionEnd();
             std::u16string preview_value = form_control.EditingValue().Utf16();
             // If there is no selection and the cursor is immediately preceded
-            // by "@@", we replace the trigger. Otherwise (e.g. if the user
-            // has already selected text or triggered via the context menu),
-            // we replace the current selection or insert at the cursor.
-            if (sel_start == sel_end && sel_start >= 2 &&
+            // by the trigger string, we replace the trigger. Otherwise (e.g. if
+            // the user has already selected text or triggered via the context
+            // menu), we replace the current selection or insert at the cursor.
+            if (!trigger.IsEmpty() && sel_start == sel_end &&
+                sel_start >= trigger.length() &&
                 form_control.EditingValue()
-                    .Substring(sel_start - 2, 2)
-                    .Equals("@@")) {
-              preview_value.replace(sel_start - 2, 2, value);
+                    .Substring(sel_start - trigger.length(), trigger.length())
+                    .Equals(trigger)) {
+              preview_value.replace(sel_start - trigger.length(),
+                                    trigger.length(), value);
             } else {
               preview_value.replace(sel_start, sel_end - sel_start, value);
             }
@@ -1429,18 +1457,23 @@ void AutofillAgent::ApplyFieldAction(
       case mojom::ActionPersistence::kFill:
         switch (action_type) {
           case mojom::FieldActionType::kReplaceAtMemoryTrigger: {
+            const blink::RendererPreferences* prefs = GetRendererPreferences();
+            WebString trigger = WebString::FromUtf8(
+                prefs ? prefs->autofill_trigger_string : "");
             const unsigned int sel_start = form_control.SelectionStart();
             const unsigned int sel_end = form_control.SelectionEnd();
             // If there is no selection and the cursor is immediately preceded
-            // by "@@", we select the trigger so it gets replaced by
-            // `PasteText` below. Otherwise (e.g. if the user has already
+            // by the trigger string, we select the trigger so it gets replaced
+            // by `PasteText` below. Otherwise (e.g. if the user has already
             // selected text or triggered via context menu), we just perform
             // a regular insertion/replacement at the current position.
-            if (sel_start == sel_end && sel_start >= 2 &&
+            if (!trigger.IsEmpty() && sel_start == sel_end &&
+                sel_start >= trigger.length() &&
                 form_control.EditingValue()
-                    .Substring(sel_start - 2, 2)
-                    .Equals("@@")) {
-              form_control.SetSelectionRange(sel_start - 2, sel_start);
+                    .Substring(sel_start - trigger.length(), trigger.length())
+                    .Equals(trigger)) {
+              form_control.SetSelectionRange(sel_start - trigger.length(),
+                                             sel_start);
             }
             form_control.PasteText(WebString::FromUtf16(value),
                                    /*replace_all=*/false);
@@ -1501,9 +1534,17 @@ void AutofillAgent::ApplyFieldAction(
                                        ->GetInputMethodController()
                                        ->GetSelectionOffsets();
               if (ShouldTriggerAtMemorySearchForContentEditable(
-                      frame->GetWebFrame(), selection)) {
+                      frame->GetWebFrame(), selection,
+                      GetRendererPreferences())) {
+                const blink::RendererPreferences* prefs =
+                    GetRendererPreferences();
+                WebString trigger = WebString::FromUtf8(
+                    prefs ? prefs->autofill_trigger_string : "");
+                int offset = selection.StartOffset();
+                int trigger_len =
+                    std::max(static_cast<int>(trigger.length()), 0);
                 frame->GetWebFrame()->SetEditableSelectionOffsets(
-                    selection.StartOffset() - 2, selection.StartOffset());
+                    offset - trigger_len, offset);
               }
             }
             [[fallthrough]];
@@ -2404,6 +2445,18 @@ void AutofillAgent::OnJavaScriptAutofillDetected(
                                                    field_ids);
     }
   }
+}
+
+const blink::RendererPreferences* AutofillAgent::GetRendererPreferences()
+    const {
+  if (auto* frame = unsafe_render_frame()) {
+    if (auto* web_frame = frame->GetWebFrame()) {
+      if (auto* view = web_frame->View()) {
+        return &view->GetRendererPreferences();
+      }
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace autofill

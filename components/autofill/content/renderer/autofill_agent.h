@@ -53,6 +53,7 @@
 namespace blink {
 class WebFormControlElement;
 class WebFormElement;
+struct RendererPreferences;
 }  // namespace blink
 
 namespace autofill {
@@ -327,6 +328,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   content::RenderFrame* unsafe_render_frame() const {
     return content::RenderFrameObserver::render_frame();
   }
+
+  const blink::RendererPreferences* GetRendererPreferences() const;
 
   // Use unsafe_render_frame() instead.
   template <typename T = int>

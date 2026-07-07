@@ -1895,6 +1895,18 @@ TEST_F(AutofillAgentTest, RequestRefillTimesOut) {
 
 class AutofillAgentTest_AtMemory : public AutofillAgentTest {
  public:
+  void SetUp() override {
+    AutofillAgentTest::SetUp();
+    SetTrigger("@@");
+  }
+
+  void SetTrigger(std::string trigger_string) {
+    blink::RendererPreferences prefs =
+        GetMainRenderFrame()->GetWebView()->GetRendererPreferences();
+    prefs.autofill_trigger_string = std::move(trigger_string);
+    GetMainRenderFrame()->GetWebView()->SetRendererPreferences(prefs);
+  }
+
   // Simulates the user typing slow enough to let AutofillAgent trigger
   // AskForValuesToFill() after each character.
   //
@@ -2103,6 +2115,25 @@ TEST_F(AutofillAgentTest_AtMemory,
   EXPECT_EQ(input.SuggestedValue().Utf16(), u"hello result extra");
 }
 
+// Tests that a non-standard trigger string works in <input> fields.
+TEST_F(AutofillAgentTest_AtMemory, NonStandardTriggerString) {
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(testing::AnyNumber());
+  // Expect the specific @memory trigger.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+
+  SetTrigger("Foo");
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+  SimulateSlowTyping("Foobar");
+}
+
 // TODO(crbug.com/479492562): Make a parametrized test with a parameter to test
 // an <input>, <textarea>, or contenteditable.
 class AutofillAgentTest_AtMemoryContentEditable
@@ -2249,8 +2280,8 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
 }
 
 // Tests that kReplaceAtMemoryTrigger inserts a value at the current cursor
-// position if "@@" is not found immediately before the cursor (for example,
-// during context menu invocation).
+// position if the trigger string ("@@") is not found immediately before the
+// cursor (for example, during context menu invocation).
 TEST_F(AutofillAgentTest_AtMemoryContentEditable,
        ReplaceAtMemoryTriggerForContextMenu) {
   blink::WebElement ce = GetWebElementById("ce");
@@ -2322,6 +2353,26 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
   blink::WebRange selection =
       GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
   EXPECT_EQ(selection.StartOffset(), 14);
+}
+
+// Tests that a non-standard trigger string works in <div contenteditable>
+// fields.
+TEST_F(AutofillAgentTest_AtMemoryContentEditable, NonStandardTriggerString) {
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(testing::AnyNumber());
+  // Expect the specific @memory trigger.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+
+  SetTrigger("Foo");
+  LoadHTML(R"(<div contenteditable id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+  SimulateSlowTyping("Foobar");
 }
 
 class AutofillAgentTest_AtMemoryInactivityNudge
