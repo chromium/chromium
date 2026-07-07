@@ -7746,11 +7746,6 @@
     "expiry_milestone": 150
   },
   {
-      "name": "password-removal-from-delete-browsing-data",
-      "owners": ["noemies@google.com", "novakovica@google.com", "bling-transactions@google.com"],
-      "expiry_milestone": 152
-  },
-  {
     "name": "password-save-in-context-error-resolution",
     "owners": [ "izuzic@google.com", "rgod@google.com", "ylahodiuk@google.com", "anki-team@google.com" ],
     "expiry_milestone": 155

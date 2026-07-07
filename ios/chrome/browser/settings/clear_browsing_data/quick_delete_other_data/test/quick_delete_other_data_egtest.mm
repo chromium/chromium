@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -124,7 +123,6 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
 
   // Set the regulatory country to Canada.
   config.additional_args.push_back("--search-engine-choice-country=CA");

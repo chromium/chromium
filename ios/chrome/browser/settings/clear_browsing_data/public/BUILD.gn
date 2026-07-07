@@ -9,14 +9,6 @@ source_set("constants") {
   ]
 }
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("util") {
   sources = [
     "quick_delete_util.h",

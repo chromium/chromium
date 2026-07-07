@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
@@ -38,14 +37,12 @@
 #import "url/gurl.h"
 
 using chrome_test_util::BrowsingDataButtonMatcher;
-using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::BrowsingDataDoneButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingHistoryButton;
 using chrome_test_util::ClearCacheButton;
 using chrome_test_util::ClearCookiesButton;
-using chrome_test_util::ClearSavedPasswordsButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -84,13 +81,6 @@ id<GREYMatcher> SafariImportButton() {
 
 @implementation SettingsTestCase
 
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. `NO` is returned to verify all tests pass
-// when the `kPasswordRemovalFromDeleteBrowsingData` feature is disabled.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return NO;
-}
-
 - (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
@@ -123,17 +113,6 @@ id<GREYMatcher> SafariImportButton() {
   policy_test_utils::ClearPolicies();
 
   [super tearDownHelper];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self shouldEnablePasswordRemovalFeature]) {
-    config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  } else {
-    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  }
-
-  return config;
 }
 
 // Performs the steps to clear browsing data. Must be called on the
@@ -174,50 +153,11 @@ id<GREYMatcher> SafariImportButton() {
   [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
       performAction:grey_tap()];
 
-  // TODO(crbug.com/487269108): Delete the BrowsingDataConfirmButtonMatcher()
-  // once the feature flag `kPasswordRemovalFromDeleteBrowsingData` is enabled.
-  // Tap the confirm button to save the prefs.
-  [[EarlGrey selectElementWithMatcher:[self shouldEnablePasswordRemovalFeature]
-                                          ? BrowsingDataDoneButtonMatcher()
-                                          : BrowsingDataConfirmButtonMatcher()]
+  // Tap the done button to save the prefs.
+  [[EarlGrey selectElementWithMatcher:BrowsingDataDoneButtonMatcher()]
       performAction:grey_tap()];
 
   [self clearBrowsingData];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
-// From the NTP, clears the saved passwords via the UI.
-- (void)clearPasswords {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
-  [ChromeEarlGreyUI tapPrivacyMenuButton:ClearBrowsingDataCell()];
-
-  // "Browsing history", "Cookies, Site Data" and "Cached Images and Files"
-  // are the default checked options when the prefs are registered. Unckeck all
-  // of them and check "Passwords".
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
-
-  [self clearBrowsingData];
-
-  // Re-tap all the previously tapped cells, so that the default state of the
-  // checkmarks is preserved.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCookiesButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearCacheButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
@@ -487,22 +427,6 @@ id<GREYMatcher> SafariImportButton() {
   } else {
     EARL_GREY_TEST_DISABLED(@"This test requires iOS 18.2 or later.");
   }
-}
-
-@end
-
-// Reruns all the tests in the file, but with the
-// `kPasswordRemovalFromDeleteBrowsingData` feature enabled by default.
-@interface SettingsPasswordRemovalTestCase : SettingsTestCase
-@end
-
-@implementation SettingsPasswordRemovalTestCase
-
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. It returns `YES` to rerun tests defined in
-// the SettingsTestCase.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return YES;
 }
 
 @end

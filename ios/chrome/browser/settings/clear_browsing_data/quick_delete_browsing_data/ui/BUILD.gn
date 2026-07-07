@@ -15,7 +15,6 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/clear_browsing_data/public:constants",
-    "//ios/chrome/browser/settings/clear_browsing_data/public:features",
     "//ios/chrome/browser/settings/clear_browsing_data/ui",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",

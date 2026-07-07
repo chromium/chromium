@@ -10,7 +10,6 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/ui/quick_delete_mutator.h"
@@ -51,9 +50,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierTabs,
   ItemIdentifierSiteData,
   ItemIdentifierCache,
-  // TODO(crbug.com/463402932): Remove once
-  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
-  ItemIdentifierPasswords,
   ItemIdentifierAutofill,
   ItemIdentifierManageOtherData,
 };
@@ -65,12 +61,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   [items addObject:@(ItemIdentifierTabs)];
   [items addObject:@(ItemIdentifierSiteData)];
   [items addObject:@(ItemIdentifierCache)];
-
-  // Conditionally add the Passwords item.
-  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
-    [items addObject:@(ItemIdentifierPasswords)];
-  }
-
   [items addObject:@(ItemIdentifierAutofill)];
   return items;
 }
@@ -88,17 +78,11 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   NSString* _historySummary;
   NSString* _tabsSummary;
   NSString* _cacheSummary;
-  // TODO(crbug.com/463402932): Remove once
-  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
-  NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
   BOOL _tabsSelected;
   BOOL _siteDataSelected;
   BOOL _cacheSelected;
-  // TODO(crbug.com/463402932): Remove once
-  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
-  BOOL _passwordsSelected;
   BOOL _autofillSelected;
   BOOL _shouldShowFooter;
 }
@@ -120,8 +104,8 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
   self.navigationItem.leftBarButtonItem = [self cancelButton];
-  self.navigationItem.rightBarButtonItem = [self confirmButton];
-  [self updateConfirmButtonEnabledStatus];
+  self.navigationItem.rightBarButtonItem = [self doneButton];
+  [self updateDoneButtonEnabledStatus];
   self.title = l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
   [self loadModel];
 }
@@ -151,12 +135,10 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   [snapshot appendItemsWithIdentifiers:BrowsingDataItemIdentifiers()
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
-  if (IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
     [snapshot
         appendSectionsWithIdentifiers:@[ @(SectionIdentifierManageOtherData) ]];
     [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierManageOtherData) ]
                intoSectionWithIdentifier:@(SectionIdentifierManageOtherData)];
-  }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
@@ -178,7 +160,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     case ItemIdentifierTabs:
     case ItemIdentifierSiteData:
     case ItemIdentifierCache:
-    case ItemIdentifierPasswords:
     case ItemIdentifierAutofill:
       // Update selection value for the corresponding cell with
       // `itemIdentifier`.
@@ -249,7 +230,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 }
 
 - (void)setManageOtherDataTitle:(NSString*)manageOtherDataTitle {
-  CHECK(IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   _manageOtherDataTitle = manageOtherDataTitle;
 
   // Reloads the "Manage other data" cell.
@@ -257,7 +237,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 }
 
 - (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle {
-  CHECK(IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   _manageOtherDataSubtitle = manageOtherDataSubtitle;
 
   // Reloads the "Manage other data" cell.
@@ -295,12 +274,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
-- (void)setPasswordsSummary:(NSString*)passwordsSummary {
-  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
-  _passwordsSummary = passwordsSummary;
-  [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
-}
-
 - (void)setAutofillSummary:(NSString*)autofillSummary {
   _autofillSummary = autofillSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
@@ -326,12 +299,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
-- (void)setPasswordsSelection:(BOOL)selected {
-  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
-  _passwordsSelected = selected;
-  [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
-}
-
 - (void)setAutofillSelection:(BOOL)selected {
   _autofillSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
@@ -347,12 +314,12 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
 #pragma mark - Private
 
-// Updates the enabled status of the confirm button. The confirm button should
+// Updates the enabled status of the done button. The done button should
 // only be enabled if at least one browsing data type is selected for deletion.
-- (void)updateConfirmButtonEnabledStatus {
+- (void)updateDoneButtonEnabledStatus {
   self.navigationItem.rightBarButtonItem.enabled =
       _historySelected || _tabsSelected || _siteDataSelected ||
-      _cacheSelected || _passwordsSelected || _autofillSelected;
+      _cacheSelected || _autofillSelected;
 }
 
 // Returns the cancel button on the navigation bar.
@@ -364,30 +331,15 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   return cancelButton;
 }
 
-// TODO(crbug.com/487269108): Modify comments and method names from `Confirm`
-// button to the `Done` button in this file once the feature flag
-// `kPasswordRemovalFromDeleteBrowsingData` is enabled. Returns the confirm
-// button on the navigation bar.
-- (UIBarButtonItem*)confirmButton {
-  UIBarButtonItem* confirmButton;
-  if (IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
-    confirmButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                             target:self
-                             action:@selector(onConfirm:)];
-    confirmButton.accessibilityIdentifier =
-        kQuickDeleteBrowsingDataDoneButtonIdentifier;
-  } else {
-    confirmButton = [[UIBarButtonItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_DELETE_BROWSING_DATA_CONFIRM)
-                style:UIBarButtonItemStyleDone
-               target:self
-               action:@selector(onConfirm:)];
-    confirmButton.accessibilityIdentifier =
-        kQuickDeleteBrowsingDataConfirmButtonIdentifier;
-  }
-  return confirmButton;
+// Returns the done button on the navigation bar.
+- (UIBarButtonItem*)doneButton {
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(onConfirm:)];
+  doneButton.accessibilityIdentifier =
+      kQuickDeleteBrowsingDataDoneButtonIdentifier;
+  return doneButton;
 }
 
 // Dismisses the page without saving changes in selection.
@@ -408,9 +360,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
   [_mutator updateCacheSelection:_cacheSelected];
-  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
-    [_mutator updatePasswordsSelection:_passwordsSelected];
-  }
   [_mutator updateAutofillSelection:_autofillSelected];
   [_delegate dismissBrowsingDataPage];
 }
@@ -514,16 +463,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                          selected:_cacheSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataCacheIdentifier];
     }
-    case ItemIdentifierPasswords: {
-      CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
-      return [self
-              createCellWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_CLEAR_SAVED_PASSWORDS)
-                          summary:_passwordsSummary
-                             icon:[self iconForItemIdentifier:itemIdentifier]
-                         selected:_passwordsSelected
-          accessibilityIdentifier:kQuickDeleteBrowsingDataPasswordsIdentifier];
-    }
     case ItemIdentifierAutofill: {
       return [self
               createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_AUTOFILL)
@@ -550,13 +489,12 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     case ItemIdentifierTabs:
     case ItemIdentifierSiteData:
     case ItemIdentifierCache:
-    case ItemIdentifierPasswords:
     case ItemIdentifierAutofill:
-      [self updateConfirmButtonEnabledStatus];
+      [self updateDoneButtonEnabledStatus];
       break;
     case ItemIdentifierManageOtherData:
       // Unlike the data type selection cells above, this cell is for
-      // navigation. Tapping it doesn't change the enabled state of the confirm
+      // navigation. Tapping it doesn't change the enabled state of the done
       // button.
       break;
   }
@@ -581,11 +519,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
       _cacheSelected = !_cacheSelected;
       break;
     }
-    case ItemIdentifierPasswords: {
-      CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
-      _passwordsSelected = !_passwordsSelected;
-      break;
-    }
     case ItemIdentifierAutofill: {
       _autofillSelected = !_autofillSelected;
       break;
@@ -595,7 +528,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
       NOTREACHED();
     }
   }
-  [self updateConfirmButtonEnabledStatus];
+  [self updateDoneButtonEnabledStatus];
 }
 
 // Returns the icon for the given `itemIdentifier`.
@@ -616,10 +549,6 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     case ItemIdentifierCache: {
       return DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
                                                 kDefaultSymbolSize);
-    }
-    case ItemIdentifierPasswords: {
-      return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
-                                               kDefaultSymbolSize);
     }
     case ItemIdentifierAutofill: {
       return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,

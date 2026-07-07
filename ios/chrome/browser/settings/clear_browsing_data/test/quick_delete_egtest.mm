@@ -20,9 +20,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -120,43 +118,6 @@ id<GREYMatcher> PopupCellWithTimeRange(NSString* timeRange) {
                     grey_text(timeRange), nil);
 }
 
-// Matcher for Search history link in the footer.
-id<GREYMatcher> SearchHistoryLink() {
-  return grey_allOf(
-      // The link is within the security footer with ID
-      // `kQuickDeleteFooterIdentifier`.
-      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
-      grey_accessibilityLabel(@"Search history"),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
-// Matcher for other forms of activity link in footer.
-id<GREYMatcher> OtherFormsOfActivityLink() {
-  return grey_allOf(
-      // The link is within the security footer with ID
-      // `kQuickDeleteFooterIdentifier`.
-      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
-      grey_accessibilityLabel(@"other forms of activity"),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
-// Expects my activity histogram entries for `navigation`.
-void ExpectClearBrowsingDataNavigationHistograms(
-    MyActivityNavigation navigation) {
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(navigation)
-          forHistogram:@"Settings.ClearBrowsingData.OpenMyActivity"],
-      @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
-}
-
 // Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
 // `action` was logged once.
 void ExpectDeleteBrowsingDataDialogHistogram(
@@ -215,13 +176,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 @implementation QuickDeleteTestCase
 
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. `NO` is returned to verify all tests pass
-// when the `kPasswordRemovalFromDeleteBrowsingData` feature is disabled.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return NO;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -234,7 +188,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   if (![ChromeTestCase forceRestartAndWipe]) {
     [AutofillAppInterface clearCreditCardStore];
-    [PasswordSettingsAppInterface clearPasswordStores];
     [ChromeEarlGrey clearBrowsingHistory];
     [ChromeEarlGrey resetBrowsingDataPrefs];
   }
@@ -259,7 +212,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       @"Inactive tabs preference is not set to default value.");
 
   [AutofillAppInterface clearCreditCardStore];
-  [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
 
@@ -290,29 +242,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-
-  // These tests will always run with the feature
-  // `kPasswordRemovalFromDeleteBrowsingData` as disabled and will be deleted
-  // after the feature's launch.
-  BOOL isTestRequiringFeatureDisabled =
-      [self
-          isRunningTest:@selector(testOpenSearchHistoryMyActivityFooterLink)] ||
-      [self isRunningTest:@selector
-            (testOpenOtherFormsOfActivityMyActivityFooterLink)] ||
-      [self isRunningTest:@selector(testHideShowFooterBasedOnSignInStatus)] ||
-      [self isRunningTest:@selector(testPasswordsForDeletion)] ||
-      [self isRunningTest:@selector(testKeepPasswords)];
-
-  // The tests above will require the feature to be disabled in order to run.
-  // The  other tests will run with the `kPasswordRemovalFromDeleteBrowsingData`
-  // feature enabled or disabled.
-  if (isTestRequiringFeatureDisabled) {
-    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  } else if ([self shouldEnablePasswordRemovalFeature]) {
-    config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  } else {
-    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  }
 
   return config;
 }
@@ -540,8 +469,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCache];
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:browsing_data::prefs::kDeletePasswords];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
@@ -778,8 +705,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCache];
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:browsing_data::prefs::kDeletePasswords];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
@@ -1034,8 +959,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCache];
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:browsing_data::prefs::kDeletePasswords];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
@@ -1442,85 +1365,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the number of passwords is shown on the browsing data row if
-// passwords is selected as a data type to be deleted. It also tests the
-// password gets deleted when the deletion of browsing data is selected.
-- (void)testPasswordsForDeletion {
-  // Add password to password autofill store.
-  int kPasswordCount = 1;
-  [PasswordSettingsAppInterface
-      saveExamplePasswordToProfileWithCount:kPasswordCount];
-
-  // Set pref to select deletion of passwords.
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:browsing_data::prefs::kDeletePasswords];
-
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Check that the browsing data row and the passwords substring are presented.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          ContainsPartialText(l10n_util::GetPluralNSStringF(
-              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, kPasswordCount))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap the browsing data button.
-  [self triggerDeletionFromQuickDelete];
-
-  // Check that the stored password was removed.
-  GREYAssertEqual(
-      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
-      @"Stored password was not removed.");
-}
-
-// Tests that the number of passwords is not shown on the browsing data row if
-// passwords is not selected as a data type to be deleted. It also tests that
-// the password does not get deleted when the deletion of browsing data is
-// selected.
-- (void)testKeepPasswords {
-  // Save a card to the payments data manager.
-  int kPasswordCount = 1;
-  [PasswordSettingsAppInterface
-      saveExamplePasswordToProfileWithCount:kPasswordCount];
-
-  // Set pref to keep passwords.
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:browsing_data::prefs::kDeletePasswords];
-
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Check that the browsing data row is present but that the passwords
-  // substring is not.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
-                     kPasswordCount))] assertWithMatcher:grey_nil()];
-
-  // Tap the browsing data button.
-  [self triggerDeletionFromQuickDelete];
-
-  // Check that the stored password was not removed.
-  GREYAssertEqual(
-      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
-      @"Stored password was removed.");
-}
-
 // Tests that the number of payment methods is shown on the browsing data row if
 // form data is selected as a data type to be deleted. It also tests that the
 // cards gets deleted when the deletion of browsing data is selected.
@@ -1617,119 +1461,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA))]
       assertWithMatcher:grey_nil()];
-}
-
-// Tests the footer search history link is opened correctly and metrics are
-// recorded in the corrresponding histogram bucket.
-- (void)testOpenSearchHistoryMyActivityFooterLink {
-  // Sign in is required to show the footer.
-  [self signIn];
-  // Open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // At the beginning of the test, the Delete Browsing Data dialog metric should
-  // be empty.
-  NoDeleteBrowsingDataDialogHistogram(
-      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the footer is presented.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap on the "Search history" link.
-  [[EarlGrey selectElementWithMatcher:SearchHistoryLink()]
-      performAction:grey_tap()];
-
-  // Check that the "Search history" link was opened.
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(
-                                    kClearBrowsingDataDSESearchUrlInFooterURL)];
-
-  // Assert that the metrics are populated.
-  ExpectClearBrowsingDataNavigationHistograms(
-      MyActivityNavigation::kSearchHistory);
-  ExpectDeleteBrowsingDataDialogHistogram(
-      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
-}
-
-// Tests the footer other forms of activity link is opened correctly and metrics
-// are recorded in the corrresponding histogram bucket.
-- (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
-  // Sign in is required to show the footer.
-  [self signIn];
-  // Open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // At the beginning of the test, the Delete Browsing Data dialog metric should
-  // be empty.
-  NoDeleteBrowsingDataDialogHistogram(
-      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the footer is presented.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap on the "My Activity" link.
-  [[EarlGrey selectElementWithMatcher:OtherFormsOfActivityLink()]
-      performAction:grey_tap()];
-
-  // Check that the "My Activity" link was opened.
-  [ChromeEarlGrey waitForWebStateVisibleURL:
-                      GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)];
-
-  // Assert that the metrics are populated.
-  ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
-  ExpectDeleteBrowsingDataDialogHistogram(
-      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
-}
-
-// Tests the footer disclaimer string is hidden when the user is signed out and
-// shown when the user signs in.
-- (void)testHideShowFooterBasedOnSignInStatus {
-  // Open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Check that the footer is hidden.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_nil()];
-
-  // Sign in to the browser.
-  [self signIn];
-
-  // Re-open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Check that the footer is presented.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that a user in the `ConsentLevel::kSignin` state will remain signed in
@@ -1838,63 +1569,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Assess that the cache pref is no longer displayed in the summary on the
   // second window.
   [[EarlGrey selectElementWithMatcher:BrowsingDataSummaryWithCache()]
-      assertWithMatcher:grey_nil()];
-}
-
-@end
-
-// Reruns all the tests in the file, but with the
-// `kPasswordRemovalFromDeleteBrowsingData` feature is enabled by default.
-@interface QuickDeletePasswordRemovalTestCase : QuickDeleteTestCase
-
-@end
-
-@implementation QuickDeletePasswordRemovalTestCase
-
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. It returns `YES` to rerun tests defined in
-// the QuickDeleteTestCase.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return YES;
-}
-
-// Tests that the footer disclaimer string is not present, regardless of the
-// user's sign-in status when the `kPasswordRemovalFromDeleteBrowsingData`
-// feature is enabled.
-- (void)testThatFooterIsNeverPresentWhenThePasswordRemovalFeatureIsEnabled {
-  // Open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the footer is not shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_nil()];
-
-  // Sign in to the browser.
-  [self signIn];
-
-  // Re-open Quick Delete bottom sheet.
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the footer is not shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kQuickDeleteFooterIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 

@@ -1196,10 +1196,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kQuickDeleteBrowsingDataButtonIdentifier);
 }
 
-+ (id<GREYMatcher>)browsingDataConfirmButtonMatcher {
-  return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
-}
-
 + (id<GREYMatcher>)browsingDataDoneButtonMatcher {
   return grey_accessibilityID(kQuickDeleteBrowsingDataDoneButtonIdentifier);
 }
@@ -1229,14 +1225,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   // cell used by the tableview and a invisible recycled cell.
   return grey_allOf(
       grey_accessibilityID(kQuickDeleteBrowsingDataCacheIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-+ (id<GREYMatcher>)clearSavedPasswordsButton {
-  // Needs to use grey_sufficientlyVisible() to make the difference between a
-  // cell used by the tableview and a invisible recycled cell.
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 

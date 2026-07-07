@@ -24,7 +24,6 @@ source_set("ui") {
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/clear_browsing_data/public:constants",
-    "//ios/chrome/browser/settings/clear_browsing_data/public:features",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",

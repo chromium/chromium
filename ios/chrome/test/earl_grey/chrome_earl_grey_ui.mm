@@ -42,13 +42,11 @@ using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::BrowsingDataButtonMatcher;
-using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::BrowsingDataDoneButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearAutofillButton;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
-using chrome_test_util::ClearSavedPasswordsButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::SettingsActionButton;
 using chrome_test_util::SettingsDestinationButton;
@@ -275,13 +273,13 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tap()];
 }
 
-- (void)deleteBrowsingDataAndPasswords:(BOOL)deletePasswords {
+- (void)clearBrowsingDataFromHistory {
   // Open Clear Browsing Data Button.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
   [self waitForClearBrowsingDataViewVisible:YES];
-  [self deleteAllBrowsingDataAndPasswords:deletePasswords];
+  [self deleteAllBrowsingData];
 }
 
 - (void)assertHistoryHasNoEntries {
@@ -607,12 +605,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 #pragma mark - Private
 
 // Clears all browsing data from the device. This method needs to be called when
-// the "Delete Browsing Data" panel is opened. Passwords cannot be deleted when
-// the `kPasswordRemovalFromDeleteBrowsingData` is enabled. Note that if
-// `deletePasswords` is "YES" and the feature is enabled or if the
-// `deletePasswords` is `NO` and the feature is disabled, it will cause an eg
-// test failure.
-- (void)deleteAllBrowsingDataAndPasswords:(BOOL)deletePasswords {
+// the "Delete Browsing Data" panel is opened.
+- (void)deleteAllBrowsingData {
   // Set 'Time Range' to 'All Time'.
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
@@ -634,29 +628,15 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       QuickDeleteBrowsingDataPageTitleMatcher()];
 
-  // Check "Saved Passwords" and "Autofill Data" which are unchecked by
-  // default. When the `kPasswordRemovalFromDeleteBrowsingData` feature is
-  // enabled, the passwords are not checked.
-  if (deletePasswords) {
-    [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-        performAction:grey_tap()];
-  }
+  // Check "Autofill Data" which is unchecked by default.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 
-  // Set the correct confirmation button matcher based on whether passwords can
-  // be deleted or not.
-  id<GREYMatcher> browsingDataConfirmationButtonMatcher =
-      deletePasswords ? BrowsingDataConfirmButtonMatcher()
-                      : BrowsingDataDoneButtonMatcher();
-
-  // Tap the confirm button to save the prefs.
-  [[EarlGrey selectElementWithMatcher:browsingDataConfirmationButtonMatcher]
+  // Tap the done button to save the prefs.
+  [[EarlGrey selectElementWithMatcher:BrowsingDataDoneButtonMatcher()]
       performAction:grey_tap()];
 
   // Clear data, and confirm.

@@ -25,10 +25,6 @@ enum class TimePeriod;
 // Sets the ViewController with the subtitle for the "Manage other data" cell.
 - (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle;
 
-// Sets the boolean on whether the ViewController should show the disclaimer
-// footer string or not.
-- (void)setShouldShowFooter:(BOOL)shouldShowFooter;
-
 // Sets the ViewController with the history summary.
 - (void)setHistorySummary:(NSString*)historySummary;
 
@@ -37,11 +33,6 @@ enum class TimePeriod;
 
 // Sets the ViewController with the cache summary.
 - (void)setCacheSummary:(NSString*)cacheSummary;
-
-// TODO(crbug.com/463402932): Remove once
-// `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
-// Sets the ViewController with the passwords summary.
-- (void)setPasswordsSummary:(NSString*)passwordsSummary;
 
 // Sets the ViewController with the autofill summary.
 - (void)setAutofillSummary:(NSString*)autofillSummary;
@@ -57,11 +48,6 @@ enum class TimePeriod;
 
 // Sets the boolean value for the cache pref selection.
 - (void)setCacheSelection:(BOOL)selected;
-
-// TODO(crbug.com/463402932): Remove once
-// `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
-// Sets the boolean value for the passwords pref selection.
-- (void)setPasswordsSelection:(BOOL)selected;
 
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;

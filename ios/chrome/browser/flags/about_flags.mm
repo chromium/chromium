@@ -119,7 +119,6 @@
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -2419,11 +2418,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kComposeboxAttachmentsTypedStateDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxAttachmentsTypedState)},
-    {"password-removal-from-delete-browsing-data",
-     flag_descriptions::kPasswordRemovalFromDeleteBrowsingDataName,
-     flag_descriptions::kPasswordRemovalFromDeleteBrowsingDataDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPasswordRemovalFromDeleteBrowsingData)},
     {"autofill-enable-wallet-branding",
      flag_descriptions::kAutofillEnableWalletBrandingName,
      flag_descriptions::kAutofillEnableWalletBrandingDescription,

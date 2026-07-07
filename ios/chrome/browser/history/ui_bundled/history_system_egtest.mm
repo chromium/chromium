@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
-#import "ios/chrome/browser/settings/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -123,24 +122,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @implementation HistorySystemTestCase
 
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. `NO` is returned to verify all tests pass
-// when the `kPasswordRemovalFromDeleteBrowsingData` feature is disabled.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return NO;
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
-
-  if ([self shouldEnablePasswordRemovalFeature]) {
-    config.features_enabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  } else {
-    config.features_disabled.push_back(kPasswordRemovalFromDeleteBrowsingData);
-  }
-
   return config;
 }
 
@@ -406,8 +391,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
       assertWithMatcher:grey_notNil()];
 
-  BOOL deletePasswords = ![self shouldEnablePasswordRemovalFeature];
-  [ChromeEarlGreyUI deleteBrowsingDataAndPasswords:deletePasswords];
+  [ChromeEarlGreyUI clearBrowsingDataFromHistory];
 
   // Toolbar should only contain CBD button and the background should contain
   // the Illustrated empty view
@@ -558,22 +542,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // multiwindow is fixed.
   chrome_test_util::TapAtOffsetOf(kToolsMenuHistoryId, windowNumber,
                                   CGVectorMake(0.5, 0.5));
-}
-
-@end
-
-// Reruns all the tests in `HistorySystemTestCase` with the
-// `kPasswordRemovalFromDeleteBrowsingData` feature enabled.
-@interface HistorySystemPasswordRemovalTestCase : HistorySystemTestCase
-@end
-
-@implementation HistorySystemPasswordRemovalTestCase
-
-// Returns whether the `kPasswordRemovalFromDeleteBrowsingData` feature should
-// be enabled for the current test. It returns `YES` to rerun tests defined in
-// the HistorySystemTestCase.
-- (BOOL)shouldEnablePasswordRemovalFeature {
-  return YES;
 }
 
 @end

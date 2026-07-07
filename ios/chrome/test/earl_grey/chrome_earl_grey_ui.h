@@ -147,11 +147,8 @@
 // Opens the tab grid.
 - (void)openTabGrid;
 
-// Clears browsing data from history. If `deletePasswords` is NO, saved
-// passwords will not be selected for deletion. If `deletePasswords` is "YES"
-// and the feature `kPasswordRemovalFromDeleteBrowsingData` is enabled, this
-// will lead to an error.
-- (void)deleteBrowsingDataAndPasswords:(BOOL)deletePasswords;
+// Clears browsing data from history.
+- (void)clearBrowsingDataFromHistory;
 
 // Asserts that history is empty.
 - (void)assertHistoryHasNoEntries;

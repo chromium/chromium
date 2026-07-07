@@ -1621,13 +1621,6 @@ inline constexpr char kPasswordManagerActorLoginName[] =
 inline constexpr char kPasswordManagerActorLoginDescription[] =
     "Enables logging in on websites using actor tools.";
 
-inline constexpr char kPasswordRemovalFromDeleteBrowsingDataName[] =
-    "Removal of Passwords from Quick Delete Browsing Data";
-inline constexpr char kPasswordRemovalFromDeleteBrowsingDataDescription[] =
-    "Disables the deletion of passwords via the quick delete bottom sheet. "
-    "Enables a new navigational view towards the appropriate pages to delete "
-    "passwords or manage other Google data (Search History and My Activities).";
-
 inline constexpr char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";
 inline constexpr char kPasswordReuseDetectionDescription[] =
