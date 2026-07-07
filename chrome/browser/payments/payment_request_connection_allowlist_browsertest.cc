@@ -548,6 +548,142 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
   EXPECT_FALSE(monitor.GetRequestInfo(app_manifest_url).has_value());
 }
 
+// Test that payment icon download is allowed when the URL is allowed by the
+// connection allowlist.
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       PaymentIconAllowed) {
+  RegisterResponse(
+      "/payment_request_connection_allowlist_icon_allowed.html",
+      ResponseEntry(kDefaultPaymentPageContent, {{"Connection-Allowlist", R"(
+            (
+              response-origin
+              "*://b.com:*/manifest-with-link"
+              "*://b.com:*/nickpay.test/pay"
+              "*://b.com:*/nickpay.test/app.json"
+              "*://b.com:*/nickpay.test/icon.png"
+            )
+          )"}}));
+  RegisterResponse(
+      "/manifest-with-link",
+      ResponseEntry(
+          "",
+          {{"Link", "</nickpay.test/pay>; rel=\"payment-method-manifest\""}}));
+  RegisterResponse(
+      "/nickpay.test/pay",
+      ResponseEntry(
+          R"({ "default_applications": ["app.json"] })",
+          {{"Content-Type", "application/json"},
+           {"Link", "</nickpay.test/pay>; rel=\"payment-method-manifest\""}}));
+  RegisterResponse("/nickpay.test/app.json",
+                   ResponseEntry(
+                       R"({
+                          "name": "Nick Pay",
+                          "icons": [{
+                            "src": "icon.png",
+                            "sizes": "40x40",
+                            "type": "image/png"
+                          }],
+                          "serviceworker": {
+                            "src": "app.js"
+                          }
+                       })",
+                       {{"Content-Type", "application/json"}}));
+  RegisterResponse(
+      "/nickpay.test/icon.png",
+      ResponseEntry("icon_content", {{"Content-Type", "image/png"}}));
+
+  content::URLLoaderMonitor monitor;
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  console_observer.SetPattern("*ERR_NETWORK_ACCESS_REVOKED*");
+
+  NavigateTo("a.com",
+             "/payment_request_connection_allowlist_icon_allowed.html");
+
+  GURL method_url = https_server()->GetURL("b.com", "/manifest-with-link");
+  GURL manifest_url = https_server()->GetURL("b.com", "/nickpay.test/pay");
+  GURL app_manifest_url =
+      https_server()->GetURL("b.com", "/nickpay.test/app.json");
+  GURL icon_url = https_server()->GetURL("b.com", "/nickpay.test/icon.png");
+
+  ExpectCanMakePayment(true, method_url);
+
+  EXPECT_TRUE(console_observer.messages().empty());
+  monitor.WaitForUrls({method_url, manifest_url, app_manifest_url, icon_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(method_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(manifest_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(app_manifest_url).error_code,
+            net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(icon_url).error_code, net::OK);
+}
+
+// Test that payment icon download is blocked when the URL is not allowed by the
+// connection allowlist.
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       PaymentIconBlocked) {
+  RegisterResponse(
+      "/payment_request_connection_allowlist_icon_blocked.html",
+      ResponseEntry(kDefaultPaymentPageContent, {{"Connection-Allowlist", R"(
+            (
+              response-origin
+              "*://b.com:*/manifest-with-link"
+              "*://b.com:*/nickpay.test/pay"
+              "*://b.com:*/nickpay.test/app.json"
+            )
+          )"}}));
+  RegisterResponse(
+      "/manifest-with-link",
+      ResponseEntry(
+          "",
+          {{"Link", "</nickpay.test/pay>; rel=\"payment-method-manifest\""}}));
+  RegisterResponse(
+      "/nickpay.test/pay",
+      ResponseEntry(
+          R"({ "default_applications": ["app.json"] })",
+          {{"Content-Type", "application/json"},
+           {"Link", "</nickpay.test/pay>; rel=\"payment-method-manifest\""}}));
+  RegisterResponse("/nickpay.test/app.json",
+                   ResponseEntry(
+                       R"({
+                          "name": "Nick Pay",
+                          "icons": [{
+                            "src": "icon.png",
+                            "sizes": "40x40",
+                            "type": "image/png"
+                          }],
+                          "serviceworker": {
+                            "src": "app.js"
+                          }
+                        })",
+                       {{"Content-Type", "application/json"}}));
+  RegisterResponse(
+      "/nickpay.test/icon.png",
+      ResponseEntry("icon_content", {{"Content-Type", "image/png"}}));
+
+  content::URLLoaderMonitor monitor;
+
+  NavigateTo("a.com",
+             "/payment_request_connection_allowlist_icon_blocked.html");
+
+  GURL method_url = https_server()->GetURL("b.com", "/manifest-with-link");
+  GURL manifest_url = https_server()->GetURL("b.com", "/nickpay.test/pay");
+  GURL app_manifest_url =
+      https_server()->GetURL("b.com", "/nickpay.test/app.json");
+  GURL icon_url = https_server()->GetURL("b.com", "/nickpay.test/icon.png");
+
+  // canMakePayment still returns true because
+  // `kAllowJITInstallationWhenAppIconIsMissing` is enabled. However, below the
+  // URLLoaderMonitor verifies the icon download is blocked as expected.
+  ExpectCanMakePayment(true, method_url);
+
+  monitor.WaitForUrls({method_url, manifest_url, app_manifest_url, icon_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(method_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(manifest_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(app_manifest_url).error_code,
+            net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(icon_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PaymentRequestConnectionAllowlistBrowserTest);
 
