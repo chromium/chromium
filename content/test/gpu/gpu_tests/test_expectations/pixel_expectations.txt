@@ -551,6 +551,11 @@ crbug.com/286989320 [ mac no-clang-coverage no-asan  ] Pixel_MeetEffects_rainbow
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
 
+# Flaky all white image on multiple platforms
+crbug.com/510186413 [ linux ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
+crbug.com/510186413 [ mac ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
+crbug.com/510186413 [ win ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
