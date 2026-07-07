@@ -17,6 +17,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -31,6 +32,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -43,6 +45,7 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -773,6 +776,117 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxToolInteractiveTest,
       ClickElement(kNtpElementId, GetParam().tool_context_menu_item),
       // 7. Wait for the tool chip to render with the correct text.
       WaitForStateChange(kNtpElementId, tool_chip_ready));
+}
+
+class NtpRealboxTabFlyoverInteractiveTest : public NtpRealboxUiTestBase {
+ public:
+  NtpRealboxTabFlyoverInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures();
+    enabled_features.emplace_back(omnibox::kContextManagementInComposebox,
+                                  base::FieldTrialParams());
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                GetDisabledFeatures());
+    tab_context_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting<
+                lens::TabContextualizationController>(base::BindRepeating(
+                [](tabs::TabInterface& tab)
+                    -> std::unique_ptr<lens::TabContextualizationController> {
+                  auto controller =
+                      std::make_unique<MockTabContextualizationController>(
+                          &tab);
+                  EXPECT_CALL(*controller, GetInitialPageContextEligibility())
+                      .WillRepeatedly(testing::Return(true));
+                  EXPECT_CALL(*controller, GetPageContext(testing::_))
+                      .WillRepeatedly([](lens::TabContextualizationController::
+                                             GetPageContextCallback callback) {
+                        auto context =
+                            std::make_unique<lens::ContextualInputData>();
+                        std::move(callback).Run(std::move(context));
+                      });
+                  return controller;
+                }));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
+};
+
+// Tests the user journey of opening the NTP realbox contextual menu, hovering
+// over the "Add tabs" item to open the tab flyout menu, and selecting a tab
+// to attach/add it to the composebox.
+IN_PROC_BROWSER_TEST_F(NtpRealboxTabFlyoverInteractiveTest,
+                       WebUiTabFlyoverAddTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  const DeepQuery kWebUIContextMenuEntrypoint = {
+      "ntp-app", "#composebox", "#contextEntrypoint", "#entrypointButton",
+      "#entrypoint"};
+  const DeepQuery kShareTabsTrigger = {"ntp-app", "#composebox",
+                                       "#contextEntrypoint", "#menu",
+                                       "#shareTabsTrigger"};
+  const DeepQuery kFirstTabFlyoutItem = {
+      "ntp-app",
+      "#composebox",
+      "#contextEntrypoint",
+      "#menu",
+      ".share-tabs-flyout",
+      ".suggestion-container:first-of-type button"};
+
+  const DeepQuery kComposeboxFaviconGroup = {
+      "ntp-app", "#composebox", "#contextEntrypoint", "#entrypointButton",
+      "composebox-favicon-group"};
+
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
+
+  RunTestSequence(
+      Do([this]() {
+        browser()->profile()->GetPrefs()->SetInteger(
+            contextual_search::kSearchContentSharingSettings,
+            static_cast<int>(contextual_search::
+                                 SearchContentSharingSettingsValue::kEnabled));
+      }),
+      // Open a background tab first, then open NTP.
+      AddInstrumentedTab(kFirstTab, GURL("about:blank")),
+      AddInstrumentedTab(kNtpElementId, chrome::ChromeUINewTabURLAsGURL()),
+      // Open NTP composebox by clicking compose button.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kComposeButton),
+      ExecuteJsAt(kNtpElementId, kComposeButton, "el => el.click()"),
+      WaitForDialogStateChange(kComposeboxDialog, /*expected_open=*/true),
+      // Wait for inputState to be loaded and populated.
+      WaitForJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
+                        "el => el.inputState !== null && "
+                        "el.inputState.allowedTools.length > 0",
+                        true),
+      // Force showMenuOnClick to true on composebox.
+      ExecuteJsAt(kNtpElementId, {"ntp-app", "#composebox"},
+                  "el => { el.showMenuOnClick = true; }"),
+      // Open contextual menu.
+      WaitForElementToRender(kNtpElementId, kWebUIContextMenuEntrypoint),
+      ExecuteJsAt(kNtpElementId, kWebUIContextMenuEntrypoint,
+                  "el => el.click()"),
+      // Wait for the WebUI menu trigger to render and click/hover it.
+      WaitForElementToRender(kNtpElementId, kShareTabsTrigger),
+      MoveMouseTo(kNtpElementId, kShareTabsTrigger),
+      // Set pointerOverFlyout_ to true via JS to prevent the flyout from
+      // closing due to async mouse move events in tests.
+      ExecuteJsAt(kNtpElementId,
+                  {"ntp-app", "#composebox", "#contextEntrypoint", "#menu"},
+                  "el => { el.pointerOverFlyout_ = true; }"),
+      // Wait for the first tab item in the flyout menu and click it.
+      WaitForElementToRender(kNtpElementId, kFirstTabFlyoutItem),
+      ExecuteJsAt(kNtpElementId, kFirstTabFlyoutItem, "el => el.click()"),
+      // Verify tab is attached in NTP composebox.
+      WaitForElementToRender(kNtpElementId, kComposeboxFaviconGroup),
+      CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
+                      "el => el.files.size", 1),
+      CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
+                      "el => el.errorMessage", ""),
+      CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
+                      "el => el.showFileCarousel", false));
 }
 
 struct ComposeboxSearchParam {

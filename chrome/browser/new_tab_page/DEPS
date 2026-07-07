@@ -78,6 +78,7 @@ test_rules = [
   "+chrome/browser/user_education/ntp_promo_identifiers.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/tabs/tab_group_model.h",
+  "+chrome/browser/ui/tabs/public/tab_features.h",
   "+chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h",
   "+chrome/browser/ui/views",
 ]

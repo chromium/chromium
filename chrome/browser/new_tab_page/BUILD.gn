@@ -288,6 +288,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/contextual_search:test_support",
+      "//components/omnibox/common:features",
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/base:test_support",
