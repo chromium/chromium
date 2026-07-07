@@ -396,11 +396,6 @@ class Browser : public TabStripModelObserver,
   //      this class.
   TabStripModel* tab_strip_model() const { return tab_strip_model_.get(); }
 
-  // Never nullptr.
-  TabStripModelDelegate* tab_strip_model_delegate() const {
-    return tab_strip_model_delegate_.get();
-  }
-
   BrowserActions* browser_actions() { return GetActions(); }
 
   // TODO(crbug.com/434734349): Remove this method once callsites are migrated.
