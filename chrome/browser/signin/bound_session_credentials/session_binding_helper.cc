@@ -28,7 +28,7 @@ unexportable_keys::BackgroundTaskPriority kSessionBindingPriority =
 
 bool ShouldTryToReloadKey(
     const unexportable_keys::ServiceErrorOr<
-        unexportable_keys::UnexportableKeyId>& key_id_or_error) {
+        unexportable_keys::UnexportableSigningKeyId>& key_id_or_error) {
   if (key_id_or_error.has_value()) {
     // The key was successfully loaded, no need to reload.
     return false;

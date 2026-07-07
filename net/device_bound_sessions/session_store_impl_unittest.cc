@@ -94,7 +94,7 @@ unexportable_keys::UnexportableAttestationKeyId GenerateNewAttestationKey(
 
 std::vector<uint8_t> GetWrappedKey(
     unexportable_keys::UnexportableKeyService& key_service,
-    unexportable_keys::UnexportableKeyId key_id) {
+    unexportable_keys::UnexportableSigningKeyId key_id) {
   unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
       key_service.GetWrappedKey(key_id);
   CHECK(wrapped_key.has_value());
@@ -157,7 +157,7 @@ proto::Session CreateSessionProto(
   std::unique_ptr<Session> session =
       CreateSessionHelper(key_service, url_string, session_id, origin);
   proto::Session sproto = session->ToProto();
-  unexportable_keys::UnexportableKeyId key_id =
+  unexportable_keys::UnexportableSigningKeyId key_id =
       session->unexportable_key_id().value();
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_service, key_id);
   sproto.set_wrapped_key(std::string(wrapped_key.begin(), wrapped_key.end()));
@@ -726,13 +726,13 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
 
   // Obtain the corresponding key ids.
   base::test::TestFuture<unexportable_keys::ServiceErrorOr<
-      std::vector<unexportable_keys::UnexportableKeyId>>>
+      std::vector<unexportable_keys::UnexportableSigningKeyId>>>
       get_all_keys_future;
   unexportable_key_service().GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       get_all_keys_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(
-      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
+      std::vector<unexportable_keys::UnexportableSigningKeyId> all_keys_ids,
       get_all_keys_future.Take());
 
   unexportable_keys::UnexportableSigningKeyId key_id_1(all_keys_ids[0]);
@@ -1356,13 +1356,13 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeysWithAttestation) {
 
   // Obtain the corresponding key ids.
   base::test::TestFuture<unexportable_keys::ServiceErrorOr<
-      std::vector<unexportable_keys::UnexportableKeyId>>>
+      std::vector<unexportable_keys::UnexportableSigningKeyId>>>
       get_all_keys_future;
   unexportable_key_service().GetAllKeysForGarbageCollectionSlowlyAsync(
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       get_all_keys_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(
-      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
+      std::vector<unexportable_keys::UnexportableSigningKeyId> all_keys_ids,
       get_all_keys_future.Take());
   ASSERT_EQ(all_keys_ids.size(), 4u);
 

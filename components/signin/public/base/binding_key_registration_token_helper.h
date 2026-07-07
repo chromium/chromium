@@ -129,7 +129,7 @@ class BindingKeyRegistrationTokenHelper {
           unexportable_keys::UnexportableSigningKeyId> binding_key);
   void CreateRegistrationToken(
       std::string_view header_and_payload,
-      unexportable_keys::UnexportableKeyId binding_key,
+      unexportable_keys::UnexportableSigningKeyId binding_key,
       base::OnceCallback<void(base::expected<Result, Error>)> callback,
       unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature);
   static void RecordResultAndInvokeCallback(

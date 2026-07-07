@@ -16,22 +16,6 @@ TEST(UnexportableSigningKeyIdTest, DefaultConstructor) {
   EXPECT_FALSE(signing_key_id.value().is_empty());
 }
 
-TEST(UnexportableSigningKeyIdTest, ExplicitConversionFromBase) {
-  static_assert(
-      !std::convertible_to<UnexportableKeyId, UnexportableSigningKeyId>,
-      "Implicit conversion from UnexportableKeyId to "
-      "UnexportableSigningKeyId should not be allowed");
-
-  UnexportableKeyId base_id;
-  UnexportableSigningKeyId derived_id(base_id);
-  EXPECT_EQ(derived_id, base_id);
-}
-
-TEST(UnexportableSigningKeyIdTest, ImplicitConversionToBase) {
-  UnexportableSigningKeyId derived_id;
-  UnexportableKeyId base_id = derived_id;
-  EXPECT_EQ(derived_id, base_id);
-}
 
 TEST(UnexportableAttestationKeyIdTest, DefaultConstructor) {
   UnexportableAttestationKeyId attestation_key_id;
@@ -39,19 +23,19 @@ TEST(UnexportableAttestationKeyIdTest, DefaultConstructor) {
 }
 
 TEST(UnexportableAttestationKeyIdTest, ExplicitConversionFromBase) {
-  static_assert(
-      !std::convertible_to<UnexportableKeyId, UnexportableAttestationKeyId>,
-      "Implicit conversion from UnexportableKeyId to "
-      "UnexportableAttestationKeyId should not be allowed");
+  static_assert(!std::convertible_to<UnexportableSigningKeyId,
+                                     UnexportableAttestationKeyId>,
+                "Implicit conversion from UnexportableSigningKeyId to "
+                "UnexportableAttestationKeyId should not be allowed");
 
-  UnexportableKeyId base_id;
+  UnexportableSigningKeyId base_id;
   UnexportableAttestationKeyId derived_id(base_id);
   EXPECT_EQ(derived_id, base_id);
 }
 
 TEST(UnexportableAttestationKeyIdTest, ImplicitConversionToBase) {
   UnexportableAttestationKeyId derived_id;
-  UnexportableKeyId base_id = derived_id;
+  UnexportableSigningKeyId base_id = derived_id;
   EXPECT_EQ(derived_id, base_id);
 }
 
@@ -62,18 +46,18 @@ TEST(UnexportableKeyIdTest, InequalityOfDifferentKeys) {
 }
 
 TEST(UnexportableKeyIdTest, EqualityOfSameKeys) {
-  UnexportableKeyId base_id;
+  UnexportableSigningKeyId base_id;
   UnexportableSigningKeyId signing_key_id(base_id);
   UnexportableAttestationKeyId attestation_key_id(base_id);
   EXPECT_EQ(signing_key_id, attestation_key_id);
 }
 
 TEST(UnexportableKeyIdTest, HashMapIntegration) {
-  UnexportableKeyId base_id;
+  UnexportableSigningKeyId base_id;
   UnexportableSigningKeyId signing_key_id(base_id);
   UnexportableAttestationKeyId attestation_key_id(base_id);
 
-  absl::flat_hash_map<UnexportableKeyId, int> map;
+  absl::flat_hash_map<UnexportableSigningKeyId, int> map;
   map[signing_key_id] = 1;
   map[attestation_key_id] = 2;
 

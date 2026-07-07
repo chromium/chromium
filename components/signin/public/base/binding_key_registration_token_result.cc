@@ -7,7 +7,7 @@
 namespace signin {
 
 BindingKeyRegistrationTokenResult::BindingKeyRegistrationTokenResult(
-    unexportable_keys::UnexportableKeyId binding_key_id,
+    unexportable_keys::UnexportableSigningKeyId binding_key_id,
     std::vector<uint8_t> wrapped_binding_key,
     std::string registration_token)
     : binding_key_id(binding_key_id),

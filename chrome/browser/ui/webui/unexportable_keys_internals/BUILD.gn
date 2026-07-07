@@ -17,8 +17,8 @@ mojom("mojo_bindings") {
     {
       types = [
         {
-          mojom = "unexportable_keys_internals.mojom.UnexportableKeyId"
-          cpp = "::unexportable_keys::UnexportableKeyId"
+          mojom = "unexportable_keys_internals.mojom.UnexportableSigningKeyId"
+          cpp = "::unexportable_keys::UnexportableSigningKeyId"
         },
       ]
       traits_headers = [

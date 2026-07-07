@@ -8,7 +8,7 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import type {UnexportableKeysInternalsAppElement} from 'chrome://unexportable-keys-internals/app.js';
 import {UnexportableKeysInternalsBrowserProxyImpl} from 'chrome://unexportable-keys-internals/browser_proxy.js';
 import type {UnexportableKeysInternalsBrowserProxy} from 'chrome://unexportable-keys-internals/browser_proxy.js';
-import type {PageHandlerInterface, UnexportableKeyId, UnexportableKeyInfo} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
+import type {PageHandlerInterface, UnexportableKeyInfo, UnexportableSigningKeyId} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -38,7 +38,7 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.deleteKeySuccess_ = success;
   }
 
-  deleteKey(keyId: UnexportableKeyId) {
+  deleteKey(keyId: UnexportableSigningKeyId) {
     this.methodCalled('deleteKey', keyId);
     return Promise.resolve({success: this.deleteKeySuccess_});
   }

@@ -35,7 +35,7 @@ class UnexportableKeyObsoleteProfileGarbageCollector
  private:
   void StartGarbageCollection();
   void OnGetAllKeysForGarbageCollection(
-      ServiceErrorOr<std::vector<UnexportableKeyId>> keys_or_error);
+      ServiceErrorOr<std::vector<UnexportableSigningKeyId>> keys_or_error);
 
   ProfileManager* profile_manager() {
     return profile_manager_observation_.GetSource();

@@ -115,7 +115,7 @@ std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config);
 // where the tag is prefixed by one of the `active_application_tag_prefixes`.
 // Returns the number of keys removed.
 size_t FilterUnexportableKeysByActiveApplicationTags(
-    std::vector<UnexportableKeyId>& key_ids,
+    std::vector<UnexportableSigningKeyId>& key_ids,
     UnexportableKeyService& key_service,
     const base::flat_set<std::string>& active_application_tag_prefixes);
 

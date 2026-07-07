@@ -79,7 +79,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
       BackgroundTaskPriority priority,
       GetAllKeysForGarbageCollectionCallback callback) override;
 
-  void DeleteKeys(const std::vector<UnexportableKeyId>& key_ids,
+  void DeleteKeys(const std::vector<UnexportableSigningKeyId>& key_ids,
                   BackgroundTaskPriority priority,
                   DeleteKeysCallback callback) override;
 
@@ -99,7 +99,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
       ServiceErrorOr<UnexportableAttestationKeyId> error_or_key_id);
   void OnGetAllKeysForGarbageCollection(
       GetAllKeysForGarbageCollectionCallback callback,
-      ServiceErrorOr<std::vector<UnexportableKeyId>> error_or_key_ids);
+      ServiceErrorOr<std::vector<UnexportableSigningKeyId>> error_or_key_ids);
 
   mojo::Receiver<mojom::UnexportableKeyService> receiver_{this};
   // The underlying UnexportableKeyService instance. Not owned.

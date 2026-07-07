@@ -224,7 +224,7 @@ class TokenBindingHelper {
   void OnGetAllKeysForGarbageCollection(
       absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
       unexportable_keys::ServiceErrorOr<
-          std::vector<unexportable_keys::UnexportableKeyId>>
+          std::vector<unexportable_keys::UnexportableSigningKeyId>>
           all_key_ids_or_error);
 
   const raw_ref<unexportable_keys::UnexportableKeyService>

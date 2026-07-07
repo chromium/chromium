@@ -58,7 +58,7 @@ class SessionBindingHelperTest : public testing::Test {
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      unexportable_keys::UnexportableKeyId key_id) {
+      unexportable_keys::UnexportableSigningKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
@@ -95,7 +95,7 @@ TEST_F(SessionBindingHelperTest, MaybeLoadBindingKey) {
 }
 
 TEST_F(SessionBindingHelperTest, GenerateBindingKeyAssertion) {
-  unexportable_keys::UnexportableKeyId key_id = GenerateNewSigningKey();
+  unexportable_keys::UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   SessionBindingHelper helper(unexportable_key_service(), GetWrappedKey(key_id),
                               "session_id");
   base::test::TestFuture<

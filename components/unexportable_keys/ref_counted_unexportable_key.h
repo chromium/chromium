@@ -21,7 +21,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableKey
     : public base::RefCountedThreadSafe<RefCountedUnexportableKey> {
  public:
   virtual crypto::UnexportableSigningKey& key() const = 0;
-  virtual const UnexportableKeyId& id() const = 0;
+  virtual const UnexportableSigningKeyId& id() const = 0;
 
  protected:
   virtual ~RefCountedUnexportableKey() = default;

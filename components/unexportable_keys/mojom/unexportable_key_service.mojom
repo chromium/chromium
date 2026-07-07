@@ -54,10 +54,6 @@ enum BackgroundTaskPriority {
 };
 
 // LINT.ThenChange(/components/unexportable_keys/background_task_priority.h)
-struct UnexportableKeyId {
-  mojo_base.mojom.UnguessableToken key_id;
-};
-
 struct UnexportableSigningKeyId {
   mojo_base.mojom.UnguessableToken key_id;
 };
@@ -73,12 +69,6 @@ struct NewKeyMetadata {
   SignatureAlgorithm algorithm;
   string? key_tag;
   mojo_base.mojom.Time? creation_time;
-};
-
-// A struct that holds a key ID and its metadata.
-struct NewKeyData {
-  UnexportableKeyId key_id;
-  NewKeyMetadata metadata;
 };
 
 // A struct that holds a signing key ID and its metadata.
@@ -163,17 +153,16 @@ interface UnexportableKeyService {
       => result<AttestationStatement, ServiceError>;
 
   // Returns all keys currently stored by the OS that are being managed by this
-  // service. In success an array of NewKeyData will be returned. If there was a
-  // failure a ServiceError will be returned instead.
+  // service. In success an array of NewSigningKeyData will be returned. If
+  // there was a failure a ServiceError will be returned instead.
   GetAllKeysForGarbageCollection(BackgroundTaskPriority priority)
-      => result<array<NewKeyData>, ServiceError>;
+      => result<array<NewSigningKeyData>, ServiceError>;
 
   // Deletes the keys identified by key_ids.
   // On success the number of keys deleted is returned. On error a ServiceError
   // is returned instead.
-  DeleteKeys(
-      array<UnexportableKeyId> key_ids, BackgroundTaskPriority priority)
-      => result<uint64, ServiceError>;
+  DeleteKeys(array<UnexportableSigningKeyId> key_ids,
+             BackgroundTaskPriority priority) => result<uint64, ServiceError>;
 
   // Delete all keys.
   // On success the number of keys deleted is returned. On error a ServiceError

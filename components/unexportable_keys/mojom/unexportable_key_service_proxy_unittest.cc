@@ -473,9 +473,9 @@ TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionSuccess) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const UnexportableKeyId key_id1;
-  const UnexportableKeyId key_id2;
-  std::vector<UnexportableKeyId> mock_result = {key_id1, key_id2};
+  const UnexportableSigningKeyId key_id1;
+  const UnexportableSigningKeyId key_id2;
+  std::vector<UnexportableSigningKeyId> mock_result = {key_id1, key_id2};
 
   EXPECT_CALL(mock_uks,
               GetAllKeysForGarbageCollectionSlowlyAsync(kTestPriority, _))
@@ -495,11 +495,12 @@ TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionSuccess) {
   ON_CALL(mock_uks, GetKeyTag).WillByDefault(Return("tag"));
   ON_CALL(mock_uks, GetCreationTime).WillByDefault(Return(base::Time::Now()));
 
-  TestFuture<ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>>> future;
+  TestFuture<ServiceErrorOr<std::vector<mojom::NewSigningKeyDataPtr>>> future;
   uks_remote->GetAllKeysForGarbageCollection(kTestPriority,
                                              future.GetCallback());
 
-  ASSERT_OK_AND_ASSIGN(std::vector<mojom::NewKeyDataPtr> keys, future.Take());
+  ASSERT_OK_AND_ASSIGN(std::vector<mojom::NewSigningKeyDataPtr> keys,
+                       future.Take());
   ASSERT_THAT(keys, SizeIs(2));
   EXPECT_EQ(keys[0]->key_id, key_id1);
   EXPECT_EQ(keys[1]->key_id, key_id2);
@@ -520,7 +521,7 @@ TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionError) {
               GetAllKeysForGarbageCollectionSlowlyAsync(kTestPriority, _))
       .WillOnce(RunOnceCallback<1>(base::unexpected(expected_error)));
 
-  TestFuture<ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>>> future;
+  TestFuture<ServiceErrorOr<std::vector<mojom::NewSigningKeyDataPtr>>> future;
   uks_remote->GetAllKeysForGarbageCollection(kTestPriority,
                                              future.GetCallback());
 
@@ -536,7 +537,7 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeysSuccess) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
 
   EXPECT_CALL(mock_uks,
               DeleteKeysSlowlyAsync(ElementsAre(key_id), kTestPriority, _))
@@ -557,7 +558,7 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeysError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
   ServiceError expected_error = ServiceError::kKeyNotFound;
 
   EXPECT_CALL(mock_uks,

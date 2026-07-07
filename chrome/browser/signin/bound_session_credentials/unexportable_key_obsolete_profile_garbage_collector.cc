@@ -107,12 +107,13 @@ void UnexportableKeyObsoleteProfileGarbageCollector::StartGarbageCollection() {
 
 void UnexportableKeyObsoleteProfileGarbageCollector::
     OnGetAllKeysForGarbageCollection(
-        ServiceErrorOr<std::vector<UnexportableKeyId>> key_ids_or_error) {
+        ServiceErrorOr<std::vector<UnexportableSigningKeyId>>
+            key_ids_or_error) {
   if (!key_ids_or_error.has_value() || key_ids_or_error->empty()) {
     return;
   }
 
-  std::vector<UnexportableKeyId>& key_ids = *key_ids_or_error;
+  std::vector<UnexportableSigningKeyId>& key_ids = *key_ids_or_error;
   const size_t key_count = key_ids.size();
   base::UmaHistogramCounts100(
       base::StrCat({kObsoleteProfilesHistogramPrefix, "TotalKeyCount"}),

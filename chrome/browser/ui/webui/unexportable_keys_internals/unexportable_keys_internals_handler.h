@@ -42,14 +42,14 @@ class UnexportableKeysInternalsHandler
   // unexportable_keys_internals::mojom::PageHandler:
   void GetUnexportableKeysInfo(
       GetUnexportableKeysInfoCallback callback) override;
-  void DeleteKey(const unexportable_keys::UnexportableKeyId& key_id,
+  void DeleteKey(const unexportable_keys::UnexportableSigningKeyId& key_id,
                  DeleteKeyCallback callback) override;
 
  private:
   void OnGetAllKeysForGarbageCollection(
       GetUnexportableKeysInfoCallback callback,
       unexportable_keys::ServiceErrorOr<
-          std::vector<unexportable_keys::UnexportableKeyId>> keys);
+          std::vector<unexportable_keys::UnexportableSigningKeyId>> keys);
 
   // Allows handling received messages from the web ui page.
   mojo::Receiver<unexportable_keys_internals::mojom::PageHandler> receiver_;

@@ -11,15 +11,17 @@
 
 namespace mojo {
 
-bool StructTraits<unexportable_keys_internals::mojom::UnexportableKeyIdDataView,
-                  unexportable_keys::UnexportableKeyId>::
-    Read(unexportable_keys_internals::mojom::UnexportableKeyIdDataView data,
-         unexportable_keys::UnexportableKeyId* output) {
+bool StructTraits<
+    unexportable_keys_internals::mojom::UnexportableSigningKeyIdDataView,
+    unexportable_keys::UnexportableSigningKeyId>::
+    Read(unexportable_keys_internals::mojom::UnexportableSigningKeyIdDataView
+             data,
+         unexportable_keys::UnexportableSigningKeyId* output) {
   base::UnguessableToken key_id;
   if (!data.ReadKeyId(&key_id)) {
     return false;
   }
-  *output = unexportable_keys::UnexportableKeyId(key_id);
+  *output = unexportable_keys::UnexportableSigningKeyId(key_id);
   return true;
 }
 

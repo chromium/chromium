@@ -154,7 +154,7 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   void StartGarbageCollection();
   void OnGetAllKeysForGarbageCollection(
       unexportable_keys::ServiceErrorOr<
-          std::vector<unexportable_keys::UnexportableKeyId>>
+          std::vector<unexportable_keys::UnexportableSigningKeyId>>
           all_key_ids_or_error);
 
   // Key service used to wrap/unwrap unexportable session keys.

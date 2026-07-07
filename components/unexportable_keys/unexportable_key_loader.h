@@ -20,8 +20,8 @@ namespace unexportable_keys {
 
 class UnexportableKeyService;
 
-// This class facilitates creation of `UnexportableKeyId` and allows scheduling
-// callbacks to be called once a key is loaded.
+// This class facilitates creation of `UnexportableSigningKeyId` and allows
+// scheduling callbacks to be called once a key is loaded.
 //
 // This class is designed for a single use: it allows loading only one key.
 // Create multiple instances of this class to load multiple keys.

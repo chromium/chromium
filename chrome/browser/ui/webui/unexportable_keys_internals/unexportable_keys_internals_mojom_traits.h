@@ -14,16 +14,16 @@ namespace mojo {
 
 template <>
 struct StructTraits<
-    unexportable_keys_internals::mojom::UnexportableKeyIdDataView,
-    unexportable_keys::UnexportableKeyId> {
+    unexportable_keys_internals::mojom::UnexportableSigningKeyIdDataView,
+    unexportable_keys::UnexportableSigningKeyId> {
   static const base::UnguessableToken& key_id(
-      const unexportable_keys::UnexportableKeyId& input) {
+      const unexportable_keys::UnexportableSigningKeyId& input) {
     return input.value();
   }
 
   static bool Read(
-      unexportable_keys_internals::mojom::UnexportableKeyIdDataView data,
-      unexportable_keys::UnexportableKeyId* output);
+      unexportable_keys_internals::mojom::UnexportableSigningKeyIdDataView data,
+      unexportable_keys::UnexportableSigningKeyId* output);
 };
 
 }  // namespace mojo

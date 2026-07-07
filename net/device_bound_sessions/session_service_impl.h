@@ -193,10 +193,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void StartGarbageCollection();
   void OnGetAllKeysForGarbageCollection(
       unexportable_keys::ServiceErrorOr<
-          std::vector<unexportable_keys::UnexportableKeyId>>
+          std::vector<unexportable_keys::UnexportableSigningKeyId>>
           all_key_ids_or_error);
   void DoGarbageCollection(
-      std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
+      std::vector<unexportable_keys::UnexportableSigningKeyId> all_key_ids);
 
   void AddSession(const SchemefulSite& site,
                   std::unique_ptr<Session> session,

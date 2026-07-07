@@ -68,13 +68,13 @@ class UnexportableKeyProviderConfigTest : public testing::Test {
 TEST_F(UnexportableKeyProviderConfigTest,
        FilterUnexportableKeysByActiveApplicationTags) {
   StrictMock<MockUnexportableKeyService> service;
-  UnexportableKeyId key_with_error;
-  UnexportableKeyId key_with_active_tag_1;
-  UnexportableKeyId key_with_active_tag_2;
-  UnexportableKeyId key_with_inactive_tag;
-  UnexportableKeyId key_with_partial_match_tag;
+  UnexportableSigningKeyId key_with_error;
+  UnexportableSigningKeyId key_with_active_tag_1;
+  UnexportableSigningKeyId key_with_active_tag_2;
+  UnexportableSigningKeyId key_with_inactive_tag;
+  UnexportableSigningKeyId key_with_partial_match_tag;
 
-  std::vector<UnexportableKeyId> key_ids = {
+  std::vector<UnexportableSigningKeyId> key_ids = {
       key_with_error,        key_with_active_tag_1,      key_with_active_tag_2,
       key_with_inactive_tag, key_with_partial_match_tag,
   };

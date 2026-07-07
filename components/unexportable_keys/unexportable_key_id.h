@@ -9,40 +9,24 @@
 
 namespace unexportable_keys {
 
-// Strongly typed id for identifying unexportable keys.
+// Strongly typed id for identifying unexportable signing keys.
 // Default constructor creates a new, unique key ID.
-using UnexportableKeyId = base::TokenType<class UnexportableKeyIdMarker>;
+using UnexportableSigningKeyId =
+    base::TokenType<class UnexportableSigningKeyIdMarker>;
 
-// A subclass of `UnexportableKeyId` that represents a signing key specifically.
-//
-// Inheritance is used here instead of a distinct tag to allow implicit
-// conversion to the base `UnexportableKeyId` for type-agnostic APIs,
-// while preventing accidental interchange with other specific key types.
-//
-// TODO(b/501307307): Replace existing usages of `UnexportableKeyId` that should
-// be `UnexportableSigningKeyId`.
-class UnexportableSigningKeyId : public UnexportableKeyId {
- public:
-  using UnexportableKeyId::UnexportableKeyId;
-
-  // Allows explicit conversion from the base class.
-  explicit UnexportableSigningKeyId(UnexportableKeyId key_id)
-      : UnexportableKeyId(key_id) {}
-};
-
-// A subclass of `UnexportableKeyId` that represents an attestation key
+// A subclass of `UnexportableSigningKeyId` that represents an attestation key
 // specifically.
 //
 // Inheritance is used here instead of a distinct tag to allow implicit
-// conversion to the base `UnexportableKeyId` for type-agnostic APIs,
+// conversion to the base `UnexportableSigningKeyId` for type-agnostic APIs,
 // while preventing accidental interchange with other specific key types.
-class UnexportableAttestationKeyId : public UnexportableKeyId {
+class UnexportableAttestationKeyId : public UnexportableSigningKeyId {
  public:
-  using UnexportableKeyId::UnexportableKeyId;
+  using UnexportableSigningKeyId::UnexportableSigningKeyId;
 
   // Allows explicit conversion from the base class.
-  explicit UnexportableAttestationKeyId(UnexportableKeyId key_id)
-      : UnexportableKeyId(key_id) {}
+  explicit UnexportableAttestationKeyId(UnexportableSigningKeyId key_id)
+      : UnexportableSigningKeyId(key_id) {}
 };
 
 }  // namespace unexportable_keys

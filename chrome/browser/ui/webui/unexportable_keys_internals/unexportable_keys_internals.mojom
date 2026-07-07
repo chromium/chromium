@@ -7,12 +7,12 @@ module unexportable_keys_internals.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
-struct UnexportableKeyId {
+struct UnexportableSigningKeyId {
   mojo_base.mojom.UnguessableToken key_id;
 };
 
 struct UnexportableKeyInfo {
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
   string wrapped_key;
   string algorithm;
   string key_tag;
@@ -38,7 +38,7 @@ interface PageHandler {
 
   // Deletes the key identified by `key_id`. Returns `true` on success,
   // `false` otherwise.
-  DeleteKey(UnexportableKeyId key_id) => (bool success);
+  DeleteKey(UnexportableSigningKeyId key_id) => (bool success);
 };
 
 // Called from C++ side of chrome://unexportable-keys-internals (Browser ->

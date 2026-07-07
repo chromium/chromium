@@ -161,10 +161,10 @@ std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config) {
 }
 
 size_t FilterUnexportableKeysByActiveApplicationTags(
-    std::vector<UnexportableKeyId>& key_ids,
+    std::vector<UnexportableSigningKeyId>& key_ids,
     UnexportableKeyService& key_service,
     const base::flat_set<std::string>& active_application_tag_prefixes) {
-  return std::erase_if(key_ids, [&](UnexportableKeyId key_id) -> bool {
+  return std::erase_if(key_ids, [&](UnexportableSigningKeyId key_id) -> bool {
     ASSIGN_OR_RETURN(std::string key_tag, key_service.GetKeyTag(key_id),
                      [](auto) { return true; });
     // Since `active_application_tag_prefixes` is sorted, a possible prefix of

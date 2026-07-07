@@ -1004,7 +1004,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, GenerateBindingKeyRegistrationToken) {
 
   delegate_ptr_->IssueTokenBindingRegistrationTokenForAuthCode(
       "test_code", signin::BindingKeyRegistrationTokenResult(
-                       unexportable_keys::UnexportableKeyId(), {1, 2, 3},
+                       unexportable_keys::UnexportableSigningKeyId(), {1, 2, 3},
                        "test_registration_token"));
 
   ASSERT_TRUE(future.IsReady());

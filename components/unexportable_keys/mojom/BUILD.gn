@@ -26,10 +26,7 @@ mojom("mojom") {
           mojom = "unexportable_keys.mojom.ServiceError"
           cpp = "::unexportable_keys::ServiceError"
         },
-        {
-          mojom = "unexportable_keys.mojom.UnexportableKeyId"
-          cpp = "::unexportable_keys::UnexportableKeyId"
-        },
+
         {
           mojom = "unexportable_keys.mojom.UnexportableSigningKeyId"
           cpp = "::unexportable_keys::UnexportableSigningKeyId"

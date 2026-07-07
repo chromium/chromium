@@ -82,25 +82,26 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       base::OnceCallback<void(ServiceErrorOr<crypto::AttestationStatement>)>
           callback) override;
   void DeleteKeysSlowlyAsync(
-      base::span<const UnexportableKeyId> key_ids,
+      base::span<const UnexportableSigningKeyId> key_ids,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void GetAllKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-          callback) override;
+      base::OnceCallback<
+          void(ServiceErrorOr<std::vector<UnexportableSigningKeyId>>)> callback)
+      override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
-      UnexportableKeyId key_id) const override;
+      UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
-      UnexportableKeyId key_id) const override;
+      UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
-      UnexportableKeyId key_id) const override;
+      UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::string> GetKeyTag(
-      UnexportableKeyId key_id) const override;
+      UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<base::Time> GetCreationTime(
-      UnexportableKeyId key_id) const override;
+      UnexportableSigningKeyId key_id) const override;
 
  private:
   void OnSigningKeyGenerated(
@@ -124,12 +125,13 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       ServiceErrorOr<mojom::NewAttestationKeyDataPtr> result);
 
   void OnGetAllKeysForGarbageCollection(
-      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+      base::OnceCallback<
+          void(ServiceErrorOr<std::vector<UnexportableSigningKeyId>>)>
           original_callback,
-      ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result);
+      ServiceErrorOr<std::vector<mojom::NewSigningKeyDataPtr>> result);
 
   const mojo::Remote<mojom::UnexportableKeyService> remote_;
-  absl::flat_hash_map<UnexportableKeyId, CachedKeyData> key_cache_;
+  absl::flat_hash_map<UnexportableSigningKeyId, CachedKeyData> key_cache_;
 };
 }  // namespace unexportable_keys
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_MOJOM_UNEXPORTABLE_KEY_SERVICE_PROXIED_H_

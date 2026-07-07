@@ -94,8 +94,8 @@ TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,
       GetServiceForConfig(GetConfigForProfilePath(profile.GetPath()));
   ASSERT_TRUE(created_service);
 
-  UnexportableKeyId active_key_id;
-  UnexportableKeyId orphaned_key_id;
+  UnexportableSigningKeyId active_key_id;
+  UnexportableSigningKeyId orphaned_key_id;
 
   std::string profile_path_tag =
       GetConfigForProfilePath(profile.GetPath()).application_tag;

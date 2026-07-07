@@ -50,7 +50,7 @@ template <
     typename NewKeyDataPtrType,
     typename KeyIdType = decltype(std::declval<NewKeyDataPtrType>()->key_id)>
 ServiceErrorOr<KeyIdType> OnKeyGeneratedImpl(
-    absl::flat_hash_map<UnexportableKeyId, CachedKeyData>& key_cache,
+    absl::flat_hash_map<UnexportableSigningKeyId, CachedKeyData>& key_cache,
     ServiceErrorOr<NewKeyDataPtrType> result) {
   ASSIGN_OR_RETURN(NewKeyDataPtrType new_key_data, std::move(result));
   KeyIdType key_id = new_key_data->key_id;
@@ -68,7 +68,7 @@ template <
     typename NewKeyDataPtrType,
     typename KeyIdType = decltype(std::declval<NewKeyDataPtrType>()->key_id)>
 ServiceErrorOr<KeyIdType> OnKeyLoadedImpl(
-    absl::flat_hash_map<UnexportableKeyId, CachedKeyData>& key_cache,
+    absl::flat_hash_map<UnexportableSigningKeyId, CachedKeyData>& key_cache,
     ServiceErrorOr<NewKeyDataPtrType> result) {
   ASSIGN_OR_RETURN(NewKeyDataPtrType new_key_data, std::move(result));
   KeyIdType key_id = new_key_data->key_id;
@@ -212,7 +212,7 @@ void UnexportableKeyServiceProxied::CertifySlowlyAsync(
 
 ServiceErrorOr<std::vector<uint8_t>>
 UnexportableKeyServiceProxied::GetSubjectPublicKeyInfo(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);
   if (it == key_cache_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -221,7 +221,8 @@ UnexportableKeyServiceProxied::GetSubjectPublicKeyInfo(
 }
 
 ServiceErrorOr<std::vector<uint8_t>>
-UnexportableKeyServiceProxied::GetWrappedKey(UnexportableKeyId key_id) const {
+UnexportableKeyServiceProxied::GetWrappedKey(
+    UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);
   if (it == key_cache_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -230,7 +231,8 @@ UnexportableKeyServiceProxied::GetWrappedKey(UnexportableKeyId key_id) const {
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
-UnexportableKeyServiceProxied::GetAlgorithm(UnexportableKeyId key_id) const {
+UnexportableKeyServiceProxied::GetAlgorithm(
+    UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);
   if (it == key_cache_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -239,7 +241,7 @@ UnexportableKeyServiceProxied::GetAlgorithm(UnexportableKeyId key_id) const {
 }
 
 ServiceErrorOr<std::string> UnexportableKeyServiceProxied::GetKeyTag(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);
   if (it == key_cache_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -248,7 +250,7 @@ ServiceErrorOr<std::string> UnexportableKeyServiceProxied::GetKeyTag(
 }
 
 ServiceErrorOr<base::Time> UnexportableKeyServiceProxied::GetCreationTime(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);
   if (it == key_cache_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -257,11 +259,11 @@ ServiceErrorOr<base::Time> UnexportableKeyServiceProxied::GetCreationTime(
 }
 
 void UnexportableKeyServiceProxied::DeleteKeysSlowlyAsync(
-    base::span<const UnexportableKeyId> key_ids,
+    base::span<const UnexportableSigningKeyId> key_ids,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   auto to_delete = base::ToVector(key_ids);
-  std::erase_if(to_delete, [&](UnexportableKeyId key_id) {
+  std::erase_if(to_delete, [&](UnexportableSigningKeyId key_id) {
     return key_cache_.erase(key_id) == 0;
   });
 
@@ -288,8 +290,8 @@ void UnexportableKeyServiceProxied::DeleteAllKeysSlowlyAsync(
 
 void UnexportableKeyServiceProxied::GetAllKeysForGarbageCollectionSlowlyAsync(
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-        callback) {
+    base::OnceCallback<
+        void(ServiceErrorOr<std::vector<UnexportableSigningKeyId>>)> callback) {
   // SAFETY: remote_ will not call any pending callbacks after it is destroyed.
   // Since we own remote_, it is guaranteed that this will be alive when a
   // callback is called.
@@ -303,18 +305,19 @@ void UnexportableKeyServiceProxied::GetAllKeysForGarbageCollectionSlowlyAsync(
 }
 
 void UnexportableKeyServiceProxied::OnGetAllKeysForGarbageCollection(
-    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+    base::OnceCallback<
+        void(ServiceErrorOr<std::vector<UnexportableSigningKeyId>>)>
         original_callback,
-    ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result) {
-  ASSIGN_OR_RETURN(std::vector<mojom::NewKeyDataPtr> key_data,
+    ServiceErrorOr<std::vector<mojom::NewSigningKeyDataPtr>> result) {
+  ASSIGN_OR_RETURN(std::vector<mojom::NewSigningKeyDataPtr> key_data,
                    std::move(result), [&](ServiceError error) {
                      std::move(original_callback).Run(base::unexpected(error));
                    });
 
-  std::vector<UnexportableKeyId> key_ids;
+  std::vector<UnexportableSigningKeyId> key_ids;
   key_ids.reserve(key_data.size());
-  for (mojom::NewKeyDataPtr& new_key_data : key_data) {
-    UnexportableKeyId key_id = new_key_data->key_id;
+  for (mojom::NewSigningKeyDataPtr& new_key_data : key_data) {
+    UnexportableSigningKeyId key_id = new_key_data->key_id;
     key_cache_.try_emplace(key_id,
                            ToCachedKeyData(std::move(new_key_data->metadata)));
     key_ids.push_back(key_id);

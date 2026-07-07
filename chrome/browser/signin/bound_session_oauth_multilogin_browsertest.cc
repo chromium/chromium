@@ -256,7 +256,7 @@ class BoundSessionOAuthMultiloginBaseTest
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      std::optional<unexportable_keys::UnexportableKeyId> key_id =
+      std::optional<unexportable_keys::UnexportableSigningKeyId> key_id =
           std::nullopt) {
     if (!key_id.has_value()) {
       key_id = GenerateNewSigningKey();

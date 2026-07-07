@@ -48,18 +48,6 @@ struct EnumTraits<unexportable_keys::mojom::ServiceError,
 };
 
 template <>
-struct StructTraits<unexportable_keys::mojom::UnexportableKeyIdDataView,
-                    unexportable_keys::UnexportableKeyId> {
-  static const base::UnguessableToken& key_id(
-      const unexportable_keys::UnexportableKeyId& input) {
-    return input.value();
-  }
-
-  static bool Read(unexportable_keys::mojom::UnexportableKeyIdDataView data,
-                   unexportable_keys::UnexportableKeyId* output);
-};
-
-template <>
 struct StructTraits<unexportable_keys::mojom::UnexportableSigningKeyIdDataView,
                     unexportable_keys::UnexportableSigningKeyId> {
   static const base::UnguessableToken& key_id(

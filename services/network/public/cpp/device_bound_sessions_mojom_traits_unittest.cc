@@ -43,7 +43,7 @@ TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeSessionParams) {
   EXPECT_EQ(input.scope.specifications, output.scope.specifications);
   EXPECT_EQ(input.scope.origin, output.scope.origin);
   EXPECT_EQ(input.credentials, output.credentials);
-  // `UnexportableKeyId`s are not currently serialized/deserialized.
+  // `UnexportableSigningKeyId`s are not currently serialized/deserialized.
   EXPECT_EQ(input.allowed_refresh_initiators,
             output.allowed_refresh_initiators);
 }

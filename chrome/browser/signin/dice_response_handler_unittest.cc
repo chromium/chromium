@@ -727,7 +727,7 @@ TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
   for (const auto& code : authorization_codes) {
     SimulateRegistrationTokenHelperResult(
         code, signin::BindingKeyRegistrationTokenResult(
-                  unexportable_keys::UnexportableKeyId(), kWrappedKey,
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
                   "test_registration_token"));
   }
 
@@ -848,7 +848,7 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       authorization_code, signin::BindingKeyRegistrationTokenResult(
-                              unexportable_keys::UnexportableKeyId(),
+                              unexportable_keys::UnexportableSigningKeyId(),
                               kWrappedKey, "test_registration_token"));
 
   // Check that a GaiaAuthFetcher has been created.
@@ -894,7 +894,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   // Simulate successful token generation.
   SimulateRegistrationTokenHelperResult(
       authorization_code, signin::BindingKeyRegistrationTokenResult(
-                              unexportable_keys::UnexportableKeyId(),
+                              unexportable_keys::UnexportableSigningKeyId(),
                               kWrappedKey, "test_registration_token"));
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
@@ -970,13 +970,13 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       code_2, signin::BindingKeyRegistrationTokenResult(
-                  unexportable_keys::UnexportableKeyId(), kWrappedKey,
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
                   "test_registration_token"));
   GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_2, testing::NotNull());
   SimulateRegistrationTokenHelperResult(
       code_1, signin::BindingKeyRegistrationTokenResult(
-                  unexportable_keys::UnexportableKeyId(), kWrappedKey,
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
                   "other_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_1, testing::NotNull());
@@ -1030,8 +1030,8 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       eligible_code, signin::BindingKeyRegistrationTokenResult(
-                         unexportable_keys::UnexportableKeyId(), kWrappedKey,
-                         "test_registration_token"));
+                         unexportable_keys::UnexportableSigningKeyId(),
+                         kWrappedKey, "test_registration_token"));
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
 }
 
@@ -1059,7 +1059,7 @@ TEST_F(DiceResponseHandlerTest,
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       code_1, signin::BindingKeyRegistrationTokenResult(
-                  unexportable_keys::UnexportableKeyId(), kWrappedKey,
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
                   "test_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_1, testing::NotNull());

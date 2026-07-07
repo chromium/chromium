@@ -48,7 +48,6 @@
 using bound_session_credentials::RotationDebugInfo;
 using chrome::mojom::ResumeBlockedRequestsTrigger;
 using unexportable_keys::ServiceErrorOr;
-using unexportable_keys::UnexportableKeyId;
 using unexportable_keys::UnexportableSigningKeyId;
 using Result = BoundSessionRefreshCookieFetcher::Result;
 
@@ -142,7 +141,7 @@ class BoundSessionCookieControllerImplTest
     return *key_id;
   }
 
-  std::vector<uint8_t> GetWrappedKey(UnexportableKeyId key_id) {
+  std::vector<uint8_t> GetWrappedKey(UnexportableSigningKeyId key_id) {
     ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());

@@ -62,7 +62,7 @@ void UnexportableKeysInternalsHandler::GetUnexportableKeysInfo(
 }
 
 void UnexportableKeysInternalsHandler::DeleteKey(
-    const unexportable_keys::UnexportableKeyId& key_id,
+    const unexportable_keys::UnexportableSigningKeyId& key_id,
     DeleteKeyCallback callback) {
   key_service_->DeleteKeysSlowlyAsync(
       {key_id}, unexportable_keys::BackgroundTaskPriority::kBestEffort,
@@ -77,7 +77,7 @@ void UnexportableKeysInternalsHandler::DeleteKey(
 void UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection(
     GetUnexportableKeysInfoCallback callback,
     unexportable_keys::ServiceErrorOr<
-        std::vector<unexportable_keys::UnexportableKeyId>> keys) {
+        std::vector<unexportable_keys::UnexportableSigningKeyId>> keys) {
   if (!keys.has_value()) {
     std::move(callback).Run({});
     return;

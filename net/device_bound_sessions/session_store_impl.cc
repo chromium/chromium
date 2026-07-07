@@ -33,8 +33,8 @@ namespace {
 using unexportable_keys::BackgroundTaskPriority;
 using unexportable_keys::ServiceError;
 using unexportable_keys::ServiceErrorOr;
-using unexportable_keys::UnexportableKeyId;
 using unexportable_keys::UnexportableKeyService;
+using unexportable_keys::UnexportableSigningKeyId;
 
 // Priority is set to `USER_VISIBLE` because the initial load of
 // sessions from disk is required to complete before URL requests
@@ -423,7 +423,7 @@ void SessionStoreImpl::StartGarbageCollection() {
 
 void SessionStoreImpl::OnGetAllKeysForGarbageCollection(
     unexportable_keys::ServiceErrorOr<
-        std::vector<unexportable_keys::UnexportableKeyId>>
+        std::vector<unexportable_keys::UnexportableSigningKeyId>>
         all_key_ids_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!all_key_ids_or_error.has_value() || all_key_ids_or_error->empty()) {
@@ -445,7 +445,7 @@ void SessionStoreImpl::OnGetAllKeysForGarbageCollection(
     }
   }
 
-  std::vector<unexportable_keys::UnexportableKeyId> all_key_ids =
+  std::vector<unexportable_keys::UnexportableSigningKeyId> all_key_ids =
       *std::move(all_key_ids_or_error);
 
   const size_t key_count = all_key_ids.size();
@@ -455,7 +455,8 @@ void SessionStoreImpl::OnGetAllKeysForGarbageCollection(
 
   // Don't garbage collect keys that are still used, or were created after the
   // process started.
-  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
+  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableSigningKeyId
+                                     key_id) {
     return known_wrapped_keys.contains(
                key_service_->GetWrappedKey(key_id).value_or({})) ||
            key_service_->GetCreationTime(key_id).value_or(base::Time::Now()) >=

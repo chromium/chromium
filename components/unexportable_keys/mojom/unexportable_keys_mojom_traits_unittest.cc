@@ -12,15 +12,6 @@
 
 namespace unexportable_keys {
 
-TEST(UnexportableKeysTraitsTest, UnexportableKeyId) {
-  base::UnguessableToken token = base::UnguessableToken::Create();
-  UnexportableKeyId input(token);
-  UnexportableKeyId output;
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::UnexportableKeyId>(
-      input, output));
-  EXPECT_EQ(input, output);
-}
-
 TEST(UnexportableKeysTraitsTest, UnexportableSigningKeyId) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   UnexportableSigningKeyId input(token);

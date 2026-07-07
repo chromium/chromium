@@ -20,12 +20,12 @@ namespace signin {
 // `//components/signin/public/identity_manager/` once
 // `binding_key_registration_token_helper.h` can also be moved.
 struct BindingKeyRegistrationTokenResult {
-  unexportable_keys::UnexportableKeyId binding_key_id;
+  unexportable_keys::UnexportableSigningKeyId binding_key_id;
   std::vector<uint8_t> wrapped_binding_key;
   std::string registration_token;
 
   BindingKeyRegistrationTokenResult(
-      unexportable_keys::UnexportableKeyId binding_key_id,
+      unexportable_keys::UnexportableSigningKeyId binding_key_id,
       std::vector<uint8_t> wrapped_binding_key,
       std::string registration_token);
 

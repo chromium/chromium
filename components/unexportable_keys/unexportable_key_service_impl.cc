@@ -774,8 +774,8 @@ void UnexportableKeyServiceImpl::FromWrappedAttestationKeySlowlyAsync(
 
 void UnexportableKeyServiceImpl::GetAllKeysForGarbageCollectionSlowlyAsync(
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-        callback) {
+    base::OnceCallback<
+        void(ServiceErrorOr<std::vector<UnexportableSigningKeyId>>)> callback) {
   task_manager_->GetAllKeysForGarbageCollectionSlowlyAsync(
       task_origin_, config_, priority,
       WrapCallbackWithErrorIfCancelled(
@@ -828,14 +828,15 @@ void UnexportableKeyServiceImpl::CertifySlowlyAsync(
 }
 
 void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
-    base::span<const UnexportableKeyId> key_ids,
+    base::span<const UnexportableSigningKeyId> key_ids,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   // Delete the keys from the in-memory maps.
   std::vector<ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>>
-      keys_or_errors = base::ToVector(key_ids, [&](UnexportableKeyId key_id) {
-        return ExtractKeyFromMaps(key_id);
-      });
+      keys_or_errors =
+          base::ToVector(key_ids, [&](UnexportableSigningKeyId key_id) {
+            return ExtractKeyFromMaps(key_id);
+          });
 
   // Collect the keys that were successfully deleted.
   std::erase_if(keys_or_errors, [](auto& k) { return !k.has_value(); });
@@ -869,40 +870,41 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
 
 ServiceErrorOr<std::vector<uint8_t>>
 UnexportableKeyServiceImpl::GetSubjectPublicKeyInfo(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->GetSubjectPublicKeyInfo();
 }
 
 ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyServiceImpl::GetWrappedKey(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->GetWrappedKey();
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
-UnexportableKeyServiceImpl::GetAlgorithm(UnexportableKeyId key_id) const {
+UnexportableKeyServiceImpl::GetAlgorithm(
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   return key->Algorithm();
 }
 
 ServiceErrorOr<std::string> UnexportableKeyServiceImpl::GetKeyTag(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
                    GetStatefulKey(key_id));
   return stateful_key->GetKeyTag();
 }
 
 ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
-    UnexportableKeyId key_id) const {
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
                    GetStatefulKey(key_id));
   return stateful_key->GetCreationTime();
 }
 
 ServiceErrorOr<const crypto::UnexportableSigningKey*>
-UnexportableKeyServiceImpl::GetKey(UnexportableKeyId key_id) const {
-  if (auto* key = signing_keys_->GetKey(UnexportableSigningKeyId(key_id))) {
+UnexportableKeyServiceImpl::GetKey(UnexportableSigningKeyId key_id) const {
+  if (auto* key = signing_keys_->GetKey(key_id)) {
     return &key->key();
   }
   if (auto* key =
@@ -916,7 +918,8 @@ UnexportableKeyServiceImpl::GetKey(UnexportableKeyId key_id) const {
 }
 
 ServiceErrorOr<const crypto::StatefulKey*>
-UnexportableKeyServiceImpl::GetStatefulKey(UnexportableKeyId key_id) const {
+UnexportableKeyServiceImpl::GetStatefulKey(
+    UnexportableSigningKeyId key_id) const {
   ASSIGN_OR_RETURN(const crypto::UnexportableSigningKey* key, GetKey(key_id));
   if (const crypto::StatefulKey* stateful_key = key->AsStatefulKey()) {
     return stateful_key;
@@ -925,16 +928,17 @@ UnexportableKeyServiceImpl::GetStatefulKey(UnexportableKeyId key_id) const {
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>
-UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
+UnexportableKeyServiceImpl::ExtractKeyFromMaps(
+    UnexportableSigningKeyId key_id) {
   // Check the garbage collection map first. Ensure the `key_id` can't be
   // present in the other maps.
   if (auto gc_key_handle = all_gc_keys_by_key_id_.extract(key_id)) {
-    CHECK(!signing_keys_->Contains(UnexportableSigningKeyId(key_id)));
+    CHECK(!signing_keys_->Contains(key_id));
     CHECK(!attestation_keys_->Contains(UnexportableAttestationKeyId(key_id)));
     return std::move(gc_key_handle.mapped());
   }
 
-  if (auto key = signing_keys_->ExtractKey(UnexportableSigningKeyId(key_id))) {
+  if (auto key = signing_keys_->ExtractKey(key_id)) {
     return key;
   }
 
@@ -946,7 +950,7 @@ UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
   return base::unexpected(ServiceError::kKeyNotFound);
 }
 
-ServiceErrorOr<std::vector<UnexportableKeyId>>
+ServiceErrorOr<std::vector<UnexportableSigningKeyId>>
 UnexportableKeyServiceImpl::OnGetAllKeysForGarbageCollectionSlowlyImpl(
     ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
         keys_or_error) {

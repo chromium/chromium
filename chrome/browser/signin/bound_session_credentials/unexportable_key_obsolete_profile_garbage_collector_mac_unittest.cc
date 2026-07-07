@@ -132,7 +132,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
               GetAllKeysForGarbageCollectionSlowlyAsync)
-      .WillOnce(RunOnceCallback<1>(std::vector<UnexportableKeyId>()));
+      .WillOnce(RunOnceCallback<1>(std::vector<UnexportableSigningKeyId>()));
   EXPECT_CALL(*user_data_dir_service(), GetKeyTag).Times(0);
   EXPECT_CALL(*user_data_dir_service(), DeleteKeysSlowlyAsync).Times(0);
 
@@ -150,7 +150,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   std::string profile_tag = GetConfigForProfile(*profile).application_tag;
 
   ASSERT_TRUE(user_data_dir_service());
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
               GetAllKeysForGarbageCollectionSlowlyAsync(
                   BackgroundTaskPriority::kBestEffort, _))
@@ -203,10 +203,10 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   std::string system_profile_tag =
       GetConfigForProfile(*system_profile).application_tag;
 
-  UnexportableKeyId active_key_id;
-  UnexportableKeyId obsolete_key_id;
-  UnexportableKeyId guest_key_id;
-  UnexportableKeyId system_key_id;
+  UnexportableSigningKeyId active_key_id;
+  UnexportableSigningKeyId obsolete_key_id;
+  UnexportableSigningKeyId guest_key_id;
+  UnexportableSigningKeyId system_key_id;
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
@@ -268,8 +268,8 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   profile_manager().DeleteTestingProfile("profile11");
 
   // Default construction generates a unique UnguessableToken.
-  UnexportableKeyId active_key_id;
-  UnexportableKeyId obsolete_key_id;
+  UnexportableSigningKeyId active_key_id;
+  UnexportableSigningKeyId obsolete_key_id;
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
@@ -327,8 +327,8 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   profile_manager().DeleteTestingProfile("profile1");
 
   // Default construction generates a unique UnguessableToken.
-  UnexportableKeyId active_key_id;
-  UnexportableKeyId obsolete_key_id;
+  UnexportableSigningKeyId active_key_id;
+  UnexportableSigningKeyId obsolete_key_id;
 
   ASSERT_TRUE(user_data_dir_service());
   EXPECT_CALL(*user_data_dir_service(),
@@ -375,7 +375,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
        GarbageCollectionKeyTagError) {
   ASSERT_TRUE(user_data_dir_service());
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
               GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce(RunOnceCallback<1>(base::ToVector({key_id})));
@@ -440,7 +440,7 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
        ProfileManagerDestroyedBeforeGarbageCollection) {
   ASSERT_TRUE(user_data_dir_service());
 
-  UnexportableKeyId key_id;
+  UnexportableSigningKeyId key_id;
   EXPECT_CALL(*user_data_dir_service(),
               GetAllKeysForGarbageCollectionSlowlyAsync)
       .WillOnce([&](auto priority, auto callback) {
