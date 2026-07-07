@@ -151,6 +151,9 @@ class HangingPdfListener : public pdf::mojom::PdfListener {
   void HasJavaScript(HasJavaScriptCallback callback) override {
     std::move(callback).Run(false);
   }
+  void IsPasswordProtected(IsPasswordProtectedCallback callback) override {
+    std::move(callback).Run(false);
+  }
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   void GetSaveDataBufferHandlerForDrive(
       pdf::mojom::SaveRequestType request_type,

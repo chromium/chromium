@@ -55,6 +55,9 @@ class FakePdfListener : public pdf::mojom::PdfListener {
   void HasJavaScript(HasJavaScriptCallback callback) override {
     std::move(callback).Run(has_javascript_);
   }
+  void IsPasswordProtected(IsPasswordProtectedCallback callback) override {
+    std::move(callback).Run(is_password_protected_);
+  }
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   void GetSaveDataBufferHandlerForDrive(
       pdf::mojom::SaveRequestType request_type,
@@ -69,10 +72,14 @@ class FakePdfListener : public pdf::mojom::PdfListener {
   void set_has_javascript(bool has_javascript) {
     has_javascript_ = has_javascript;
   }
+  void set_is_password_protected(bool is_password_protected) {
+    is_password_protected_ = is_password_protected;
+  }
 
  private:
   bool has_meaningful_text_ = false;
   bool has_javascript_ = false;
+  bool is_password_protected_ = false;
 };
 
 class DummyPDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {

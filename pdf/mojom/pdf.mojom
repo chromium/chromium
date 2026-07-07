@@ -72,18 +72,22 @@ interface PdfListener {
   // returns nullopt.
   GetMostVisiblePageIndex() => (uint32? page_index);
 
-  // Returns true if the document has meaningful text. A document is
+  // Returns `true` if the document has meaningful text. A document is
   // considered to have meaningful text if the total character count is at
   // least 100 characters. If Searchify is enabled, pages that require
-  // Searchify are treated as having 0 characters.
-  // Note: This requires the PDF document to be fully loaded before calling.
+  // Searchify are treated as having 0 characters. Returns `false` if called
+  // before the document is loaded.
   HasMeaningfulText() => (bool has_meaningful_text);
 
-  // Returns true if the PDF contains JavaScript actions.
+  // Returns `true` if the PDF contains JavaScript actions. Returns `false` if
+  // called before the document is loaded.
   // Called by the browser process (privileged) to query the PDF plugin in the
   // renderer process (sandboxed).
-  // Note: This requires the PDF document to be fully loaded before calling.
   HasJavaScript() => (bool has_javascript);
+
+  // Returns `true` if the PDF is password protected / encrypted. Returns
+  // `false` if called before the document is loaded.
+  IsPasswordProtected() => (bool is_password_protected);
 
   // Returns a `SaveDataBufferHandler` and the total file size to read the data
   // to save to Google Drive. Once the handler is acquired, caller can read the

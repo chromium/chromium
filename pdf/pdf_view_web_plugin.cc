@@ -1781,6 +1781,11 @@ void PdfViewWebPlugin::HasJavaScript(HasJavaScriptCallback callback) {
   std::move(callback).Run(engine_ && engine_->HasJavaScript());
 }
 
+void PdfViewWebPlugin::IsPasswordProtected(
+    IsPasswordProtectedCallback callback) {
+  std::move(callback).Run(engine_ && engine_->IsPasswordProtected());
+}
+
 void PdfViewWebPlugin::GetPageText(int32_t page_index,
                                    GetPageTextCallback callback) {
   if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {
