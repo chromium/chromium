@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+# Converts the textproto contextual_cues_endorsement_options.txtpb to a binpb
+# file. Note: A separate proto_library is not needed here as the schema is
+# compiled by
+# //third_party/federated_compute:access_policy_endorsement_options_proto.
+protoc_convert("contextual_cues_endorsement_options_binpb") {
+  sources = [ "contextual_cues_endorsement_options.txtpb" ]
+  inputs = [
+    "//third_party/federated_compute/chromium/fcp/protos/confidentialcompute/access_policy_endorsement_options.proto",
+    "//third_party/federated_compute/src/fcp/protos/confidentialcompute/key.proto",
+  ]
+  output_pattern = "$target_gen_dir/{{source_name_part}}.binpb"
+
+  args = [
+    "--encode=fcp.confidentialcompute.AccessPolicyEndorsementOptions",
+    "-I",
+    rebase_path("//third_party/federated_compute/chromium", root_build_dir),
+    "-I",
+    rebase_path("//third_party/federated_compute/src", root_build_dir),
+    "-I",
+    rebase_path("//third_party/protobuf/src", root_build_dir),
+    "fcp/protos/confidentialcompute/access_policy_endorsement_options.proto",
+  ]
+  deps = [
+    "//third_party/federated_compute:access_policy_endorsement_options_proto",
+    "//third_party/federated_compute:client_proto",
+  ]
+}

@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/federated_compute/src/fcp/client/attestation/attestation_verifier.h"
@@ -16,6 +19,7 @@
 #include "third_party/federated_compute/src/fcp/protos/confidentialcompute/signed_endorsements.pb.h"
 #include "third_party/federated_compute/src/fcp/protos/federatedcompute/confidential_encryption_config.pb.h"
 #include "third_party/federated_compute/src/fcp/protos/plan.pb.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace private_insights {
 
@@ -86,6 +90,18 @@ TEST(FcpSimpleTaskEnvironmentTest, CreateHttpClient) {
                                                      nullptr, false);
   auto http_client = task_env->CreateHttpClient();
   EXPECT_NE(http_client, nullptr);
+}
+
+TEST(FcpSimpleTaskEnvironmentTest,
+     CreateAttestationVerifierEndorsementOptionsAreParsedCorrectly) {
+  scoped_refptr<FcpSimpleTaskEnvironment> task_env =
+      base::MakeRefCounted<FcpSimpleTaskEnvironment>("base_dir", "cache_dir",
+                                                     nullptr, true);
+  base::HistogramTester histogram_tester;
+  auto verifier = task_env->CreateAttestationVerifier();
+  histogram_tester.ExpectUniqueSample(
+      "PrivateMetrics.PrivateInsights.EndorsementOptions.ParsingOutcome", true,
+      1);
 }
 
 }  // namespace private_insights
