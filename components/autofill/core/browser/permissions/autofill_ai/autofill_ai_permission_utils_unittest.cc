@@ -770,6 +770,32 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(AutofillAiPermissionUtilsTest, OptInStatusWithUsePrivateAi) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiUsePrivateAi};
+
+  // By default, neither the opt-in pref nor the notice shown timestamp is set.
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
+                                  true);
+  // Setting only `kAutofillAiPrivateInferenceOptInStatus` is not sufficient
+  // without `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` being set.
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  client().GetPrefs()->SetTime(
+      prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
+      base::Time::Now());
+  // Both `kAutofillAiPrivateInferenceOptInStatus` is true and
+  // `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` is set.
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
+                                  false);
+  // Setting `kAutofillAiPrivateInferenceOptInStatus` to false returns false
+  // even if `kAutofillAiPrivateInferenceNoticeFirstShownTimestamp` remains set.
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+}
+
 TEST_F(AutofillAiPermissionUtilsTest,
        UsersCannotOptInIfAutofillForAddressesIsDisabled) {
   EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,

@@ -832,6 +832,14 @@ bool GetAutofillAiOptInStatus(const PrefService* prefs,
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)) {
+    return prefs->GetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus) &&
+           !prefs
+                ->GetTime(
+                    prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+                .is_null();
+  }
+
   const std::optional<GaiaIdHash> signed_in_hash =
       GetAccountGaiaIdHash(identity_manager);
   if (!signed_in_hash) {
