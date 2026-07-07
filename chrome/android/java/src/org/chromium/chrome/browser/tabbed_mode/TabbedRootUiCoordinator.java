@@ -243,6 +243,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
@@ -381,6 +382,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CharSequence mApplicationLabel;
     private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
     private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
+    private @Nullable EnterpriseSignalsDisclaimerCoordinator
+            mEnterpriseSignalsDisclaimerCoordinator;
     private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
@@ -912,6 +915,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mGlicPromoCoordinator != null) {
             mGlicPromoCoordinator.destroy();
         }
+        if (mEnterpriseSignalsDisclaimerCoordinator != null) {
+            mEnterpriseSignalsDisclaimerCoordinator.destroy();
+            mEnterpriseSignalsDisclaimerCoordinator = null;
+        }
 
         if (mInactivityTrackerSupplier.get() != null) {
             mInactivityTrackerSupplier.get().removeObserver(mInactivityObserver);
@@ -1296,6 +1303,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         mProfileSupplier.asNonNull().get().getOriginalProfile(),
                         SigninAndHistorySyncActivityLauncherImpl.get());
+
+        // TODO(b/512836948): This is temporary for testing purposes. A proper way to launch and
+        // control the dialog shall be introduced later on.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
+            mEnterpriseSignalsDisclaimerCoordinator =
+                    new EnterpriseSignalsDisclaimerCoordinator(
+                            mActivity, assertNonNull(getBottomSheetController()));
+            mEnterpriseSignalsDisclaimerCoordinator.show();
+        }
     }
 
     @Override

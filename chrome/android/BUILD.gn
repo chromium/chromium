@@ -547,6 +547,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/digital_credentials:java",
       "//chrome/browser/ui/android/edge_to_edge:factory_java",
       "//chrome/browser/ui/android/edge_to_edge:java",
+      "//chrome/browser/ui/android/enterprise_signals_disclaimer:java",
       "//chrome/browser/ui/android/ephemeraltab:java",
       "//chrome/browser/ui/android/extensions:java",
       "//chrome/browser/ui/android/extensions/windowing:factory_java",

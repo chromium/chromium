@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerViewBinder.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package =
+      "org.chromium.chrome.browser.ui.enterprise_signals_disclaimer"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/mobile_icon.xml",
+    "java/res/layout/enterprise_signals_disclaimer_layout.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_locale_settings_grd",
+    "//components/strings:components_strings_grd",
+  ]
+}
