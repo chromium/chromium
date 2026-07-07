@@ -37,12 +37,15 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -81,6 +84,8 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -196,6 +201,7 @@ class AppBarMediatorTest : public PlatformTest {
 
     tab_grid_state_ = [[TabGridState alloc] init];
     incognito_state_ = [[IncognitoState alloc] initWithSceneState:nil];
+    lens_overlay_state_ = [[LensOverlayStateNotifier alloc] init];
     regular_web_state_list_ = regular_browser_->GetWebStateList();
     incognito_web_state_list_ = incognito_browser_->GetWebStateList();
 
@@ -248,7 +254,8 @@ class AppBarMediatorTest : public PlatformTest {
                   aimEligibilityService:aim_eligibility_service_.get()
                               URLLoader:url_loader_
                            tabGridState:tab_grid_state_
-                         incognitoState:incognito_state_];
+                         incognitoState:incognito_state_
+               lensOverlayStateNotifier:lens_overlay_state_];
 
     consumer_ = OCMProtocolMock(@protocol(TestAppBarConsumer));
     mediator_.consumer = consumer_;
@@ -338,6 +345,7 @@ class AppBarMediatorTest : public PlatformTest {
   raw_ptr<WebStateList> incognito_web_state_list_;
   TabGridState* tab_grid_state_;
   IncognitoState* incognito_state_;
+  LensOverlayStateNotifier* lens_overlay_state_;
   raw_ptr<AuthenticationService> auth_service_;
   std::unique_ptr<GeminiService> gemini_service_ptr_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
@@ -1057,7 +1065,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensWhenIneligibleSignedIn) {
                 aimEligibilityService:aim_eligibility_service_.get()
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+                       incognitoState:incognito_state_
+             lensOverlayStateNotifier:lens_overlay_state_];
   mediator_.consumer = consumer_;
   mediator_.sceneHandler = mock_scene_handler_;
   mediator_.settingsHandler = mock_settings_handler_;
@@ -1296,7 +1305,8 @@ TEST_F(AppBarMediatorTest, TestGeminiEligibilityChangeUpdatesAssistantButton) {
                 aimEligibilityService:aim_eligibility_service_.get()
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+                       incognitoState:incognito_state_
+             lensOverlayStateNotifier:lens_overlay_state_];
 
   id consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
   mediator.consumer = consumer;
@@ -1509,7 +1519,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Lens) {
                 aimEligibilityService:aim_eligibility_service_.get()
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+                       incognitoState:incognito_state_
+             lensOverlayStateNotifier:lens_overlay_state_];
 
   local_mediator.overrideLensAvailabilityForTesting = YES;
 
@@ -1573,7 +1584,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Account) {
                 aimEligibilityService:aim_eligibility_service_.get()
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+                       incognitoState:incognito_state_
+             lensOverlayStateNotifier:lens_overlay_state_];
 
   local_mediator.overrideLensAvailabilityForTesting = NO;
   SetLocationEligible(false);
@@ -1644,7 +1656,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_AIM) {
                 aimEligibilityService:aim_eligibility_service_.get()
                             URLLoader:url_loader_
                          tabGridState:tab_grid_state_
-                       incognitoState:incognito_state_];
+                       incognitoState:incognito_state_
+             lensOverlayStateNotifier:lens_overlay_state_];
 
   // We expect the consumer to be updated with kAIM.
   id local_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
@@ -1734,5 +1747,56 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStatePriority_LensOverAccount) {
                                       signedIn:NO]);
 
   [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is disabled when Lens Overlay is visible.
+TEST_F(AppBarMediatorTest, TestAssistantButtonDisabledWhenLensOverlayVisible) {
+  SetLocationEligible(false);
+  mediator_.overrideLensAvailabilityForTesting = YES;
+
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  fake_navigation_manager->AddItem(GURL("https://example.com"),
+                                   ui::PAGE_TRANSITION_LINK);
+  fake_navigation_manager->SetVisibleItem(
+      fake_navigation_manager->GetItemAtIndex(0));
+  web_state->SetNavigationManager(std::move(fake_navigation_manager));
+
+  LensOverlayTabHelper::CreateForWebState(web_state.get());
+  LensOverlayTabHelper* helper =
+      LensOverlayTabHelper::FromWebState(web_state.get());
+
+  regular_web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  helper->SetLensOverlayUIAttachedAndAlive(true);
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:NO
+                                        avatar:[OCMArg any]
+                                      signedIn:NO])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation* invocation) {
+        BOOL highlighted;
+        [invocation getArgument:&highlighted atIndex:3];
+        BOOL enabled;
+        [invocation getArgument:&enabled atIndex:4];
+        UIImage* avatar;
+        [invocation getArgument:&avatar atIndex:5];
+        BOOL signedIn;
+        [invocation getArgument:&signedIn atIndex:6];
+
+        EXPECT_FALSE(highlighted);
+        EXPECT_FALSE(enabled);
+        EXPECT_EQ(nil, avatar);
+        EXPECT_FALSE(signedIn);
+      });
+  [lens_overlay_state_ lensOverlayDidPrepare];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

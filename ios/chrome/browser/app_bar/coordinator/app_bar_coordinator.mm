@@ -148,7 +148,8 @@
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                           _regularBrowser)
                          tabGridState:sceneState.tabGridState
-                       incognitoState:sceneState.incognitoState];
+                       incognitoState:sceneState.incognitoState
+             lensOverlayStateNotifier:sceneState.lensOverlayStateNotifier];
   _mediator.sceneHandler = sceneHandler;
   _mediator.lensHandler = HandlerForProtocol(regularDispatcher, LensCommands);
   _mediator.delegate = self;
