@@ -34,7 +34,13 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+// clang-format off
+#include <windows.h>
+#include <ncrypt.h>
+// clang-format on
+
 #include "crypto/scoped_cng_types.h"
+#include "crypto/tpm.rs.h"
 #include "crypto/unexportable_key_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -321,9 +327,55 @@ TEST_P(UnexportableKeyTest, CertifySlowlySucceeds) {
   }
 
   std::vector<uint8_t> challenge = {1, 2, 3, 4};
-  auto statement = attestation_key->CertifySlowly(*signing_key, challenge);
+  ASSERT_OK_AND_ASSIGN(crypto::AttestationStatement statement,
+                       attestation_key->CertifySlowly(*signing_key, challenge));
 
-  EXPECT_TRUE(statement.has_value());
+  EXPECT_EQ(statement.format, crypto::AttestationStatement::kTpm);
+  EXPECT_OK(
+      crypto::tpm::VerifySignature(attestation_key->GetSubjectPublicKeyInfo(),
+                                   statement.statement, statement.signature));
+}
+
+TEST_P(UnexportableKeyTest, CertifySlowlyUsesSha256) {
+  if (provider_type() != Provider::kTPM ||
+      algorithm() !=
+          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+    // TODO(crbug.com/531590259): Add support for ECDSA_SHA256 attestation keys.
+    GTEST_SKIP() << "Only for TPM RSA keys";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!CurrentAlgorithmSupported(provider.get())) {
+    GTEST_SKIP() << "Algorithm not supported by provider.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP() << "Attestation key generation failed (see "
+                    "https://crbug.com/41494935).";
+  }
+
+  auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
+  if (!signing_key) {
+    GTEST_SKIP()
+        << "Signing key generation failed (see https://crbug.com/41494935).";
+  }
+
+  ASSERT_OK_AND_ASSIGN(
+      crypto::AttestationStatement statement,
+      attestation_key->CertifySlowly(*signing_key, {1, 2, 3, 4}));
+  EXPECT_EQ(statement.format, crypto::AttestationStatement::kTpm);
+  EXPECT_OK(
+      crypto::tpm::VerifySignature(attestation_key->GetSubjectPublicKeyInfo(),
+                                   statement.statement, statement.signature));
+
+  ASSERT_OK_AND_ASSIGN(
+      crypto::tpm::SignatureAlgorithms signature_algs,
+      crypto::tpm::GetSignatureAlgorithms(statement.signature));
+  EXPECT_EQ(signature_algs.hash_alg,
+            std::to_underlying(crypto::tpm::TpmAlg::TPM_ALG_SHA256));
 }
 
 TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {

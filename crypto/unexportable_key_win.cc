@@ -4,6 +4,7 @@
 
 #include "crypto/unexportable_key_win.h"
 
+#include <ncrypt.h>
 #include <tbs.h>
 
 #include <string>
@@ -38,6 +39,7 @@
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
+#include "crypto/tpm.rs.h"
 #include "crypto/tpm_parser.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
@@ -139,8 +141,10 @@ std::u16string KeyIdToWindowsLabel(base::span<const uint8_t> key_id) {
 }
 
 template <typename T>
-base::expected<T, SECURITY_STATUS> GetNCryptProperty(NCRYPT_HANDLE handle,
-                                                     LPCWSTR property) {
+using SecurityStatusOr = base::expected<T, SECURITY_STATUS>;
+
+template <typename T>
+SecurityStatusOr<T> GetNCryptProperty(NCRYPT_HANDLE handle, LPCWSTR property) {
   T value{};
   DWORD cb_value = 0;
   SECURITY_STATUS status =
@@ -151,6 +155,16 @@ base::expected<T, SECURITY_STATUS> GetNCryptProperty(NCRYPT_HANDLE handle,
   }
   CHECK_EQ(cb_value, sizeof(value));
   return base::ok(value);
+}
+
+template <typename T>
+SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
+                                         LPCWSTR property,
+                                         T value) {
+  SECURITY_STATUS status = NCryptSetProperty(
+      handle, property, reinterpret_cast<PBYTE>(&value), sizeof(value), 0);
+  return SUCCEEDED(status) ? SecurityStatusOr<void>()
+                           : base::unexpected(status);
 }
 
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
@@ -279,22 +293,10 @@ bool IsIdentityKey(NCRYPT_KEY_HANDLE key) {
          ((*usage_policy & NCRYPT_PCP_IDENTITY_KEY) != 0);
 }
 
-// Sets the NCRYPT_PCP_IDENTITY_KEY flag in the key's usage policy.
-// This marks the key as an Attestation Identity Key (AIK). This property
-// is specific to the Platform Crypto Provider (TPM) and restricts the key
-// from being used to sign arbitrary data.
-bool SetIdentityKeyPolicy(NCRYPT_KEY_HANDLE key) {
-  DWORD usage_policy = NCRYPT_PCP_IDENTITY_KEY;
-  SECURITY_STATUS status = NCryptSetProperty(
-      key, NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
-      reinterpret_cast<PBYTE>(&usage_policy), sizeof(usage_policy), 0);
-  return SUCCEEDED(status);
-}
 
 // ExportKey returns |key| exported in the given format or nullopt on error.
-base::expected<std::vector<uint8_t>, SECURITY_STATUS> ExportKey(
-    NCRYPT_KEY_HANDLE key,
-    LPCWSTR format) {
+SecurityStatusOr<std::vector<uint8_t>> ExportKey(NCRYPT_KEY_HANDLE key,
+                                                 LPCWSTR format) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   DWORD output_size;
   SECURITY_STATUS status =
@@ -315,26 +317,24 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> ExportKey(
 }
 
 std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
-  const base::expected<std::vector<uint8_t>, SECURITY_STATUS> pub_key =
-      ExportKey(key, BCRYPT_ECCPUBLIC_BLOB);
-  if (!pub_key.has_value()) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(const std::vector<uint8_t> pub_key,
+                   ExportKey(key, BCRYPT_ECCPUBLIC_BLOB),
+                   [](auto) { return std::nullopt; });
 
   // The exported key is a |BCRYPT_ECCKEY_BLOB| followed by the bytes of the
   // public key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_ecckey_blob
   BCRYPT_ECCKEY_BLOB header;
-  if (pub_key->size() < sizeof(header)) {
+  if (pub_key.size() < sizeof(header)) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(&header, pub_key->data(), sizeof(header)));
+  UNSAFE_TODO(memcpy(&header, pub_key.data(), sizeof(header)));
   // |cbKey| is documented[1] as "the length, in bytes, of the key". It is
   // not. For ECDSA public keys it is the length of a field element.
   if ((header.dwMagic != BCRYPT_ECDSA_PUBLIC_P256_MAGIC &&
        header.dwMagic != BCRYPT_ECDSA_PUBLIC_GENERIC_MAGIC) ||
       header.cbKey != 256 / 8 ||
-      pub_key->size() - sizeof(BCRYPT_ECCKEY_BLOB) != 64) {
+      pub_key.size() - sizeof(BCRYPT_ECCKEY_BLOB) != 64) {
     return std::nullopt;
   }
 
@@ -351,7 +351,7 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
   uint8_t x962[1 + 32 + 32];
   UNSAFE_TODO(x962[0]) = POINT_CONVERSION_UNCOMPRESSED;
   UNSAFE_TODO(
-      memcpy(&x962[1], pub_key->data() + sizeof(BCRYPT_ECCKEY_BLOB), 64));
+      memcpy(&x962[1], pub_key.data() + sizeof(BCRYPT_ECCKEY_BLOB), 64));
 
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -373,20 +373,18 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
 }
 
 std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
-  const base::expected<std::vector<uint8_t>, SECURITY_STATUS> pub_key =
-      ExportKey(key, BCRYPT_RSAPUBLIC_BLOB);
-  if (!pub_key.has_value()) {
-    return std::nullopt;
-  }
+  ASSIGN_OR_RETURN(const std::vector<uint8_t> pub_key,
+                   ExportKey(key, BCRYPT_RSAPUBLIC_BLOB),
+                   [](auto) { return std::nullopt; });
 
   // The exported key is a |BCRYPT_RSAKEY_BLOB| followed by the bytes of the
   // key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_rsakey_blob
   BCRYPT_RSAKEY_BLOB header;
-  if (pub_key->size() < sizeof(header)) {
+  if (pub_key.size() < sizeof(header)) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(&header, pub_key->data(), sizeof(header)));
+  UNSAFE_TODO(memcpy(&header, pub_key.data(), sizeof(header)));
   if (header.Magic != static_cast<ULONG>(BCRYPT_RSAPUBLIC_MAGIC)) {
     return std::nullopt;
   }
@@ -395,16 +393,16 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   if (!base::CheckAdd(sizeof(BCRYPT_RSAKEY_BLOB),
                       base::CheckAdd(header.cbPublicExp, header.cbModulus))
            .AssignIfValid(&bytes_needed) ||
-      pub_key->size() < bytes_needed) {
+      pub_key.size() < bytes_needed) {
     return std::nullopt;
   }
 
   bssl::UniquePtr<BIGNUM> e(
-      BN_bin2bn(UNSAFE_TODO(&pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB)]),
+      BN_bin2bn(UNSAFE_TODO(&pub_key.data()[sizeof(BCRYPT_RSAKEY_BLOB)]),
                 header.cbPublicExp, nullptr));
   bssl::UniquePtr<BIGNUM> n(BN_bin2bn(
       UNSAFE_TODO(
-          &pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB) + header.cbPublicExp]),
+          &pub_key.data()[sizeof(BCRYPT_RSAKEY_BLOB) + header.cbPublicExp]),
       header.cbModulus, nullptr));
 
   bssl::UniquePtr<RSA> rsa(RSA_new());
@@ -418,7 +416,7 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   return CBBToVector(cbb.get());
 }
 
-base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignECDSA(
+SecurityStatusOr<std::vector<uint8_t>> SignECDSA(
     NCRYPT_KEY_HANDLE key,
     base::span<const uint8_t> data) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -453,9 +451,8 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignECDSA(
   return CBBToVector(cbb.get());
 }
 
-base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignRSA(
-    NCRYPT_KEY_HANDLE key,
-    base::span<const uint8_t> data) {
+SecurityStatusOr<std::vector<uint8_t>> SignRSA(NCRYPT_KEY_HANDLE key,
+                                               base::span<const uint8_t> data) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -857,8 +854,32 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return std::nullopt;
       }
 
-      if (usage == KeyUsage::kAttestation && !SetIdentityKeyPolicy(key.get())) {
-        return std::nullopt;
+      if (provider_type_ == ProviderType::kTPM &&
+          algo == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+        // TPM 2.0 RSA keys created via the Platform Crypto Provider default to
+        // SHA-1 for signing if left unset. Restrict the key to SHA-256 instead.
+        RETURN_IF_ERROR(
+            SetNCryptProperty(
+                key.get(), NCRYPT_PCP_RSA_SCHEME_HASH_ALG_PROPERTY,
+                static_cast<DWORD>(crypto::tpm::TpmAlg::TPM_ALG_SHA256)),
+            [&](SECURITY_STATUS status) {
+              LogTPMOperationError(creation_operation, status, algo);
+              return std::nullopt;
+            });
+      }
+
+      if (usage == KeyUsage::kAttestation) {
+        // Sets the NCRYPT_PCP_IDENTITY_KEY flag in the key's usage policy.
+        // This marks the key as an Attestation Identity Key (AIK). This
+        // property is specific to the Platform Crypto Provider (TPM) and
+        // restricts the key from being used to sign arbitrary data.
+        RETURN_IF_ERROR(
+            SetNCryptProperty(key.get(), NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
+                              NCRYPT_PCP_IDENTITY_KEY),
+            [&](SECURITY_STATUS status) {
+              LogTPMOperationError(creation_operation, status, algo);
+              return std::nullopt;
+            });
       }
 
       if (FAILED(NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG))) {
