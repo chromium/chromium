@@ -67,8 +67,9 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
       std::make_unique<views::MockInputEventActivationProtector>();
   // Expect that `allow_key_events` is set to false to protect against
   // enter-jacking.
-  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction(
-                                    testing::_, /*allow_key_events=*/false))
+  EXPECT_CALL(*input_protector,
+              IsPossiblyUnintendedInteraction(
+                  testing::_, /*allow_key_events=*/false, testing::_))
       .WillOnce(testing::Return(true))
       .WillRepeatedly(testing::Return(false));
 

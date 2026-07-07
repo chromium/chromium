@@ -19,6 +19,7 @@ class Event;
 namespace views {
 
 class InputProtectorDelegate;
+class View;
 
 // The goal of this class is to prevent potentially unintentional user
 // interaction with a UI element.
@@ -61,10 +62,18 @@ class VIEWS_EXPORT InputEventActivationProtector
   // event that took place within the double-click time interval after
   // `view_protected_time_stamp_`.
   //
-  // If `allow_key_events` is true, "key events" will NOT be considered
-  // for possibly unintended interaction checks.
+  // If `allow_key_events` is true, "key events" will NOT be considered for
+  // possibly unintended interaction checks.
+  //
+  // If `target_view` is provided, delegates can use it to perform security
+  // checks on the view that is the target for the event.
   virtual bool IsPossiblyUnintendedInteraction(const ui::Event& event,
-                                               bool allow_key_events);
+                                               bool allow_key_events,
+                                               const View* target_view);
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                       bool allow_key_events) {
+    return IsPossiblyUnintendedInteraction(event, allow_key_events, nullptr);
+  }
 
   // Adds a delegate to the list of policies that check for unintended
   // interactions. To allow the event for the interaction to proceed, all

@@ -10,6 +10,8 @@
 
 namespace views {
 
+class View;
+
 // Default implementation of `InputProtectorDelegate` that implements the
 // standard timing-based protection (cooldown and click-rate limits). This
 // delegate is used by default when no custom delegate is passed to the
@@ -23,6 +25,7 @@ class VIEWS_EXPORT DefaultInputProtectorDelegate
   // InputProtectorDelegate:
   bool IsPossiblyUnintendedInteraction(
       const ui::Event& event,
+      const View* target_view,
       InputEventActivationProtector* protector) override;
 };
 

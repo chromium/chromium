@@ -12,6 +12,7 @@ namespace views {
 
 bool DefaultInputProtectorDelegate::IsPossiblyUnintendedInteraction(
     const ui::Event& event,
+    const View* target_view,
     InputEventActivationProtector* protector) {
   // Unintended if the user has been clicking with short intervals.
   if (protector->repeated_event_count() > 0) {

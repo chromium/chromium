@@ -17,13 +17,13 @@ namespace views {
 
 InputEventActivationProtector::InputEventActivationProtector() {
   WindowsStationarityMonitor::GetInstance()->AddObserver(this);
-  delegates_.push_back(std::make_unique<DefaultInputProtectorDelegate>());
+  AddDelegate(std::make_unique<DefaultInputProtectorDelegate>());
 }
 
 InputEventActivationProtector::InputEventActivationProtector(
     std::unique_ptr<InputProtectorDelegate> delegate) {
   WindowsStationarityMonitor::GetInstance()->AddObserver(this);
-  delegates_.push_back(std::move(delegate));
+  AddDelegate(std::move(delegate));
 }
 
 InputEventActivationProtector::~InputEventActivationProtector() {
@@ -48,7 +48,8 @@ void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(
 
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     const ui::Event& event,
-    bool allow_key_events) {
+    bool allow_key_events,
+    const View* target_view) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableInputEventActivationProtectionForTesting))
       [[unlikely]] {
@@ -78,7 +79,7 @@ bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
   UpdateStateForEvent(event);
 
   for (const auto& delegate : delegates_) {
-    if (delegate->IsPossiblyUnintendedInteraction(event, this)) {
+    if (delegate->IsPossiblyUnintendedInteraction(event, target_view, this)) {
       return true;
     }
   }

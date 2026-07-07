@@ -13,6 +13,7 @@
 namespace views {
 
 class InputProtectorDelegate;
+class View;
 
 // Mock version of InputEventActivationProtector for injection during tests, to
 // allow verifying that protected Views work as expected.
@@ -28,9 +29,13 @@ class MockInputEventActivationProtector : public InputEventActivationProtector {
   MockInputEventActivationProtector& operator=(
       const MockInputEventActivationProtector&) = delete;
 
+  using InputEventActivationProtector::IsPossiblyUnintendedInteraction;
+
   MOCK_METHOD(bool,
               IsPossiblyUnintendedInteraction,
-              (const ui::Event& event, bool allow_key_events),
+              (const ui::Event& event,
+               bool allow_key_events,
+               const View* target_view),
               (override));
 };
 

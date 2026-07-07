@@ -23,7 +23,9 @@ class TestInputProtectorDelegate : public InputProtectorDelegate {
 
   bool IsPossiblyUnintendedInteraction(
       const ui::Event& event,
+      const View* target_view,
       InputEventActivationProtector* protector) override {
+    last_target_view_ = target_view;
     return is_unintended_interaction_;
   }
 
@@ -31,7 +33,10 @@ class TestInputProtectorDelegate : public InputProtectorDelegate {
     is_unintended_interaction_ = is_unintended_interaction;
   }
 
+  const View* last_target_view() const { return last_target_view_; }
+
  private:
+  raw_ptr<const View> last_target_view_ = nullptr;
   bool is_unintended_interaction_ = false;
 };
 
@@ -175,6 +180,26 @@ TEST_F(InputEventActivationProtectorTest, MultipleDelegates) {
   delegate2_ptr->set_is_unintended_interaction(true);
   EXPECT_TRUE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
+}
+
+TEST_F(InputEventActivationProtectorTest, TargetViewIsForwardedToDelegates) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto delegate = std::make_unique<TestInputProtectorDelegate>();
+  TestInputProtectorDelegate* delegate_ptr = delegate.get();
+  InputEventActivationProtector protector(std::move(delegate));
+
+  protector.VisibilityChanged(true);
+
+  // Retrieve the root view of the widget to act as our expected target view.
+  const View* expected_target_view = widget->GetRootView();
+
+  // Call the protector passing our expected target view.
+  protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false,
+                                            expected_target_view);
+
+  // Assert that the delegate received the exact same target view pointer.
+  EXPECT_EQ(delegate_ptr->last_target_view(), expected_target_view);
 }
 
 }  // namespace views

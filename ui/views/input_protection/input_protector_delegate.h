@@ -14,6 +14,7 @@ class Event;
 namespace views {
 
 class InputEventActivationProtector;
+class View;
 
 // Delegate interface for evaluating if an input event should be blocked
 // as a possibly unintended interaction. This allows incorporating additional
@@ -23,9 +24,14 @@ class VIEWS_EXPORT InputProtectorDelegate {
   virtual ~InputProtectorDelegate() = default;
 
   // Returns true if the `event` should be blocked based on the delegate's
-  // logic. `protector` provides access to the calling protector's state.
+  // logic.
+  //
+  // If `target_view` is provided, the delegate can use it to perform security
+  // checks on the view that is the target for the event. The `protector`
+  // provides access to the calling protector's state.
   virtual bool IsPossiblyUnintendedInteraction(
       const ui::Event& event,
+      const View* target_view,
       InputEventActivationProtector* protector) = 0;
 };
 
