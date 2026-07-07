@@ -13,8 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "ui/base/base_window.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -30,12 +29,13 @@ DefaultBrowserModalDialogManager::~DefaultBrowserModalDialogManager() = default;
 
 void DefaultBrowserModalDialogManager::ShowForBrowser(
     BrowserWindowInterface* browser) {
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  CHECK(browser_view);
+  CHECK(browser);
+  ui::BaseWindow* window = browser->GetWindow();
+  CHECK(window);
 
   gfx::NativeWindow parent_window = gfx::NativeWindow();
   if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-          browser_view->GetNativeWindow())) {
+          window->GetNativeWindow())) {
     parent_window = widget->GetNativeWindow();
   }
 
