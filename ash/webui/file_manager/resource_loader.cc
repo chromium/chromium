@@ -4,6 +4,7 @@
 
 #include "ash/webui/file_manager/resource_loader.h"
 
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
