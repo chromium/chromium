@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -42,15 +43,41 @@ class TrackedElementHandler
     : public tracked_element::mojom::TrackedElementHandler,
       public content::WebContentsObserver {
  public:
-  TrackedElementHandler(content::WebUIController* controller,
-                        const std::vector<ui::ElementIdentifier>& identifiers);
-  TrackedElementHandler(
-      content::WebContents* web_contents,
-      ui::ElementContext context,
-      const std::vector<ui::ElementIdentifier>& identifiers);
+  explicit TrackedElementHandler(content::WebUIController* controller);
+  TrackedElementHandler(content::WebContents* web_contents,
+                        ui::ElementContext context);
   ~TrackedElementHandler() override;
   TrackedElementHandler(const TrackedElementHandler&) = delete;
   TrackedElementHandler& operator=(const TrackedElementHandler&) = delete;
+
+  // Convenience constructor; infers context from `controller` and registers
+  // `identifiers`.
+  template <typename T>
+    requires std::ranges::input_range<T>
+  TrackedElementHandler(content::WebUIController* controller,
+                        const T& identifiers)
+      : TrackedElementHandler(controller) {
+    RegisterIdentifiers(identifiers);
+  }
+
+  // Convenience constructor; specifies `context` and registers `identifiers`.
+  template <typename T>
+    requires std::ranges::input_range<T>
+  TrackedElementHandler(content::WebContents* web_contents,
+                        ui::ElementContext context,
+                        const T& identifiers)
+      : TrackedElementHandler(web_contents, context) {
+    RegisterIdentifiers(identifiers);
+  }
+
+  // Register the given identifiers by adding them to the set of known ids.
+  template <typename T>
+    requires std::ranges::input_range<T>
+  void RegisterIdentifiers(const T& identifiers) {
+    for (auto id : identifiers) {
+      RegisterIdentifier(id);
+    }
+  }
 
   base::WeakPtr<TrackedElementHandler> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -112,6 +139,7 @@ class TrackedElementHandler
  private:
   void UpdateAllEffectiveVisibilities();
   TrackedElementWebUI* GetElement(const std::string& identifier_name);
+  void RegisterIdentifier(ui::ElementIdentifier id);
 
   const ui::ElementContext context_;
   absl::flat_hash_map<std::string, std::unique_ptr<TrackedElementWebUI>>

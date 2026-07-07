@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
+#include <set>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -29,9 +31,14 @@ class TrackedElementHandlerConfig
  public:
   ~TrackedElementHandlerConfig() override = default;
 
-  ui::ElementContext context() { return context_getter_.Run(); }
-  const std::vector<ui::ElementIdentifier>& identifiers() const {
-    return identifiers_;
+  ui::ElementContext context() const { return context_getter_.Run(); }
+  const auto& identifiers() const { return identifiers_; }
+
+  template <typename T>
+    requires std::ranges::input_range<T>
+  void AddIdentifiers(const T& identifiers) {
+    std::ranges::copy(identifiers,
+                      std::inserter(identifiers_, identifiers_.end()));
   }
 
  private:
@@ -41,12 +48,13 @@ class TrackedElementHandlerConfig
                               std::vector<ui::ElementIdentifier> identifiers)
       : content::WebContentsUserData<TrackedElementHandlerConfig>(
             *web_contents),
-        context_getter_(std::move(context_getter)),
-        identifiers_(std::move(identifiers)) {}
+        context_getter_(std::move(context_getter)) {
+    AddIdentifiers(identifiers);
+  }
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   ContextGetter context_getter_;
-  const std::vector<ui::ElementIdentifier> identifiers_;
+  std::set<ui::ElementIdentifier> identifiers_;
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TrackedElementHandlerConfig);
@@ -61,14 +69,16 @@ class TrackedElementHandlerUserData
 
  private:
   friend class content::DocumentUserData<TrackedElementHandlerUserData>;
-  explicit TrackedElementHandlerUserData(content::RenderFrameHost* rfh,
-                                         TrackedElementHandlerConfig* config)
+  explicit TrackedElementHandlerUserData(
+      content::RenderFrameHost* rfh,
+      const TrackedElementHandlerConfig* config)
       : content::DocumentUserData<TrackedElementHandlerUserData>(rfh) {
     CHECK(config);
     auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
     CHECK(web_contents);
-    handler_ = std::make_unique<TrackedElementHandler>(
-        web_contents, config->context(), config->identifiers());
+    handler_ = std::make_unique<TrackedElementHandler>(web_contents,
+                                                       config->context());
+    handler_->RegisterIdentifiers(config->identifiers());
   }
 
   DOCUMENT_USER_DATA_KEY_DECL();
@@ -94,6 +104,16 @@ void TrackedElementHandlerDocumentSingleton::Register(
     return;
   }
 
+  // If the config already exists, add the identifiers. This avoids a case where
+  // multiple components register different identifiers they want to use as
+  // anchors. If this isn't done, different components could overwrite each
+  // others' identifier lists.
+  if (auto* const config =
+          TrackedElementHandlerConfig::FromWebContents(web_contents)) {
+    config->AddIdentifiers(identifiers);
+    return;
+  }
+
   if (!maybe_context_getter) {
     ui::ElementContext context = ui::ElementContext(
         controller, base::PassKey<TrackedElementHandlerDocumentSingleton>());
@@ -112,20 +132,22 @@ TrackedElementHandlerDocumentSingleton::GetOrCreate(
     return nullptr;
   }
 
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  const TrackedElementHandlerConfig* const config =
+      web_contents ? TrackedElementHandlerConfig::FromWebContents(web_contents)
+                   : nullptr;
   auto* user_data = TrackedElementHandlerUserData::GetForCurrentDocument(rfh);
-  if (!user_data) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(rfh);
-    if (!web_contents) {
-      return nullptr;
+  if (user_data) {
+    // Re-registering the config, so make sure the identifier list is current.
+    // If this is not done then adding a second component which uses identifiers
+    // could be ignored if another component got here first.
+    if (config) {
+      user_data->handler()->RegisterIdentifiers(config->identifiers());
     }
-
-    TrackedElementHandlerConfig* config =
-        TrackedElementHandlerConfig::FromWebContents(web_contents);
-    if (!config) {
-      return nullptr;
-    }
-
+  } else if (!web_contents || !config) {
+    return nullptr;
+  } else {
     TrackedElementHandlerUserData::CreateForCurrentDocument(rfh, config);
     user_data = TrackedElementHandlerUserData::GetForCurrentDocument(rfh);
   }

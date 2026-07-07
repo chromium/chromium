@@ -22,18 +22,14 @@
 namespace ui {
 
 TrackedElementHandler::TrackedElementHandler(
-    content::WebUIController* controller,
-    const std::vector<ui::ElementIdentifier>& identifiers)
+    content::WebUIController* controller)
     : TrackedElementHandler(
           controller->web_ui()->GetWebContents(),
           ui::ElementContext(controller,
-                             base::PassKey<TrackedElementHandler>()),
-          identifiers) {}
+                             base::PassKey<TrackedElementHandler>())) {}
 
-TrackedElementHandler::TrackedElementHandler(
-    content::WebContents* web_contents,
-    ui::ElementContext context,
-    const std::vector<ui::ElementIdentifier>& identifiers)
+TrackedElementHandler::TrackedElementHandler(content::WebContents* web_contents,
+                                             ui::ElementContext context)
     : context_(context), receiver_(this) {
   ui::ElementHighlighter::GetElementHighlighter()
       ->MaybeRegisterBackend<ElementHighlighterWebUI>();
@@ -42,11 +38,6 @@ TrackedElementHandler::TrackedElementHandler(
     Observe(web_contents);
     is_web_contents_visible_ =
         web_contents->GetVisibility() == content::Visibility::VISIBLE;
-  }
-
-  for (const ui::ElementIdentifier& id : identifiers) {
-    elements_[id.GetName()] =
-        std::make_unique<TrackedElementWebUI>(this, id, context);
   }
 }
 
@@ -225,6 +216,9 @@ void TrackedElementHandler::TrackedElementVisibilityChanged(
     const gfx::RectF& rect) {
   TrackedElementWebUI* element = GetElement(identifier_name);
   if (!element) {
+    NOTREACHED(base::NotFatalUntil::M153)
+        << "Use of unregistered identifier \"" << identifier_name
+        << "\" in page " << web_contents()->GetURL();
     return;
   }
   element->SetRawVisible(visible, rect);
@@ -285,6 +279,15 @@ TrackedElementHandler::LockVisible(const std::string& identifier_name) {
     return nullptr;
   }
   return element->LockVisible();
+}
+
+void TrackedElementHandler::RegisterIdentifier(ui::ElementIdentifier id) {
+  const auto name = id.GetName();
+  // It's okay to re-register names; doing so is a no-op.
+  auto& el_ptr = elements_[name];
+  if (!el_ptr) {
+    el_ptr = std::make_unique<TrackedElementWebUI>(this, id, context_);
+  }
 }
 
 std::vector<std::string> TrackedElementHandler::GetIdentifiers() {
