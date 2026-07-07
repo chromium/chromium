@@ -20,16 +20,14 @@ class GURL;
 class GaiaAuthFetcherIOSBridge {
  public:
   // Delegate class receives notification when the request is done.
-  class GaiaAuthFetcherIOSBridgeDelegate {
+  class Delegate {
    public:
-    GaiaAuthFetcherIOSBridgeDelegate();
+    Delegate();
 
-    GaiaAuthFetcherIOSBridgeDelegate(const GaiaAuthFetcherIOSBridgeDelegate&) =
-        delete;
-    GaiaAuthFetcherIOSBridgeDelegate& operator=(
-        const GaiaAuthFetcherIOSBridgeDelegate&) = delete;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~GaiaAuthFetcherIOSBridgeDelegate();
+    virtual ~Delegate();
 
     // Called when the request is done.
     virtual void OnFetchComplete(const GURL& url,
@@ -39,7 +37,7 @@ class GaiaAuthFetcherIOSBridge {
   };
 
   // Initializes the instance.
-  GaiaAuthFetcherIOSBridge(GaiaAuthFetcherIOSBridgeDelegate* delegate);
+  GaiaAuthFetcherIOSBridge(Delegate* delegate);
 
   GaiaAuthFetcherIOSBridge(const GaiaAuthFetcherIOSBridge&) = delete;
   GaiaAuthFetcherIOSBridge& operator=(const GaiaAuthFetcherIOSBridge&) = delete;
@@ -53,7 +51,7 @@ class GaiaAuthFetcherIOSBridge {
   //   will be a POST request.
   //
   // Implementations are expected to call
-  // GaiaAuthFetcherIOSBridgeDelegate::OnFetchComplete() when the fetch
+  // Delegate::OnFetchComplete() when the fetch
   // operation is finished.
   virtual void Fetch(const GURL& url,
                      const std::string& headers,
@@ -63,15 +61,15 @@ class GaiaAuthFetcherIOSBridge {
   // Cancels the current fetch.
   //
   // Implementations are expected to call
-  // GaiaAuthFetcherIOSBridgeDelegate::OnFetchComplete() with error
+  // Delegate::OnFetchComplete() with error
   // `net::ERR_ABORTED`.
   virtual void Cancel() = 0;
 
  protected:
-  GaiaAuthFetcherIOSBridgeDelegate* delegate() { return delegate_; }
+  Delegate* delegate() { return delegate_; }
 
  private:
-  raw_ptr<GaiaAuthFetcherIOSBridgeDelegate> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_GAIA_AUTH_FETCHER_IOS_BRIDGE_H_

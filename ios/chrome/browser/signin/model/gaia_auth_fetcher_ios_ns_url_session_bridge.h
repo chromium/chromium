@@ -25,7 +25,7 @@ class ProfileIOS;
 class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
  public:
   GaiaAuthFetcherIOSNSURLSessionBridge(
-      GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
+      GaiaAuthFetcherIOSBridge::Delegate* delegate,
       ProfileIOS* profile);
 
   GaiaAuthFetcherIOSNSURLSessionBridge(

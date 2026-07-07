@@ -10,18 +10,15 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
 
-#pragma mark - GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate
+#pragma mark - GaiaAuthFetcherIOSBridge::Delegate
 
-GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate::
-    GaiaAuthFetcherIOSBridgeDelegate() {}
+GaiaAuthFetcherIOSBridge::Delegate::Delegate() {}
 
-GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate::
-    ~GaiaAuthFetcherIOSBridgeDelegate() {}
+GaiaAuthFetcherIOSBridge::Delegate::~Delegate() {}
 
 #pragma mark - GaiaAuthFetcherIOSBridge
 
-GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridge(
-    GaiaAuthFetcherIOSBridgeDelegate* delegate)
+GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridge(Delegate* delegate)
     : delegate_(delegate) {}
 
 GaiaAuthFetcherIOSBridge::~GaiaAuthFetcherIOSBridge() {}

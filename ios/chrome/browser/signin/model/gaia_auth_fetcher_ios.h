@@ -27,9 +27,8 @@ class SharedURLLoaderFactory;
 // Authenticate a user against the Google Accounts ClientLogin API
 // with various capabilities and return results to a GaiaAuthConsumer.
 // The queries are fetched using native APIs.
-class GaiaAuthFetcherIOS
-    : public GaiaAuthFetcher,
-      public GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate {
+class GaiaAuthFetcherIOS : public GaiaAuthFetcher,
+                           public GaiaAuthFetcherIOSBridge::Delegate {
  public:
   GaiaAuthFetcherIOS(
       GaiaAuthConsumer* consumer,
@@ -54,7 +53,7 @@ class GaiaAuthFetcherIOS
       const GURL& gaia_gurl,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
-  // GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate.
+  // GaiaAuthFetcherIOSBridge::Delegate.
   void OnFetchComplete(const GURL& url,
                        const std::string& data,
                        net::Error net_error,

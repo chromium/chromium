@@ -22,8 +22,7 @@ namespace {
 
 class FakeGaiaAuthFetcherIOSBridge : public GaiaAuthFetcherIOSBridge {
  public:
-  FakeGaiaAuthFetcherIOSBridge(
-      GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate)
+  FakeGaiaAuthFetcherIOSBridge(GaiaAuthFetcherIOSBridge::Delegate* delegate)
       : GaiaAuthFetcherIOSBridge(delegate) {}
   ~FakeGaiaAuthFetcherIOSBridge() override {}
 

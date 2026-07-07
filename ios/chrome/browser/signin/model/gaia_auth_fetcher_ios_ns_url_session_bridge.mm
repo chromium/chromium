@@ -143,7 +143,7 @@ GaiaAuthFetcherIOSNSURLSessionBridge::Request::Request(
 @end
 
 GaiaAuthFetcherIOSNSURLSessionBridge::GaiaAuthFetcherIOSNSURLSessionBridge(
-    GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
+    GaiaAuthFetcherIOSBridge::Delegate* delegate,
     ProfileIOS* profile)
     : GaiaAuthFetcherIOSBridge(delegate), profile_(profile) {
   url_session_delegate_ = [[GaiaAuthFetcherIOSURLSessionDelegate alloc] init];

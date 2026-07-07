@@ -53,16 +53,14 @@ NSString* GetStringWithCanonicalCookie(net::CanonicalCookie cookie) {
 }
 
 // Delegate class to test GaiaAuthFetcherIOSNSURLSessionBridge.
-class FakeGaiaAuthFetcherIOSBridgeDelegate
-    : public GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate {
+class FakeDelegate : public GaiaAuthFetcherIOSBridge::Delegate {
  public:
-  FakeGaiaAuthFetcherIOSBridgeDelegate()
-      : GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate(),
-        fetch_complete_called_(false) {}
+  FakeDelegate()
+      : GaiaAuthFetcherIOSBridge::Delegate(), fetch_complete_called_(false) {}
 
-  ~FakeGaiaAuthFetcherIOSBridgeDelegate() override {}
+  ~FakeDelegate() override {}
 
-  // GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate.
+  // GaiaAuthFetcherIOSBridge::Delegate.
   void OnFetchComplete(const GURL& url,
                        const std::string& data,
                        net::Error net_error,
@@ -107,7 +105,7 @@ class TestGaiaAuthFetcherIOSNSURLSessionBridge
     : public GaiaAuthFetcherIOSNSURLSessionBridge {
  public:
   TestGaiaAuthFetcherIOSNSURLSessionBridge(
-      GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
+      GaiaAuthFetcherIOSBridge::Delegate* delegate,
       ProfileIOS* profile,
       GaiaAuthFetcherIOSNSURLSessionBridgeTest* test);
 
@@ -163,7 +161,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
   // Fake delegate for `ns_url_session_bridge_` (this needs to be deallocated
   // after `ns_url_session_bridge_`).
-  std::unique_ptr<FakeGaiaAuthFetcherIOSBridgeDelegate> delegate_;
+  std::unique_ptr<FakeDelegate> delegate_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
@@ -183,7 +181,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
 
 TestGaiaAuthFetcherIOSNSURLSessionBridge::
     TestGaiaAuthFetcherIOSNSURLSessionBridge(
-        GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
+        GaiaAuthFetcherIOSBridge::Delegate* delegate,
         ProfileIOS* profile,
         GaiaAuthFetcherIOSNSURLSessionBridgeTest* test)
     : GaiaAuthFetcherIOSNSURLSessionBridge(delegate, profile), test_(test) {}
@@ -205,7 +203,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
   web_state_->GetView();
   web_state_->SetKeepRenderProcessAlive(true);
 
-  delegate_ = std::make_unique<FakeGaiaAuthFetcherIOSBridgeDelegate>();
+  delegate_ = std::make_unique<FakeDelegate>();
   ns_url_session_bridge_ =
       std::make_unique<TestGaiaAuthFetcherIOSNSURLSessionBridge>(
           delegate_.get(), profile_.get(), this);
