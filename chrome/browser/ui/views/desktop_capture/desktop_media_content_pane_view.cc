@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"

@@ -14,7 +14,6 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"

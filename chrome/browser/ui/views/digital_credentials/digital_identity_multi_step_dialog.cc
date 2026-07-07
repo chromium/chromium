@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_variant.h"

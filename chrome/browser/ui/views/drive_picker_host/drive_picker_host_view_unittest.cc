@@ -20,7 +20,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"

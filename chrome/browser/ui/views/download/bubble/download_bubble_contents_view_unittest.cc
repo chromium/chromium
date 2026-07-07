@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/download/mock_download_core_service.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"

@@ -4,12 +4,9 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 
-#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"

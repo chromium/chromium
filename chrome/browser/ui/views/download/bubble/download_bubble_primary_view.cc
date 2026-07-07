@@ -7,11 +7,9 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
@@ -20,7 +18,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"

@@ -28,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,6 +48,10 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/accessibility/ax_mode.h"
+#endif
 
 namespace {
 

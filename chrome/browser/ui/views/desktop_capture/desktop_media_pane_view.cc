@@ -7,10 +7,7 @@
 #include <string_view>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/separator.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"

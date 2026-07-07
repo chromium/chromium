@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
@@ -20,7 +19,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/display/screen.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"

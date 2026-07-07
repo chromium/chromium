@@ -6,20 +6,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -30,7 +25,6 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
 using content::BrowserThread;

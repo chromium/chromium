@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -13,7 +12,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 

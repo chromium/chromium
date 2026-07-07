@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"

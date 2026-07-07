@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +16,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -25,7 +23,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 

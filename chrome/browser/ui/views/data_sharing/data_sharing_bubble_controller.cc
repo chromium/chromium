@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/saved_tab_groups/public/types.h"

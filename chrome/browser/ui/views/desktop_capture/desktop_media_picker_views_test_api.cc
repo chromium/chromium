@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"

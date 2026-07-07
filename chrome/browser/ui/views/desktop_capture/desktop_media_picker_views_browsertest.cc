@@ -8,9 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -21,11 +18,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/grit/branded_strings.h"
-#include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {

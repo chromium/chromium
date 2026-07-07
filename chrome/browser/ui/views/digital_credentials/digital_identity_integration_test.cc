@@ -24,7 +24,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"

@@ -61,6 +61,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/mica_titlebar.h"
+#include "media/base/media_switches.h"
+#elif BUILDFLAG(IS_MAC)
+#include "media/base/media_switches.h"
 #endif
 
 namespace {

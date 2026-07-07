@@ -5,11 +5,9 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/scroll_view.h"
 
 using offline_items_collection::ContentId;
 

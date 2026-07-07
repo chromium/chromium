@@ -26,7 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)

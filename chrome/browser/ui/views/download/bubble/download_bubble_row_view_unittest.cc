@@ -22,7 +22,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/test_event.h"
 #include "ui/events/types/event_type.h"
-#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 
 namespace {
