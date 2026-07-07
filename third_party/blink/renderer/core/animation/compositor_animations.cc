@@ -524,6 +524,14 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     return false;
   }
 
+  if (layout_object && layout_object->StyleRef().SubtreeWillChangeContents()) {
+    // If the element has will-change: contents, then this function cannot
+    // return a meaningful result, as we decline to generate layers in this
+    // case. See also crbug.com/40061259 - some assumptions made in the below
+    // function are weakened in this case, resulting in DCHECK failures.
+    return false;
+  }
+
   bool any_compositor_properties_missing = false;
   bool any_compositor_properties_present = false;
 
