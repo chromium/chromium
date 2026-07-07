@@ -8,7 +8,7 @@ import type {ExtensionsElement} from './extensions.js';
 
 export function getHtml(this: ExtensionsElement) {
   return html`<!--_html_template_start_-->
-${this.state.filter(state => state.isVisible).map(state => html`
+${this.state.map(state => html`
   <webui-toolbar-extension .state="${state}">
   </webui-toolbar-extension>
 `)}

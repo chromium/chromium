@@ -157,9 +157,12 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
 void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
   std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> state;
   for (const auto& [id, action] : cached_actions_) {
+    if (!action->is_visible) {
+      continue;
+    }
     state.push_back(mojo::Clone(action));
   }
-  if (!state.empty()) {
+  if (!cached_actions_.empty()) {
     state.push_back(GetExtensionsButton());
   }
   delegate_->OnExtensionsStateChanged(std::move(state));
