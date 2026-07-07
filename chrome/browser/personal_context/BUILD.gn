@@ -42,19 +42,26 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "personal_context_service_browsertest.cc" ]
+    sources = [
+      "personal_context_enablement_service_browsertest.cc",
+      "personal_context_service_browsertest.cc",
+    ]
     deps = [
       ":personal_context",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/account_settings",
       "//chrome/browser/signin",
       "//chrome/test:test_support",
+      "//components/account_settings:test_support",
       "//components/personal_context/core",
       "//components/personal_context/core:features",
       "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
       "//content/test:test_support",
       "//net:test_support",
       "//services/network:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }
