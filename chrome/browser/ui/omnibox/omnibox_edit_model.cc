@@ -2326,7 +2326,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
   }
   TRACE_EVENT("omnibox", "OmniboxEditModel::OnPopupResultChanged");
   UpdatePopupSelectionOnResultChanged();
-  observers_.Notify(&Observer::OnContentsChanged);
+  observers_.NotifyAllowReentrancy(&Observer::OnContentsChanged);
 }
 
 const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
