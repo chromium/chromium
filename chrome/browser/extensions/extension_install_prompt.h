@@ -67,18 +67,11 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
   GetReEnablePromptTypeForExtension(content::BrowserContext* context,
                                     const extensions::Extension* extension);
 
-  // Creates a dummy extension from the `manifest`, replacing the name and
-  // description with the localizations if provided.
-  static scoped_refptr<extensions::Extension> GetLocalizedExtensionForDisplay(
-      const base::DictValue& manifest,
-      int flags,  // Extension::InitFromValueFlags
-      const std::string& id,
-      const std::string& localized_name,
-      const std::string& localized_description,
-      std::u16string* error);
-
-  // Creates a prompt with a parent web content.
-  explicit ExtensionInstallPrompt(content::WebContents* contents);
+  // Creates a prompt with a parent web content and a prompt data.
+  // If `prompt` is null, it will be created when calling `ShowDialog` method.
+  explicit ExtensionInstallPrompt(
+      content::WebContents* contents,
+      std::unique_ptr<extensions::InstallPromptData> prompt = nullptr);
 
   // Creates a prompt with a profile and a native window. The most recently
   // active browser window (or a new browser window if there are no browser
@@ -130,6 +123,10 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
   void ConfirmReEnable(DoneCallback install_callback,
                        const extensions::Extension* extension,
                        content::BrowserContext* browser_context) override;
+  void ShowInstallDialog(DoneCallback install_callback,
+                         const extensions::Extension* extension,
+                         const SkBitmap* icon) override;
+
   bool did_call_show_dialog() const { return did_call_show_dialog_; }
 
   std::unique_ptr<extensions::InstallPromptData> GetPromptForTesting();

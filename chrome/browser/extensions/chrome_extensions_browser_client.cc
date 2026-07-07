@@ -50,6 +50,7 @@
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -115,6 +116,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
+#include "extensions/browser/install_prompt_data.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
@@ -1230,6 +1232,14 @@ void ChromeExtensionsBrowserClient::CanInstallExtensionByPolicy(
   } else {
     std::move(callback).Run(/*can_install=*/true, std::u16string());
   }
+}
+
+std::unique_ptr<ExtensionInstallPromptClient>
+ChromeExtensionsBrowserClient::CreateInstallPrompt(
+    content::WebContents* web_contents,
+    std::unique_ptr<InstallPromptData> prompt) {
+  return std::make_unique<ExtensionInstallPrompt>(web_contents,
+                                                  std::move(prompt));
 }
 
 void ChromeExtensionsBrowserClient::SetAPIClientForTest(

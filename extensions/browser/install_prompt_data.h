@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "extensions/browser/extension_install_prompt_client.h"
@@ -146,7 +147,7 @@ class InstallPromptData {
   bool is_requesting_host_permissions_ = false;
 
   // The extension being installed.
-  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> extension_;
+  scoped_refptr<const extensions::Extension> extension_;
 
   // The icon to be displayed.
   gfx::Image icon_;

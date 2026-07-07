@@ -161,7 +161,6 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
       fail_install_if_unexpected_version_(false),
       extensions_enabled_(registrar_->extensions_enabled()),
       delete_source_(false),
-      // See header file comment on |client_| for why we use a raw pointer here.
       client_(client.release()),
       apps_require_extension_mime_type_(false),
       allow_silent_install_(false),
@@ -218,10 +217,9 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
 CrxInstaller::~CrxInstaller() {
   DCHECK(!browser_context_ || installer_callbacks_.empty());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Ensure |client_| and |install_checker_| data members are destroyed on the
-  // UI thread. The |client_| dialog has a weak reference as |this| is its
-  // delegate, and |install_checker_| owns WeakPtrs, so must be destroyed on the
-  // same thread that created it.
+  // Ensure |client_| data member is destroyed on the UI thread. The |client_|
+  // dialog has a weak reference as |this| is its delegate, so must be destroyed
+  // on the same thread that created it.
 }
 
 void CrxInstaller::InstallCrx(const base::FilePath& source_file) {

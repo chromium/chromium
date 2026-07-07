@@ -109,11 +109,13 @@ class ExtensionAssetsManager;
 class ExtensionCache;
 class ExtensionError;
 class ExtensionHostDelegate;
+class ExtensionInstallPromptClient;
 class ExtensionManagementClient;
 class ExtensionSet;
 class ExtensionSystem;
 class ExtensionSystemProvider;
 class ExtensionWebContentsObserver;
+class InstallPromptData;
 class InstallStageTracker;
 class InstallTracker;
 class InstallVerifier;
@@ -699,6 +701,11 @@ class ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const base::Version& extension_version,
       base::OnceCallback<void(bool, std::u16string)> callback);
+
+  // Creates install prompt UI.
+  virtual std::unique_ptr<ExtensionInstallPromptClient> CreateInstallPrompt(
+      content::WebContents* web_contents,
+      std::unique_ptr<InstallPromptData> prompt);
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;

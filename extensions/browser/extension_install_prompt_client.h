@@ -79,6 +79,13 @@ class ExtensionInstallPromptClient {
                                const Extension* extension,
                                content::BrowserContext* browser_context) = 0;
 
+  // Starts the process to show the install prompt.
+  // `extension` can be null in the case of a bundle install.
+  // If `icon` is null, this will attempt to load the extension's icon.
+  virtual void ShowInstallDialog(DoneCallback install_callback,
+                                 const Extension* extension,
+                                 const SkBitmap* icon) = 0;
+
   virtual ~ExtensionInstallPromptClient() = default;
 };
 

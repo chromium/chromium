@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +26,6 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -86,39 +84,16 @@ ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
                            : InstallPromptData::RE_ENABLE_PROMPT;
 }
 
-// static
-scoped_refptr<Extension>
-ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-    const base::DictValue& manifest,
-    int flags,
-    const std::string& id,
-    const std::string& localized_name,
-    const std::string& localized_description,
-    std::u16string* error) {
-  std::optional<base::DictValue> localized_manifest;
-  if (!localized_name.empty() || !localized_description.empty()) {
-    localized_manifest = manifest.Clone();
-    if (!localized_name.empty()) {
-      localized_manifest->Set(extensions::manifest_keys::kName, localized_name);
-    }
-    if (!localized_description.empty()) {
-      localized_manifest->Set(extensions::manifest_keys::kDescription,
-                              localized_description);
-    }
-  }
-
-  return Extension::Create(
-      base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
-      localized_manifest ? *localized_manifest : manifest, flags, id, error);
-}
-
-ExtensionInstallPrompt::ExtensionInstallPrompt(content::WebContents* contents)
+ExtensionInstallPrompt::ExtensionInstallPrompt(
+    content::WebContents* contents,
+    std::unique_ptr<InstallPromptData> prompt)
     : profile_(contents
                    ? Profile::FromBrowserContext(contents->GetBrowserContext())
                    : nullptr),
       extension_(nullptr),
       install_ui_(ExtensionInstallUI::Create(profile_)),
       show_params_(new ExtensionInstallPromptShowParams(contents)),
+      prompt_(std::move(prompt)),
       did_call_show_dialog_(false) {}
 
 ExtensionInstallPrompt::ExtensionInstallPrompt(Profile* profile,
@@ -220,6 +195,14 @@ void ExtensionInstallPrompt::ConfirmReEnable(
       GetReEnablePromptTypeForExtension(browser_context, extension);
   ShowDialog(std::move(install_callback), extension, nullptr,
              std::make_unique<InstallPromptData>(type),
+             GetDefaultShowDialogCallback());
+}
+
+void ExtensionInstallPrompt::ShowInstallDialog(DoneCallback install_callback,
+                                               const Extension* extension,
+                                               const SkBitmap* icon) {
+  DCHECK(prompt_);
+  ShowDialog(std::move(install_callback), extension, icon, std::move(prompt_),
              GetDefaultShowDialogCallback());
 }
 

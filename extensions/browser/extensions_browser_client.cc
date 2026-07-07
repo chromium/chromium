@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_assets_manager.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/browser/install_prompt_data.h"
 #include "extensions/browser/scoped_extension_keep_alive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -391,6 +392,13 @@ void ExtensionsBrowserClient::CanInstallExtensionByPolicy(
     const base::Version& extension_version,
     base::OnceCallback<void(bool, std::u16string)> callback) {
   std::move(callback).Run(/*can_install=*/true, std::u16string());
+}
+
+std::unique_ptr<ExtensionInstallPromptClient>
+ExtensionsBrowserClient::CreateInstallPrompt(
+    content::WebContents* web_contents,
+    std::unique_ptr<InstallPromptData> prompt) {
+  return nullptr;
 }
 
 }  // namespace extensions

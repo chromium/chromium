@@ -13,13 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/webstore_private.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/browser/active_install_data.h"
 #include "extensions/browser/api/webstore_private/extension_install_status.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/browser/webstore_install_helper.h"
 #include "extensions/browser/webstore_install_result.h"
@@ -41,6 +40,7 @@ class WebContents;
 namespace extensions {
 
 class Extension;
+class ExtensionInstallPromptClient;
 struct InstallApproval;
 class ScopedActiveInstall;
 
@@ -135,8 +135,10 @@ class WebstorePrivateBeginInstallWithManifest3Function
   bool PromptForParentApproval();
 
   void OnFrictionPromptDone(bool result);
-  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
-  void OnRequestPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnInstallPromptDone(
+      ExtensionInstallPromptClient::DoneCallbackPayload payload);
+  void OnRequestPromptDone(
+      ExtensionInstallPromptClient::DoneCallbackPayload payload);
   void OnBlockByPolicyPromptDone();
   void OnRequestParentApprovalPromptCancelled();
 
@@ -183,7 +185,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   std::u16string blocked_by_policy_error_message_;
 
-  std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
+  std::unique_ptr<ExtensionInstallPromptClient> install_prompt_;
 
   bool friction_dialog_shown_ = false;
 };

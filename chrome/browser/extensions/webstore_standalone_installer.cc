@@ -26,6 +26,7 @@
 #include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_tracker.h"
 #include "extensions/browser/scoped_active_install.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/browser/webstore_data_fetcher.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -152,10 +153,9 @@ WebstoreStandaloneInstaller::GetLocalizedExtensionForDisplay() {
       return nullptr;
 
     std::u16string error;
-    localized_extension_for_display_ =
-        ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-            *manifest_, Extension::REQUIRE_KEY | Extension::FROM_WEBSTORE, id_,
-            localized_name_, localized_description_, &error);
+    localized_extension_for_display_ = ui_util::GetLocalizedExtensionForDisplay(
+        *manifest_, Extension::REQUIRE_KEY | Extension::FROM_WEBSTORE, id_,
+        localized_name_, localized_description_, &error);
   }
   return localized_extension_for_display_.get();
 }

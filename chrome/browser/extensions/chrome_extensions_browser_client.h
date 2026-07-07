@@ -332,6 +332,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const base::Version& extension_version,
       base::OnceCallback<void(bool, std::u16string)> callback) override;
+  std::unique_ptr<ExtensionInstallPromptClient> CreateInstallPrompt(
+      content::WebContents* web_contents,
+      std::unique_ptr<InstallPromptData> prompt) override;
 
   void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
 
