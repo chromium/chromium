@@ -91,6 +91,15 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
 AiAmountExtractionResult::ResultType
 AmountExtractionManager::ValidateAmountExtractionResponse(
     const optimization_guide::proto::AmountExtractionResponse& response) {
+  // If the inference response explicitly indicates that the amount extraction
+  // was unsuccessful, return `kAmountMissing` immediately. This prevents
+  // checking other fields like `currency`, which might be populated with empty
+  // or fallback values and cause incorrect error dialogs (e.g. unsupported
+  // currency errors).
+  if (response.has_is_successful() && !response.is_successful()) {
+    return base::unexpected(AiAmountExtractionResult::Error::kAmountMissing);
+  }
+
   std::optional<AiAmountExtractionResult::Error> error;
 
   // Lower priority check: currency. If checkout amount is missing or invalid,

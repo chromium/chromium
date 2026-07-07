@@ -856,6 +856,24 @@ TEST_F(AmountExtractionManagerTest, ValidateResponse_EmptyResponse) {
   EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kAmountMissing);
 }
 
+TEST_F(AmountExtractionManagerTest, ValidateResponse_UnsuccessfulExtraction) {
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_is_successful(false);
+  response.set_final_checkout_amount(0.0);
+  response.set_currency("GBP");
+
+  ASSERT_FALSE(
+      amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kAmountMissing);
+  EXPECT_FALSE(
+      amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad());
+}
+
 TEST_F(AmountExtractionManagerTest,
        TriggerCheckoutAmountExtraction_Success_Metric) {
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
