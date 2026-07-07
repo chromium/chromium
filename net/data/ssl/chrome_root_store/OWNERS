@@ -3,3 +3,5 @@ per-file additional.certs=mdb.chrome-pki-metadata-release-jobs@google.com
 per-file root_store.certs=mdb.chrome-pki-metadata-release-jobs@google.com
 per-file root_store.textproto=mdb.chrome-pki-metadata-release-jobs@google.com
 per-file root_store.md=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file signer_set.textproto=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file signer_keys.pem=mdb.chrome-pki-metadata-release-jobs@google.com
