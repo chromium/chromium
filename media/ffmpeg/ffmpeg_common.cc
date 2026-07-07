@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -959,18 +958,14 @@ void VideoDecoderConfigToAVCodecContext(
 
 ChannelLayout ChannelLayoutToChromeChannelLayout(
     const AVChannelLayout& layout) {
-  // TODO(crbug.com/475344578): We currently register 1st order ambisonics to be
-  // seen as a quad channel layout. While this is incorrect (we should return
-  // DISCRETE), we are not sure how common this case exists. Need to see
-  // histograms first before a potential breaking change.
-  if (layout.order == AV_CHANNEL_ORDER_AMBISONIC) {
-    constexpr int kMaxAmbisonicsChannels = 32;
-    static_assert(kMaxAmbisonicsChannels == media::limits::kMaxChannels,
-                  "kMaxAmbisonicsChannels does not match kMaxChannels.");
-    base::UmaHistogramExactLinear("Media.Audio.Layouts.Ambisonic.ChannelCount",
-                                  layout.nb_channels,
-                                  kMaxAmbisonicsChannels + 1);
-  }
+  // We currently register 1st order ambisonics (which has 4 channels) to be
+  // seen as a QUAD channel layout. While this is incorrect (and DISCRETE would
+  // be more appropriate), we opt to preserve the historical behavior. Fixing
+  // this behavior might require a substantial update, to prevent loss of
+  // information in the case of downmixing (both from QUAD or DISCRETE).
+  // However, UMAs have shown that the number of ambisonic playbacks is
+  // practically zero, so we should only update this path if we receive actual
+  // user complaints.
 
   switch (layout.u.mask) {
     case AV_CH_LAYOUT_MONO:
