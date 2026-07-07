@@ -3254,16 +3254,16 @@ Google Chrome is unable to recover your settings.
         </if>
 
         <message name="IDS_DICTATION_ONBOARDING_TITLE" desc="The title string in the onboarding dialog for the dictation feature." translateable="false">
-          Turn your spoken thoughts into polished text with voice typing
+          Turn your spoken thoughts into polished text with Gemini
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
-          Chrome will use your microphone to capture your voice and fill in text fields with cleaned up text.
+          Gemini will use your microphone to capture your voice and fill in text fields with cleaned up content.
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING" desc="The second paragraph in the onboarding dialog describing data sharing with Google servers." translateable="false">
           Your spoken audio, the transcribed text, and the content and URL of the page you're interacting with will be sent to Google.
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_DISCLAIMER" desc="The disclaimer text in the onboarding dialog describing the use of AI and potential for mistakes and providing a link for more details." translateable="false">
-          Chrome uses AI and can make mistakes. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
+          Gemini is AI and can make mistakes. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BUTTON_ACCEPT" desc="Button label on the onboarding dialog to confirm the provided information and use the feature." translateable="false">
           Ok, got it

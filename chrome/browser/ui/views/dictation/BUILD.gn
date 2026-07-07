@@ -27,6 +27,7 @@ source_set("dictation") {
 
   deps = [
     "//chrome/app:branded_strings",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/interaction",

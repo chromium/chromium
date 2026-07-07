@@ -53,6 +53,7 @@ class OnboardingDialogController {
   std::unique_ptr<ui::DialogModel> CreateDialogModel(
       base::OnceClosure complete_callback);
   void OnDialogAccepted(base::OnceClosure complete_callback);
+  void OnLearnMoreLinkClicked();
   void Close(views::Widget::ClosedReason reason);
 
   const raw_ref<tabs::TabInterface> tab_;
