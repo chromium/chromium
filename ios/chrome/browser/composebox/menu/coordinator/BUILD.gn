@@ -2,6 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("shared_tab") {
+  sources = [
+    "composebox_menu_shared_tab.h",
+    "composebox_menu_shared_tab.mm",
+  ]
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 source_set("coordinator") {
   sources = [
     "composebox_menu_coordinator.h",
@@ -16,6 +27,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/composebox/coordinator:input_state_manager",
     "//ios/chrome/browser/composebox/coordinator:mode_holder",
+    "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/menu/ui",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public:features",

@@ -783,6 +783,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                source:ComposeboxInputItemSource::
                                           kContextLibrary];
   item.title = title;
+  item.tabURL = url;
   item.state = ComposeboxInputItemState::kLoaded;
   base::UnguessableToken identifier = item.identifier;
 
@@ -970,6 +971,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                           kComposeboxInputItemTypeTab
                                source:source];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
+  item.tabURL = webState->GetVisibleURL();
   base::UnguessableToken identifier = item.identifier;
   _latestTabSelectionMapping[identifier] = webState->GetUniqueIdentifier();
 

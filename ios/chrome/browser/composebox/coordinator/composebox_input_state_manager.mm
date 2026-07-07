@@ -22,6 +22,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -513,6 +514,19 @@ ComposeboxStrings* ServerStringsFromInputState(
   state.activeModel = self.activeModel;
 
   state.strings = _cachedStrings;
+
+  NSMutableArray<ComposeboxMenuSharedTab*>* sharedTabs =
+      [[NSMutableArray alloc] init];
+  for (ComposeboxInputItem* item in self.items.containedItems) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+      ComposeboxMenuSharedTab* tab =
+          [[ComposeboxMenuSharedTab alloc] initWithURL:item.tabURL
+                                                 title:item.title
+                                           serverToken:item.serverToken];
+      [sharedTabs addObject:tab];
+    }
+  }
+  state.sharedTabs = sharedTabs;
 
   // Populate allowed/disabled attachments
   std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;

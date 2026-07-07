@@ -13,10 +13,14 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
+@class ComposeboxMenuSharedTab;
 @class ComposeboxStrings;
 
 // State object containing all UI input state for the composebox.
 @interface ComposeboxUIInputState : NSObject
+
+/// The shared tabs that are attached.
+@property(nonatomic, copy) NSArray<ComposeboxMenuSharedTab*>* sharedTabs;
 
 /// The favicon of the current tab, if available.
 @property(nonatomic, strong) UIImage* currentTabFavicon;

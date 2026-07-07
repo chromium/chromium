@@ -301,6 +301,7 @@ source_set("input_state_manager") {
     "//components/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/coordinator:mode_holder",
+    "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:composebox_mode",
     "//ios/chrome/browser/composebox/public:entrypoint",
