@@ -109,11 +109,6 @@ public final class ReadAloudFeatures {
         return AccessibilityFeaturesMap.isEnabled(AccessibilityFeatures.READ_ALOUD_NATIVE);
     }
 
-    /** Returns true if playback is enabled. */
-    public static boolean isPlaybackEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
-    }
-
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */
     public static boolean isIPHMenuButtonHighlightCctEnabled() {
         return ChromeFeatureList.isEnabled(

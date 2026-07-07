@@ -20,9 +20,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
@@ -32,7 +30,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TapToSeekHandler} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.READALOUD_PLAYBACK})
 public class TapToSeekHandlerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
