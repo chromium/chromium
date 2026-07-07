@@ -35,7 +35,7 @@ const CGFloat kDatePickerPopoverAnchorWidthRatio = 0.25;
 - (void)configureCell:(TableViewTextEditCell*)cell {
   [super configureCell:cell];
 
-  if (self.editingEnabled && !ShouldUsePopoverForDatePicker()) {
+  if (self.editingEnabled && !ShouldUsePopoverForDatePicker(cell)) {
     cell.textField.inputView = [self createCustomInputView];
   } else {
     cell.textField.inputView = nil;

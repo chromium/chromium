@@ -89,7 +89,7 @@ CGFloat NavigationBarTopConstraintConstant() {
     return;
   }
 
-  if (ShouldUsePopoverForDatePicker()) {
+  if (ShouldUsePopoverForDatePicker(self)) {
     _topConstraint.constant =
         IsLandscape(window) ? kDatePickerPopoverNavigationBarLandscapeTopPadding
                             : kDatePickerPopoverNavigationBarPortraitTopPadding;

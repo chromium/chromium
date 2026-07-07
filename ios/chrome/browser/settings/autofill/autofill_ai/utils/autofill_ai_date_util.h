@@ -15,6 +15,8 @@ namespace autofill {
 class AttributeInstance;
 }
 
+@class UIView;
+
 // Returns a NSDate representing the value of the date attribute `attribute`.
 // Returns nil if `attribute` is not a date type or if the date is invalid.
 NSDate* NSDateFromAttributeInstance(
@@ -28,6 +30,6 @@ std::u16string AttributeValueFromNSDate(NSDate* date);
 autofill::AutofillFormatString GetAttributeFormatString();
 
 // Returns whether to use the popover view for the date picker.
-bool ShouldUsePopoverForDatePicker();
+bool ShouldUsePopoverForDatePicker(UIView* view);
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UTILS_AUTOFILL_AI_DATE_UTIL_H_

@@ -374,7 +374,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestSelectDateItem) {
 
   id mock_view_controller = OCMPartialMock(view_controller);
 
-  if (ShouldUsePopoverForDatePicker()) {
+  if (ShouldUsePopoverForDatePicker(view_controller.view)) {
     OCMExpect([mock_view_controller
         presentViewController:[OCMArg checkWithBlock:^BOOL(
                                           UIViewController* viewController) {
@@ -395,7 +395,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestSelectDateItem) {
   [mock_view_controller tableView:view_controller.tableView
           didSelectRowAtIndexPath:indexPath];
 
-  if (ShouldUsePopoverForDatePicker()) {
+  if (ShouldUsePopoverForDatePicker(view_controller.view)) {
     [mock_view_controller verify];
   }
 }
