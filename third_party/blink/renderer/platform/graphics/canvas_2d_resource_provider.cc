@@ -304,11 +304,6 @@ void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   EnsureWriteAccess();
 }
 
-ScopedRasterTimer Canvas2DResourceProvider::CreateScopedRasterTimer() {
-  return ScopedRasterTimer(IsAccelerated() ? RasterInterface() : nullptr, *this,
-                           always_enable_raster_timers_for_testing_);
-}
-
 void Canvas2DResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
   if (context_provider_wrapper_ &&
       context_provider_wrapper_->ContextProvider()
@@ -636,7 +631,8 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
 }
 
 void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
-  auto timer = CreateScopedRasterTimer();
+  ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
+                          always_enable_raster_timers_for_testing_);
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
     if (!skia_canvas_) {
