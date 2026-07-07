@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_INDICATOR_ANDROID_H_
-#define CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_INDICATOR_ANDROID_H_
+#ifndef CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_UI_ANDROID_H_
+#define CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_UI_ANDROID_H_
 
 #include <memory>
 #include <vector>
@@ -17,12 +17,11 @@
 
 // Android-specific implementation of MediaStreamUI for tab sharing state
 // (capturee).
-class TabSharingIndicatorAndroid : public MediaStreamUI {
+class TabSharingUIAndroid : public MediaStreamUI {
  public:
-  explicit TabSharingIndicatorAndroid(
-      content::WebContents* capturer_web_contents,
-      const content::DesktopMediaID& media_id);
-  ~TabSharingIndicatorAndroid() override;
+  explicit TabSharingUIAndroid(content::WebContents* capturer_web_contents,
+                               const content::DesktopMediaID& media_id);
+  ~TabSharingUIAndroid() override;
 
   // chrome::MediaStreamUI override.
   gfx::NativeViewId OnStarted(
@@ -38,7 +37,7 @@ class TabSharingIndicatorAndroid : public MediaStreamUI {
   base::WeakPtr<content::WebContents> capturer_web_contents_;
   base::OnceClosure stop_callback_;
   const content::DesktopMediaID media_id_;
-  std::unique_ptr<content::MediaStreamUI> tab_sharing_indicator_ui_;
+  std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_INDICATOR_ANDROID_H_
+#endif  // CHROME_BROWSER_MEDIA_ANDROID_TAB_SHARING_UI_ANDROID_H_

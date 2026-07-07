@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/android/tab_sharing_indicator_android.h"
+#include "chrome/browser/media/android/tab_sharing_ui_android.h"
 
 #include <string>
 #include <utility>
@@ -22,67 +22,66 @@ namespace {
 // applicable.
 constexpr gfx::NativeViewId kNoWindowId = 0;
 
-class TabSharingIndicatorAndroidHelper
-    : public content::WebContentsUserData<TabSharingIndicatorAndroidHelper> {
+class TabSharingUIAndroidHelper
+    : public content::WebContentsUserData<TabSharingUIAndroidHelper> {
  public:
-  ~TabSharingIndicatorAndroidHelper() override = default;
+  ~TabSharingUIAndroidHelper() override = default;
 
-  void set_indicator(TabSharingIndicatorAndroid* indicator) {
-    indicator_ = indicator;
+  void set_tab_sharing_ui(TabSharingUIAndroid* tab_sharing_ui) {
+    tab_sharing_ui_ = tab_sharing_ui;
   }
-  TabSharingIndicatorAndroid* get_indicator() const { return indicator_; }
+  TabSharingUIAndroid* get_tab_sharing_ui() const { return tab_sharing_ui_; }
 
  private:
-  friend class content::WebContentsUserData<TabSharingIndicatorAndroidHelper>;
-  explicit TabSharingIndicatorAndroidHelper(content::WebContents* contents)
-      : content::WebContentsUserData<TabSharingIndicatorAndroidHelper>(
-            *contents) {}
+  friend class content::WebContentsUserData<TabSharingUIAndroidHelper>;
+  explicit TabSharingUIAndroidHelper(content::WebContents* contents)
+      : content::WebContentsUserData<TabSharingUIAndroidHelper>(*contents) {}
 
-  raw_ptr<TabSharingIndicatorAndroid> indicator_ = nullptr;
+  raw_ptr<TabSharingUIAndroid> tab_sharing_ui_ = nullptr;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabSharingIndicatorAndroidHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabSharingUIAndroidHelper);
 
 }  // namespace
 
-TabSharingIndicatorAndroid::TabSharingIndicatorAndroid(
+TabSharingUIAndroid::TabSharingUIAndroid(
     content::WebContents* capturer_web_contents,
     const content::DesktopMediaID& media_id)
     : capturer_web_contents_(capturer_web_contents->GetWeakPtr()),
       media_id_(media_id) {
-  TabSharingIndicatorAndroidHelper::CreateForWebContents(capturer_web_contents);
-  TabSharingIndicatorAndroidHelper::FromWebContents(capturer_web_contents)
-      ->set_indicator(this);
+  TabSharingUIAndroidHelper::CreateForWebContents(capturer_web_contents);
+  TabSharingUIAndroidHelper::FromWebContents(capturer_web_contents)
+      ->set_tab_sharing_ui(this);
 }
 
-TabSharingIndicatorAndroid::~TabSharingIndicatorAndroid() {
+TabSharingUIAndroid::~TabSharingUIAndroid() {
   StopSharing();
   if (capturer_web_contents_) {
-    auto* helper = TabSharingIndicatorAndroidHelper::FromWebContents(
+    auto* helper = TabSharingUIAndroidHelper::FromWebContents(
         capturer_web_contents_.get());
-    if (helper && helper->get_indicator() == this) {
-      helper->set_indicator(nullptr);
+    if (helper && helper->get_tab_sharing_ui() == this) {
+      helper->set_tab_sharing_ui(nullptr);
     }
   }
 }
 
-void TabSharingIndicatorAndroid::StopSharing(
+void TabSharingUIAndroid::StopSharing(
     content::WebContents* capturer_web_contents) {
   auto* helper =
-      TabSharingIndicatorAndroidHelper::FromWebContents(capturer_web_contents);
-  if (helper && helper->get_indicator()) {
-    helper->get_indicator()->StopSharing();
+      TabSharingUIAndroidHelper::FromWebContents(capturer_web_contents);
+  if (helper && helper->get_tab_sharing_ui()) {
+    helper->get_tab_sharing_ui()->StopSharing();
   }
 }
 
-void TabSharingIndicatorAndroid::StopSharing() {
+void TabSharingUIAndroid::StopSharing() {
   if (stop_callback_) {
     std::move(stop_callback_).Run();
   }
 }
 
-gfx::NativeViewId TabSharingIndicatorAndroid::OnStarted(
+gfx::NativeViewId TabSharingUIAndroid::OnStarted(
     base::OnceClosure stop_callback,
     content::MediaStreamUI::SourceCallback source_callback,
     const std::vector<content::DesktopMediaID>& media_ids) {
@@ -110,12 +109,12 @@ gfx::NativeViewId TabSharingIndicatorAndroid::OnStarted(
 
   blink::mojom::StreamDevices devices;
   devices.video_device = device;
-  tab_sharing_indicator_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
+  tab_capture_indicator_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(web_contents, devices);
 
-  if (tab_sharing_indicator_ui_) {
-    tab_sharing_indicator_ui_->OnStarted(
+  if (tab_capture_indicator_ui_) {
+    tab_capture_indicator_ui_->OnStarted(
         base::DoNothing(), content::MediaStreamUI::SourceCallback(),
         std::string(), {}, content::MediaStreamUI::StateChangeCallback());
   } else {
