@@ -8736,22 +8736,6 @@ if (!is_android) {
       "base/web_ui_test_data_source.h",
       "base/web_view_focus_helper.cc",
       "base/web_view_focus_helper.h",
-      "interaction/dom_message_observer.cc",
-      "interaction/dom_message_observer.h",
-      "interaction/feature_engagement_initialized_observer.cc",
-      "interaction/feature_engagement_initialized_observer.h",
-      "interaction/interaction_test_util_browser.cc",
-      "interaction/interaction_test_util_browser.h",
-      "interaction/interactive_browser_test.cc",
-      "interaction/interactive_browser_test.h",
-      "interaction/interactive_browser_test_internal.cc",
-      "interaction/interactive_browser_test_internal.h",
-      "interaction/interactive_browser_window_test.cc",
-      "interaction/interactive_browser_window_test.h",
-      "interaction/tracked_element_webcontents.cc",
-      "interaction/tracked_element_webcontents.h",
-      "interaction/webcontents_interaction_test_util.cc",
-      "interaction/webcontents_interaction_test_util.h",
       "user_education/interactive_feature_promo_test.cc",
       "user_education/interactive_feature_promo_test.h",
       "user_education/interactive_feature_promo_test_common.cc",
@@ -8765,10 +8749,11 @@ if (!is_android) {
     configs += [ "//build/config:precompiled_headers" ]
 
     allow_circular_includes_from = [
-      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # TODO(crbug.com/353332589): Remove these circular dependencies when
       # chrome/test/base/in_process_browser_test.h gets componentized.
       "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/ui/test:dialog",
+      "//chrome/test/interaction",
     ]
 
     public_deps = [
@@ -8784,6 +8769,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
+      "//chrome/test/interaction",
       "//chrome/test/permissions:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/supervised_user/core/browser",

@@ -5,6 +5,56 @@
 import("//ui/views/features.gni")
 
 if (!is_android) {
+  source_set("interaction") {
+    testonly = true
+    sources = [
+      "dom_message_observer.cc",
+      "dom_message_observer.h",
+      "feature_engagement_initialized_observer.cc",
+      "feature_engagement_initialized_observer.h",
+      "interaction_test_util_browser.cc",
+      "interaction_test_util_browser.h",
+      "interactive_browser_test.cc",
+      "interactive_browser_test.h",
+      "interactive_browser_test_internal.cc",
+      "interactive_browser_test_internal.h",
+      "interactive_browser_window_test.cc",
+      "interactive_browser_window_test.h",
+      "tracked_element_webcontents.cc",
+      "tracked_element_webcontents.h",
+      "webcontents_interaction_test_util.cc",
+      "webcontents_interaction_test_util.h",
+    ]
+    public_deps = [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/test:dialog",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/base/interaction:test_support",
+      "//ui/views/interaction:test_support",
+      "//ui/views/interaction/mouse:test_support",
+    ]
+    deps = [
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/views/tabs/common",
+      "//chrome/test:test_switches",
+      "//components/feature_engagement",
+      "//components/tabs:public",
+      "//content/public/common",
+      "//ui/base:test_support",
+      "//ui/events",
+      "//ui/views:test_support",
+      "//ui/views/controls/webview",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [
