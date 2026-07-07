@@ -90,10 +90,12 @@ ensure that the request is annotated somewhere upstream.
 
 ## Coverage
 Network traffic annotations are currently enforced on all url requests and
-socket writes, except for the code which is not compiled on Windows or Linux.
-This effort may expand to ChromeOS in future and currently there is no plan to
-expand it to other platforms.
+socket writes, except for code which is not compiled on the following platforms:
 
+- Windows
+- Linux
+- ChromeOS
+- Android
 
 ## Network Traffic Annotation Tag
 
