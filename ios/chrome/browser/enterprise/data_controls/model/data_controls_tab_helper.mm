@@ -33,7 +33,9 @@
 namespace data_controls {
 
 DataControlsTabHelper::DataControlsTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+    : web_state_(web_state) {
+  scoped_observation_.Observe(DataControlsPasteboardManager::GetInstance());
+}
 
 DataControlsTabHelper::~DataControlsTabHelper() = default;
 
@@ -97,6 +99,7 @@ void DataControlsTabHelper::ShouldAllowPaste(
 
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
+      paste_event_state_ = PasteEventState::kDisplayingWarningDialog;
       ShowWarningDialog(
           enterprise::DialogType::kClipboardPasteWarn, domain,
           base::BindOnce(
@@ -201,7 +204,7 @@ void DataControlsTabHelper::ShouldAllowSearchWith(
 
 void DataControlsTabHelper::SetEnterpriseCommandsHandler(
     id<EnterpriseCommands> handler) {
-  commands_handler_ = handler;
+  enterprise_handler_ = handler;
 }
 
 void DataControlsTabHelper::SetSnackbarHandler(
@@ -307,6 +310,9 @@ void DataControlsTabHelper::FinishPaste(
   base::UmaHistogramEnumeration(
       kIOSWebStateDataControlsClipboardPasteVerdictHistogram, verdict.level());
 
+  // Reset the `paste_event_state_` to `kIdle`.
+  paste_event_state_ = PasteEventState::kIdle;
+
   if (verdict.level() > Rule::Level::kNotSet && destination_profile.get()) {
     MaybeReportDataControlsPaste(
         source_url, destination_url, source_profile.get(),
@@ -344,8 +350,8 @@ void DataControlsTabHelper::ShowWarningDialog(
     enterprise::DialogType dialog_type,
     std::string_view org_domain,
     base::OnceCallback<void(bool)> on_bypassed_callback) {
-  if (commands_handler_) {
-    [commands_handler_
+  if (enterprise_handler_) {
+    [enterprise_handler_
         showEnterpriseWarningDialog:dialog_type
                  organizationDomain:org_domain
                            callback:std::move(on_bypassed_callback)];
@@ -374,6 +380,17 @@ std::string DataControlsTabHelper::GetManagementDomain(ProfileIOS* profile) {
   policy::PolicyScope scope = static_cast<policy::PolicyScope>(
       profile->GetPrefs()->GetInteger(kDataControlsRulesScopePref));
   return enterprise::GetManagementDomain(scope, profile);
+}
+
+void DataControlsTabHelper::OnPasteboardContentChanged() {
+  switch (paste_event_state_) {
+    case PasteEventState::kIdle:
+      break;
+    case PasteEventState::kDisplayingWarningDialog:
+      [enterprise_handler_ dismissEnterpriseWarningDialog];
+      paste_event_state_ = PasteEventState::kIdle;
+      break;
+  }
 }
 
 }  // namespace data_controls

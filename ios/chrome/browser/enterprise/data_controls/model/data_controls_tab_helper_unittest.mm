@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
@@ -1225,6 +1227,44 @@ TEST_F(DataControlsTabHelperTest,
                           std::u16string(kOrganizationDomain))]);
 
   std::move(handler->_callback).Run(true);
+  run_loop.Run();
+}
+
+// Tests that paste is blocked when a "WARN" rule matches the page URL and the
+// user copies new content before making a decision using the warning dialog.
+TEST_F(DataControlsTabHelperTest, ShouldBlockPaste_Warn_NewCopyAction) {
+  SetPasteWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  FakeEnterpriseCommandsHandler* handler =
+      [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
+
+  EXPECT_CALL(*reporting_router_, ReportPaste(_, _)).Times(1);
+
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  }));
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardPasteWarn);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSString(IDS_DATA_CONTROLS_WARNED_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON)]);
+
+  // Change the pasteboard content.
+  UIPasteboard.generalPasteboard.string = @"Placeholder";
   run_loop.Run();
 }
 

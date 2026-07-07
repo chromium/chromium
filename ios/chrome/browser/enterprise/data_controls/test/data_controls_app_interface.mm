@@ -51,6 +51,19 @@
                                  /*machine_scope=*/false);
 }
 
++ (void)setWarnPasteRule {
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  data_controls::SetDataControls(prefs, {R"({
+                                    "destinations": {
+                                      "urls": ["*"]
+                                    },
+                                    "restrictions": [
+                                      {"class": "CLIPBOARD", "level": "WARN"}
+                                    ]
+                                  })"},
+                                 /*machine_scope=*/false);
+}
+
 + (void)clearDataControlRules {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->ClearPref(data_controls::kDataControlsRulesPref);

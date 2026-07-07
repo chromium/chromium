@@ -19,6 +19,9 @@
                  organizationDomain:(std::string_view)organizationDomain
                            callback:(base::OnceCallback<void(bool)>)callback;
 
+// Commands to dismiss the warning dialog and stop the coordinator.
+- (void)dismissEnterpriseWarningDialog;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ENTERPRISE_COMMANDS_H_

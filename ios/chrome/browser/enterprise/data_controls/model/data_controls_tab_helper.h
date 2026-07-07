@@ -8,7 +8,9 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager_observer.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
@@ -23,12 +25,15 @@ class WebState;
 
 namespace data_controls {
 
+class DataControlsPasteboardManager;
+
 // Manages Enterprise Data Control policies for the associated tab. These
 // policies determine whether certain user actions, like clipboard operations
 // (copying, pasting), are permitted. Such restrictions only apply to managed
 // profiles; for all other profiles, these actions are unrestricted.
 class DataControlsTabHelper
-    : public web::WebStateUserData<DataControlsTabHelper> {
+    : public web::WebStateUserData<DataControlsTabHelper>,
+      public DataControlsPasteboardManagerObserver {
  public:
   DataControlsTabHelper(const DataControlsTabHelper&) = delete;
   DataControlsTabHelper& operator=(const DataControlsTabHelper&) = delete;
@@ -72,9 +77,25 @@ class DataControlsTabHelper
   // Called after the clipboard has been read from.
   void DidFinishClipboardRead();
 
+  // DataControlsPasteboardManagerObserver override: Called when the pasteboard
+  // content is changed.
+  void OnPasteboardContentChanged() override;
+
  private:
   friend class web::WebStateUserData<DataControlsTabHelper>;
   explicit DataControlsTabHelper(web::WebState* web_state);
+
+  // An enum class that keeps track of the state of the current paste event for
+  // each tab. More event states will be added in the future for the Pasted
+  // Content DLP Rules feature.
+  //
+  // TODO(crbug.com/531672160): Add event states for pasted content DLP Rules.
+  enum class PasteEventState {
+    // No ongoing paste event.
+    kIdle,
+    // Waiting for users to make a decision from Warning Dialog.
+    kDisplayingWarningDialog,
+  };
 
   // Returns true if clipboard data controls are enabled.
   bool IsClipboardDataControlsEnabled() const;
@@ -128,11 +149,16 @@ class DataControlsTabHelper
   raw_ptr<web::WebState> web_state_;
 
   // The enterprise command handler.
-  __weak id<EnterpriseCommands> commands_handler_ = nil;
+  __weak id<EnterpriseCommands> enterprise_handler_ = nil;
 
   // The snackbar command handler.
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
 
+  PasteEventState paste_event_state_ = PasteEventState::kIdle;
+
+  base::ScopedObservation<DataControlsPasteboardManager,
+                          DataControlsPasteboardManagerObserver>
+      scoped_observation_{this};
   base::WeakPtrFactory<DataControlsTabHelper> weak_factory_{this};
 };
 

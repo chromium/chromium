@@ -35,6 +35,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_content/ui_bundled:eg_matchers",
+    "//ios/chrome/browser/browser_content/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/enterprise/data_controls/test:eg_test_support+eg2",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:constants",

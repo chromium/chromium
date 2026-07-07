@@ -5,11 +5,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -41,6 +43,15 @@ const char kLogoPageChromiumImageId[] = "chromium_image";
 // The text of the message on the logo page.
 const char kLogoPageText[] = "Page with some text and the chromium logo image.";
 
+// URL to a page with selectable text and pastebin.
+const char kPastebinPath[] = "/pastebin_page.html";
+// The DOM element ID of the selectable text.
+const char kSensitiveInformationId[] = "sensitive_information";
+// The text of the pastebin page
+const char kSensitiveInformationText[] = "SensitiveInformation";
+// The DOM element ID of the pastebin.
+const char kPastebinId[] = "pastebin";
+
 // Returns an ElementSelector for long pressing the first link in the page.
 ElementSelector* ElementSelectorToLongPressLink() {
   return [ElementSelector selectorWithCSSSelector:"a"];
@@ -49,6 +60,11 @@ ElementSelector* ElementSelectorToLongPressLink() {
 // Returns an ElementSelector for the chromium image on the logo page.
 ElementSelector* LogoPageChromiumImageIdSelector() {
   return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
+}
+
+// Returns an ElementSelector for the sensitive information text.
+ElementSelector* SensitiveInformationIDSelector() {
+  return [ElementSelector selectorWithElementID:kSensitiveInformationId];
 }
 
 // Matcher for the copy link button in the context menu.
@@ -398,6 +414,57 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   // Check that the link was not copied.
   GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
                  kBlockCopyingLinkFailedMessage);
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that when pasting is warned, clipboard content change will dismiss the
+// current Warning Dialog.
+- (void)testPasteCancelIfClipboardContentChanged {
+  [DataControlsAppInterface setWarnPasteRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kPastebinPath);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kSensitiveInformationText];
+
+  [ChromeEarlGreyUI longPressElementOnWebView:SensitiveInformationIDSelector()];
+  id<GREYMatcher> copyButton =
+      grey_allOf([EditMenuAppInterface editMenuCopyButtonMatcher],
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:copyButton] performAction:grey_tap()];
+
+  // Using JavaScript to focus on the pastebin first then longpress because
+  // edit menu does not always show up if simply tapping on the pastebin.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          [NSString stringWithFormat:@"document.getElementById('%@').focus();",
+                                     base::SysUTF8ToNSString(kPastebinId)]];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:[ElementSelector
+                                    selectorWithElementID:kPastebinId]];
+
+  // Tap the paste button in the edit menu.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[EditMenuAppInterface
+                                              editMenuPasteButtonMatcher]];
+  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
+                                          editMenuPasteButtonMatcher]]
+      performAction:grey_tap()];
+
+  // Test that the alert is shown by waiting.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::AlertItemWithAccessibilityLabelId(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)];
+
+  // Simulate a new Copy action by updating the clipboard content.
+  [ChromeEarlGrey copyTextToPasteboard:@"Text"];
+
+  // Test that the alert is dismissed by waiting.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::AlertItemWithAccessibilityLabelId(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)];
+
   [ChromeEarlGrey clearPasteboard];
   [DataControlsAppInterface clearDataControlRules];
 }

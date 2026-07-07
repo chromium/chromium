@@ -16,4 +16,10 @@
   _callback = std::move(callback);
 }
 
+- (void)dismissEnterpriseWarningDialog {
+  if (_callback) {
+    std::move(_callback).Run(false);
+  }
+}
+
 @end

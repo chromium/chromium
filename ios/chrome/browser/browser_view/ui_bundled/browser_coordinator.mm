@@ -5781,4 +5781,9 @@ const char kChromeAppStoreUrl[] =
   [_enterpriseDialogCoordinator start];
 }
 
+- (void)dismissEnterpriseWarningDialog {
+  [_enterpriseDialogCoordinator stop];
+  _enterpriseDialogCoordinator = nil;
+}
+
 @end
