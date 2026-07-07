@@ -192,7 +192,7 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lineFocusLargeCursorWindow,
         chrome.readingMode.lastNonDisabledLineFocus);
   });
 
@@ -234,13 +234,13 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lineFocusMediumCursorWindow,
         chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lineFocusMediumStaticWindow,
         chrome.readingMode.lastNonDisabledLineFocus);
   });
 

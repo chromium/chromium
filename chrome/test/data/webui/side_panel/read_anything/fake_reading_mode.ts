@@ -275,8 +275,8 @@ export class FakeReadingMode {
   }
 
   // Called when the line focus mode is changed via the webui toolbar.
-  onLineFocusChanged(value: number) {
-    this.lastNonDisabledLineFocus = value;
+  onLineFocusChanged(_value: number, lastNonDisabledLineFocus: number) {
+    this.lastNonDisabledLineFocus = lastNonDisabledLineFocus;
   }
 
   // Called when a user toggles a switch in the language menu
