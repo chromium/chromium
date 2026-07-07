@@ -1951,6 +1951,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2460150227008936698">{COUNT,plural, =0{Läuft heute ab}=1{Läuft morgen ab}other{Läuft in # Tagen ab}}</translation>
 <translation id="2460482211073772897">In anderen Ordnern</translation>
 <translation id="2460826998961521840">Um Passkeys aus deinem Google-Konto zu nutzen</translation>
+<translation id="2461457574123041923">Wenn du diese Website verlässt, wird deine Aufgabe beendet. Öffne einen neuen Tab, damit die Aufgabe nicht beendet wird, während du andere Websites besuchst.</translation>
 <translation id="2461550163693930491">Websites dürfen auf geteilten Tabs nicht scrollen und zoomen</translation>
 <translation id="2461593638794842577">Du kannst diese Einstellung deaktivieren, um deine Passwörter nur auf diesem Gerät zu speichern</translation>
 <translation id="2462550463312552298">Fasse dieses Dokument zusammen</translation>
@@ -2525,6 +2526,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2865057607286263192">Drücke und halte die Tasten gedrückt, um Akzentzeichen und Sonderzeichen zu sehen. Dadurch wird die Wiederholung des Tastendrucks für Buchstabentasten deaktiviert. Nur für Englisch (USA) verfügbar.</translation>
 <translation id="2865919525181940183">Screenshot der Programme, die sich momentan auf dem Bildschirm befinden</translation>
 <translation id="286643536820867504">Untertitel für unterstützte Sprachen werden automatisch erstellt. Das Audio verbleibt dabei auf deinem Gerät.</translation>
+<translation id="2866504884233915828">Du kannst maximal <ph name="COUNT" /> Dateien hinzufügen.</translation>
 <translation id="286674810810214575">Stromquellen werden überprüft…</translation>
 <translation id="2867768963760577682">In angepinntem Tab öffnen</translation>
 <translation id="2868746137289129307">Diese Erweiterung ist veraltet und wurde aufgrund der Unternehmensrichtlinie deaktiviert. Die Erweiterung kann automatisch aktiviert werden, wenn eine neuere Version verfügbar ist.</translation>
@@ -2696,6 +2698,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2990500505358145117">Tastenkombination für erweitertes automatisches Ausfüllen bearbeiten</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
+<translation id="2992754757708650257">Website verlassen und Aufgabe beenden?</translation>
 <translation id="2992931425024192067">Gesamten Benachrichtigungsinhalt anzeigen</translation>
 <translation id="2993517869960930405">App-Info</translation>
 <translation id="2994804273850542871">Stufe 4: ULTRA</translation>

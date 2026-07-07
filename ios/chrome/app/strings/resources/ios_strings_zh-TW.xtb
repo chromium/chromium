@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4883766694719903356">無痕分頁方格</translation>
 <translation id="4884937942297374058">強化防護功能已關閉</translation>
+<translation id="4887391901725877182">隱藏式輔助字幕</translation>
 <translation id="488785315393301722">顯示詳情</translation>
 <translation id="4889521386764567563">目前的設定檔</translation>
 <translation id="4893713555726946316">隱藏「在網頁中尋找」</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="5791632441210678828">用於排序已追蹤動態消息的按鈕。</translation>
 <translation id="5799263916847593256">開啟即可查看價格記錄</translation>
+<translation id="5801568494490449797">偏好設定</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="58081802114142635">活動記錄有助於提升 Google AI 服務品質</translation>
@@ -1571,6 +1573,7 @@
 <translation id="628251768213143684">你隨時可以管理儲存在 Google 帳戶中的內容</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
+<translation id="6295140892595702619">使用麥克風與 Gemini 對話。對話過程中，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)。你的資料不會用於改良生成式 AI 模型</translation>
 <translation id="6295751040240588413">卡片暱稱無效</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
@@ -2105,6 +2108,7 @@
 <translation id="8023878949384262191">展開這個專區。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
 <translation id="8029092694585014252">設定提醒</translation>
+<translation id="8029349782735515147">使用 Gemini Live 時顯示隱藏式輔助字幕</translation>
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035133914807600019">新資料夾…</translation>
 <translation id="8035412398498507358">相簿</translation>

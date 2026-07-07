@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4883766694719903356">Incognito-välilehden ruudukko</translation>
 <translation id="4884937942297374058">Parannettu suojaus on pois päältä</translation>
+<translation id="4887391901725877182">Tekstitys</translation>
 <translation id="488785315393301722">Näytä tiedot</translation>
 <translation id="4889521386764567563">Nykyinen profiili</translation>
 <translation id="4893713555726946316">Piilota "Haku sivulta"</translation>
@@ -1421,6 +1422,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5779117921996157216">{count,plural, =1{Sinulla on {count} vaarantunut salasana, joka voi vaarantaa turvallisuutesi. Korjaa se nyt, jotta pysyt turvassa.}other{Sinulla on {count} vaarantunutta salasanaa, jotka voivat vaarantaa turvallisuutesi. Korjaa ne nyt, jotta pysyt turvassa.}}</translation>
 <translation id="5791632441210678828">Lajittelupainike Seurataan-fiidille</translation>
 <translation id="5799263916847593256">Avaa nähdäksesi hintahistorian</translation>
+<translation id="5801568494490449797">Asetukset</translation>
 <translation id="5803566855766646066">Haluatko varmasti hylätä tämän uuden kortin?</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="58081802114142635">Toimintasi kehittää Googlen tekoälyä</translation>
@@ -1571,6 +1573,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="628251768213143684">Voit milloin tahansa valita, mitä Google-tilillesi tallennetaan</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
+<translation id="6295140892595702619">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, ääni tallennetaan Gemini-sovellustoimintaan (jos se on päällä). Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="6295751040240588413">Virheellinen kortin lyhytnimi</translation>
 <translation id="629730747756840877">Tili</translation>
 <translation id="6301104306974789820">Tilaa hintaseurantailmoitukset</translation>
@@ -2105,6 +2108,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8023878949384262191">Laajentaa osion.</translation>
 <translation id="8027581147000338959">Avaa uudessa ikkunassa</translation>
 <translation id="8029092694585014252">Aseta muistutus</translation>
+<translation id="8029349782735515147">Näytä tekstitykset, kun käytät Gemini Liveä</translation>
 <translation id="8032569120109842252">Seurataan</translation>
 <translation id="8035133914807600019">Uusi kansio…</translation>
 <translation id="8035412398498507358">Kuvat</translation>

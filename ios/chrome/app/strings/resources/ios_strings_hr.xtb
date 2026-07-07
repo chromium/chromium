@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4883766694719903356">Rešetka anonimne kartice</translation>
 <translation id="4884937942297374058">Isključena je poboljšana zaštita</translation>
+<translation id="4887391901725877182">Pomoćni titlovi</translation>
 <translation id="488785315393301722">Pokaži pojedinosti</translation>
 <translation id="4889521386764567563">Trenutačni profil</translation>
 <translation id="4893713555726946316">Sakrij stavku Traži na stranici</translation>
@@ -1421,6 +1422,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}one{Imate {count} ugroženu zaporku koja bi mogla ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}few{Imate {count} ugrožene zaporke koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}other{Imate {count} ugroženih zaporki koje bi mogle ugroziti vašu sigurnost. Riješite problem odmah da biste se zaštitili.}}</translation>
 <translation id="5791632441210678828">Gumb za razvrstavanje za feed Praćeno</translation>
 <translation id="5799263916847593256">Otvorite da biste vidjeli povijest cijena</translation>
+<translation id="5801568494490449797">Postavke</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti ovu novu karticu?</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="58081802114142635">Vaša aktivnost poboljšava Googleov AI</translation>
@@ -1571,6 +1573,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="628251768213143684">Uvijek možete upravljati time koji će se podaci spremati na vaš Google račun</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
+<translation id="6295140892595702619">Upotrijebite mikrofon da biste razgovarali s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u aktivnost u Gemini aplikacijama (ako je uključena). Vaši se podaci ne upotrebljavaju za poboljšanje generativnih AI modela</translation>
 <translation id="6295751040240588413">Nadimak kartice nije važeći</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
@@ -2105,6 +2108,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8023878949384262191">Proširuje odjeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
 <translation id="8029092694585014252">Postavi podsjetnik</translation>
+<translation id="8029349782735515147">Prikaži pomoćne titlove pri upotrebi Geminija Live</translation>
 <translation id="8032569120109842252">Praćeno</translation>
 <translation id="8035133914807600019">Nova mapa…</translation>
 <translation id="8035412398498507358">Fotografije</translation>

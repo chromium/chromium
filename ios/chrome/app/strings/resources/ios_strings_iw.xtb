@@ -484,6 +484,7 @@
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
 <translation id="2580306219079937316">פתיחה של הגדרות התרגום</translation>
 <translation id="2583688836549072561">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות, פעילות חדשה.</translation>
+<translation id="2584994295315085351">‏פתיחת כרטיסייה חדשה ב-Chrome עם חזרת הפעילות שלי אחרי 4 שעות</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
 <translation id="2602372807870028932">הפעולה הזו תמחק את המידע הנבחר ששמור במכשיר הזה</translation>
@@ -1145,6 +1146,7 @@
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4883766694719903356">תצוגה של כרטיסיות פרטיות</translation>
 <translation id="4884937942297374058">ההגנה המשופרת מושבתת</translation>
+<translation id="4887391901725877182">כתוביות</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="4889521386764567563">הפרופיל הנוכחי</translation>
 <translation id="4893713555726946316">הסתרה של 'חיפוש בדף'</translation>
@@ -1420,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ועלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
 <translation id="5799263916847593256">כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
+<translation id="5801568494490449797">העדפות</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="58081802114142635">‏הדברים שעושים עם Gemini עוזרים ל-Google לשפר את ה-AI</translation>
@@ -1570,6 +1573,7 @@
 <translation id="628251768213143684">‏תמיד אפשר לנהל את הפריטים ששמורים בחשבון Google</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> וללחוץ על 'גלישה בטוחה'.</translation>
+<translation id="6295140892595702619">‏אפשר לדבר עם Gemini באמצעות המיקרופון. כשמדברים אל Gemini, האודיו נשמר בפעילות בממשקי Gemini (אם האפשרות מופעלת). הנתונים שלך לא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="6295751040240588413">כינוי הכרטיס לא תקין</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
@@ -2104,6 +2108,7 @@
 <translation id="8023878949384262191">מרחיב את הקטע.</translation>
 <translation id="8027581147000338959">פתיחה בחלון חדש</translation>
 <translation id="8029092694585014252">הגדרת תזכורת</translation>
+<translation id="8029349782735515147">‏הצגת כתוביות כשמשתמשים ב-Gemini Live</translation>
 <translation id="8032569120109842252">במעקב</translation>
 <translation id="8035133914807600019">תיקייה חדשה…</translation>
 <translation id="8035412398498507358">תמונות</translation>

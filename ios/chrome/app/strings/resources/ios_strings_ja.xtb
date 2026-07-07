@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">開く</translation>
 <translation id="4883766694719903356">シークレット タブのグリッド</translation>
 <translation id="4884937942297374058">保護強化機能がオフになっています</translation>
+<translation id="4887391901725877182">字幕</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="4889521386764567563">現在のプロフィール</translation>
 <translation id="4893713555726946316">[ページ内を検索] を非表示</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{不正使用されたパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}other{不正使用されたパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}}</translation>
 <translation id="5791632441210678828">フォロー中のフィードの並べ替えボタン</translation>
 <translation id="5799263916847593256">開くと価格の推移を確認できます。</translation>
+<translation id="5801568494490449797">設定</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="58081802114142635">Google AI を改善するため、ユーザーのアクティビティが使用されます</translation>
@@ -1571,6 +1573,7 @@
 <translation id="628251768213143684">Google アカウントに保存する情報はいつでも管理できます</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
+<translation id="6295140892595702619">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="6295751040240588413">無効なカード ニックネーム</translation>
 <translation id="629730747756840877">アカウント</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
@@ -2105,6 +2108,7 @@
 <translation id="8023878949384262191">セクションを展開します。</translation>
 <translation id="8027581147000338959">新しいウインドウで開く</translation>
 <translation id="8029092694585014252">リマインダーを設定</translation>
+<translation id="8029349782735515147">Gemini Live の使用時に字幕を表示します</translation>
 <translation id="8032569120109842252">フォロー中</translation>
 <translation id="8035133914807600019">新しいフォルダ...</translation>
 <translation id="8035412398498507358">フォト</translation>

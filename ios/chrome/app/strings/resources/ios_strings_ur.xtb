@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4883766694719903356">پوشیدگی ٹیب کا گرڈ</translation>
 <translation id="4884937942297374058">بہتر کردہ حفاظت آف ہے</translation>
+<translation id="4887391901725877182">سب ٹائٹلنگ</translation>
 <translation id="488785315393301722">تفصیلات دکھائیں</translation>
 <translation id="4889521386764567563">موجودہ پروفائل</translation>
 <translation id="4893713555726946316">'صفحہ میں تلاش کریں' کو چھپائیں</translation>
@@ -1421,6 +1422,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5779117921996157216">{count,plural, =1{آپ کے پاس {count} متاثرہ پاس ورڈ ہے جس سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔}other{آپ کے پاس {count} متاثرہ پاس ورڈز ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے انہیں ابھی صحیح کریں۔}}</translation>
 <translation id="5791632441210678828">مندرجہ ذیل فیڈ کے لیے ترتیب دینے کا بٹن۔</translation>
 <translation id="5799263916847593256">قیمت کی سرگزشت دیکھنے کے لیے کھولیں</translation>
+<translation id="5801568494490449797">ترجیحات</translation>
 <translation id="5803566855766646066">کیا آپ واقعی اس نئے کارڈ کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="58081802114142635">‏آپ کی سرگرمی Google AI کو بہتر بناتی ہے</translation>
@@ -1571,6 +1573,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="628251768213143684">‏آپ ہمیشہ اپنے Google اکاؤنٹ میں محفوظ کردہ چیزوں کا نظم کر سکتے ہیں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
+<translation id="6295140892595702619">‏‫Gemini کی مدد سے چیٹ کرنے کیلئے اپنا مائیکروفون استعمال کریں۔ جب آپ Gemini سے بات کرتے ہیں تو آڈیو Gemini ایپس کی سرگرمی (اس کے آن ہونے پر) میں اسٹور کیا جاتا ہے۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے</translation>
 <translation id="6295751040240588413">کارڈ کا غلط عرفی نام</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
@@ -2105,6 +2108,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8023878949384262191">سیکشن کو پھیلاتا ہے۔</translation>
 <translation id="8027581147000338959">نئی ونڈو میں کھولیں</translation>
 <translation id="8029092694585014252">یاد دہانی سیٹ کریں</translation>
+<translation id="8029349782735515147">‏‫Gemini Live استعمال کرتے وقت سب ٹائٹلز دکھائیں</translation>
 <translation id="8032569120109842252">پیروی ہو رہی ہے</translation>
 <translation id="8035133914807600019">نیا فولڈر…</translation>
 <translation id="8035412398498507358">تصاویر</translation>

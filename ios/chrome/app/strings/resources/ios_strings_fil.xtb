@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4883766694719903356">Grid ng Tab na Incognito</translation>
 <translation id="4884937942297374058">Naka-off ang pinaigting na proteksyon</translation>
+<translation id="4887391901725877182">Closed Captioning</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
 <translation id="4889521386764567563">Kasalukuyang profile</translation>
 <translation id="4893713555726946316">I-hide ang Hanapin sa Page</translation>
@@ -1421,6 +1422,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5779117921996157216">{count,plural, =1{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>
 <translation id="5791632441210678828">Button na Pagbukud-bukurin para sa feed na Sinusubaybayan.</translation>
 <translation id="5799263916847593256">Buksan para makita ang history ng presyo</translation>
+<translation id="5801568494490449797">Mga Kagustuhan</translation>
 <translation id="5803566855766646066">Sigurado ka bang gusto mong i-discard ang bagong card na ito?</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="58081802114142635">Pinapahusay ng iyong aktibidad ang Google AI</translation>
@@ -1571,6 +1573,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="628251768213143684">Puwede mong pamahalaan kung ano ang naka-save sa iyong Google Account anumang oras</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para i-on ang Ligtas na Pag-browse, buksan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" /> at i-tap ang Ligtas na Pag-browse.</translation>
+<translation id="6295140892595702619">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito). Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model</translation>
 <translation id="6295751040240588413">Invalid ang nickname ng card</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
@@ -2105,6 +2108,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8023878949384262191">Pinapalawak ang seksyon.</translation>
 <translation id="8027581147000338959">Buksan sa Bagong Window</translation>
 <translation id="8029092694585014252">Itakda ang paalala</translation>
+<translation id="8029349782735515147">Ipakita ang mga closed caption kapag ginagamit ang Gemini Live</translation>
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8035133914807600019">Bagong folder…</translation>
 <translation id="8035412398498507358">Mga Larawan</translation>

@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4883766694719903356">Ezkutuko moduko fitxen sareta</translation>
 <translation id="4884937942297374058">Babes hobetua desaktibatuta dago</translation>
+<translation id="4887391901725877182">Aukerako azpitituluak</translation>
 <translation id="488785315393301722">Erakutsi xehetasunak</translation>
 <translation id="4889521386764567563">Profil hau</translation>
 <translation id="4893713555726946316">Ezkutatu "Bilatu orrian"</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{Arriskuan dagoen {count} pasahitz daukazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda ezazu.}other{Arriskuan dauden {count} pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda itzazu.}}</translation>
 <translation id="5791632441210678828">Jarraitzen jarioko Ordenatu botoia.</translation>
 <translation id="5799263916847593256">Prezioen historia ikusteko, ireki hau</translation>
+<translation id="5801568494490449797">Hobespenak</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
 <translation id="58081802114142635">Zure jarduerek Google-ren AA hobetzen dute</translation>
@@ -1571,6 +1573,7 @@
 <translation id="628251768213143684">Beti kudea dezakezu Google-ko kontuan gordeta daukazun guztia</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
+<translation id="6295140892595702619">Erabili mikrofonoa Gemini-rekin txateatzeko. Gemini-rekin hitz egiten duzunean, audioa "Gemini-ren aplikazioetako jarduerak" erregistroan gordetzen da (aktibatuta badago). Zure datuak ez dira erabiltzen AA generatiboko ereduak hobetzeko.</translation>
 <translation id="6295751040240588413">Txartelaren goitizenak ez du balio</translation>
 <translation id="629730747756840877">Kontua</translation>
 <translation id="6301104306974789820">Jaso prezio-jaitsieren jakinarazpenak</translation>
@@ -2105,6 +2108,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8023878949384262191">Hautapena zabaltzen du.</translation>
 <translation id="8027581147000338959">Ireki beste leiho batean</translation>
 <translation id="8029092694585014252">Ezarri gogorarazpena</translation>
+<translation id="8029349782735515147">Erakutsi azpitituluak Gemini Live erabiltzean</translation>
 <translation id="8032569120109842252">Jarraitzen</translation>
 <translation id="8035133914807600019">Karpeta berria…</translation>
 <translation id="8035412398498507358">Argazkiak</translation>

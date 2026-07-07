@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4883766694719903356">ตารางกริดของแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="4884937942297374058">การปกป้องที่ดียิ่งขึ้นปิดอยู่</translation>
+<translation id="4887391901725877182">คำบรรยายแทนเสียง</translation>
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
 <translation id="4889521386764567563">โปรไฟล์ปัจจุบัน</translation>
 <translation id="4893713555726946316">ซ่อน "ค้นหาในหน้าเว็บ"</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{คุณมี {count} รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}other{คุณมี {count} รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}}</translation>
 <translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5799263916847593256">เปิดเพื่อดูประวัติราคา</translation>
+<translation id="5801568494490449797">ค่ากำหนด</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="58081802114142635">กิจกรรมของคุณจะปรับปรุง Google AI</translation>
@@ -1571,6 +1573,7 @@
 <translation id="628251768213143684">คุณจัดการข้อมูลที่บันทึกไว้ในบัญชี Google ได้ทุกเมื่อ</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
+<translation id="6295140892595702619">ใช้ไมโครโฟนเพื่อแชทกับ Gemini เมื่อคุณพูดกับ Gemini ระบบจะจัดเก็บเสียงไว้ในกิจกรรมบนแอป Gemini (หากเปิดอยู่) ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="6295751040240588413">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="629730747756840877">บัญชี</translation>
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
@@ -2105,6 +2108,7 @@
 <translation id="8023878949384262191">ขยายส่วนนี้</translation>
 <translation id="8027581147000338959">เปิดในหน้าต่างใหม่</translation>
 <translation id="8029092694585014252">ตั้งการช่วยเตือน</translation>
+<translation id="8029349782735515147">แสดงคำบรรยายแทนเสียงเมื่อใช้ Gemini Live</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
 <translation id="8035133914807600019">โฟลเดอร์ใหม่…</translation>
 <translation id="8035412398498507358">รูปภาพ</translation>

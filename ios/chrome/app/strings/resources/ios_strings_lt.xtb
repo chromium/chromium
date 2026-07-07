@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="4883766694719903356">Inkognito skirtukų tinklelis</translation>
 <translation id="4884937942297374058">Sustiprinta apsauga išjungta</translation>
+<translation id="4887391901725877182">Uždarų antraščių pateikimas</translation>
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="4889521386764567563">Dabartinis profilis</translation>
 <translation id="4893713555726946316">Slėpti paiešką puslapyje</translation>
@@ -1421,6 +1422,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5779117921996157216">{count,plural, =1{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}one{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}few{Turite {count} pažeistus slaptažodžius, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}many{Turite {count} pažeisto slaptažodžio, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}other{Turite {count} pažeistų slaptažodžių, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}}</translation>
 <translation id="5791632441210678828">Sklaidos kanalo „Stebima“ rūšiavimo mygtukas.</translation>
 <translation id="5799263916847593256">Atidarykite, kad peržiūrėtumėte kainų istoriją</translation>
+<translation id="5801568494490449797">Nuostatos</translation>
 <translation id="5803566855766646066">Ar tikrai norite atmesti šią naują kortelę?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="58081802114142635">„Google“ DI tobulinamas pagal jūsų veiklą</translation>
@@ -1571,6 +1573,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="628251768213143684">Visada galite valdyti, kas išsaugoma jūsų „Google“ paskyroje</translation>
 <translation id="6284652193729350524">Siūlyti versti <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Jei norite įjungti saugų naršymą, atidarykite skiltį <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" /> ir palieskite „Saugus naršymas“.</translation>
+<translation id="6295140892595702619">Naudokite mikrofoną, kad galėtumėte kalbėtis su „Gemini“. Kai kalbate su „Gemini“, garso įrašas saugomas „Gemini Apps“ veikloje (jei ji įjungta). Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti</translation>
 <translation id="6295751040240588413">Netinkamas kortelės slapyvardis</translation>
 <translation id="629730747756840877">Paskyra</translation>
 <translation id="6301104306974789820">Gaukite kainų stebėjimo pranešimus</translation>
@@ -2105,6 +2108,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="8023878949384262191">Išplečia skiltį.</translation>
 <translation id="8027581147000338959">Atidaryti naujame lange</translation>
 <translation id="8029092694585014252">Nustatyti priminimą</translation>
+<translation id="8029349782735515147">Rodyti subtitrus naudojant „Gemini Live“</translation>
 <translation id="8032569120109842252">Stebima</translation>
 <translation id="8035133914807600019">Naujas aplankas…</translation>
 <translation id="8035412398498507358">Nuotraukos</translation>

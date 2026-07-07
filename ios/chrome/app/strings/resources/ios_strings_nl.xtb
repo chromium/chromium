@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4883766694719903356">Raster voor incognitotabbladen</translation>
 <translation id="4884937942297374058">Geoptimaliseerde beveiliging staat uit</translation>
+<translation id="4887391901725877182">Ondertiteling</translation>
 <translation id="488785315393301722">Details bekijken</translation>
 <translation id="4889521386764567563">Huidig profiel</translation>
 <translation id="4893713555726946316">Zoeken op pagina verbergen</translation>
@@ -1421,6 +1422,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5779117921996157216">{count,plural, =1{Je hebt {count} gehackt wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} gehackte wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
 <translation id="5791632441210678828">Knop Sorteren voor de feed Je volgt.</translation>
 <translation id="5799263916847593256">Openen om de prijsgeschiedenis te bekijken</translation>
+<translation id="5801568494490449797">Voorkeuren</translation>
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="58081802114142635">Je activiteit verbetert AI van Google</translation>
@@ -1571,6 +1573,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="628251768213143684">Je kunt altijd bepalen wat wordt opgeslagen in je Google-account</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
+<translation id="6295140892595702619">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat). Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="6295751040240588413">Ongeldige bijnaam kaart</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
@@ -2105,6 +2108,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8023878949384262191">Hiermee wordt het gedeelte uitgevouwen.</translation>
 <translation id="8027581147000338959">Openen in nieuw venster</translation>
 <translation id="8029092694585014252">Herinnering instellen</translation>
+<translation id="8029349782735515147">Toon ondertiteling bij gebruik van Gemini Live</translation>
 <translation id="8032569120109842252">Je volgt</translation>
 <translation id="8035133914807600019">Nieuwe map…</translation>
 <translation id="8035412398498507358">Foto's</translation>

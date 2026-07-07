@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4883766694719903356">Rutnät med inkognitoflikar</translation>
 <translation id="4884937942297374058">Utökat skydd är inaktiverat</translation>
+<translation id="4887391901725877182">Textning</translation>
 <translation id="488785315393301722">Visa information</translation>
 <translation id="4889521386764567563">Aktuell profil</translation>
 <translation id="4893713555726946316">Dölj Sök på sidan</translation>
@@ -1421,6 +1422,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} utsatt lösenord som kan innebära en säkerhetsrisk. Åtgärda det nu för att hålla dig säker.}other{Du har {count} utsatta lösenord som kan innebära en säkerhetsrisk. Åtgärda dem nu för att hålla dig säker.}}</translation>
 <translation id="5791632441210678828">Knappen Sortera för flödet Följer.</translation>
 <translation id="5799263916847593256">Öppna för att se prishistorik</translation>
+<translation id="5801568494490449797">Inställningar</translation>
 <translation id="5803566855766646066">Vill du slänga det här nya kortet?</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="58081802114142635">Din aktivitet förbättrar Google AI</translation>
@@ -1571,6 +1573,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="628251768213143684">Du kan när som helst hantera vad som sparas i Google-kontot</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
+<translation id="6295140892595702619">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="6295751040240588413">Ogiltigt kortnamn</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
@@ -2105,6 +2108,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8023878949384262191">Expanderar avsnittet.</translation>
 <translation id="8027581147000338959">Öppna i nytt fönster</translation>
 <translation id="8029092694585014252">Ange påminnelse</translation>
+<translation id="8029349782735515147">Visa textning när du använder Gemini Live</translation>
 <translation id="8032569120109842252">Följer</translation>
 <translation id="8035133914807600019">Ny mapp …</translation>
 <translation id="8035412398498507358">Foton</translation>

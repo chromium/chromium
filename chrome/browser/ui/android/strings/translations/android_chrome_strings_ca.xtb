@@ -184,6 +184,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1792959175193046959">Canvia la ubicació predeterminada de baixada en qualsevol moment</translation>
 <translation id="1796666869097395659">Minimitza la pestanya per tornar-hi més endavant</translation>
 <translation id="1799920918471566157">Consells per a Chrome</translation>
+<translation id="1803799720926799756">Mida del fitxer</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1807709131360304325">Obre una finestra nova</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no pot continuar utilitzant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -329,6 +330,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, pestanya audible seleccionada</translation>
 <translation id="2413014528833954543">No es poden comprovar les contrasenyes en aquest dispositiu</translation>
 <translation id="2414886740292270097">Fosc</translation>
+<translation id="2415037988255164008">Vols restaurar les finestres?</translation>
 <translation id="2421705177906985956">No hi ha cap lloc web per mostrar en aquest moment</translation>
 <translation id="2426805022920575512">Tria un altre compte</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeos, 1 vídeo a la llista}other{Vídeos, # vídeos a la llista}}</translation>
@@ -1341,6 +1343,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Cerca amb Sogou</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
+<translation id="6565781844089373403">Restaura les finestres</translation>
 <translation id="6565959834589222080">S'utilitza la Wi‑Fi quan està disponible</translation>
 <translation id="657177046675873214">Per accedir a les teves adreces d'interès des de tots els dispositius, activa Adreces d'interès a la configuració</translation>
 <translation id="6573096386450695060">Permet sempre</translation>

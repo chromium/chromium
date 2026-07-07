@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4883766694719903356">Rrjeta e skedave "të fshehta"</translation>
 <translation id="4884937942297374058">"Mbrojtja e përmirësuar" është joaktive</translation>
+<translation id="4887391901725877182">Titrat</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
 <translation id="4889521386764567563">Profili aktual</translation>
 <translation id="4893713555726946316">Fshih "Gjej në faqe"</translation>
@@ -1421,6 +1422,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5779117921996157216">{count,plural, =1{Ke {count} fjalëkalim të komprometuar që mund ta rrezikojë sigurinë tënde. Rregulloje tani për të qëndruar i sigurt.}other{Ke {count} fjalëkalime të komprometuara që mund ta rrezikojnë sigurinë tënde. Rregulloji tani për të qëndruar i sigurt.}}</translation>
 <translation id="5791632441210678828">Butoni i renditjes për furnizimin "Ndjekje".</translation>
 <translation id="5799263916847593256">Hape për të parë historikun e çmimeve</translation>
+<translation id="5801568494490449797">Preferencat</translation>
 <translation id="5803566855766646066">Je i sigurt që dëshiron ta heqësh këtë kartë të re?</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="58081802114142635">Aktiviteti yt përmirëson IA-në e Google</translation>
@@ -1571,6 +1573,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="628251768213143684">Mund të menaxhosh gjithmonë se çfarë ruhet në "Llogarinë tënde të Google"</translation>
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
+<translation id="6295140892595702619">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është aktivizuar). Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese</translation>
 <translation id="6295751040240588413">Pseudonim i pavlefshëm karte</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
@@ -2105,6 +2108,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8023878949384262191">Zgjeron seksionin.</translation>
 <translation id="8027581147000338959">Hape në dritare të re</translation>
 <translation id="8029092694585014252">Cakto rikujtesën</translation>
+<translation id="8029349782735515147">Shfaq titra kur përdor Gemini Live</translation>
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="8035133914807600019">Dosje e re...</translation>
 <translation id="8035412398498507358">Fotografitë</translation>

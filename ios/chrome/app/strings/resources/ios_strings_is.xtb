@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4883766694719903356">Töfluyfirlit yfir huliðsflipa</translation>
 <translation id="4884937942297374058">Slökkt er á aukinni vörn</translation>
+<translation id="4887391901725877182">Skjátextun</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
 <translation id="4889521386764567563">Núverandi prófíll</translation>
 <translation id="4893713555726946316">Fela „Finna á síðu“</translation>
@@ -1421,6 +1422,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5779117921996157216">{count,plural, =1{Þú ert með {count} aðgangsorð í hættu sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} aðgangsorð í hættu sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} aðgangsorð í hættu sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>
 <translation id="5791632441210678828">Flokkunarhnappur fyrir strauminn „Fylgir“.</translation>
 <translation id="5799263916847593256">Opnaðu til að sjá verðferil</translation>
+<translation id="5801568494490449797">Kjörstillingar</translation>
 <translation id="5803566855766646066">Ertu viss um að þú viljir fleygja þessu nýja korti?</translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="58081802114142635">Virknin þín bætir gervigreind Google</translation>
@@ -1571,6 +1573,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="628251768213143684">Þú getur alltaf stjórnað því sem er vistað á Google-reikningnum þínum</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
+<translation id="6295140892595702619">Notaðu hljóðnemann til að spjalla við Gemini. Þegar þú spjallar við Gemini er hljóðupptakan vistuð í Gemini-forritavirkni (ef kveikt er á henni). Gögnin þín eru ekki notuð til að bæta skapandi gervigreindarlíkön</translation>
 <translation id="6295751040240588413">Ógilt gælunafn korts</translation>
 <translation id="629730747756840877">Reikningur</translation>
 <translation id="6301104306974789820">Fá tilkynningar fyrir verðvöktun</translation>
@@ -2105,6 +2108,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8023878949384262191">Stækkar hlutann.</translation>
 <translation id="8027581147000338959">Opna í nýjum glugga</translation>
 <translation id="8029092694585014252">Stilla áminningu</translation>
+<translation id="8029349782735515147">Sýna skjátexta þegar raunspjall við Gemini er notað</translation>
 <translation id="8032569120109842252">Fylgist með</translation>
 <translation id="8035133914807600019">Ný mappa…</translation>
 <translation id="8035412398498507358">Myndir</translation>

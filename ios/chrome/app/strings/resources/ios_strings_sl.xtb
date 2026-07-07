@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4883766694719903356">Mreža anonimnih zavihkov</translation>
 <translation id="4884937942297374058">Izboljšana zaščita je izklopljena</translation>
+<translation id="4887391901725877182">Podnapisi</translation>
 <translation id="488785315393301722">Pokaži podrobnosti</translation>
 <translation id="4889521386764567563">Trenutni profil</translation>
 <translation id="4893713555726946316">Skrij Iskanje na strani</translation>
@@ -1421,6 +1422,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ogroženo geslo, ki lahko ogrozi vašo varnost. Popravite ga, če se želite zavarovati.}one{Imate {count} ogroženo geslo; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}two{Imate {count} ogroženi gesli; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}few{Imate {count} ogrožena gesla, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}other{Imate {count} ogroženih gesel, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}}</translation>
 <translation id="5791632441210678828">Gumb za razvrščanje za vir Spremljanje.</translation>
 <translation id="5799263916847593256">Odpiranje za ogleda zgodovine cen</translation>
+<translation id="5801568494490449797">Nastavitve</translation>
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="58081802114142635">Vaša dejavnost izboljšuje Googlovo umetno inteligenco</translation>
@@ -1571,6 +1573,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="628251768213143684">Kadar koli lahko upravljate, kaj se shranjuje v računu Google</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>
+<translation id="6295140892595702619">Uporabite mikrofon za klepet z Geminijem. Ko govorite z Geminijem, se zvok shrani v dejavnost v aplikacijah Gemini (če je vklopljena). Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence</translation>
 <translation id="6295751040240588413">Neveljaven vzdevek za kartico</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Prejemanje obvestil o spremljanju cen</translation>
@@ -2105,6 +2108,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8023878949384262191">Razširi razdelek.</translation>
 <translation id="8027581147000338959">Odpri v novem oknu</translation>
 <translation id="8029092694585014252">Nastavi opomnik</translation>
+<translation id="8029349782735515147">Prikaz podnapisov pri uporabi Geminija Live</translation>
 <translation id="8032569120109842252">Spremljate</translation>
 <translation id="8035133914807600019">Nova mapa …</translation>
 <translation id="8035412398498507358">Foto</translation>

@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4883766694719903356">गुप्त टॅब ग्रिड</translation>
 <translation id="4884937942297374058">वर्धित संरक्षण बंद आहे</translation>
+<translation id="4887391901725877182">क्लोझ्ड कॅप्शन</translation>
 <translation id="488785315393301722">तपशील दर्शवा</translation>
 <translation id="4889521386764567563">सध्याची प्रोफाइल</translation>
 <translation id="4893713555726946316">पेजमध्ये शोधा हे लपवा</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{तुमच्याकडे ज्यामुळे तुमची सुरक्षा धोक्यात येऊ शकते असा {count} धोक्यात असलेला पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.}other{तुमच्याकडे ज्यांमुळे तुमची सुरक्षा धोक्यात येऊ शकते असे {count} धोक्यात असलेले पासवर्ड आहेत. सुरक्षित राहण्यासाठी त्यांचे आता निराकरण करा.}}</translation>
 <translation id="5791632441210678828">फॉलो करत आहे या फीडसाठी क्रमाने लावा बटण.</translation>
 <translation id="5799263916847593256">किमतीचा इतिहास पाहण्यासाठी उघडा</translation>
+<translation id="5801568494490449797">प्राधान्ये</translation>
 <translation id="5803566855766646066">तुम्हाला हे नवीन कार्ड नक्की काढून टाकायचे आहे का?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="58081802114142635">तुमच्या ॲक्टिव्हिटीमुळे Google AI मध्ये सुधारणा होते</translation>
@@ -1572,6 +1574,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप
 करा.</translation>
+<translation id="6295140892595702619">Gemini सोबत चॅट करण्यासाठी तुमचा मायक्रोफोन वापरा. तुम्ही Gemini सोबत बोलता, तेव्हा त्याचा ऑडिओ Gemini अ‍ॅप्स अ‍ॅक्टिव्हिटी (सुरू केलेली असल्यास) यामध्ये स्टोअर केला जातो. जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तुमचा डेटा वापरला जात नाही</translation>
 <translation id="6295751040240588413">कार्डचे टोपणनाव चुकीचे आहे</translation>
 <translation id="629730747756840877">खाते</translation>
 <translation id="6301104306974789820">किमतीचा माग ठेवणाऱ्या सूचना मिळवा</translation>
@@ -2106,6 +2109,7 @@
 <translation id="8023878949384262191">विभाग विस्तृत करते.</translation>
 <translation id="8027581147000338959">नवीन विंडोमध्ये उघडा</translation>
 <translation id="8029092694585014252">रिमाइंडर सेट करा</translation>
+<translation id="8029349782735515147">Gemini Live वापरताना क्लोझ्ड कॅप्शन दाखवा</translation>
 <translation id="8032569120109842252">फॉलो करत आहे</translation>
 <translation id="8035133914807600019">नवीन फोल्डर…</translation>
 <translation id="8035412398498507358">Photos</translation>

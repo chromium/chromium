@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4883766694719903356">Инкогнито қойындысының торы</translation>
 <translation id="4884937942297374058">Күшейтілген қорғаныс өшірілді.</translation>
+<translation id="4887391901725877182">Субтитр</translation>
 <translation id="488785315393301722">Мәліметтерді көрсету</translation>
 <translation id="4889521386764567563">Қазіргі профиль</translation>
 <translation id="4893713555726946316">"Беттен табу" опциясын жасыру</translation>
@@ -1421,6 +1422,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="5779117921996157216">{count,plural, =1{{count} құпия сөзіңіз ұрланған болуы ықтимал. Бұл жағдай қауіп төндіруі мүмкін. Қауіпсіздікті сақтау үшін мұны қазір түзетіңіз.}other{{count} құпия сөзіңіз ұрланған болуы ықтимал. Бұл жағдай қауіп төндіруі мүмкін. Қауіпсіздікті сақтау үшін мұны қазір түзетіңіз.}}</translation>
 <translation id="5791632441210678828">Жазылған фидке арналған сұрыптау түймесі.</translation>
 <translation id="5799263916847593256">Баға тарихын көру үшін ашыңыз</translation>
+<translation id="5801568494490449797">Параметрлер</translation>
 <translation id="5803566855766646066">Осы жаңа картаны шынымен де жабу керек пе?</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="58081802114142635">Әрекеттеріңіз Google AI-ды жақсартады</translation>
@@ -1571,6 +1573,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="628251768213143684">Google аккаунтына не сақталатынын реттеуге болады.</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тілінен аудару ұсынысы</translation>
 <translation id="6293101329759844770">Safe Browsing функциясын қосу үшін <ph name="BEGIN_LINK" />Google қызметтерін<ph name="END_LINK" /> ашып, Safe Browsing түймесін түртіңіз.</translation>
+<translation id="6295140892595702619">Gemini-мен чатта сөйлесу үшін микрофонды пайдаланыңыз. Gemini-мен сөйлескен кезде, аудио Gemini қолданбаларын пайдалану тарихында (қосулы болса) сақталады. Деректеріңіз жасампаз жасанды интеллект моделін жақсарту үшін пайдаланылмайды.</translation>
 <translation id="6295751040240588413">Картаның лақап аты жарамсыз</translation>
 <translation id="629730747756840877">Аккаунт</translation>
 <translation id="6301104306974789820">Бағаны бақылау туралы хабарландырулар алу</translation>
@@ -2105,6 +2108,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8023878949384262191">Бөлімді кеңейтеді.</translation>
 <translation id="8027581147000338959">Жаңа терезеден ашу</translation>
 <translation id="8029092694585014252">Еске салғыш орнату</translation>
+<translation id="8029349782735515147">Gemini Live пайдаланған кезде субтитр көрсету</translation>
 <translation id="8032569120109842252">Жазылғансыз</translation>
 <translation id="8035133914807600019">Жаңа қалта…</translation>
 <translation id="8035412398498507358">Photos</translation>

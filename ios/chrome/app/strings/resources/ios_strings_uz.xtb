@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4883766694719903356">Inkognito varaq katagi</translation>
 <translation id="4884937942297374058">Kuchaytirilgan himoya oʻchiq</translation>
+<translation id="4887391901725877182">Taglavhalar</translation>
 <translation id="488785315393301722">Tafsilotlarini ko‘rsatish</translation>
 <translation id="4889521386764567563">Joriy profil</translation>
 <translation id="4893713555726946316">Sahifa ichidan qidirishni yopish</translation>
@@ -1421,6 +1422,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5779117921996157216">{count,plural, =1{Xavfsizlikka tahdid qilishi mumkin {count} ta oshkor etilgan parol bor. Axborotlarni himoyalash uchun buni tuzating.}other{Xavfsizlikka tahdid qilishi mumkin {count} ta oshkor etilgan parol bor. Axborotlarni himoyalash uchun buni tuzating.}}</translation>
 <translation id="5791632441210678828">Kuzatish tasmasi uchun saralash tugmasi.</translation>
 <translation id="5799263916847593256">Narxlar tarixini koʻrish uchun oching</translation>
+<translation id="5801568494490449797">Sozlamalar</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="58081802114142635">Faollik tarixi Google AI funksiyalarini yaxshilashga yordam beradi</translation>
@@ -1571,6 +1573,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="628251768213143684">Google hisobida nimalar saqlanishini istalgan vaqt boshqarish mumkin</translation>
 <translation id="6284652193729350524">Bu tildagi sahifalar tarjimasi taklif qilinsin: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Saytlarni xavfsiz kezish rejimini yoqish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bandini oching va Saytlarni xavfsiz kezish ustiga bosing.</translation>
+<translation id="6295140892595702619">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa). Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="6295751040240588413">Karta nomi yaroqsiz</translation>
 <translation id="629730747756840877">Hisob</translation>
 <translation id="6301104306974789820">Kuzatiladigan narxlar boʻyicha bildirishnomalar olish</translation>
@@ -2105,6 +2108,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8023878949384262191">Bo‘limni yoyadi.</translation>
 <translation id="8027581147000338959">Yangi oynada ochish</translation>
 <translation id="8029092694585014252">Eslatma kiritish</translation>
+<translation id="8029349782735515147">Gemini Live ishlatilganda tagyozuvlarni chiqarish</translation>
 <translation id="8032569120109842252">Kuzatyapsiz</translation>
 <translation id="8035133914807600019">Yangi jild qo‘shish…</translation>
 <translation id="8035412398498507358">Photos</translation>

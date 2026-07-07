@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="4883766694719903356">છૂપી ટૅબની ગ્રિડ</translation>
 <translation id="4884937942297374058">વધારેલા સંરક્ષણનું સેટિંગ બંધ છે</translation>
+<translation id="4887391901725877182">ઉપશીર્ષક</translation>
 <translation id="488785315393301722">વિગતો બતાવો</translation>
 <translation id="4889521386764567563">વર્તમાન પ્રોફાઇલ</translation>
 <translation id="4893713555726946316">'પેજમાં શોધો' છુપાવો</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5779117921996157216">{count,plural, =1{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}one{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}other{તમારા {count} પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}}</translation>
 <translation id="5791632441210678828">'ફૉલો કરી રહ્યાં છે' ફીડ સૉર્ટ કરવાનું બટન.</translation>
 <translation id="5799263916847593256">કિંમતનો ઇતિહાસ જોવા માટે ખોલો</translation>
+<translation id="5801568494490449797">પસંદગીઓ</translation>
 <translation id="5803566855766646066">શું તમે ખરેખર આ નવું કાર્ડ કાઢી નાખવા માગો છો?</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="58081802114142635">તમારી ઍક્ટિવિટી Google AIને બહેતર બનાવે છે</translation>
@@ -1571,6 +1573,7 @@
 <translation id="628251768213143684">તમારા Google એકાઉન્ટમાં સાચવેલી દરેક બાબતો તમે હંમેશાં મેનેજ કરી જ શકો છો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
 <translation id="6293101329759844770">Safe Browsingની સુવિધા ચાલુ કરવા માટે, <ph name="BEGIN_LINK" />Google સેવાઓ<ph name="END_LINK" /> ખોલો અને Safe Browsing પર ટૅપ કરો.</translation>
+<translation id="6295140892595702619">Gemini સાથે ચૅટ કરવા માટે, તમારા માઇક્રોફોનનો ઉપયોગ કરો. જ્યારે તમે Gemini સાથે વાત કરો છો, ત્યારે ઑડિયો Gemini ઍપ ઍક્ટિવિટીમાં સ્ટોર કરવામાં આવે છે (જો તે ચાલુ હોય તો). જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તમારા ડેટાનો ઉપયોગ કરવામાં આવતો નથી</translation>
 <translation id="6295751040240588413">કાર્ડનું અમાન્ય ઉપનામ</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6301104306974789820">કિંમત ટ્રૅક કરવા વિશે નોટિફિકેશન મેળવો</translation>
@@ -2105,6 +2108,7 @@
 <translation id="8023878949384262191">વિભાગને વિસ્તૃત કરે છે.</translation>
 <translation id="8027581147000338959">નવી વિંડોમાં ખોલો</translation>
 <translation id="8029092694585014252">રિમાઇન્ડર સેટ કરો</translation>
+<translation id="8029349782735515147">Gemini Liveનો ઉપયોગ કરતી વખતે ઉપશીર્ષક બતાવો</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8035133914807600019">નવું ફોલ્ડર...</translation>
 <translation id="8035412398498507358">Photos</translation>

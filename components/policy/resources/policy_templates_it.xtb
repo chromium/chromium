@@ -6456,7 +6456,7 @@ Se questa policy viene impostata su Attivata o se non viene configurata, la prop
 
 Se viene impostata su Disattivata, la proprietà CSS "zoom" utilizzerà il comportamento precedente pre-standardizzato.
 
-Questa policy è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche una prova dell'origine ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questa policy è impostata su Disattivata. Questa policy verrà rimossa e il comportamento "Attivata" verrà reso permanente nella versione 134.</translation>
+Questa policy è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche un origin trial ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questa policy è impostata su Disattivata. Questa policy verrà rimossa e il comportamento "Attivata" verrà reso permanente nella versione 134.</translation>
 <translation id="5088303895040832480">Utilizza UsbDeviceId nel nuovo codice.</translation>
 <translation id="5090791951240382356">Consenti l'unione delle policy del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>

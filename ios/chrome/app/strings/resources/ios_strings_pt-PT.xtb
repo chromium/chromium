@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4883766694719903356">Grelha de separadores de navegação anónima</translation>
 <translation id="4884937942297374058">A Proteção melhorada está desativada</translation>
+<translation id="4887391901725877182">Legendas</translation>
 <translation id="488785315393301722">Mostrar Detalhes</translation>
 <translation id="4889521386764567563">Perfil atual</translation>
 <translation id="4893713555726946316">Ocultar Localizar na página</translation>
@@ -1421,6 +1422,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5779117921996157216">{count,plural, =1{Tem {count} palavra-passe comprometida que pode pôr a sua segurança em risco. Corrija-a agora para manter a sua segurança.}other{Tem {count} palavras-passe comprometidas que podem pôr a sua segurança em risco. Corrija-as agora para manter a sua segurança.}}</translation>
 <translation id="5791632441210678828">Botão Ordenar do feed A seguir.</translation>
 <translation id="5799263916847593256">Abra o separador para ver o histórico de preços</translation>
+<translation id="5801568494490449797">Preferências</translation>
 <translation id="5803566855766646066">Quer mesmo rejeitar o novo cartão?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="58081802114142635">A sua atividade melhora a IA da Google</translation>
@@ -1571,6 +1573,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="628251768213143684">Pode sempre gerir o que é guardado na sua Conta Google</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
+<translation id="6295140892595702619">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada). Os seus dados não são usados para melhorar os modelos de IA generativa</translation>
 <translation id="6295751040240588413">Alcunha do cartão inválida</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
@@ -2105,6 +2108,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8023878949384262191">Expande a secção.</translation>
 <translation id="8027581147000338959">Abrir numa Nova Janela</translation>
 <translation id="8029092694585014252">Definir lembrete</translation>
+<translation id="8029349782735515147">Mostrar legendas ao usar o Gemini Live</translation>
 <translation id="8032569120109842252">A seguir</translation>
 <translation id="8035133914807600019">Nova pasta…</translation>
 <translation id="8035412398498507358">Fotos</translation>

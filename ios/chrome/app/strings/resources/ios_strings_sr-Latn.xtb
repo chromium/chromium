@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4883766694719903356">Mreža kartica bez arhiviranja</translation>
 <translation id="4884937942297374058">Poboljšana zaštita je isključena</translation>
+<translation id="4887391901725877182">Opcionalni titl</translation>
 <translation id="488785315393301722">Prikaži detalje</translation>
 <translation id="4889521386764567563">Aktuelni profil</translation>
 <translation id="4893713555726946316">Sakrij opciju Pronađi na stranici</translation>
@@ -1421,6 +1422,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu lozinku koja može da ugrozi bezbednost. Rešite problem odmah da biste bili bezbedni.}one{Imate {count} ugroženu lozinku koja može da ugrozi bezbednost. Rešite probleme odmah da biste bili bezbedni.}few{Imate {count} ugrožene lozinke koje mogu da ugroze bezbednost. Rešite probleme odmah da biste bili bezbedni.}other{Imate {count} ugroženih lozinki koje mogu da ugroze bezbednost. Rešite probleme odmah da biste bili bezbedni.}}</translation>
 <translation id="5791632441210678828">Dugme Sortiraj za fid Pratite.</translation>
 <translation id="5799263916847593256">Otvorite da biste videli istoriju cena</translation>
+<translation id="5801568494490449797">Podešavanja</translation>
 <translation id="5803566855766646066">Želite li stvarno da odbacite ovu novu karticu?</translation>
 <translation id="5804241973901381774">Dozvole</translation>
 <translation id="58081802114142635">Vaše aktivnosti poboljšavaju Google veštačku inteligenciju</translation>
@@ -1571,6 +1573,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="628251768213143684">Uvek možete da upravljate sadržajem koji se čuva na Google nalogu</translation>
 <translation id="6284652193729350524">Ponudi prevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili Bezbedno pregledanje, otvorite <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" /> i dodirnite Bezbedno pregledanje.</translation>
+<translation id="6295140892595702619">Koristite mikrofon da biste razgovarali sa Gemini-jem. Kada razgovarate sa Gemini-jem, zvuk se čuva u Aktivnostima u Gemini aplikacijama (ako su uključene). Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije</translation>
 <translation id="6295751040240588413">Nevažeći nadimak kartice</translation>
 <translation id="629730747756840877">nalog</translation>
 <translation id="6301104306974789820">Dobijajte obaveštenja o praćenju cena</translation>
@@ -2105,6 +2108,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="8023878949384262191">Proširuje odeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
 <translation id="8029092694585014252">Podesi podsetnik</translation>
+<translation id="8029349782735515147">Prikazuj titl kada koristim Gemini Live</translation>
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8035133914807600019">Novi folder...</translation>
 <translation id="8035412398498507358">Slike</translation>

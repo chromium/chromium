@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="4883766694719903356">Incognito-oortjierooster</translation>
 <translation id="4884937942297374058">Verbeterde beskerming is af</translation>
+<translation id="4887391901725877182">Onderskrifte</translation>
 <translation id="488785315393301722">Wys besonderhede</translation>
 <translation id="4889521386764567563">Huidige profiel</translation>
 <translation id="4893713555726946316">Versteek Vind in bladsy</translation>
@@ -1421,6 +1422,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5779117921996157216">{count,plural, =1{Jy het {count} gekompromitteerde wagwoord wat jou sekuriteit in gevaar kan stel. Stel dit nou reg om veilig te bly.}other{Jy het {count} gekompromitteerde wagwoorde wat jou sekuriteit in gevaar kan stel. Stel hulle nou reg om veilig te bly.}}</translation>
 <translation id="5791632441210678828">Sorteerknoppie vir volgende stroom.</translation>
 <translation id="5799263916847593256">Maak oop om prysgeskiedenis te sien</translation>
+<translation id="5801568494490449797">Voorkeure</translation>
 <translation id="5803566855766646066">Is jy seker jy wil hierdie nuwe kaart weggooi?</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="58081802114142635">Jou aktiwiteit verbeter Google KI</translation>
@@ -1571,6 +1573,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="628251768213143684">Jy kan altyd bestuur wat in jou Google-rekening gestoor is</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
+<translation id="6295140892595702619">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is). Jou data word nie gebruik om generatiewe KI-modelle te verbeter</translation>
 <translation id="6295751040240588413">Ongeldige kaartbynaam</translation>
 <translation id="629730747756840877">Rekening</translation>
 <translation id="6301104306974789820">Kry prysnasporingkennisgewings</translation>
@@ -2105,6 +2108,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8023878949384262191">Vou hierdie afdeling uit.</translation>
 <translation id="8027581147000338959">Maak in nuwe venster oop</translation>
 <translation id="8029092694585014252">Stel onthounota</translation>
+<translation id="8029349782735515147">Wys onderskrifte wanneer Gemini Regstreeks gebruik word</translation>
 <translation id="8032569120109842252">Volg tans</translation>
 <translation id="8035133914807600019">Nuwe vouer …</translation>
 <translation id="8035412398498507358">Foto’s</translation>

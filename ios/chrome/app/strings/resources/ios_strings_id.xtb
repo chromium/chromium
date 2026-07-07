@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4883766694719903356">Petak Tab Samaran</translation>
 <translation id="4884937942297374058">Perlindungan yang ditingkatkan nonaktif</translation>
+<translation id="4887391901725877182">Pemberian Teks Tertutup</translation>
 <translation id="488785315393301722">Tampilkan Detail</translation>
 <translation id="4889521386764567563">Profil saat ini</translation>
 <translation id="4893713555726946316">Sembunyikan Cari di Halaman</translation>
@@ -1421,6 +1422,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5779117921996157216">{count,plural, =1{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}other{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}}</translation>
 <translation id="5791632441210678828">Tombol urutkan untuk feed Mengikuti.</translation>
 <translation id="5799263916847593256">Buka untuk melihat histori harga</translation>
+<translation id="5801568494490449797">Preferensi</translation>
 <translation id="5803566855766646066">Yakin ingin menghapus kartu baru ini?</translation>
 <translation id="5804241973901381774">Izin</translation>
 <translation id="58081802114142635">Aktivitas Anda akan meningkatkan kualitas AI Google</translation>
@@ -1571,6 +1573,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
+<translation id="6295140892595702619">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Saat Anda berbicara dengan Gemini, audio disimpan di Aktivitas Aplikasi Gemini (jika diaktifkan). Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif</translation>
 <translation id="6295751040240588413">Nama kartu tidak valid</translation>
 <translation id="629730747756840877">Akun</translation>
 <translation id="6301104306974789820">Dapatkan notifikasi pemantauan harga</translation>
@@ -2105,6 +2108,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8023878949384262191">Luaskan bagian.</translation>
 <translation id="8027581147000338959">Buka di Jendela Baru</translation>
 <translation id="8029092694585014252">Setel pengingat</translation>
+<translation id="8029349782735515147">Tampilkan teks tertutup saat menggunakan Gemini Live</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8035133914807600019">Folder baru…</translation>
 <translation id="8035412398498507358">Foto</translation>

@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4883766694719903356">Mriežka kariet inkognito</translation>
 <translation id="4884937942297374058">Rozšírená ochrana je vypnutá</translation>
+<translation id="4887391901725877182">Skryté titulky</translation>
 <translation id="488785315393301722">Zobraziť podrobnosti</translation>
 <translation id="4889521386764567563">Aktuálny profil</translation>
 <translation id="4893713555726946316">Skryť položku Vyhľadávať na stránke</translation>
@@ -1421,6 +1422,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5779117921996157216">{count,plural, =1{Máte {count} odhalené heslo, ktoré môže ohroziť vaše zabezpečenie. Zmeňte ho, aby ste boli v bezpečí.}few{Máte {count} odhalené heslá, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}many{You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}other{Máte {count} odhalených hesiel, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}}</translation>
 <translation id="5791632441210678828">Tlačidlo na zoradenie informačného kanála Sledované.</translation>
 <translation id="5799263916847593256">Otvoriť a pozrieť si históriu cien</translation>
+<translation id="5801568494490449797">Predvoľby</translation>
 <translation id="5803566855766646066">Naozaj chcete zahodiť túto novú kartu?</translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="58081802114142635">Vaša aktivita zlepšuje umelú inteligenciu od Googlu</translation>
@@ -1571,6 +1573,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="628251768213143684">Kedykoľvek môžete spravovať, čo sa ukladá do vášho účtu Google</translation>
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Ak chcete zapnúť Bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
+<translation id="6295140892595702619">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá). Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="6295751040240588413">Neplatná prezývka karty</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6301104306974789820">Dostávať upozornenia sledovania cien</translation>
@@ -2105,6 +2108,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="8023878949384262191">Rozbalí sekciu.</translation>
 <translation id="8027581147000338959">Otvoriť v novom okne</translation>
 <translation id="8029092694585014252">Nastaviť pripomenutie</translation>
+<translation id="8029349782735515147">Zobrazenie skrytých titulkov pri používaní Gemini Live</translation>
 <translation id="8032569120109842252">Sledované</translation>
 <translation id="8035133914807600019">Nový priečinok…</translation>
 <translation id="8035412398498507358">Fotky</translation>

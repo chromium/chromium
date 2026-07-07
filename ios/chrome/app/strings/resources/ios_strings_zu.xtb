@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Vula</translation>
 <translation id="4883766694719903356">Igridi Yethebhu Ye-incognito</translation>
 <translation id="4884937942297374058">Ukuvikela okuthuthukisiwe kuvaliwe</translation>
+<translation id="4887391901725877182">Okuvamile</translation>
 <translation id="488785315393301722">Bonisa imininingwane</translation>
 <translation id="4889521386764567563">Iphrofayela yamanje</translation>
 <translation id="4893713555726946316">Fihla Ukuthola Okungaphakathi Ekhasini</translation>
@@ -1421,6 +1422,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5779117921996157216">{count,plural, =1{Unephasiwedi engu-{count} eyonakalisiwe engabeka ukuvikeleka kwakho engozini. Yilungise manje ukuze uhlale uphephile.}one{Unamaphasiwedi angu-{count} onakalisiwe angabeka ukuvikeleka kwakho engozini. Walungise manje ukuze uhlale uphephile.}other{Unamaphasiwedi angu-{count} onakalisiwe angabeka ukuvikeleka kwakho engozini. Walungise manje ukuze uhlale uphephile.}}</translation>
 <translation id="5791632441210678828">Inkinobho yokuhlunga yokuphakelayo Kokulandelayo.</translation>
 <translation id="5799263916847593256">Vula ukuze ubone umlando wentengo</translation>
+<translation id="5801568494490449797">Okuncamelayo</translation>
 <translation id="5803566855766646066">Ingabe uqinisekile ukuthi ufuna ukulahla leli khadi elisha?</translation>
 <translation id="5804241973901381774">Izimvume</translation>
 <translation id="58081802114142635">Umsebenzi wakho uthuthukisa iGoogle AI</translation>
@@ -1571,6 +1573,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="628251768213143684">Ungakumenenja noma nini okulondolozwe ku-Google Account yakho</translation>
 <translation id="6284652193729350524">Nikeza ukuhumusha isi-<ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Ukuze uvule Ukuphequlula Ngokuphepha, vula <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /> bese uthepha okuthi Ukuphequlula ngokuphepha.</translation>
+<translation id="6295140892595702619">Sebenzisa imakrofoni yakho ukuze uxoxe neGemini. Uma ukhuluma neGemini, umsindo ugcinwa Emsebenzini wama-App eGemini (uma ivuliwe). Idatha yakho isetshenziselwe ukuthuthukisa izinhlelo ze-AI ekhiqizayo.</translation>
 <translation id="6295751040240588413">Isiteketiso sekhadi esingavumelekile</translation>
 <translation id="629730747756840877">I-akhawunti</translation>
 <translation id="6301104306974789820">Thola izaziso zentengo yokulandelela</translation>
@@ -2105,6 +2108,7 @@ Ukuze uqhubeke kukhompyutha yakho, shintshela ku-<ph name="OTHER_EMAIL" />. Uzot
 <translation id="8023878949384262191">Kunweba isigaba.</translation>
 <translation id="8027581147000338959">Vula Kuwindi Elisha</translation>
 <translation id="8029092694585014252">Setha isikhumbuzi</translation>
+<translation id="8029349782735515147">Bonisa okuvamile uma usebenzisa iGemini Ebukhoma</translation>
 <translation id="8032569120109842252">Ukulandela</translation>
 <translation id="8035133914807600019">Ifolda entsha…</translation>
 <translation id="8035412398498507358">Izithombe</translation>

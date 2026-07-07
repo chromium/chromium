@@ -1146,6 +1146,7 @@
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4883766694719903356">Griglia schede Incognito</translation>
 <translation id="4884937942297374058">La Protezione avanzata è disattivata</translation>
+<translation id="4887391901725877182">Sottotitolaggio codificato</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
 <translation id="4889521386764567563">Profilo corrente</translation>
 <translation id="4893713555726946316">Nascondi Trova nella pagina</translation>
@@ -1421,6 +1422,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5779117921996157216">{count,plural, =1{Hai {count} password compromessa che potrebbe mettere a rischio la tua sicurezza. Sistemala subito per rimanere al sicuro.}other{Hai {count} password compromesse che potrebbero mettere a rischio la tua sicurezza. Sistemale subito per rimanere al sicuro.}}</translation>
 <translation id="5791632441210678828">Pulsante Ordina per il feed Stai seguendo.</translation>
 <translation id="5799263916847593256">Apri per visualizzare la cronologia dei prezzi</translation>
+<translation id="5801568494490449797">Preferenze</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="58081802114142635">La tua attività migliora Google AI</translation>
@@ -1571,6 +1573,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="628251768213143684">Puoi gestire in qualsiasi momento i dati salvati nel tuo Account Google</translation>
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
+<translation id="6295140892595702619">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva). I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="6295751040240588413">Nickname carta non valido</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
@@ -2105,6 +2108,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8023878949384262191">Viene espansa la sezione.</translation>
 <translation id="8027581147000338959">Apri in un'altra finestra</translation>
 <translation id="8029092694585014252">Crea promemoria</translation>
+<translation id="8029349782735515147">Mostra i sottotitoli codificati quando usi Gemini Live</translation>
 <translation id="8032569120109842252">Stai seguendo</translation>
 <translation id="8035133914807600019">Nuova cartella…</translation>
 <translation id="8035412398498507358">Foto</translation>
