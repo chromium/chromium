@@ -27,7 +27,6 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
 <translation id="1287534462498555020">スマートフォンで Chromium を活用</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">画像検索による商品の確認方法を示すイラスト</translation>
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="132092532143527429">Gemini in Chromium を使ってみる</translation>
 <translation id="1324107359134968521">Bluetooth デバイスを検出するには、Chromium に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -491,7 +490,6 @@
 <translation id="6400112897226594999">パソコンの画面に表示された Chromium のロゴ。</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6414624068245092115">Google アカウントで Chromium のデータを使用、保存できるようにするには、本人確認を行ってください</translation>
-<translation id="6417332166651156371">Chromium のパスワード マネージャーのエントリ ポイントを示す簡略化された画像</translation>
 <translation id="642132557830635295">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します</translation>
 <translation id="6436260184216827876">画像検索は使用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="6442900851116057561">Chromium OS を再起動してください</translation>

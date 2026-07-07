@@ -302,7 +302,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2297822946037605517">यह पेज शेयर करें</translation>
 <translation id="230115972905494466">कोई संगत डिवाइस नहीं मिला</translation>
 <translation id="2316129865977710310">नहीं, रहने दें</translation>
-<translation id="2318045970523081853">कॉल करने के लिए टैप करें</translation>
 <translation id="232137538351753795">वापस जाने के लिए, स्क्रीन के बाएं किनारे से स्वाइप करें</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> से मिला</translation>
@@ -436,7 +435,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{जांच 1 दिन पहले की गई}one{जांच # दिन पहले की गई}other{जांच # दिन पहले की गई}}</translation>
 <translation id="2842985007712546952">मूल फ़ोल्‍डर</translation>
 <translation id="2854916915045135148">गुप्त मोड पर स्विच करने के लिए, टैब स्विचर बटन को दबाकर रखें</translation>
-<translation id="2860954141821109167">पक्का करें कि इस डिवाइस पर फ़ोन ऐप्लिकेशन चालू है</translation>
 <translation id="286473047976978798">क्या आपको दिखने से जुड़ी अपनी पिछली सेटिंग लागू करनी हैं?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> और 1 अन्य टैब}one{<ph name="URL" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब}other{<ph name="URL" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब}}</translation>
 <translation id="2869430948265924908">कार में अपने संवेदनशील कॉन्टेंट को सुरक्षित रखने के लिए, आपको कार का प्रोफ़ाइल लॉक सेट अप करना होगा.  इसके लिए, पिन, कोड या पासवर्ड का इस्तेमाल किया जा सकता है.</translation>
@@ -1272,6 +1270,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6315386555979018699">मिटाएं और जारी रखें</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
 <translation id="631839948975905034">Chrome को बंद करते समय, गुप्त विंडो लॉक करें</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" एक्सटेंशन का इस्तेमाल करने के लिए, आपको Chrome में साइन इन करना होगा</translation>
 <translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
 <translation id="6324977638108296054">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
@@ -1450,6 +1449,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="6916590542764765824">एक्‍सटेंशन मैनेज करें</translation>
 <translation id="6918398787259831832">अगर यह समस्या बार-बार आती है, तो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से <ph name="BEGIN_LINK" />ज़्यादा जानकारी पाएं<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">इस पेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए यह अनुमति हटा दी है, क्योंकि आपने हाल ही में इसका इस्तेमाल नहीं किया है</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 टैब}one{<ph name="NUMBER_OF_TABS" /> टैब}other{<ph name="NUMBER_OF_TABS" /> टैब}}</translation>
 <translation id="6929224077895306814">आपके डिवाइस और Google खाते में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
@@ -1541,6 +1541,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7248671827512403053">ऐप्स </translation>
 <translation id="7253951228444156601">पासवर्ड की जांच की जा रही है…</translation>
 <translation id="7260367682327802201">आपके Android डिवाइस में इससे मिलती-जुलती सेटिंग हो सकती है. अगर Chrome और आपके Android डिवाइस पर विज्ञापन की परफ़ॉर्मेंस को मापने की सुविधा चालू है, तो कोई कंपनी यह माप सकती है कि विज्ञापन, विज़िट की गई वेबसाइटों और इस्तेमाल किए गए ऐप्लिकेशन पर कितना असरदार है.</translation>
+<translation id="7265857422443387781">Google Lens की मदद से टैब में खोजें <ph name="BEGIN_NEW" />नई सुविधा<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">क्या आप <ph name="ONE_TIME_CODE" /> को <ph name="ORIGIN" /> पर सबमिट करना चाहते हैं?</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>
 <translation id="7276868533747677875">अगर आपने पहले कभी पासवर्ड एक्सपोर्ट किए हैं, तो अपने डिवाइस में कोई CSV फ़ाइल ढूंढें और उन्हें अपने पसंदीदा पासवर्ड मैनेजर पर इंपोर्ट करें.</translation>
@@ -1883,6 +1884,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8611922158252451755">जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं. इसलिए, सोच-समझकर ही लोगों को ग्रुप में शामिल होने का न्योता भेजें. लिंक 48 घंटों के बाद काम नहीं करते हैं.</translation>
 <translation id="8616006591992756292">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य तरह के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" /> में अनुवाद करें</translation>
 <translation id="8629093325209491835">Chrome मेन्यू &gt; सेटिंग खोलें</translation>
 <translation id="8634050254805484913">छोटी स्क्रीन पर छिपा हुआ होता है</translation>
 <translation id="8635399646025169806">क्या आपको टैब ग्रुप सेव करना है?</translation>
@@ -2031,7 +2033,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9205933215779845960">वह पेज नहीं मिला. स्पेलिंग की जांच करें या <ph name="SEARCH_ENGINE" /> पर खोजें.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">कॉल नहीं कर पा रहे</translation>
 <translation id="9212845824145208577">इससे नीचे नहीं जा सकते. पेज पर नीचे से शुरुआत करके देखें.</translation>
 <translation id="9218430445555521422">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="9219103736887031265">इमेज</translation>

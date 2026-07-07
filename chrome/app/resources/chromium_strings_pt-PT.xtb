@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Ao iniciar sessão em serviços Google, como o Gmail ou o YouTube, com <ph name="USER_EMAIL" />, pode iniciar sessão automaticamente no Chromium com a mesma conta</translation>
 <translation id="1287534462498555020">Instale o Chromium no telemóvel</translation>
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Uma ilustração a mostrar como pode usar a pesquisa de imagens para procurar um produto</translation>
 <translation id="1315551408014407711">Configure o seu novo perfil do Chromium</translation>
 <translation id="132092532143527429">Experimentar com o Gemini no Chromium</translation>
 <translation id="1324107359134968521">O Chromium precisa de acesso ao Bluetooth para explorar 
@@ -494,7 +493,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6400112897226594999">Logótipo do Chromium num ecrã de computador.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador de internet que executa páginas Web e aplicações à velocidade da luz. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança, com proteção contra programas maliciosos e phishing integrada no Chromium.</translation>
 <translation id="6414624068245092115">Para se certificar de que pode sempre usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade</translation>
-<translation id="6417332166651156371">Uma imagem simplificada que mostra o ponto de entrada do Gestor de Palavras-passe no Chromium</translation>
 <translation id="642132557830635295">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto</translation>
 <translation id="6436260184216827876">A pesquisa de imagens não está disponível. Tente mais tarde.</translation>
 <translation id="6442900851116057561">Reinicie o ChromiumOS</translation>

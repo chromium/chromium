@@ -1573,6 +1573,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="628251768213143684">Vždy můžete spravovat, co je ve vašem účtu Google uloženo</translation>
 <translation id="6284652193729350524">Nabízet překlad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pokud chcete zapnout Bezpečné prohlížení, otevřete <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" /> a klepněte na Bezpečné prohlížení.</translation>
+<translation id="6295140892595702619">Používat k chatování s Gemini mikrofon. Když s Gemini mluvíte, ukládá se zvuk do aktivity v aplikacích s Gemini (pokud je zapnutá). Vaše data se nepoužívají k vylepšování modelů generativní umělé inteligence.</translation>
 <translation id="6295751040240588413">Neplatná přezdívka karty</translation>
 <translation id="629730747756840877">Účet</translation>
 <translation id="6301104306974789820">Dostávat oznámení o sledování cen</translation>
@@ -2181,7 +2182,6 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="8264966119170358612">Při porušení zabezpečení údajů třetí strany byla vyzrazena některá vaše uložená hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">V rámci resetování iPadu jste byli odhlášeni z účtu <ph name="USER_NAME" />. Pokud se chcete znovu přihlásit, klepněte níže na Pokračovat.</translation>
 <translation id="8270320981823560179">Disk</translation>
-<translation id="8273982424131314219">Vyplníte údaje na webu <ph name="URL" /></translation>
 <translation id="8274795744553482834">Chystáte se přepnout profily</translation>
 <translation id="8275068909952022340">Více…</translation>
 <translation id="8280797717392145626">Byly přijaty odkazy</translation>
@@ -2415,6 +2415,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
 <translation id="8990960056509724223">Soubor se kvůli zásadám vaší organizace nepodařilo uložit</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
+<translation id="9003263770394939629">Návrh od Gemini. Vylepšené automatické vyplňování můžete spravovat v nastavení.</translation>
 <translation id="9003677638446136377">Zkontrolovat znovu</translation>
 <translation id="9006453925669499173">Nabídka → Nová anonymní karta</translation>
 <translation id="9008201768610948239">Ignorovat</translation>

@@ -1573,6 +1573,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="628251768213143684">በGoogle መለያዎ ውስጥ የተቀመጠውን ማንኛውንም ነገር ማስተዳደር ይችላሉ</translation>
 <translation id="6284652193729350524">ወደ <ph name="LANGUAGE" /> ለመተርጎም ሐሳብ ያቅርቡ</translation>
 <translation id="6293101329759844770">ደህንነቱ የተጠበቀ አሰሳን ለማብራት <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይክፈቱ እና የጥንቃቄ አሰሳን መታ ያድርጉ።</translation>
+<translation id="6295140892595702619">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="6295751040240588413">ልክ ያልሆነ ቅጽል ስም</translation>
 <translation id="629730747756840877">መለያ</translation>
 <translation id="6301104306974789820">የዋጋ ክትትል ማሳወቂያዎችን ያግኙ</translation>
@@ -2181,7 +2182,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8264966119170358612">ከእርስዎ የተቀመጡ የይለፍ ቃላት መካከል አንዳንዶቹ የGoogle ባልሆነ የውሂብ ጥሰት ተጋልጠው ነበረ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">እንደ የእርስዎ iPad ዳግም ማስጀመር አንድ አካል ከመለያዎ <ph name="USER_NAME" /> ዘግተው ወጥተዋል። ተመልሰው በመለያ ለመግባት ከታች «ቀጥል»ን መታ ያድርጉ።</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">መረጃ ወደ <ph name="URL" /> ውስጥ ይሞላሉ</translation>
 <translation id="8274795744553482834">መገለጫዎችን ሊቀይሩ ነው</translation>
 <translation id="8275068909952022340">ተጨማሪ…</translation>
 <translation id="8280797717392145626">የደረሱ አገናኞች</translation>
@@ -2415,6 +2415,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />፣ የተሰካ ጣቢያ</translation>
 <translation id="8990960056509724223">በድርጅትዎ መመሪያዎች ምክንያት ፋይልን ማስቀመጥ አልተቻለም</translation>
 <translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
+<translation id="9003263770394939629">በGemini የተጠቆመ። በቅንብሮች ውስጥ የተሻሻለ ራስ-ሙላን ያስተዳድሩ።</translation>
 <translation id="9003677638446136377">እንደገና ፈትሽ</translation>
 <translation id="9006453925669499173">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="9008201768610948239">ችላ በል</translation>

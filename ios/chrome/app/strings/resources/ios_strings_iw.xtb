@@ -484,6 +484,7 @@
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
 <translation id="2580306219079937316">פתיחה של הגדרות התרגום</translation>
 <translation id="2583688836549072561">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות, פעילות חדשה.</translation>
+<translation id="2584994295315085351">‏פתיחת כרטיסייה חדשה ב-Chrome עם חזרת הפעילות שלי אחרי 4 שעות</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
 <translation id="2602372807870028932">הפעולה הזו תמחק את המידע הנבחר ששמור במכשיר הזה</translation>
@@ -1572,6 +1573,7 @@
 <translation id="628251768213143684">‏תמיד אפשר לנהל את הפריטים ששמורים בחשבון Google</translation>
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> וללחוץ על 'גלישה בטוחה'.</translation>
+<translation id="6295140892595702619">‏אפשר לדבר עם Gemini באמצעות המיקרופון. כשמדברים אל Gemini, האודיו נשמר בפעילות בממשקי Gemini (אם האפשרות מופעלת). הנתונים שלך לא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="6295751040240588413">כינוי הכרטיס לא תקין</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
@@ -2180,7 +2182,6 @@
 <translation id="8264966119170358612">‏חלק מהסיסמאות השמורות שלך נחשפו ברשומות שאינן של Google עקב פרצה באבטחת מידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPad. כדי להיכנס שוב לחשבון צריך ללחוץ על 'המשך' למטה.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">הפרטים ימולאו באתר <ph name="URL" /></translation>
 <translation id="8274795744553482834">תיכף מתבצע מעבר לפרופיל אחר</translation>
 <translation id="8275068909952022340">עוד…</translation>
 <translation id="8280797717392145626">הקישורים התקבלו</translation>

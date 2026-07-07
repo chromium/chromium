@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
+<translation id="1053898984916097744">開始新任務，或在工作過程中取得協助。</translation>
+<translation id="1061130374843955397">歡迎使用 <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">自動從 Android 手機取得帳戶資訊</translation>
 <translation id="1076766328672150609">你的孩子可以使用 PIN 碼來解鎖裝置。</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網路 <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">孩子可以使用這個 PIN 碼登入裝置</translation>
 <translation id="1122587596907914265">設計獨特桌布樣式</translation>
 <translation id="1131201598497838573">孩子的 PIN 碼已更新</translation>
 <translation id="1147322039136785890">現在可交由「<ph name="SUPERVISED_USER_NAME" />」使用</translation>
+<translation id="1148669835763563782">你正在接收最新的軟體更新版本，享有安全再升級和最新的 Chromebook 功能。本次更新提升了設定體驗，有助於順利開始使用 Chromebook。</translation>
 <translation id="1176864681932214421">使用 AI 生成圖片</translation>
 <translation id="1177073277575830464">Android 快速設定已完成，請在 <ph name="DEVICE_TYPE" /> 上繼續設定</translation>
 <translation id="1179902906564467236">按照手機上的指示操作或使用相機應用程式</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1217114730239853757">是否要啟動 ChromeOS Flex 內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
 <translation id="1222835797152767346">設定 PIN 碼可簡化登入程序</translation>
+<translation id="1231426483209637778">系統會在你下次使用 <ph name="DEVICE_TYPE" /> 時記住你的網路</translation>
+<translation id="1243002225871118300">變更顯示和文字大小</translation>
+<translation id="1256588359404100567">已從舊裝置同步處理設定。</translation>
 <translation id="1272978324304772054">裝置註冊的網域中沒有這個使用者帳戶。如果你要使用其他網域進行註冊，必須先完成裝置修復作業。</translation>
+<translation id="1293556467332435079">檔案</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這個裝置儲存長期 API 存取符記。</translation>
+<translation id="1335929031622236846">註冊你的裝置</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
           <ph name="BR" />
           只要啟用 ChromeOS 裝置的偵錯功能，即可安裝並測試自訂程式碼。啟用後，你可以：<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
 <translation id="1347625331607114917">在 Android 手機上驗證 PIN 碼</translation>
 <translation id="1347975661240122359">電池電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
+<translation id="1353275871123211385">如要使用應用程式核准設定、螢幕時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="1375557162880614858">是否要啟動 ChromeOS Flex 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="1375938286942050085">設定完成！備妥裝置以進行接下來的遊戲</translation>
 <translation id="1377600615067678409">暫時略過</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">傳送診斷和使用資料。</translation>
 <translation id="1418882096915998312">正在進行 Enterprise 註冊作業</translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1427269577154060167">國家/地區</translation>
 <translation id="1440090277117135316">學校註冊程序完成</translation>
 <translation id="1473927070149284123">請再試一次或手動連線至特定網路</translation>
 <translation id="1503556098270577657">你已使用 Android 手機登入 <ph name="USER_EMAIL" /></translation>
+<translation id="1510238584712386396">啟動器</translation>
 <translation id="1521442365706402292">管理憑證</translation>
+<translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1540605929960647700">啟用展示模式</translation>
 <translation id="1572876035008611720">請輸入您的電子郵件</translation>
+<translation id="1588438908519853928">一般</translation>
+<translation id="1620510694547887537">攝影機</translation>
+<translation id="1636212173818785548">確定</translation>
 <translation id="1642494467033190216">必須先移除 rootfs 保護並重新啟動，才能啟用其他偵錯功能。</translation>
+<translation id="1646045728251578877">有可用的軟體更新</translation>
+<translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1678919064276516737">輸入的電子郵件和密碼不符</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
 <translation id="1695487653372841667">您可以控制要提供哪些資料給 Google。您隨時可以前往 [設定] 進行變更。</translation>
 <translation id="169675691788639886">裝置有設定好的 SSH 伺服器。請勿使用敏感帳戶登入。</translation>
+<translation id="1700517974991662022">曾經造訪過</translation>
 <translation id="1730666151302379551">清除舊密碼</translation>
+<translation id="1749645492410897998">正在安裝軟體</translation>
 <translation id="177053719077591686">在 Google 雲端硬碟中備份 Android 應用程式。</translation>
+<translation id="1798832846931769717">Google Beam for Meet</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
+<translation id="1826657447823925402">已停用反向捲動功能</translation>
 <translation id="1831848493690504725">系統無法透過已連線的網路連上 Google，建議你選擇其他網路，或是檢查網路設定或 Proxy 設定 (如果使用 Proxy 的話)。</translation>
 <translation id="1842766183094193446">確定要啟用展示模式嗎？</translation>
 <translation id="1845060436536902492">ChromeVox 是 ChromeOS Flex 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
+<translation id="185766080319917408">啟動鍵位於左 Alt 鍵的左側</translation>
 <translation id="1868617395637139709">允許 Android 應用程式和服務使用位置資訊。</translation>
+<translation id="1877377730633446520">這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。你目前的可用空間為 <ph name="FREE_SPACE" />。</translation>
 <translation id="189035593835762169">條款及細則</translation>
+<translation id="189358972401248634">其他語言</translation>
+<translation id="1915734383465415025">商店編號</translation>
+<translation id="1919096511823372013">你可以插入連結、表情符號等內容，也可以讓 Google AI 協助你撰寫內容及生成圖片。</translation>
+<translation id="1922496389170590548">子女的學校帳戶</translation>
+<translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1987574314042117472">選取並安裝熱門應用程式</translation>
 <translation id="1991829061375381344">你的可用授權不足，無法註冊這部 Google Meet 設備。如要購買更多授權，請與經銷商聯絡。若你認為不應顯示這則訊息，請與經銷商聯絡。</translation>
+<translation id="200928901437634269">使用子女的 Google 帳戶或學校帳戶。你也可以設定家長監護功能。</translation>
+<translation id="2013550551806600826">試試看。開啟或關閉設定，然後在觸控板上，用兩根手指在測試區域中捲動。你也可以稍後依序前往「設定」&gt;「裝置」&gt;「滑鼠和觸控板」調整這項設定。</translation>
+<translation id="2018189721942291407">不確定是否要註冊嗎？</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
 <translation id="2052572566310583903">你在其他裝置上安裝的應用程式</translation>
 <translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
 <translation id="208928984520943006">隨時從底部向上滑動即可返回主畫面。</translation>
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">選擇更多要設定的功能</translation>
+<translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2157779167749714207">Gemini 是 <ph name="DEVICE_TYPE" /> 隨附的服務</translation>
 <translation id="2163470535490402084">請連線至網際網路，以登入您的 <ph name="DEVICE_TYPE" />。</translation>
+<translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
 <translation id="2178585470774851578">你即將啟用 ChromeOS Flex 偵錯功能，這會一併設定 sshd Daemon，並允許從 USB 隨身碟執行啟動作業。</translation>
+<translation id="2183570493397356669">已停用「繼續」按鈕</translation>
+<translation id="221872881068107022">反向捲動</translation>
 <translation id="2219081237089444028">設定 <ph name="DEVICE_TYPE" /> 密碼可簡化登入程序</translation>
+<translation id="2229161054156947610">剩下 1 個多小時</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> 要求裝置必須連上網路才能用於登入 <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">已完成 <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">正在連線到 Android 手機...</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">找不到 Google API 金鑰，因此您無法新增使用者。詳情請參閱 <ph name="DETAILS_URL" />。</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2485681265915754872">Google Play 服務條款</translation>
+<translation id="248676429071089168">向上滑動即可將頁面向下移動</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="2538084450874617176">誰在使用這部 <ph name="DEVICE_TYPE" />？</translation>
+<translation id="2553340429761841190">「<ph name="PRODUCT_NAME" />」無法連線至<ph name="NETWORK_ID" />，請選取其他網路，或再試一次。</translation>
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
+<translation id="2569972178052279830">零售商名稱</translation>
+<translation id="257779572837908839">設為 Chromebox 視訊會議解決方案</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi-Fi、行動網路和感應器等來源，估算出這部裝置的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以關閉這部裝置的 Android 定位服務，只要依序前往「設定」&gt;「應用程式」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「安全性與位置資訊」&gt;「位置」即可。你也可以使用同一個選單關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、行動網路和感應器。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">語言</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">請稍候...</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="2740531572673183784">確定</translation>
+<translation id="274318651891194348">正在搜尋鍵盤</translation>
 <translation id="2754825024506485820">Google Play 商店提供各種應用程式，從提升工作效率到生活娛樂都能滿足所需，而且隨時都能安裝。</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓 Android 應用程式和服務提供適地性功能。為達成這個目的，Google 會定期收集這部裝置的感應器資訊和附近的無線訊號，並匯總這些資料，建立無線訊號定位資料庫。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 會使用從這部裝置收集到的資訊提升定位精確度和適地性服務，並改進、提供及維護 Google 的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求，不會將這些資訊用於識別任何人的身分。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往這部裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。如果關閉「定位精確度」，系統就不會收集任何定位精確度資料。這樣一來，Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷這部裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">大功告成！</translation>
+<translation id="2819519502129272135">檔案同步處理功能已關閉</translation>
 <translation id="2832124733806557606">你的孩子可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網路，請先在下方連線至網際網路。</translation>
 <translation id="2849767214114481738">已新增 PIN 碼</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />如果允許 ChromeOS 裝置自動傳送報告，我們就能安排 ChromeOS 修正與改善項目的優先順序。報告內容可能包含 ChromeOS 當機情形、使用的功能，以及一般的記憶體使用量等資訊。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以前往 Chrome 裝置的設定允許或禁止傳送這類報告。網域管理員可以前往管理控制台變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">這項作業最多可能需要 30 分鐘才能完成</translation>
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務</translation>
 <translation id="2902265136119311513">以訪客身分瀏覽</translation>
 <translation id="2904210161403910217">密碼已在你上次登入後變更</translation>
 <translation id="2918484644467055090">無法在你的帳戶所屬機構內註冊這部裝置，原因是裝置已標示管理者為其他機構。</translation>
 <translation id="2921081876747860777">請設定密碼，保護你的本機資料。</translation>
+<translation id="2935654492420446828">稍後再新增學校帳戶</translation>
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2979966855249721010">系統會根據興趣喜好推薦應用程式、提供提示等等</translation>
 <translation id="3012917896646559015">請立即與你的硬體製造商聯絡，將電腦送返維修中心。</translation>
+<translation id="3023464535986383522">隨選朗讀</translation>
 <translation id="3028371505549235127">你可以為這部裝置設定 <ph name="DEVICE_TYPE" /> 密碼，這樣就不必輸入 Google 帳戶密碼登入</translation>
 <translation id="3033348223765101500">控管資料</translation>
+<translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」已配對</translation>
 <translation id="3101924772906986970">你的 Chrome 瀏覽器書籤、密碼、歷史記錄等資料都會儲存到 Google 帳戶</translation>
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3162070126914310576">貴機構單位已達到初始註冊上限，因此目前無法註冊這部裝置。請向管理員尋求協助。</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="3177914167275935955">你的裝置含有 Chrome Education 升級版，但你的使用者名稱沒有相關聯的 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3196912927885212665">Chromebook 需要開啟藍牙功能，才能使用 Android 手機進行設定</translation>
+<translation id="322708765617468434">設定完成後，你隨時可以在裝置中新增其他使用者。每位使用者都可以建立個人專屬的體驗，並維護資料的私密性。</translation>
 <translation id="3238192140106069382">正在連線及驗證</translation>
+<translation id="3251119461199395237">檔案同步處理</translation>
+<translation id="325238099842880997">設定數位裝置基本使用規則，協助孩子在家玩樂、探索及完成學校作業</translation>
+<translation id="3255747772218936245">安裝更新</translation>
 <translation id="3261268979727295785">針對年齡較大的子女，您可以在設定完成後新增家長監護功能。您可以在「探索」應用程式中找到家長監護功能的相關資訊。</translation>
 <translation id="3278001907972365362">你的 Google 帳戶有狀況需處理</translation>
 <translation id="3283148363895519428">按照手機上的操作說明繼續設定。請確認手機在附近且已開啟藍牙。</translation>
 <translation id="3382073616108123819">糟糕！系統無法判別這個裝置的裝置 ID。</translation>
 <translation id="3382200254148930874">正在停用監護功能...</translation>
+<translation id="3384362484379805487">為節省磁碟空間，語言檔案會由裝置的所有使用者共用。</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">ChromeVox 是 ChromeOS Flex 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
+<translation id="3402585168444815892">正在註冊展示模式</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="3435896845095436175">啟用</translation>
 <translation id="3462413494201477527">取消設定帳戶？</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
+<translation id="3473479545200714844">畫面放大鏡</translation>
 <translation id="3491669675709357988">貴子女的帳戶並未設定 Family Link 家長監護功能。設定完成後，即可新增家長監護功能。您可以在「探索」應用程式中找到家長監護功能的相關資訊。</translation>
+<translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
 <translation id="3520824492621090923">確認要註冊資訊站和看板裝置嗎？</translation>
+<translation id="3547954654003013442">Proxy 設定</translation>
+<translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬體資料收集聲明</translation>
+<translation id="3602290021589620013">預覽</translation>
+<translation id="3607671391978830431">供孩子使用</translation>
+<translation id="3627320433825461852">剩下不到 1 分鐘</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3650753875413052677">註冊時發生錯誤</translation>
 <translation id="3661106764436337772">自信地快速編寫</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3712050472459130149">必須更新帳戶</translation>
 <translation id="3733296813637058299">系統將為你安裝這些應用程式。你可以在 Play 商店中發掘更多適用於 <ph name="DEVICE_TYPE" /> 的應用程式。</translation>
+<translation id="3740945083753997630">縮小顯示和文字大小</translation>
 <translation id="376841534249795524">這部 <ph name="DEVICE_TYPE" /> 的用途是什麼？</translation>
 <translation id="3772046291955677288">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3800828618615365228">Google Chrome 和 ChromeOS 的《附加條款》</translation>
 <translation id="3828953470056652895">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》以及《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
+<translation id="3837569373891539515">可複選，完成 <ph name="DEVICE_TYPE" /> 設定後，你也可以在「設定」中找到這些選項。</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用 Google 帳戶</translation>
+<translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> 是專為遊戲量身打造。「探索」應用程式會隨即開啟，方便你存取數百款最新遊戲、查看遊戲優惠，並探索裝置內建的遊戲功能。</translation>
+<translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3910588685973519483">使用 AI 建立桌布</translation>
+<translation id="3924259174674732591">顯示和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3983400541576569538">某些應用程式的資料可能會遺失</translation>
+<translation id="3984159763196946143">無法啟動展示模式</translation>
 <translation id="3994318741694670028">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="4002440992267487163">PIN 碼設定</translation>
 <translation id="4044883420905480380">你已連上 Wi-Fi 並使用 Android 手機登入 <ph name="USER_EMAIL" /></translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">《Google Chrome 和 ChromeOS 附加服務條款》</translation>
 <translation id="41365691917097717">如果繼續，系統將啟用 ADB 偵錯功能建立及測試 Android 應用程式。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且必須將裝置恢復原廠設定才能停用。</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不屬於有效機構，請與管理員聯絡。如果你是管理員，可以前往 g.co/ChromeEnterpriseAccount 進行機構設定</translation>
+<translation id="4209092469652827314">大</translation>
+<translation id="4213918571089943508">孩子的 Google 帳戶</translation>
+<translation id="4228071595943929139">使用貴機構的電子郵件地址</translation>
 <translation id="4232484478444192782">Android 手機能為你處理大小事，目前正在轉移你的 Wi-Fi 和密碼。</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="4287157641315808225">是，啟動 ChromeVox</translation>
 <translation id="4289732974614035569">選擇 PIN 碼</translation>
+<translation id="4291265871880246274">登入對話方塊</translation>
+<translation id="4305817255990598646">切換</translation>
 <translation id="4309165024397827958">允許具有位置存取權的 Android 應用程式和服務使用您裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
 <translation id="4317733381297736564">應用程式內購</translation>
 <translation id="4341905082470253054">正在檢查 TPM 狀態...</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
+<translation id="4378556263712303865">裝置申請</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />如果允許 ChromeOS 裝置自動傳送報告，我們就能安排 ChromeOS 修正與改善項目的優先順序。報告內容可能包含 ChromeOS 當機情形、使用的功能、一般的記憶體使用量，以及 Android 應用程式診斷與使用狀況資料等資訊。此外，部分匯總資料也為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供協助。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以前往 ChromeOS 裝置的設定允許或禁止傳送這類報告。網域管理員可以前往管理控制台變更這項設定。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />如果 Google 帳戶開啟「網路和應用程式活動」設定，系統可能會將 Android 資料儲存到你的 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">搜尋藍牙裝置和 USB 裝置</translation>
 <translation id="4403266582403435904">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用貴子女的 Google 帳戶密碼加密。</translation>
 <translation id="4410545552906060960">你可以使用一組數字 (PIN 碼) 來解鎖裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="4415213869328311284">你的 <ph name="DEVICE_TYPE" /> 已準備就緒。</translation>
+<translation id="443031431654216610">只能使用數字</translation>
+<translation id="4448560527907365660">儲存並查看更多功能</translation>
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
 <translation id="4450974146388585462">診斷</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，這可安全儲存你的資料。</translation>
+<translation id="4472298120638043495">你可以使用偏好的 Google 帳戶語言 (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">開始使用</translation>
+<translation id="450867954911715010">協助工具設定</translation>
+<translation id="4519605771716872386">檔案同步處理功能已開啟</translation>
+<translation id="4531924570968473143">你想要將誰加入這部 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，必須將裝置恢復原廠設定 (Powerwash)。</translation>
 <translation id="4567512141633030272">登入選項有誤？</translation>
+<translation id="4567533462991917415">設定完成後，你可以隨時新增更多使用者。每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
 <translation id="4568213207643490790">很抱歉，你無法使用 Google 帳戶登入這個裝置。</translation>
 <translation id="4611759022973144129">你可以使用這組密碼登入 <ph name="DEVICE_TYPE" />。</translation>
+<translation id="4634575639321169635">將這部裝置設定為工作用或個人使用</translation>
+<translation id="4689235506267737042">選擇示範模式偏好設定</translation>
 <translation id="4727847987444062305">受管理的訪客工作階段</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">已選取 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 不是有效的 Google for Education 帳戶，請與系統管理員聯絡。如果你是系統管理員，可以前往 g.co/workspace/edusignup 設定貴機構</translation>
+<translation id="4780558987886269159">工作</translation>
 <translation id="4806457879608775995">請詳閱以下條款，並控管您的資料</translation>
+<translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4837926214103741331">您未獲得授權，無法使用這個裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
+<translation id="4844333629810439236">其他鍵盤</translation>
 <translation id="4864369630010738180">登入中...</translation>
+<translation id="4867272607148176509">家長可以核准或封鎖應用程式、設定使用時間限制，以及控管網路瀏覽內容。如要存取大多數的學校資源，之後可以新增學校帳戶。</translation>
 <translation id="4877652723592270843">是否要啟動 ChromeOS Flex 內建的螢幕閱讀器 ChromeVox？如要啟動，請同時按住音量調高和調低鍵五秒。</translation>
 <translation id="4899696330053002588">含廣告內容</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">這是由 <ph name="SAML_DOMAIN" /> 代管的驗證服務</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
 <translation id="4965808351167763748">你確定要設定這個裝置以執行 Hangouts Meet 嗎？</translation>
+<translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
 <translation id="5029287942302939687">密碼已設定完成</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5062930723426326933">無法登入，請重新連線至網際網路並再試一次。</translation>
+<translation id="5085162214018721575">正在檢查有無更新</translation>
 <translation id="5097306410549350357">進一步瞭解如何使用位置資訊服務</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />只要與 Gemini 對話，Google AI 就能協助撰寫內容、擬定計畫及學習新知等等。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />設定完成後，選取底部檔案櫃的 Gemini 應用程式，即可開始使用。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">請將 <ph name="DEVICE_TYPE" /> 接上電源。</translation>
+<translation id="5145876360421795017">不要註冊裝置</translation>
 <translation id="5147516217412920887">按照手機上的操作說明輸入驗證碼</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
+<translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="5234523649284990414">ChromeVox 是 ChromeOS 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5240931875940563122">使用 Android 手機登入</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">註冊企業裝置</translation>
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確認你使用的是最新版本，然後再試一次。</translation>
 <translation id="5397378439569041789">註冊資訊站或看板裝置</translation>
+<translation id="5397794290049113714">你</translation>
 <translation id="5411022484772257615">無法完成學校註冊程序</translation>
 <translation id="5413640305322530561">進一步瞭解診斷與使用資料</translation>
 <translation id="542750953150239272">如果選擇繼續，即表示你允許這部裝置自動下載及安裝來自 Google、你的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="542948651837270806">必須安裝可信任平台模組韌體的更新項目。詳情請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
+<translation id="5453829744223920473">你的子女可以像在課堂上一樣，使用所有學校應用程式、書籤和資源。由學校設定基本規則。</translation>
 <translation id="5463450804024056231">訂閱 <ph name="DEVICE_TYPE" /> 電子郵件</translation>
 <translation id="5473099001878321374">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、貴子女的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
+<translation id="5502915260472117187">孩子</translation>
 <translation id="5511823366942919280">你確定要將這個裝置設為「Shark」嗎？</translation>
+<translation id="5513807280330619196">計算機</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
 <translation id="5539070192556911367">無法連上 Google</translation>
+<translation id="5549511085333906441">選擇設定</translation>
 <translation id="557722062034137776">重設裝置並不會影響你的 Google 帳戶，以及任何與這些帳戶同步處理的資料。不過，所有儲存在裝置中的資料將會遭到刪除。</translation>
 <translation id="5626172233890210551">改用密碼</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />為提供最佳體驗，<ph name="DEVICE_OS" /> 會收集裝置硬體資料並提供給 Google，以判斷應提供哪些更新。你可以選擇允許 Google 將這類資料用於其他用途，例如提供支援，以及改進 <ph name="DEVICE_OS" /> 的使用體驗和服務。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可以登入這部裝置並前往 chrome://system，查看標有 chromeosflex_ 的欄位，瞭解哪些資料傳送給 Google 用於篩選更新類型，以及你選擇與 Google 分享資料的其他情況。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能會將哪些資料提供給 Google 和資料用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
+<translation id="565899488479822148">正在安裝最新的更新版本</translation>
 <translation id="5659964844710667266">為這部 <ph name="DEVICE_TYPE" /> 建立密碼</translation>
 <translation id="5684661240348539843">資產 ID</translation>
 <translation id="5684950556880280580">你的密碼已更新</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">很抱歉，部分檔案已損毀，因此無法更新。已同步的檔案則未受影響。</translation>
 <translation id="5770125698810550803">顯示瀏覽按鈕</translation>
 <translation id="5799478978078236781">現在可以取得 <ph name="DEVICE_TYPE" /> 的實用提示、優惠資訊與最新消息，並提供意見回饋。</translation>
+<translation id="5800703268655655701">選取淺色或深色主題</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5810809306422959727">這個帳戶無法使用家長監護功能</translation>
+<translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5852112051279473187">糟糕！註冊這個裝置時發生嚴重錯誤。請再試一次，或與你的支援代表聯絡。</translation>
 <translation id="5852137567692933493">重新啟動並執行 Powerwash</translation>
 <translation id="5856721540245522153">啟用偵錯功能</translation>
+<translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
+<translation id="5870086504539785141">關閉無障礙選單</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895335062901455404">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 ChromeOS Flex 裝置。你可以在設定中選擇要同步處理的資料。</translation>
+<translation id="5916664084637901428">開啟</translation>
 <translation id="5919305207330938913">我們會依《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
 <translation id="5932441198730183141">你的可用授權不足，無法註冊這部 Google Meet 設備。請與銷售人員聯絡以購買更多授權。如果你確信這是系統誤判，請與支援團隊聯絡。</translation>
 <translation id="5939518447894949180">重設</translation>
+<translation id="5948536763493709626">請連接鍵盤或滑鼠，或使用觸控螢幕繼續設定。如果使用藍牙裝置，請確認該裝置處於可進行配對的狀態。</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="6016178549409952427">前往 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
+<translation id="6016972670657536680">請選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這個裝置。</translation>
 <translation id="6055544610007596637">從 Google Play 商店安裝 <ph name="DEVICE_TYPE" /> 適用的應用程式</translation>
@@ -305,58 +426,93 @@
 <translation id="6301300352769835063">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。如要瞭解詳情，請前往 g.co/flex/HWDataCollection。</translation>
 <translation id="6308493641021088955">登入資訊提供者：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">你已成功在 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能。</translation>
+<translation id="6343262564968371601">搜尋 Google、檔案、應用程式等，尋找所需資訊</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
 <translation id="6367097275976877956">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="640457954117263537">允許 ChromeOS 和 Android 應用程式及服務使用位置資訊。</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />如果允許 ChromeOS 裝置自動傳送報告，我們就能安排 ChromeOS 修正與改善項目的優先順序。報告內容可能包含 ChromeOS 當機情形、使用的功能，以及一般的記憶體使用量等資訊。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以前往 Chrome 裝置的設定允許或禁止傳送這類報告。網域管理員可以前往管理控制台變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">安裝重大更新</translation>
+<translation id="6478849105642611893">快速插入鍵位於 Tab 鍵下方</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
+<translation id="6488384360522318064">選取語言</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi 連線</translation>
 <translation id="6515620015470298987">裝置設定檢查發生問題，因此無法登入。請將 <ph name="DEVICE_TYPE" /> 恢復原廠設定，然後再試一次。</translation>
 <translation id="6519689855001245063">正在檢查資格</translation>
 <translation id="6532527800157340614">無法擷取你的存取憑證，因此登入失敗。請檢查網路連線，然後再試一次。</translation>
+<translation id="653920215766444089">正在搜尋指標裝置</translation>
 <translation id="65513682072153627">當某項設定或功能是由系統管理員管理時，系統會顯示這個受管理的圖示。</translation>
+<translation id="6561726789132298588">Enter 鍵</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定完成後登出帳戶，然後在登入畫面上選取 [新增使用者]。</translation>
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動然後按住螢幕。</translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
 <translation id="6671497123040790595">正在配置由 <ph name="MANAGER" /> 管理的設定</translation>
+<translation id="6675665718701918026">已連上指標裝置</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 資訊...</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">你可以復原 <ph name="EMAIL" />，但系統將刪除本機資料。</translation>
 <translation id="6748980958975836188">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》。</translation>
+<translation id="6749473226660745022">相片</translation>
+<translation id="6754918760968695779">快速插入</translation>
 <translation id="6789834167207639931">在下一個畫面中再次輸入 Google 帳戶密碼，完成復原程序</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />如果允許 ChromeOS 裝置自動傳送報告，我們就能安排 ChromeOS 修正與改善項目的優先順序。報告內容可能包含 ChromeOS 當機情形、使用的功能、一般的記憶體使用量，以及 Android 應用程式診斷與使用狀況資料等資訊。此外，部分匯總資料也為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供協助。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以前往孩子的 ChromeOS 裝置設定允許或禁止傳送這類報告。網域管理員可以前往管理控制台變更這項設定。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />如果孩子的 Google 帳戶開啟「網路和應用程式活動」設定，系統可能會將孩子的資料儲存到他們的 Google 帳戶。如要進一步瞭解這些設定和調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> 的熱門應用程式</translation>
 <translation id="682971198310367122">Google 隱私權政策</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
+<translation id="6852529053326738838">請詢問貴機構，或是使用公司電子郵件帳戶註冊，確認你的帳戶是否符合資格。</translation>
+<translation id="6867671714894555998">使用新鍵盤，效率更提升</translation>
 <translation id="6883319974225028188">糟糕！  系統無法儲存裝置設定。</translation>
+<translation id="6888831646723563669">連結之後，你就可以在新的 <ph name="DEVICE_TYPE" /> 上使用所有功能</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依開發人員設定儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入孩子的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可以前往「設定」關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6918733588290914545">使用 Android 手機快速設定</translation>
 <translation id="6920473853105515518">請確認 <ph name="DEVICE_TYPE" /> 已連上網際網路，然後再試一次。你也可以在其他裝置上前往 play.google/play-terms。</translation>
+<translation id="6929126689972602640">學校帳戶不支援家長監護功能。如要新增學校帳戶，以便從家裡存取 Google Classroom 和其他學校作業用的網站，請先使用孩子的個人帳戶登入。你稍後可在設定過程中新增學校帳戶。</translation>
+<translation id="6935031746833428401">進一步瞭解裝置管理功能</translation>
+<translation id="6950351336108213154">正在更新周邊裝置</translation>
 <translation id="6955698182324067397">你即將啟用 Chrome OS 偵錯功能，這會一併設定 sshd Daemon，並允許從 USB 隨身碟執行啟動作業。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6969216690072714773">請輸入這部裝置的相關資訊或更新現有資訊。</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="6984652455487792101">如果正在使用 Proxy 伺服器，請檢查 Proxy 設定或與網路管理員聯絡，確認 Proxy 伺服器是否正常運作。如果你認為不應使用 Proxy 伺服器，請調整 <ph name="LINK_START" />Proxy 設定<ph name="LINK_END" />。</translation>
 <translation id="6996245928508281884">請開啟手機的藍牙和 Wi-Fi</translation>
+<translation id="6996438701394974959">放大顯示和文字大小</translation>
+<translation id="6998793565256476099">註冊視訊會議裝置</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
 <translation id="7034692021407794547">有「帳單管理」權限的管理員必須先前往管理控制台的「Google Meet 設備」專區接受《Google Meet 設備服務條款》。</translation>
+<translation id="7039951224110875196">為孩子建立 Google 帳戶</translation>
 <translation id="7065223852455347715">這個裝置已鎖定，目前處於禁止企業註冊模式。您必須先完成裝置還原程序，才能註冊這個裝置。</translation>
+<translation id="7066572364168923329">選擇 <ph name="DEVICE_TYPE" /> 的設定</translation>
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7088674813905715446">管理員已將這個裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求你的管理員將裝置設為待處理狀態。</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7141105143012495934">無法擷取您的帳戶詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7144878232160441200">重試</translation>
+<translation id="7171259390164035663">不註冊</translation>
 <translation id="7189451821249468368">你的升級授權不足，無法註冊這個裝置。請與銷售人員聯絡以購買更多授權。如果你認為不應顯示這則訊息，請與支援小組聯絡。</translation>
 <translation id="7202337678781136582">使用 Android 手機掃描 QR code</translation>
+<translation id="7228854227189381547">不切換</translation>
+<translation id="7230881857327093958">系統會在設定完成後套用變更</translation>
 <translation id="7260186537988033909">資訊站和看板裝置註冊完成</translation>
+<translation id="7284411326658527427">每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
 <translation id="7290242001003353852">這項登入服務 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的攝影機。</translation>
+<translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
+<translation id="7326004502692201767">為孩子設定這部 <ph name="DEVICE_TYPE" /></translation>
+<translation id="732659786514229249">要在貴機構中註冊裝置嗎？</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7345706641791090287">確認你的密碼</translation>
+<translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
+<translation id="7403642243184989645">正在下載資源</translation>
+<translation id="7406912950279255498">色彩反轉模式</translation>
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網路連線，然後再試一次。</translation>
 <translation id="7475742997309661417">ChromeVox 是 ChromeOS 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。同時按住音量調高鍵和調低鍵五秒，即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -366,39 +522,61 @@
 <translation id="7506541170099744506">你的 <ph name="DEVICE_TYPE" /> 已成功註冊企業管理服務。</translation>
 <translation id="7509097596023256288">正在設定管理服務</translation>
 <translation id="7543104066686362383">在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能</translation>
+<translation id="7544227555407951270">註冊裝置</translation>
+<translation id="7549434883223124329">要切換裝置語言嗎？</translation>
 <translation id="7553242001898162573">請輸入您的密碼</translation>
 <translation id="7556242789364317684">很抱歉，<ph name="SHORT_PRODUCT_NAME" /> 無法復原你的設定。如要修正錯誤，<ph name="SHORT_PRODUCT_NAME" /> 必須透過 Powerwash 重設你的裝置。</translation>
 <translation id="7560756177962144929">同步處理 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">空間不足，無法進行更新</translation>
+<translation id="7616214729753637086">正在註冊裝置…</translation>
 <translation id="7622114377921274169">充電中。</translation>
 <translation id="7630426712700473382">這部裝置是由 <ph name="MANAGER" /> 所管理，你每次使用時都必須登入。</translation>
 <translation id="7639914187072011620">無法從伺服器擷取 SAML 重新導向網址</translation>
 <translation id="7643117827468520640">請詳閱這些條款</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依開發人員設定儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入你的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你可以前往「設定」關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659584679870740384">您未獲得授權，無法使用這個裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7660116474961254898">請按照手機上的指示操作</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
+<translation id="7666531788977935712">已啟用「繼續」按鈕</translation>
 <translation id="7671139479636735732">按一下滑鼠右鍵即可以視覺化方式呈現你的構想</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。如要復原本機資料，請輸入舊密碼。</translation>
 <translation id="7722040605881499779">更新所需空間：<ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
+<translation id="7746045113967198252">放大或縮小包括文字在內的畫面項目。你也可以稍後依序前往「設定」&gt;「裝置」&gt;「顯示」調整這項設定。</translation>
 <translation id="7760176388948986635">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用這部裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自這部裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含任何身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
 <translation id="7784875615510899699">可用授權不足，無法註冊這部 Google Beam 裝置。如要購買更多授權，請與經銷商聯絡。若你認為不應顯示這則訊息，請與經銷商聯絡。</translation>
+<translation id="7791269138074599214">輸入法</translation>
+<translation id="7791436592012979144">已啟用反向捲動功能</translation>
 <translation id="7792012425874949788">登入帳戶時發生錯誤</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連上網路</translation>
+<translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="7851457902707056880">只能使用擁有者帳戶才能登入。請重新開機並使用擁有者帳戶登入。電腦會在 30 秒後自動開機。</translation>
 <translation id="7870730066603611552">設定後查看同步處理選項</translation>
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
+<translation id="7887864092952184874">已配對藍牙滑鼠</translation>
 <translation id="7906440585529721295">本機資料將遭到刪除</translation>
+<translation id="7910725946105920830">使用個人 Google 帳戶</translation>
+<translation id="7918257978052780342">註冊</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />如果允許 ChromeOS 裝置自動傳送報告，我們就能安排 ChromeOS 修正與改善項目的優先順序。報告內容可能包含 ChromeOS 當機情形、使用的功能，以及一般的記憶體使用量等資訊。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以前往孩子的 ChromeOS 裝置設定允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">進階選項</translation>
 <translation id="7943311690198910993">登入方式已更新</translation>
 <translation id="795240231873601803">進行公司和學校帳戶的企業註冊程序</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
 <translation id="7975504106303186033">你必須將這部 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
+<translation id="7980084013673500153">資產 ID：<ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">請重新啟動裝置以修復這個錯誤。</translation>
 <translation id="7990958035181555539">自動傳送 Android 手機上的 Wi-Fi 資訊</translation>
+<translation id="8022466874160067884">輸入 Google 帳戶和密碼</translation>
+<translation id="8049029041626250638">請連接鍵盤或滑鼠。如果使用藍牙裝置，請確認該裝置處於可進行配對的狀態。</translation>
 <translation id="8054563304616131773">請輸入有效的電子郵件地址</translation>
+<translation id="8054921503121346576">已連接 USB 鍵盤</translation>
 <translation id="8065144531309810062">運用 Google AI 提升創造力與生產力</translation>
+<translation id="8082106343289440791">要與「<ph name="DEVICE_NAME" />」配對嗎？</translation>
 <translation id="8097959162767603171">系統管理員必須先在管理控制台接受 Chrome 裝置清單中的服務條款。</translation>
 <translation id="8098616321286360457">需要網路連線</translation>
 <translation id="8129265306888404830">如要使用貴機構的電子郵件地址 (<ph name="EMAIL_DOMAIN" />)，你必須進行企業註冊程序。假如這是你的個人裝置，請登入個人 Google 帳戶。</translation>
@@ -406,28 +584,37 @@
 <translation id="8146177459103116374">如果你已在這部裝置上註冊，你可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
 <translation id="8146793085009540321">登入失敗，請與您的管理員聯絡或再試一次。</translation>
 <translation id="8147346945017130012">自動將當機報告以及診斷與使用資料傳送給 Google，協助改善 Chrome 和 ChromeOS 的功能與效能。</translation>
+<translation id="8152760814912191567">Google Beam for Zoom</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
 <translation id="8157704005178149728">正在設定監護功能</translation>
 <translation id="8174047975335711832">裝置資訊</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi-Fi、行動網路和感應器等來源，估算出裝置的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />你隨時可以關閉裝置的 Android 定位服務，只要依序前往「設定」&gt;「應用程式」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「安全性與位置資訊」&gt;「位置」即可。你也可以使用同一個選單關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、行動網路和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">請再次輸入您的密碼，以更新您的 <ph name="DEVICE_TYPE" /> 設定檔。</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
 <translation id="8241806945692107836">正在確定裝置設定...</translation>
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="826905130698769948">用戶端憑證無效</translation>
+<translation id="8271379370373330993">後續幾個步驟須由家長完成。你可以在完成帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給孩子。</translation>
 <translation id="8274924778568117936">完成更新前，請勿將 <ph name="DEVICE_TYPE" /> 關機。<ph name="DEVICE_TYPE" /> 會在安裝完成後重新啟動。</translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="8291942417224950075">個人用途</translation>
 <translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或使用受 Family Link 監護的 Google 帳戶登入。</translation>
 <translation id="8321837372750396788">這部 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
+<translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="8354034204605718473">已新增孩子的 PIN 碼</translation>
 <translation id="8366396658833131068">你的網路連線已恢復。請選取其他網路，或按底下的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
 <translation id="8408270600235826886">您可以控制要分享哪些資料給 Google，並隨時在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="8425768983279799676">你可以使用 PIN 碼將裝置解鎖。</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="843173223122814223">使用 AI 建立背景</translation>
 <translation id="8452105022015742247">從 Android 手機傳輸 Google 帳戶資訊</translation>
 <translation id="8464132254133862871">這個使用者帳戶不符合使用服務的資格。</translation>
 <translation id="8524841856047224176">打造符合個人需求的相機拍攝背景，以便用於視訊通話等情境</translation>
+<translation id="8527257351549797148">貴機構可能會要求你註冊，才能存取應用程式、擴充功能和其他內容。這樣一來，貴機構也能管理安全性和裝置設定等項目。</translation>
+<translation id="8558063527625343224">設定 Google Beam</translation>
 <translation id="8569673829373920831">進一步瞭解<ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
 <translation id="8627804903623428808">請詳閱以下條款，並控管貴子女的資料</translation>
@@ -436,9 +623,13 @@
         <ph name="BR" />
         附近的裝置會看到 <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="8655972064210167941">無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓 Android 應用程式和服務提供適地性功能。為達成這個目的，Google 會定期收集裝置感應器資訊和你附近的無線訊號，並匯總這些資料，建立無線訊號定位資料庫。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 使用這些資訊時不會識別你的身分。這些資訊只會用於提升定位精確度和適地性服務，並改進、提供及維護 Google 的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。如果關閉「定位精確度」，系統就不會收集任何定位精確度資料。這樣一來，Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 Chrome OS 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="8695139659682234808">在設定完成後新增家長監護功能</translation>
 <translation id="8698269656364382265">如要返回上一個畫面，請從左側向右側滑動。</translation>
+<translation id="8718994464069323380">已偵測到觸控螢幕</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8726206820263995930">從伺服器擷取政策設定時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="8730621377337864115">完成</translation>
@@ -446,24 +637,36 @@
 <translation id="8740247629089392745">你可以將這部 Chromebook 交給「<ph name="SUPERVISED_USER_NAME" />」。設定即將完成，完成後即可開始探索。</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
 <translation id="8777628254805677039">Root 密碼</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">輸入藍牙配對碼，然後按下返回鍵或 Enter 鍵。</translation>
 <translation id="8794548468611058947">你可以為這個 <ph name="DEVICE_TYPE" /> 設定 PIN 碼，這樣就不必輸入 Google 帳戶密碼登入</translation>
 <translation id="8830796635868321089">無法以目前的 Proxy 設定啟動更新檢查，請調整 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
+<translation id="8855977033756560989">這台 Chromebook Enterprise 裝置隨附 Chrome Enterprise 升級版。為充分發揮企業版功能的優勢，請使用 Google 管理員帳戶註冊這台裝置。</translation>
 <translation id="885746075120788020">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 Chrome OS 裝置。你可以在「設定」中選擇要同步處理的資料。</translation>
+<translation id="8868333925931032127">正在啟動展示模式</translation>
 <translation id="8875221558267407626">生成內容摘要、簡化複雜語言或提問</translation>
+<translation id="8907701755790961703">請選取國家/地區</translation>
 <translation id="8913163265790894442">使用手機就能輕鬆設定 <ph name="DEVICE_TYPE" />。不必手動輸入密碼，即可新增 Wi-Fi 和 Google 帳戶。
         <ph name="BR" />
         <ph name="BR" />
         裝置會顯示為 <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">繼續</translation>
 <translation id="8946359700442089734">尚未在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上完整啟用偵錯功能。</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
+<translation id="8968906873893164556">選擇要用來設定的帳戶</translation>
+<translation id="8973596347849323817">你可以根據個人需求自訂這個裝置，日後也可前往「設定」變更這些無障礙功能。</translation>
 <translation id="8975396729541388937">你隨時可以取消訂閱，只要在收到的電子郵件中按一下相關連結即可。</translation>
+<translation id="8987305927843254629">每位使用者都可以建立個人專屬的體驗，並維護資料的私密性。</translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="903480517321259405">重新輸入 PIN 碼</translation>
 <translation id="9040473193163777637">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？如要啟動，請同時按住高低音量調整鍵五秒。</translation>
 <translation id="9068298336633421551">允許具有位置存取權的 Android 應用程式和服務使用這個裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
+<translation id="9074836595010225693">已連接 USB 滑鼠</translation>
 <translation id="9076523132036239772">抱歉，系統無法驗證你的電子郵件或密碼，請先連線至網路。</translation>
+<translation id="9089959054554410481">變更觸控板捲動方向</translation>
 <translation id="9158715103698450907">糟糕！驗證過程中發生網路通訊問題，請檢查你的網路連線，然後再試一次。</translation>
+<translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
 <translation id="9214520840402538427">糟糕！系統嘗試初始設定安裝時間 (installation-time) 屬性，但是動作已逾時。請洽詢你的支援代表。</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> 專屬功能。<ph name="END_PARAGRAPH1" />
@@ -473,4 +676,7 @@
         <ph name="BR" />
         裝置會顯示為 <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">拒絕</translation>
+<translation id="954749761428814584">語言和輸入法</translation>
+<translation id="960987915827980018">剩下約 1 個小時</translation>
+<translation id="995420352808264005">選擇裝置註冊類型</translation>
 </translationbundle>

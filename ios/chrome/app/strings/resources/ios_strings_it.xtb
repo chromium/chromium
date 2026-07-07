@@ -1573,6 +1573,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="628251768213143684">Puoi gestire in qualsiasi momento i dati salvati nel tuo Account Google</translation>
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
+<translation id="6295140892595702619">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva). I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="6295751040240588413">Nickname carta non valido</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
@@ -2181,7 +2182,6 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Inserirai i dati su <ph name="URL" /></translation>
 <translation id="8274795744553482834">Stai per cambiare profilo</translation>
 <translation id="8275068909952022340">Altro…</translation>
 <translation id="8280797717392145626">Link ricevuti</translation>
@@ -2415,6 +2415,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sito fissato</translation>
 <translation id="8990960056509724223">Impossibile salvare il file a causa delle policy della tua organizzazione</translation>
 <translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
+<translation id="9003263770394939629">Suggerito da Gemini Gestisci la compilazione automatica avanzata nelle impostazioni.</translation>
 <translation id="9003677638446136377">Controlla</translation>
 <translation id="9006453925669499173">Menu → Nuova scheda Incognito</translation>
 <translation id="9008201768610948239">Ignora</translation>

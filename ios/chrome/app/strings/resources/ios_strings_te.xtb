@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">మీ Google ఖాతాలో సేవ్ అయిన దానిని మీరు ఎప్పుడైనా మేనేజ్ చేయవచ్చు</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
+<translation id="6295140892595702619">Geminiతో చాట్ చేయడానికి మీ మైక్రోఫోన్‌ను ఉపయోగించండి. మీరు Geminiతో మాట్లాడినప్పుడు, Gemini యాప్స్ యాక్టివిటీలో ఆడియో స్టోర్ చేయబడుతుంది (అది ఆన్‌లో ఉంటే). మీ డేటాను జెనరేటివ్ AI మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగించడం జరగదు</translation>
 <translation id="6295751040240588413">కార్డ్ మారుపేరు చెల్లదు</translation>
 <translation id="629730747756840877">ఖాతా</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
@@ -2181,7 +2182,6 @@
 <translation id="8264966119170358612">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లలో కొన్ని, Google-యేతర డేటా ఉల్లంఘనలో బహిర్గతమయ్యాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">మీ iPad రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు మీ <ph name="USER_NAME" /> ఖాతా నుండి సైన్ అవుట్ చేయబడ్డారు. తిరిగి సైన్ ఇన్ చేయడానికి, దిగువున ఉన్న "కొనసాగండి" అనే ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">మీరు <ph name="URL" />లో సమాచారాన్ని ఎంటర్ చేయండి</translation>
 <translation id="8274795744553482834">మీరు ప్రొఫైల్స్‌ను మార్చబోతున్నారు</translation>
 <translation id="8275068909952022340">మరిన్ని…</translation>
 <translation id="8280797717392145626">లింక్‌లు అందాయి</translation>
@@ -2415,6 +2415,7 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, పిన్ చేసిన సైట్</translation>
 <translation id="8990960056509724223">మీ సంస్థ పాలసీల కారణంగా ఫైల్‌ను సేవ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
+<translation id="9003263770394939629">Gemini ద్వారా సూచించినది. సెట్టింగ్‌లలో మెరుగైన ఆటోఫిల్‌ను మేనేజ్ చేయండి.</translation>
 <translation id="9003677638446136377">మళ్లీ చెక్ చేయండి</translation>
 <translation id="9006453925669499173">మెనూ → కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>

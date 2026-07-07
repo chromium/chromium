@@ -504,6 +504,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="175656076281618225">Iluzja</translation>
 <translation id="1757773103848038814">Czcionka o stałej szerokości</translation>
 <translation id="1757935267918149452">Przycisk Zmień hasło do Google; aktywuj, aby zmienić hasło do konta Google</translation>
+<translation id="1759776526873274358">Autouzupełnianie kodów weryfikacyjnych używanych przez witryny w celu poprawienia bezpieczeństwa. Chrome może pobierać te kody z Gmaila. <ph name="BEGIN_LINK" />Dowiedz się więcej o tej funkcji<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego urządzenia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Zdjęcie (archiwalne)</translation>
@@ -3129,6 +3130,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862579898803147654">Układarka 8</translation>
 <translation id="5863515189965725638">Edytuj numer IBAN</translation>
+<translation id="5863517400058880216">Autouzupełnianie kodów weryfikacyjnych z Gmaila</translation>
 <translation id="5863847714970149516">Otwierana strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5866257070973731571">Dodaj numer telefonu</translation>
 <translation id="5866327164731551901">Źródła: <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4519,6 +4521,7 @@ Dodatkowe informacje:
 <translation id="7967973398323409409">Twoje informacje autouzupełniania nie są dla nikogo widoczne</translation>
 <translation id="79682505114836835">Wartość „<ph name="VALUE" />” jest nieprawidłowym kodem szesnastkowym koloru.</translation>
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
+<translation id="7971403153351954587">Twoja organizacja monitoruje kopiowanie treści</translation>
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
 <translation id="7976053965094442846">Wydawcy korzystający z opcji „Kup teraz, zapłać później” dostępni w przypadku płatności ratalnych. Klawiatura jest ukryta.</translation>
 <translation id="7976214039405368314">Zbyt wiele żądań</translation>

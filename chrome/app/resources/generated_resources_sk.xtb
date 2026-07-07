@@ -80,7 +80,6 @@
 <translation id="1049795001945932310">&amp;Nastavenia jazyka</translation>
 <translation id="1050693411695664090">Slabé</translation>
 <translation id="1053226848101751430">Záznam bol odstránený</translation>
-<translation id="1053898984916097744">Začnite niečo nové alebo získajte pomoc s postupom.</translation>
 <translation id="1054048317165655285">Dokončite nastavenie v telefóne</translation>
 <translation id="1054153489933238809">Otvoriť pôvodný &amp;obrázok na novej karte</translation>
 <translation id="1054187194995068149">Dobrý deň. Toto je ukážka.</translation>
@@ -93,7 +92,6 @@
 <translation id="1059944192885972544">Boli nájdené karty (<ph name="NUM" />) pre dopyt <ph name="SEARCH_TEXT" /></translation>
 <translation id="1060172044035704924">Vymeniť s pravým zobrazením</translation>
 <translation id="1060570945511946595">Spravovať tikety</translation>
-<translation id="1061130374843955397">Víta vás <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Vytvoriť QR kód pre tento odkaz</translation>
 <translation id="1061904396131502319">Už je takmer čas na prestávku</translation>
 <translation id="10619348099955377">Kopírovať zobrazovaný názov</translation>
@@ -106,7 +104,6 @@
 <translation id="106855837688344862">Dotykové udalosti</translation>
 <translation id="1069104208554708737">Tento prístupový kľúč bude uložený iba v tomto zariadení</translation>
 <translation id="1069355737714877171">Odstrániť profil eSIM karty s názvom <ph name="PROFILE_NAME" /></translation>
-<translation id="1069778954840159202">Automaticky získať účet z telefónu s Androidom</translation>
 <translation id="1069814191880976658">Vybrať inú obrazovku</translation>
 <translation id="1070357312245925724">Skratka navigácie</translation>
 <translation id="1070705170564860382">Otvorí sa v alternatívnom prehliadači o <ph name="COUNTDOWN_SECONDS" /> s</translation>
@@ -212,7 +209,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1147867844630510586">Prihláste sa účtom <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Povoliť skripty používateľa</translation>
 <translation id="1148624853678088576">Všetko je nastavené</translation>
-<translation id="1148669835763563782">Dostávate najnovšiu aktualizáciu softvéru prinášajúcu lepšie zabezpečenie a najnovšie funkcie Chromebooku. Táto aktualizácia zahŕňa zlepšené nastavovanie, ktorá vám pomôže bez problémov začať s Chromebookom.</translation>
 <translation id="1149401351239820326">Mesiac vypršania platnosti</translation>
 <translation id="1149483087970735785">Asistenčná technológia</translation>
 <translation id="1149706845443784281">&amp;Spravovať vyhľadávače a odkazy</translation>
@@ -329,7 +325,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1227660082540388410">Úprava hesla</translation>
 <translation id="1227993798763400520">Prenos zlyhal. Skúste to znova.</translation>
 <translation id="1230961867057865279">Stránka nie je v jazyku <ph name="LANGUAGE" /></translation>
-<translation id="1231426483209637778">Keď nabudúce použijte zariadenie <ph name="DEVICE_TYPE" />, vašu sieť si zapamätáme</translation>
 <translation id="1231489110997683307">Stránka nie je v jazyku <ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">Weby môžu žiadať o zaznamenávanie a používanie vstupu myši</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
@@ -349,7 +344,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1241968867980182121">Zavrieť horné zobrazenie</translation>
 <translation id="1242044645101871359">Prihláste sa znova</translation>
 <translation id="1242633766021457174">Nástroj <ph name="THIRD_PARTY_TOOL_NAME" /> chce resetovať vaše nastavenia.</translation>
-<translation id="1243002225871118300">Zmena veľkosti zobrazenia a textu</translation>
 <translation id="1243314992276662751">Nahrať</translation>
 <translation id="1244303850296295656">Chyba rozšírenia</translation>
 <translation id="1245331638296910488">Súbory, ktoré otvoríte v súprave Microsoft 365 budú prenesené do služby OneDrive</translation>
@@ -368,7 +362,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1254767904958485584">Rozdelené zobrazenie bolo vytvorené</translation>
 <translation id="1255095393630332248">Pri zdieľaní kariet sa obsah ich stránok, médiá a webové adresy odosielajú Googlu.</translation>
 <translation id="1256143630373008432">Autonómny test sa nepodaril</translation>
-<translation id="1256588359404100567">Nastavenie bolo synchronizované z vášho predchádzajúceho zariadenia.</translation>
 <translation id="1257336506558170607">Exportovať vybraný certifikát</translation>
 <translation id="1258491128795710625">Novinky</translation>
 <translation id="1260451001046713751">Vždy povoliť zobrazovanie kontextových okien z webu <ph name="HOST" /></translation>
@@ -390,6 +383,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1272508081857842302">Otvárajú sa <ph name="BEGIN_LINK" />podporované odkazy<ph name="END_LINK" /></translation>
 <translation id="1273937721055267968">Blokovať <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Spravujte pripojenie medzi vyhľadávacími službami a aplikáciami Google Workspace, ako je Disk Google</translation>
 <translation id="1274997165432133392">Súbory cookie a ďalšie dáta webov</translation>
 <translation id="1275936815032730048">kláves spúšťača + šípka doprava</translation>
 <translation id="1275963833368139883">Keď vyhľadávate v histórii prehliadania, odpovede a výsledky vyhľadávania sú založené na obsahu príslušnej stránky. Vďaka tomu máte k dispozícii lepšie výsledky.</translation>
@@ -464,7 +458,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1333489022424033687">Niektoré funkcie na <ph name="ORIGIN" /> nemusia fungovať, dokým nevymažete dáta, ktoré ostatné weby uložili v zariadení</translation>
 <translation id="1333965224356556482">Nepovoliť webom zobrazovať polohu</translation>
 <translation id="13356285923490863">Názov pravidla</translation>
-<translation id="1335929031622236846">Registrácia vášho zariadenia</translation>
 <translation id="133660899895084533">Čítať informácie a údaje periférií s rozhraním Bluetooth</translation>
 <translation id="1336902454946927954">Bezpečnostný kľúč je uzamknutý, pretože sa nepodarilo rozpoznať odtlačok prsta. Ak ho chcete odomknúť, zadajte PIN.</translation>
 <translation id="1338631221631423366">Páruje sa…</translation>
@@ -481,7 +474,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1348966090521113558">Nastavenia dostupnosti myši</translation>
 <translation id="1350962700620017446"><ph name="EXTENSION_NAME" /> chce vyhľadať skenery dokumentov a získať k nim prístup.</translation>
 <translation id="1352834119074414157">Tento balík môže byť nefunkčný alebo napadnutý. Zavrite toto okno a znova ho stiahnite.</translation>
-<translation id="1353275871123211385">Ak chcete používať rodičovskú kontrolu, napríklad schvaľovať aplikácie a limity času používania, musí mať dieťa účet Google spravovaný rodičom. Školský účet, ktorý sa bude dať používať s nástrojmi, ako je Učebňa Google, môžete pridať neskôr.</translation>
 <translation id="135389172849514421">Funguje offline</translation>
 <translation id="1353980523955420967">Súbor PPD sa nepodarilo nájsť. Skontrolujte, či je Chromebook online, a skúste to znova.</translation>
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
@@ -562,7 +554,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1426410128494586442">Áno</translation>
 <translation id="142655739075382478">Aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="1427179946227469514">Výška hlasu pre prevod textu na reč</translation>
-<translation id="1427269577154060167">Krajina</translation>
 <translation id="1428373049397869723">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z aplikácie Finder alebo iných. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Uložili ste poznámku k heslu na tomto webe. Ak si ju chcete zobraziť, vyberte možnosť Správa hesiel vo vyhľadávaní a na paneli s adresou.</translation>
 <translation id="1429300045468813835">Všetko bolo vymazané</translation>
@@ -700,7 +691,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1536754031901697553">Odpája sa...</translation>
 <translation id="1536883206862903762">Deaktivujete tým rozšírenia a obnovíte bezpečné predvolené nastavenia. Karty, súbory a súbory cookie budú zachované. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa celej obrazovky</translation>
-<translation id="15373452373711364">Veľký kurzor myši</translation>
 <translation id="1538808328818992871">Minimálny počet znakov je <ph name="MIN_LENGTH" /></translation>
 <translation id="1539248305642687917">Nepovoliť webom prepísať vstup klávesnice</translation>
 <translation id="1539727654733007771">Nie sú nastavené žiadne mobilné siete. Stiahnite <ph name="BEGIN_LINK" />nový profil.<ph name="END_LINK" /></translation>
@@ -840,7 +830,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1634224622052500893">Bola nájdená sieť Wi‑Fi</translation>
 <translation id="1634783886312010422">Už ste zmenili toto heslo na webe <ph name="WEBSITE" />?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Chcete odstrániť kartu aj skupinu?}=1{Chcete odstrániť karty aj skupinu?}few{Chcete odstrániť karty aj skupiny?}many{Remove tabs and delete groups?}other{Chcete odstrániť karty aj skupiny?}}</translation>
-<translation id="1636212173818785548">OK</translation>
 <translation id="1637765355341780467">Pri pokuse o otvorenie profilu sa vyskytla chyba. Niektoré funkcie nemusia byť k dispozícii.</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
 <translation id="1641113438599504367">Bezpečné prehliadanie</translation>
@@ -852,7 +841,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1644574205037202324">História</translation>
 <translation id="1644852018355792105">Zadajte heslo rozhrania Bluetooth pre zariadenie <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Neznámy zdroj</translation>
-<translation id="1646045728251578877">K dispozícii je aktualizácia softvéru</translation>
 <translation id="1647408325348388858">Chcete <ph name="FILE_NAME" /> otvoriť a upraviť v tejto webovej aplikácii?</translation>
 <translation id="1647986356840967552">Predchádzajúca stránka</translation>
 <translation id="1648401604841225489">Odomknúť prístupové kľúče</translation>
@@ -860,7 +848,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1648528859488547844">Na určenie polohy používať Wi‑Fi alebo mobilnú sieť</translation>
 <translation id="1650407365859096313">Otvorí sa na novej karte. Povolenie je <ph name="PERMISSION_STATE" />.</translation>
 <translation id="1650723160137517362">Otvoriť odkaz v dolnom zobrazení</translation>
-<translation id="1650801028905250434">Súbory v sekcii Môj disk sa budú automaticky synchronizovať s Chromebookom, aby ste k nim mali prístup aj bez internetového pripojenia. Túto možnosť môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Súbory.</translation>
 <translation id="1651008383952180276">Rovnakú prístupovú frázu musíte zadať dvakrát</translation>
 <translation id="1651609627703324721">Táto karta prezentuje obsah VR do náhlavnej súpravy</translation>
 <translation id="1652281434788353738">Hĺbavá</translation>
@@ -927,7 +914,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1698899521169711967">Kurzorové prehliadanie</translation>
 <translation id="1699807488537653303">Opravte chybu hesla</translation>
 <translation id="1700201317341192482">Odstránenie virtuálnej karty</translation>
-<translation id="1700517974991662022">Navštívené</translation>
 <translation id="1701367827913789499">Pohodlne čítajte s minimálnym rozptyľovaním pomocou tlačidla režimu čítania na paneli s nástrojmi</translation>
 <translation id="1703331064825191675">Už si nemusíte robiť starosti o heslá</translation>
 <translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
@@ -981,7 +967,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1745732479023874451">Spravovať kontakty</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Chcete otvoriť a upraviť # súbory v tejto webovej aplikácii?}many{Open and edit # files in this web app?}other{Chcete otvoriť a upraviť # súborov v tejto webovej aplikácii?}}</translation>
 <translation id="1748563609363301860">Toto heslo môžete uložiť vo svojom účte Google alebo iba v tomto zariadení</translation>
-<translation id="1749645492410897998">Inštalácia softvéru</translation>
 <translation id="1749733017156547309">Heslo je povinné</translation>
 <translation id="1750172676754093297">Váš bezpečnostný kľúč nedokáže ukladať odtlačky prstov</translation>
 <translation id="1750238553597293878">Naďalej používajte heslá vo svojom účte Google</translation>
@@ -1050,7 +1035,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1796460466266263589">Ak chcete pokračovať v používaní Gemini, overte svoju totožnosť</translation>
 <translation id="1796588414813960292">Funkcie vyžadujúce zvuk nebudú podporované</translation>
 <translation id="1798726622311813209">Kreditné a debetné karty</translation>
-<translation id="1798832846931769717">Google Beam pre Meet</translation>
 <translation id="180203835522132923">Tlačidlo vyhľadávania + O, potom W</translation>
 <translation id="1802624026913571222">Po zavretí krytu prejsť do režimu spánku</translation>
 <translation id="1802687198411089702">Stránka nereaguje. Môžete na ňu počkať alebo rozhranie ukončiť.</translation>
@@ -1091,7 +1075,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1825565032302550710">Port musí byť v rozsahu od 1024 do 65535</translation>
 <translation id="18260074040409954">Uložené heslá môžete používať v ľubovoľnom zariadení. Ukladajú sa do služby <ph name="GOOGLE_PASSWORD_MANAGER" /> účtu <ph name="EMAIL" />.</translation>
 <translation id="1826516787628120939">Kontroluje sa</translation>
-<translation id="1826657447823925402">Obrátené posúvanie je vypnuté</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" /> farba</translation>
 <translation id="1827504459960247692">Názov hotspotu</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Otvoriť všetky}=1{Otvoriť záložku}few{Otvoriť všetky ({COUNT})}many{Otvoriť všetky ({COUNT})}other{Otvoriť všetky ({COUNT})}}</translation>
@@ -1129,7 +1112,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1854180393107901205">Zastaviť prenášanie</translation>
 <translation id="1856715684130786728">Pridať umiestnenie...</translation>
 <translation id="1857044401921988155">Keď kliknete na Uložiť, táto skupina kariet sa stane priečinkom so záložkami a bude odstránená z vašich skupín vo všetkých zariadeniach</translation>
-<translation id="185766080319917408">Kláves spúšťača sa nachádza naľavo od ľavého klávesa Alt</translation>
 <translation id="1859294693760125695">Už nemám záujem</translation>
 <translation id="1859339856433307593">Heslo tohto účtu už bolo do služby <ph name="BRAND" /> (<ph name="USER_EMAIL" />) uložené</translation>
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
@@ -1154,7 +1136,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1874248162548993294">Môže zobrazovať ľubovoľné reklamy</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Presunúť kartu do iného okna}few{Presunúť karty do iného okna}many{Presunúť karty do iného okna}other{Presunúť karty do iného okna}}</translation>
 <translation id="1877377290348678128">Štítok (nepovinné)</translation>
-<translation id="1877377730633446520">Vyžaduje to približne <ph name="REQUIRED_SPACE" />. Momentálne máte k dispozícii <ph name="FREE_SPACE" />.</translation>
 <translation id="1877860345998737529">Priradenie akcií prepínačov</translation>
 <translation id="1878155070920054810">Zdá sa, že batéria Chromebooku sa vybije pred dokončením aktualizácie. Ak chcete predísť prerušeniu, skontrolujte, či sa nabíja správne.</translation>
 <translation id="1878477879455105085">Otvorené</translation>
@@ -1180,7 +1161,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1892341345406963517">Dobrý deň, <ph name="PARENT_NAME" /></translation>
 <translation id="1892453608039100484">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.
 2. V nastaveniach systému Windows kliknite na <ph name="BUTTON_2" />.</translation>
-<translation id="189358972401248634">Ďalšie jazyky</translation>
 <translation id="1895658205118569222">Vypnúť</translation>
 <translation id="1897120393475391208">Použiť silné heslo</translation>
 <translation id="1897860317037652061">Nepodarilo sa skontrolovať</translation>
@@ -1208,7 +1188,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="19147273405311768">Obnoviť predvolené nastavenia panela s nástrojmi</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Zložiť</translation>
-<translation id="1915734383465415025">Číslo predajne</translation>
 <translation id="1916502483199172559">Predvolený červený avatar</translation>
 <translation id="1916770123977586577">Ak chcete na webe uplatniť aktualizované nastavenia, znova načítajte túto stránku</translation>
 <translation id="1917766536967060661">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" /> a <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) s vami už nebude môcť komunikovať v službách Googlu.</translation>
@@ -1216,12 +1195,10 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1918141783557917887">&amp;Menší</translation>
 <translation id="1918281588461452432">Keď prehliadate weby, obsah ich stránok sa šifruje a ukladá vo vašom zariadení</translation>
 <translation id="1918761619391445601">Rozšírenie <ph name="EXTENSION_NAME" /> je pripnuté. Zobraziť ďalšie možnosti</translation>
-<translation id="1919096511823372013">Vkladajte odkazy, emodži a ďalšie položky. Umelá inteligencia od Googlu vám môže pomôcť aj s písaním a vytváraním obrázkov.</translation>
 <translation id="1920390473494685033">Kontakty</translation>
 <translation id="1921544956190977703">Máte najúčinnejšie zabezpečenie Chromu pred nebezpečnými webmi, sťahovanými súbormi a rozšíreniami</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">Rozšírenie <ph name="NAME" /> je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho v účte Google.</translation>
-<translation id="1922496389170590548">Školský účet dieťaťa</translation>
 <translation id="1923468477587371721">Weby Google, ako sú Gmail, Disk a YouTube, používajú jazyk vášho účtu Google, pokiaľ ste nezmenili jazyk jednotlivých služieb</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
 <translation id="192494336144674234">Otvoriť pomocou</translation>
@@ -1256,7 +1233,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1941685451584875710">Správca nakonfiguroval váš účet tak, aby sa automaticky pripájal k službe Microsoft OneDrive, ale niečo sa pokazilo.</translation>
 <translation id="194174710521904357">Tomuto webu ste dočasne povolili používať súbory cookie tretích strán, čo znamená menšiu ochranu prehliadania. Je však pravdepodobnejšie, že funkcie webu budú fungovať podľa očakávania.</translation>
 <translation id="1942128823046546853">Čítať a meniť všetky vaše údaje na všetkých weboch</translation>
-<translation id="1944528062465413897">Párovací kód Bluetooth:</translation>
 <translation id="1944535645109964458">Nie sú k dispozícii žiadne prístupové kľúče</translation>
 <translation id="1947136734041527201">Umožňuje vám prihlásiť sa na weboch účtom, ktorý ste si zriadili prostredníctvom služby identity</translation>
 <translation id="1948528728718281125">Prístup ku kamere je povolený pre aplikácie, weby s povolením používať kameru a systémové služby</translation>
@@ -1294,15 +1270,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1974159333077206889">Rovnaký zvuk vo všetkých reproduktoroch</translation>
 <translation id="1975841812214822307">Odstrániť...</translation>
 <translation id="1976823515278601587">Veľké úspory</translation>
-<translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />Registráciou zariadení v organizácii ich nastavíte na centralizovanú správu zariadení. Vaša organizácia môže vyžadovať registráciu z viacerých dôvodov:<ph name="END_DESCRIPTION" />
-    <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />Zvýšenie zabezpečenia<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
-    <ph name="BEGIN_DESCRIPTION1" />Organizácia môže konfiguráciou ďalších nastavení zabezpečenia zaistiť ochranu údajov používateľov aj zariadení. Okrem toho môže vykonať akcie, ako je vzdialený reset alebo deaktivácia strateného zariadenia.<ph name="END_DESCRIPTION1" />
-    <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />Prispôsobenie prostredia<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
-    <ph name="BEGIN_DESCRIPTION2" />Správanie zariadenia pri zapnutí, na prihlasovacej obrazovke a po prihlásení sa dá prispôsobiť potrebám organizácie.<ph name="END_DESCRIPTION2" />
-    <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />Poskytovanie podpory<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
-    <ph name="BEGIN_DESCRIPTION3" />Organizácia môže získavať vzdialený prístup k relácii zariadenia na vyriešenie problému.<ph name="END_DESCRIPTION3" />
-    <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Povolenie prístupu<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
-    <ph name="BEGIN_DESCRIPTION4" />Aplikácie, služby a siete organizácie môžu byť k dispozícii iba v zaregistrovaných zariadeniach.<ph name="END_DESCRIPTION4" /></translation>
 <translation id="1979208610845113582">Teraz môžete pokračovať vo vláknach režimu AI priamo tu. Túto možnosť môžete kedykoľvek odopnúť.</translation>
 <translation id="1979280758666859181">Chystáte sa zmeniť na kanál so staršou verziou prehliadača <ph name="PRODUCT_NAME" />. Zmena kanála sa prejaví, keď sa verzia kanála bude zhodovať s verziou, ktorá je momentálne nainštalovaná v zariadení.</translation>
 <translation id="1979582938184524893">Manuálne vybrať osobné údaje, ktoré chcete zahrnúť</translation>
@@ -1338,15 +1305,12 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="2002109485265116295">Reálny čas</translation>
 <translation id="2003130567827682533">Ak chcete aktivovať dáta v sieti <ph name="NAME" />, najprv sa pripojte k sieti Wi-Fi</translation>
 <translation id="2003596238737586336">Aktuálny plán je nastavený na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Toto nastavenie ovláda váš správca.</translation>
-<translation id="2004413981947727241">Používajte svoje heslá v ľubovoľnom zariadení</translation>
 <translation id="2006638907958895361">Otvoriť odkaz v aplikácii <ph name="APP" /></translation>
 <translation id="2007404777272201486">Nahlásiť problém...</translation>
 <translation id="200781997903833896">Ak chcete používať predčítanie, uvoľnite priestor v zariadení</translation>
-<translation id="200928901437634269">Použite účet Google alebo školský účet svojho dieťaťa. Môžete nastaviť aj rodičovskú kontrolu.</translation>
 <translation id="2010501376126504057">Kompatibilné zariadenia</translation>
 <translation id="2010636492623189611">Vybrané.</translation>
 <translation id="2012935757369720523">Odstrániť súbor</translation>
-<translation id="2013550551806600826">Vyskúšajte to. Zapnite alebo vypnite dané nastavenie a dvoma prstami sa na touchpade posúvajte v oblasti testovania. Môžete to skúsiť aj neskôr. Stačí prejsť do sekcie Nastavenia &gt; Zariadenie &gt; Myš a touchpad.</translation>
 <translation id="2014495120525813351">Povoľte Gemini Spark prehliadať internet v tomto zariadení</translation>
 <translation id="2016473077102413275">Funkcie vyžadujúce obrázky nebudú podporované</translation>
 <translation id="2016574333161572915">Hardvér Google Meet je pripravený na nastavenie</translation>
@@ -1356,7 +1320,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
     Okrem toho môže byť odstránený obsah, ktorý ste zakúpili prostredníctvom služby Google Play, napríklad filmy, televízne relácie, hudba, knihy a nákupy z iných aplikácií.
     <ph name="LINE_BREAKS2" />
     Neovplyvní to aplikácie ani obsah v ďalších zariadeniach.</translation>
-<translation id="2018189721942291407">Neviete, či by ste sa mali zaregistrovať?</translation>
 <translation id="2019213483156307334">Pri pridávaní obmedzenia sa vyskytla chyba</translation>
 <translation id="2019718679933488176">&amp;Otvoriť zvuk na novej karte</translation>
 <translation id="2020183425253392403">Zobraziť nastavenia sieťovej adresy</translation>
@@ -1486,7 +1449,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2130235198799290727">Z rozšírení</translation>
 <translation id="2131548114076786395">Ak sa chcete pripojiť k skupinám kariet, zdieľať ich a spolupracovať na nich, overte svoju totožnosť</translation>
 <translation id="2131863825246488194">Zvýšte svoju bezpečnosť na internete</translation>
-<translation id="2133775869826239001">Výber ďalších funkcií na nastavenie</translation>
 <translation id="2133857665503360653">Zopakovať pre súbor <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Certifikáty CA systému</translation>
 <translation id="2135420518376202233">Názvy zariadení s rozhraním Bluetooth</translation>
@@ -1543,7 +1505,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2168036794078614559">Hlásenie bolo odoslané</translation>
 <translation id="2169062631698640254">Napriek tomu sa prihlásiť</translation>
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
-<translation id="2173801458090845390">Pridať do tohto zariadenia ID rekvizície</translation>
 <translation id="2175384018164129879">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="2175526076681939329">Používať primárne klávesy</translation>
 <translation id="217576141146192373">Tlačiareň sa nepodarilo pridať. Skontrolujte jej konfiguráciu a skúste to znova.</translation>
@@ -1558,7 +1519,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2181821976797666341">Pravidlá</translation>
 <translation id="2182058453334755893">Skopírované do schránky</translation>
 <translation id="2182419606502127232">Zahrnúť moje denníky servera</translation>
-<translation id="2183570493397356669">Tlačidlo Pokračovať je deaktivované</translation>
 <translation id="2184272387334793084">Prihláste sa a používajte heslá a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="2184515124301515068">Povoľte Chromu vyberať, kedy môžu weby prehrať zvuk (odporúčané)</translation>
 <translation id="2184754597051264978">Gemini vás už nebude môcť prihlasovať do služby <ph name="URL" /></translation>
@@ -1604,7 +1564,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2217208085547223783">Stav dôveryhodnosti</translation>
 <translation id="2218019600945559112">Myš a touchpad</translation>
 <translation id="2218515861914035131">Prilepiť ako čistý text</translation>
-<translation id="221872881068107022">Obrátené posúvanie</translation>
 <translation id="2219007152108311874">Spýtať sa pri každej návšteve</translation>
 <translation id="2220529011494928058">Nahlásiť problém</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
@@ -1618,7 +1577,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2226826835915474236">Neaktívne skratky</translation>
 <translation id="2226907662744526012">Automaticky odomknúť po zadaní kódu PIN</translation>
 <translation id="2227179592712503583">Odstrániť návrh</translation>
-<translation id="2229161054156947610">Zostáva viac ako 1 hodina</translation>
 <translation id="222931766245975952">Súbor bol upravený</translation>
 <translation id="2229342031987138128">Skryté titulky</translation>
 <translation id="2231160360698766265">Weby môžu prehrávať chránený obsah</translation>
@@ -2015,7 +1973,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2520644704042891903">Čaká sa na dostupný soket...</translation>
 <translation id="2521427645491031107">Synchronizácia aplikácií je nastavená v nastaveniach zariadenia</translation>
 <translation id="2521835766824839541">predchádzajúca stopa</translation>
-<translation id="252277619743753687">Vybrať heslá</translation>
 <translation id="2523184218357549926">Odosiela Googlu webové adresy navštívených stránok</translation>
 <translation id="2524093372979370955">Týmto vypnete upozornenia pre všetky nové periférie USB v systéme. Naozaj chcete pokračovať?</translation>
 <translation id="252418934079508528">Nainštalujte si operačný systém <ph name="DEVICE_OS" /></translation>
@@ -2039,7 +1996,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="253557089021624350">Počet akcií zabraňujúcich ukončeniu</translation>
 <translation id="2535799430745250929">Neexistuje žiadna mobilná sieť</translation>
 <translation id="2537395079978992874">Web <ph name="ORIGIN" /> môže zobrazovať a upravovať nasledujúce súbory a priečinky</translation>
-<translation id="2538084450874617176">Kto používa toto zariadenie <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2538361623464451692">Synchronizácia je zakázaná</translation>
 <translation id="2538655793265890607">Snímka videa bola skopírovaná</translation>
 <translation id="2540449034743108469">Ak chcete počúvať aktivity rozšírenia, stlačte tlačidlo Štart</translation>
@@ -2060,7 +2016,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2550596535588364872">Povoliť rozšíreniu <ph name="EXTENSION_NAME" /> otvoriť súbor <ph name="FILE_NAME" />?</translation>
 <translation id="2552230905527343195">Aktuálna karta sa nedá pridať</translation>
 <translation id="2553290675914258594">Overený prístup</translation>
-<translation id="2553340429761841190">Systém <ph name="PRODUCT_NAME" /> sa nemohol pripojiť k sieti <ph name="NETWORK_ID" />. Vyberte inú sieť alebo to skúste znova.</translation>
 <translation id="2553440850688409052">Skryť tento doplnok</translation>
 <translation id="2554553592469060349">Vybratý súbor je príliš veľký (maximálna veľkosť: 3 MB).</translation>
 <translation id="2555802059188792472">Aplikácie, ktoré môžu odosielať upozornenia: <ph name="NUM_ALLOWED_APPS" /> z <ph name="TOTAL_NUM_APPS" /></translation>
@@ -2075,7 +2030,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2566146433999774844">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> ďalšími</translation>
 <translation id="256726287944589768">Zobrazovať pätu na stránke na novej karte</translation>
 <translation id="2568774940984945469">Kontajner informačného panela</translation>
-<translation id="2569972178052279830">Názov maloobchodu</translation>
 <translation id="257088987046510401">Motívy</translation>
 <translation id="2572032849266859634">Bol udelený prístup k médiu <ph name="VOLUME_NAME" /> s povolením iba na čítanie.</translation>
 <translation id="2573147659521059501">Počet kariet: <ph name="NUM" /></translation>
@@ -2087,7 +2041,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2575441894380764255">Nemôže zobrazovať obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Toto zariadenie bude uložené na 1 rok a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}few{Toto zariadenie bude uložené na {YEARS} roky a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}many{Toto zariadenie bude uložené na {YEARS} roka a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}other{Toto zariadenie bude uložené na {YEARS} rokov a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}}</translation>
 <translation id="2577127557293415225">Na chvíľu zavrite obe oči</translation>
-<translation id="257779572837908839">Nastaviť ako Chromebox pre videokonferencie</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) okamžite stratí prístup ku skupine kariet <ph name="GROUP_NAME" /> a už s vami nebude môcť interagovať v službách Googlu.</translation>
 <translation id="2580889980133367162">Vždy povoliť hostiteľovi <ph name="HOST" /> sťahovať viacero súborov</translation>
 <translation id="258095186877893873">Dlhé</translation>
@@ -2201,7 +2154,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2661315027005813059">Stránka v spätnej vyrovnávacej pamäti: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Pridáva sa profil eSIM. Môže to niekoľko minút trvať.</translation>
-<translation id="2663302507110284145">Jazyk</translation>
 <translation id="2665056444046933274">Weby môžu pomocou tejto funkcie získať prístup k iným aplikáciám a službám v tomto zariadení</translation>
 <translation id="2665394472441560184">Pridať nové slovo</translation>
 <translation id="2665647207431876759">Platnosť uplynula</translation>
@@ -2315,7 +2267,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2741912629735277980">Zobrazovať používateľské rozhrania na prihlasovacej obrazovke</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie je momentálne k dispozícii.</translation>
 <translation id="2742448780373473567">Inštaláciou operačného systému <ph name="DEVICE_OS" /> prepíšete všetky údaje vo svojom zariadení.</translation>
-<translation id="274318651891194348">Hľadá sa klávesnica</translation>
 <translation id="2743301740238894839">Spustiť</translation>
 <translation id="2743378970365831481">Ak chcete uložiť heslo do Správcu hesiel Google, stlačte ikonu Správcu hesiel na paneli s adresou</translation>
 <translation id="2743387203779672305">Kopírovať do schránky</translation>
@@ -2422,7 +2373,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2817861546829549432">Ak povolíte možnosť Nesledovať, k odosielaným údajom prehliadania sa pridá žiadosť. Akýkoľvek účinok závisí od toho, či budú webové stránky na žiadosť reagovať, a od interpretácie žiadosti. Niektoré webové stránky môžu napríklad na túto žiadosť reagovať tak, že vám zobrazia reklamy, ktoré nie sú založené na ostatných webových stránkach, ktoré ste navštívili. Mnoho webových stránok bude stále zhromažďovať a používať vaše údaje prehliadania, napríklad na zlepšenie zabezpečenia, poskytovanie obsahových služieb, reklám a odporúčaní na svojich webových stránkach a na generovanie štatistiky prehľadov.</translation>
 <translation id="2818476747334107629">Podrobnosti tlačiarne</translation>
 <translation id="2819167288942847344">Ak chcete zabrániť problematickému správaniu aplikácií, použite v prípade telefónu, tabletu alebo okna s prispôsobiteľnou veľkosťou predvoľby.</translation>
-<translation id="2819519502129272135">Synchronizácia súborov je vypnutá</translation>
 <translation id="2820957248982571256">Prebieha vyhľadávanie...</translation>
 <translation id="282230978681804245">Váš profil spravuje vaša organizácia, ktorá si môže zobraziť určité informácie vrátane týchto:</translation>
 <translation id="2822551631199737692">Kamera sa používa</translation>
@@ -2507,7 +2457,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2884070497102362193">Otestujte svoju batériu, procesor, pamäť, pripojenie a viac</translation>
 <translation id="2885129935310217435">Existuje tlačidlo s rovnakým názvom. Vyberte iné.</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
-<translation id="2886119409731773154">Môže to trvať až 30 minút</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> a ďalšie (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="2887344147309501015">Četujte s Gemini v Chrome a získavajte odpovede, kľúčové poznatky a ďalší obsah počas prehliadania</translation>
@@ -2530,6 +2479,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2902127500170292085">Rozšíreniu <ph name="EXTENSION_NAME" /> sa nepodarilo komunikovať s touto tlačiarňou. Skontrolujte, či je tlačiareň pripojená a skúste to znova.</translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2903457445916429186">Otvorenie vybratých položiek</translation>
+<translation id="2903764741244499151">Weby môžu automaticky spúšťať obraz v obraze. Umožňuje vám to pokračovať v pozeraní videa a zároveň uvoľniť obrazovku pre iné úlohy.</translation>
 <translation id="2903882649406874750">Vždy blokovať webu <ph name="HOST" /> prístup k senzorom</translation>
 <translation id="2903925626657991994">Výber tlačidla myši (ľavé, pravé alebo oba) zmeníte klávesom čiarky</translation>
 <translation id="290415756080113152">Weby nemôžu vyhľadávať ani používať tlačiarne, ku ktorým má vaše zariadenie prístup</translation>
@@ -2571,7 +2521,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2933653107553951760">Obnoviť skupinu</translation>
 <translation id="2934225044529065415">Nie je možné získať prístup ku kamere</translation>
 <translation id="2935314715123552088">Deaktivovať aktívny profil eSIM</translation>
-<translation id="2935654492420446828">Pridajte školský účet neskôr</translation>
 <translation id="2936067606203230121">Gemini Spark rozhodne, ktoré akcie treba vykonať na základe úloh, ktoré začnete alebo aktualizujete.</translation>
 <translation id="2936851848721175671">Zálohovanie a obnovenie</translation>
 <translation id="2938981087412273365">Nemá povolené čítať ani meniť tento web</translation>
@@ -2705,7 +2654,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3022361196600037287">Zariadenie <ph name="DEVICE" /> bude z tohto Chromebooku odstránené a do účtu <ph name="PRIMARY_EMAIL" /> sa neuloží.</translation>
 <translation id="3022978424994383087">Nebolo rozumieť.</translation>
 <translation id="3023204744987201088">&amp;Kontaktné údaje</translation>
-<translation id="3023464535986383522">Počúvanie vybraného textu</translation>
 <translation id="3024374909719388945">Použiť 24-hodinový režim hodín</translation>
 <translation id="3025905136198521738">Usporiadať rozdelené zobrazenie – aktívne je ľavé zobrazenie</translation>
 <translation id="3027296729579831126">Zapnúť Zdieľanie nablízku</translation>
@@ -2791,7 +2739,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3089137131053189723">Vyhľadávanie bolo vymazané</translation>
 <translation id="3089941350495701096">&amp;Čitateľský zoznam</translation>
 <translation id="3090227230165225418">Zobrazovať upozornenia na sťahovanie</translation>
-<translation id="3090871774332213558">Zariadenie „<ph name="DEVICE_NAME" />“ bolo spárované</translation>
 <translation id="3093714882666365141">Nepovoliť webom inštalovať obslužné nástroje platieb</translation>
 <translation id="3094080575472025333">Blokovať aplikácie</translation>
 <translation id="3094521107841754472">Cena sa zmenila z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
@@ -2955,7 +2902,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3225084153129302039">Predvolený fialový avatar</translation>
 <translation id="3226249862705569834">Senzory sa používajú</translation>
 <translation id="3226487301970807183">Prepínač zarovnania bočného panela vľavo</translation>
-<translation id="322708765617468434">Po nastavení môžete do zariadenia stále pridať ďalšiu osobu. Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3227701057281907159">Opravuje sa</translation>
 <translation id="3228962656492373217">Zavrieť karty nižšie</translation>
@@ -2990,7 +2936,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3251119461199395237">Synchronizácia súborov</translation>
 <translation id="3251759466064201842">&lt;Nie je súčasťou certifikátu&gt;</translation>
 <translation id="3252169590975855820">Prístup k nemu získate v Správcovi hesiel Google</translation>
-<translation id="325238099842880997">Nastavte základné digitálne pravidlá, ktoré pomôžu deťom doma hrať, skúmať a robiť domáce úlohy</translation>
 <translation id="3253225298092156258">Nie je k dispozícii</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Ak chcete skopírovať tento súbor, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}few{Ak chcete skopírovať tieto súbory, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}many{Free up space in <ph name="CLOUD_PROVIDER" /> to copy these files}other{Ak chcete skopírovať tieto súbory, uvoľnite priestor v službe <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="3253448572569133955">Neznámy účet</translation>
@@ -2998,7 +2943,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3254451942070605467">Sťahuje sa <ph name="FILE_NAME" />, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254506277019076812">Pridanie zručnosti</translation>
 <translation id="3254516606912442756">Automatické zisťovanie časového pásma je deaktivované</translation>
-<translation id="3255747772218936245">Inštalovať aktualizáciu</translation>
 <translation id="3257733480216378006">Chcete povoliť <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Bolo zablokované podozrivé sťahovanie</translation>
 <translation id="3261090393424563833">Zvýšiť frekvenciu</translation>
@@ -3154,7 +3098,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3379268272734690">Púšť</translation>
 <translation id="3382737653173267704">Zobraziť rodinu</translation>
 <translation id="338323348408199233">Blokovať dátové prenosy bez siete VPN</translation>
-<translation id="3384362484379805487">Jazykové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku.</translation>
 <translation id="3385053436247851142">Prihlásiť sa účtom Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Presnosť určovania polohy poskytuje aplikáciám aj službám presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z vášho zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie vašej totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj všeobecného zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov.</translation>
@@ -3182,7 +3125,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3401484564516348917">Čítanie informácií o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri, hodnotách databázy Registry a súboroch</translation>
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402276740728396499">Zobraziť zoskupené</translation>
-<translation id="3402585168444815892">Prebieha registrácia do ukážkového režimu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Pre tento web neboli uložené žiadne heslá</translation>
 <translation id="3405664148539009465">Prispôsobiť písma</translation>
@@ -3277,7 +3219,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3468999815377931311">Telefón s Androidom</translation>
 <translation id="3471687177769494956">Upraviť skratku navigácie</translation>
 <translation id="3472469028191701821">Otvorí sa na novej karte</translation>
-<translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">V prípade nových slov použite maximálne 99 písmen</translation>
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Získate priemernú úsporu pamäte. Karty sa po dlhšom čase deaktivujú.</translation>
@@ -3318,7 +3259,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3498138244916757538">Zmena nastavenia mikrofónu vyžaduje, aby ste vypli <ph name="SPECIFIC_NAME" />. Ak chcete pokračovať, vypnite <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3500417806337761827">Chyba pri inštalácií zdieľaného priestoru. Už je nainštalovaných príliš veľa zdieľaných priestorov SMB.</translation>
 <translation id="3500764001796099683">Povoliť izolované webové aplikácie</translation>
-<translation id="350397915809787283">Ak účet nemáte, vyberte prvú možnosť a vytvorte si ho.</translation>
 <translation id="3505100368357440862">Návrhy nákupov</translation>
 <translation id="3507650052590605702">Spravovať heslo</translation>
 <translation id="3507888235492474624">Znova vyhľadať zariadenia Bluetooth</translation>
@@ -3334,6 +3274,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3512465804715993309">Adaptívne zvýrazňovanie</translation>
 <translation id="3513019849832307207">Pripojiť sa a otvoriť</translation>
 <translation id="3513563267917474897">Posúvač odtieňa od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
+<translation id="3514519909735866748">Pripnúť nové rozšírenia</translation>
 <translation id="3514647716686280777">Máte štandardnú ochranu zabezpečenia. Ak chcete získať účinnejšiu ochranu pred nebezpečnými webmi, sťahovanými súbormi a rozšíreniami, zapnite v nastaveniach Chromu Zlepšené bezpečné prehliadanie.</translation>
 <translation id="3514681096978190000">Tento súbor archívu obsahuje ďalšie súbory, ktoré môžu skrývať malvér</translation>
 <translation id="3515983984924808886">Resetovanie potvrďte opätovným stlačením bezpečnostného kľúča. Všetky informácie uchované v bezpečnostnom kľúči (vrátane jeho kódu PIN) budú odstránené.</translation>
@@ -3455,7 +3396,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} účet používa rovnaké heslo}few{{COUNT} účty používajú rovnaké heslo}many{{COUNT} accounts using same password}other{{COUNT} účtov používa rovnaké heslo}}</translation>
 <translation id="3605515937536882518">Hodnoty formulára boli aktualizované</translation>
 <translation id="3605780360466892872">Manažér</translation>
-<translation id="3607671391978830431">Pre dieťa</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> chce overiť vašu totožnosť</translation>
 <translation id="3608460311600621471">Zadajte dôvod tlače týchto údajov:</translation>
 <translation id="3608730769702025110">3. krok zo 4: skontrolujte údaje umožňujúce zistenie totožnosti</translation>
@@ -3486,7 +3426,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3623598555687153298">Týmto odstránite <ph name="TOTAL_USAGE" /> dát uložených zobrazenými webmi</translation>
 <translation id="3624583033347146597">Vyberte predvoľby súborov cookie tretích strán</translation>
 <translation id="3625481642044239431">Bol vybraný neplatný súbor. Skúste to znova.</translation>
-<translation id="3627320433825461852">Zostáva menej ako 1 minúta</translation>
 <translation id="3627588569887975815">Otvoriť odkaz v okne inko&amp;gnito</translation>
 <translation id="3627671146180677314">Netscape – čas pre obnovenie certifikátu</translation>
 <translation id="3628275722731025472">Vypnúť rozhranie Bluetooth</translation>
@@ -3581,9 +3520,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3700993174159313525">Nepovoliť webom sledovať polohu fotoaparátu</translation>
 <translation id="3701167022068948696">Opraviť</translation>
 <translation id="3701515417135397388">Upozorniť, keď bolo heslo prezradené v rámci porušenia ochrany údajov</translation>
-<translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Zadajte názov maloobchodu a číslo predajne, pre ktoré je toto ukážkové zariadenie konfigurované*. <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ak číslo predajne nepoznáte, môžete zadať „0000“ a pokračovať v inštalácii ukážkového režimu. <ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />* Poznámka: Google pomocou týchto informácií identifikuje, ktorú verziu ukážkového režimu by malo zariadenie získať, a meria používanie ukážkového režimu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3703166520839776970">Ak sa tento problém opakuje, získajte ďalšie informácie od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> výberom možnosti Ďalšie podrobnosti nižšie.</translation>
 <translation id="3703699162703116302">Tiket bol obnovený</translation>
 <translation id="370415077757856453">Bol zablokovaný JavaScript</translation>
@@ -3652,7 +3588,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Otvoriť <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Weby môžu žiadať o povolenie vyhľadávať a používať tlačiarne, ku ktorým má vaše zariadenie prístup</translation>
-<translation id="3740945083753997630">Zmenšiť veľkosť zobrazenia a textu</translation>
 <translation id="3741056951918180319">Na rozšírenie môžete kedykoľvek kliknúť a použiť ho tak na ľubovoľnom webe</translation>
 <translation id="374124333420280219">Podrobnosti o aplikácii:</translation>
 <translation id="3741510433331996336">Dokončite aktualizáciu reštartom zariadenia</translation>
@@ -3802,7 +3737,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3829765597456725595">Zdieľané úložisko SMB</translation>
 <translation id="3830470485672984938">Použiť iný prístupový kľúč</translation>
 <translation id="3834728400518755610">Zmena nastavenia mikrofónu vyžaduje vypnutie systému Linux. Pokračujte vypnutím systému Linux.</translation>
-<translation id="3837569373891539515">Môžete vybrať všetky vhodné možnosti. Nájdete ich aj v Nastaveniach po dokončení nastavovania zariadenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3838085852053358637">Načítanie rozšírenia zlyhalo</translation>
 <translation id="3838486795898716504">Ďalšie <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Žiadne weby neboli priblížené ani oddialené</translation>
@@ -3831,7 +3765,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3855676282923585394">Importovať záložky a nastavenia...</translation>
 <translation id="3856023744577163821">S Gemini sa zdieľajú aj karty otvorené v čete alebo na zdieľanej karte.</translation>
 <translation id="3856096718352044181">Overte, že ide o platného poskytovateľa, alebo to skúste znova</translation>
-<translation id="3856470183388031602">Používajte svoj účet Google v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Výber časového pásma</translation>
 <translation id="3856902135796972992">Tento web vyžaduje ďalšiu akciu. Vykonajte ju na danej stránke, aby sa zmena hesla mohla dokončiť.</translation>
 <translation id="3858860766373142691">Názov</translation>
@@ -3893,7 +3826,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3898498281932368596">Blokovať a opustiť</translation>
 <translation id="3898743717925399322">Vaše heslo webu <ph name="WEBSITE" /> je uložené v tomto zariadení a vašom účte Google. Ktoré chcete odstrániť?</translation>
 <translation id="3898768766145818464">Prehrať alebo pozastaviť video</translation>
-<translation id="389901847090970821">Výber klávesnice</translation>
 <translation id="3899457911440165602">Pri odstraňovaní certifikátu sa vyskytla chyba</translation>
 <translation id="3900966090527141178">Exportovanie hesiel</translation>
 <translation id="3903187154317825986">Vstavaná klávesnica</translation>
@@ -3925,7 +3857,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3923676227229836009">Táto stránka má povolené zobrazovať súbory</translation>
 <translation id="3923958273791212723">Upozornenia na výkonnostné problémy</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3924259174674732591">Veľkosť zobrazenia a textu: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Odosiela webové adresy na kontrolu do Bezpečného prehliadania. Posiela tiež malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme, a tak pomáha objavovať nové hrozby. Dočasne prepojí tieto údaje s vaším účtom Google (keď sa prihláste), aby vás chránila v aplikáciách Google.</translation>
 <translation id="3924788966103416622">Externá aplikácia vyžaduje úplnú kontrolu nad touto reláciou Chromu, aby ju mohla ladiť. Zahŕňa to prístup k vašim uloženým údajom, súborom cookie a dátam webov, ako aj možnosť prejsť na ľubovoľnú webovú adresu.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
@@ -4010,7 +3941,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3983586614702900908">zariadenia od neznámeho dodávateľa</translation>
 <translation id="3983769721878416534">Oneskorenie pred kliknutím</translation>
 <translation id="3984135167056005094">Nezahŕňajte e‑mailovú adresu</translation>
-<translation id="3984159763196946143">Nepodarilo sa spustiť režim ukážky</translation>
 <translation id="3984536049089846927">Ďalšia stránka</translation>
 <translation id="398477389655464998">Kopírovať odkaz na zvýraznenie</translation>
 <translation id="3984862166739904574">Definícia v rámci rýchlych odpovedí</translation>
@@ -4284,7 +4214,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="42126664696688958">Exportovať</translation>
 <translation id="4213540068152645535">Pri zmene hesla sa vyskytol problém</translation>
 <translation id="42137655013211669">Server zakázal prístup k tomuto zdroju</translation>
-<translation id="4213918571089943508">Účet Google dieťaťa</translation>
 <translation id="4214192212360095377">Vypnúť</translation>
 <translation id="4216407171061541111">Vaša organizácia vypla ukladanie kariet vo vašom účte Google</translation>
 <translation id="4216511743389425832">Vypočuť obsah tejto stránky</translation>
@@ -4298,7 +4227,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4225397296022057997">Na všetkých weboch</translation>
 <translation id="4225895483398857530">Skratka panela s nástrojmi</translation>
 <translation id="4226303886821889519">Verzia služby Updater: <ph name="VERSION" /></translation>
-<translation id="4228071595943929139">Použiť e‑mailovú adresu vašej organizácie</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie nie je povolené}few{Niektoré rozšírenia nie sú povolené}many{Niektoré rozšírenia nie sú povolené}other{Niektoré rozšírenia nie sú povolené}}</translation>
 <translation id="4229538146709970028">Ak chcete vykonať overenie pre hostiteľa <ph name="HOST_NAME" /> pomocou svojho certifikátu, odomknite <ph name="TOKEN_NAME" />.</translation>
 <translation id="4232375817808480934">Konfigurácia protokolu Kerberos</translation>
@@ -4385,7 +4313,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4290791284969893584">Po zatvorení stránky sa začaté úlohy nemusia dokončiť</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> člen</translation>
 <translation id="4290898381118933198">Medzi stránkami prechádzajte potiahnutím</translation>
-<translation id="4291265871880246274">Dialógové okno prihlásenia</translation>
 <translation id="4292613336957320546">Zrýchlenie</translation>
 <translation id="429312253194641664">Web prehráva médiá</translation>
 <translation id="4293219510510666933">Pomocou bežných výrazov môžete vyhľadávať vo svojej histórii prehliadania a nájsť weby, ktoré ste navštívili. Navyše môžete klásť otázky a dostávať odpovede na základe histórie prehliadania. Toto nastavenie je zapnuté.</translation>
@@ -4498,7 +4425,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4378308539633073595">Posunúť vpred</translation>
 <translation id="4378363201814870400">Spravujte údaje automatického dopĺňania, napríklad heslá, spôsoby platby, adresy a doklady totožnosti, aby ste mohli prehliadať rýchlejšie</translation>
 <translation id="4378551569595875038">Pripája sa...</translation>
-<translation id="4378556263712303865">Rekvizícia zariadenia</translation>
 <translation id="4378589147979399051">Ovládanie kurzora myši pomocou hlavnej klávesnice</translation>
 <translation id="4379097572583973456">Na webe môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Údaje môžu ukladať aj tieto ďalšie weby.</translation>
 <translation id="4379281552162875326">Chcete odinštalovať aplikáciu <ph name="APP_NAME" />?</translation>
@@ -4512,7 +4438,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4384886290276344300">Zmeniť nastavenia klávesnice</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385146930797718821">Snímka obrazovky bola skopírovaná do schránky</translation>
-<translation id="4385905942116811558">Vyhľadávajú sa zariadenia s rozhraniami Bluetooth a USB</translation>
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie bolo vypnuté, pretože už nie je podporované}few{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}many{These extensions were turned off because they're no longer supported}other{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}}</translation>
 <translation id="4386435410933281983">Nedá sa uložiť. Skúste to znova.</translation>
 <translation id="4386604394450371010">prehľad</translation>
@@ -4582,7 +4507,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4428518847683570286">{NUM_TASKS,plural, =1{Úloha je dokončená}few{Úlohy sú dokončené}many{Tasks done}other{Úlohy sú dokončené}}</translation>
 <translation id="4429163740524851942">Rozloženie fyzickej klávesnice</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
-<translation id="443031431654216610">Použite iba číslice</translation>
 <translation id="4430369329743628066">Záložka bola pridaná</translation>
 <translation id="4430422687972614133">Zapnúť virtuálnu kartu</translation>
 <translation id="4431962107539413562">Majte heslá k dispozícii vo všetkých svojich zariadeniach</translation>
@@ -4607,7 +4531,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4445446646109808714">Licenčná zmluva s koncovým používateľom: <ph name="EULA_LINK" /></translation>
 <translation id="4445505059498744265">Obnoviť rozdelené zobrazenie</translation>
 <translation id="4446933390699670756">Zrkadlené</translation>
-<translation id="4448560527907365660">Uložiť a zobraziť viac</translation>
 <translation id="4449247303975391730">Spravovať povolenia</translation>
 <translation id="4452898361839215358">alebo vyberte súbor PPD. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Vyhľadajte v službe <ph name="SEARCH_ENGINE_NAME" /> alebo zadajte webovú adresu</translation>
@@ -4622,7 +4545,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4470957202018033307">Predvoľby externých úložísk</translation>
 <translation id="4471250205822310967">Prekrytie výberu Gemini</translation>
 <translation id="4471354919263203780">Sťahujú sa súbory rozpoznávania reči… <ph name="PERCENT" /> %</translation>
-<translation id="4472298120638043495">Môžete použiť preferovaný jazyk účtu Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
 <translation id="4472533928615930332"><ph name="INDEX" />. vygenerovaný obrázok z <ph name="SUBJECT" /> v štýle <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Začíname</translation>
@@ -4665,7 +4587,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4507373251891673233">Zablokovali ste všetky rozšírenia z webu <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliknite na Pridať odkaz.</translation>
 <translation id="4508265954913339219">Aktivácia zlyhala</translation>
-<translation id="450867954911715010">Nastavenia dostupnosti</translation>
 <translation id="4508765956121923607">&amp;Zobraziť zdrojový kód</translation>
 <translation id="4509277363725254222">Keď zdieľate svoje <ph name="BEGIN_BOLD_USERNAME" />používateľské meno<ph name="END_BOLD_USERNAME" /> a <ph name="BEGIN_BOLD_PASSWORD" />heslo<ph name="END_BOLD_PASSWORD" />, člen vašej rodiny ich môže vyplniť pomocou Správcu hesiel Google.</translation>
 <translation id="4509421746503122514">Aktualizovať novým spustením</translation>
@@ -4678,7 +4599,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4515942088136451195">Vaša organizácia obmedzuje, čo môžete ukladať</translation>
 <translation id="4516395361210407049">Tlačidlá panela s nástrojmi boli resetované</translation>
 <translation id="4519331665958994620">Weby môžu žiadať o použitie kamery</translation>
-<translation id="4519605771716872386">Synchronizácia súborov je zapnutá</translation>
 <translation id="4519935350946509010">Chyba pripojenia.</translation>
 <translation id="4520385623207007473">Používané súbory cookie</translation>
 <translation id="452039078290142656">neznáme zariadenia od dodávateľa <ph name="VENDOR_NAME" /></translation>
@@ -4690,7 +4610,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4528494169189661126">Návrh prekladu</translation>
 <translation id="4529455689802245339">Nemusí fungovať živý prepis v Chrome</translation>
 <translation id="4531451811601110068">Môžete to skúsiť znova, prípadne požiadajte o pomoc správcu</translation>
-<translation id="4531924570968473143">Koho chcete pridať do tohto zariadenia <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532183705767666195">{COUNT,plural, =1{1 prístupový kľúč}few{{COUNT} prístupové kľúče}many{{COUNT} passkeys}other{{COUNT} prístupových kľúčov}}</translation>
 <translation id="4532625150642446981">Názov <ph name="USB_DEVICE_NAME" /> sa používa. Opätovné pridelenie zariadenia, keď sa práve používa, môže spôsobiť chyby. Naozaj chcete pokračovať?</translation>
 <translation id="4532646538815530781">Tento web používa senzory pohybu.</translation>
@@ -4744,7 +4663,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4565917129334815774">Ukladať denníky systému</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="456717285308019641">Jazyk stránok, ktorý chcete prekladať</translation>
-<translation id="4567533462991917415">Po nastavení môžete kedykoľvek pridať ďalších ľudí. Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
 <translation id="4567772783389002344">Pridať slovo</translation>
 <translation id="4568025708905928793">Požaduje sa bezpečnostný kľúč</translation>
 <translation id="4569747168316751899">Keď je nečinné</translation>
@@ -4826,7 +4744,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4631637535315947773">Odkazy vedúce na najnavštevovanejšie weby boli odstránené, pretože ste ich v poslednom čase nepoužili</translation>
 <translation id="4631955550884380853">Zreteľný hlas</translation>
 <translation id="4632655012900268062">Prispôsobiť karty</translation>
-<translation id="4634575639321169635">Nastavte toto zariadenie na pracovné alebo osobné použitie</translation>
 <translation id="4635072447747973225">Odinštalovať systém Crostini</translation>
 <translation id="4635398712689569051">Stránka <ph name="PAGE_NAME" /> nie je k dispozícii pre hostí.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Nahrajte 1 obrázok, ktorý sa použije pri vašej otázke}few{Nahrajte maximálne # obrázky, ktoré sa použijú pri vašej otázke}many{Upload up to # images to use with your question}other{Nahrajte maximálne # obrázkov, ktoré sa použijú pri vašej otázke}}</translation>
@@ -4904,7 +4821,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4688036121858134881">Identifikátor miestneho denníka: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> obnovuje predchádzajúcu verziu v tomto zariadení (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">Skontrolujte internetové pripojenie a skúste Gemini znova použiť</translation>
-<translation id="4689235506267737042">Výber predvolieb ukážky</translation>
 <translation id="4690091457710545971">&lt;Firmvér Intel Wi-Fi vygeneroval štyri súbory: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Prvé tri sú binárne súbory obsahujúce výpisy z registra, pri ktorých firmvér Intel určil, že neobsahujú žiadne osobné informácie ani informácie umožňujúce identifikáciu zariadení. Posledný súbor je trasovanie spustenia z firmvéru Intel. Boli v ňom odstránené všetky osobné informácie alebo informácie umožňujúce identifkáciu zariadení, ale je príliš veľký, aby sa tu dal zobraziť. Tieto súbory boli vygenerované v reakcii na nedávne problémy s Wi-Fi vo vašom zariadení a budú zdieľané so spoločnosťou Intel, ktorá problémy pomôže vyriešiť.&gt;</translation>
 <translation id="4691995778017338841">Pretvorte fotku</translation>
 <translation id="4692342362587775867">Upozornenia z tohto webu môžu byť rušivé</translation>
@@ -5020,7 +4936,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Premenovať mobilnú sieť eSIM</translation>
 <translation id="4780321648949301421">Uložiť stránku ako...</translation>
-<translation id="4780558987886269159">Na prácu</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> chce používať osobné údaje z vašej digitálnej peňaženky.</translation>
 <translation id="4784506603920819520"><ph name="TASK_TITLE" />: Gemini potrebuje vašu pomoc, aby mohol pokračovať v práci na tejto úlohe</translation>
 <translation id="4785719467058219317">Používate bezpečnostný kľúč, ktorý nie je registrovaný s týmto webom</translation>
@@ -5060,7 +4975,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4812073856515324252">Vyberte, kam sa má uložiť prístupový kľúč aplikácie <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Chyba siete</translation>
 <translation id="4814114628197290459">Odstrániť IBAN</translation>
-<translation id="4814327014588285482">Preskočiť a pripomenúť neskôr</translation>
 <translation id="4814378367953456825">Pomenujte tento odtlačok prsta</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {COUNT} záložky}many{{COUNT} bookmarks deleted}other{Bolo odstránených {COUNT} záložiek}}</translation>
 <translation id="481689174647911539">Tento súbor môže byť vírus alebo malvér.<ph name="LINE_BREAK" />Môžete ho poslať Bezpečnému prehliadaniu Google, ktoré skontrolujte, či je bezpečný. Kontrola zvyčajne trvá niekoľko sekúnd.</translation>
@@ -5102,7 +5016,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4840096453115567876">Naozaj chcete ukončiť režim inkognito?</translation>
 <translation id="4841475798258477260">Toto zariadenie sa môže pripojiť iba ku konkrétnej mobilnej sieti. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Táto stránka sa snaží načítať skripty z neoverených zdrojov.</translation>
-<translation id="4844333629810439236">Ďalšie klávesnice</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4846628405149428620">Vyberte, kam tento web môže ukladať zmeny</translation>
 <translation id="4846680374085650406">V prípade tohto nastavenia dodržiavate odporúčania správcu.</translation>
@@ -5138,7 +5051,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokované)</translation>
 <translation id="486505726797718946">Bola uvoľnená pamäť</translation>
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
-<translation id="4867272607148176509">Rodičia môžu schvaľovať alebo blokovať aplikácie, nastavovať časové limity a ovládať webové prehliadanie. Školský účet na prístup k väčšine školských zdrojov sa dá pridať neskôr.</translation>
 <translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
 <translation id="4869170227080975044">Čítať informácie o sieťach v systéme ChromeOS</translation>
 <translation id="4870724079713069532">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z Prieskumníka súborov alebo iných aplikácií. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prejdite do <ph name="BEGIN_LINK" />nastavení systému Windows<ph name="END_LINK" />.</translation>
@@ -5301,7 +5213,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
 <translation id="4986706507552097681">Obsah, ktorý chcete synchronizovať, môžete kedykoľvek vybrať v nastaveniach. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="4986728572522335985">Odstránia sa všetky údaje v bezpečnostnom kľúči vrátane kódu PIN</translation>
-<translation id="4987944280765486504">Po dokončení sťahovania sa Chromebook reštartuje a budete môcť pokračovať v nastavovaní.</translation>
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4989479404508898003">V histórii prehliadania môžete vyhľadávať nielen na základe názvu stránky a webovej adresy, ale aj jej všeobecného obsahu, aby sa vám zobrazili lepšie výsledky</translation>
 <translation id="49896407730300355">Otočiť &amp;proti smeru hodinových ručičiek</translation>
@@ -5505,7 +5416,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="514387318601895731">Pozrite sa dole</translation>
 <translation id="5143960098217235598">Týmto povolíte prístup k mikrofónu aplikáciám, webom s povoleným prístupom k mikrofónu a systémovým službám</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="5145876360421795017">Neregistrovať zariadenie</translation>
 <translation id="5146235736676876345">Vybrať vlastné</translation>
 <translation id="5146896637028965135">Hlas systému</translation>
 <translation id="5147113439721488265">Odporúčanie</translation>
@@ -5605,7 +5515,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5213891612754844763">Zobraziť nastavenia proxy servera</translation>
 <translation id="5214639857958972833">Bola vytvorená záložka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Zapnite rozšírené bezpečnostné aktualizácie</translation>
-<translation id="5215502535566372932">Vyberte krajinu</translation>
 <translation id="5216674789212441076">Automaticky prekladá živé prepisy. Titulky sa odosielajú Googlu na preklad.</translation>
 <translation id="5220011581825921581">kláves vyhľadávania + šípka nahor</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> sa nedá prenášať</translation>
@@ -5785,7 +5694,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5379140238605961210">Aj naďalej blokovať prístup k mikrofónu</translation>
 <translation id="5382591305415226340">Spravovať podporované odkazy</translation>
 <translation id="5384401776498845256">Kto s vami môže zdieľať</translation>
-<translation id="5385628342687007304">Toto heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do účtu Google.</translation>
 <translation id="5387116558048951800">Upraviť <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Zmenili sa pravidlá pre podniky. Na panel s nástrojmi bolo pridané tlačidlo Experimenty. Kliknutím naň otvoríte dialógové okno na povolenie experimentov.</translation>
 <translation id="5388436023007579456">Aplikácie aj weby s povolením používať kameru a systémové služby môžu používať vašu kameru. Ak chcete použiť kameru, možno budete musieť aplikáciu reštartovať alebo obnoviť stránku.</translation>
@@ -5883,7 +5791,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5452446625764825792">Teraz si môžete zobraziť nedávne fotky, médiá a aplikácie svojho telefónu</translation>
 <translation id="5452716108542782563">Toto nastavenie ovláda rozšírenie <ph name="NAME" />. Ak chcete zmeniť predvolený vyhľadávač, <ph name="BEGIN_LINK_DISABLE" />vypnite rozšírenie<ph name="END_LINK_DISABLE" /> alebo <ph name="BEGIN_LINK_MANAGE" />spravujte jeho nastavenia<ph name="END_LINK_MANAGE" />.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funguje offline)</translation>
-<translation id="5453829744223920473">Vaše dieťa môže používať všetky svoje školské aplikácie, záložky a zdroje rovnako ako v triede. Základné pravidlá určuje škola.</translation>
 <translation id="5454166040603940656">s poskytovateľom <ph name="PROVIDER" /></translation>
 <translation id="5457082343331641453">Pridajte do vyhľadávania</translation>
 <translation id="5457459357461771897">Čítať a odstraňovať fotky, hudbu a ďalšie médiá z tohto počítača</translation>
@@ -5961,7 +5868,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}few{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}many{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}other{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5501979953419946416">Napísať niečo nové</translation>
 <translation id="5502500733115278303">Importované z Firefoxu</translation>
-<translation id="5502915260472117187">Dieťa</translation>
 <translation id="5503910407200952415">{NUM_PROFILES,plural, =1{&amp;Zavrieť tento profil}few{&amp;Zavrieť tento profil (# okná)}many{&amp;Close this profile (# windows)}other{&amp;Zavrieť tento profil (# okien)}}</translation>
 <translation id="5503982651688210506">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru aj hýbať ňou a používať mikrofón</translation>
 <translation id="5505307013568720083">Minul sa atrament</translation>
@@ -5971,7 +5877,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5510775624736435856">Získavať opisy obrázkov od Googlu</translation>
 <translation id="5511379779384092781">Veľmi malý</translation>
 <translation id="5512739112435045339">Uvoľnite v zariadení priestor. Potom skúste položku znova stiahnuť.</translation>
-<translation id="5513807280330619196">Kalkulačka</translation>
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5515048886012998157">Zobraziť ďalšie možnosti pre rozšírenie <ph name="EXTENSION_NAME" /></translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
@@ -6011,7 +5916,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="554810465530189549">Nezobrazovať plávajúcu ponuku pri výbere textu</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # Other Tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
-<translation id="5549511085333906441">Výber nastavenia</translation>
 <translation id="5551573675707792127">Klávesnica a textový vstup</translation>
 <translation id="5551753770140674714">Údaje sú šifrované pomocou vašej prístupovej frázy synchronizácie. Nezahŕňa to spôsoby platby ani adresy zo služby Google Pay.</translation>
 <translation id="5553089923092577885">Priraďovanie politiky certifikátu</translation>
@@ -6134,7 +6038,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5638309510554459422">Nájdite rozšírenia a motívy v <ph name="BEGIN_LINK" />Internetovom obchode Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Načítať túto stránku, ďalšie možnosti zobrazíte podržaním</translation>
 <translation id="5640133431808313291">Správa bezpečnostných kľúčov</translation>
-<translation id="5640159004008030285">Toto heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, <ph name="BEGIN_LINK" />uložte si ho do účtu Google<ph name="END_LINK" />.</translation>
 <translation id="5640322514952298438">Uprednostňuje rýchlosť webu</translation>
 <translation id="5641608986289282154">Začnite pomocou systému <ph name="DEVICE_OS" /></translation>
 <translation id="5641715878999557094">Rozšírenie <ph name="EXTENSION_NAME" /> zmenilo stránku, ktorá sa zobrazuje po kliknutí na tlačidlo domovskej stránky.</translation>
@@ -6150,11 +6053,9 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Boli odstránené povolenia 1 webu}few{Boli odstránené povolenia {NUM_SITES} webov}many{Removed permissions for {NUM_SITES} sites}other{Boli odstránené povolenia {NUM_SITES} webov}}</translation>
 <translation id="565461030474814383">Chcete uložiť v účte?</translation>
 <translation id="5654751240928365405">Toto rozšírenie bolo vypnuté, pretože už nie je podporované</translation>
-<translation id="5655296450510165335">Registrácia zariadenia</translation>
 <translation id="5655823808357523308">Upravovať zobrazovanie farieb na obrazovke</translation>
 <translation id="5656845498778518563">Odoslanie spätnej väzby Googlu</translation>
 <translation id="5656944594833183876">Získajte pomoc s úlohami</translation>
-<translation id="565899488479822148">Inštaluje sa najnovšia aktualizácia</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5663459693447872156">Automaticky prepnúť na polovičnú šírku</translation>
 <translation id="5663653125349867535">&amp;Čitateľský zoznam</translation>
@@ -6313,7 +6214,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5799508265798272974">Virtuálny počítač so systémom Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5799638114236977894">Vymeniť s pravým zobrazením</translation>
 <translation id="5800020978570554460">Cieľový súbor bol od posledného stiahnutia upravený alebo odstránený.</translation>
-<translation id="5800703268655655701">Výber svetlého alebo tmavého motívu</translation>
 <translation id="5801051031414037185">Nastaviť telefón</translation>
 <translation id="5801568494490449797">Predvoľby</translation>
 <translation id="5801848377610914194">Pomocou bežných výrazov môžete vyhľadávať vo svojej histórii prehliadania a nájsť weby, ktoré ste navštívili. Toto nastavenie je zapnuté.</translation>
@@ -6362,7 +6262,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Nepovoliť webom používať JavaScript</translation>
 <translation id="583431638776747">Web bol nedostupný</translation>
-<translation id="5834581999798853053">Zostáva približne <ph name="TIME" /> min.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> má prístup k zariadeniam s ľudským rozhraním}=2{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}few{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> a {3} ďalšie}many{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} more}other{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> a {3} ďalších}}</translation>
 <translation id="583673505367439042">Weby môžu žiadať o úpravu súborov a priečinkov v zariadení</translation>
 <translation id="5836999627049108525">Jazyk, z ktorého chcete prekladať</translation>
@@ -6419,7 +6318,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5868822853313956582">Použiť farby zariadenia</translation>
 <translation id="5869029295770560994">Dobre</translation>
 <translation id="5869522115854928033">Uložené heslá</translation>
-<translation id="5870086504539785141">Zavrieť ponuku zjednodušenia ovládania</translation>
 <translation id="5870155679953074650">Závažné chyby</translation>
 <translation id="587234395549708302">Chcete vymazať záložky?</translation>
 <translation id="5875534259258494936">Zdieľanie obrazovky bolo ukončené</translation>
@@ -6511,7 +6409,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5947651424015173580">Dvakrát kliknúť na myš</translation>
 <translation id="594783581676390841">{NUM_EVENTS,plural, =1{1 udalosť sa nepodarilo analyzovať a nezobrazuje sa}few{# udalosti sa nepodarilo analyzovať a nezobrazujú sa}many{# events could not be parsed and are not shown}other{# udalostí sa nepodarilo analyzovať a nezobrazujú sa}}</translation>
 <translation id="5948476936444935795">Zrušiť import</translation>
-<translation id="5948536763493709626">Pripojte klávesnicu alebo myš, prípadne pokračujte v nastavovaní pomocou dotykovej obrazovky. Ak používate zariadenia s rozhraním Bluetooth, uistite sa, že sú pripravené na párovanie.</translation>
 <translation id="5949795028157144515">Režim vývojára je vypnutý. Niektoré rozšírenia boli deaktivované.</translation>
 <translation id="594993197557058302">Stlačte prvý až štvrtý kláves modifikátora (ctrl, alt, shift, kláves vyhľadávania alebo Spúšťač) a 1 ďalší kláves. Môžete vybrať aj jeden kláves.</translation>
 <translation id="5950762317146173294">Tento súbor môže byť vírus alebo malvér.</translation>
@@ -6602,7 +6499,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6016178549409952427">Prechod na ďalší obsah, <ph name="CURRENT_ELEMENT" />. prvok z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016462059150340136">Ktokoľvek v okolí</translation>
-<translation id="6016972670657536680">Tlačidlo pre výber jazyka a klávesnice. Aktuálne je vybratý jazyk <ph name="LANGUAGE" />.</translation>
 <translation id="6017318029492906697">Web nemôže používať informácie, ktoré o vás uložil</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="6018241313232245125">Zlepšiť pomocou Gemini</translation>
@@ -6638,8 +6534,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6052488962264772833">Začnite prenášať zadaním prístupového kódu</translation>
 <translation id="6052557981901634648">Vytvoriť plán</translation>
 <translation id="6052976518993719690">Certifikačná autorita SSL</translation>
-<translation id="6053717018321787060">Je to ten istý účet Google, ktorý používate s Gmailom, službou YouTube, Chromom a ďalšími službami Googlu.
-    Pomocou svojho účtu máte jednoduchý prístup k všetkým záložkám, súborom a ďalšiemu obsahu. Ak účet nemáte, môžete si ho vytvoriť na ďalšej obrazovke.</translation>
 <translation id="6054138466019582920">Vyhľadávať na tejto stránke Googlom…</translation>
 <translation id="6054284857788651331">Nedávno zavretá skupina kariet</translation>
 <translation id="6054819000749443354">Otvoriť nastavenia systému</translation>
@@ -7005,7 +6899,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6341850831632289108">Určiť vašu fyzickú polohu</translation>
 <translation id="6342069812937806050">Práve teraz</translation>
 <translation id="6343003829431264373">Iba párne strany</translation>
-<translation id="6343262564968371601">Vyhľadávaním v súboroch, aplikáciách, na Googli a ďalších miestach nájdite, čo hľadáte</translation>
 <translation id="6343932110790212017">Odteraz môžete karty vyhľadávať a zatvárať tu. Túto funkciu môžete kedykoľvek odopnúť.</translation>
 <translation id="6343981313228733146">Okno bolo presunuté nahor a doprava</translation>
 <translation id="6344170822609224263">Pristupovať k zoznamu sieťových pripojení</translation>
@@ -7184,7 +7077,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6476482583633999078">Rýchlosť reči</translation>
 <translation id="6476671549211161535">Stlačte v zariadení <ph name="DEVICE_NAME" /> iné tlačidlo, než sú ľavé a pravé tlačidlo myši.</translation>
 <translation id="6477822444490674459">Synchronizácia upozornení nie je podporovaná v pracovnom profile v telefóne. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
-<translation id="6478849105642611893">Kláves rýchleho vloženia sa nachádza pod klávesom Tab</translation>
 <translation id="6479881432656947268">Internetový obchod Chrome</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">Operácia aktualizácie sa nepodarila</translation>
@@ -7195,7 +7087,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{Chcete skupinu kariet ponechať?}few{Chcete skupiny kariet ponechať?}many{Keep tab groups?}other{Chcete skupiny kariet ponechať?}}</translation>
 <translation id="6486301003991593638">Ak chcete spravovať prístupové kľúče, použite novšiu verziu systému Windows</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> nedokáže skontrolovať, či boli vaše heslá odhalené pri porušení ochrany údajov. Skontrolujte internetové pripojenie.</translation>
-<translation id="6488384360522318064">Výber jazyka</translation>
 <translation id="648927581764831596">Nie je k dispozícii</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
 <translation id="649396225532207613">Tento súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
@@ -7253,7 +7144,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="653659894138286600">Skenovanie dokumentov a obrázkov</translation>
 <translation id="6538036594527795020">Zmeňte jazyk aplikácie <ph name="APP" />. Aktuálne používate jazyk <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Pri rozpoznávaní kódu sa vyskytla chyba</translation>
-<translation id="653920215766444089">Vyhľadáva sa polohovacie zariadenie</translation>
 <translation id="653983593749614101">Obnovuje sa…</translation>
 <translation id="6540174167103635041">Inštalácia aplikácie</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Túto možnosť povoľte iba v prípade, ak viete, čo robíte, alebo ak vás o to niekto požiadal, pretože zhromažďovanie údajov môže znížiť výkonnosť.</translation>
@@ -7284,7 +7174,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6558098963164662391">&amp;Odstrániť zo slovníka</translation>
 <translation id="6560061709899140565">Zobraziť ďalšie relácie prenosu</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
-<translation id="6561726789132298588">enter</translation>
 <translation id="6561877237303825108">Tento súbor typu (<ph name="TYPE" />) môže byť nebezpečný. Uložte ho, iba keď je pre vás zdroj <ph name="ORIGIN" /> dôveryhodný.</translation>
 <translation id="6562117348069327379">Ukladajte denníky systému do priečinka Stiahnuté.</translation>
 <translation id="656293578423618167">Názov súboru alebo cesta má veľa znakov. Uložte súbor pod kratším názvom alebo inde.</translation>
@@ -7448,7 +7337,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6673797129585578649">Predlžuje výdrž batérie tak, že zníži jas, obmedzí aktivitu a vizuálne efekty na pozadí, odloží upozornenia a zapne šetrič energie Chromu.</translation>
 <translation id="6673898378497337661">zvýšenie jasu klávesnice</translation>
 <translation id="6674571176963658787">Ak chcete spustiť synchronizáciu, zadajte prístupovú frázu</translation>
-<translation id="6675665718701918026">Bolo pripojené ukazovacie zariadenie</translation>
 <translation id="6675717447295898330">Vytvoriť nový pracovný profil bez existujúcich údajov</translation>
 <translation id="6677527809400770913">Gesto <ph name="GESTURE" /> bolo priradené akcii <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Veľké morské vlny a krajina na vzdialenom pozadí. Zbytky oranžového svetla tesne za horizontom na inak tmavej, pochmúrnej oblohe.</translation>
@@ -7537,11 +7425,9 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="67465227497040338">Zobraziť heslo domény <ph name="DOMAIN" /></translation>
 <translation id="6746834324024491643">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
-<translation id="6749473226660745022">Fotky</translation>
 <translation id="6750757184909117990">Zakázať mobilnú sieť</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
 <translation id="6754359471209693699">Spustenie nového vyhľadávania</translation>
-<translation id="6754918760968695779">Rýchlo vložiť</translation>
 <translation id="6755702685749429945">Pridať slovník</translation>
 <translation id="6756643207511618722">Hlasové nástroje</translation>
 <translation id="6757431299485455321">Umožnite ostatným zariadeniam nájsť tento hotspot.</translation>
@@ -7692,7 +7578,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6850925512806464982">Všetci okamžite stratia prístup k tejto skupine kariet a bude odstránená zo všetkých zariadení</translation>
 <translation id="6851346504162963984">{MEMBERS,plural, =1{1 web v skupine vlastníka <ph name="RWS_OWNER" />}few{{MEMBERS} weby v skupine vlastníka <ph name="RWS_OWNER" />}many{{MEMBERS} sites in <ph name="RWS_OWNER" />'s group}other{{MEMBERS} webov v skupine vlastníka <ph name="RWS_OWNER" />}}</translation>
 <translation id="6851497530878285708">Aplikácia je povolená</translation>
-<translation id="6852529053326738838">Požiadajte svoju organizáciu alebo sa zaregistrujte svojím pracovným e‑mailom a zistite, či váš účet spĺňa podmienky.</translation>
 <translation id="6853029310037965825">Bola nainštalovaná aplikácia <ph name="APP_TYPE" /> zo zdroja <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
 <translation id="6853118789186721762">Pripomenutie bolo odoslané do vášho zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Rok <ph name="DROPDOWN_NAME" /></translation>
@@ -7715,7 +7600,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="686609795364435700">Tiché</translation>
 <translation id="686664946474413495">Teplota farieb</translation>
 <translation id="6867086642466184030">Ďalšie aplikácie sú nastavené, aby otvárali rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikáciám <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> a <ph name="NUMBER_OF_OTHER_APPS" /> ďalším otvárať podporované odkazy.</translation>
-<translation id="6867671714894555998">Šetrite čas s novou klávesnicou</translation>
 <translation id="6868206169573555318">Aktualizovať opätovným spustením</translation>
 <translation id="686831807558000905">Neprihlasovať sa</translation>
 <translation id="686839242150793617">Môžu automaticky spúšťať obraz v obraze</translation>
@@ -7742,7 +7626,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6885338910541974777">Operácia inštalátora aplikácie sa nepodarila.</translation>
 <translation id="6885771755599377173">Ukážka systémových informácií</translation>
 <translation id="6886871292305414135">Otvoriť odkaz na novej &amp;karte</translation>
-<translation id="6888831646723563669">Pripojte sa a využívajte všetky funkcie vo svojom novom zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6888850808202733940">Aplikácie a hry</translation>
 <translation id="6889957081990109136">Prepínač zatiaľ nebol pridelený</translation>
 <translation id="689007770043972343">Skúste do skupiny presunúť ďalšie otvorené karty</translation>
@@ -7800,7 +7683,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6924109527536857168">Vyžaduje sa synchronizácia</translation>
 <translation id="6924940560840297548">Karty boli odstránené, pretože ste ich v poslednom čase nepoužili</translation>
 <translation id="6928650056523249512">Automaticky odstraňovať povolenia z nepoužívaných webov</translation>
-<translation id="6929126689972602640">Rodičovská kontrola nie je podporovaná v prípade školských účtov. Ak chcete pridať školský účet, aby ste mali doma prístup k Učebni Google a ďalším webom s domácimi úlohami, prihláste sa najprv osobným účtom dieťaťa. Školský účet môžete pridať neskôr v nastaveniach.</translation>
 <translation id="6929639755025587400">Inštaluje sa aplikácia…</translation>
 <translation id="6929669104135164900">Otvoriť „<ph name="SELECTION" />“ v režime čítania</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Rozšírenie bolo odmietnuté}few{# rozšírenia boli odmietnuté}many{# extensions have been rejected}other{# rozšírení bolo odmietnutých}}</translation>
@@ -7811,7 +7693,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6933321725007230600">Zapnúť synchronizáciu…</translation>
 <translation id="693459579445775904">Hlasové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku.</translation>
 <translation id="6934597021412437058">Teraz môžete pomocou rozdeleného zobrazenia porovnávať alebo vykonávať multitasking či ďalšie akcie</translation>
-<translation id="6935031746833428401">Ďalšie informácie o správe zariadení</translation>
 <translation id="6938386202199793006">Máte jednu uloženú tlačiareň.</translation>
 <translation id="6938606182859551396">Ak chcete v zariadení <ph name="DEVICE_TYPE" /> dostávať upozornenia z telefónu, podľa pokynov v telefóne udeľte Službám Google Play prístup k upozorneniam.</translation>
 <translation id="6941514251635934269">Spýtajte sa na tento dokument</translation>
@@ -7825,7 +7706,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6949089178006131285">Čítať informácie o sieťach v systéme ChromeOS Flex</translation>
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950143189069683062">Podrobnosti o pamäti</translation>
-<translation id="6950351336108213154">Aktualizujú sa periférne zariadenia</translation>
 <translation id="6954936693361896459">Prenášať radšej túto kartu</translation>
 <translation id="6955446738988643816">Preskúmať kontextové okná</translation>
 <translation id="6955535239952325894">Toto nastavenie je v spravovaných prehliadačoch deaktivované.</translation>
@@ -7884,13 +7764,11 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6992554835374084304">Zapnutie rozšírenej kontroly pravopisu</translation>
 <translation id="6993000214273684335">Karta bola odstránená zo skupiny bez názvu – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6995984090981858039">Čítať informácie a údaje zo zariadení ChromeOS</translation>
-<translation id="6996438701394974959">Zväčšiť veľkosť zobrazenia a textu</translation>
 <translation id="6997083615983164651">Ďalšie možnosti pre web <ph name="ORIGIN" /></translation>
 <translation id="6997553674029032185">Prejsť na web</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – denník aktivít</translation>
 <translation id="6997707937646349884">V zariadeniach:</translation>
 <translation id="6998036632333022623">Zdieľanie kariet s Googlom</translation>
-<translation id="6998793565256476099">Zaregistrovať zariadenie na videokonferencie</translation>
 <translation id="6999956497249459195">Nová skupina</translation>
 <translation id="7000206553895739324">Tlačiareň <ph name="PRINTER_NAME" /> je pripojená, ale je potrebné ju nakonfigurovať</translation>
 <translation id="7000347579424117903">Použite Ctrl, Alt alebo kláves vyhľadávania</translation>
@@ -7955,7 +7833,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7039326228527141150">Pristupovať k zariadením USB od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="7039697949826432881">Nedá sa nahrať. Súbor prekračuje maximálnu podporovanú veľkosť <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Karta Smart Card – prihlásenie</translation>
-<translation id="7039951224110875196">Vytvoriť účet Google pre dieťa</translation>
 <translation id="7042116641003232070">Môže ukladať údaje do vášho zariadenia</translation>
 <translation id="7044124535091449260">Ďalšie informácie o prístupe k webom</translation>
 <translation id="7044207729381622209">Systém vás odhlási z týchto webov (aj v otvorených kartách)</translation>
@@ -7971,7 +7848,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}few{# otvorené okná inkognito}many{# open Incognito windows}other{# otvorených okien inkognito}}</translation>
 <translation id="7056526158851679338">&amp;Preskúmať zariadenia</translation>
 <translation id="7057567173736333354">Opíšte obrázok</translation>
-<translation id="70577934383983846">Používajte toto heslo vo všetkých zariadeniach</translation>
 <translation id="7058024590501568315">Skrytá sieť</translation>
 <translation id="7058325593717863084">Odoslať spätnú väzbu k panelu kariet</translation>
 <translation id="7059858479264779982">Nastaviť na automatické spúšťanie</translation>
@@ -7982,7 +7858,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Do služby <ph name="BRAND" /> v účte <ph name="USER_EMAIL" /> bolo importované 1 heslo}few{Do služby <ph name="BRAND" /> v účte <ph name="USER_EMAIL" /> boli importované {NUM_PASSWORDS} heslá}many{{NUM_PASSWORDS} passwords imported to <ph name="BRAND" /> for <ph name="USER_EMAIL" />}other{Do služby <ph name="BRAND" /> v účte <ph name="USER_EMAIL" /> bolo importovaných {NUM_PASSWORDS} hesiel}}</translation>
 <translation id="7065534935986314333">O systéme</translation>
 <translation id="706626672220389329">Pri pripájaní zdieľaného úložiska sa vyskytla chyba. Dané úložisko je už pripojené.</translation>
-<translation id="7066572364168923329">Výber nastavenia zariadenia (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7067396782363924830">Ambientné farby</translation>
 <translation id="7067725467529581407">Túto výzvu už nezobrazovať</translation>
 <translation id="7068279399556423026">Ak chcete vidieť karty z iných zariadení, prihláste sa</translation>
@@ -8102,7 +7977,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7168109975831002660">Minimálna veľkosť písma</translation>
 <translation id="7169122689956315694">Zapnúť upozornenie na zariadenia v okolí</translation>
 <translation id="7171000599584840888">Pridať profil…</translation>
-<translation id="7171259390164035663">Nezaregistrovať</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Pridať karty do novej skupiny}other{Pridať karty do novej skupiny}}</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7174199383876220879">Novinka! Ovládajte svoju hudbu, videá a ďalší obsah.</translation>
@@ -8180,9 +8054,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7226163413959353072">Asistent s umelou inteligenciou, ktorý poskytuje kľúčové poznatky, objasňuje pojmy, nachádza odpovede a nielen to</translation>
 <translation id="7227235818314667565">Spravovať zdieľanie</translation>
 <translation id="7227458944009118910">Aplikácie uvedené nižšie dokážu spracúvať aj odkazy na protokol. Iné budú žiadať povolenie.</translation>
-<translation id="7228854227189381547">Neprepínať</translation>
 <translation id="7230222852462421043">&amp;Obnoviť okno</translation>
-<translation id="7230881857327093958">Zmeny sa uplatnia po nastavení</translation>
 <translation id="7231260028442989757">Zobrazovať upozornenia telefónu, zatvárať ich a odpovedať na ne</translation>
 <translation id="7231347196745816203">Odomykajte zariadenie <ph name="DEVICE_TYPE" /> pomocou telefónu.</translation>
 <translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{1 záložka a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}few{{BOOKMARK_COUNT} záložky a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}many{{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{{BOOKMARK_COUNT} záložiek a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}}</translation>
@@ -8252,7 +8124,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7283555985781738399">Režim pre hostí</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Toto zariadenie bude uložené na 1 deň a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}few{Toto zariadenie bude uložené na {DAYS} dni a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}many{Toto zariadenie bude uložené na {DAYS} dňa a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}other{Toto zariadenie bude uložené na {DAYS} dní a nabudúce sa môžete pripojiť bez kódu. Nastavil to váš správca.}}</translation>
 <translation id="7284386549235597598">Týmto ukončíte úlohu, na ktorej Gemini momentálne pracuje.</translation>
-<translation id="7284411326658527427">Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
 <translation id="7285008278689343502">Národný park Grand Teton</translation>
 <translation id="7286867818472074330">Vybrať prístupový kľúč</translation>
 <translation id="7287411021188441799">Obnoviť predvolené pozadie</translation>
@@ -8286,7 +8157,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7308643132139167865">Jazyky webov</translation>
 <translation id="7309214454733221756">Chcete vytvoriť prístupový kľúč na prihlasovanie do aplikácie <ph name="APP_NAME" />?</translation>
 <translation id="7309517920862730287">Zoznam úloh</translation>
-<translation id="7311005168897771689">Majte jednoduchý prístup k súborom na Disku Google, keď ste offline</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
 <translation id="7312040805247765153">Aplikácia sa nedá nainštalovať</translation>
 <translation id="7312210124139670355">Správca resetuje vašu eSIM kartu. Môže trvať niekoľko minút.</translation>
@@ -8306,8 +8176,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7324297612904500502">Beta fórum</translation>
 <translation id="7325209047678309347">Papier je zaseknutý</translation>
 <translation id="7325953439504232954">Chcete prepnúť profil?</translation>
-<translation id="7326004502692201767">Nastavenie tohto zariadenia <ph name="DEVICE_TYPE" /> pre dieťa</translation>
-<translation id="732659786514229249">Chcete zariadenie zaregistrovať vo svojej organizácii?</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 záložka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju v účte Google.}few{{BOOKMARK_COUNT} záložky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}many{{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}other{{BOOKMARK_COUNT} záložiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}}</translation>
 <translation id="7328867076235380839">Neplatná kombinácia</translation>
@@ -8419,11 +8287,9 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7402198013420237102">Chcete uložené heslá presunúť do účtu Google?</translation>
 <translation id="7402375256128852434">Pridajte nedávne karty</translation>
 <translation id="740333000181878130">Zvuk pri spustení zariadenia</translation>
-<translation id="7403642243184989645">Sťahujú sa zdroje</translation>
 <translation id="7406113532070524618">Toto nastavenie funguje bez identifikácie vašej totožnosti a neumožňuje webom zobraziť si vašu históriu prehliadania, ale v rámci overenia môžu weby zdieľať malé množstvo informácií</translation>
 <translation id="7406170619228425009">Výsledky vyhľadávania a odpovede v rámci histórie využívajúcej umelú inteligenciu môžu byť neaktuálne, ak sa obsah webu od vašej poslednej návštevy zmenil</translation>
 <translation id="740624631517654988">Zablokované vyskakovacie okno</translation>
-<translation id="7406912950279255498">Režim inverzie farieb</translation>
 <translation id="7407430846095439694">Importovať a spojiť</translation>
 <translation id="7407504355934009739">Väčšina ľudí blokuje upozornenia z tohto webu</translation>
 <translation id="7407578029724074226">Súbor <ph name="FILE_NAME" /> obsahuje citlivé údaje. Vaša organizácia vám umožní uložiť ho do cloudového priestoru alebo zahodiť.</translation>
@@ -8604,14 +8470,12 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7542113656240799536">Informácie o overení siete s protokolom EAP</translation>
 <translation id="754225194829660954">Zdroj: <ph name="DISPLAY_INITIATOR_ORIGIN" /></translation>
 <translation id="7542619176101025604"><ph name="ACTION_NAME" /> – pripnuté</translation>
-<translation id="7544227555407951270">Registrovať zariadenie</translation>
 <translation id="7544977292347272434">Požiadaj rodiča, aby rozšírenie povolil</translation>
 <translation id="7545347190366646170">Osoby s prístupom</translation>
 <translation id="7547317915858803630">Upozornenie: Vaše nastavenia aplikácie <ph name="PRODUCT_NAME" /> sú uložené na sieťovom disku. Môže to viesť ku spomaleniu, chybám alebo strate údajov.</translation>
 <translation id="754836352246153944">Rozšírenia nie sú na tomto webe povolené. Výberom otvorte ponuku.</translation>
 <translation id="7548856833046333824">Limonáda</translation>
 <translation id="7549250950481368089">Tu sa zobrazia uložené heslá. <ph name="BEGIN_LINK" /> Importujte heslá<ph name="END_LINK" /> do služby <ph name="BRAND" />.</translation>
-<translation id="7549434883223124329">Chcete prepnúť jazyk zariadenia?</translation>
 <translation id="7550830279652415241">záložky_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Ukladací priestor, napájanie, jazyk</translation>
 <translation id="7551059576287086432">Nepodarilo sa stiahnuť súbor <ph name="FILE_NAME" /></translation>
@@ -8685,7 +8549,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7612989789287281429">Prihlasuje sa…</translation>
 <translation id="76131528886466333">Nainštalujte si rozšírenie Vyhľadávanie Google pre Microsoft Edge</translation>
 <translation id="7615365294369022248">Pri pridávaní účtu sa vyskytla chyba</translation>
-<translation id="7616214729753637086">Zariadenie sa registruje...</translation>
 <translation id="7616964248951412133">Weby pomocou tejto funkcie zaznamenávajú a používajú vstup myši, napríklad pre hry alebo aplikácie vzdialenej plochy</translation>
 <translation id="7617263010641145920">Zapnúť Obchod Play</translation>
 <translation id="7617648809369507487">Používať tichší režim</translation>
@@ -8744,7 +8607,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7657090467145778067">Malé úspory</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Iné formy aktivity<ph name="END_LINK_GOOGLE" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Môžete ich kedykoľvek odstrániť.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
-<translation id="7658395071164441475">Niektoré heslá sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google <ph name="USER_EMAIL" /></translation>
 <translation id="7659154729610375585">Naozaj chcete ukončiť režim inkognito?</translation>
 <translation id="7659336857671800422">Prejsť na sprievodcu ochranou súkromia</translation>
 <translation id="7660146600670077843">Kliknite pravým tlačidlom na kartu a vyberte Pridať kartu do novej skupiny</translation>
@@ -8759,7 +8621,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7665445336029073980">Celá história sťahovania</translation>
 <translation id="766560638707011986">Zobraziť domény</translation>
 <translation id="766635563210446220">Heslá sa nedajú importovať. Skontrolujte, či má súbor <ph name="FILENAME" /> správny formát. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="7666531788977935712">Tlačidlo Pokračovať je aktivované</translation>
 <translation id="7666966001957552011">Upozorní vás na nebezpečné weby, stiahnuté súbory a rozšírenia. Tieto varovania môžete kedykoľvek vypnúť. Ak sa vám zobrazí varovanie týkajúce sa legitímneho obsahu, môžete <ph name="BEGIN_LINK" />nahlásiť chybu<ph name="END_LINK" />.</translation>
 <translation id="7668205084604701639">Nastavenia súboru balíka Office</translation>
 <translation id="7668423670802040666">V správcovi hesiel Google pre účet <ph name="ACCOUNT" /></translation>
@@ -8855,7 +8716,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="7730683939467795481">Túto stránku zmenilo rozšírenie <ph name="EXTENSION_NAME" /></translation>
 <translation id="7735558909644181051">Sprostredkujúce certifikáty</translation>
 <translation id="7736119438443237821">Chystáte sa odstrániť prístup k prístupovým kľúčom v tomto zariadení</translation>
-<translation id="7737115349420013392">Páruje sa so zariadením <ph name="DEVICE_NAME" />...</translation>
 <translation id="7737203573077018777">Bol prijatý pokyn <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
 <translation id="7737948071472253612">Nemôže používať vašu kameru</translation>
 <translation id="77381465218432215">Zobrazovať diakritické znamienka a špeciálne znaky</translation>
@@ -8871,7 +8731,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7745554356330788383">Znova načítajte túto stránku, aby sa použili aktualizované nastavenia rozšírenia <ph name="EXTENSION_NAME" /> na tomto webe</translation>
 <translation id="7745677556280361868">Chcete odstrániť túto sieť na stránke odberu Passpoint?</translation>
 <translation id="7745849183714722618">Chrome môže pomocou modelov umelej inteligencie, ktoré sa spúšťajú priamo vo vašom zariadení, poskytovať funkcie, ako je detekcia podvodu. Keď je toto nastavenie vypnuté, tieto funkcie nemusia fungovať. <ph name="BEGIN_LINK" />Ďalšie informácie o umelej inteligencii v zariadení<ph name="END_LINK" /></translation>
-<translation id="7746045113967198252">Zväčšite alebo zmenšite položky na obrazovke vrátane textu. Môžete to urobiť aj neskôr v sekcii Nastavenia &gt; Zariadenie &gt; Obrazovky.</translation>
 <translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
 <translation id="7752832973194460442">Informácie o aplikáciách pre Android</translation>
@@ -8933,8 +8792,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7787308148023287649">Zobraziť na inej obrazovke</translation>
 <translation id="7788976206742181876">Požiadavka služby Omaha</translation>
 <translation id="7789895198197042595">Adresa domova vám pomôže vykonávať akcie v službách Googlu, napríklad získať relevantnejšie výsledky vyhľadávania a trasy v Mapách Google. Môžete ju upraviť alebo odstrániť v <ph name="BEGIN_LINK" />účte Google používateľa <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
-<translation id="7791269138074599214">Metóda vstupu</translation>
-<translation id="7791436592012979144">Obrátené posúvanie je zapnuté</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="7792388396321542707">Zastaviť zdieľanie</translation>
 <translation id="779308894558717334">Svetlozelená</translation>
@@ -8993,7 +8850,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7839871177690823984">Štrbinový kaňon</translation>
 <translation id="7840222916565569061">Aplikácie nemôžu používať vašu kameru</translation>
 <translation id="7842062217214609161">Žiadna skratka</translation>
-<translation id="7842692330619197998">Ak chcete vytvoriť nový účet, prejdite na g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Odinštalovať systém Linux</translation>
 <translation id="784475655832336580">Zvýraznenie položky označením na klávesnici nie je k dispozícii, keď je čítačka ChromeVox zapnutá</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
@@ -9044,7 +8900,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7887174313503389866">Pozrite si komentovanú prehliadku hlavných ovládacích prvkov ochrany súkromia a zabezpečenia. Ďalšie možnosti nájdete v jednotlivých nastaveniach.</translation>
 <translation id="7887286029584695415">Chcete tomuto webu povoliť zobrazovať a kopírovať súbory?</translation>
 <translation id="7887334752153342268">Duplikovať</translation>
-<translation id="7887864092952184874">Myš Bluetooth bola spárovaná</translation>
 <translation id="7889371445710865055">Zmena jazyka diktovania</translation>
 <translation id="7890147169288018054">Zobrazte si informácie o sieti, napríklad adresu IP alebo MAC</translation>
 <translation id="7890722904825422657">Ak chcete vidieť celé názvy kariet, jednoducho spravovať skupiny kariet a získať viac priestoru na výšku, presuňte karty na stranu.</translation>
@@ -9070,7 +8925,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7909324225945368569">Premenujte svoj profil</translation>
 <translation id="7909969815743704077">Stiahnuté v režime inkognito</translation>
 <translation id="7909986151924474987">Tento profil zrejme nebudete môcť preinštalovať</translation>
-<translation id="7910725946105920830">Použiť osobný účet Google</translation>
 <translation id="7910768399700579500">&amp;Nový priečinok</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Zrušiť nastavenie</translation>
@@ -9079,7 +8933,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7915457674565721553">Ak chcete nastaviť rodičovskú kontrolu, pripojte sa k internetu</translation>
 <translation id="7916364730877325865">Vaša organizácia vám nepovoľuje zapnúť synchronizáciu s týmto účtom</translation>
 <translation id="791698251820376781">Vaša organizácia vám neumožňuje prihlásiť sa</translation>
-<translation id="7918257978052780342">Zaregistrovať</translation>
 <translation id="7918928051723770926">Úloha bola dokončená</translation>
 <translation id="7919123827536834358">Automaticky prekladať tieto jazyky</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -9111,7 +8964,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7936195481975600746">Ak chcete zdieľať obrazovku, použite systémový nástroj na výber obrazovky</translation>
 <translation id="7937809006412909895">Zhromažďujú sa diagnostické údaje</translation>
 <translation id="7938881824185772026">Labs</translation>
-<translation id="7939062555109487992">Rozšírené možnosti</translation>
 <translation id="793923212791838">Vaše zariadenie s týmto webom nedá použiť</translation>
 <translation id="7939328347457537652">Správa certifikátov zariadení</translation>
 <translation id="7939918959917132075">Zmenené na toto rozšírením</translation>
@@ -9177,7 +9029,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7978412674231730200">Súkromný kľúč</translation>
 <translation id="7978450511781612192">Táto možnosť vás odhlási z účtov Google. Záložky, história, heslá a ďalší obsah sa prestanú synchronizovať.</translation>
 <translation id="7980066177668669492">ASCII s kódovaním Base64, viacero certifikátov</translation>
-<translation id="7980084013673500153">ID prvku: <ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406">Použite uložený prístupový kľúč pre aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="7981662863948574132">Zobraziť vyskakovacie okno s číslom EID zariadenia a QR kódom</translation>
 <translation id="7981670705071137488">Aktualizácie softvéru budú prebiehať na pozadí. Predvoľby aktualizácie môžete skontrolovať v Nastaveniach.</translation>
@@ -9235,7 +9086,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8018298733481692628">Chcete odstrániť tento profil?</translation>
 <translation id="8018313076035239964">Aké dáta môžu weby používať a aký obsah vám môžu zobrazovať</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
-<translation id="8022466874160067884">Zadajte svoj účet Google a heslo</translation>
 <translation id="8023133589013344428">Správa jazykov v nastaveniach systému Chrome OS Flex</translation>
 <translation id="8023801379949507775">Aktualizovať rozšírenia</translation>
 <translation id="8024161440284949905">Pokračovať s týmito kartami</translation>
@@ -9279,7 +9129,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8048596485169033655">Sťahujú sa súbory s anotáciami hlavného uzla… <ph name="PERCENT" /> %</translation>
 <translation id="8048728378294435881">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení</translation>
 <translation id="8048977114738515028">Vytvorte si v zariadení odkaz na pracovnej ploche, aby ste získali priamy prístup k tomuto profilu</translation>
-<translation id="8049029041626250638">Pripojte klávesnicu alebo myš. Ak používate zariadenia s rozhraním Bluetooth, uistite sa, že sú pripravené na párovanie.</translation>
 <translation id="8049122382261047457">Vyhľadajte ľubovoľný obrázok pomocou funkcie Google Lens</translation>
 <translation id="8049948037269924837">Obrátené posúvanie touchpadom</translation>
 <translation id="8050038245906040378">Komerčné podpisovanie kódu Microsoft</translation>
@@ -9293,7 +9142,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8054517699425078995">Tento typ súboru môže poškodiť vaše zariadenie. Chcete súbor <ph name="FILE_NAME" /> aj napriek tomu zachovať?</translation>
 <translation id="8054609631325628928">Pomocou týchto čísel je možné aktivovať službu</translation>
 <translation id="8054883179223321715">K dispozícii pre konkrétne weby s videom</translation>
-<translation id="8054921503121346576">Klávesnica s konektorom USB bola pripojená</translation>
 <translation id="8055975688427973864">Zobrazovať tlačidlo usporiadania</translation>
 <translation id="8058655154417507695">Rok ukončenia platnosti</translation>
 <translation id="8058986560951482265">Opakovane sa zastavuje</translation>
@@ -9322,7 +9170,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8080028325999236607">Zavrieť všetky karty</translation>
 <translation id="8080530871547404884"><ph name="ORIGIN" /> bude môcť zobrazovať súbor <ph name="FILENAME" /> a vytvárať jeho vlastné kópie, dokým nezavriete všetky karty tohto webu</translation>
 <translation id="8081989000209387414">Chcete deaktivovať ladenie ADB?</translation>
-<translation id="8082106343289440791">Chcete spárovať so zariadením <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082132721957920509">Vaša karta je uložená</translation>
 <translation id="8082390128630131497">Deaktivácia ladenia ADB obnoví výrobné nastavenia tohto zariadenia <ph name="DEVICE_TYPE" />. Všetky používateľské účty a miestne údaje budú odstránené.</translation>
 <translation id="8084114998886531721">Uložené heslo</translation>
@@ -9397,8 +9244,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8139440916039659819">Zrýchlenie pohybu kurzorom</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Prehliadač je spravovaný<ph name="END_LINK" /> doménou <ph name="BROWSER_DOMAIN" /> a váš <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> doménou <ph name="PROFILE_DOMAIN" /></translation>
-<translation id="8140869601171867148">Váš účet Google je účet, ktorý používate s Gmailom, službou YouTube, Chromom a ďalšími službami Googlu.
-    Pomocou svojho účtu máte jednoduchý prístup k všetkým záložkám, súborom a ďalšiemu obsahu.</translation>
 <translation id="8141418916163800697">Ďalšie funkcie môžete nakonfigurovať v nastaveniach Telefónneho centra</translation>
 <translation id="8141584439523427891">Otvára sa alternatívny prehliadač</translation>
 <translation id="8141725884565838206">Správa hesiel</translation>
@@ -9417,7 +9262,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8151057139207656239">Podrobnosti o zostave boli skopírované</translation>
 <translation id="815114315010033526">Použiť radšej QR kód</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
-<translation id="8152760814912191567">Google Beam pre Zoom</translation>
 <translation id="815347678407292813">Aplikácie a weby môžu stále vidieť vašu polohu na základe adresy IP.</translation>
 <translation id="8154790740888707867">Žiadny súbor</translation>
 <translation id="8155214519979960765">Ak sa budete chcieť znova prihlásiť prístupovým kľúčom v tomto zariadení, budete musieť overiť svoju totožnosť. Ak máte k dispozícii inú možnosť prihlásenia, napríklad heslo, môžete sa prihlásiť aj pomocou nej.</translation>
@@ -9570,7 +9414,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="82706708334564640">Nedávna história sťahovania</translation>
 <translation id="827097179112817503">Zobrazovať tlačidlo domovskej stránky</translation>
 <translation id="8271268254812352141">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu. Jazyky prekladu si prispôsobíte v sekcii <ph name="LINK_BEGIN" />Jazyky webu<ph name="LINK_END" />.</translation>
-<translation id="8271379370373330993">Nasledujúce kroky sú určené pre rodičov. Po založení účtu môžete zariadenie <ph name="DEVICE_TYPE" /> vrátiť dieťaťu.</translation>
 <translation id="8272443605911821513">Ak chcete spravovať rozšírenia, kliknite v ponuke Ďalšie nástroje na možnosť Rozšírenia.</translation>
 <translation id="8272786333453048167">Udeliť znova</translation>
 <translation id="8273905181216423293">Stiahnuť</translation>
@@ -9598,7 +9441,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8289128870594824098">Veľkosť na disku</translation>
 <translation id="8289509909262565712">Víta vás <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Stiahnuť Chrome</translation>
-<translation id="8291942417224950075">Na osobné použitie</translation>
 <translation id="8293206222192510085">Pridať záložku</translation>
 <translation id="8293957715257389063">Dôkladne prehľadajte kartu</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -9901,7 +9743,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8525461909394569609">Táto aplikácia zahŕňa webový obsah zo zdroja</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Reproduktory</translation>
-<translation id="8527257351549797148">Vaša organizácia môže vyžadovať na prístup k aplikáciám, rozšíreniam a ďalšiemu obsahu registráciu. Umožňuje jej aj spravovať napríklad nastavenia zabezpečenia a zariadenia.</translation>
 <translation id="8528074251912154910">Pridať jazyky</translation>
 <translation id="8528479410903501741">Uložiť číslo IBAN</translation>
 <translation id="8531701051932785007">Zlepšené bezpečné prehliadanie je vypnuté</translation>
@@ -9942,7 +9783,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8557022314818157177">Klepte na bezpečnostný kľúč, dokým sa odtlačok prsta nenasníma</translation>
 <translation id="8557100046150195444">Ak chcete pokračovať, použite Touch ID</translation>
 <translation id="8557856025359704738">Ďalšie stiahnutie nastane o <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8558063527625343224">Nastavenie služby Google Beam</translation>
 <translation id="8559858985063901027">Prístupové kľúče</translation>
 <translation id="8559961053328923750">Chrome obmedzuje celkové množstvo údajov na meranie výkonnosti reklám, ktoré môžu weby zdieľať prostredníctvom prehliadača</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť v novom okne}few{Otvoriť všetky ({COUNT}) v novom okne}many{Otvoriť všetky ({COUNT}) v novom okne}other{Otvoriť všetky ({COUNT}) v novom okne}}</translation>
@@ -10018,6 +9858,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8619803522055190423">Vrhnutý tieň</translation>
 <translation id="8620206585293032550">Vzhľad neaktívnych kariet</translation>
 <translation id="8621979332865976405">Zdieľanie celej obrazovky</translation>
+<translation id="8622145666696249878">Režim AI vo Vyhľadávaní Google a pripojené aplikácie</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Čítať sériové čísla zariadení ChromeOS a komponentov</translation>
 <translation id="862542460444371744">&amp;Rozšírenia</translation>
@@ -10164,7 +10005,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8716050156658570300">Weby môžu žiadať o používanie senzorov pohybu a svetla</translation>
 <translation id="8716067129332848360">Zobraziť usporiadanie</translation>
 <translation id="8717864919010420084">Skopírovať odkaz</translation>
-<translation id="8718994464069323380">Bola rozpoznaná dotyková obrazovka</translation>
 <translation id="8719472795285728850">Počúvajú sa aktivity rozšírenia…</translation>
 <translation id="8719665168401479425">Vykonávať akcie gestami tvárou</translation>
 <translation id="8720200012906404956">Hľadá sa mobilná sieť. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -10247,13 +10087,11 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8776294611668764629">Vaša organizácia tento súbor zablokovala, pretože je na kontrolu príliš veľký. Otvárať môžete súbory s veľkosťou do 50 MB.</translation>
 <translation id="8777509665768981163">Pridajte alebo vyhľadajte tlačidlá v tablete</translation>
 <translation id="8779720597365936419">Áno, ponechať moje údaje oddelené od pracovných údajov (odporúčané)</translation>
-<translation id="877985182522063539">A4</translation>
 <translation id="8780123805589053431">Získavať opisy obrázkov od Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhľadávanie bolo vypnuté</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>
 <translation id="8781980678064919987">Pri zavretí krytu vypnúť</translation>
 <translation id="8783171585655659524">Zahrnúť snímku obrazovky</translation>
-<translation id="8783834180813871000">Zadajte párovací kód Bluetooth a potom stlačte Return alebo Enter.</translation>
 <translation id="8785622406424941542">Dotykové pero</translation>
 <translation id="8788008845761123079">Vyberte gesto pre akciu <ph name="SELECTED_ACTION" /></translation>
 <translation id="878862491037637275">Táto skupina kariet je plná</translation>
@@ -10335,7 +10173,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="885246833287407341">Argumenty funkcie rozhrania API</translation>
 <translation id="8853586775156634952">Táto karta sa uloží iba do tohto zariadenia</translation>
 <translation id="8855242995793521265">Prehliadač ani zariadenie výrazne nespomalí.</translation>
-<translation id="8855977033756560989">Súprava tohto zariadenia Chromebook Enterprise obsahuje aj povýšenie Chrome Enterprise. Využite možnosti pre podniky a zaregistrujte si toto zariadenie pomocou účtu správcu Google.</translation>
 <translation id="8856028055086294840">Obnoviť aplikácie a stránky</translation>
 <translation id="885701979325669005">Úložisko</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Chcete inštalovať aplikáciu?}few{Chcete inštalovať aplikácie?}many{Chcete inštalovať aplikácie?}other{Chcete inštalovať aplikácie?}}</translation>
@@ -10354,7 +10191,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8867102760244540173">Hľadať karty…</translation>
 <translation id="8867228703146808825">Skopírovať podrobnosti o zostave do schránky</translation>
 <translation id="8867568208303837180">Odosiela sa...</translation>
-<translation id="8868333925931032127">Spustenie ukážkového režimu</translation>
 <translation id="8868626022555786497">Využité miesto</translation>
 <translation id="8868838761037459823">Podrobnosti o mobilnej sieti</translation>
 <translation id="8870413625673593573">Nedávno zatvorené</translation>
@@ -10409,7 +10245,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="890518297681039136">Operácia sa z neznámeho dôvodu nepodarila.</translation>
 <translation id="8905253417215700291">Služba <ph name="GOOGLE_PASSWORD_MANAGER" /> vytvorila pre tento web silné heslo</translation>
 <translation id="890616557918890486">Zmeniť zdroj</translation>
-<translation id="8907701755790961703">Vyberte krajinu</translation>
 <translation id="8909833622202089127">Web sleduje vašu polohu</translation>
 <translation id="8910222113987937043">Záložky, história, heslá a ďalšie nastavenia sa už nebudú ďalej synchronizovať do vášho účtu Google. Vaše existujúce údaje však zostanú uložené v účte Google a môžete ich spravovať pomocou panela <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8911478306361447917">Skratky funkcií a rozšírení</translation>
@@ -10448,7 +10283,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8933709832356869375">Bude odstránená jedna inštalovaná aplikácia</translation>
 <translation id="8933960630081805351">&amp;Zobraziť v aplikácii Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> má prístup k zariadeniam USB}=2{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}few{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> a {3} ďalšie}many{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} more}other{Rozšírenia s prístupom k zariadeniam: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> a {3} ďalších}}</translation>
-<translation id="8934732568177537184">Pokračovať</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>
 <translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{Použité pred <ph name="TIME_COUNT" /> dňami}=1{Použité pred <ph name="TIME_COUNT" /> dňom}=2{Použité pred <ph name="TIME_COUNT" /> týždňami}few{Použité pred <ph name="TIME_COUNT" /> týždňami}many{Použité pred <ph name="TIME_COUNT" /> týždňa}other{Použité pred <ph name="TIME_COUNT" /> týždňami}}</translation>
 <translation id="8940081510938872932">Počítač momentálne vykonáva priveľa úloh.  Skúste to neskôr.</translation>
@@ -10487,13 +10321,11 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8967427617812342790">Pridať do čitateľského zoznamu</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
-<translation id="8968906873893164556">Výber účtu, pomocou ktorého chcete nastavovať</translation>
 <translation id="8970887620466824814">Niečo sa pokazilo.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontaktujte správcu siete a uistite sa, že brána firewall neblokuje sťahovanie súborov zo serverov Google.</translation>
 <translation id="8973263196882835828">&amp;Zapnúť živý prepis</translation>
 <translation id="8973557916016709913">Odstrániť úroveň lupy</translation>
-<translation id="8973596347849323817">Zariadenie môžete prispôsobiť, aby zodpovedalo vašim potrebám. Tieto funkcie dostupnosti môžete neskôr zmeniť v Nastaveniach.</translation>
 <translation id="8973648401056792381">Webovú aplikáciu nainštaloval správca vášho zariadenia.</translation>
 <translation id="897414447285476047">Cieľový súbor bol neúplný, pretože sa vyskytol problém s pripojením.</translation>
 <translation id="8974261761101622391">Vyhľadať alternatívu rozšírenia <ph name="EXTENSION_NAME" /></translation>
@@ -10520,7 +10352,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8985661571449404298">Bol stiahnutý nezabezpečený súbor</translation>
 <translation id="8986362086234534611">Odstrániť</translation>
 <translation id="8986494364107987395">Automaticky odosielať Googlu štatistiky používania a správy o zlyhaní</translation>
-<translation id="8987305927843254629">Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
 <translation id="8987321822984361516">Prehliadač spravuje organizácia a profil spravuje <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987736167266086032">Pokračujte tam, kde ste skončili</translation>
 <translation id="8987927404178983737">Mesiac</translation>
@@ -10649,7 +10480,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9072918088200875065">Gemini ste udelili povolenie prihlasovať sa do týchto webov, aby mohol dokončovať úlohy za vás</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 jadro}few{{CORE_COUNT} jadrá}many{{CORE_COUNT} cores}other{{CORE_COUNT} jadier}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9074836595010225693">Myš s konektorom USB bola pripojená</translation>
 <translation id="9075413375877487220">Zlepšené bezpečné prehliadanie nepovažuje toto rozšírenie za dôveryhodné.</translation>
 <translation id="9076821103818989526">Bočný panel</translation>
 <translation id="9076977315710973122">Zdieľané úložisko SMB</translation>
@@ -10669,7 +10499,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="90885733430013283">SSID siete Wi‑Fi</translation>
 <translation id="9088578317174654338">Dolný hárok Gemini je zavretý.</translation>
 <translation id="9089416786594320554">Metódy vstupu</translation>
-<translation id="9089959054554410481">Zmena smeru posúvania na touchpade</translation>
 <translation id="9090044809052745245">Ako sa vaše zariadenie zobrazuje ostatným</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{Súbor sa nedá presunúť do služby <ph name="CLOUD_PROVIDER" />}few{Súbory sa nedajú presunúť do služby <ph name="CLOUD_PROVIDER" />}many{Can't move files to <ph name="CLOUD_PROVIDER" />}other{Súbory sa nedajú presunúť do služby <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="9093470422440389061">Metriky výkonu siete Wi‑Fi</translation>
@@ -10803,7 +10632,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikácia}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Váš správca môže nahrať vašu obrazovku pomocou aplikácie <ph name="APP0_NAME" />. Po spustení nahrávania nedostanete upozornenie.}=2{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" /> a <ph name="APP1_NAME" />. Po spustení nahrávania nedostanete upozornenie.}=3{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a jednej ďalšej. Po spustení nahrávania nedostanete upozornenie.}few{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania nedostanete upozornenie.}many{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will not be notified when the recording starts.}other{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania nedostanete upozornenie.}}</translation>
-<translation id="9186963452600581158">Prihlásiť sa účtom Google dieťaťa</translation>
 <translation id="9187967020623675250">Klávesy sa nezhodujú. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
 <translation id="9188142767272053574">Povoliť izoláciu procesov</translation>
 <translation id="9192019773545828776">Počúvajte hovorenú spätnú väzbu a používajte zariadenie bez pozerania na obrazovku. Spätná väzba k Braillovmu písmu je k dispozícii pomocou pripojeného zariadenia. ChromeVox zapnete alebo vypnete klávesovou skratkou Ctrl + Alt + Z. Položkami prechádzajte stláčaním klávesov Hľadať + šípka doľava alebo doprava. Položky vyberajte (aktivujte) klávesovou skratkou Hľadať + medzerník.</translation>
@@ -10877,12 +10705,10 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="952944744072967244">Aplikácia nie je k dispozícii</translation>
 <translation id="953434574221655299">Weby, ktoré majú povolené zisťovať, kedy aktívne používate zariadenie</translation>
 <translation id="954705236478705408">Nastavte nový profil</translation>
-<translation id="954749761428814584">Jazyk a metóda vstupu</translation>
 <translation id="956013912698841780">Kliknutím pravým tlačidlom môžete zhrnúť obsah, získať definície, písať s väčšou istotou, vytvárať obrázky a viac. Dostupnosť funkcie je momentálne obmedzená.</translation>
 <translation id="957179356621191750">Šesťbodové</translation>
 <translation id="957960681186851048">Tento web sa pokúsil automaticky stiahnuť viacero súborov</translation>
 <translation id="958571289841636277">Prechod dozadu a dopredu gestom potiahnutia</translation>
-<translation id="960987915827980018">Zostáva približne 1 hodina</translation>
 <translation id="961010578115289982">Vymeniť s ľavým zobrazením</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
 <translation id="962802172452141067">Stromová štruktúra priečinka so záložkami</translation>
@@ -10925,7 +10751,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="992256792861109788">Ružová</translation>
 <translation id="994087375490600917">Bočné panely</translation>
 <translation id="994289308992179865">Opa&amp;kovať</translation>
-<translation id="995420352808264005">Vyberte typ registrácie zariadenia</translation>
 <translation id="995755448277384931">Pridanie čísla IBAN</translation>
 <translation id="996250603853062861">Prebieha nadväzovanie zabezpečeného spojenia...</translation>
 <translation id="997143476478634194">Weby sa automaticky riadia týmto nastavením, keď ich navštívite. Zvyčajne odosielajú upozornenia, aby vás informovali o mimoriadnych alebo četových správach.</translation>

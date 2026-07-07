@@ -504,6 +504,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="175656076281618225">Töfrabrögð</translation>
 <translation id="1757773103848038814">Jafnstafaletur</translation>
 <translation id="1757935267918149452">Hnappurinn „Breyta Google-aðgangsorði“, virkjaðu til að breyta aðgangsorði Google-reikningsins</translation>
+<translation id="1759776526873274358">Fylla staðfestingarkóða sem vefsvæði nota til að auka öryggi þitt út sjálfvirkt. Chrome getur fengið þessa kóða úr Gmail. <ph name="BEGIN_LINK" />Nánar um þennan eiginleika<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; stýrikerfi tækisins treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prófaðu að keyra Windows-netgreiningu<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Ljósmynd (skjalapappír)</translation>
@@ -3129,6 +3130,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5862579898803147654">Staflari 8</translation>
 <translation id="5863515189965725638">Breyta IBAN</translation>
+<translation id="5863517400058880216">Fylla staðfestingarkóða úr Gmail út sjálfvirkt</translation>
 <translation id="5863847714970149516">Síðan gæti reynt að rukka þig um greiðslu</translation>
 <translation id="5866257070973731571">Bæta við símanúmeri</translation>
 <translation id="5866327164731551901">Frá <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4518,6 +4520,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7967973398323409409">Enginn getur séð upplýsingarnar sem þú fyllir sjálfkrafa út</translation>
 <translation id="79682505114836835">Gildið „<ph name="VALUE" />“ er ógildur litur í sextándakerfi.</translation>
 <translation id="7968982339740310781">Skoða upplýsingar</translation>
+<translation id="7971403153351954587">Fyrirtækið þitt fylgist með afritun</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 með RSA-dulkóðun</translation>
 <translation id="7976053965094442846">Útgefendur „kauptu núna, borgaðu síðar“ fyrir raðgreiðslur. Lyklaborð er falið.</translation>
 <translation id="7976214039405368314">Of margar beiðnir</translation>
@@ -5131,6 +5134,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9001074447101275817">Staðgengilsþjónninn <ph name="DOMAIN" /> krefst notandanafns og aðgangsorðs.</translation>
 <translation id="9001701119003382280">Jaðartæki tölvu</translation>
 <translation id="9001963517402879850">Hoppaðu!</translation>
+<translation id="9003263770394939629">Tillaga frá Gemini. Stjórnaðu ítarlegri sjálfvirkri útfyllingu í stillingum.</translation>
 <translation id="9003639428623471314">Umslag: kahu</translation>
 <translation id="9004367719664099443">VR-lota í gangi</translation>
 <translation id="9005998258318286617">Mistókst að hlaða PDF-skjal.</translation>

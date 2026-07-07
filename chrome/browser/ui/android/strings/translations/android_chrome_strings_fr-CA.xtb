@@ -302,7 +302,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="230115972905494466">Aucun appareil compatible trouvé</translation>
 <translation id="2316129865977710310">Non merci</translation>
-<translation id="2318045970523081853">Touchez ici pour faire un appel</translation>
 <translation id="232137538351753795">Balayez l'écran à partir de la gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Stockage des sites</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2854916915045135148">Touchez et maintenez le doigt sur l'icône pour passer en mode Navigation privée</translation>
-<translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="286473047976978798">Appliquer vos préférences d'apparence?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> et 1 autre onglet}one{<ph name="URL" /> et <ph name="TAB_COUNT_MANY" /> autre onglet}other{<ph name="URL" /> et <ph name="TAB_COUNT_MANY" /> autres onglets}}</translation>
 <translation id="2869430948265924908">Pour protéger votre contenu confidentiel dans le véhicule, vous devez créer un verrouillage de profil du véhicule.  Vous pouvez le faire au moyen d'un NIP, d'un code ou d'un mot de passe.</translation>
@@ -1272,6 +1270,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6315386555979018699">Supprimer et continuer</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
 <translation id="631839948975905034">Verrouiller les fenêtres de navigation privée en quittant Chrome</translation>
+<translation id="6321592572353357376">L'extension « <ph name="EXTENSION_NAME" /> » souhaite que vous vous connectiez à Chrome</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6324977638108296054">Impossible de créer un lien vers l'élément en surbrillance</translation>
 <translation id="6333140779060797560">Partager à l'aide de <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6916590542764765824">Gérer les extensions</translation>
 <translation id="6918398787259831832">Si ce problème persiste, <ph name="BEGIN_LINK" />obtenez plus d'information<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Créer un code QR pour cette page</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
@@ -1541,6 +1541,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Vérification des mots de passe en cours…</translation>
 <translation id="7260367682327802201">Il est possible que votre appareil Android ait un paramètre similaire. Si la mesure des annonces est activée dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l’efficacité d’une annonce sur les sites Web que vous visitez et dans les applications que vous utilisez.</translation>
+<translation id="7265857422443387781">Rechercher l'onglet avec Lentille Google <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Envoyer un <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7276868533747677875">Si vous avez déjà exporté des mots de passe, recherchez un fichier CSV sur votre appareil et importez-les dans votre gestionnaire de mots de passe préféré.</translation>
@@ -1883,6 +1884,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="860282621117673749">Alertes relatives aux baisses de prix</translation>
 <translation id="8611922158252451755">Toute personne disposant du lien peut modifier l'ensemble des onglets, alors partagez le groupe judicieusement. Le lien expire dans 48 heures.</translation>
 <translation id="8616006591992756292">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Traduire en <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Ouvrez le menu Chrome &gt; Paramètres.</translation>
 <translation id="8634050254805484913">Masquée sur les écrans étroits</translation>
 <translation id="8635399646025169806">Conserver le groupe d'onglets?</translation>
@@ -2031,7 +2033,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9205933215779845960">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Impossible de faire des appels</translation>
 <translation id="9212845824145208577">Impossible d'aller plus bas. Essayez de commencer plus bas sur la page.</translation>
 <translation id="9218430445555521422">Définir par défaut</translation>
 <translation id="9219103736887031265">Images</translation>

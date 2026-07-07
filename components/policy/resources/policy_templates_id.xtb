@@ -3268,6 +3268,11 @@ Kebijakan ini tidak memengaruhi kebijakan '<ph name="WEB_APP_INSTALL_FORCE_LIST_
         Kebijakan ini tidak memengaruhi kebijakan yang sudah dirilis.</translation>
 <translation id="3002067315837777719">Jangan izinkan pengaktifan notifikasi Phone Hub</translation>
 <translation id="3003490107503207900">Mendownload otomatis dokumen Office (mis. .docx), bukan membukanya di <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Mengontrol cara <ph name="PRODUCT_OS_NAME" /> menangani ketidakcocokan sandi yang terdeteksi selama login online. Kebijakan ini menentukan yang akan terjadi saat sandi pengguna, yang diautentikasi melalui IdP online (misalnya, IdP pihak ketiga, Gaia), tidak cocok dengan sandi yang digunakan untuk mengenkripsi data lokalnya. Hal ini biasanya terjadi setelah pengguna mengubah sandinya secara eksternal.
+
+Jika kebijakan ini disetel ke 0 (Alur perubahan sandi standar) atau tidak disetel, alur perubahan sandi standar akan dimulai. Pengguna akan diminta untuk memasukkan sandi lamanya untuk memperbarui enkripsi data lokalnya, atau pengguna dapat menggunakan mekanisme pemulihan data lokal lainnya jika tersedia.
+
+Jika kebijakan ini disetel ke 1 (Penghapusan total data lokal otomatis), alur perubahan sandi standar akan dihindari. Setelah mendeteksi ketidakcocokan sandi, data lokal pengguna akan otomatis dihapus total. Hal ini memungkinkan pengguna login dengan lancar menggunakan sandi barunya, tetapi mengakibatkan hilangnya semua data yang disimpan secara lokal dalam profil pengguna (misalnya, Download, setelan yang tidak disinkronkan). Opsi ini ditujukan untuk lingkungan yang penggunanya lebih sering menyimpan data di cloud atau jika sandi diperkirakan akan sering diperbarui.</translation>
 <translation id="300673820739371513">Kebijakan ini menentukan apakah entity teks biasa terdeteksi di halaman web, sehingga pengguna dapat memicu tindakan kontekstual dengan berinteraksi dengan entity tersebut.
 Kebijakan ini memiliki beberapa properti, satu properti untuk setiap jenis entity.
 Jenis entity-nya adalah <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />, dll.
@@ -9227,6 +9232,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 
       Catatan: Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pemeriksaan ejaan.</translation>
+<translation id="6625424971640741579">Alur perubahan sandi standar</translation>
 <translation id="6625716212597516929">Mengembalikan ke perilaku cakupan cookie versi lama</translation>
 <translation id="6626319579493977784">Setelan Kode Dinamis</translation>
 <translation id="66265932317331474">Melaporkan info CPU</translation>
@@ -9438,6 +9444,7 @@ mengonfigurasi pintasan.</translation>
 <translation id="6763023079133439068">Izinkan sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName saat dikeluarkan oleh trust anchor lokal</translation>
 <translation id="6766216162565713893">Izinkan situs meminta pengguna memberikan akses ke perangkat Bluetooth di sekitar</translation>
 <translation id="6770454900105963262">Melaporkan informasi tentang sesi kios aktif</translation>
+<translation id="6770703270685871935">Penghapusan total data lokal otomatis</translation>
 <translation id="6774132787348495175">Jangan izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
 <translation id="6782331708811245959">Aktifkan pelaporan mode booting perangkat</translation>
 <translation id="6783578496154221347">Gunakan WeeklyTimeIntervalInspect dalam kode baru.</translation>
@@ -9751,6 +9758,7 @@ Kebijakan ini akan dihapus pada masa mendatang, setelah fitur driver cetak di lu
       Jika tidak disetel, tidak akan ada printer perangkat dan kebijakan <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> yang lain akan diabaikan.</translation>
 <translation id="69525503251220566">Parameter menyediakan fitur telusuri pakai gambar untuk penyedia penelusuran default</translation>
 <translation id="6953102253399571439">Aktifkan pencetakan PIN secara default</translation>
+<translation id="6953246833109449226">Mengonfigurasi perilaku untuk ketidakcocokan sandi online</translation>
 <translation id="695532899547292238">Aktifkan pengumpulan log aplikasi kios</translation>
 <translation id="6956272732789158625">Jangan izinkan situs apa pun menggunakan pembuatan kunci</translation>
 <translation id="6960996423652450945">Nonaktifkan sorotan tanda sisipan di layar login</translation>

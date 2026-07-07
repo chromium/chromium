@@ -1573,6 +1573,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="628251768213143684">Google Hesabında yadda saxlananları idarə edə bilərsiniz</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>
+<translation id="6295140892595702619">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə). Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir</translation>
 <translation id="6295751040240588413">Yanlış kart ləqəbi</translation>
 <translation id="629730747756840877">Hesab</translation>
 <translation id="6301104306974789820">Qiymət izləmə bildirişləri alın</translation>
@@ -2181,7 +2182,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8264966119170358612">Yadda saxlanılmış parollarınızdan bəziləri Google-a aid olmayan data pozulması nəticəsində ələ keçirilib. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad-i sıfırlayarkən <ph name="USER_NAME" /> hesabından çıxdınız. Yenidən daxil olmaq üçün aşağıda "Davam edin" üzərinə toxunun.</translation>
 <translation id="8270320981823560179">Disk</translation>
-<translation id="8273982424131314219">Məlumatlar <ph name="URL" /> saytına daxil ediləcək</translation>
 <translation id="8274795744553482834">Profilləri dəyişmək üzrəsiniz</translation>
 <translation id="8275068909952022340">Daha çox…</translation>
 <translation id="8280797717392145626">Keçidlər qəbul edildi</translation>
@@ -2415,6 +2415,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, bərkidilmiş sayt</translation>
 <translation id="8990960056509724223">Təşkilatınızın siyasətlərinə əsasən faylı yadda saxlamaq mümkün olmadı</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
+<translation id="9003263770394939629">Gemini tərəfindən təklif edildi. Ayarlarda təkmilləşdirilmiş avtodoldurmanı idarə edin.</translation>
 <translation id="9003677638446136377">Yenidən yoxlayın</translation>
 <translation id="9006453925669499173">Menyu → Yeni Anonim tab</translation>
 <translation id="9008201768610948239">İqnor</translation>

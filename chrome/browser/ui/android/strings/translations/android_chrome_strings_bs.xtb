@@ -302,7 +302,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2297822946037605517">Dijeli ovu stranicu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilni uređaj</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
-<translation id="2318045970523081853">Dodirnite da uspostavite poziv</translation>
 <translation id="232137538351753795">Prevucite od lijevog ruba da se vratite</translation>
 <translation id="2323763861024343754">Pohrana web lokacije</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provjereno prije 1 dan}one{Provjereno prije # dan}few{Provjereno prije # dana}other{Provjereno prije # dana}}</translation>
 <translation id="2842985007712546952">Nadređeni folder</translation>
 <translation id="2854916915045135148">Prebacivanje na anonimni način rada dodirom i zadržavanjem</translation>
-<translation id="2860954141821109167">Provjerite je li na ovom uređaju omogućena aplikacija za telefon</translation>
 <translation id="286473047976978798">Primijeniti postavke izgleda?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i još 1 kartica}one{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="2869430948265924908">Da zaštitite osjetljiv sadržaj u automobilu, morate kreirati zaključavanje profila za automobil.  To možete učiniti PIN-om, kodom ili lozinkom.</translation>
@@ -1272,6 +1270,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6315386555979018699">Izbriši i nastavi</translation>
 <translation id="6316139424528454185">Verzija Androida nije podržana</translation>
 <translation id="631839948975905034">Zaključaj anonimne prozore prilikom napuštanja Chromea</translation>
+<translation id="6321592572353357376">Ekstenzija "<ph name="EXTENSION_NAME" />" želi da se prijavite u Chrome</translation>
 <translation id="6324916366299863871">Uredite prečicu</translation>
 <translation id="6324977638108296054">Nije moguće kreirati link za istaknuti tekst</translation>
 <translation id="6333140779060797560">Dijeli pomoću aplikacije <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6916590542764765824">Upravljanje ekstenzijama</translation>
 <translation id="6918398787259831832">Ako se taj problem nastavi pojavljivati, <ph name="BEGIN_LINK" />saznajte više informacija<ph name="END_LINK" /> od pružaoca usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Kreiraj QR kôd za ovu stranicu</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome je uklonio odobrenja jer web lokaciju u posljednje vrijeme niste posjetili</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 kartica}one{<ph name="NUMBER_OF_TABS" /> kartica}few{<ph name="NUMBER_OF_TABS" /> kartice}other{<ph name="NUMBER_OF_TABS" /> kartica}}</translation>
 <translation id="6929224077895306814">Svi sigurnosni kodovi sačuvani na vašem uređaju i Google računu će se izbrisati</translation>
@@ -1541,6 +1541,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7248671827512403053">Prijava</translation>
 <translation id="7253951228444156601">Provjera lozinki…</translation>
 <translation id="7260367682327802201">Android uređaj može sadržavati sličnu postavku. Ako je mjerenje oglasa uključeno u Chromeu i na Android uređaju, kompanija će možda moći izmjeriti učinkovitost oglasa na web lokacijama koje posjećujete i u aplikacijama koje koristite.</translation>
+<translation id="7265857422443387781">Pretraži karticu putem Google Objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Poslati <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokirane web lokacije:</translation>
 <translation id="7276868533747677875">Ako ste prethodno izvezli lozinke, potražite CSV fajl na uređaju i uvezite ga na preferirani upravitelj lozinki.</translation>
@@ -1883,6 +1884,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="860282621117673749">Obavještenja o padu cijena</translation>
 <translation id="8611922158252451755">Svako s linkom može uređivati sve kartice, stoga budite oprezni s kim ga dijelite. Link ističe za 48 sati.</translation>
 <translation id="8616006591992756292">Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Prevedi na jezik <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Otvorite Chrome meni &gt; Postavke</translation>
 <translation id="8634050254805484913">Sakriveno je na uskim ekranima</translation>
 <translation id="8635399646025169806">Zadržati grupu kartica?</translation>
@@ -2031,7 +2033,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="9204836675896933765">Ostao je još 1 fajl</translation>
 <translation id="9205933215779845960">Nije moguće pronaći tu stranicu. Provjerite pravopis ili koristite <ph name="SEARCH_ENGINE" /> da pretražite.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Upućivanje poziva nije moguće</translation>
 <translation id="9212845824145208577">Nije moguće pomjeriti niže. Pokušajte započeti na nižem mjestu na stranici.</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>

@@ -504,6 +504,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="175656076281618225">Mustkunst</translation>
 <translation id="1757773103848038814">Püsisammuga font</translation>
 <translation id="1757935267918149452">Nupp Muuda Google'i parooli, aktiveerige nupp oma Google'i konto parooli muutmiseks</translation>
+<translation id="1759776526873274358">Kinnituskoodide automsuurendamiseksaatne täitmine saitidel, mis kasutavad neid teie turvalisuse . Chrome saab need koodid teie Gmailist. <ph name="BEGIN_LINK" />Lisateave selle funktsiooni kohta<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, seadme operatsioonisüsteem ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proovige käitada Windowsi võrgudiagnostika tööriista<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arhiivimine)</translation>
@@ -3129,6 +3130,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862579898803147654">Virnastaja 8</translation>
 <translation id="5863515189965725638">IBAN-i muutmine</translation>
+<translation id="5863517400058880216">Gmaili kinnituskoodide automaatne täitmine</translation>
 <translation id="5863847714970149516">Järgmisel lehel võidakse teilt üritada tasu võtta</translation>
 <translation id="5866257070973731571">Telefoninumbri lisamine</translation>
 <translation id="5866327164731551901">Järgmistest kohtadest: <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4519,6 +4521,7 @@ Lisateave:
 <translation id="7967973398323409409">Teie automaattäidetud teavet ei näe keegi</translation>
 <translation id="79682505114836835">Väärtus „<ph name="VALUE" />“ on sobimatu kuueteistkümnendsüsteemis värvikood.</translation>
 <translation id="7968982339740310781">Kuva üksikasjad</translation>
+<translation id="7971403153351954587">Teie organisatsioon jälgib kopeerimist.</translation>
 <translation id="7972714317346275248">PKCS 1 SHA-384 koos RSA krüpteerimisega</translation>
 <translation id="7976053965094442846">Järelmaksu väljaandjad on saadaval järelmaksuga tasumiseks. Klaviatuur on peidetud.</translation>
 <translation id="7976214039405368314">Liiga palju päringuid</translation>
@@ -5132,6 +5135,7 @@ Lisateave:
 <translation id="9001074447101275817">Puhverserver <ph name="DOMAIN" /> nõuab kasutajanime ja parooli.</translation>
 <translation id="9001701119003382280">Arvuti välisseadmed</translation>
 <translation id="9001963517402879850">Hüpake!</translation>
+<translation id="9003263770394939629">Gemini soovitatud. Täiustatud automaattäidet saate hallata seadetes.</translation>
 <translation id="9003639428623471314">Ümbrik Kahu</translation>
 <translation id="9004367719664099443">VR-seanss on pooleli</translation>
 <translation id="9005998258318286617">PDF-dokumendi laadimine ebaõnnestus.</translation>

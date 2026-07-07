@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Поделиться этой страницей</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
 <translation id="2316129865977710310">Нет, спасибо</translation>
-<translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="232137538351753795">Чтобы вернуться, проведите слева направо</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
 <translation id="2327445548174191329">С устройства <ph name="DEVICE_NAME" />.</translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено 1 день назад.}one{Проверено # день назад.}few{Проверено # дня назад.}many{Проверено # дней назад.}other{Проверено # дня назад.}}</translation>
 <translation id="2842985007712546952">Родительская папка</translation>
 <translation id="2854916915045135148">Чтобы перейти в режим инкогнито, нажмите и удерживайте</translation>
-<translation id="2860954141821109167">Убедитесь, что на устройстве есть приложение "Телефон".</translation>
 <translation id="286473047976978798">Применить настройки внешнего вида?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и ещё 1 вкладка}one{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="URL" /> и ещё <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2869430948265924908">Для защиты ваших конфиденциальных данных в автомобиле необходимо настроить блокировку профиля.  Это можно сделать с помощью PIN-кода, кода блокировки или пароля.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">Удалить и продолжить</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
 <translation id="631839948975905034">Блокировать доступ к окнам инкогнито, когда вы не используете Chrome</translation>
+<translation id="6321592572353357376">Расширение "<ph name="EXTENSION_NAME" />" запрашивает вход в Chrome</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">Удалено</translation>
 <translation id="6916590542764765824">Управление расширениями</translation>
 <translation id="6918398787259831832">Если проблема не решится, <ph name="BEGIN_LINK" />посмотрите дополнительную информацию<ph name="END_LINK" />, предоставленную сервисом "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="6920262510368602827">Создать QR-код для этой страницы</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 вкладка}one{<ph name="NUMBER_OF_TABS" /> вкладка}few{<ph name="NUMBER_OF_TABS" /> вкладки}many{<ph name="NUMBER_OF_TABS" /> вкладок}other{<ph name="NUMBER_OF_TABS" /> вкладки}}</translation>
 <translation id="6929224077895306814">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">Приложение</translation>
 <translation id="7253951228444156601">Проверка паролей…</translation>
 <translation id="7260367682327802201">На вашем устройстве Android может быть похожая функция. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут оценивать эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
+<translation id="7265857422443387781">Поиск на вкладке с Объективом <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Отправить код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокированный сайт</translation>
 <translation id="7276868533747677875">Если вы раньше экспортировали пароли, они хранятся на устройстве в виде файла CSV. Их можно импортировать в любой менеджер паролей.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">Оповещения о скидках</translation>
 <translation id="8611922158252451755">Отправляйте ссылку только тем пользователям, которым вы доверяете. Они смогут изменять все вкладки. Ссылка перестанет работать через 48 часов.</translation>
 <translation id="8616006591992756292">Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Перевести на <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Откройте меню Google Chrome &gt; "Настройки".</translation>
 <translation id="8634050254805484913">Не показывается на устройствах с узким экраном</translation>
 <translation id="8635399646025169806">Оставить группу вкладок?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">Остался 1 файл</translation>
 <translation id="9205933215779845960">Не удается найти страницу. Проверьте, правильно ли введен запрос, или воспользуйтесь поисковой системой <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>
-<translation id="9209888181064652401">Звонки недоступны</translation>
 <translation id="9212845824145208577">Не удается прокрутить дальше вниз. Начните делать скриншот ниже на этой странице.</translation>
 <translation id="9218430445555521422">Использовать по умолчанию</translation>
 <translation id="9219103736887031265">Картинки</translation>

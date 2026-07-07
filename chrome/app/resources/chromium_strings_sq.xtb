@@ -29,7 +29,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
 <translation id="1287534462498555020">Merr Chromium në telefonin tënd</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Një ilustrim që tregon se si mund të përdorësh "Kërkimin e imazheve" për të kërkuar për një produkt</translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
 <translation id="132092532143527429">Provo me Gemini në Chromium</translation>
 <translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -495,7 +494,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6400112897226594999">Logoja e Chromium brenda një ekrani kompjuteri.</translation>
 <translation id="6403826409255603130">Chromium është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Chromium kundër mashtrimeve dhe softuerëve keqdashës.</translation>
 <translation id="6414624068245092115">Për t'u siguruar që mund t'i përdorësh dhe t'i ruash gjithmonë të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
-<translation id="6417332166651156371">Një imazh i thjeshtuar që tregon pikën e hyrjes të "Menaxherit të fjalëkalimeve" në Chromium</translation>
 <translation id="642132557830635295">Chromium funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet</translation>
 <translation id="6436260184216827876">"Kërkimi nëpërmjet imazheve" nuk ofrohet. Provo përsëri më vonë.</translation>
 <translation id="6442900851116057561">Rinis ChromiumOS</translation>

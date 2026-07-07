@@ -1573,6 +1573,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="628251768213143684">Kila wakati, unaweza kudhibiti kilichohifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="6284652193729350524">Jitolee kutafsiri kutoka <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Ili uwashe kipengele cha Kuvinjari Salama, fungua <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" /> na uguse Kuvinjari Salama.</translation>
+<translation id="6295140892595702619">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Shughuli kwenye Programu za Gemini (ikiwa umewasha). Data yako haitumiwi kuboresha mifumo ya AI zalishi</translation>
 <translation id="6295751040240588413">Jina wakilishi kwenye kadi si sahihi</translation>
 <translation id="629730747756840877">Akaunti</translation>
 <translation id="6301104306974789820">Pata arifa za ufuatiliaji bei</translation>
@@ -2181,7 +2182,6 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8264966119170358612">Baadhi ya manenosiri uliyohifadhi yalifichuliwa katika ufichuzi haramu wa data kwenye tovuti isiyo ya Google. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPad yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="8270320981823560179">Hifadhi</translation>
-<translation id="8273982424131314219">Utajaza maelezo katika <ph name="URL" /></translation>
 <translation id="8274795744553482834">Unakaribia kubadilisha wasifu</translation>
 <translation id="8275068909952022340">Zaidi…</translation>
 <translation id="8280797717392145626">Umepokea viungo</translation>
@@ -2415,6 +2415,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, tovuti imebandikwa</translation>
 <translation id="8990960056509724223">Imeshindwa kuhifadhi faili kutokana na sera za shirika lako</translation>
 <translation id="8998289560386111590">Haipatikani katika kifaa chako</translation>
+<translation id="9003263770394939629">Yametolewa na Gemini. Dhibiti kipengele kilichoboreshwa cha kujaza kiotomatiki katika mipangilio.</translation>
 <translation id="9003677638446136377">Angalia tena</translation>
 <translation id="9006453925669499173">Menyu → Kichupo kipya cha faragha</translation>
 <translation id="9008201768610948239">Puuza</translation>

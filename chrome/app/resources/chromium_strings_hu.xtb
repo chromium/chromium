@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
 <translation id="1287534462498555020">A Chromium letöltése telefonra</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
-<translation id="1312200348844120300">Illusztráció, amely bemutatja, hogyan használhatja a Képkeresőt egy termék megkeresésére</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="132092532143527429">Kipróbálás a Gemini a Chromiumban funkcióval</translation>
 <translation id="1324107359134968521">A Chromiumnak Bluetooth-hozzáférésre van szüksége a 
@@ -494,7 +493,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6400112897226594999">A Chromium logója egy számítógép képernyőjén.</translation>
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
 <translation id="6414624068245092115">Annak érdekében, hogy mindig használhassa és menthesse a Chromium-adatokat a Google-fiókjában, igazolja személyazonosságát</translation>
-<translation id="6417332166651156371">Egyszerűsített kép, amely a Jelszókezelő belépési pontját mutatja a Chromiumban</translation>
 <translation id="642132557830635295">A Chromium gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük</translation>
 <translation id="6436260184216827876">A Képkereső nem áll rendelkezésre. Próbálja újra később.</translation>
 <translation id="6442900851116057561">A ChromiumOS újraindítása</translation>

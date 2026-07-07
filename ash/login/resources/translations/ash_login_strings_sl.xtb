@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1005333234656240382">Želite omogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
+<translation id="1053898984916097744">Začnite nekaj novega ali med postopkom poiščite pomoč.</translation>
+<translation id="1061130374843955397">Pozdravljeni v napravi <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Samodejno pridobivanje računa iz telefona Android</translation>
 <translation id="1076766328672150609">Otrok lahko s kodo PIN odklene napravo.</translation>
 <translation id="1097658378307015415">Pred prijavo vstopite kot gost, da aktivirate omrežje <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Otrok se lahko s to kodo PIN prijavi v svojo napravo</translation>
 <translation id="1122587596907914265">Oblikujte edinstvena zaslonska ozadja</translation>
 <translation id="1131201598497838573">Otrokova koda PIN je posodobljena</translation>
 <translation id="1147322039136785890">Zdaj je na vrsti <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">Prejemate najnovejšo posodobitev programske opreme za večjo varnost in najnovejše funkcije Chromebooka. Ta posodobitev vključuje izboljšano izkušnjo nastavitve, ki vam olajša začetek uporabe Chromebooka.</translation>
 <translation id="1176864681932214421">Ustvarite slike z umetno inteligenco</translation>
 <translation id="1177073277575830464">Hitra nastavitev Androida je končana. Nadaljujte nastavitev v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">Upoštevajte navodila v telefonu ali uporabite aplikacijo Fotoaparat</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1217114730239853757">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex? Če ga želite, pritisnite preslednico.</translation>
 <translation id="1222835797152767346">Nastavite kodo PIN, če si želite olajšati prijavo</translation>
+<translation id="1231426483209637778">Vaše omrežje si bomo zapomnili, ko boste naslednjič uporabili napravo <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Spreminjanje velikosti prikaza in besedila</translation>
+<translation id="1256588359404100567">Nastavitev je sinhronizirana iz prejšnje naprave.</translation>
 <translation id="1272978324304772054">Uporabniški račun ne sodi v domeno, v katero je včlanjena naprava. Če se želite včlaniti v drugo domeno, morate najprej obnoviti napravo.</translation>
+<translation id="1293556467332435079">Datoteke</translation>
 <translation id="1307559529304613120">Ojoj, sistem za to napravo ni shranil žetona za dolgoročni dostop do API-ja.</translation>
+<translation id="1335929031622236846">Včlanite napravo</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funkcije za odpravljanje napak<ph name="END_H3" />
           <ph name="BR" />
           Če želite v napravi Chrome OS namestiti in preizkusiti kodo po meri, lahko v njej omogočite funkcije za odpravljanje napak. S tem boste lahko:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> Sistem se bo med postopkom znova zagnal.</translation>
 <translation id="1347625331607114917">Preverite kodo v telefonu Android</translation>
 <translation id="1347975661240122359">Posodobitev se bo začela, ko bo akumulator dosegel <ph name="BATTERY_LEVEL" /> % napolnjenosti.</translation>
+<translation id="1353275871123211385">Če želite uporabljati starševski nadzor, na primer odobritve aplikacij in omejitve časa uporabe, mora otrok imeti račun Google, ki ga upravlja starš. Šolski račun je pozneje mogoče dodati za uporabo orodij, kot je Učilnica Google.</translation>
 <translation id="1375557162880614858">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Namestitev je končana. Napravo zdaj pripravite za igranje iger.</translation>
 <translation id="1377600615067678409">Za zdaj preskoči</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Pošiljanje diagnostičnih podatkov in podatkov o uporabi</translation>
 <translation id="1418882096915998312">Poteka včlanitev v poslovno okolje</translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1427269577154060167">Država</translation>
 <translation id="1440090277117135316">Vpis v šolo je končan</translation>
 <translation id="1473927070149284123">Poskusite znova ali se ročno povežite z omrežjem</translation>
 <translation id="1503556098270577657">V račun <ph name="USER_EMAIL" /> ste se prijavili s telefonom Android</translation>
+<translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1521442365706402292">Upravljanje certifikatov</translation>
+<translation id="15373452373711364">Velik miškin kazalec</translation>
 <translation id="1540605929960647700">Omogočanje predstavitvenega načina</translation>
 <translation id="1572876035008611720">Vnesite e-poštni naslov</translation>
+<translation id="1588438908519853928">Običajen</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">V redu</translation>
 <translation id="1642494467033190216">Pred omogočanjem drugih funkcij za odpravljanje napak je treba odstraniti zaščito rootfs in znova zagnati napravo.</translation>
+<translation id="1646045728251578877">Na voljo je posodobitev za programsko opremo</translation>
+<translation id="1650801028905250434">Datoteke v Mojem disku se bodo samodejno sinhronizirale s Chromebookom, tako da boste do njih lahko dostopali brez internetne povezave. To lahko kadar koli spremenite v »Nastavitve &gt; Datoteke«.</translation>
 <translation id="1668435968811469751">Ročna včlanitev</translation>
 <translation id="1678919064276516737">E-poštni naslov in PIN, ki ste ju vnesli, se ne ujemata</translation>
 <translation id="1692115862433274081">Uporaba drugega računa</translation>
 <translation id="1695487653372841667">Sami lahko nadzorujete, katere podatke želite deliti z Googlom. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="169675691788639886">Naprava ima konfiguriran strežnik SSH. Ne prijavljajte se z občutljivimi računi.</translation>
+<translation id="1700517974991662022">Obiskano</translation>
 <translation id="1730666151302379551">Pozabi staro geslo</translation>
+<translation id="1749645492410897998">Nameščanje programske opreme</translation>
 <translation id="177053719077591686">Varnostno kopirajte aplikacije za Android v Google Drive.</translation>
+<translation id="1798832846931769717">Google Beam za Meet</translation>
 <translation id="1806335016774576568">Preklop na drugo odprto aplikacijo</translation>
 <translation id="1826192255355608658">Sinhroniziranje zaznamkov, gesel, zgodovine in drugega v Chromu</translation>
+<translation id="1826657447823925402">Obratno pomikanje je onemogočeno</translation>
 <translation id="1831848493690504725">Googla ni mogoče doseči prek povezanega omrežja. Izberite drugo omrežje ali preverite omrežne nastavitve ali nastavitve strežnika proxy (če ga uporabljate).</translation>
 <translation id="1842766183094193446">Ali ste prepričani, da želite omogočiti predstavitveni način?</translation>
 <translation id="1845060436536902492">Bralnik zaslona v sistemu ChromeOS Flex ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Pritisnite preslednico, če želite vklopiti ChromeVox. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
+<translation id="185766080319917408">Tipka za zaganjalnik je levo od leve tipke Alt</translation>
 <translation id="1868617395637139709">Uporabite lokacijo za aplikacije in storitve za Android.</translation>
+<translation id="1877377730633446520">S tem boste porabili približno <ph name="REQUIRED_SPACE" />. Trenutno imate na voljo <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">Določila in pogoji</translation>
+<translation id="189358972401248634">Drugi jeziki</translation>
+<translation id="1915734383465415025">Številka trgovine</translation>
+<translation id="1919096511823372013">Vstavite povezave, emodžije in drugo. Prav tako lahko pri pisanju in ustvarjanju slik prejmete pomoč Googlove umetne inteligence.</translation>
+<translation id="1922496389170590548">Otrokov šolski račun</translation>
+<translation id="1944528062465413897">Koda za seznanitev prek Bluetootha:</translation>
 <translation id="1987574314042117472">Izberite in namestite priljubljene aplikacije</translation>
 <translation id="1991829061375381344">Nimate dovolj razpoložljivih licenc za včlanitev te strojne opreme za Google Meet. Obrnite se na prodajnega posrednika za nakup dodatnih licenc. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na prodajnega posrednika.</translation>
+<translation id="200928901437634269">Uporabite otrokov račun Google ali šolski račun. Nastavite lahko tudi starševski nadzor.</translation>
+<translation id="2013550551806600826">Preizkusite. Vklopite ali izklopite nastavitev, nato pa z dvema prstoma povlecite po preizkusnem območju na sledilni ploščici. To lahko najdete pozneje tudi v »Nastavitve &gt; Naprava &gt; Miška in sledilna ploščica«.</translation>
+<translation id="2018189721942291407">Niste prepričani, ali se morate včlaniti?</translation>
 <translation id="2040460856718599782">Pri preverjanju pristnosti je prišlo do težav. Še enkrat preverite poverilnice za prijavo in poskusite znova.</translation>
 <translation id="2052572566310583903">Nameščeno v vaših drugih napravah</translation>
 <translation id="2088092308059522196">Včlanitev je podprta šele po namestitvi sistema <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Če se želite kadar koli vrniti na začetni zaslon, s prstom povlecite z dna zaslona navzgor.</translation>
 <translation id="2090165459409185032">Če želite obnoviti podatke računa, pojdite na: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Izbira več funkcij za nastavitev</translation>
+<translation id="2135456203358955318">Zasidrana lupa</translation>
 <translation id="2157779167749714207">Z napravo <ph name="DEVICE_TYPE" /> dobite Gemini</translation>
 <translation id="2163470535490402084">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
+<translation id="2173801458090845390">Dodajanje ID-ja zahteve tej napravi</translation>
 <translation id="2178585470774851578">Omogočili boste funkcije za odpravljanje napak sistema ChromeOS Flex, tako da boste nastavili sshd daemon in omogočili zagon prek pogonov USB.</translation>
+<translation id="2183570493397356669">Gumb za nadaljevanje je onemogočen</translation>
+<translation id="221872881068107022">Obratno pomikanje</translation>
 <translation id="2219081237089444028">Nastavite geslo za <ph name="DEVICE_TYPE" />, če si želite olajšati prijavo</translation>
+<translation id="2229161054156947610">Še več kot ena ura</translation>
 <translation id="2296022312651137376">Domena <ph name="DOMAIN_NAME" /> zahteva, da ima naprava povezavo s spletom, ko se prijavljate v e-poštni naslov <ph name="EMAIL" />.</translation>
 <translation id="2317842250900878657">Dokončano: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">Vzpostavljanje povezave s telefonom Android …</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Uporabnikov ne boste mogli dodati, ker manjkajo ključi Googlovega API-ja. Za podrobnosti obiščite <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Omogočanje storitve za obnovitev podatkov.</translation>
 <translation id="2485681265915754872">Pogoji storitve Google Play</translation>
+<translation id="248676429071089168">Povlecite navzgor, če želite premakniti stran navzdol</translation>
 <translation id="2501278716633472235">Nazaj</translation>
+<translation id="2538084450874617176">Kdo uporablja to napravo <ph name="DEVICE_TYPE" />?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ni uspel vzpostaviti povezave z omrežjem <ph name="NETWORK_ID" />. Izberite drugo omrežje ali poskusite znova.</translation>
 <translation id="2565214867520763227">Vklop bralnika zaslona</translation>
+<translation id="2569972178052279830">Ime prodajalca</translation>
+<translation id="257779572837908839">Nastavitev kot Chromebox za videokonference</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Okolje <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Ne, nadaljuj brez ChromeVoxa</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Googlova lokacijska storitev si pri določanju lokacije te naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lokacijo te naprave Android lahko kadar koli izklopite v »Nastavitve« &gt; »Aplikacije« &gt; »Trgovina Google Play« &gt; »Upravljanje nastavitev Androida« &gt; »Varnost in lokacija« &gt; »Lokacija«. Izklopite lahko tudi uporabo omrežij Wi-Fi, mobilnih omrežij in tipal za zaznavanje lokacije naprave Android, tako da v istem meniju izklopite »Natančnost Googlovega zaznavanja lokacije«.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Jezik</translation>
 <translation id="2687407218262674387">Googlovi pogoji storitve</translation>
 <translation id="2688196195245426394">Napaka pri registraciji naprave v strežniku: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">To je paketna naprava, zato je ni mogoče včlaniti v nadgradnjo za kiosk ali reklamne napise.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Počakajte ...</translation>
 <translation id="2732134891301408122">Element dodatne vsebine št. <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">V redu</translation>
+<translation id="274318651891194348">Iskanje tipkovnice</translation>
 <translation id="2754825024506485820">V Trgovini Google Play najdite aplikacije, ki jih potrebujete, od aplikacij za storilnost do razvedrila. Aplikacije lahko namestite kadar koli.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Če je vklopljena natančnost zaznavanja lokacije, se podatki o brezžičnih signalih, kot so dostopne točke Wi-Fi, bazne postaje mobilnih omrežij, ter podatki tipal naprave, kot sta merilnik pospeška in žiroskop, uporabljajo za ocenjevanje natančnejše lokacije naprave, ki jo aplikacije in storitve za Android uporabljajo za zagotavljanje funkcij, ki pri delovanju uporabljajo lokacijo. Google v ta namen redno zbira podatke o tipalih naprave in brezžičnih signalih v bližini te naprave ter tako prispeva k množičnemu zbiranju lokacij brezžičnih signalov.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google uporablja te podatke, zbrane iz te naprave, za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter splošno izboljšanje, zagotavljanje in vzdrževanje Googlovih storitev. Te podatke obdelujemo glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov. Ti podatki se ne uporabljajo za osebno prepoznavo posameznikov.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Natančnost zaznavanja lokacije lahko kadar koli izklopite v nastavitvah lokacije v tej napravi, in sicer v »Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije &gt; Dodatne nastavitve lokacije«. Če je natančnost zaznavanja lokacije izklopljena, se podatki o natančnosti zaznavanja lokacije ne bodo zbirali. Pri aplikacijah in storitvah za Android se za določanje lokacije te naprave uporablja samo naslov IP (če je na voljo), kar lahko vpliva na razpoložljivost in natančnost lokacij za aplikacije in storitve za Android, kot so Google Zemljevidi.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Pripravljeni ste.</translation>
+<translation id="2819519502129272135">Sinhronizacija datotek je izklopljena</translation>
 <translation id="2832124733806557606">Otrok lahko uporabi kodo PIN za prijavo ali odklepanje naprave.</translation>
 <translation id="283669119850230892">Če želite uporabljati omrežje <ph name="NETWORK_ID" />, najprej spodaj vzpostavite povezavo z internetom.</translation>
 <translation id="2849767214114481738">Koda PIN je dodana</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije so bile uporabljene in koliko pomnilnika je bilo običajno uporabljenega.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave Chrome. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">To lahko traja do 30 minut.</translation>
 <translation id="2893180576842394309">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev</translation>
 <translation id="2902265136119311513">Brskanje kot gost</translation>
 <translation id="2904210161403910217">Geslo se je spremenilo, odkar ste se nazadnje prijavili</translation>
 <translation id="2918484644467055090">Te naprave ni mogoče včlaniti v organizacijo, ki ji pripada vaš račun, ker je naprava označena za upravljanje v drugi organizaciji.</translation>
 <translation id="2921081876747860777">Ustvarite geslo za zaščito lokalnih podatkov.</translation>
+<translation id="2935654492420446828">Dodajanje šolskega računa pozneje</translation>
 <translation id="2950666755714083615">Prijavi me</translation>
 <translation id="2979966855249721010">Glede na vaša zanimanja boste morda videli priporočila za aplikacije, nasvete in drugo</translation>
 <translation id="3012917896646559015">Takoj se obrnite na proizvajalca strojne opreme glede pošiljanja računalnika na servis.</translation>
+<translation id="3023464535986383522">Izberite in poslušajte</translation>
 <translation id="3028371505549235127">Namesto vnosa gesla za račun Google lahko za prijavo ustvarite geslo za <ph name="DEVICE_TYPE" /> za to napravo</translation>
 <translation id="3033348223765101500">Imejte nadzor nad podatki</translation>
+<translation id="3090871774332213558">Naprava »<ph name="DEVICE_NAME" />« je seznanjena</translation>
 <translation id="3101924772906986970">Zaznamki, gesla, zgodovina in drugo v brskalniku Chrome so shranjeni v računu Google</translation>
 <translation id="313205617302240621">Ste pozabili geslo?</translation>
 <translation id="3162070126914310576">Te naprave trenutno ni mogoče včlaniti, ker je vaša organizacijska enota dosegla začetno omejitev včlanitev. Za pomoč se obrnite na skrbnika.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Prijavo lahko tudi preskočite in <ph name="LINK_START" />brskate kot gost<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Vaša naprava vključuje nadgradnjo za Chrome Education, vendar vaše uporabniško ime ni povezano z računom za Google for Education. Ustvarite račun za Google for Education tako, da v drugi napravi obiščete g.co/workspace/edusignup.</translation>
 <translation id="3196912927885212665">Če želite nastaviti s telefonom Android, mora biti v Chromebooku vklopljen Bluetooth</translation>
+<translation id="322708765617468434">Po nastavitvi lahko v napravo kadar koli dodate drugo osebo. Vsak si lahko individualno prilagodi izkušnjo in poskrbi za zasebnost podatkov.</translation>
 <translation id="3238192140106069382">Vzpostavljanje povezave in preverjanje</translation>
+<translation id="3251119461199395237">Sinhronizacija datotek</translation>
+<translation id="325238099842880997">Nastavite digitalna pravila, s pomočjo katerih se bodo otroci lahko igrali, bodo lahko raziskovali in doma opravili šolske obveznosti.</translation>
+<translation id="3255747772218936245">Namesti posodobitev</translation>
 <translation id="3261268979727295785">Za starejše otroke lahko starševski nadzor dodate po koncu nastavitve. Informacije o starševskem nadzoru so na voljo v aplikaciji Raziskovanje.</translation>
 <translation id="3278001907972365362">V računih Google je potrebno ukrepanje</translation>
 <translation id="3283148363895519428">Upoštevajte navodila v telefonu in nadaljujte nastavitev. Poskrbite, da je telefon v bližini in da je Bluetooth vklopljen.</translation>
 <translation id="3382073616108123819">Ups. Sistemu ni uspelo določiti identifikatorjev naprave za to napravo.</translation>
 <translation id="3382200254148930874">Ustavitev nadzora ...</translation>
+<translation id="3384362484379805487">Jezikovne datoteke so zaradi varčevanja s prostorom na disku skupne za vse uporabnike.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3391721320619127327">Bralnik zaslona v sistemu ChromeOS Flex ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Če želite vklopiti ChromeVox, za pet sekund pridržite obe tipki za glasnost. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
+<translation id="3402585168444815892">Včlanitev v predstavitveni način</translation>
 <translation id="3433621910545056227">Ojej!  Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
 <translation id="3435896845095436175">Omogoči</translation>
 <translation id="3462413494201477527">Želite preklicati nastavitev računa?</translation>
 <translation id="3473241910002674503">Premikanje na začetni zaslon in nazaj ter preklop med aplikacijami z gumbi v načinu tabličnega računalnika.</translation>
+<translation id="3473479545200714844">Lupa</translation>
 <translation id="3491669675709357988">Otrokov račun ni nastavljen za starševski nadzor Family Linka. Starševski nadzor lahko dodate po koncu nastavitve. Informacije o starševskem nadzoru so na voljo v aplikaciji Raziskovanje.</translation>
+<translation id="350397915809787283">Če nimate računa, izberite prvo možnost, da ga ustvarite.</translation>
 <translation id="3520824492621090923">Želite potrditi včlanitev naprave za kiosk ali reklamne napise?</translation>
+<translation id="3547954654003013442">Nastavitve proxyja</translation>
+<translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="3577745545227000795">Zbiranje podatkov o strojni opremi v sistemu <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Predogled</translation>
+<translation id="3607671391978830431">Za otroka</translation>
+<translation id="3627320433825461852">Še manj kot minuta</translation>
 <translation id="3635199270495525546">Zaznan je modul Trusted Platform Module (TPM)</translation>
 <translation id="3650753875413052677">Napaka pri včlanjevanju</translation>
 <translation id="3661106764436337772">Pišite hitreje in z več samozavesti</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Nalaganje ...</translation>
 <translation id="3712050472459130149">Račun je treba posodobiti</translation>
 <translation id="3733296813637058299">Namestili bomo te aplikacije. Več aplikacij za napravo <ph name="DEVICE_TYPE" /> je na voljo v Trgovini Play.</translation>
+<translation id="3740945083753997630">Zmanjšanje velikosti prikaza in besedila</translation>
 <translation id="376841534249795524">Za kaj boste uporabljali napravo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> ter se strinjam z njimi.</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="3800828618615365228">Dodatni pogoji za Google Chrome in Chrome OS</translation>
 <translation id="3828953470056652895">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />pogoje storitve za Google Play<ph name="END_LINK3" /> ter se strinjam z njimi.</translation>
+<translation id="3837569373891539515">Izberete lahko vse ustrezne možnosti. Ti možnosti sta na voljo tudi v nastavitvah po končani nastavitvi naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3856470183388031602">Uporaba računa Google v napravi <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
 <translation id="3897746662269329507">Naprava <ph name="DEVICE_TYPE" /> je zasnovana za igranje iger. Najprej se bo odprla Raziskovanje, kjer lahko dostopate do več sto najnovejših iger, si ogledate ponudbe za igranje iger in odkrivate funkcije za igre, ki jih dobite z napravo.</translation>
+<translation id="389901847090970821">Izbira tipkovnice</translation>
 <translation id="3910588685973519483">Ustvarjanje zaslonskih ozadij z umetno inteligenco</translation>
+<translation id="3924259174674732591">Velikost prikaza in besedila: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3983400541576569538">Morda boste izgubili podatke iz nekaterih aplikacij</translation>
+<translation id="3984159763196946143">Ni bilo mogoče zagnati predstavitvenega načina</translation>
 <translation id="3994318741694670028">Vaš računalnik je konfiguriran s popačenim ID-jem strojne opreme. Zaradi tega ChromeOS Flex ne more namestiti najnovejših varnostnih popravkov in vaš računalnik <ph name="BEGIN_BOLD" />je lahko še bolj izpostavljen zlonamernim napadom<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Nastavitev kode PIN</translation>
 <translation id="4044883420905480380">Vzpostavili ste povezavo z omrežjem Wi-Fi in se s telefonom Android prijavili v račun <ph name="USER_EMAIL" /></translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Dodatni pogoji storitve za Google Chrome in Chrome OS</translation>
 <translation id="41365691917097717">Če nadaljujete, bo omogočeno odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB) za ustvarjanje in preizkušanje aplikacij za Android. Upoštevajte, da to dejanje omogoča namestitev aplikacij za Android, ki jih ni preveril Google, če želite orodje onemogočiti, pa je potrebna tovarniška ponastavitev.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada veljavni organizaciji. Obrnite se na skrbnika. Če ste skrbnik, lahko nastavite organizacijo na: g.co/ChromeEnterpriseAccount.</translation>
+<translation id="4209092469652827314">Velika</translation>
+<translation id="4213918571089943508">Otrokov račun Google</translation>
+<translation id="4228071595943929139">Uporabi e-poštni naslov organizacije</translation>
 <translation id="4232484478444192782">Telefon Android ima vse, kar potrebujete. Poteka prenos omrežja Wi-Fi in gesla.</translation>
 <translation id="4242145785130247982">Več potrdil odjemalca ni podprtih</translation>
 <translation id="4242577469625748426">Namestitev nastavitev pravilnika v napravi ni uspela: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Uporabili boste nadgradnjo za kiosk ali reklamne napise, ki napravi dovoli samo izvajanje v načinu za kiosk ali reklamne napise. Če želite, da bi se uporabniki prijavili v napravo, se vrnite in jo včlanite z nadgradnjo za Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Da, aktiviraj ChromeVox</translation>
 <translation id="4289732974614035569">Izbira kode PIN</translation>
+<translation id="4291265871880246274">Pogovorno okno za prijavo</translation>
+<translation id="4305817255990598646">Preklopi</translation>
 <translation id="4309165024397827958">Aplikacijam in storitvam za Android z dovoljenjem za lokacijo omogoči uporabo lokacije vaše naprave. Google bo morda občasno zbiral lokacijske podatke ter jih na anonimen način uporabil za izboljšanje natančnosti zaznavanja lokacije in izpopolnjevanje storitev na podlagi lokacije.</translation>
 <translation id="4317733381297736564">Nakupi v aplikaciji</translation>
 <translation id="4341905082470253054">Preverjanje stanja TPM-ja …</translation>
 <translation id="4370975561335139969">E-poštni naslov in geslo, ki ste ju vnesli, se ne ujemata.</translation>
 <translation id="4373418556073552953">Prijava s telefonom Android</translation>
+<translation id="4378556263712303865">Zahteva za napravo</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do zrušitev, katere funkcije uporabljate in koliko pomnilnika običajno uporabljate, ter diagnostične podatke in podatke o uporabi aplikacij za Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave s sistemom ChromeOS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Če ste za račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki naprave Android morda shranjeni v računu Google. Na account.google.com si lahko ogledate podatke in jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Iskanje naprav Bluetooth in USB</translation>
 <translation id="4403266582403435904">Po želji lahko preprosto obnovite podatke ali napravo zamenjate z drugo. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google otroka.</translation>
 <translation id="4410545552906060960">Za odklepanje naprave namesto gesla uporabite številko (kodo PIN). Kodo PIN lahko nastavite pozneje v nastavitvah.</translation>
 <translation id="4415213869328311284">Pripravljeni ste na začetek uporabe naprave <ph name="DEVICE_TYPE" />.</translation>
+<translation id="443031431654216610">Uporabite samo števke.</translation>
+<translation id="4448560527907365660">Shrani in prikaži več</translation>
 <translation id="4449948729197510913">Uporabniško ime pripada računu podjetja organizacije. Če želite včlaniti naprave v račun, najprej v konzoli Admin console preverite lastništvo domene. Če ga boste želeli preveriti, boste potrebovali skrbniške pravice v računu.</translation>
 <translation id="4450974146388585462">Diagnosticiraj</translation>
 <translation id="445099924538929605">Sistem <ph name="DEVICE_OS" /> je zaznal aktiven TPM, ki lahko varneje shranjuje vaše podatke.</translation>
+<translation id="4472298120638043495">Uporabite lahko prednostni jezik računa Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="4472575034687746823">Kako začeti</translation>
+<translation id="450867954911715010">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
+<translation id="4519605771716872386">Sinhronizacija datotek je vklopljena</translation>
+<translation id="4531924570968473143">Koga želite dodati tej napravi <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Če želite po včlanitvi preklopiti, boste morali napravo ponastaviti na tovarniške nastavitve (postopek Powerwash).</translation>
 <translation id="4567512141633030272">Napačna možnost prijave?</translation>
+<translation id="4567533462991917415">Po nastavitvi lahko dodate več ljudi. Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
 <translation id="4568213207643490790">Google Računi v tej napravi niso dovoljeni.</translation>
 <translation id="4611759022973144129">To geslo lahko uporabite za prijavo v napravo <ph name="DEVICE_TYPE" /></translation>
+<translation id="4634575639321169635">Nastavite to napravo za službeno ali osebno uporabo</translation>
+<translation id="4689235506267737042">Izbira nastavitev predstavitve</translation>
 <translation id="4727847987444062305">Upravljana gostujoča seja</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="473936925429402449">Izbrano, element dodatne vsebine št. <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ni veljaven račun za Google for Education. Obrnite se na skrbnika. Če ste skrbnik, lahko organizacijo nastavite na: g.co/workspace/edusignup.</translation>
+<translation id="4780558987886269159">Za delo</translation>
 <translation id="4806457879608775995">Pregled teh pogojev in nadzor nad podatki</translation>
+<translation id="4814327014588285482">Preskoči in me opomni pozneje</translation>
 <translation id="4830502475412647084">Nameščanje posodobitve operacijskega sistema</translation>
 <translation id="4837926214103741331">Nimate dovoljenja za uporabo te naprave. Za dovoljenje za prijavo se obrnite na lastnika naprave.</translation>
+<translation id="4844333629810439236">Druge tipkovnice</translation>
 <translation id="4864369630010738180">Prijavljanje ...</translation>
+<translation id="4867272607148176509">Starši lahko odobrijo ali blokirajo aplikacije, nastavijo časovne omejitve in upravljajo brskanje po spletu. Če želite dostopati do večine šolskih virov, lahko pozneje dodate šolski račun.</translation>
 <translation id="4877652723592270843">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex? Če ga želite, za pet sekund pridržite gumba za glasnost.</translation>
 <translation id="4899696330053002588">Vsebuje oglase</translation>
 <translation id="49027928311173603">Pravilnik, prenesen iz strežnika, ni veljaven: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">Storitev preverjanja pristnosti gosti <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Izberite kodo PIN</translation>
 <translation id="4965808351167763748">Ali res želite nastaviti to napravo za zagon storitve Hangouts Meet?</translation>
+<translation id="4987944280765486504">Ko bo prenos končan, se bo Chromebook znova zagnal in lahko boste nadaljevali nastavitev.</translation>
 <translation id="5029287942302939687">Geslo je nastavljeno</translation>
 <translation id="503155457707535043">Prenašanje aplikacij</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="5062930723426326933">Prijava ni uspela. Povežite se v internet in poskusite znova.</translation>
+<translation id="5085162214018721575">Preverjanje, ali so na voljo posodobitve</translation>
 <translation id="5097306410549350357">Preberite več o uporabi lokacije</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Klepetajte z Geminijem, če želite začeti pisati, načrtovati, se učiti in početi še več z Googlovo umetno inteligenco.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Po nastavitvi začnite uporabljati Geminija tako, da na polici na dnu zaslona izberete aplikacijo Gemini.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Priključite napravo <ph name="DEVICE_TYPE" /> v vir napajanja.</translation>
+<translation id="5145876360421795017">Ne včlani naprave</translation>
 <translation id="5147516217412920887">Upoštevajte navodila v telefonu in preverite kodo</translation>
 <translation id="5160857336552977725">Prijavite se v napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Funkcije za odpravljanje napak<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> Sistem se bo med postopkom znova zagnal.</translation>
+<translation id="5215502535566372932">Izberite državo</translation>
 <translation id="5234523649284990414">Bralnik zaslona v sistemu ChromeOS ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Pritisnite preslednico, če želite vklopiti ChromeVox. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
 <translation id="523505283826916779">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="5240931875940563122">Prijava s telefonom Android</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Včlanitev naprave podjetja</translation>
 <translation id="5372529912055771682">Ta različica operacijskega sistema ne podpira navedenega načina včlanitve. Poskrbite, da imate nameščeno najnovejšo različico, in poskusite znova.</translation>
 <translation id="5397378439569041789">Včlanitev naprave za kiosk ali reklamne napise</translation>
+<translation id="5397794290049113714">Vi</translation>
 <translation id="5411022484772257615">Vpisa v šolo ni bilo mogoče dokončati</translation>
 <translation id="5413640305322530561">Preberite več o diagnostičnih podatkih in podatkih o uporabi</translation>
 <translation id="542750953150239272">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenese in namesti posodobitve ter aplikacije, ki jih zagotavljajo Google, vaš operater in proizvajalec vaše naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="542948651837270806">Namestiti morate posodobitev za vdelano programsko opremo modula Trusted Platform Module. Oglejte si <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Nekaj je šlo narobe pri prijavi</translation>
+<translation id="5453829744223920473">Otrok lahko uporablja vse svoje šolske aplikacije, zaznamke in vire enako kot v razredu. Šola določa osnovna pravila.</translation>
 <translation id="5463450804024056231">Prijava za e-poštna sporočila glede naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenaša in namešča posodobitve in aplikacije Googla, operaterja in proizvajalca te otrokove naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
+<translation id="5502915260472117187">Otrok</translation>
 <translation id="5511823366942919280">Ali ste prepričani, da želite to napravo nastaviti kot »Morski pes«?</translation>
+<translation id="5513807280330619196">Računalo</translation>
 <translation id="5527474464531963247">Izberete lahko tudi drugo omrežje.</translation>
 <translation id="5539070192556911367">Googla ni mogoče doseči</translation>
+<translation id="5549511085333906441">Izberite nastavitev</translation>
 <translation id="557722062034137776">Ponastavitev naprave ne bo vplivala na vaše Google Račune ali kakršne koli druge podatke, sinhronizirane s temi računi. Izbrisani pa bodo vsi podatki, shranjeni lokalno v napravi.</translation>
 <translation id="5626172233890210551">Uporaba gesla</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Zaradi omogočanja najboljše izkušnje operacijski sistem <ph name="DEVICE_OS" /> zbira podatke o strojni opremi naprav in jih deli z Googlom zaradi določanja, katere posodobitve naj vam zagotovi. Izbirno lahko dovolite Googlu, da te podatke uporablja za dodatne namene, kot so podpora in izboljšanje izkušnje sistema <ph name="DEVICE_OS" /> ter njegovih storitev.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Prijavite se lahko v to napravo in si ogledate polja, navedena kot chromeosflex_ na chrome://system, kjer si ogledate podatke, poslane Googlu zaradi filtriranja posodobitev, in druge primere, v katerih ste izbrali deljenje podatkov z Googlom.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Če želite več podrobnosti o podatkih, ki jih <ph name="DEVICE_OS" /> morda deli z Googlom in kako se ti uporabljajo, obiščite g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Če želite uporabljati omrežje <ph name="NETWORK_ID" />, morate najprej <ph name="LINK_START" />obiskati stran za prijavo v omrežje<ph name="LINK_END" />, ki se bo samodejno odprla čez nekaj sekund. Če se ne odpre, omrežja ne morete uporabljati.</translation>
 <translation id="5655296450510165335">Včlanitev naprave</translation>
+<translation id="565899488479822148">Nameščanje najnovejše posodobitve</translation>
 <translation id="5659964844710667266">Ustvarite geslo za to napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">ID sredstva</translation>
 <translation id="5684950556880280580">Geslo je posodobljeno</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Nekatere datoteke so bile poškodovane in posodobitev ni uspela. Sinhronizirane datoteke so varne.</translation>
 <translation id="5770125698810550803">Pokaži gumbe za krmarjenje</translation>
 <translation id="5799478978078236781">Prejmite nasvete, ponudbe in obvestila za napravo <ph name="DEVICE_TYPE" /> ter pošiljajte povratne informacije.</translation>
+<translation id="5800703268655655701">Izberite svetlo ali temno temo</translation>
 <translation id="5804259315582798390">Obnovitev lokalnih podatkov ni uspela</translation>
 <translation id="5810809306422959727">Ta račun ni primeren za starševski nadzor</translation>
+<translation id="5834581999798853053">Še približno <ph name="TIME" /> min</translation>
 <translation id="5852112051279473187">Ojoj, pri prijavljanju te naprave je prišlo do hude napake. Poskusite znova ali poiščite pomoč.</translation>
 <translation id="5852137567692933493">Ponovni zagon in izvedba funkcije Powerwash</translation>
 <translation id="5856721540245522153">Omogočanje funkcij za odpravljanje napak</translation>
+<translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
+<translation id="5870086504539785141">Zapiranje menija s funkcijami za ljudi s posebnimi potrebami</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5895335062901455404">Shranjene nastavitve in dejavnost bodo pripravljeni v kateri koli napravi ChromeOS Flex, ko se prijavite z računom Google. V nastavitvah lahko izberete, kaj želite sinhronizirati.</translation>
+<translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5919305207330938913">Vsi zbrani podatki bodo uporabljeni v skladu z <ph name="BEGIN_LINK" />Googlovim pravilnikom o zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">Nimate dovolj razpoložljivih licenc za včlanitev te strojne opreme za Google Meet. Obrnite se na prodajni oddelek za nakup dodatnih licenc. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
+<translation id="5948536763493709626">Povežite tipkovnico ali miško, sicer pa nadaljujte nastavitev prek zaslona na dotik. Če uporabljate naprave Bluetooth, morajo biti pripravljene na seznanjanje.</translation>
 <translation id="5959471481388474538">Omrežje ni na voljo</translation>
 <translation id="6016178549409952427">Premik na element dodatne vsebine št. <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Gumb za izbiro jezika in tipkovnice. Trenutno izbran jezik je <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6051354611314852653">Ojoj, sistem za to napravo ni uspel pooblastiti dostop do API-ja.</translation>
 <translation id="6055544610007596637">Namestite aplikacije za napravo <ph name="DEVICE_TYPE" /> v Trgovini Google Play</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Dovolite Googlu, da uporablja podatke o strojni opremi za izboljšanje operacijskega sistema <ph name="DEVICE_OS" />. Če odklonite, bodo ti podatki vseeno poslani Googlu zaradi določanja ustreznih posodobitev, vendar se ne bodo shranjevali ali kako drugače uporabljali. Več o tem: g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Prijavo omogoča <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">V napravi <ph name="IDS_SHORT_PRODUCT_NAME" /> ste uspešno omogočili funkcije za odpravljanje napak.</translation>
+<translation id="6343262564968371601">Z iskanjem v Googlu, datotekah, aplikacijah in drugem poiščite tisto, kar iščete</translation>
 <translation id="635609604405270300">Naprava naj ostane vklopljena</translation>
 <translation id="6367097275976877956">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS? Če ga želite, pritisnite preslednico.</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
 <translation id="6380143666419481200">Sprejmite in nadaljujte</translation>
 <translation id="640457954117263537">Uporaba lokacije za aplikacije in storitve za ChromeOS in Android.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije uporabljate in koliko pomnilnika običajno uporabljate.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave Chrome. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Namestitev nujne posodobitve</translation>
+<translation id="6478849105642611893">Tipka za hitro vstavljanje je pod tabulatorko</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
+<translation id="6488384360522318064">Izbira jezika</translation>
 <translation id="6495266441917713704">Povezave Wi-Fi ni mogoče prenesti</translation>
 <translation id="6515620015470298987">Prijava ni uspela zaradi težave s preverjanjem konfiguracije naprave. Izvedite powerwash naprave <ph name="DEVICE_TYPE" /> in poskusite znova.</translation>
 <translation id="6519689855001245063">Preverjanje upravičenosti</translation>
 <translation id="6532527800157340614">Prijava ni uspela, ker ni bilo mogoče pridobiti žetona za dostop. Preverite omrežno povezavo in poskusite znova.</translation>
+<translation id="653920215766444089">Iskanje kazalne naprave</translation>
 <translation id="65513682072153627">Če nastavitev ali funkcijo upravlja skrbnik, bo prikazana ta ikona za upravljano.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021">Račun <ph name="USER_EMAIL" /> že upravlja <ph name="DOMAIN" />. Če želite uporabiti starševski nadzor v drugem računu Google, se po nastavitvi odjavite, nato na zaslonu za prijavo izberite »Dodajanje osebe«.</translation>
 <translation id="6642720633335369752">Če si želite ogledati okna vseh odprtih aplikacij, s prstom povlecite z dna zaslona navzgor in pridržite.</translation>
 <translation id="6648911618876616409">Nujna posodobitev je pripravljena za namestitev. Če želite začeti, se prijavite.</translation>
 <translation id="6671497123040790595">Nastavljanje upravljanja v izvedbi <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Priključena je kazalna naprava</translation>
 <translation id="667752334740867460">Prejemanje podatkov o omrežju Wi-Fi …</translation>
 <translation id="6680442031740878064">Na voljo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Naslov <ph name="EMAIL" /> lahko obnovite, vendar bodo lokalni podatki izbrisani.</translation>
 <translation id="6748980958975836188">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> ter se strinjam z njimi.</translation>
+<translation id="6749473226660745022">Fotografije</translation>
+<translation id="6754918760968695779">Hitro vstavljanje</translation>
 <translation id="6789834167207639931">Na naslednjem zaslonu znova vnesite geslo za račun Google, da končate obnovitev.</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije so bile uporabljene in koliko pomnilnika je bilo običajno uporabljenega, ter diagnostične podatke in podatke o uporabi aplikacij za Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom ChromeOS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Če ste za otrokov račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Več o teh nastavitvah in njihovem prilagajanju lahko preberete na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Najbolj priljubljene aplikacije za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">Googlov pravilnik o zasebnosti</translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>
 <translation id="6839916869147598086">Prijava je zdaj drugačna</translation>
+<translation id="6852529053326738838">Vprašajte organizacijo ali se včlanite v službeni e-poštni naslov in preverite, ali je vaš račun primeren.</translation>
+<translation id="6867671714894555998">Hitro opravite naloge z novo tipkovnico</translation>
 <translation id="6883319974225028188">Ojoj. Sistemu ni uspelo shraniti konfiguracije naprave.</translation>
+<translation id="6888831646723563669">Povežite se, da boste lahko uživali v vseh funkcijah nove naprave <ph name="DEVICE_TYPE" /></translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Podatki aplikacij so lahko kateri koli podatki, ki jih je shranila aplikacija (glede na nastavitve razvijalca), vključno s podatki, kot so stiki, sporočila in fotografije. Varnostno kopirani podatki se ne štejejo v otrokovo količinsko omejitev prostora za shranjevanje v Googlu Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Vklopi sinhronizacijo</translation>
 <translation id="6918733588290914545">Hitra nastavitev s telefonom Android</translation>
 <translation id="6920473853105515518">Prepričajte se, da je naprava <ph name="DEVICE_TYPE" /> povezana v internet, in poskusite znova. Lahko tudi odprete play.google/play-terms v drugi napravi.</translation>
+<translation id="6929126689972602640">Starševski nadzor ni podprt za šolske račune. Če želite dodati šolski račun za dostop do Učilnice Google in drugih spletnih mest za opravljanje šolskih obveznosti doma, se najprej prijavite z otrokovim osebnim računom. Šolski račun lahko dodate pozneje pri nastavitvi.</translation>
+<translation id="6935031746833428401">Preberite več o upravljanju naprav</translation>
+<translation id="6950351336108213154">Posodabljanje zunanjih naprav</translation>
 <translation id="6955698182324067397">Omogočili boste funkcije za odpravljanje napak sistema Chrome OS, tako da boste nastavili sshd daemon in omogočili zagon prek pogonov USB.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6969216690072714773">Vnesite nove ali posodobite obstoječe podatke, ki jih želite povezati s to napravo.</translation>
@@ -343,23 +485,37 @@
         proxy deluje. Če menite, da vam strežnika proxy ni treba
         uporabljati, prilagodite <ph name="LINK_START" />nastavitve strežnika proxy<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">V telefonu vklopite Bluetooth in Wi-Fi</translation>
+<translation id="6996438701394974959">Povečanje velikosti prikaza in besedila</translation>
+<translation id="6998793565256476099">Včlanitev naprave za videokonference</translation>
 <translation id="7025082428878635038">Predstavljamo nov način pomikanja s potezami</translation>
 <translation id="7034692021407794547">Skrbnik s pravicami za upravljanje obračunavanja mora najprej sprejeti pogoje storitve za strojno opremo za Google Meet v razdelku Strojna oprema za Google Meet v skrbniški konzoli.</translation>
+<translation id="7039951224110875196">Ustvari račun Google za otroka</translation>
 <translation id="7065223852455347715">Ta naprava je zaklenjena v načinu, ki onemogoča včlanitev v podjetje. Če želite napravo včlaniti, jo morate najprej obnoviti.</translation>
+<translation id="7066572364168923329">Izberite nastavitev naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Nalaganje strani za prijavo s trenutnimi nastavitvami strežnika proxy ni uspelo. <ph name="GAIA_RELOAD_LINK_START" />Poskusite se znova prijaviti<ph name="GAIA_RELOAD_LINK_END" /> ali uporabite druge <ph name="PROXY_SETTINGS_LINK_START" />nastavitve proxyja<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">Skrbnik je to napravo umaknil iz uporabe. Če jo želite omogočiti za včlanitev, naj jo skrbnik preklopi v stanje čakanja.</translation>
 <translation id="7114054701490058191">Gesli se ne ujemata</translation>
 <translation id="7135729336746831607">Želite vklopiti Bluetooth?</translation>
 <translation id="7141105143012495934">Prijava ni uspela, ker ni bilo mogoče pridobiti podrobnosti o računu. Obrnite se na skrbnika in poskusite znova.</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
+<translation id="7171259390164035663">Brez včlanitve</translation>
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="7202337678781136582">Optično preberite kodo QR v telefonu Android</translation>
+<translation id="7228854227189381547">Ne preklopi</translation>
+<translation id="7230881857327093958">Spremembe bodo uporabljene po nastavitvi</translation>
 <translation id="7260186537988033909">Včlanitev naprave za kiosk ali reklamne napise je dokončana</translation>
+<translation id="7284411326658527427">Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
 <translation id="7290242001003353852">Prijavna storitev, ki jo gosti <ph name="SAML_DOMAIN" />, dostopa do vaše kamere.</translation>
+<translation id="7311005168897771689">Dostop do datotek v Googlu Drive, ko nimate povezave</translation>
 <translation id="7317831949569936035">Vpis v šolo</translation>
+<translation id="7326004502692201767">Nastavitev te naprave <ph name="DEVICE_TYPE" /> za otroka</translation>
+<translation id="732659786514229249">Želite napravo včlaniti v organizacijo?</translation>
 <translation id="7329154610228416156">Prijava ni uspela, ker je konfigurirana za uporabo URL-ja, ki ni varen (<ph name="BLOCKED_URL" />). Obrnite se na skrbnika.</translation>
 <translation id="7345706641791090287">Potrdite geslo</translation>
+<translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
+<translation id="7403642243184989645">Prenos sredstev</translation>
+<translation id="7406912950279255498">Način inverzije barv</translation>
 <translation id="7416263748877373774">Pogojev storitve ni mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="7475742997309661417">Bralnik zaslona v sistemu ChromeOS ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Če želite vklopiti ChromeVox, za pet sekund pridržite obe tipki za glasnost. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
 <translation id="7476454130948140105">Akumulator ima premalo energije za posodobitev (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -369,39 +525,61 @@
 <translation id="7506541170099744506">Naprava <ph name="DEVICE_TYPE" /> je bila uspešno prijavljena za upravljanje v podjetju.</translation>
 <translation id="7509097596023256288">Nastavitev upravljanja</translation>
 <translation id="7543104066686362383">Omogočanje funkcij za odpravljanje napak v tej napravi: <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544227555407951270">Včlanitev naprave</translation>
+<translation id="7549434883223124329">Želite preklopiti jezik naprave?</translation>
 <translation id="7553242001898162573">Vnesite geslo</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> ne more obnoviti vaših nastavitev. <ph name="SHORT_PRODUCT_NAME" /> lahko napako popravi tako, da napravo ponastavi s funkcijo Powerwash.</translation>
 <translation id="7560756177962144929">Sinhroniziranje naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">Ni dovolj shrambe za posodobitev</translation>
+<translation id="7616214729753637086">Včlanjevanje naprave ...</translation>
 <translation id="7622114377921274169">Polnjenje.</translation>
 <translation id="7630426712700473382">To napravo upravlja <ph name="MANAGER" />, ki zahteva, da se vsakič prijavite.</translation>
 <translation id="7639914187072011620">URL-ja za preusmeritev za prijavo SAML ni bilo mogoče pridobiti iz strežnika.</translation>
 <translation id="7643117827468520640">Pregled teh pogojev</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Podatki aplikacij so lahko kateri koli podatki, ki jih je shranila aplikacija (glede na nastavitve razvijalca), vključno s podatki, kot so stiki, sporočila in fotografije. Varnostno kopirani podatki se ne štejejo v omejitev prostora za shranjevanje v Googlu Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7659584679870740384">Nimate dovoljenja za uporabo te naprave. Za dovoljenje za prijavo se obrnite na skrbnika.</translation>
 <translation id="7660116474961254898">Upoštevajte navodila v telefonu</translation>
 <translation id="7661451191293163002">Potrdila za registracijo ni bilo mogoče pridobiti.</translation>
+<translation id="7666531788977935712">Gumb za nadaljevanje je omogočen</translation>
 <translation id="7671139479636735732">S klikom desnega gumba preprosto vizualizirajte svoje zamisli</translation>
 <translation id="770831926727930011">Lokalni podatki so zaščiteni s starim geslom. Če želite obnoviti lokalne podatke, vnesite staro geslo.</translation>
 <translation id="7722040605881499779">Potrebno za posodobitev: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Seznanjanje z napravo »<ph name="DEVICE_NAME" />« …</translation>
+<translation id="7746045113967198252">Povečajte ali pomanjšajte elemente na zaslonu, vključno z besedilom. To lahko najdete pozneje tudi v »Nastavitve &gt; Naprava &gt; Zasloni«.</translation>
 <translation id="7760176388948986635">Aplikacijam za ChromeOS in Android, spletnim mestom in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije te naprave. Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. To Google naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave in tako zbere lokacije brezžičnih signalov. Ti se uporabljajo, ne da bi se osebno prepoznalo posameznike, zaradi izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije zaradi izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
 <translation id="7784875615510899699">Nimate dovolj razpoložljivih licenc za včlanitev te naprave Google Beam. Obrnite se na prodajnega posrednika za nakup dodatnih licenc. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na prodajnega posrednika.</translation>
+<translation id="7791269138074599214">Način vnosa</translation>
+<translation id="7791436592012979144">Obratno pomikanje je omogočeno</translation>
 <translation id="7792012425874949788">Nekaj je šlo narobe pri prijavi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7803657407897251194">Če želite nadaljevati nastavitev z napravo Android, napravo <ph name="DEVICE_TYPE" /> povežite z omrežjem</translation>
+<translation id="7842692330619197998">Če morate ustvariti nov račun, obiščite g.co/ChromeEnterpriseAccount.</translation>
 <translation id="7851457902707056880">Prijava je omejena na račun lastnika. Znova zaženite napravo in se prijavite z računom lastnika. Naprava se bo samodejno znova zagnala čez 30 sekund.</translation>
 <translation id="7870730066603611552">Ogled možnosti sinhronizacije po nastavitvi</translation>
 <translation id="7883792253546618164">Odjavite se lahko kadar koli.</translation>
+<translation id="7887864092952184874">Miška Bluetooth je seznanjena</translation>
 <translation id="7906440585529721295">Lokalni podatki bodo izbrisani</translation>
+<translation id="7910725946105920830">Uporabi osebni račun Google</translation>
+<translation id="7918257978052780342">Včlanitev</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije so bile uporabljene in koliko pomnilnika je bilo običajno uporabljenega.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom ChromeOS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Dodatne možnosti</translation>
 <translation id="7943311690198910993">Način prijave je posodobljen</translation>
 <translation id="795240231873601803">Uporaba včlanitve v podjetje za službene in šolske račune</translation>
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>
 <translation id="7975504106303186033">To napravo za Chrome Education morate včlaniti v račun za Education. Če se želite prijaviti za nov račun, odprite visit g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">ID sredstva: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Če želite odpraviti to napako, znova zaženite napravo.</translation>
 <translation id="7990958035181555539">Samodejni prenos poverilnic za Wi-Fi iz telefona Android</translation>
+<translation id="8022466874160067884">Vnesite račun Google in geslo</translation>
+<translation id="8049029041626250638">Priključite tipkovnico ali miško. Če uporabljate naprave Bluetooth, morajo biti pripravljene na seznanjanje.</translation>
 <translation id="8054563304616131773">Vnesite veljaven e-poštni naslov</translation>
+<translation id="8054921503121346576">Tipkovnica USB je povezana</translation>
 <translation id="8065144531309810062">Uporabite Googlovo umetno inteligenco za večjo ustvarjalnost in storilnost</translation>
+<translation id="8082106343289440791">Želite seznaniti z napravo »<ph name="DEVICE_NAME" />«?</translation>
 <translation id="8097959162767603171">Skrbnik mora najprej sprejeti pogoje storitve na seznamu naprav Chrome v skrbniški konzoli.</translation>
 <translation id="8098616321286360457">Potrebna je omrežna povezava</translation>
 <translation id="8129265306888404830">Če želite uporabiti svoj e-poštni naslov organizacije (<ph name="EMAIL_DOMAIN" />), morate uporabiti včlanitev v podjetje. Če je ta naprava za osebno uporabo, se prijavite z osebnim računom Google.</translation>
@@ -409,28 +587,37 @@
 <translation id="8146177459103116374">Če ste se v tej napravi že registrirali, se lahko <ph name="LINK2_START" />prijavite kot obstoječi uporabnik<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Prijava ni uspela. Obrnite se na skrbnika in poskusite znova.</translation>
 <translation id="8147346945017130012">Pomagajte izboljšati funkcije Chroma in sistema Chrome OS ter njuno delovanje s samodejnim pošiljanjem poročil o zrušitvah, diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
+<translation id="8152760814912191567">Google Beam za Zoom</translation>
 <translation id="815491593104042026">Ups. Preverjanje ni uspelo, ker je konfigurirana za uporabo URL-ja, ki ni varen (<ph name="BLOCKED_URL" />). Obrnite se na skrbnika.</translation>
 <translation id="8157704005178149728">Nastavljanje nadzora</translation>
 <translation id="8174047975335711832">Podatki o napravi</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Googlova lokacijska storitev si pri določanju lokacije vaše naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lokacijo naprave Android lahko kadar koli izklopite tako, da odprete Nastavitve &gt; Aplikacije &gt; Trgovina Google Play &gt; Upravljanje nastavitev Androida &gt; Varnost in lokacija &gt; Lokacija. Izklopite lahko tudi uporabo omrežij Wi-Fi, mobilnih omrežij in tipal za zaznavanje lokacije naprave Android, tako da v istem meniju izklopite »Natančnost Googlovega zaznavanja lokacije«.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Znova vnesite geslo, če želite posodobiti profil v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8239032431519548577">Včlanitev v poslovno okolje je dokončana</translation>
 <translation id="8241806945692107836">Ugotavljanje konfiguracije naprave ...</translation>
 <translation id="8242426110754782860">Naprej</translation>
 <translation id="826905130698769948">Neveljavno potrdilo odjemalca</translation>
+<translation id="8271379370373330993">Starši, naslednji koraki so za vas. Po nastavitvi računa lahko napravo <ph name="DEVICE_TYPE" /> vrnete otroku.</translation>
 <translation id="8274924778568117936">Ne izklopite ali zaprite naprave <ph name="DEVICE_TYPE" />, dokler se posodobitev ne konča. Naprava <ph name="DEVICE_TYPE" /> se bo po končani namestitvi znova zagnala.</translation>
 <translation id="8281886186245836920">Preskoči</translation>
+<translation id="8291942417224950075">Za osebno uporabo</translation>
 <translation id="8304383784961451596">Nimate dovoljenja za uporabo te naprave. Obrnite se na skrbnika glede dovoljenja za prijavo ali se prijavite z računom Google, ki ga nadzoruje Family Link.</translation>
 <translation id="8321837372750396788">To napravo <ph name="DEVICE_TYPE" /> bo upravljala domena <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Velikost prikaza in besedila</translation>
 <translation id="8354034204605718473">Otrokova koda PIN je dodana</translation>
 <translation id="8366396658833131068">Omrežna povezava je znova vzpostavljena. Če želite zagnati aplikacijo za kiosk, izberite drugo omrežje ali spodaj pritisnite »Naprej«.</translation>
 <translation id="8401432541486058167">Navedite kodo PIN, povezano s pametno kartico.</translation>
 <translation id="8408270600235826886">Sami lahko nadzorujete, katere podatke želite deliti z Googlom. To lahko kadar koli spremenite v nastavitvah. <ph name="BEGIN_LINK" />Podatki bodo uporabljeni v skladu z Googlovim pravilnikom o zasebnosti.<ph name="END_LINK" /></translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
 <translation id="8425768983279799676">Kodo PIN lahko uporabite za odklepanje naprave.</translation>
+<translation id="8428213095426709021">Nastavitve</translation>
 <translation id="843173223122814223">Ustvarite ozadja z umetno inteligenco</translation>
 <translation id="8452105022015742247">Prenos podatkov o računu Google iz telefona Android</translation>
 <translation id="8464132254133862871">Ta uporabniški račun ni upravičen do storitve.</translation>
 <translation id="8524841856047224176">Osebno prilagodite ozadja kamere za videoklice in drugo</translation>
+<translation id="8527257351549797148">Vaša organizacija morda zahteva včlanitev, da boste lahko dostopali do aplikacij, razširitev in drugega. To organizaciji tudi omogoča upravljanje stvari, kot so nastavitve varnosti in naprave.</translation>
+<translation id="8558063527625343224">Nastavitev Googla Beam</translation>
 <translation id="8569673829373920831">Več o aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Aplikacijam za ChromeOS in Android, spletnim mestom in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije naprave. Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. Google to naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave ter tako množično zbere lokacije brezžičnih signalov. Ti se uporabljajo brez vaše prepoznave zaradi izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije zaradi izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
 <translation id="8627804903623428808">Pregled teh pogojev in nadzor nad podatki otroka</translation>
@@ -439,9 +626,13 @@
         <ph name="BR" />
         Vidno napravam v bližini kot <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="8655972064210167941">Prijava ni uspela, ker ni bilo mogoče preveriti gesla. Obrnite se na skrbnika ali poskusite znova.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Če je vklopljena natančnost zaznavanja lokacije, se podatki o brezžičnih signalih, kot so dostopne točke Wi-Fi, bazne postaje mobilnih omrežij, ter podatki tipal naprave, kot sta merilnik pospeška in žiroskop, uporabljajo za ocenjevanje natančnejše lokacije naprave, ki jo aplikacije in storitve za Android uporabljajo za zagotavljanje funkcij, ki pri delovanju uporabljajo lokacijo. Google v ta namen redno zbira podatke o tipalih naprave in brezžičnih signalih v vaši bližini ter tako prispeva k množičnemu zbiranju lokacij brezžičnih signalov.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google te podatke, ne da bi vas osebno prepoznal, uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter splošno izboljšanje, zagotavljanje in vzdrževanje Googlovih storitev. Te podatke obdelujemo glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Natančnost zaznavanja lokacije lahko kadar koli izklopite v nastavitvah lokacije v napravi, in sicer v »Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije &gt; Dodatne nastavitve lokacije«. Če je natančnost zaznavanja lokacije izklopljena, se podatki o natančnosti zaznavanja lokacije ne bodo zbirali. Pri aplikacijah in storitvah za Android se za določanje lokacije naprave uporablja samo naslov IP (če je na voljo), kar lahko vpliva na razpoložljivost in natančnost lokacij za aplikacije in storitve za Android, kot so Google Zemljevidi.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Vaš računalnik je konfiguriran s popačenim ID-jem strojne opreme. Zaradi tega Chrome OS ne more namestiti najnovejših varnostnih popravkov in vaš računalnik <ph name="BEGIN_BOLD" />je lahko še bolj izpostavljen zlonamernim napadom<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Dodajanje starševskega nadzora po nastavitvi</translation>
 <translation id="8698269656364382265">Če se želite vrniti na prejšnji zaslon, s prstom povlecite od leve strani.</translation>
+<translation id="8718994464069323380">Zaznan je bil zaslon na dotik.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8726206820263995930">Napaka pri prenosu nastavitev pravilnika iz strežnika: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Končano</translation>
@@ -449,24 +640,36 @@
 <translation id="8740247629089392745">Ta Chromebook lahko predate osebi <ph name="SUPERVISED_USER_NAME" />. Nastavitev je skoraj dokončana, čas je za raziskovanje.</translation>
 <translation id="8759753423332885148">Več o tem</translation>
 <translation id="8777628254805677039">korensko geslo</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Vnesite kodo za seznanjanje za Bluetooth in nato pritisnite Return ali Enter.</translation>
 <translation id="8794548468611058947">Namesto vnosa gesla za račun Google lahko za prijavo ustvarite kodo PIN za to napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830796635868321089">Preverjanje posodobitve s trenutnimi nastavitvami za namestniški strežnik ni uspelo. Prilagodite <ph name="PROXY_SETTINGS_LINK_START" />nastavitve namestniškega strežnika<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Ta naprava Chromebook Enterprise je opremljena s svežnjem za nadgradnjo Chrome Enterprise. Če želite izkoristiti zmožnosti za podjetja, včlanite to napravo s skrbniškim računom Google.</translation>
 <translation id="885746075120788020">Shranjene nastavitve in dejavnost bodo pripravljeni v kateri koli napravi Chrome OS, ko se prijavite z računom Google. V nastavitvah lahko izberete, kaj želite sinhronizirati.</translation>
+<translation id="8868333925931032127">Zagon predstavitvenega načina</translation>
 <translation id="8875221558267407626">Povzemanje vsebine, poenostavljanje zapletenega besedila ali zastavljanje vprašanj</translation>
+<translation id="8907701755790961703">Izberite državo</translation>
 <translation id="8913163265790894442">Preprosto nastavite napravo <ph name="DEVICE_TYPE" /> s telefonom. Wi-Fi in račun Google lahko dodate, ne da bi vam bilo treba ročno vnesti gesla.
         <ph name="BR" />
         <ph name="BR" />
         Vidno kot <ph name="DEVICE_TYPE" /> …</translation>
+<translation id="8934732568177537184">Naprej</translation>
 <translation id="8946359700442089734">V tej napravi niso bile v celoti omogočene funkcije za odpravljanje napak: <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8965037249707889821">Vnesite staro geslo</translation>
+<translation id="8968906873893164556">Izberite račun za nastavitev</translation>
+<translation id="8973596347849323817">To napravo lahko prilagodite svojim potrebam. Te funkcije za ljudi s posebnimi potrebami lahko pozneje spremenite v nastavitvah.</translation>
 <translation id="8975396729541388937">Kadar koli se lahko odjavite tako, da kliknete povezavo v e-poštnih sporočilih, ki jih prejmete.</translation>
+<translation id="8987305927843254629">Vsak si lahko individualno prilagodi izkušnjo in poskrbi za zasebnost podatkov.</translation>
 <translation id="8993059306046735527">Če pozabite geslo za napravo <ph name="DEVICE_TYPE" />, lahko še vedno obnovite lokalne podatke. Prijaviti se boste morali v račun Google ali uporabiti račun za obnovitev.</translation>
 <translation id="9033765790910064284">Vseeno nadaljuj</translation>
 <translation id="903480517321259405">Znova vnesite kodo PIN</translation>
 <translation id="9040473193163777637">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS? Če ga želite, za pet sekund pridržite gumba za glasnost.</translation>
 <translation id="9068298336633421551">Aplikacijam in storitvam z dovoljenjem za lokacijo dovoli uporabo lokacije te naprave. Google bo morda občasno zbiral lokacijske podatke ter jih na anonimen način uporabil za izboljšanje natančnosti zaznavanja lokacije in izpopolnjevanje storitev na podlagi lokacije.</translation>
+<translation id="9074836595010225693">Miška USB je povezana</translation>
 <translation id="9076523132036239772">E-poštnega naslova ali gesla žal ni bilo mogoče preveriti. Poskusite se najprej povezati z omrežjem.</translation>
+<translation id="9089959054554410481">Spreminjanje smeri pomikanja s sledilno ploščico</translation>
 <translation id="9158715103698450907">Ojej!  Težava z omrežno komunikacijo med preverjanjem pristnosti.  Preverite omrežno povezavo in poskusite znova.</translation>
+<translation id="9186963452600581158">Prijavite se z otrokovim računom Google</translation>
 <translation id="919686179725692564">Preberite več o varnostnem kopiranju podatkov</translation>
 <translation id="9214520840402538427">Ojoj! Potekla je časovna omejitev inicializacije atributov časa namestitve. Obrnite se na predstavnika podpore.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Ekskluzivno za naprave <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@
         <ph name="BR" />
         Vidno kot <ph name="DEVICE_TYPE" /> …</translation>
 <translation id="951991426597076286">Zavrni</translation>
+<translation id="954749761428814584">Jezik in način vnosa</translation>
+<translation id="960987915827980018">Še približno ena ura</translation>
+<translation id="995420352808264005">Izbira vrste včlanitve naprave</translation>
 </translationbundle>

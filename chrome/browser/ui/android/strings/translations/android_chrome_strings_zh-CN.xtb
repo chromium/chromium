@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">分享此页</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2316129865977710310">不用了</translation>
-<translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="232137538351753795">从左侧边缘滑动即可返回</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
 <translation id="2327445548174191329">来自<ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
 <translation id="2854916915045135148">轻触并按住即可切换到无痕模式</translation>
-<translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="286473047976978798">要应用外观偏好设置吗？</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 及另外 1 个标签页}other{<ph name="URL" /> 及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="2869430948265924908">为了保护您在车载系统上存放的敏感内容，您必须设置一种车载系统个人资料锁定方式。为此，您可以使用 PIN 码、验证码或密码。</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">删除并继续</translation>
 <translation id="6316139424528454185">Android 版本不受支持</translation>
 <translation id="631839948975905034">退出 Chrome 时锁定无痕式窗口</translation>
+<translation id="6321592572353357376">“<ph name="EXTENSION_NAME" />”扩展程序需要您登录 Chrome</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6324977638108296054">无法创建指向突出显示的内容的链接</translation>
 <translation id="6333140779060797560">通过<ph name="APPLICATION" />分享</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">已删除</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
 <translation id="6918398787259831832">如果此问题仍然存在，请从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
+<translation id="6920262510368602827">为此页面创建二维码</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这一权限</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 个标签页}other{<ph name="NUMBER_OF_TABS" /> 个标签页}}</translation>
 <translation id="6929224077895306814">您的设备和 Google 账号中保存的所有安全码都将删除</translation>
@@ -1539,6 +1539,7 @@
 <translation id="7248671827512403053">应用</translation>
 <translation id="7253951228444156601">正在检查密码…</translation>
 <translation id="7260367682327802201">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告衡量”，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
+<translation id="7265857422443387781">使用 Google 智能镜头搜索标签页<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">将 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" />？</translation>
 <translation id="7274013316676448362">禁止访问的网站</translation>
 <translation id="7276868533747677875">如果您之前导出了密码，请在设备上查找 CSV 文件，然后将其导入您首选的密码管理工具。</translation>
@@ -1881,6 +1882,7 @@
 <translation id="860282621117673749">降价提醒</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
 <translation id="8616006591992756292">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
+<translation id="8626572875733549102">翻译成<ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">依次打开 Chrome 菜单 &gt;“设置”</translation>
 <translation id="8634050254805484913">在窄屏设备上隐藏</translation>
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
@@ -2029,7 +2031,6 @@
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9205933215779845960">找不到这个页面。请检查拼写，或尝试在 <ph name="SEARCH_ENGINE" /> 上进行搜索。</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">无法致电</translation>
 <translation id="9212845824145208577">无法继续向下滚动屏幕了。请尝试从页面中更靠下的位置开始截屏。</translation>
 <translation id="9218430445555521422">设为默认</translation>
 <translation id="9219103736887031265">图片</translation>

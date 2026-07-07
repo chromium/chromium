@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Споделете ја страницава</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="2316129865977710310">Не, фала</translation>
-<translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="232137538351753795">Повлечете од левиот раб за да се вратите назад</translation>
 <translation id="2323763861024343754">Достапен простор на сајтот</translation>
 <translation id="2327445548174191329">Од <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено пред 1 ден}one{Проверено пред # ден}other{Проверено пред # дена}}</translation>
 <translation id="2842985007712546952">Надредена папка</translation>
 <translation id="2854916915045135148">Допрете и задржете за да префрлите на „Инкогнито“</translation>
-<translation id="2860954141821109167">Проверете дали е овозможена апликација за телефон на уредов</translation>
 <translation id="286473047976978798">Да се применат поставките за изглед?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и уште 1 картичка}one{<ph name="URL" /> и уште <ph name="TAB_COUNT_MANY" /> картичка}other{<ph name="URL" /> и уште <ph name="TAB_COUNT_MANY" /> картички}}</translation>
 <translation id="2869430948265924908">За да ги заштитите чувствителните содржини во автомобилот, мора да создадете „Заклучување на профилот“ во автомобилот.  Тоа може да го направите со PIN, код или лозинка.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">Избриши и продолжи</translation>
 <translation id="6316139424528454185">Верзијата на Android не е поддржана</translation>
 <translation id="631839948975905034">Заклучувај ги прозорците „Инкогнито“ кога ќе го напуштам Chrome</translation>
+<translation id="6321592572353357376">Екстензијата „<ph name="EXTENSION_NAME" />“ сака да се најавите на Chrome</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6324977638108296054">Не може да се создаде линк до нагласената ставка</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">Избришано</translation>
 <translation id="6916590542764765824">Управувај со наставки</translation>
 <translation id="6918398787259831832">Ако и натаму се соочувате со проблемов, <ph name="BEGIN_LINK" />добијте повеќе информации<ph name="END_LINK" /> од <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Создајте QR-код за страницава</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи не сте го отвориле сајтот неодамна</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картичка}one{<ph name="NUMBER_OF_TABS" /> картичка}other{<ph name="NUMBER_OF_TABS" /> картички}}</translation>
 <translation id="6929224077895306814">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и во сметката на Google</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">Апликација</translation>
 <translation id="7253951228444156601">Се проверуваат лозинките…</translation>
 <translation id="7260367682327802201">Вашиот уред со Android може да има слична поставка. Ако мерењето реклами е вклучено во Chrome и на вашиот уред со Android, одредена компанија можеби ќе може да ја мери ефективноста на некоја реклама на веб-сајтовите што ги посетувате и апликациите што ги користите.</translation>
+<translation id="7265857422443387781">Пребарај ја картичката со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сајт</translation>
 <translation id="7276868533747677875">Ако сте извезле лозинки претходно, побарајте CSV-датотека на вашиот уред и увезете ги во претпочитаниот управувач со лозинки.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">Известувања за попусти</translation>
 <translation id="8611922158252451755">Секој што го има линкот може да ги изменува сите картички, па споделувајте паметно. Линкот истекува по 48 часа.</translation>
 <translation id="8616006591992756292">Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Преведи на <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Отворете „Поставки“ во менито на Chrome</translation>
 <translation id="8634050254805484913">Скриено на тесни екрани</translation>
 <translation id="8635399646025169806">Да се задржи групата картички?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">Преостанува 1 датотека</translation>
 <translation id="9205933215779845960">Не може да се најде таа страница. Проверете го правописот или пробајте да пребарувате на <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Не може да се упатуваат повици</translation>
 <translation id="9212845824145208577">Не може да одите пониско. Почнете од подолу на страницата.</translation>
 <translation id="9218430445555521422">Постави како стандардно</translation>
 <translation id="9219103736887031265">Слики</translation>

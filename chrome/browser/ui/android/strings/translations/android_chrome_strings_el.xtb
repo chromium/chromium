@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Κοινή χρήση αυτής της σελίδας</translation>
 <translation id="230115972905494466">Δεν βρέθηκαν συμβατές συσκευές</translation>
 <translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
-<translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
 <translation id="232137538351753795">Για να επιστρέψετε, σύρετε από την αριστερή άκρη</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
 <translation id="2327445548174191329">Από <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ελέγχθηκε πριν από μία ημέρα}other{Ελέγχθηκε πριν από # ημέρες}}</translation>
 <translation id="2842985007712546952">Γονικός φάκελος</translation>
 <translation id="2854916915045135148">Αγγίξτε παρατεταμένα για εναλλαγή στην ανώνυμη περιήγηση</translation>
-<translation id="2860954141821109167">Βεβαιωθείτε ότι είναι ενεργοποιημένη μια εφαρμογή τηλεφώνου σε αυτήν τη συσκευή.</translation>
 <translation id="286473047976978798">Να εφαρμοστούν οι προτιμήσεις εμφάνισης;</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> και μία ακόμα καρτέλα}other{<ph name="URL" /> και <ph name="TAB_COUNT_MANY" /> ακόμα καρτέλες}}</translation>
 <translation id="2869430948265924908">Για να προστατεύσετε το ευαίσθητο περιεχόμενό σας στο αυτοκίνητο, θα πρέπει να δημιουργήσετε ένα κλείδωμα προφίλ αυτοκινήτου.  Για να το κάνετε αυτό, χρησιμοποιήστε PIN, κωδικό ή κωδικό πρόσβασης.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">Διαγραφή και συνέχεια</translation>
 <translation id="6316139424528454185">Μη υποστηρ. έκδοση Android</translation>
 <translation id="631839948975905034">Κλείδωμα παραθύρων για ανώνυμη περιήγηση κατά την αποχώρηση από το Chrome</translation>
+<translation id="6321592572353357376">Η επέκταση <ph name="EXTENSION_NAME" /> θέλει να συνδεθείτε στο Chrome</translation>
 <translation id="6324916366299863871">Επεξεργασία συντόμευσης</translation>
 <translation id="6324977638108296054">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6916590542764765824">Διαχείριση επεκτάσεων</translation>
 <translation id="6918398787259831832">Εάν αυτό το πρόβλημα δεν επιλυθεί, <ph name="BEGIN_LINK" />λάβετε περισσότερες πληροφορίες<ph name="END_LINK" /> από το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Δημιουργία κωδικού QR για αυτήν τη σελίδα</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 καρτέλα}other{<ph name="NUMBER_OF_TABS" /> καρτέλες}}</translation>
 <translation id="6929224077895306814">Όλοι οι κωδικοί ασφαλείας που είναι αποθηκευμένοι στη συσκευή σας και στον Λογαριασμό σας Google θα διαγραφούν</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">Εφαρμογή</translation>
 <translation id="7253951228444156601">Έλεγχος κωδικών πρόσβασης…</translation>
 <translation id="7260367682327802201">Η συσκευή σας Android μπορεί να περιλαμβάνει μια παρόμοια ρύθμιση. Εάν η Μέτρηση διαφημίσεων είναι ενεργοποιημένη στο Chrome και στη συσκευή σας Android, μια εταιρεία μπορεί να έχει τη δυνατότητα μέτρησης της αποτελεσματικότητας μιας διαφήμισης στους ιστοτόπους που επισκέπτεστε και στις εφαρμογές που χρησιμοποιείτε.</translation>
+<translation id="7265857422443387781">Αναζήτηση καρτέλας με το Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Υποβολή <ph name="ONE_TIME_CODE" /> σε <ph name="ORIGIN" />;</translation>
 <translation id="7274013316676448362">Αποκλεισμένος ιστότοπος</translation>
 <translation id="7276868533747677875">Εάν είχατε εξαγάγει κωδικούς πρόσβασης στο παρελθόν, αναζητήστε ένα αρχείο CSV στη συσκευή σας και εισαγάγετε τους κωδικούς πρόσβασης στο πρόγραμμα διαχείρισης κωδικών πρόσβασης που προτιμάτε.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">Ειδοποιήσεις πτώσης τιμής</translation>
 <translation id="8611922158252451755">Οποιοσδήποτε διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες, συνεπώς, μοιραστείτε με σύνεση. Ο σύνδεσμος λήγει σε 48 ώρες.</translation>
 <translation id="8616006591992756292">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Μετάφραση στα <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Ανοίξτε το Μενού του Chrome &gt; Ρυθμίσεις</translation>
 <translation id="8634050254805484913">Δεν εμφανίζεται σε στενές οθόνες</translation>
 <translation id="8635399646025169806">Να διατηρηθεί η ομάδα καρτελών;</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">1 αρχείο απομένει</translation>
 <translation id="9205933215779845960">Δεν είναι δυνατή η εύρεση της σελίδας. Ελέγξτε την ορθογραφία ή δοκιμάστε να αναζητήσετε στη μηχανή αναζήτησης <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">Α</translation>
-<translation id="9209888181064652401">Δεν είναι δυνατή η πραγματοποίηση κλήσεων</translation>
 <translation id="9212845824145208577">Δεν είναι δυνατή η μετάβαση χαμηλότερα. Δοκιμάστε να ξεκινήσετε από ακόμη πιο χαμηλά στη σελίδα.</translation>
 <translation id="9218430445555521422">Ορισμός ως προεπιλογή</translation>
 <translation id="9219103736887031265">Εικόνες</translation>

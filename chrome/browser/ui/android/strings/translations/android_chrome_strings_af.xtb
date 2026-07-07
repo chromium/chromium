@@ -302,7 +302,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2297822946037605517">Deel hierdie bladsy</translation>
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
-<translation id="2318045970523081853">Tik om 'n oproep te maak</translation>
 <translation id="232137538351753795">Swiep van die linkerkant af om terug te gaan</translation>
 <translation id="2323763861024343754">Werfberging</translation>
 <translation id="2327445548174191329">Vanaf <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag gelede nagegaan}other{# dae gelede nagegaan}}</translation>
 <translation id="2842985007712546952">Moedervouer</translation>
 <translation id="2854916915045135148">Raak en hou om na Incognito oor te skakel</translation>
-<translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="286473047976978798">Pas jou voorkomsvoorkeure toe?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> en 1 ander oortjie}other{<ph name="URL" /> en <ph name="TAB_COUNT_MANY" /> ander oortjies}}</translation>
 <translation id="2869430948265924908">Jy moet ’n motorprofielslot skep om jou sensitiewe inhoud in die motor te beskerm.  Jy kan dit met ’n PIN, kode of wagwoord doen.</translation>
@@ -1272,6 +1270,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6315386555979018699">Vee uit en gaan voort</translation>
 <translation id="6316139424528454185">Steun nie Android-weergawe nie</translation>
 <translation id="631839948975905034">Sluit Incognito-vensters wanneer jy Chrome verlaat</translation>
+<translation id="6321592572353357376">Die uitbreiding “<ph name="EXTENSION_NAME" />” wil hê dat jy by Chrome moet aanmeld</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6324977638108296054">Kan nie skakel na hoogtepunt skep nie</translation>
 <translation id="6333140779060797560">Deel via <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6910211073230771657">Uitgevee</translation>
 <translation id="6916590542764765824">Bestuur uitbreidings</translation>
 <translation id="6918398787259831832"><ph name="BEGIN_LINK" />Kry meer inligting<ph name="END_LINK" /> by <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> as hierdie kwessie aanhou voorkom.</translation>
+<translation id="6920262510368602827">Skep QR-kode vir hierdie bladsy</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want jy het nie onlangs die werf besoek nie</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 oortjie}other{<ph name="NUMBER_OF_TABS" /> oortjies}}</translation>
 <translation id="6929224077895306814">Alle sekuriteitskodes wat op jou toestel en in jou Google-rekening gestoor is, sal uitgevee word</translation>
@@ -1541,6 +1541,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7248671827512403053">App</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7260367682327802201">Jou Android-toestel kan ’n soortgelyke instelling insluit. As advertensiemeting in Chrome en op jou Android-toestel aangeskakel is, kan ’n maatskappy dalk die doeltreffendheid van ’n advertensie meet op alle webwerwe wat jy besoek en apps wat jy gebruik.</translation>
+<translation id="7265857422443387781">Deursoek oortjie met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Dien <ph name="ONE_TIME_CODE" /> in by <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Geblokkeerde werf</translation>
 <translation id="7276868533747677875">As jy voorheen wagwoorde uitgevoer het, moet jy ’n CSV-lêer op jou toestel soek en dit invoer na jou voorkeurwagwoordbestuurder.</translation>
@@ -1883,6 +1884,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
 <translation id="8611922158252451755">Enigiemand met die skakel kan alle oortjies wysig, so deel verstandig. Skakel verval oor 48 uur.</translation>
 <translation id="8616006591992756292">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="8626572875733549102">Vertaal in <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Maak Chrome-kieslys &gt; Instellings oop</translation>
 <translation id="8634050254805484913">Word versteek op klein skerms</translation>
 <translation id="8635399646025169806">Hou oortjiegroep?</translation>
@@ -2031,7 +2033,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9204836675896933765">1 lêer oor</translation>
 <translation id="9205933215779845960">Kan nie daardie bladsy kry nie. Gaan jou spelling na of probeer ’n soektog op <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Kan nie oproepe maak nie</translation>
 <translation id="9212845824145208577">Kan nie laer gaan nie. Probeer om laer op die bladsy te begin.</translation>
 <translation id="9218430445555521422">Stel as verstek</translation>
 <translation id="9219103736887031265">Prente</translation>

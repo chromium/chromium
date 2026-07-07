@@ -1573,6 +1573,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="628251768213143684">Ungakumenenja noma nini okulondolozwe ku-Google Account yakho</translation>
 <translation id="6284652193729350524">Nikeza ukuhumusha isi-<ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Ukuze uvule Ukuphequlula Ngokuphepha, vula <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /> bese uthepha okuthi Ukuphequlula ngokuphepha.</translation>
+<translation id="6295140892595702619">Sebenzisa imakrofoni yakho ukuze uxoxe neGemini. Uma ukhuluma neGemini, umsindo ugcinwa Emsebenzini wama-App eGemini (uma ivuliwe). Idatha yakho isetshenziselwe ukuthuthukisa izinhlelo ze-AI ekhiqizayo.</translation>
 <translation id="6295751040240588413">Isiteketiso sekhadi esingavumelekile</translation>
 <translation id="629730747756840877">I-akhawunti</translation>
 <translation id="6301104306974789820">Thola izaziso zentengo yokulandelela</translation>
@@ -2181,7 +2182,6 @@ Ukuze uqhubeke kukhompyutha yakho, shintshela ku-<ph name="OTHER_EMAIL" />. Uzot
 <translation id="8264966119170358612">Amanye amaphasiwedi wakho alondoloziwe aye adalulwa ekwephulweni kwesivumelwano sedatha engeyona eye-Google. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Ukhishwe ngemvume ku-akhawunti yakho, <ph name="USER_NAME" />, njengengxenye yokusetha kabusha i-iPad yakho. Ukuze uphinde ungenge ngemvume, thepha okuthi "Qhubeka" ngezansi.</translation>
 <translation id="8270320981823560179">I-Drive</translation>
-<translation id="8273982424131314219">Uzogcwalisa ulwazi ku-<ph name="URL" /></translation>
 <translation id="8274795744553482834">Usuzoshintsha amaphrofayela</translation>
 <translation id="8275068909952022340">Okuningi…</translation>
 <translation id="8280797717392145626">Amalinki amukelwe</translation>
@@ -2415,6 +2415,7 @@ Ukuze uqhubeke kukhompyutha yakho, shintshela ku-<ph name="OTHER_EMAIL" />. Uzot
 <translation id="8988107725234939347">I-<ph name="WEBSITE_TITLE" />, isayithi ephiniwe</translation>
 <translation id="8990960056509724223">Ifayela alikwazanga ukulondoloza ngenxa yezinqubomgomo zenhlangano yakho</translation>
 <translation id="8998289560386111590">Ayitholakali kudivayisi yakho</translation>
+<translation id="9003263770394939629">Iphakanyiswe yiGemini Lawula ukuzigcwalisela okuthuthukisiwe kumasethingi.</translation>
 <translation id="9003677638446136377">Hlola futhi</translation>
 <translation id="9006453925669499173">Imenyu → Ithebhu Entsha ye-Incognito</translation>
 <translation id="9008201768610948239">Ziba</translation>

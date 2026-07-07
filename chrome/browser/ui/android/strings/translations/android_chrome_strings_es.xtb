@@ -302,7 +302,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2297822946037605517">Compartir esta página</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="2316129865977710310">No, gracias</translation>
-<translation id="2318045970523081853">Toca para llamar</translation>
 <translation id="232137538351753795">Desliza desde el borde izquierdo para volver</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio web</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Comprobado hace 1 día}other{Comprobado hace # días}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
 <translation id="2854916915045135148">Mantén pulsado para cambiar a Incógnito</translation>
-<translation id="2860954141821109167">Comprueba que se haya habilitado una aplicación de teléfono en este dispositivo</translation>
 <translation id="286473047976978798">¿Aplicar tus preferencias de aspecto?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> y 1 pestaña más}other{<ph name="URL" /> y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="2869430948265924908">Para proteger tu contenido sensible en el coche, debes crear un bloqueo de perfil del coche.  Puedes hacerlo con un PIN, un código o una contraseña.</translation>
@@ -1272,6 +1270,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6315386555979018699">Eliminar y continuar</translation>
 <translation id="6316139424528454185">Esta versión de Android no es compatible</translation>
 <translation id="631839948975905034">Bloquear las ventanas de Incógnito al cerrar Chrome</translation>
+<translation id="6321592572353357376">La extensión "<ph name="EXTENSION_NAME" />" quiere que inicies sesión en Chrome</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6324977638108296054">No se puede crear un enlace al texto destacado</translation>
 <translation id="6333140779060797560">Compartir a través de <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6910211073230771657">Eliminados</translation>
 <translation id="6916590542764765824">Gestionar extensiones</translation>
 <translation id="6918398787259831832">Si el problema persiste, <ph name="BEGIN_LINK" />obtén más información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Crear un código QR para esta página</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>
 <translation id="6929224077895306814">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en tu cuenta de Google</translation>
@@ -1541,6 +1541,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7260367682327802201">Es posible que tu dispositivo Android tenga una opción similar. Si la medición de anuncios está activada en Chrome y en tu dispositivo Android, una empresa podría medir la eficacia de un anuncio en los sitios web que visitas y las aplicaciones que usas.</translation>
+<translation id="7265857422443387781">Buscar en la pestaña con Google Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">¿Enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sitio web bloqueado</translation>
 <translation id="7276868533747677875">Si ya has exportado contraseñas, busca un archivo CSV en tu dispositivo e impórtalo en el gestor de contraseñas que prefieras.</translation>
@@ -1883,6 +1884,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="860282621117673749">Alertas por bajada de precio</translation>
 <translation id="8611922158252451755">Cualquier persona que tenga el enlace puede editar todas las pestañas, así que comparte con cuidado. El enlace caduca al cabo de 48 horas.</translation>
 <translation id="8616006591992756292">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Traducir al <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Abre el menú de Chrome &gt; Configuración</translation>
 <translation id="8634050254805484913">Oculta en pantallas estrechas</translation>
 <translation id="8635399646025169806">¿Mantener grupo de pestañas?</translation>
@@ -2031,7 +2033,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9204836675896933765">1 archivo restante</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a buscarla en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">No se pueden hacer llamadas</translation>
 <translation id="9212845824145208577">No se puede ir más abajo. Intenta empezar desde más abajo de la página.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imágenes</translation>

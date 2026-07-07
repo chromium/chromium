@@ -1573,6 +1573,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="628251768213143684">Voit milloin tahansa valita, mitä Google-tilillesi tallennetaan</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
+<translation id="6295140892595702619">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, ääni tallennetaan Gemini-sovellustoimintaan (jos se on päällä). Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="6295751040240588413">Virheellinen kortin lyhytnimi</translation>
 <translation id="629730747756840877">Tili</translation>
 <translation id="6301104306974789820">Tilaa hintaseurantailmoitukset</translation>
@@ -2181,7 +2182,6 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8264966119170358612">Osa tallennetuista salasanoistasi on paljastunut Googlen ulkopuolisen tietosuojaloukkauksen yhteydessä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Sinut kirjattiin ulos tililtä <ph name="USER_NAME" />, kun iPad nollattiin. Kirjaudu takaisin sisään valitsemalla Jatka.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Täytä tiedot täällä: <ph name="URL" /></translation>
 <translation id="8274795744553482834">Olet vaihtamassa profiilia</translation>
 <translation id="8275068909952022340">Lisää…</translation>
 <translation id="8280797717392145626">Linkkejä vastaanotettu</translation>
@@ -2415,6 +2415,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8990960056509724223">Tiedostoa ei voitu tallentaa organisaation käytäntöjen vuoksi</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
+<translation id="9003263770394939629">Geminin ehdotus. Muuta parannettua automaattista täyttöä asetuksista.</translation>
 <translation id="9003677638446136377">Tarkista uudelleen</translation>
 <translation id="9006453925669499173">Valikko → Uusi incognito-välilehti</translation>
 <translation id="9008201768610948239">Ohita</translation>

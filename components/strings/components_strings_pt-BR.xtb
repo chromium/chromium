@@ -504,6 +504,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="175656076281618225">Mágica</translation>
 <translation id="1757773103848038814">Fonte monoespaçada</translation>
 <translation id="1757935267918149452">Botão "Alterar senha do Google". Ative para alterar a senha da sua Conta do Google</translation>
+<translation id="1759776526873274358">Preencher automaticamente os códigos de verificação que os sites usam para melhorar sua segurança. O Chrome pode acessar esses códigos no seu Gmail. <ph name="BEGIN_LINK" />Saiba mais sobre esse recurso<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o sistema operacional do seu dispositivo. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (permanente)</translation>
@@ -3129,6 +3130,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
 <translation id="5863515189965725638">Editar IBAN</translation>
+<translation id="5863517400058880216">Preencher códigos de verificação do Gmail automaticamente</translation>
 <translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
 <translation id="5866327164731551901">De <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4519,6 +4521,7 @@ Mais detalhes:
 <translation id="7967973398323409409">As informações que você preenche automaticamente nunca são vistas por ninguém</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é uma cor hexadecimal inválida.</translation>
 <translation id="7968982339740310781">Mais detalhes</translation>
+<translation id="7971403153351954587">Sua organização monitora a cópia</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
 <translation id="7976053965094442846">Emissores da opção "Compre agora, pague depois" disponíveis para pagamento parcelado. Teclado oculto.</translation>
 <translation id="7976214039405368314">Excesso de solicitações</translation>

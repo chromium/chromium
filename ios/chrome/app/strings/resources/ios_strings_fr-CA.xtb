@@ -1573,6 +1573,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="628251768213143684">Vous pouvez toujours gérer ce qui est enregistré dans votre compte Google</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
+<translation id="6295140892595702619">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'Activité dans les applis Gemini (si ce paramètre est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6295751040240588413">Pseudo de carte incorrect</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
@@ -2181,7 +2182,6 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été exposés à une violation de données d'un tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="8270320981823560179">Disque</translation>
-<translation id="8273982424131314219">Vous remplirez les renseignements dans <ph name="URL" /></translation>
 <translation id="8274795744553482834">Vous êtes sur le point de changer de profil</translation>
 <translation id="8275068909952022340">Plus…</translation>
 <translation id="8280797717392145626">Liens reçus</translation>
@@ -2415,6 +2415,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier en raison des politiques de votre organisation</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
+<translation id="9003263770394939629">Suggéré par Gemini. Gérez le remplissage automatique amélioré dans les paramètres.</translation>
 <translation id="9003677638446136377">Revérifier</translation>
 <translation id="9006453925669499173">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="9008201768610948239">OK</translation>

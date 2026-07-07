@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1005333234656240382">Bật tùy chọn gỡ lỗi ADB?</translation>
+<translation id="1053898984916097744">Bắt đầu một nhiệm vụ mới hoặc nhận trợ giúp trong quá trình làm việc.</translation>
+<translation id="1061130374843955397">Chào mừng bạn đến với <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Tự động lấy thông tin tài khoản từ điện thoại Android</translation>
 <translation id="1076766328672150609">Con bạn có thể dùng mã PIN để mở khóa thiết bị này.</translation>
 <translation id="1097658378307015415">Trước khi đăng nhập, vui lòng đăng nhập với tư cách khách để kích hoạt mạng <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Trẻ có thể dùng mã PIN này để đăng nhập vào thiết bị của mình</translation>
 <translation id="1122587596907914265">Thiết kế hình nền độc đáo</translation>
 <translation id="1131201598497838573">Đã cập nhật mã PIN của trẻ</translation>
 <translation id="1147322039136785890">Bây giờ, <ph name="SUPERVISED_USER_NAME" /> có thể dùng thiết bị</translation>
+<translation id="1148669835763563782">Bạn sẽ nhận được bản cập nhật phần mềm mới nhất giúp tăng cường khả năng bảo mật và các tính năng mới nhất của Chromebook. Bản cập nhật này đã cải thiện quy trình thiết lập, giúp bạn có khởi đầu suôn sẻ trên Chromebook.</translation>
 <translation id="1176864681932214421">Tạo hình ảnh bằng AI</translation>
 <translation id="1177073277575830464">Quá trình thiết lập nhanh Android đã hoàn tất. Hãy tiếp tục thiết lập trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="1179902906564467236">Làm theo hướng dẫn trên điện thoại hoặc sử dụng ứng dụng máy ảnh</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1217114730239853757">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không? Nếu có, hãy nhấn phím cách.</translation>
 <translation id="1222835797152767346">Đặt mã PIN để đăng nhập dễ dàng hơn</translation>
+<translation id="1231426483209637778">Chúng tôi sẽ ghi nhớ mạng của bạn vào lần tiếp theo bạn sử dụng <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Thay đổi kích thước hiển thị và văn bản</translation>
+<translation id="1256588359404100567">Đã đồng bộ hoá chế độ cài đặt từ thiết bị trước của bạn.</translation>
 <translation id="1272978324304772054">Tài khoản người dùng này không thuộc về miền mà thiết bị được đăng ký. Nếu bạn muốn đăng ký miền khác, bạn cần tìm thiết bị trước tiên.</translation>
+<translation id="1293556467332435079">Tệp</translation>
 <translation id="1307559529304613120">Rất tiếc! Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
+<translation id="1335929031622236846">Đăng ký thiết bị của bạn</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Tính năng gỡ lỗi<ph name="END_H3" />
           <ph name="BR" />
           Bạn có thể bật tính năng gỡ lỗi trên thiết bị ChromeOS để cài đặt và kiểm tra mã tuỳ chỉnh trên thiết bị.  Nhờ vậy, bạn có thể:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
 <translation id="1347625331607114917">Xác minh mã trên điện thoại Android</translation>
 <translation id="1347975661240122359">Sẽ bắt đầu cập nhật khi pin đạt đến mức <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Để sử dụng các quyền kiểm soát của cha mẹ như phê duyệt ứng dụng và giới hạn thời gian sử dụng thiết bị, trẻ phải có một Tài khoản Google do cha mẹ quản lý. Bạn có thể thêm một tài khoản trường học vào lúc khác để dùng các công cụ như Google Lớp học.</translation>
 <translation id="1375557162880614858">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không?</translation>
 <translation id="1375938286942050085">Đã thiết lập xong! Tiếp theo, hãy chuẩn bị sẵn thiết bị để chơi trò chơi</translation>
 <translation id="1377600615067678409">Bỏ qua ngay bây giờ</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng.</translation>
 <translation id="1418882096915998312">Đang trong quá trình đăng ký Bản nâng cấp Enterprise</translation>
 <translation id="1426410128494586442">Có</translation>
+<translation id="1427269577154060167">Quốc gia</translation>
 <translation id="1440090277117135316">Đã hoàn tất việc đăng ký học</translation>
 <translation id="1473927070149284123">Hãy thử lại hoặc kết nối mạng theo cách thủ công</translation>
 <translation id="1503556098270577657">Bạn đã đăng nhập vào <ph name="USER_EMAIL" /> bằng điện thoại Android</translation>
+<translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1521442365706402292">Quản lý chứng chỉ</translation>
+<translation id="15373452373711364">Con trỏ chuột lớn</translation>
 <translation id="1540605929960647700">Bật chế độ minh họa</translation>
 <translation id="1572876035008611720">Nhập email của bạn</translation>
+<translation id="1588438908519853928">Bình thường</translation>
+<translation id="1620510694547887537">Camera</translation>
+<translation id="1636212173818785548">OK</translation>
 <translation id="1642494467033190216">Yêu cầu xóa bảo vệ rootfs và khởi động lại trước khi bật các tính năng gỡ lỗi khác.</translation>
+<translation id="1646045728251578877">Đã có bản cập nhật phần mềm</translation>
+<translation id="1650801028905250434">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào trong phần Cài đặt &gt; Tệp.</translation>
 <translation id="1668435968811469751">Đăng ký theo cách thủ công</translation>
 <translation id="1678919064276516737">Địa chỉ email và mã PIN bạn nhập không khớp</translation>
 <translation id="1692115862433274081">Sử dụng một tài khoản khác</translation>
 <translation id="1695487653372841667">Bạn có thể kiểm soát những dữ liệu nào được chia sẻ với Google. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
+<translation id="1700517974991662022">Đã truy cập</translation>
 <translation id="1730666151302379551">Quên mật khẩu cũ</translation>
+<translation id="1749645492410897998">Đang cài đặt phần mềm</translation>
 <translation id="177053719077591686">Sao lưu các ứng dụng Android vào Google Drive.</translation>
+<translation id="1798832846931769717">Google Beam cho Meet</translation>
 <translation id="1806335016774576568">Chuyển sang một ứng dụng khác đang mở</translation>
 <translation id="1826192255355608658">Đồng bộ hóa dấu trang, mật khẩu, nhật ký duyệt web trên Chrome, v.v.</translation>
+<translation id="1826657447823925402">Đã tắt chế độ cuộn ngược</translation>
 <translation id="1831848493690504725">Chúng tôi không thể kết nối với Google thông qua mạng được kết nối. Hãy thử chọn một mạng khác hoặc kiểm tra chế độ cài đặt mạng hoặc chế độ cài đặt proxy của bạn (nếu bạn đang sử dụng proxy).</translation>
 <translation id="1842766183094193446">Bạn có chắc chắn muốn bật chế độ minh họa không?</translation>
 <translation id="1845060436536902492">Trình đọc màn hình ChromeVox trên ChromeOS Flex chủ yếu dành cho người khiếm thị hoặc có thị lực kém, giúp họ đọc văn bản hiển thị trên màn hình thông qua trình tổng hợp giọng nói hoặc màn hình chữ nổi. Nhấn phím cách để bật ChromeVox. Sau khi kích hoạt ChromeVox, bạn sẽ được hướng dẫn nhanh.</translation>
+<translation id="185766080319917408">Phím Trình chạy nằm bên trái phím Alt bên trái</translation>
 <translation id="1868617395637139709">Sử dụng thông tin vị trí cho các ứng dụng và dịch vụ Android.</translation>
+<translation id="1877377730633446520">Tính năng này sẽ sử dụng khoảng <ph name="REQUIRED_SPACE" />. Bạn hiện có <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">Điều khoản và điều kiện</translation>
+<translation id="189358972401248634">Ngôn ngữ khác</translation>
+<translation id="1915734383465415025">Số hiệu cửa hàng</translation>
+<translation id="1919096511823372013">Chèn đường liên kết, biểu tượng cảm xúc và nội dung khác. Bạn cũng có thể yêu cầu AI của Google trợ giúp viết nội dung và tạo hình ảnh.</translation>
+<translation id="1922496389170590548">Tài khoản trường học của trẻ</translation>
+<translation id="1944528062465413897">Mã ghép nối Bluetooth:</translation>
 <translation id="1987574314042117472">Chọn cài đặt các ứng dụng phổ biến</translation>
 <translation id="1991829061375381344">Bạn hiện không có đủ giấy phép để đăng ký thiết bị Google Meet này. Vui lòng liên hệ với đại lý để mua thêm giấy phép. Nếu bạn cho rằng mình nhận được thông báo này do nhầm lẫn, vui lòng liên hệ với đại lý.</translation>
+<translation id="200928901437634269">Sử dụng Tài khoản Google của trẻ hoặc tài khoản trường học. Bạn cũng có thể đặt chế độ kiểm soát của cha mẹ.</translation>
+<translation id="2013550551806600826">Hãy thử cài đặt đó. Bật hoặc tắt chế độ cài đặt này, sau đó cuộn bằng hai ngón tay trên bàn di chuột trong trải nghiệm dùng thử. Bạn cũng có thể tìm tuỳ chọn này sau trong phần Cài đặt &gt; Thiết bị &gt; Chuột và bàn di chuột.</translation>
+<translation id="2018189721942291407">Bạn không chắc mình có nên đăng ký hay không?</translation>
 <translation id="2040460856718599782">Rất tiếc! Đã xảy ra sự cố khi tìm cách xác thực bạn. Vui lòng kiểm tra kỹ thông tin xác thực đăng nhập của bạn và thử lại.</translation>
 <translation id="2052572566310583903">Đã cài đặt trên các thiết bị khác của bạn</translation>
 <translation id="2088092308059522196">Chỉ hỗ trợ đăng ký sau khi bạn hoàn tất cài đặt <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Để chuyển đến Màn hình chính bất cứ lúc nào, hãy vuốt lên từ cuối màn hình.</translation>
 <translation id="2090165459409185032">Để khôi phục thông tin tài khoản của bạn, hãy truy cập: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Chọn các tính năng khác để thiết lập</translation>
+<translation id="2135456203358955318">Phóng to ở vị trí cố định</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> của bạn tích hợp Gemini</translation>
 <translation id="2163470535490402084">Vui lòng kết nối Internet để đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn.</translation>
+<translation id="2173801458090845390">Thêm ID yêu cầu vào thiết bị này</translation>
 <translation id="2178585470774851578">Bạn đang bật tính năng gỡ lỗi của ChromeOS Flex. Tính năng này sẽ thiết lập trình nền sshd và bật tính năng khởi động qua ổ đĩa USB.</translation>
+<translation id="2183570493397356669">Nút Tiếp tục đã bị vô hiệu hoá</translation>
+<translation id="221872881068107022">Cuộn ngược</translation>
 <translation id="2219081237089444028">Đặt mật khẩu cho <ph name="DEVICE_TYPE" /> để đăng nhập dễ dàng hơn</translation>
+<translation id="2229161054156947610">Còn hơn 1 giờ</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> yêu cầu thiết bị phải kết nối mạng khi đăng nhập vào <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">Đã hoàn tất <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">Đang kết nối với điện thoại Android của bạn...</translation>
@@ -91,12 +129,18 @@
 <translation id="2450223707519584812">Bạn không thể thêm người dùng vì thiếu khóa Google API. Xem <ph name="DETAILS_URL" /> để biết thông tin chi tiết.</translation>
 <translation id="24786041351753425">Bật dịch vụ khôi phục dữ liệu.</translation>
 <translation id="2485681265915754872">Điều khoản dịch vụ của Google Play</translation>
+<translation id="248676429071089168">Vuốt lên để di chuyển xuống phía dưới của trang</translation>
 <translation id="2501278716633472235">Quay lại</translation>
+<translation id="2538084450874617176">Ai sẽ dùng <ph name="DEVICE_TYPE" /> này?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> không thể kết nối đến <ph name="NETWORK_ID" />. Vui lòng chọn một mạng khác hoặc thử lại.</translation>
 <translation id="2565214867520763227">Bật trình đọc màn hình</translation>
+<translation id="2569972178052279830">Tên nhà bán lẻ</translation>
+<translation id="257779572837908839">Thiết lập làm Chromebox cho hội họp</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Nền tảng <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Không, tiếp tục mà không dùng ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Dịch vụ vị trí của Google dùng những nguồn như Wi-Fi, mạng di động và các cảm biến để giúp ước tính vị trí của thiết bị này.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt dịch vụ vị trí của Android trên thiết bị này bất cứ lúc nào bằng cách chuyển tới phần Cài đặt &gt; Ứng dụng &gt; Cửa hàng Google Play &gt; Quản lý tuỳ chọn Android &gt; Bảo mật và vị trí &gt; Vị trí. Bạn cũng có thể không cho phép dịch vụ vị trí của Android sử dụng Wi-Fi, mạng di động và các cảm biến bằng cách tắt lựa chọn "Độ chính xác của vị trí trên Google" trong cùng một trình đơn.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Ngôn ngữ</translation>
 <translation id="2687407218262674387">Điều khoản dịch vụ của Google</translation>
 <translation id="2688196195245426394">Lỗi khi đăng ký thiết bị với máy chủ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Đây là thiết bị đi kèm và bạn không thể đăng ký bằng Bản nâng cấp Kiosk &amp; Signage.</translation>
@@ -104,26 +148,32 @@
 <translation id="2731700343119398978">Vui lòng chờ...</translation>
 <translation id="2732134891301408122">Nội dung bổ sung <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="274318651891194348">Đang tìm kiếm bàn phím</translation>
 <translation id="2754825024506485820">Cửa hàng Google Play cung cấp mọi ứng dụng bạn cần, từ cải thiện hiệu suất cho đến giải trí. Bạn có thể cài đặt ứng dụng bất cứ lúc nào.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Khi chế độ cài đặt Độ chính xác của vị trí ở trạng thái bật, thông tin về các tín hiệu không dây (chẳng hạn như điểm truy cập Wi-Fi và trạm phát sóng mạng di động) cùng với dữ liệu cảm biến trên thiết bị (chẳng hạn như gia tốc kế và con quay hồi chuyển) sẽ được dùng để ước tính vị trí thiết bị sao cho chính xác hơn. Các dịch vụ và ứng dụng Android cũng sử dụng thông tin vị trí này để cung cấp các tính năng dựa trên vị trí. Để thực hiện việc này, Google sẽ thu thập thông tin về cảm biến thiết bị và tín hiệu không dây ở gần thiết bị này theo chu kỳ nhằm đóng góp thông tin cho dữ liệu vị trí dựa trên tín hiệu không dây được thu thập từ đám đông.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google sử dụng thông tin thu thập được từ thiết bị này nhằm: cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí; đồng thời cải thiện, cung cấp và duy trì các dịch vụ của Google nói chung. Chúng tôi xử lý thông tin này dựa trên lợi ích chính đáng của Google và các bên thứ ba để phục vụ nhu cầu của người dùng. Chúng tôi không dùng thông tin này để xác định danh tính của bất kỳ cá nhân nào.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Bạn có thể tắt chế độ cài đặt Độ chính xác của vị trí bất cứ lúc nào trong phần cài đặt vị trí của thiết bị này. Cụ thể, hãy vào phần Cài đặt &gt; Quyền riêng tư và bảo mật &gt; Chế độ kiểm soát quyền riêng tư &gt; Quyền truy cập thông tin vị trí &gt; Cài đặt vị trí nâng cao. Nếu chế độ cài đặt Độ chính xác của vị trí ở trạng thái tắt, thì dữ liệu về Độ chính xác của vị trí sẽ không được thu thập. Đối với các dịch vụ và ứng dụng Android, chỉ địa chỉ IP mới được dùng (nếu có) để xác định vị trí của thiết bị này. Việc này có thể ảnh hưởng đến khả năng cung cấp và độ chính xác của vị trí đối với các dịch vụ và ứng dụng Android như Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Bạn đã hoàn tất!</translation>
+<translation id="2819519502129272135">Tính năng đồng bộ hoá tệp đã tắt</translation>
 <translation id="2832124733806557606">Con bạn có thể dùng mã PIN để đăng nhập hoặc mở khóa thiết bị này.</translation>
 <translation id="283669119850230892">Để sử dụng mạng <ph name="NETWORK_ID" />, trước hết hãy hoàn tất kết nối Internet của bạn ở bên dưới.</translation>
 <translation id="2849767214114481738">Đã thêm mã PIN của bạn</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng và mức bộ nhớ thường được sử dụng.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu bạn là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Quá trình này có thể mất tới 30 phút</translation>
 <translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
 <translation id="2902265136119311513">Duyệt với tư cách Khách</translation>
 <translation id="2904210161403910217">Mật khẩu của bạn đã thay đổi kể từ lần đăng nhập gần nhất</translation>
 <translation id="2918484644467055090">Bạn không thể đăng ký thiết bị này với tổ chức sở hữu tài khoản của bạn vì nhiệm vụ quản lý thiết bị này đã được chỉ định cho một tổ chức khác.</translation>
 <translation id="2921081876747860777">Vui lòng tạo mật khẩu để bảo vệ dữ liệu cục bộ của bạn.</translation>
+<translation id="2935654492420446828">Thêm một tài khoản trường học sau này</translation>
 <translation id="2950666755714083615">Đăng ký cho tôi</translation>
 <translation id="2979966855249721010">Dựa trên mối quan tâm của bạn, bạn có thể nhận được các đề xuất về ứng dụng, mẹo và nhiều thông tin khác</translation>
 <translation id="3012917896646559015">Vui lòng liên hệ ngay với nhà sản xuất phần cứng của bạn để gửi máy tính đến cơ sở sửa chữa.</translation>
+<translation id="3023464535986383522">Chọn để nói</translation>
 <translation id="3028371505549235127">Thay vì nhập mật khẩu của Tài khoản Google để đăng nhập, bạn có thể tạo mật khẩu <ph name="DEVICE_TYPE" /> cho thiết bị này</translation>
 <translation id="3033348223765101500">Kiểm soát dữ liệu của bạn</translation>
+<translation id="3090871774332213558">Đã ghép nối "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3101924772906986970">Dấu trang, mật khẩu, nhật ký duyệt web và các dữ liệu khác trên trình duyệt Chrome được lưu trong Tài khoản Google của bạn</translation>
 <translation id="313205617302240621">Bạn quên mật khẩu?</translation>
 <translation id="3162070126914310576">Hiện không thể đăng ký thiết bị này vì đơn vị tổ chức của bạn đã đạt đến giới hạn đăng ký ban đầu. Hãy liên hệ với quản trị viên để được trợ giúp.</translation>
@@ -131,20 +181,34 @@
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Thiết bị của bạn có Bản nâng cấp Chrome Education, nhưng tên người dùng của bạn chưa liên kết với một tài khoản Google for Education. Vui lòng truy cập vào g.co/workspace/edusignup trên thiết bị phụ để tạo tài khoản Google for Education.</translation>
 <translation id="3196912927885212665">Để thiết lập bằng điện thoại Android, bạn cần bật Bluetooth trên Chromebook</translation>
+<translation id="322708765617468434">Bạn có thể thêm người khác vào thiết bị bất cứ lúc nào sau khi thiết lập. Mỗi người đều có thể cá nhân hoá trải nghiệm của mình và bảo mật dữ liệu.</translation>
 <translation id="3238192140106069382">Đang kết nối và xác minh</translation>
+<translation id="3251119461199395237">Đồng bộ hoá tệp</translation>
+<translation id="325238099842880997">Đặt các quy tắc cơ bản về việc sử dụng thiết bị kỹ thuật số để giúp trẻ vui chơi, khám phá và làm bài tập ở nhà</translation>
+<translation id="3255747772218936245">Cài đặt bản cập nhật</translation>
 <translation id="3261268979727295785">Đối với trẻ lớn, bạn có thể thêm các quyền kiểm soát của cha mẹ sau khi hoàn thành quy trình thiết lập. Bạn sẽ tìm thấy thông tin về các quyền kiểm soát của cha mẹ trong ứng dụng Khám phá.</translation>
 <translation id="3278001907972365362">Bạn cần chú ý đến Tài khoản Google của mình</translation>
 <translation id="3283148363895519428">Làm theo hướng dẫn trên điện thoại để tiếp tục thiết lập. Hãy đảm bảo điện thoại của bạn đang ở gần và đã bật Bluetooth.</translation>
 <translation id="3382073616108123819">Rất tiếc! Hệ thống không thể xác định số nhận dạng thiết bị cho thiết bị này.</translation>
 <translation id="3382200254148930874">Ngừng tính năng giám sát...</translation>
+<translation id="3384362484379805487">Các tệp ngôn ngữ được chia sẻ giữa những người dùng để tiết kiệm dung lượng ổ đĩa.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">Trình đọc màn hình ChromeVox trên ChromeOS Flex chủ yếu dành cho người khiếm thị hoặc có thị lực kém, giúp họ đọc văn bản hiển thị trên màn hình thông qua trình tổng hợp giọng nói hoặc màn hình chữ nổi. Nhấn và giữ cả hai phím âm lượng trong 5 giây để bật ChromeVox. Sau khi kích hoạt ChromeVox, bạn sẽ được hướng dẫn nhanh.</translation>
+<translation id="3402585168444815892">Đang đăng ký chế độ minh họa</translation>
 <translation id="3433621910545056227">Rất tiếc!  Hệ thống không thể thiết lập khóa thuộc tính thời gian cài đặt thiết bị.</translation>
 <translation id="3435896845095436175">Bật</translation>
 <translation id="3462413494201477527">Hủy thiết lập tài khoản?</translation>
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
+<translation id="3473479545200714844">Phóng to màn hình</translation>
 <translation id="3491669675709357988">Bạn chưa thiết lập tài khoản cho con mình để thêm các quyền kiểm soát của cha mẹ trên Family Link. Bạn có thể thêm các quyền kiểm soát của cha mẹ sau khi hoàn thành quy trình thiết lập. Bạn sẽ tìm thấy thông tin về các quyền kiểm soát của cha mẹ trong ứng dụng Khám phá.</translation>
+<translation id="350397915809787283">Nếu bạn chưa có tài khoản, hãy chọn lựa chọn đầu tiên để tạo tài khoản.</translation>
 <translation id="3520824492621090923">Xác nhận đăng ký thiết bị kiosk và bảng hiệu?</translation>
+<translation id="3547954654003013442">Cài đặt proxy</translation>
+<translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3577745545227000795">Hoạt động thu thập dữ liệu phần cứng của <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Xem trước</translation>
+<translation id="3607671391978830431">Dành cho trẻ em</translation>
+<translation id="3627320433825461852">Còn chưa đến 1 phút</translation>
 <translation id="3635199270495525546">Đã phát hiện Mô-đun nền tảng đáng tin cậy (TPM)</translation>
 <translation id="3650753875413052677">Lỗi đăng ký</translation>
 <translation id="3661106764436337772">Viết nhanh hơn và tự tin hơn</translation>
@@ -156,16 +220,23 @@
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3712050472459130149">Cần cập nhật tài khoản</translation>
 <translation id="3733296813637058299">Chúng tôi sẽ cài đặt các ứng dụng đó cho bạn. Bạn có thể tìm thêm ứng dụng cho <ph name="DEVICE_TYPE" /> của mình trong Cửa hàng Play.</translation>
+<translation id="3740945083753997630">Giảm kích thước hiển thị và văn bản</translation>
 <translation id="376841534249795524">Bạn sẽ dùng <ph name="DEVICE_TYPE" /> vào những việc gì?</translation>
 <translation id="3772046291955677288">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3800828618615365228">Các điều khoản bổ sung của Google Chrome và Chrome OS</translation>
 <translation id="3828953470056652895">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ của Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Bạn có thể chọn tất cả các lựa chọn phù hợp. Bạn cũng có thể xem các lựa chọn này trong phần Cài đặt sau khi thiết lập xong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Quay lại</translation>
+<translation id="3856470183388031602">Sử dụng Tài khoản Google của bạn trên <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> có thiết kế đặc biệt phù hợp cho bạn chơi trò chơi. Tiếp theo, ứng dụng Khám phá sẽ mở ra. Trên ứng dụng này, bạn có thể truy cập hàng trăm trò chơi mới nhất, xem các ưu đãi về trò chơi và khám phá các tính năng chơi trò chơi đi kèm với thiết bị của bạn.</translation>
+<translation id="389901847090970821">Chọn bàn phím</translation>
 <translation id="3910588685973519483">Tạo hình nền bằng AI</translation>
+<translation id="3924259174674732591">Kích thước hiển thị và văn bản <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3983400541576569538">Dữ liệu của một số ứng dụng có thể sẽ mất</translation>
+<translation id="3984159763196946143">Không thể khởi động chế độ trình diễn</translation>
 <translation id="3994318741694670028">Rất tiếc, máy tính của bạn được định cấu hình bằng một mã phần cứng không đúng định dạng. Tình trạng này ngăn ChromeOS Flex cập nhật các bản vá bảo mật mới nhất và máy tính của bạn <ph name="BEGIN_BOLD" />có nguy cơ bị tấn công<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Thiết lập mã PIN</translation>
 <translation id="4044883420905480380">Bạn đã kết nối Wi-Fi và đăng nhập vào <ph name="USER_EMAIL" /> bằng điện thoại Android</translation>
@@ -176,6 +247,9 @@
 <translation id="4135746311382563554">Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS</translation>
 <translation id="41365691917097717">Nếu bạn tiếp tục, tùy chọn gỡ lỗi ADB sẽ bật để tạo và thử nghiệm các ứng dụng Android. Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> không thuộc về một tổ chức hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu bạn là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Lớn</translation>
+<translation id="4213918571089943508">Tài khoản Google của trẻ</translation>
+<translation id="4228071595943929139">Sử dụng địa chỉ email của tổ chức bạn</translation>
 <translation id="4232484478444192782">Điện thoại Android sẽ lo liệu tất cả cho bạn. Wi-Fi và mật khẩu của bạn đang được chuyển sang Chromebook.</translation>
 <translation id="4242145785130247982">Không hỗ trợ nhiều chứng chỉ ứng dụng khách</translation>
 <translation id="4242577469625748426">Không thể cài đặt các cài đặt chính sách trên thiết bị: <ph name="VALIDATION_ERROR" />.</translation>
@@ -185,33 +259,50 @@
 <translation id="4278498748067682896">Bạn sẽ sử dụng Bản nâng cấp Kiosk &amp; Signage, khi đó thiết bị chỉ chạy được trong chế độ kiosk hoặc signage. Nếu bạn muốn người dùng đăng nhập vào thiết bị, vui lòng quay lại rồi đăng ký sử dụng Bản nâng cấp Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Có, kích hoạt ChromeVox</translation>
 <translation id="4289732974614035569">Hãy chọn một mã PIN</translation>
+<translation id="4291265871880246274">Hộp thoại đăng nhập</translation>
+<translation id="4305817255990598646">Chuyển</translation>
 <translation id="4309165024397827958">Cho phép các ứng dụng Android và dịch vụ có quyền truy cập thông tin vị trí được dùng thông tin vị trí của thiết bị. Google có thể định kỳ thu thập dữ liệu vị trí và sử dụng dữ liệu này theo cách ẩn danh nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí.</translation>
 <translation id="4317733381297736564">Mua hàng trong ứng dụng</translation>
 <translation id="4341905082470253054">Đang kiểm tra trạng thái TPM...</translation>
 <translation id="4370975561335139969">Email và mật khẩu bạn nhập không khớp</translation>
 <translation id="4373418556073552953">Đăng nhập bằng điện thoại Android</translation>
+<translation id="4378556263712303865">Yêu cầu thiết bị</translation>
 <translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách tính năng bạn sử dụng, mức bộ nhớ bạn thường sử dụng cũng như dữ liệu sử dụng và chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị ChromeOS. Nếu bạn là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Nếu bạn bật chế độ cài đặt Hoạt động trên web và ứng dụng cho Tài khoản Google, thì dữ liệu Android có thể được lưu vào Tài khoản Google của bạn. Bạn có thể xem, xoá dữ liệu và thay đổi các chế độ cài đặt tài khoản tại account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Tìm kiếm thiết bị Bluetooth và USB</translation>
 <translation id="4403266582403435904">Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn.</translation>
 <translation id="4410545552906060960">Dùng một số (mã PIN) thay cho mật khẩu để mở khóa thiết bị. Để đặt mã PIN vào thời điểm khác, hãy chuyển đến mục Cài đặt.</translation>
 <translation id="4415213869328311284">Bạn đã có thể bắt đầu sử dụng <ph name="DEVICE_TYPE" /> của mình.</translation>
+<translation id="443031431654216610">Chỉ sử dụng số</translation>
+<translation id="4448560527907365660">Lưu và xem thêm</translation>
 <translation id="4449948729197510913">Tên người dùng của bạn thuộc về tài khoản doanh nghiệp của tổ chức bạn. Để đăng ký thiết bị cho tài khoản này, trước tiên, hãy xác minh quyền sở hữu miền trong Bảng điều khiển dành cho quản trị viên. Bạn cần phải có các đặc quyền của quản trị viên đối với tài khoản này thì mới xác minh được.</translation>
 <translation id="4450974146388585462">Chẩn đoán</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> đã phát hiện một đơn vị xử lý TPM đang hoạt động có thể lưu trữ dữ liệu của bạn an toàn hơn.</translation>
+<translation id="4472298120638043495">Bạn có thể sử dụng ngôn ngữ ưu tiên trong Tài khoản Google của mình (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
+<translation id="450867954911715010">Cài đặt trợ năng</translation>
+<translation id="4519605771716872386">Tính năng đồng bộ hoá tệp đã bật</translation>
+<translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="4566170377336116390">Nếu muốn chuyển đổi sau khi đăng ký, bạn sẽ phải đặt lại thiết bị về trạng thái ban đầu (powerwash).</translation>
 <translation id="4567512141633030272">Sai phương thức đăng nhập?</translation>
+<translation id="4567533462991917415">Sau khi thiết lập, bạn có thể thêm những người khác bất cứ lúc nào. Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
 <translation id="4568213207643490790">Rất tiếc, không được phép đăng nhập tài khoản Google trên thiết bị này.</translation>
 <translation id="4611759022973144129">Bạn có thể sử dụng mật khẩu này để đăng nhập vào <ph name="DEVICE_TYPE" /> của mình.</translation>
+<translation id="4634575639321169635">Thiết lập thiết bị này cho mục đích cá nhân hoặc công việc</translation>
+<translation id="4689235506267737042">Chọn tùy chọn minh họa</translation>
 <translation id="4727847987444062305">Phiên khách được quản lý</translation>
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="473936925429402449">Nội dung bổ sung đã chọn <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> không phải là tài khoản Google for Education hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập vào: g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Dành cho công việc</translation>
 <translation id="4806457879608775995">Xem xét các điều khoản này và kiểm soát dữ liệu của bạn</translation>
+<translation id="4814327014588285482">Bỏ qua và nhắc tôi sau</translation>
 <translation id="4830502475412647084">Đang cài đặt bản cập nhật hệ điều hành</translation>
 <translation id="4837926214103741331">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với chủ sở hữu thiết bị để có quyền đăng nhập.</translation>
+<translation id="4844333629810439236">Các bàn phím khác</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
+<translation id="4867272607148176509">Cha mẹ có thể phê duyệt hoặc chặn ứng dụng, đặt giới hạn về thời gian và kiểm soát hoạt động duyệt web. Bạn có thể thêm một tài khoản trường học vào lúc khác để truy cập hầu hết các tài nguyên của trường học.</translation>
 <translation id="4877652723592270843">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không? Nếu có, hãy nhấn và giữ cả hai phím âm lượng trong 5 giây.</translation>
 <translation id="4899696330053002588">Chứa quảng cáo</translation>
 <translation id="49027928311173603">Chính sách được tải xuống từ máy chủ không hợp lệ: <ph name="VALIDATION_ERROR" />.</translation>
@@ -219,14 +310,17 @@
 <translation id="4944310289250773232">Dịch vụ xác thực này do <ph name="SAML_DOMAIN" /> lưu trữ</translation>
 <translation id="4955710816792587366">Chọn mã PIN</translation>
 <translation id="4965808351167763748">Bạn có chắc chắn muốn thiết lập thiết bị này để chạy Hangouts Meet không?</translation>
+<translation id="4987944280765486504">Chromebook sẽ khởi động lại khi quá trình tải xuống hoàn tất và bạn có thể tiếp tục thiết lập sau đó.</translation>
 <translation id="5029287942302939687">Đã đặt mật khẩu xong</translation>
 <translation id="503155457707535043">Đang tải ứng dụng xuống</translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="5062930723426326933">Không đăng nhập được, vui lòng kết nối với internet và thử lại.</translation>
+<translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
 <translation id="5097306410549350357">Tìm hiểu thêm về việc sử dụng thông tin vị trí</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Trò chuyện với Gemini để bắt đầu viết, lập kế hoạch, học tập và làm nhiều việc khác bằng AI của Google.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Sau khi thiết lập, hãy chọn ứng dụng Gemini trên thanh ứng dụng ở cuối màn hình để bắt đầu sử dụng Gemini.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Hãy cắm <ph name="DEVICE_TYPE" /> của bạn vào nguồn điện.</translation>
+<translation id="5145876360421795017">Không đăng ký thiết bị</translation>
 <translation id="5147516217412920887">Làm theo hướng dẫn trên điện thoại để xác minh mã</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Tính năng gỡ lỗi<ph name="END_H3" />
@@ -247,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
+<translation id="5215502535566372932">Chọn quốc gia</translation>
 <translation id="5234523649284990414">Trình đọc màn hình ChromeVox trên ChromeOS chủ yếu dành cho người khiếm thị hoặc có thị lực kém, giúp họ đọc văn bản hiển thị trên màn hình thông qua trình tổng hợp giọng nói hoặc màn hình chữ nổi. Nhấn phím cách để bật ChromeVox. Sau khi kích hoạt ChromeVox, bạn sẽ được hướng dẫn nhanh.</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
 <translation id="5240931875940563122">Đăng nhập bằng điện thoại Android</translation>
@@ -259,16 +354,21 @@
 <translation id="5355501370336370394">Đăng ký thiết bị doanh nghiệp</translation>
 <translation id="5372529912055771682">Chế độ đăng ký đã cung cấp không được phiên bản hệ điều hành này hỗ trợ. Hãy đảm bảo bạn đang chạy phiên bản mới nhất và thử lại.</translation>
 <translation id="5397378439569041789">Đăng ký thiết bị kiosk hoặc thiết bị bảng hiệu</translation>
+<translation id="5397794290049113714">Bạn</translation>
 <translation id="5411022484772257615">Không thể hoàn tất quy trình đăng ký học</translation>
 <translation id="5413640305322530561">Tìm hiểu thêm về dữ liệu sử dụng và chẩn đoán</translation>
 <translation id="542750953150239272">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp lựa chọn mua hàng trong ứng dụng.</translation>
 <translation id="542948651837270806">Bạn cần cài đặt bản cập nhật của chương trình cơ sở Mô-đun nền tảng đáng tin cậy. Hãy truy cập vào <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Rất tiếc, đã xảy ra lỗi khi đăng nhập</translation>
+<translation id="5453829744223920473">Con bạn có thể sử dụng tất cả ứng dụng, dấu trang và tài nguyên của trường học giống như trong lớp học. Trường học sẽ đặt ra các quy tắc cơ bản.</translation>
 <translation id="5463450804024056231">Đăng ký nhận email về <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của con bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp các lựa chọn mua hàng trong ứng dụng.</translation>
+<translation id="5502915260472117187">Một trẻ</translation>
 <translation id="5511823366942919280">Bạn có chắc chắn muốn thiết lập thiết bị này là "Shark" không?</translation>
+<translation id="5513807280330619196">Máy tính</translation>
 <translation id="5527474464531963247">Bạn cũng có thể chọn một mạng khác.</translation>
 <translation id="5539070192556911367">Không thể kết nối với Google</translation>
+<translation id="5549511085333906441">Chọn mục đích thiết lập</translation>
 <translation id="557722062034137776">Đặt lại thiết bị sẽ không ảnh hưởng tới những tài khoản Google của bạn hoặc bất kỳ dữ liệu nào được đồng bộ hóa với những tài khoản này. Tuy nhiên, tất cả các tệp lưu trên thiết bị của bạn sẽ bị xóa.</translation>
 <translation id="5626172233890210551">Dùng mật khẩu</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Để mang lại trải nghiệm tốt nhất, <ph name="DEVICE_OS" /> sẽ thu thập dữ liệu phần cứng của thiết bị rồi chia sẻ dữ liệu đó cho Google để xác định xem nên phân phối bản cập nhật nào. Bạn có thể tuỳ ý cho phép Google dùng dữ liệu này cho các mục đích khác như hỗ trợ và cải thiện trải nghiệm cũng như chất lượng dịch vụ của <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
@@ -276,6 +376,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Để biết thêm thông tin về dữ liệu mà <ph name="DEVICE_OS" /> có thể chia sẻ với Google cũng như cách dữ liệu đó được sử dụng, hãy truy cập g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Để sử dụng <ph name="NETWORK_ID" />, trước hết bạn cần <ph name="LINK_START" />truy cập vào trang đăng nhập của mạng<ph name="LINK_END" />. Trang này thường tự động mở sau vài giây. Nếu trang này không mở thì không thể sử dụng mạng này.</translation>
 <translation id="5655296450510165335">Đăng ký thiết bị</translation>
+<translation id="565899488479822148">Đang cài đặt bản cập nhật mới nhất</translation>
 <translation id="5659964844710667266">Tạo mật khẩu cho <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="5684661240348539843">Số nhận dạng phần tử</translation>
 <translation id="5684950556880280580">Mật khẩu của bạn đã được cập nhật</translation>
@@ -285,19 +386,26 @@
 <translation id="5765425701854290211">Rất tiếc, một số tệp đã bị hỏng và cập nhật không thành công. Các tệp đã đồng bộ hóa của bạn được an toàn.</translation>
 <translation id="5770125698810550803">Hiện các nút di chuyển</translation>
 <translation id="5799478978078236781">Nhận các mẹo, ưu đãi và thông tin cập nhật về <ph name="DEVICE_TYPE" />, cũng như chia sẻ ý kiến phản hồi.</translation>
+<translation id="5800703268655655701">Chọn giao diện sáng hoặc tối</translation>
 <translation id="5804259315582798390">Không thể bật dịch vụ khôi phục dữ liệu cục bộ</translation>
 <translation id="5810809306422959727">Tài khoản này không đủ điều kiện để thêm các quyền kiểm soát của cha mẹ</translation>
+<translation id="5834581999798853053">Còn khoảng <ph name="TIME" /> phút</translation>
 <translation id="5852112051279473187">Rất tiếc! Đã xảy ra sự cố khi đăng ký thiết bị này. Vui lòng thử lại hoặc liên hệ với đại diện hỗ trợ của bạn.</translation>
 <translation id="5852137567692933493">Khởi động lại và Powerwash</translation>
 <translation id="5856721540245522153">Bật tính năng gỡ lỗi</translation>
+<translation id="5860033963881614850">Đang tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
+<translation id="5870086504539785141">Đóng trình đơn hỗ trợ tiếp cận</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895335062901455404">Các tuỳ chọn ưu tiên và hoạt động bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS Flex khi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn nội dung bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
+<translation id="5916664084637901428">Đang bật</translation>
 <translation id="5919305207330938913">Tất cả dữ liệu thu thập được sẽ được sử dụng theo <ph name="BEGIN_LINK" />Chính sách quyền riêng tư của Google<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">Bạn hiện không có đủ giấy phép để đăng ký thiết bị Google Meet này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm giấy phép. Nếu bạn nhận được thông báo này do nhầm lẫn, hãy liên hệ với nhóm hỗ trợ.</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
+<translation id="5948536763493709626">Kết nối bàn phím/chuột hoặc tiếp tục thiết lập bằng màn hình cảm ứng. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="5959471481388474538">Không có mạng</translation>
 <translation id="6016178549409952427">Chuyển đến nội dung bổ sung <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Chọn nút bàn phím và ngôn ngữ. Ngôn ngữ hiện được chọn là <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6051354611314852653">Rất tiếc! Hệ thống không cho phép truy cập API cho thiết bị này.</translation>
 <translation id="6055544610007596637">Cài đặt ứng dụng cho <ph name="DEVICE_TYPE" /> của bạn qua Cửa hàng Google Play</translation>
@@ -318,6 +426,7 @@
 <translation id="6301300352769835063">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối thì dữ liệu này vẫn được gửi tới Google để xác định bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hay sử dụng cho mục đích khác. Tìm hiểu thêm tại g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Màn hình đăng nhập do <ph name="EXTENSION_NAME" /> cung cấp</translation>
 <translation id="6314819609899340042">Bạn đã bật thành công tính năng gỡ lỗi trên thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này.</translation>
+<translation id="6343262564968371601">Tìm thấy nội dung bạn cần nhờ tìm kiếm trên Google, tệp, ứng dụng, v.v.</translation>
 <translation id="635609604405270300">Luôn bật thiết bị</translation>
 <translation id="6367097275976877956">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không? Nếu có, hãy nhấn phím cách.</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
@@ -326,20 +435,27 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách tính năng bạn sử dụng và mức bộ nhớ bạn thường sử dụng.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu bạn là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Cài đặt cập nhật quan trọng</translation>
+<translation id="6478849105642611893">Phím Chèn nhanh nằm bên dưới phím Tab</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
+<translation id="6488384360522318064">Chọn ngôn ngữ</translation>
 <translation id="6495266441917713704">Không thể truyền Wi-Fi</translation>
 <translation id="6515620015470298987">Không đăng nhập được do vấn đề về việc kiểm tra cấu hình thiết bị. Vui lòng định dạng lại <ph name="DEVICE_TYPE" /> rồi thử lại.</translation>
 <translation id="6519689855001245063">Đang kiểm tra tính đủ điều kiện</translation>
 <translation id="6532527800157340614">Không đăng nhập được do không thể lấy mã truy cập. Vui lòng kiểm tra kết nối mạng rồi thử lại.</translation>
+<translation id="653920215766444089">Đang tìm kiếm thiết bị trỏ</translation>
 <translation id="65513682072153627">Bạn sẽ thấy biểu tượng Được quản lý khi một chế độ cài đặt hay tính năng là do quản trị viên của bạn quản lý.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> vốn đang được <ph name="DOMAIN" /> quản lý. Để sử dụng các quyền kiểm soát của cha mẹ bằng một Tài khoản Google khác, hãy đăng xuất sau khi thiết lập rồi chọn "Thêm người" trên màn hình đăng nhập.</translation>
 <translation id="6642720633335369752">Để xem tất cả các cửa sổ ứng dụng đang mở, hãy vuốt từ cuối màn hình lên rồi giữ.</translation>
 <translation id="6648911618876616409">Một bản cập nhật quan trọng đã sẵn sàng cài đặt. Hãy đăng nhập để bắt đầu.</translation>
 <translation id="6671497123040790595">Thiết lập tính năng quản lý theo <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Đã kết nối thiết bị trỏ</translation>
 <translation id="667752334740867460">Đang nhận thông tin Wi-Fi...</translation>
 <translation id="6680442031740878064">Còn trống: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Bạn có thể khôi phục <ph name="EMAIL" />, nhưng dữ liệu cục bộ sẽ bị xoá.</translation>
 <translation id="6748980958975836188">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Ảnh</translation>
+<translation id="6754918760968695779">Chèn nhanh</translation>
 <translation id="6789834167207639931">Nhập lại mật khẩu Tài khoản Google của bạn trên màn hình tiếp theo để hoàn tất quá trình khôi phục</translation>
 <translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng, mức bộ nhớ bạn thường sử dụng cũng như dữ liệu sử dụng và chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị ChromeOS của con bạn. Nếu bạn là quản trị viên miền, thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
@@ -348,12 +464,18 @@
 <translation id="682971198310367122">Chính sách quyền riêng tư của Google</translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6839916869147598086">Quy trình đăng nhập đã thay đổi</translation>
+<translation id="6852529053326738838">Hãy hỏi tổ chức của bạn hoặc đăng ký bằng email công việc để kiểm tra xem tài khoản của bạn có đủ điều kiện hay không.</translation>
+<translation id="6867671714894555998">Hoàn thành công việc nhanh hơn nhờ bàn phím mới</translation>
 <translation id="6883319974225028188">Rất tiếc! Hệ thống không lưu được cấu hình thiết bị.</translation>
+<translation id="6888831646723563669">Kết nối để trải nghiệm tất cả các tính năng trên <ph name="DEVICE_TYPE" /> mới</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Dữ liệu ứng dụng có thể là bất kỳ dữ liệu nào mà một ứng dụng đã lưu (dựa trên các chế độ cài đặt của nhà phát triển), kể cả các dữ liệu như danh bạ, tin nhắn và ảnh. Dữ liệu sao lưu sẽ không tính vào hạn mức bộ nhớ Drive của con bạn.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt dịch vụ này trong phần Cài đặt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6918733588290914545">Thiết lập nhanh bằng điện thoại Android</translation>
 <translation id="6920473853105515518">Hãy đảm bảo <ph name="DEVICE_TYPE" /> đã kết nối với Internet rồi thử lại. Bạn cũng có thể truy cập play.google/play-terms trên một thiết bị khác.</translation>
+<translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
+<translation id="6935031746833428401">Tìm hiểu thêm về Quản lý thiết bị</translation>
+<translation id="6950351336108213154">Đang cập nhật thiết bị ngoại vi</translation>
 <translation id="6955698182324067397">Bạn đang bật tính năng gỡ lỗi của ChromeOS. Tính năng này sẽ thiết lập trình nền sshd và bật tính năng khởi động qua ổ đĩa USB.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6969216690072714773">Nhập thông tin mới hoặc cập nhật thông tin hiện có để liên kết với thiết bị này.</translation>
@@ -363,23 +485,37 @@
         có đang hoạt động không. Nếu bạn cho rằng mình không cần sử dụng
         máy chủ proxy, hãy điều chỉnh <ph name="LINK_START" />cài đặt proxy<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Bật Bluetooth và Wi-Fi trên điện thoại</translation>
+<translation id="6996438701394974959">Tăng kích thước hiển thị và văn bản</translation>
+<translation id="6998793565256476099">Đăng ký thiết bị tham gia hội nghị truyền hình</translation>
 <translation id="7025082428878635038">Giới thiệu một cách mới để thao tác bằng các cử chỉ</translation>
 <translation id="7034692021407794547">Trước tiên, một quản trị viên có đặc quyền Quản lý thanh toán phải chấp nhận Điều khoản dịch vụ dành cho Thiết bị Google Meet trong phần Thiết bị Google Meet của Bảng điều khiển dành cho quản trị viên.</translation>
+<translation id="7039951224110875196">Tạo Tài khoản Google cho trẻ</translation>
 <translation id="7065223852455347715">Thiết bị này bị khóa trong chế độ ngăn đăng ký doanh nghiệp.  Nếu bạn muốn đăng ký thiết bị, trước tiên bạn cần khôi phục thiết bị.</translation>
+<translation id="7066572364168923329">Chọn mục đích thiết lập <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Không thể tải trang đăng nhập bằng cài đặt proxy hiện tại. Vui lòng <ph name="GAIA_RELOAD_LINK_START" />thử đăng nhập lại<ph name="GAIA_RELOAD_LINK_END" /> hoặc sử dụng <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> khác.</translation>
 <translation id="7088674813905715446">Thiết bị này đã được quản trị viên đặt sang trạng thái hủy cấp phép. Để cho phép đăng ký thiết bị, quản trị viên phải đặt thiết bị về trạng thái đang chờ xử lý.</translation>
 <translation id="7114054701490058191">Mật khẩu không khớp</translation>
 <translation id="7135729336746831607">Bạn muốn bật Bluetooth?</translation>
 <translation id="7141105143012495934">Đăng nhập không thành công vì không thể truy xuất chi tiết tài khoản của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="7144878232160441200">Thử lại</translation>
+<translation id="7171259390164035663">Không đăng ký</translation>
 <translation id="7189451821249468368">Bạn không có đủ bản nâng cấp để đăng ký thiết bị này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm. Nếu bạn nhận được thư này do nhầm lẫn, vui lòng liên hệ với nhóm hỗ trợ.</translation>
 <translation id="7202337678781136582">Quét mã QR bằng điện thoại Android</translation>
+<translation id="7228854227189381547">Không chuyển</translation>
+<translation id="7230881857327093958">Các thay đổi sẽ được áp dụng sau quá trình thiết lập</translation>
 <translation id="7260186537988033909">Đã hoàn tất quá trình đăng ký thiết bị kiosk và bảng hiệu</translation>
+<translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
 <translation id="7290242001003353852">Dịch vụ đăng nhập này, do <ph name="SAML_DOMAIN" /> lưu trữ, đang truy cập vào máy ảnh của bạn.</translation>
+<translation id="7311005168897771689">Truy cập các tệp trên Google Drive khi bạn không kết nối mạng</translation>
 <translation id="7317831949569936035">Đăng ký học</translation>
+<translation id="7326004502692201767">Thiết lập <ph name="DEVICE_TYPE" /> này cho trẻ</translation>
+<translation id="732659786514229249">Đăng ký thiết bị này với tổ chức của bạn?</translation>
 <translation id="7329154610228416156">Đăng nhập không thành công vì đã được định cấu hình sử dụng URL không an toàn (<ph name="BLOCKED_URL" />). Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="7345706641791090287">Xác nhận mật khẩu của bạn</translation>
+<translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
+<translation id="7403642243184989645">Đang tải tài nguyên xuống</translation>
+<translation id="7406912950279255498">Chế độ đảo màu</translation>
 <translation id="7416263748877373774">Không thể tải Điều khoản dịch vụ. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.</translation>
 <translation id="7475742997309661417">Trình đọc màn hình ChromeVox trên ChromeOS chủ yếu dành cho người khiếm thị hoặc có thị lực kém, giúp họ đọc văn bản hiển thị trên màn hình thông qua trình tổng hợp giọng nói hoặc màn hình chữ nổi. Nhấn và giữ cả hai phím âm lượng trong 5 giây để bật ChromeVox. Sau khi kích hoạt ChromeVox, bạn sẽ được hướng dẫn nhanh.</translation>
 <translation id="7476454130948140105">Pin quá yếu để cập nhật (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -389,10 +525,13 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> của bạn đã được đăng ký thành công cho quản lý doanh nghiệp.</translation>
 <translation id="7509097596023256288">Thiết lập tính năng quản lý</translation>
 <translation id="7543104066686362383">Bật tính năng gỡ lỗi trên thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này</translation>
+<translation id="7544227555407951270">Đăng ký thiết bị</translation>
+<translation id="7549434883223124329">Bạn muốn chuyển đổi ngôn ngữ của thiết bị?</translation>
 <translation id="7553242001898162573">Nhập mật khẩu của bạn</translation>
 <translation id="7556242789364317684">Thật không may, <ph name="SHORT_PRODUCT_NAME" /> không thể khôi phục cài đặt của bạn. Để khắc phục lỗi, <ph name="SHORT_PRODUCT_NAME" /> phải đặt lại thiết bị của bạn bằng Powerwash.</translation>
 <translation id="7560756177962144929">Đồng bộ hoá <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="7571643774869182231">Không đủ bộ nhớ để cập nhật</translation>
+<translation id="7616214729753637086">Đang đăng ký thiết bị...</translation>
 <translation id="7622114377921274169">Đang sạc.</translation>
 <translation id="7630426712700473382">Thiết bị này do <ph name="MANAGER" /> quản lý và yêu cầu bạn phải đăng nhập mỗi lần sử dụng.</translation>
 <translation id="7639914187072011620">Không tải được URL chuyển hướng SAML từ máy chủ</translation>
@@ -404,28 +543,43 @@
 <translation id="7659584679870740384">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập.</translation>
 <translation id="7660116474961254898">Làm theo hướng dẫn trên điện thoại</translation>
 <translation id="7661451191293163002">Không thể lấy chứng chỉ đăng ký.</translation>
+<translation id="7666531788977935712">Nút Tiếp tục đã được kích hoạt</translation>
 <translation id="7671139479636735732">Nhấp chuột phải để dễ dàng trực quan hoá ý tưởng của bạn</translation>
 <translation id="770831926727930011">Dữ liệu cục bộ được bảo vệ bằng mật khẩu cũ của bạn. Nhập mật khẩu cũ để khôi phục dữ liệu cục bộ.</translation>
 <translation id="7722040605881499779">Cần được cập nhật: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Đang ghép nối với "<ph name="DEVICE_NAME" />"...</translation>
+<translation id="7746045113967198252">Thu nhỏ hoặc phóng to các mục trên màn hình, bao gồm cả văn bản. Bạn cũng có thể tìm tuỳ chọn này sau trong phần Cài đặt &gt; Thiết bị &gt; Màn hình.</translation>
 <translation id="7760176388948986635">Cho phép các ứng dụng, trang web và dịch vụ trên ChromeOS và Android có quyền truy cập thông tin vị trí sử dụng thông tin vị trí của thiết bị này. Chế độ Độ chính xác của vị trí cung cấp thông tin chính xác hơn về vị trí cho các ứng dụng và dịch vụ Android. Để thực hiện việc này, Google định kỳ xử lý thông tin về cảm biến thiết bị và tín hiệu không dây từ thiết bị này nhằm thu thập dữ liệu vị trí dựa trên tín hiệu không dây từ đám đông. Những thông tin này sẽ được sử dụng theo cách không xác định danh tính của bất kỳ cá nhân nào nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí. Ngoài ra, những thông tin này còn dùng để cải thiện, cung cấp và duy trì các dịch vụ của Google căn cứ trên lợi ích chính đáng của Google và bên thứ ba nhằm phục vụ nhu cầu của người dùng.</translation>
 <translation id="7784875615510899699">Bạn hiện không có đủ giấy phép để đăng ký thiết bị Google Beam này. Vui lòng liên hệ với đại lý để mua thêm giấy phép. Nếu bạn cho rằng mình nhận được thông báo này do nhầm lẫn, vui lòng liên hệ với đại lý.</translation>
+<translation id="7791269138074599214">Phương thức nhập</translation>
+<translation id="7791436592012979144">Đã bật chế độ cuộn ngược</translation>
 <translation id="7792012425874949788">Đã xảy ra lỗi khi đăng nhập</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7803657407897251194">Để tiếp tục thiết lập bằng thiết bị Android, hãy kết nối <ph name="DEVICE_TYPE" /> với một mạng</translation>
+<translation id="7842692330619197998">Hãy truy cập vào g.co/ChromeEnterpriseAccount nếu bạn cần tạo một tài khoản mới.</translation>
 <translation id="7851457902707056880">Đăng nhập chỉ bị hạn chế đối với tài khoản chủ sở hữu. Hãy khởi động lại và đăng nhập bằng tài khoản chủ sở hữu. Máy sẽ tự động khởi động lại sau 30 giây.</translation>
 <translation id="7870730066603611552">Xem lại các tùy chọn đồng bộ hóa sau khi thiết lập</translation>
 <translation id="7883792253546618164">Bạn có thể hủy đăng ký bất kỳ lúc nào.</translation>
+<translation id="7887864092952184874">Đã ghép nối chuột Bluetooth</translation>
 <translation id="7906440585529721295">Dữ liệu cục bộ sẽ bị xoá</translation>
+<translation id="7910725946105920830">Dùng Tài khoản Google cá nhân của bạn</translation>
+<translation id="7918257978052780342">Đăng ký</translation>
 <translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng và mức bộ nhớ thường được sử dụng.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị ChromeOS của con bạn. Nếu bạn là quản trị viên miền, thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Tùy chọn nâng cao</translation>
 <translation id="7943311690198910993">Đã cập nhật phương thức đăng nhập</translation>
 <translation id="795240231873601803">Sử dụng quy trình đăng ký doanh nghiệp cho tài khoản công việc và tài khoản trường học</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
 <translation id="7975504106303186033">Bạn phải đăng ký thiết bị này (thiết bị sử dụng giấy phép Chrome Education) bằng một tài khoản thuộc tổ chức giáo dục. Để đăng ký tài khoản mới, vui lòng truy cập vào g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">ID phần tử: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Vui lòng khởi động lại thiết bị của bạn để sửa lỗi này.</translation>
 <translation id="7990958035181555539">Tự động chuyển thông tin truy cập Wi-Fi từ điện thoại Android của bạn</translation>
+<translation id="8022466874160067884">Nhập Tài khoản Google và mật khẩu</translation>
+<translation id="8049029041626250638">Kết nối bàn phím hoặc chuột. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="8054563304616131773">Vui lòng nhập địa chỉ email hợp lệ</translation>
+<translation id="8054921503121346576">Đã kết nối bàn phím USB</translation>
 <translation id="8065144531309810062">Sử dụng AI của Google để tăng khả năng sáng tạo và hiệu suất công việc</translation>
+<translation id="8082106343289440791">Ghép nối với "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Trước tiên, quản trị viên của bạn phải chấp nhận điều khoản dịch vụ trong danh sách thiết bị Chrome trên Bảng điều khiển dành cho quản trị viên.</translation>
 <translation id="8098616321286360457">Cần kết nối mạng</translation>
 <translation id="8129265306888404830">Để sử dụng địa chỉ email của tổ chức (<ph name="EMAIL_DOMAIN" />), bạn cần sử dụng quy trình đăng ký doanh nghiệp. Nếu bạn sử dụng thiết bị này cho mục đích cá nhân, hãy đăng nhập bằng Tài khoản Google cá nhân của bạn.</translation>
@@ -433,6 +587,7 @@
 <translation id="8146177459103116374">Nếu bạn đã đăng ký trên thiết bị này, bạn có thể <ph name="LINK2_START" />đăng nhập với tư cách là người dùng hiện tại<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Đăng nhập không thành công. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="8147346945017130012">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi các báo cáo sự cố cũng như dữ liệu sử dụng và thông tin chẩn đoán cho Google.</translation>
+<translation id="8152760814912191567">Google Beam cho Zoom</translation>
 <translation id="815491593104042026">Rất tiếc! Xác thực không thành công do được định cấu hình sử dụng URL không an toàn (<ph name="BLOCKED_URL" />). Hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="8157704005178149728">Đang thiết lập tính năng giám sát</translation>
 <translation id="8174047975335711832">Thông tin thiết bị</translation>
@@ -443,20 +598,26 @@
 <translation id="8241806945692107836">Đang xác định cấu hình thiết bị...</translation>
 <translation id="8242426110754782860">Tiếp tục</translation>
 <translation id="826905130698769948">Chứng chỉ ứng dụng khách không hợp lệ</translation>
+<translation id="8271379370373330993">Cha mẹ chỉ cần thực hiện một vài bước nữa là xong. Bạn có thể đưa <ph name="DEVICE_TYPE" /> lại cho trẻ sau khi thiết lập tài khoản.</translation>
 <translation id="8274924778568117936">Không tắt hoặc đóng <ph name="DEVICE_TYPE" /> cho đến khi cập nhật xong. <ph name="DEVICE_TYPE" /> của bạn sẽ khởi động lại sau khi cài đặt xong.</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
+<translation id="8291942417224950075">Dùng cho mục đích cá nhân</translation>
 <translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc dùng một Tài khoản Google được giám sát bằng Family Link để đăng nhập.</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> này sẽ do <ph name="MANAGER" /> quản lý.</translation>
+<translation id="8339288417038613756">Kích thước hiển thị và văn bản</translation>
 <translation id="8354034204605718473">Đã thêm mã PIN của con bạn</translation>
 <translation id="8366396658833131068">Kết nối mạng của bạn đã được khôi phục. Hãy chọn mạng khác hoặc nhấn nút 'Tiếp tục' bên dưới để khởi chạy ứng dụng kiosk của bạn.</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
 <translation id="8408270600235826886">Bạn có thể kiểm soát những dữ liệu nào được chia sẻ với Google. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần Cài đặt. <ph name="BEGIN_LINK" />Chính sách quyền riêng tư<ph name="END_LINK" /> của Google chi phối việc dùng dữ liệu.</translation>
 <translation id="8413956290606243087">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không?</translation>
 <translation id="8425768983279799676">Bạn có thể sử dụng mã PIN để mở khóa thiết bị của mình.</translation>
+<translation id="8428213095426709021">Cài đặt</translation>
 <translation id="843173223122814223">Tạo nền bằng AI</translation>
 <translation id="8452105022015742247">Đang chuyển thông tin Tài khoản Google từ điện thoại Android của bạn</translation>
 <translation id="8464132254133862871">Tài khoản người dùng này không đủ điều kiện cho dịch vụ.</translation>
 <translation id="8524841856047224176">Cá nhân hoá nền camera cho các cuộc gọi video và nhiều tính năng khác</translation>
+<translation id="8527257351549797148">Tổ chức của bạn có thể yêu cầu bạn đăng ký để truy cập các ứng dụng, tiện ích, v.v. Yêu cầu này cũng giúp tổ chức quản lý các phương diện như chế độ cài đặt thiết bị và bảo mật.</translation>
+<translation id="8558063527625343224">Thiết lập Google Beam</translation>
 <translation id="8569673829373920831">Xem thêm về <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Cho phép các ứng dụng, trang web và dịch vụ trên ChromeOS và Android có quyền truy cập thông tin vị trí sử dụng thông tin vị trí của thiết bị. Chế độ Độ chính xác của vị trí cung cấp thông tin chính xác hơn về vị trí cho các ứng dụng và dịch vụ Android. Để thực hiện việc này, Google định kỳ xử lý thông tin về cảm biến thiết bị và tín hiệu không dây từ thiết bị của bạn nhằm thu thập dữ liệu vị trí dựa trên tín hiệu không dây từ đám đông. Những thông tin này sẽ được sử dụng theo cách không xác định danh tính của bạn nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí. Ngoài ra, những thông tin này còn dùng để cải thiện, cung cấp và duy trì các dịch vụ của Google căn cứ trên lợi ích chính đáng của Google và bên thứ ba nhằm phục vụ nhu cầu của người dùng.</translation>
 <translation id="8627804903623428808">Xem xét các điều khoản này và kiểm soát dữ liệu của con bạn</translation>
@@ -471,6 +632,7 @@
 <translation id="8674903726754070732">Rất tiếc, máy tính của bạn được định cấu hình bằng một mã phần cứng không đúng định dạng. Tình trạng này ngăn ChromeOS cập nhật các bản vá bảo mật mới nhất và máy tính của bạn <ph name="BEGIN_BOLD" />có nguy cơ bị tấn công<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Thêm các quyền kiểm soát của cha mẹ sau khi thiết lập</translation>
 <translation id="8698269656364382265">Để quay lại màn hình trước, hãy vuốt từ cạnh trái.</translation>
+<translation id="8718994464069323380">Đã phát hiện thấy màn hình cảm ứng</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8726206820263995930">Lỗi khi tìm nạp cài đặt chính sách từ máy chủ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Xong</translation>
@@ -478,24 +640,36 @@
 <translation id="8740247629089392745">Bạn có thể đưa lại Chromebook này cho <ph name="SUPERVISED_USER_NAME" />. Sắp thiết lập xong. Hãy chuẩn bị khám phá.</translation>
 <translation id="8759753423332885148">Tìm hiểu thêm.</translation>
 <translation id="8777628254805677039">mật khẩu gốc</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Nhập mã ghép nối Bluetooth, sau đó nhấn phím Return hoặc Enter.</translation>
 <translation id="8794548468611058947">Thay vì nhập mật khẩu của Tài khoản Google để đăng nhập, bạn có thể tạo mã PIN cho <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="8830796635868321089">Kiểm tra cập nhật không thành công khi sử dụng cài đặt proxy hiện tại. Vui lòng điều chỉnh <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> của bạn.</translation>
+<translation id="8855977033756560989">Thiết bị Chromebook Enterprise này đi kèm với Bản nâng cấp Chrome Enterprise. Để tận dụng các tính năng dành cho doanh nghiệp, hãy đăng ký thiết bị này bằng tài khoản quản trị viên của Google.</translation>
 <translation id="885746075120788020">Các lựa chọn ưu tiên và hoạt động mà bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS nơi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn loại dữ liệu bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
+<translation id="8868333925931032127">Đang khởi động chế độ minh họa</translation>
 <translation id="8875221558267407626">Tóm tắt nội dung, đơn giản hoá ngôn ngữ phức tạp hoặc đặt câu hỏi</translation>
+<translation id="8907701755790961703">Vui lòng chọn một quốc gia</translation>
 <translation id="8913163265790894442">Dễ dàng thiết lập <ph name="DEVICE_TYPE" /> bằng điện thoại. Bạn có thể thêm Wi-Fi và Tài khoản Google mà không cần nhập mật khẩu theo cách thủ công.
         <ph name="BR" />
         <ph name="BR" />
         Hiển thị với tên gọi <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">Tiếp tục</translation>
 <translation id="8946359700442089734">Tính năng gỡ lỗi không được bật hoàn toàn trên thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này.</translation>
 <translation id="8965037249707889821">Nhập mật khẩu cũ</translation>
+<translation id="8968906873893164556">Chọn tài khoản dùng để thiết lập</translation>
+<translation id="8973596347849323817">Bạn có thể tùy chỉnh thiết bị này cho phù hợp với nhu cầu của mình. Bạn có thể thay đổi các tính năng hỗ trợ tiếp cận này trong phần Cài đặt.</translation>
 <translation id="8975396729541388937">Bạn có thể hủy đăng ký bất kỳ lúc nào bằng cách nhấp vào đường liên kết trong email bạn nhận được.</translation>
+<translation id="8987305927843254629">Mỗi người đều có thể cá nhân hoá trải nghiệm của mình và bảo mật dữ liệu.</translation>
 <translation id="8993059306046735527">Nếu quên mật khẩu vào <ph name="DEVICE_TYPE" />, bạn vẫn có thể khôi phục dữ liệu trên thiết bị của mình. Bạn sẽ cần đăng nhập vào Tài khoản Google hoặc sử dụng tính năng khôi phục tài khoản.</translation>
 <translation id="9033765790910064284">Vẫn tiếp tục</translation>
 <translation id="903480517321259405">Nhập lại mã PIN</translation>
 <translation id="9040473193163777637">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không? Nếu có, hãy nhấn và giữ cả hai phím âm lượng trong 5 giây.</translation>
 <translation id="9068298336633421551">Cho phép các ứng dụng Android và dịch vụ có quyền truy cập thông tin vị trí được dùng thông tin vị trí của thiết bị. Google có thể định kỳ thu thập dữ liệu vị trí và sử dụng dữ liệu này theo cách ẩn danh nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí.</translation>
+<translation id="9074836595010225693">Đã kết nối chuột USB</translation>
 <translation id="9076523132036239772">Rất tiếc, email hoặc mật khẩu của bạn không thể xác minh được. Trước tiên hãy thử kết nối với một mạng.</translation>
+<translation id="9089959054554410481">Thay đổi hướng cuộn của bàn di chuột</translation>
 <translation id="9158715103698450907">Rất tiếc!  Đã xảy ra sự cố giao tiếp mạng trong khi xác thực.  Vui lòng kiểm tra kết nối mạng của bạn và thử lại.</translation>
+<translation id="9186963452600581158">Đăng nhập bằng Tài khoản Google của trẻ</translation>
 <translation id="919686179725692564">Tìm hiểu thêm về cách sao lưu ứng dụng</translation>
 <translation id="9214520840402538427">Rất tiếc! Việc chạy thuộc tính thời gian cài đặt đã hết thời gian. Vui lòng liên hệ với người đại diện hỗ trợ của bạn.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Dành riêng cho <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -505,4 +679,7 @@
         <ph name="BR" />
         Hiển thị với tên gọi <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">Từ chối</translation>
+<translation id="954749761428814584">Ngôn ngữ và phương thức nhập</translation>
+<translation id="960987915827980018">Còn khoảng 1 giờ</translation>
+<translation id="995420352808264005">Chọn loại đăng ký thiết bị</translation>
 </translationbundle>

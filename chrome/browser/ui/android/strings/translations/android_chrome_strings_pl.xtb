@@ -302,7 +302,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
-<translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
 <translation id="232137538351753795">Aby wrócić, przesuń palcem od lewej krawędzi</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2327445548174191329">Z urządzenia <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Sprawdzano 1 dzień temu}few{Sprawdzano # dni temu}many{Sprawdzano # dni temu}other{Sprawdzano # dnia temu}}</translation>
 <translation id="2842985007712546952">Folder nadrzędny</translation>
 <translation id="2854916915045135148">Naciśnij i przytrzymaj, aby przełączyć się na tryb incognito</translation>
-<translation id="2860954141821109167">Sprawdź, czy na urządzeniu jest włączona aplikacja telefonu</translation>
 <translation id="286473047976978798">Zastosować ustawienia wyglądu?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i 1 inna karta}few{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> inne karty}many{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> innych kart}other{<ph name="URL" /> i <ph name="TAB_COUNT_MANY" /> innej karty}}</translation>
 <translation id="2869430948265924908">Aby chronić poufne treści w samochodzie, musisz utworzyć blokadę profilu samochodu.  Możesz to zrobić za pomocą kodu, w tym kodu PIN, lub hasła.</translation>
@@ -1272,6 +1270,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6315386555979018699">Usuń i kontynuuj</translation>
 <translation id="6316139424528454185">Ta wersja Androida jest nieobsługiwana</translation>
 <translation id="631839948975905034">Blokowanie okien incognito po zamknięciu Chrome</translation>
+<translation id="6321592572353357376">Rozszerzenie „<ph name="EXTENSION_NAME" />” chce, żebyś zalogował(a) się w Chrome</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6324977638108296054">Nie udało się utworzyć linku do podświetlenia</translation>
 <translation id="6333140779060797560">Udostępnij przez: <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="6916590542764765824">Zarządzaj rozszerzeniami</translation>
 <translation id="6918398787259831832">Jeśli problem będzie się powtarzał, <ph name="BEGIN_LINK" />więcej informacji znajdziesz<ph name="END_LINK" /> w witrynie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> kart}other{<ph name="NUMBER_OF_TABS" /> karty}}</translation>
 <translation id="6929224077895306814">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
@@ -2033,7 +2033,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9204836675896933765">Pozostał jeden plik</translation>
 <translation id="9205933215779845960">Nie można znaleźć tej strony. Sprawdź pisownię lub spróbuj wyszukać w <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Nie można wykonywać połączeń</translation>
 <translation id="9212845824145208577">Nie można przejść niżej. Zacznij w dolnej części strony.</translation>
 <translation id="9218430445555521422">Ustaw jako opcję domyślną</translation>
 <translation id="9219103736887031265">Grafika</translation>

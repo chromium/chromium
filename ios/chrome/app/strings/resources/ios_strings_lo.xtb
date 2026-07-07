@@ -1573,6 +1573,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="628251768213143684">ທ່ານສາມາດຈັດການສິ່ງທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານໄດ້ຕະຫຼອດເວລາ</translation>
 <translation id="6284652193729350524">ສະເໜີແປ <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">ເພື່ອເປີດ Safe Browsing, ກະລຸນາເປີດ <ph name="BEGIN_LINK" />ການບໍລິການ Google<ph name="END_LINK" /> ແລະ ແຕະ Safe Browsing.</translation>
+<translation id="6295140892595702619">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານເພື່ອສົນທະນາກັບ Gemini. ເມື່ອທ່ານເວົ້າກັບ Gemini, ລະບົບຈະຈັດເກັບສຽງໄວ້ໃນການເຄື່ອນໄຫວແອັບ Gemini (ຫາກເປີດຢູ່). ລະບົບບໍ່ໄດ້ໃຊ້ຂໍ້ມູນຂອງທ່ານໃນການປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ</translation>
 <translation id="6295751040240588413">ຊື່ຫຼິ້ນຂອງບັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="629730747756840877">ບັນ​ຊີ</translation>
 <translation id="6301104306974789820">ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາ</translation>
@@ -2181,7 +2182,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8264966119170358612">ລະຫັດຜ່ານຂອງທ່ານຈຳນວນໜຶ່ງທີ່ບັນທຶກໄວ້ຖືກເປີດເຜີຍໃນການລະເມີດຂໍ້ມູນທີ່ບໍ່ແມ່ນຂໍ້ມູນ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">ທ່ານຖືກໃຫ້ອອກຈາກລະບົບບັນຊີຂອງທ່ານ, <ph name="USER_NAME" />, ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPad ທ່ານ. ເພື່ອເຂົ້າສູ່ລະບົບຄືນໃໝ່, ໃຫ້ແຕະ "ສືບຕໍ່" ທາງລຸ່ມ.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">ທ່ານຈະຕື່ມຂໍ້ມູນໃສ່ໃນ <ph name="URL" /></translation>
 <translation id="8274795744553482834">ທ່ານກຳລັງຈະສະຫຼັບໂປຣໄຟລ໌</translation>
 <translation id="8275068909952022340">ເພີ່ມເຕີມ…</translation>
 <translation id="8280797717392145626">ໄດ້ຮັບລິ້ງແລ້ວ</translation>
@@ -2415,6 +2415,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ເວັບໄຊທີ່ປັກໝຸດແລ້ວ</translation>
 <translation id="8990960056509724223">ບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
+<translation id="9003263770394939629">ແນະນຳໂດຍ Gemini. ຈັດການການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="9003677638446136377">ກວດ​ເບິ່ງ​ອີກ</translation>
 <translation id="9006453925669499173">ເມນູ → ແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>

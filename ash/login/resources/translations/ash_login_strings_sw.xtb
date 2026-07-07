@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1005333234656240382">Ungependa kuwasha utatuzi wa ADB?</translation>
+<translation id="1053898984916097744">Anza kitu kipya au upate msaada ukiwa unaendelea.</translation>
+<translation id="1061130374843955397">Karibu kwenye <ph name="DEVICE_TYPE" /> yako</translation>
+<translation id="1069778954840159202">Fungua akaunti kiotomatiki kwenye simu ya Android</translation>
 <translation id="1076766328672150609">Mtoto wako anaweza kutumia PIN kufungua kifaa.</translation>
 <translation id="1097658378307015415">Kabla ya kuingia, tafadhali ingia kama Mgeni ili kuamilisha mtandao <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Mtoto wako anaweza kutumia PIN hii kuingia katika kifaa chake</translation>
 <translation id="1122587596907914265">Wekea mandhari muundo maalum</translation>
 <translation id="1131201598497838573">Umesasisha PIN ya mtoto wako</translation>
 <translation id="1147322039136785890">Sasa ni wakati wa <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">Unapata sasisho la hivi karibuni la programu kwa ajili ya ulinzi ulioimarishwa na vipengele vipya zaidi vya Chromebook. Sasisho hili hujumuisha hali ya uwekaji mipangilio iliyoboreshwa ili kukusaidia kuanza kwa wepesi kwenye Chromebook yako.</translation>
 <translation id="1176864681932214421">Buni picha ukitumia AI</translation>
 <translation id="1177073277575830464">Mchakato wa kuweka mipangilio haraka kwenye Android umekamilika. Endelea kuweka mipangilio kwenye <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="1179902906564467236">Fuata maagizo kwenye simu yako au utumie programu ya kamera</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1217114730239853757">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex? Ikiwa ndivyo, bonyeza kitufe cha nafasi.</translation>
 <translation id="1222835797152767346">Weka PIN ili urahisishe zaidi mchakato wa kuingia katika akaunti</translation>
+<translation id="1231426483209637778">Tutakumbuka mtandao wako wakati mwingine utakapotumia <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Badilisha ukubwa wa maandishi na skrini</translation>
+<translation id="1256588359404100567">Umesawasisha mipangilio kwenye kifaa chako cha awali.</translation>
 <translation id="1272978324304772054">Akaunti hii ya mtumiaji siyo ya kikoa ambacho kifaa kimesajiliwa. Ikiwa unataka kujisajili kwenye kikoa tofauti unahitaji kuenda katika ufufuaji wa kifaa kwanza.</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="1307559529304613120">Lo!  Mfumo umeshindwa kuhifadhi data ya ufikiaji wa API ya muda mrefu kwa kifaa hiki.</translation>
+<translation id="1335929031622236846">Andikisha kifaa chako</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Vipengele vya Utatuzi<ph name="END_H3" />
           <ph name="BR" />
           Unaweza kuwasha vipengele vya utatuzi kwenye Kifaa chako Kinachotumia Mfumo wa Uendeshaji wa ChromeOS ili uweke na ujaribu misimbo maalum kwenye kifaa chako.  Hatua hii itakuruhusu:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" />  Mfumo utazima kisha kuwashwa tena wakati wa mchakato huu.</translation>
 <translation id="1347625331607114917">Thibitisha msimbo kwenye simu yako ya Android</translation>
 <translation id="1347975661240122359">Usasishaji utaanza betri itakapofika <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Ili uweze kutumia vidhibiti vya wazazi kama vile uidhinishaji wa programu na vikomo vya muda wa kutumia vifaa, ni lazima mtoto awe na Akaunti ya Google inayodhibitiwa na mzazi. Akaunti ya shule inaweza kuongezwa baadaye ili itumike kwenye huduma kama vile Google Darasani.</translation>
 <translation id="1375557162880614858">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Uwekaji mipangilio umekamilika! Andaa kifaa chako kwa ajili ya michezo ya video inayofuata</translation>
 <translation id="1377600615067678409">Ruka kwa sasa</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Tuma data ya matumizi na uchunguzi</translation>
 <translation id="1418882096915998312">Uandikishaji wa Enterprise unaendelea</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
+<translation id="1427269577154060167">Nchi</translation>
 <translation id="1440090277117135316">Uandikishaji wa kifaa cha shuleni umekamilika</translation>
 <translation id="1473927070149284123">Jaribu tena au uunganishe mwenyewe kwenye mtandao</translation>
 <translation id="1503556098270577657">Umeingia katika akaunti ya <ph name="USER_EMAIL" /> ukitumia simu yako ya Android</translation>
+<translation id="1510238584712386396">Kizindua</translation>
 <translation id="1521442365706402292">Dhibiti vyeti</translation>
+<translation id="15373452373711364">Kishale kikubwa cha kipanya</translation>
 <translation id="1540605929960647700">Washa hali ya onyesho</translation>
 <translation id="1572876035008611720">Weka anwani yako ya barua pepe</translation>
+<translation id="1588438908519853928">Ya kawaida</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Sawa</translation>
 <translation id="1642494467033190216">Kuondoa ulinzi na kuzima na kuwasha rootfs kunahitajika kabla ya kuwasha vipengele vya kutatua.</translation>
+<translation id="1646045728251578877">Sasisho la programu linapatikana</translation>
+<translation id="1650801028905250434">Faili zako katika Hifadhi Yangu zitasawazishwa kwenye Chromebook yako kiotomatiki ili uweze kuzifikia bila muunganisho wa intaneti. Unaweza kubadilisha hali hii wakati wowote katika Mipangilio &gt; Faili.</translation>
 <translation id="1668435968811469751">Jiandikishe mwenyewe</translation>
 <translation id="1678919064276516737">Anwani ya barua pepe na PIN uliyoweka hazilingani</translation>
 <translation id="1692115862433274081">Tumia akaunti nyingine</translation>
 <translation id="1695487653372841667">Unaweza kudhibiti data inayoshirikiwa na Google. Unaweza kubadilisha hali hii wakati wowote katika Mipangilio.</translation>
 <translation id="169675691788639886">Kifaa kina mipangilio ya seva ya SSH. Usiingie katika akaunti zenye maelezo nyeti.</translation>
+<translation id="1700517974991662022">Lililotembelewa</translation>
 <translation id="1730666151302379551">Umesahau nenosiri la zamani</translation>
+<translation id="1749645492410897998">Inaweka programu</translation>
 <translation id="177053719077591686">Hifadhi nakala za programu za Android kwenye Hifadhi ya Google.</translation>
+<translation id="1798832846931769717">Google Beam kwenye Meet</translation>
 <translation id="1806335016774576568">Badilisha utumie programu nyingine iliyofunguliwa</translation>
 <translation id="1826192255355608658">Sawazisha alamisho, manenosiri, historia na vipengee vyako vingine vya kivinjari cha Chrome</translation>
+<translation id="1826657447823925402">Usogezaji nyuma umezimwa</translation>
 <translation id="1831848493690504725">Hatuwezi kuifikia Google kupitia mtandao uliounganishwa. Jaribu kuchagua mtandao mwingine au uangalie mipangilio ya mtandao wako au mipangilio ya seva mbadala (ikiwa unatumia seva mbadala).</translation>
 <translation id="1842766183094193446">Una hakika kuwa ungependa kuwasha hali ya onyesho?</translation>
 <translation id="1845060436536902492">Kisoma skrini kilicho kwenye ChromeOS Flex, ChromeVox, kinatumiwa kimsingi na watu wasio na uwezo wa kuona kabisa na wale wenye uwezo mdogo wa kuona kusoma maandishi yanayoonyeshwa kwenye skrini kupitia zana ya kuchambua matamshi au skrini ya nukta nundu. Bonyeza kitufe cha "space" ili uwashe ChromeVox. ChromeVox ikishawashwa, utapata maelekezo ya haraka ya jinsi ya kuitumia.</translation>
+<translation id="185766080319917408">Kitufe cha kufungua kinapatikana kushoto mwa kitufe cha alt cha kushoto</translation>
 <translation id="1868617395637139709">Tumia huduma ya mahali kwa ajili ya programu na huduma za Android.</translation>
+<translation id="1877377730633446520">Faili hii itatumia takribani <ph name="REQUIRED_SPACE" />. Kwa sasa una <ph name="FREE_SPACE" /> za nafasi ya hifadhi.</translation>
 <translation id="189035593835762169">Sheria na Masharti</translation>
+<translation id="189358972401248634">Lugha zingine</translation>
+<translation id="1915734383465415025">Nambari ya Duka</translation>
+<translation id="1919096511823372013">Weka viungo, emoji na zaidi. Unaweza pia kupata usaidizi wa kuandika na kutayarisha picha ukitumia Google AI.</translation>
+<translation id="1922496389170590548">Akaunti ya shule ya mtoto</translation>
+<translation id="1944528062465413897">Msimbo wa kuoanisha Bluetooth:</translation>
 <translation id="1987574314042117472">Chagua na usakinishe programu maarufu</translation>
 <translation id="1991829061375381344">Huna leseni za kutosha za kusajili kifaa hiki cha maunzi ya Google Meet. Tafadhali wasiliana na muuzaji wako ili ununue zaidi. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na muuzaji wako.</translation>
+<translation id="200928901437634269">Tumia Akaunti ya Google ya mtoto wako au akaunti ya shule. Unaweza pia kuweka vidhibiti vya wazazi.</translation>
+<translation id="2013550551806600826">Ijaribu. Washa au uzime mipangilio hii, kisha usogeze kwenye padi yako ya kugusa katika sehemu ya majaribio ukitumia vidole viwili. Pia, unaweza kuona mipangilio hii baadaye kwenye Mipangilio &gt; Kifaa &gt; Kipanya na padi ya kugusa.</translation>
+<translation id="2018189721942291407">Huna uhakika iwapo ungependa kujiandikisha?</translation>
 <translation id="2040460856718599782">Lo! Kuna kitu kimeharibika wakati wa kujaribu kukuthibitisha. Tafadhali angalia tena kitambulisho cha kuingia katika akaunti na ujaribu tena.</translation>
 <translation id="2052572566310583903">Imesakinishwa kwenye vifaa vyako vingine</translation>
 <translation id="2088092308059522196">Kipengele cha kuandikisha kinaweza tu kutumiwa baada ya kusakinisha <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Ili ufungue Skrini ya kwanza wakati wowote, telezesha kidole juu kutoka chini.</translation>
 <translation id="2090165459409185032">Ili kurejesha maelezo ya akaunti yako, nenda kwenye: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Chagua vipengele zaidi ili uweke mipangilio</translation>
+<translation id="2135456203358955318">Kikuzaji kilichofungwa</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> yako ina Gemini</translation>
 <translation id="2163470535490402084">Tafadhali unganisha kwenye Intaneti ili uingie katika <ph name="DEVICE_TYPE" /> yako.</translation>
+<translation id="2173801458090845390">Ongeza ombi la Kitambulisho kwenye kifaa hiki</translation>
 <translation id="2178585470774851578">Unawasha vipengele vya utatuzi vya ChromeOS Flex ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye Hifadhi za USB.</translation>
+<translation id="2183570493397356669">Kitufe cha "endelea" kimezimwa</translation>
+<translation id="221872881068107022">Usogezaji wa nyuma</translation>
 <translation id="2219081237089444028">Weka nenosiri la <ph name="DEVICE_TYPE" /> ili urahisishe zaidi mchakato wa kuingia katika akaunti</translation>
+<translation id="2229161054156947610">Zimesalia zaidi ya saa 1</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> inahitaji kifaa kiwe mtandaoni wakati wa kuingia katika akaunti kwa kutumia <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% imekamilika</translation>
 <translation id="2319072477089403627">Inaunganisha kwenye simu yako ya Android...</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Hutaweza kuwaongeza watumiaji kwa sababu funguo za API ya Google hazipo. Angalia <ph name="DETAILS_URL" /> kwa maelezo.</translation>
 <translation id="24786041351753425">Ruhusu huduma ya kurejesha data.</translation>
 <translation id="2485681265915754872">Sheria na Masharti ya Google Play</translation>
+<translation id="248676429071089168">Telezesha kidole juu ili usogeze ukurasa chini</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
+<translation id="2538084450874617176">Ni nani anayetumia <ph name="DEVICE_TYPE" /> hii?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> haikuweza kuunganisha kwenye <ph name="NETWORK_ID" />. Tafadhali chagua mtandao mwingine au ujaribu tena.</translation>
 <translation id="2565214867520763227">Washa kisoma skrini</translation>
+<translation id="2569972178052279830">Jina la Muuzaji wa Rejareja</translation>
+<translation id="257779572837908839">Weka mipangilio kuwa Chromebox ya mikutano</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Jukwaa <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Hapana, endelea bila ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Huduma ya mahali ya Google hutumia vyanzo kama vile Wi-Fi, mitandao ya simu na vitambuzi ili kusaidia kukadiria mahali kifaa hiki kilipo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima kipengele cha mahali cha Android kwenye kifaa hiki wakati wowote kwa kwenda kwenye Mipangilio &gt; Programu &gt; Duka la Google Play &gt; Dhibiti mapendeleo kwenye Android &gt; Usalama na mahali &gt; Mahali. Unaweza pia kuzima utumiaji wa Wi-Fi, mitandao ya simu na vitambuzi kwenye kipengele cha mahali cha Android kwa kuzima “Usahihi wa Kipengele cha Google cha Kutambua Mahali” katika menyu hiyo hiyo.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Lugha</translation>
 <translation id="2687407218262674387">Sheria na Masharti ya Google</translation>
 <translation id="2688196195245426394">Hitilafu wakati wa kusajili kifaa kwa seva: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Hiki ni kifaa chenye kifurushi na hakiwezi kusajiliwa kwenye Toleo Jipya la Skrini ya Kuonyesha Matangazo na Mabango Dijitali.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Tafadhali subiri...</translation>
 <translation id="2732134891301408122">Maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Sawa</translation>
+<translation id="274318651891194348">Inatafuta kibodi</translation>
 <translation id="2754825024506485820">Pata programu unazohitaji iwe zinazohusu tija au zinazohusu burudani, kwenye Duka la Google Play. Unaweza kusakinisha programu wakati wowote.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile vifaa vya kutolea Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo huduma na programu za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu na kifaa hiki ili kuchangia katika data ya mahali iliyokusanywa kutoka kwa umma kupitia mawimbi ya simu za mkononi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya yaliyokusanywa kutoka kifaa hiki ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. Maelezo haya hayatumiwi kumtambulisha mtu yeyote binafsi.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa hiki kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa hiki kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Kila kitu kiko tayari!</translation>
+<translation id="2819519502129272135">Kipengele cha kusawazisha faili kimezimwa</translation>
 <translation id="2832124733806557606">Mtoto wako anaweza kutumia PIN kuingia katika akaunti kwenye kifaa au kukifungua.</translation>
 <translation id="283669119850230892">Ili kutumia mtandao <ph name="NETWORK_ID" />, kwanza kamilisha muunganisho wako katika Mtandao hapo chini.</translation>
 <translation id="2849767214114481738">PIN yako imewekwa</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele vilivyotumika na kadirio la kiasi cha hifadhi kilichotumika.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio kwenye kifaa chako cha Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Shughuli hii inaweza kuchukua hadi dakika 30</translation>
 <translation id="2893180576842394309">Google inaweza kutumia historia yako ili kuweka mapendeleo kwenye huduma ya Tafuta na Google na huduma nyingine za Google.</translation>
 <translation id="2902265136119311513">Vinjari kama Mgeni</translation>
 <translation id="2904210161403910217">Nenosiri lako limebadilishwa tangu mara ya mwisho ulipoingia katika akaunti</translation>
 <translation id="2918484644467055090">Kifaa hiki hakiwezi kusajiliwa kwenye shirika linalomiliki akaunti yako kwa sababu kimewekwa alama ili kidhibitiwe na shirika tofauti.</translation>
 <translation id="2921081876747860777">Tafadhali unda nenosiri la kulinda data yako kwenye kifaa.</translation>
+<translation id="2935654492420446828">Ongeza akaunti ya shuleni baadaye</translation>
 <translation id="2950666755714083615">Nisajili</translation>
 <translation id="2979966855249721010">Kulingana na mambo yanayokuvutia, huenda ukaona mapendekezo ya programu, vidokezo na zaidi</translation>
 <translation id="3012917896646559015">Tafadhali wasiliana na mtengenezaji wako wa maunzi mara moja ili utume kompyuta yako kwa kituo cha kukarabati.</translation>
+<translation id="3023464535986383522">Chagua ili izungumze</translation>
 <translation id="3028371505549235127">Badala ya kuweka nenosiri la Akaunti yako ya Google ili uingie katika akaunti, unaweza kutunga nenosiri la <ph name="DEVICE_TYPE" /> la kifaa hiki</translation>
 <translation id="3033348223765101500">Dhibiti data yako</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" imeoanishwa</translation>
 <translation id="3101924772906986970">Alamisho, manenosiri, historia na vipengee vyako vingine vya kivinjari cha Chrome vimehifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="313205617302240621">Je, umesahau nenosiri lako?</translation>
 <translation id="3162070126914310576">Kifaa hiki hakiwezi kuandikishwa kwa sasa kwa sababu kitengo cha shirika lako kimefikia kikomo chake cha kwanza cha uandikishaji. Wasiliana na msimamizi wako ili upate usaidizi.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Pia unaweza kuruka kuingia na <ph name="LINK_START" />uvinjari kama Mgeni<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Kifaa chako kinajumuisha Toleo jipya la Chrome Education, lakini jina lako la mtumiaji halihusiani na akaunti ya Google for Education. Tafadhali fungua akaunti ya Google for Education kwa kutembelea g.co/workspace/edusignup kwenye kifaa cha pili.</translation>
 <translation id="3196912927885212665">Ili uweke mipangilio kwenye simu yako ya Android, Bluetooth ya Chromebook yako inapaswa kuwa imewashwa</translation>
+<translation id="322708765617468434">Unaweza kuongeza mtu mwingine wakati wowote kwenye kifaa baada ya kuweka mipangilio. Kila mtu anaweza kuweka mapendeleo ya hali yake ya utumiaji na kuweka data yake iwe ya faragha.</translation>
 <translation id="3238192140106069382">Inaunganisha na kuthibitisha</translation>
+<translation id="3251119461199395237">Usawazishaji wa faili</translation>
+<translation id="325238099842880997">Weka sheria dijitali za msingi ili uwasaidie watoto kucheza, kugundua na kufanya kazi ya shule nyumbani</translation>
+<translation id="3255747772218936245">Sakinisha sasisho</translation>
 <translation id="3261268979727295785">Kwa watoto wenye umri mkubwa, unaweza kuongeza vidhibiti vya wazazi baada ya kukamilisha kuweka mipangilio. Utapata maelezo kuhusu vidhibiti vya wazazi kwenye programu ya Gundua.</translation>
 <translation id="3278001907972365362">Unahitaji kukagua Akaunti zako za Google</translation>
 <translation id="3283148363895519428">Fuata maelekezo kwenye simu yako ili uendelee kuweka mipangilio. Hakikisha kuwa simu yako iko karibu na umewasha Bluetooth.</translation>
 <translation id="3382073616108123819">Lo! Mfumo haukuweza kutambua vitambuaji vya kifaa kwa kifaa hiki.</translation>
 <translation id="3382200254148930874">Inakomesha usimamizi...</translation>
+<translation id="3384362484379805487">Faili za lugha hushirikiwa baina ya watumiaji ili kuokoa nafasi ya hifadhi ya diski.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">Kisoma skrini kilicho kwenye ChromeOS Flex, ChromeVox, kinatumiwa kimsingi na watu wasio na uwezo wa kuona kabisa na wale wenye uwezo mdogo wa kuona kusoma maandishi yanayoonyeshwa kwenye skrini kupitia zana ya kuchambua matamshi au skrini ya nukta nundu. Bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano ili uwashe ChromeVox. ChromeVox ikishawashwa, utapata maelekezo ya haraka ya jinsi ya kuitumia.</translation>
+<translation id="3402585168444815892">Inaandikisha katika Hali ya Onyesho</translation>
 <translation id="3433621910545056227">Lo! Mfumo umeshindwa kuanzisha kufungwa kwa sifa za muda wa usakinishaji wa kifaa.</translation>
 <translation id="3435896845095436175">Washa</translation>
 <translation id="3462413494201477527">Ungependa kughairi ufunguaji wa akaunti?</translation>
 <translation id="3473241910002674503">Nenda kwenye kifungua programu, rudi nyuma na ubadilishe programu ukitumia vitufe katika hali ya kompyuta kibao.</translation>
+<translation id="3473479545200714844">Kikuza skrini</translation>
 <translation id="3491669675709357988">Akaunti ya mtoto wako haijawekewa mipangilio ya vidhibiti vya wazazi kwenye Family Link. Unaweza kuongeza vidhibiti vya wazazi baada ya kukamilisha kuweka mipangilio. Utapata maelezo kuhusu vidhibiti vya wazazi kwenye programu ya Gundua.</translation>
+<translation id="350397915809787283">Ikiwa huna akaunti, teua chaguo la kwanza ili ufungue akaunti.</translation>
 <translation id="3520824492621090923">Ungependa kuthibitisha uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali?</translation>
+<translation id="3547954654003013442">Mipangilio ya proksi</translation>
+<translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="3577745545227000795">Ukusanyaji wa data ya maunzi unaofanywa na <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Hakiki</translation>
+<translation id="3607671391978830431">Kwa mtoto</translation>
+<translation id="3627320433825461852">Imesalia chini ya dakika 1</translation>
 <translation id="3635199270495525546">Sehemu ya Mfumo Unaoaminika (TPM) imetambuliwa</translation>
 <translation id="3650753875413052677">Hitilafu ya Kujiandikisha</translation>
 <translation id="3661106764436337772">Andika haraka na kwa kujiamini zaidi</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Inapakia...</translation>
 <translation id="3712050472459130149">Sasisho la akaunti linahitajika</translation>
 <translation id="3733296813637058299">Tutakusakinishia programu hizo. Unaweza kupata programu zingine kwa ajili ya <ph name="DEVICE_TYPE" /> yako katika Duka la Google Play.</translation>
+<translation id="3740945083753997630">Punguza ukubwa wa skrini na maandishi</translation>
 <translation id="376841534249795524">Utatumia <ph name="DEVICE_TYPE" /> yako kufanya nini?</translation>
 <translation id="3772046291955677288">Nimesoma na ninakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3800828618615365228">Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="3828953470056652895">Nimesoma na ninakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" /> na <ph name="BEGIN_LINK3" />Sheria na Masharti ya Google Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Unaweza kuchagua yote yanayohusika. Unaweza pia kupata chaguo hizi katika Mipangilio ukimaliza kuweka mipangilio ya <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
+<translation id="3856470183388031602">Tumia Akaunti yako ya Google kwenye <ph name="DEVICE_TYPE" /> yako</translation>
+<translation id="3893630138897523026">ChromeVox (majibu yanayotamkwa)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> yako imeundwa maalum kwa ajili ya michezo ya video. Programu ya Gundua itafunguka ambapo utaweza kufikia mamia ya michezo mipya, kuona ofa za michezo ya video na kufahamu vipengele vya michezo vilivyojumuishwa kwenye kifaa chako.</translation>
+<translation id="389901847090970821">Chagua kibodi</translation>
 <translation id="3910588685973519483">Tayarisha mandhari ukitumia AI</translation>
+<translation id="3924259174674732591">Ukubwa wa skrini na maandishi asilmia <ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
 <translation id="3983400541576569538">Data kutoka baadhi ya programu inaweza kupotea</translation>
+<translation id="3984159763196946143">Imeshindwa kuanzisha hali ya onyesho</translation>
 <translation id="3994318741694670028">Kwa bahati mbaya, kompyuta yako imewekewa mipangilio na kitambulisho cha maunzi yenye hitilafu. Hali hii huzuia ChromeOS Flex isisasishe marekebisho ya usalama ya hivi karibuni na kompyuta yako <ph name="BEGIN_BOLD" />inaweza kuwa hatarini kutokana na mashambulizi ya hasidi<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Mipangilio ya Pin</translation>
 <translation id="4044883420905480380">Uliunganisha kwenye Wi-Fi na kuingia katika akaunti ya <ph name="USER_EMAIL" /> ukitumia simu yako ya Android</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Sheria na masharti ya ziada ya Google Chrome na mfumo wa uendeshaji wa Chrome</translation>
 <translation id="41365691917097717">Hatua ya kuendelea itawasha utatuzi wa ADB wa kusanidi na kujaribu programu za Android. Kumbuka kwamba hatua hii inaruhusu usakinishaji wa programu za Android ambazo hazijathibitishwa na Google na zinahitaji urejeshe mipangilio ambayo kifaa ilitoka nayo kiwandani ili kuzima.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> haipo kwenye shirika sahihi. Wasiliana na msimamizi wako. Iwapo wewe ni msimamizi, unaweza kuweka mipangilio ya shirika lako kwa kutembelea: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Kubwa</translation>
+<translation id="4213918571089943508">Akaunti ya Google ya Mtoto</translation>
+<translation id="4228071595943929139">Tumia anwani ya barua pepe ya shirika lako</translation>
 <translation id="4232484478444192782">Simu yako ya Android inakushughulikia. Nenosiri na maelezo ya mtandao wako wa Wi-Fi yanahamishiwa hapa.</translation>
 <translation id="4242145785130247982">Vyeti vingi vya kiteja havitumiki</translation>
 <translation id="4242577469625748426">Imeshindwa kusakinisha mipangilio ya sera kwenye kifaa: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Utatumia toleo jipya la skrini ya kuonyesha matangazo na mabango ya dijitali ambayo huruhusu tu kifaa kufanya kazi kwenye hali ya skrini ya kuonyesha matangazo au mabango ya dijitali. Iwapo ungependa watumiaji waingie katika akaunti kwenye kifaa, tafadhali rudi nyuma na ujiandikishe ukitumia Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Ndiyo, washa ChromeVox</translation>
 <translation id="4289732974614035569">Chagua PIN</translation>
+<translation id="4291265871880246274">Kidirisha cha Kuingia katika akaunti</translation>
+<translation id="4305817255990598646">Badilisha</translation>
 <translation id="4309165024397827958">Ruhusu programu na huduma za Android zenye ruhusa ya mahali zitumie maelezo ya mahali kifaa chako kilipo. Google inaweza kukusanya data ya mahali mara kwa mara na kutumia data hiyo kwa njia isiyokutambulisha ili kuboresha usahihi wa kipengele cha kutambua mahali na huduma zinazohusiana na mahali.</translation>
 <translation id="4317733381297736564">Ununuzi wa ndani ya programu</translation>
 <translation id="4341905082470253054">Inakagua hali ya TPM...</translation>
 <translation id="4370975561335139969">Anwani ya barua pepe na nenosiri uliloweka havilingani</translation>
 <translation id="4373418556073552953">Ingia katika akaunti ukitumia simu yako ya Android</translation>
+<translation id="4378556263712303865">Ombi la kifaa</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile mfumo wa uendeshaji wa ChromeOS unapoacha kufanya kazi, vipengele unavyotumia, kadirio la kiasi cha hifadhi unachotumia na data ya uchunguzi na matumizi ya programu za Android. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako kinachotumia mfumo wa uendeshaji wa ChromeOS. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ikiwa umewasha mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu katika Akaunti yako ya Google, huenda data yako ya Android ikahifadhiwa kwenye Akaunti yako ya Google. Unaweza kuona data yako, kuifuta na kubadilisha mipangilio ya akaunti yako katika account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Inatafuta vifaa vya Bluetooth na USB</translation>
 <translation id="4403266582403435904">Rejesha data au ubadilishe vifaa kwa urahisi wakati wowote. Nakala hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti ya Google ya mtoto wako.</translation>
 <translation id="4410545552906060960">Tumia namba (PIN) badala ya nenosiri ili kufungua kifaa chako. Ili kuweka PIN yako baadaye, nenda kwenye Mipangilio.</translation>
 <translation id="4415213869328311284">Uko tayari kuanza kutumia <ph name="DEVICE_TYPE" /> yako.</translation>
+<translation id="443031431654216610">Tumia tarakimu pekee</translation>
+<translation id="4448560527907365660">Hifadhi na uone vipengele zaidi</translation>
 <translation id="4449948729197510913">Jina lako la mtumiaji linamilikiwa na akaunti ya kazini ya shirika lako. Ili uandikishe vifaa kwenye akaunti, thibitisha kwanza umiliki wa kikoa katika Dashibodi ya Msimamizi. Utahitaji ruhusa za msimamizi kwenye akaunti ili uthibitishe.</translation>
 <translation id="4450974146388585462">Tambua hitilafu</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> imetambua TPM inayotumika ambayo inaweza kuhifadhi data yako kwa usalama zaidi.</translation>
+<translation id="4472298120638043495">Unaweza kutumia lugha yako unayopendelea ya Akaunti ya Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Anza</translation>
+<translation id="450867954911715010">Mipangilio ya zana za walio na matatizo ya kuona au kusikia</translation>
+<translation id="4519605771716872386">Kipengele cha kusawazisha faili kimewashwa</translation>
+<translation id="4531924570968473143">Ungependa kumwongeza nani kwenye kifaa hiki cha <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Iwapo unataka kubadilisha baada ya uandikishaji, utahitajika kurejesha mipangilio ya kifaa chako iliyotoka nayo kiwandani (Powerwash).</translation>
 <translation id="4567512141633030272">Je, chaguo hilo la kuingia katika akaunti si sahihi?</translation>
+<translation id="4567533462991917415">Unaweza kuongeza watu zaidi baada ya kuweka mipangilio. Kila mtu anaweza kuweka mapendeleo kwenye akaunti yake na kuweka data yake iwe ya faragha.</translation>
 <translation id="4568213207643490790">Samahani, akaunti za Google haziruhusiwi kwenye kifaa hiki.</translation>
 <translation id="4611759022973144129">Unaweza kutumia nenosiri hili kuingia kwenye kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">Weka mipangilio ya matumizi ya kazini au binafsi kwenye kifaa hiki</translation>
+<translation id="4689235506267737042">Chagua mapendeleo yako ya maonyesho</translation>
 <translation id="4727847987444062305">Kipindi cha mgeni kinachodhibitiwa</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="473936925429402449">Umechagua, maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> si akaunti sahihi ya Google for Education. Wasiliana na msimamizi wako. Iwapo wewe ni msimamizi, unaweza kuweka mipangilio ya shirika lako kwa kutembelea: g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Cha kazini</translation>
 <translation id="4806457879608775995">Kagua sheria na masharti haya na udhibiti data yako</translation>
+<translation id="4814327014588285482">Ruka kisha unikumbushe baadaye</translation>
 <translation id="4830502475412647084">Inasasisha Mfumo wa Uendeshaji</translation>
 <translation id="4837926214103741331">Huruhusiwi kukitumia kifaa hiki. Tafadhali wasiliana na mmiliki wa kifaa kwa ruhusa ya kuingia katika akaunti.</translation>
+<translation id="4844333629810439236">Kibodi zingine</translation>
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
+<translation id="4867272607148176509">Wazazi wanaweza kuidhinisha au kuzuia programu, kuweka vidhibiti vya muda na kudhibiti kuvinjari kwenye wavuti. Akaunti ya shule inaweza kuongezwa baadaye ili kufikia nyenzo nyingi za shule.</translation>
 <translation id="4877652723592270843">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex? Ikiwa ndivyo, bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano.</translation>
 <translation id="4899696330053002588">Ina matangazo</translation>
 <translation id="49027928311173603">Sera iliyopakuliwa kutoka kwenye seva ni batili: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">Huduma hii ya uthibitishaji imepangishwa na <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Chagua PIN yako</translation>
 <translation id="4965808351167763748">Una uhakika ungependa kuweka mipangilio kwenye kifaa hiki ili utumie Hangouts Meet?</translation>
+<translation id="4987944280765486504">Chromebook yako itazima kisha iwake upakuaji utakapokamilika na unaweza kuendelea kuweka mipangilio.</translation>
 <translation id="5029287942302939687">Nenosiri lako limewekwa</translation>
 <translation id="503155457707535043">Inapakua programu</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="5062930723426326933">Imeshindwa kuingia katika akaunti, tafadhali unganisha kwenye mtandao na ujaribu tena.</translation>
+<translation id="5085162214018721575">Inatafuta visasishi</translation>
 <translation id="5097306410549350357">Pata maelezo zaidi kuhusu jinsi ya kutumia kipengele cha mahali</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Piga gumzo na Gemini ili uanze kuandika, kupanga, kujifunza na zaidi ukitumia Google AI.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Baada ya kuweka mipangilio, anza kutumia Gemini kwa kuchagua programu ya Gemini kwenye rafu yako, katika sehemu ya chini ya skrini yako.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Tafadhali weka kifaa chako cha <ph name="DEVICE_TYPE" /> kwenye chaji.</translation>
+<translation id="5145876360421795017">Usiandikishe kifaa</translation>
 <translation id="5147516217412920887">Fuata maagizo kwenye simu yako ili uthibitishe msimbo</translation>
 <translation id="5160857336552977725">Ingia katika <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Vipengele vya Utatuzi<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" />  Mfumo utazima kisha kuwashwa tena wakati wa mchakato huu.</translation>
+<translation id="5215502535566372932">Chagua nchi</translation>
 <translation id="5234523649284990414">Kisoma skrini kilicho kwenye ChromeOS, ChromeVox kinatumiwa kimsingi na watu wasio na uwezo wa kuona kabisa au wale wenye uwezo mdogo wa kuona ili kusoma maandishi yanayoonyeshwa kwenye skrini kupitia zana ya kuchanganua matamshi au skrini ya nukta nundu. Bonyeza kitufe cha "space" ili uwashe ChromeVox. ChromeVox ikishawashwa, utapata maelekezo ya haraka ya jinsi ya kuitumia.</translation>
 <translation id="523505283826916779">Mipangilio ya ufikiaji</translation>
 <translation id="5240931875940563122">Ingia katika akaunti ukitumia simu ya Android</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Andikisha kifaa cha shirika</translation>
 <translation id="5372529912055771682">Modi ya usajili iliyosambazwa haihimiliwi na toleo hili la mfumo wa uendeshaji. Tafadhali hakikisha unaendesha toleo jipya na ujaribu tena.</translation>
 <translation id="5397378439569041789">Andikisha kifaa cha skrini ya kuonyesha matangazo au mabango dijitali</translation>
+<translation id="5397794290049113714">Wewe</translation>
 <translation id="5411022484772257615">Imeshindwa kukamilisha uandikishaji wa kifaa cha shuleni</translation>
 <translation id="5413640305322530561">Pata maelezo zaidi kuhusu data ya uchunguzi na matumizi</translation>
 <translation id="542750953150239272">Kwa kuendelea, unakubali kwamba kifaa hiki pia kinaweza kupakua na kusakinisha masasisho na programu kiotomatiki kutoka Google, mtoa huduma wako wa simu na mtengenezaji wa kifaa chako, labda kwa kutumia data ya mtandao wa simu. Baadhi ya programu hizi zinaweza kuwa na ununuzi wa ndani ya programu.</translation>
 <translation id="542948651837270806">Unahitaji kusakinisha sasisho la programu dhibiti ya Trusted Platform Module. Angalia <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Lo! hitilafu imetokea wakati wa kuingia kwenye akaunti</translation>
+<translation id="5453829744223920473">Mtoto wako anaweza kutumia programu zake zote za shule, alamisho na nyenzo kama vile afanyavyo darasani. Shule huweka sheria za msingi</translation>
 <translation id="5463450804024056231">Jisajili kwa ajili ya barua pepe za <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Kwa kuendelea, unakubali kwamba kifaa hiki pia kinaweza kupakua na kusakinisha masasisho na programu kiotomatiki kutoka Google, kampuni inayompa mtoto wako huduma za simu na mtengenezaji wa kifaa hiki, kwa kutumia data ya mtandao wa simu (panapowezekana). Huenda baadhi ya programu hizi zikawa na ununuzi wa ndani ya programu.</translation>
+<translation id="5502915260472117187">Mtoto</translation>
 <translation id="5511823366942919280">Je, una uhakika unataka kusanidi kifaa hiki kama "Shark"?</translation>
+<translation id="5513807280330619196">Kikokotoo</translation>
 <translation id="5527474464531963247">Unaweza pia kuchagua mtandao mwingine.</translation>
 <translation id="5539070192556911367">Imeshindwa kuifikia Google</translation>
+<translation id="5549511085333906441">Chagua mipangilio yako</translation>
 <translation id="557722062034137776">Kuweka upya kifaa chako hakutaathiri akaunti zako za Google au data yoyote iliyosawazishwa kwenye akaunti hizi. Hata hivyo, faili zote zilizohifadhiwa ndani ya kifaa chako zitafutwa.</translation>
 <translation id="5626172233890210551">Tumia nenosiri badala yake</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Ili kukupa hali bora zaidi ya utumiaji, <ph name="DEVICE_OS" /> hukusanya data ya maunzi kuhusu vifaa na kuituma kwa Google ili kubaini masasisho yanayofaa kutolewa. Ukipenda, unaweza kuruhusu Google itumie data hii kwa madhumuni ya ziada kama vile kuimarisha na kuboresha huduma na hali ya utumiaji wa <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuingia katika akaunti kwenye kifaa hiki na uangalie sehemu zilizoorodheshwa kama chromeosflex_ katika chrome://system ili uone data inayotumwa kwa Google ili kuchuja masasisho, pamoja na matukio yoyote mengine ambapo unaweza kuchagua kutuma data kwa Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ili upate maelezo zaidi kuhusu data ambayo <ph name="DEVICE_OS" /> inaweza kutuma kwa Google na jinsi data hiyo inavyotumika, tembelea g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Ili kutumia <ph name="NETWORK_ID" /> huenda kwanza ukahitaji kutembelea <ph name="LINK_START" /> ukurasa wa kuingia wa mtandao<ph name="LINK_END" />, ambao utafunguka otomatiki katika sekunde chache. Ikiwa haitafanyika, mtandao hauwezi kutumika.</translation>
 <translation id="5655296450510165335">Uandikishaji wa kifaa</translation>
+<translation id="565899488479822148">Inasakinisha sasisho jipya zaidi</translation>
 <translation id="5659964844710667266">Unda nenosiri la <ph name="DEVICE_TYPE" /> hii</translation>
 <translation id="5684661240348539843">Kitambulisho cha Kipengee</translation>
 <translation id="5684950556880280580">Nenosiri lako limesasishwa</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Samahani, baadhi ya faili zimeharibika, kwa hiyvo sasisho halikukamilika. Faili zako ulizosawazisha ziko salama.</translation>
 <translation id="5770125698810550803">Onyesha vitufe vya kusogeza</translation>
 <translation id="5799478978078236781">Pata taarifa, ofa na vidokezo kuhusu <ph name="DEVICE_TYPE" /> na ushiriki maoni.</translation>
+<translation id="5800703268655655701">Chagua mandhari meupe au meusi</translation>
 <translation id="5804259315582798390">Imeshindwa kuwasha mipangilio ya kurejesha data iliyo kwenye kifaa</translation>
 <translation id="5810809306422959727">Akaunti hii haijatimiza masharti ya vidhibiti vya wazazi</translation>
+<translation id="5834581999798853053">Zimesalia karibu dakika <ph name="TIME" /></translation>
 <translation id="5852112051279473187">Lo! Hitilafu imetokea wakati wa kusajili kifaa hiki. Tafadhali jaribu tena au uwasiliane na mwakilishi atakayekusaidia.</translation>
 <translation id="5852137567692933493">Anzisha upya na Powerwash</translation>
 <translation id="5856721540245522153">Washa vipengele vya kutatua</translation>
+<translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="5860491529813859533">Washa</translation>
+<translation id="5870086504539785141">Funga menyu ya ufikiaji</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>
 <translation id="5895335062901455404">Mapendeleo na shughuli ulizohifadhi zitakuwa tayari kwenye kifaa chochote kinachotumia ChromeOS Flex ukiingia kwa kutumia Akaunti yako ya Google. Unaweza kuchagua unachotaka kusawazisha katika Mipangilio.</translation>
+<translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5919305207330938913">Data yote iliyokusanywa itatumika kulingana na <ph name="BEGIN_LINK" />Sera ya Faragha<ph name="END_LINK" /> ya Google.</translation>
 <translation id="5932441198730183141">Huna leseni za kutosha za kusajili kifaa hiki cha maunzi ya Google Meet. Tafadhali wasiliana na timu ya mauzo ili ununue leseni zaidi. Kama unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
 <translation id="5939518447894949180">Weka upya</translation>
+<translation id="5948536763493709626">Unganisha kibodi au kipanya au uendelee kuweka mipangilio kwa kutumia skrini yako ya kugusa. Ikiwa unatumia vifaa vyenye Bluetooth, hakikisha kwamba vifaa vyako viko tayari kuoanisha.</translation>
 <translation id="5959471481388474538">Mtandao haupatikani</translation>
 <translation id="6016178549409952427">Nenda kwenye maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Chagua kitufe cha lugha na kibodi. Lugha uliyochagua kwa sasa ni <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6051354611314852653">Lo! Mfumo ulishindwa kuidhinisha ufikiaji wa API kwa kifaa hiki.</translation>
 <translation id="6055544610007596637">Sakinisha programu za <ph name="DEVICE_TYPE" /> yako, kutoka kwenye Duka la Google Play</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Ruhusu Google itumie data yako ya maunzi ili kusaidia kuboresha <ph name="DEVICE_OS" />. Ukikataa, data hii bado itatumwa kwa Google ili kubainisha masasisho yanayofaa, lakini haitahifadhiwa wala kutumiwa vinginevyo. Pata maelezo zaidi kwenye g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Shughuli ya kuingia katika akaunti inafanywa na <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Umefaulu kuwasha vipengele vya kutataua kwenye kifaa hiki cha <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
+<translation id="6343262564968371601">Pata unachotafuta kwa kutafuta kwenye Google, faili, programu na mengineyo</translation>
 <translation id="635609604405270300">Usizime kifaa</translation>
 <translation id="6367097275976877956">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome? Ikiwa ndivyo, bonyeza kitufe cha nafasi.</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="6380143666419481200">Kubali na uendelee</translation>
 <translation id="640457954117263537">Kutumia data ya mahali katika programu na huduma za ChromeOS pamoja na Android.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile mfumo wa uendeshaji wa Chrome unapoacha kufanya kazi, vipengele unavyotumia na kiasi cha hifadhi unachotumia.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio kwenye kifaa chako cha Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Sakinisha sasisho muhimu</translation>
+<translation id="6478849105642611893">Kitufe cha Kuingiza haraka kinapatikana chini ya kitufe cha tab</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Chagua lugha</translation>
 <translation id="6495266441917713704">Haiwezi kuhamisha Wi-Fi</translation>
 <translation id="6515620015470298987">Imeshindwa kuingia katika akaunti kutokana na tatizo la ukaguzi wa usanidi wa kifaa. Tafadhali rejesha mipangilio ambayo <ph name="DEVICE_TYPE" /> yako ilitoka nayo kiwandani kisha ujaribu tena.</translation>
 <translation id="6519689855001245063">Inakagua masharti ya kujiunga</translation>
 <translation id="6532527800157340614">Imeshindwa kuingia katika akaunti kwa sababu haikuleta data ya ufikiaji. Tafadhali kagua muunganisho wa mtandao kisha ujaribu tena.</translation>
+<translation id="653920215766444089">Inatafuta vifaa vinavyosogeza kishale</translation>
 <translation id="65513682072153627">Utaona aikoni hii ya Imedhibitiwa pale ambapo mpangilio au kipengele kimedhibitiwa na msimamizi wako.</translation>
+<translation id="6561726789132298588">ingiza</translation>
 <translation id="6607890859198268021">Tayari <ph name="USER_EMAIL" /> inasimamiwa na <ph name="DOMAIN" />. Ili utumie vidhibiti vya wazazi na Akaunti tofauti ya Google, ondoka katika akaunti baada ya kuweka mipangilio, kisha uchague "Ongeza mtu" kwenye skrini ya kuingia katika akaunti.</translation>
 <translation id="6642720633335369752">Ili uone madirisha yote ya programu yaliyofunguliwa, telezesha kidole juu kutoka chini na ushikilie.</translation>
 <translation id="6648911618876616409">Sasisho muhimu liko tayari kusakinishwa. Ingia katika akaunti ili usakinishe.</translation>
 <translation id="6671497123040790595">Inaweka mipangilio ya kudhibitiwa na <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Kifaa cha kuonyeshea kimeunganishwa</translation>
 <translation id="667752334740867460">Inapokea maelezo ya Wi-Fi...</translation>
 <translation id="6680442031740878064">Nafasi inayopatikana: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Unaweza kurejesha <ph name="EMAIL" />, lakini data iliyo kwenye kifaa itafutwa.</translation>
 <translation id="6748980958975836188">Nimesoma na ninakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Picha</translation>
+<translation id="6754918760968695779">Kuingiza Haraka</translation>
 <translation id="6789834167207639931">Weka tena nenosiri lako la Akaunti ya Google katika skrini inayofuata ili umalizie kurejesha</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele vilivyotumika, kadirio la kiasi cha hifadhi kilichotumika na data ya uchunguzi na matumizi ya programu za Android. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa cha mtoto wako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Ikiwa mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu imewashwa katika Akaunti ya Google ya mtoto wako, huenda data ya mtoto wako ikahifadhiwa katika Akaunti yake ya Google. Pata maelezo zaidi kuhusu mipangilio hii na jinsi ya kuirekebisha katika families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Programu zinazopendekezwa kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="682971198310367122">Sera ya faragha ya Google</translation>
 <translation id="6835762382653651563">Tafadhali unganisha kwenye Intaneti ili usasishe <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="6839916869147598086">Kipengele cha kuingia katika akaunti kimebadilika</translation>
+<translation id="6852529053326738838">Liombe shirika lako au ujiandikishe ukitumia barua pepe yako ya kazini ili uangalie iwapo akaunti yako inatimiza masharti.</translation>
+<translation id="6867671714894555998">Fanikisha mambo kwa haraka ukitumia kibodi mpya</translation>
 <translation id="6883319974225028188">Lo! Mfumo umeshindwa kuhifadhi mipangilio ya kifaa.</translation>
+<translation id="6888831646723563669">Unganishwa ili ufurahie vipengele vyote kwenye <ph name="DEVICE_TYPE" /> yako mpya</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Data ya programu inaweza kuwa data yoyote ambayo imehifadhiwa na programu (kulingana na mipangilio ya msanidi programu), ikiwa ni pamoja na data kama vile anwani, ujumbe na picha. Nakala ya data iliyohifadhiwa haitatumia nafasi ya Hifadhi aliyopewa mtoto wako.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma hii katika Mipangilio.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Washa kipengele cha kusawazisha</translation>
 <translation id="6918733588290914545">Weka mipangilio ya haraka ukitumia simu ya Android</translation>
 <translation id="6920473853105515518">Hakikisha kuwa umeunganisha <ph name="DEVICE_TYPE" /> kwenye intaneti kisha ujaribu tena. Unaweza pia kutembelea play.google/play-terms kwenye kifaa kingine.</translation>
+<translation id="6929126689972602640">Vidhibiti vya wazazi haviwezi kutumika kwenye akaunti za shuleni. Ili uongeze akaunti ya shuleni itakayotumika kufikia Google Darasani na tovuti zingine kwa ajili ya kufanya kazi ya shule nyumbani, ingia kwa kutumia akaunti ya kibinafsi ya mtoto kwanza. Unaweza kuongeza akaunti ya shuleni baadaye katika mipangilio.</translation>
+<translation id="6935031746833428401">Pata maelezo zaidi kuhusu Udhibiti wa Vifaa</translation>
+<translation id="6950351336108213154">Inasasisha vifaa vya pembeni</translation>
 <translation id="6955698182324067397">Unawasha vipengele vya utatuzi vya Chrome OS ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye hifadhi za USB.</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6969216690072714773">Weka maelezo mapya au sasisha yaliyopo ili yaunganishwe na kifaa hiki.</translation>
@@ -343,23 +485,37 @@
 mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
         seva mbadala, rekebisha <ph name="LINK_START" />mipangilio yako ya seva mbadala<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Washa Bluetooth na Wi-Fi ya simu yako</translation>
+<translation id="6996438701394974959">Ongeza ukubwa wa skrini na maandishi</translation>
+<translation id="6998793565256476099">Sajili vifaa vitumike kwenye mkutano wa video</translation>
 <translation id="7025082428878635038">Utangulizi wa njia mpya ya kusogeza kwa kutumia ishara</translation>
 <translation id="7034692021407794547">Ni lazima msimamizi aliye na mamlaka ya Kudhibiti Malipo akubali Sheria na Masharti ya Google Meet Hardware katika sehemu ya Google Meet Hardware kwenye dashibodi ya Msimamizi.</translation>
+<translation id="7039951224110875196">Mfungulie mtoto Akaunti ya Google</translation>
 <translation id="7065223852455347715">Kifaa hiki kimefungwa katika hali ambayo inazuia usajili wa biashara. Ikiwa unataka kusajili kifaa unahitaji kupitia urejeshaji wa kifaa kwanza.</translation>
+<translation id="7066572364168923329">Chagua mipangilio ya <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="7077829361966535409">Ukurasa wa kuingia ulishindwa kupakiwa kutumia mipangilio ya sasa ya proksi. Tafadhali <ph name="GAIA_RELOAD_LINK_START" />jaribu tena kuingia<ph name="GAIA_RELOAD_LINK_END" />, au tumia <ph name="PROXY_SETTINGS_LINK_START" />mipangilio ya proksi<ph name="PROXY_SETTINGS_LINK_END" /> tofauti.</translation>
 <translation id="7088674813905715446">Kifaa hiki kimewekwa katika hali ya kutotumika na msimamizi. Ili kukiwezesha kwa uandikishaji, tafadhali mwambie msimamizi wako aweke kifaa katika hali ya kusubiri.</translation>
 <translation id="7114054701490058191">Nenosiri halilingani</translation>
 <translation id="7135729336746831607">Je, ungependa kuwasha Bluetooth?</translation>
 <translation id="7141105143012495934">Haikufaulu kuingia katika akaunti kwa sababu maelezo ya akaunti yako hayakupatikana. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
+<translation id="7171259390164035663">Usiandikishe</translation>
 <translation id="7189451821249468368">Huna leseni za kutosha kusajili kifaa hiki. Tafadhali wasiliana na huduma ya mauzo ili ununue nyingine. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
 <translation id="7202337678781136582">Changanua msimbo wa QR ukitumia simu yako ya Android</translation>
+<translation id="7228854227189381547">Usibadilishe</translation>
+<translation id="7230881857327093958">Mabadiliko yataanza kutumika baada ya kuweka mipangilio</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
+<translation id="7284411326658527427">Kila mtu anaweza kuweka mapendeleo kwenye akaunti yake na kuweka data yake iwe ya faragha.</translation>
 <translation id="7290242001003353852">Huduma hii ya kuingia katika akaunti, inayopangishwa na <ph name="SAML_DOMAIN" />, ina idhini ya kufikia kamera yako.</translation>
+<translation id="7311005168897771689">Kufikia faili zako za Hifadhi ya Google ukiwa nje ya mtandao</translation>
 <translation id="7317831949569936035">Uandikishaji wa kifaa cha shuleni</translation>
+<translation id="7326004502692201767">Weka mipangilio kwenye <ph name="DEVICE_TYPE" /> hii kwa ajili ya mtoto</translation>
+<translation id="732659786514229249">Ungependa kuandikisha kifaa kwenye shirika lako?</translation>
 <translation id="7329154610228416156">Haikufaulu kuingia katika akaunti kwa sababu ilisanidiwa ili itumie URL isiyo salama (<ph name="BLOCKED_URL" />). Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="7345706641791090287">Thibitisha nenosiri lako</translation>
+<translation id="7348093485538360975">Kibodi ya skrini</translation>
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
+<translation id="7403642243184989645">Inapakua Nyenzo</translation>
+<translation id="7406912950279255498">Hali ya ugeuzaji rangi</translation>
 <translation id="7416263748877373774">Imeshindwa kupakia Sheria na Masharti. Tafadhali kagua muunganisho wako wa mtandao kisha ujaribu tena.</translation>
 <translation id="7475742997309661417">Kisoma skrini kilicho kwenye ChromeOS, ChromeVox kinatumiwa kimsingi na watu wasio na uwezo wa kuona kabisa au wale wenye uwezo mdogo wa kuona ili kusoma maandishi yanayoonyeshwa kwenye skrini kupitia zana ya kuchanganua matamshi au skrini ya nukta nundu. Bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano ili uwashe ChromeVox. ChromeVox ikishawashwa, utapata maelekezo ya haraka ya jinsi ya kuitumia.</translation>
 <translation id="7476454130948140105">Betri haina chaji ya kutosha ili kuweza kusasisha (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -369,39 +525,61 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="7506541170099744506">Kifaa chako cha <ph name="DEVICE_TYPE" /> kimesajiliwa kwa usimamizi wa biashara.</translation>
 <translation id="7509097596023256288">Inaweka mipangilio ya udhibiti</translation>
 <translation id="7543104066686362383">Washa vipengele vya kutatua kwenye kifaa hiki cha <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544227555407951270">Andikisha kifaa</translation>
+<translation id="7549434883223124329">Ungependa kubadilisha lugha ya kifaa?</translation>
 <translation id="7553242001898162573">Weka nenosiri lako</translation>
 <translation id="7556242789364317684">Kwa bahati mbaya, <ph name="SHORT_PRODUCT_NAME" /> imeshindwa kuokoa mipangilio yako. Kurekebisha hitilafu hii, <ph name="SHORT_PRODUCT_NAME" /> lazima uweke upya kifaa chako na Powerwash.</translation>
 <translation id="7560756177962144929">Sawazisha <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="7571643774869182231">Hakuna nafasi ya kutosha kufanya sasisho</translation>
+<translation id="7616214729753637086">Inajumuisha kifaa...</translation>
 <translation id="7622114377921274169">Inachaji.</translation>
 <translation id="7630426712700473382">Kifaa hiki kinadhibitiwa na <ph name="MANAGER" /> na unahitajika kuingia katika akaunti kila wakati.</translation>
 <translation id="7639914187072011620">Imeshindwa kuleta kiungo kinachoelekeza kwingine cha SAML kutoka kwenye seva</translation>
 <translation id="7643117827468520640">Kagua masharti haya</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Data ya programu inaweza kuwa data yoyote ambayo imehifadhiwa na programu (kulingana na mipangilio ya msanidi programu), ikiwa ni pamoja na data kama vile anwani, ujumbe na picha. Nakala ya data iliyohifadhiwa haitatumia nafasi ya Hifadhi uliyopewa.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma hii katika Mipangilio.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7659584679870740384">Huruhusiwi kukitimia kifaa hiki. Tafadhali wasiliana na msimamizi kwa ruhusa ya kuingia katika akaunti.</translation>
 <translation id="7660116474961254898">Fuata maagizo kwenye simu yako</translation>
 <translation id="7661451191293163002">Haikupata cheti cha usajili.</translation>
+<translation id="7666531788977935712">Kitufe cha "endelea" kimewashwa</translation>
 <translation id="7671139479636735732">Bofya kulia ili uonyeshe mawazo yako kwa urahisi</translation>
 <translation id="770831926727930011">Data yako iliyo kwenye kifaa inalindwa kwa kutumia nenosiri lako la awali. Weka nenosiri lako la awali ili urejeshe data iliyo kwenye kifaa.</translation>
 <translation id="7722040605881499779">Nafasi inayohitajika ili kusasisha: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Inaoanisha na "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7746045113967198252">Ongeza au upunguze ukubwa wa vipengee vilivyo kwenye skrini yako, ikiwa ni pamoja na maandishi. Unaweza kuona mipangilio hii baadaye kwenye Mipangilio &gt; Kifaa &gt; Skrini.</translation>
 <translation id="7760176388948986635">Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa hiki kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa hiki ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kumtambulisha mtu yeyote binafsi ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="7784875615510899699">Huna leseni za kutosha za kusajili kifaa hiki cha Google Beam. Tafadhali wasiliana na muuzaji wako ili ununue zaidi. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na muuzaji wako.</translation>
+<translation id="7791269138074599214">Mbinu ya kuingiza data</translation>
+<translation id="7791436592012979144">Usogezaji nyuma umewashwa</translation>
 <translation id="7792012425874949788">Hitilafu imetokea wakati wa kuingia kwenye akaunti</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7803657407897251194">Ili uendelee kuweka mipangilio ukitumia kifaa chako cha Android, unganisha <ph name="DEVICE_TYPE" /> yako kwenye mtandao</translation>
+<translation id="7842692330619197998">Tembelea g.co/ChromeEnterpriseAccount ikiwa unahitaji kufungua akaunti mpya.</translation>
 <translation id="7851457902707056880">Kuingia katika akaunti kunaruhusiwa kwa mmiliki wa akaunti pekee. Tafadhali washa upya na uingie katika akaunti ya mmiliki. Mashine itawashwa upya ndani ya sekunde 30.</translation>
 <translation id="7870730066603611552">Kagua chaguo za usawazishaji baada ya kuweka mipangilio</translation>
 <translation id="7883792253546618164">Jiondoe wakati wowote.</translation>
+<translation id="7887864092952184874">Kipanya cha Bluetooth kimeoanishwa</translation>
 <translation id="7906440585529721295">Data iliyo kwenye kifaa itafutwa</translation>
+<translation id="7910725946105920830">Tumia Akaunti yako binafsi ya Google</translation>
+<translation id="7918257978052780342">Jiandikishe</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele vilivyotumika na kadirio la kiasi cha hifadhi kilichotumika.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa cha mtoto wako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Chaguo mahiri</translation>
 <translation id="7943311690198910993">Njia ya kuingia katika akaunti imesasishwa</translation>
 <translation id="795240231873601803">Tumia kipengele cha usajili wa biashara ikiwa unatumia akaunti za shuleni na kazini</translation>
 <translation id="7968982339740310781">Ona maelezo</translation>
 <translation id="7975504106303186033">Ni lazima uandikishe kifaa hiki cha Chrome Education kwenye akaunti ya elimu. Ili ufungue akaunti mpya, tafadhali tembelea g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">Kitambulisho cha Kipengee: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Tafadhali zima na uwashe kifaa chako ili kurekebisha hitilafu hii.</translation>
 <translation id="7990958035181555539">Hamisha kiotomatiki WiFi kwenye simu yako ya Android</translation>
+<translation id="8022466874160067884">Weka nenosiri la Akaunti yako ya Google</translation>
+<translation id="8049029041626250638">Unganisha kibodi au kipanya. Ikiwa unatumia vifaa vyenye Bluetooth, hakikisha kwamba vifaa vyako viko tayari kuoanisha.</translation>
 <translation id="8054563304616131773">Tafadhali andika anwani sahihi ya barua pepe</translation>
+<translation id="8054921503121346576">Kibodi ya USB imeunganishwa</translation>
 <translation id="8065144531309810062">Tumia Google AI ili uwe mbunifu zaidi na uongeze tija</translation>
+<translation id="8082106343289440791">Je, ungependa kuoanisha na "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Ni lazima msimamizi wako akubali kwanza sheria na masharti kwenye orodha ya vifaa vya Chrome katika dashibodi ya Wasimamizi.</translation>
 <translation id="8098616321286360457">Unahitaji muunganisho wa mtandao</translation>
 <translation id="8129265306888404830">Ili utumie anwani ya barua pepe ya shirika lako (<ph name="EMAIL_DOMAIN" />), unahitaji kutumia kipengele cha usajili wa biashara. Iwapo kifaa hiki ni kwa ajili ya matumizi yako binafsi, ingia ukitumia Akaunti yako binafsi ya Google.</translation>
@@ -409,28 +587,37 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="8146177459103116374">Ikiwa tayari umeingia kwenye kifaa hiki, unaweza <ph name="LINK2_START" /> kuingia kama mtumiaji aliyepo<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Haikufaulu kuingia katika akaunti. Tafadhali wasiliana na msimamizi wako au ujaribu tena.</translation>
 <translation id="8147346945017130012">Tusaidie kuboresha vipengele na utendaji wa Chrome na mfumo wa uendeshaji wa Chrome kwa kutuma kiotomatiki ripoti za kuacha kufanya kazi pamoja na data ya matumizi na uchunguzi kwa Google.</translation>
+<translation id="8152760814912191567">Google Beam kwenye Zoom</translation>
 <translation id="815491593104042026">Lo! Uthibitishaji haukufaulu kwa sababu ulisanidiwa ili kutumia URL isiyo salama (<ph name="BLOCKED_URL" />).  Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="8157704005178149728">Inaweka mipangilio ya usimamizi</translation>
 <translation id="8174047975335711832">Maelezo ya kifaa</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Huduma ya mahali ya Google hutumia vyanzo kama vile Wi-Fi, mitandao ya simu na vitambuzi ili kusaidia kukadiria mahali kifaa chako kilipo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima kipengele cha mahali cha Android kwenye kifaa chako wakati wowote kwa kwenda kwenye Mipangilio &gt; Programu &gt; Duka la Google Play &gt; Dhibiti mapendeleo kwenye Android &gt; Usalama na mahali &gt; Mahali. Unaweza pia kuzima utumiaji wa Wi-Fi, mitandao ya simu na vitambuzi kwenye kipengele cha mahali cha Android kwa kuzima “Usahihi wa Kipengele cha Google cha Kutambua Mahali” katika menyu hiyo hiyo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Tafadhali andika tena nenosiri lako ili usasishe wasifu wako kwenye <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8239032431519548577">Usajili wa biashara umekamilika</translation>
 <translation id="8241806945692107836">Inatambua usanidi wa kifaa...</translation>
 <translation id="8242426110754782860">Endelea</translation>
 <translation id="826905130698769948">Cheti cha kiteja si sahihi</translation>
+<translation id="8271379370373330993">Mzazi, hatua chache zinazofuata ni zako. Ukishaweka mipangilio ya akaunti, unaweza kumrudishia mtoto <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8274924778568117936">Usizime wala kufunga kifaa chako cha <ph name="DEVICE_TYPE" /> hadi sasisho likamilike. Kifaa chako cha <ph name="DEVICE_TYPE" /> kitazimika na kuwaka baada ya sasisho kukamilika.</translation>
 <translation id="8281886186245836920">Ruka</translation>
+<translation id="8291942417224950075">Kwa matumizi binafsi</translation>
 <translation id="8304383784961451596">Hujaidhinishwa kutumia kifaa hiki. Tafadhali wasiliana na msimamizi ili akupe ruhusa ya kuingia katika akaunti au uingie kwa kutumia akaunti ya Google inayodhibitiwa kupitia Family Link.</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> hii itadhibitiwa na <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Ukubwa wa skrini na maandishi</translation>
 <translation id="8354034204605718473">PIN ya mtoto wako imewekwa</translation>
 <translation id="8366396658833131068">Muunganisho wa mtandao wako umerejeshwa. Tafadhali chagua mtandao tofauti au bonyeza kitufe cha 'Endelea' hapo chini ili uzindue programu ya kioski.</translation>
 <translation id="8401432541486058167">Weka PIN inayohusiana na kadi yako mahiri.</translation>
 <translation id="8408270600235826886">Unaweza kudhibiti data inayoshirikiwa na Google. Unaweza kubadilisha hali hii wakati wowote katika Mipangilio. Data itatumika kulingana na <ph name="BEGIN_LINK" />Sera ya Faragha<ph name="END_LINK" /> ya Google.</translation>
 <translation id="8413956290606243087">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome?</translation>
 <translation id="8425768983279799676">Unaweza kutumia PIN kufungua kifaa chako.</translation>
+<translation id="8428213095426709021">Mipangilio</translation>
 <translation id="843173223122814223">Tayarisha mandharinyuma ukitumia AI</translation>
 <translation id="8452105022015742247">Kuhamisha maelezo ya Akaunti ya Google kutoka kwenye simu yako ya Android</translation>
 <translation id="8464132254133862871">Akaunti hii ya mtumiaji haikubaliwi kutumia huduma hii.</translation>
 <translation id="8524841856047224176">Wekea mapendeleo mandharinyuma ya kamera ili uyatumie unapopiga simu za video na zaidi</translation>
+<translation id="8527257351549797148">Shirika lako huenda likahitaji ujiandikishe ili uweze kufikia programu, viendelezi na zaidi. Hii inaruhusu shirika lako lidhibiti vitu kama usalama na mipangilio ya kifaa.</translation>
+<translation id="8558063527625343224">Weka mipangilio ya Google Beam</translation>
 <translation id="8569673829373920831">Maelezo zaidi kuhusu <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa chako kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa chako ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kukutambulisha ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.</translation>
 <translation id="8627804903623428808">Kagua sheria na masharti haya na udhibiti data ya mtoto wako</translation>
@@ -439,9 +626,13 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
         <ph name="BR" />
         Inaonekana kwa jina <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> kwenye vifaa vilivyo karibu...</translation>
 <translation id="8655972064210167941">Haikufaulu kuingia katika akaunti kwa sababu nenosiri lako halikuthibitishwa. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile vifaa vya kutolea Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo huduma na programu za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, mara kwa mara Google huchakata maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu nawe ili kuchangia katika data ya mahali iliyokusanywa kutoka kwa umma kupitia mawimbi ya simu za mkononi.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya bila kukutambulisha ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Unaweza kuzima mipangilio ya Usahihi wa Mahali wakati wowote katika mipangilio ya mahali ya kifaa chako kwenye sehemu ya Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali &gt; Mipangilio ya kina ya mahali. Ukizima mipangilio ya Usahihi wa Mahali, hakuna data ya Usahihi wa Mahali itakayokusanywa. Kwenye programu na huduma za Android, anwani ya IP, inapopatikana, ndiyo tu hutumika kubaini mahali kifaa chako kilipo, hali inayoweza kuathiri upatikanaji na usahihi wa data ya mahali kwenye programu na huduma za Android kama vile Ramani za Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Kwa bahati mbaya, kompyuta yako imewekewa mipangilio na kitambulisho cha maunzi yenye hitilafu. Hali hii huzuia Mfumo wa Uendeshaji wa Chrome usisasishe marekebisho ya usalama ya hivi karibuni na kompyuta yako <ph name="BEGIN_BOLD" />inaweza kuwa hatarini kutokana na mashambulizi hasidi<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Ongeza vidhibiti vya wazazi baada ya kuweka mipangilio</translation>
 <translation id="8698269656364382265">Ili urudi kwenye skrini ya awali, telezesha kidole kutoka upande wa kushoto.</translation>
+<translation id="8718994464069323380">Skrini ya kugusa imetambuliwa</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
 <translation id="8726206820263995930">Hitilafu wakati wa kupata mipangilio ya sera kutoka kwenye seva: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
@@ -449,24 +640,36 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="8740247629089392745">Unaweza kumpa <ph name="SUPERVISED_USER_NAME" /> Chromebook hii. Unakaribia kumaliza kuweka mipangilio, kisha ataweza kuitumia.</translation>
 <translation id="8759753423332885148">Pata maelezo zaidi.</translation>
 <translation id="8777628254805677039">nenosiri msingi</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Andika msimbo wa kuoanisha Bluetooth kisha ubonyeze Return au Enter.</translation>
 <translation id="8794548468611058947">Badala ya kuweka nenosiri la Akaunti yako ya Google ili uingie katika akaunti, unaweza kubuni PIN ili uitumie kwenye <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830796635868321089">Kuangalia sasisho kumeshindwa kutumia mipangilio ya sasa ya proksi. Tafadhali rekebisha <ph name="PROXY_SETTINGS_LINK_START" />mipangilio yako ya proksi<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Kifaa hiki cha Chromebook Enterprise kinakuja na kifurushi cha Chrome Enterprise Upgrade. Ili ufurahie uwezo wa biashara, andikisha kifaa hiki ukitumia akaunti ya Google ya msimamizi.</translation>
 <translation id="885746075120788020">Mapendeleo na shughuli ulizohifadhi zitakuwa tayari kwenye kifaa chochote kinachotumia Mfumo wa Uendeshaji wa Chrome ukiingia kwa kutumia Akaunti yako ya Google. Unaweza kuchagua unachotaka kusawazisha katika Mipangilio.</translation>
+<translation id="8868333925931032127">Inaanzisha Hali ya Onyesho</translation>
 <translation id="8875221558267407626">Andaa muhtasari wa maudhui, rahisisha lugha changamano au uulize maswali</translation>
+<translation id="8907701755790961703">Tafadhali chagua nchi</translation>
 <translation id="8913163265790894442">Weka mipangilio kwa urahisi kwenye <ph name="DEVICE_TYPE" /> yako ukitumia simu yako. Unaweza kuweka Wi-Fi na Akaunti yako ya Google bila kuweka manenosiri mwenyewe.
         <ph name="BR" />
         <ph name="BR" />
         Huonekana kwa jina la <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">Endelea</translation>
 <translation id="8946359700442089734">Vipengele vya kutatua havikuwashwa kikamilifu kwenye kifaa hiki cha <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8965037249707889821">Weka nenosiri la zamani</translation>
+<translation id="8968906873893164556">Chagua akaunti ya kutumia kuweka mipangilio</translation>
+<translation id="8973596347849323817">Unaweza kubadilisha mipangilio ya kifaa hiki kulingana na mahitaji yako. Vipengele hivi vya zana za walio na matatizo ya kuona au kusikia vinaweza kubadilishwa baadaye kwenye Mipangilio.</translation>
 <translation id="8975396729541388937">Unaweza kujiondoa wakati wowote kwa kubofya kiungo katika barua pepe unazopokea.</translation>
+<translation id="8987305927843254629">Kila mtu anaweza kuweka mapendeleo ya hali yake ya utumiaji na kuweka data yake iwe ya faragha.</translation>
 <translation id="8993059306046735527">Ukisahau nenosiri lako la <ph name="DEVICE_TYPE" />, bado unaweza kurejesha data yako iliyo kwenye kifaa. Utahitaji kuingia kwenye Akaunti yako ya Google au utumie mbinu za kurejesha uwezo wa kufikia akaunti.</translation>
 <translation id="9033765790910064284">Endelea tu</translation>
 <translation id="903480517321259405">Andika PIN tena</translation>
 <translation id="9040473193163777637">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome? Ikiwa ndivyo, bonyeza na ushikilie vitufe vya sauti vyote viwili kwa sekunde tano.</translation>
 <translation id="9068298336633421551">Ruhusu programu na huduma za Android zenye ruhusa ya mahali zitumie maelezo ya mahali kifaa hiki kilipo. Google inaweza kukusanya data ya mahali mara kwa mara na kutumia data hiyo kwa njia isiyokutambulisha ili kuboresha usahihi wa kipengele cha kutambua mahali na huduma zinazohusiana na mahali.</translation>
+<translation id="9074836595010225693">Kipanya cha USB kimeunganishwa</translation>
 <translation id="9076523132036239772">Samahani, barua pepe au nenosiri lako havingeweza kuthibitishwa. Jaribu kuunganisha kwenye mtandao kwanza.</translation>
+<translation id="9089959054554410481">Badilisha mwelekeo wa kusogeza wa padi ya kugusa</translation>
 <translation id="9158715103698450907">Lo! Tatizo la mawasiliano katika mtandao lilitokea wakati wa uthibitishaji. Tafadhali kagua muunganisho wa mtandao wako na ujaribu tena.</translation>
+<translation id="9186963452600581158">Ingia ukitumia Akaunti ya Google ya mtoto</translation>
 <translation id="919686179725692564">Pata maelezo zaidi kuhusu kuhifadhi nakala za programu zako</translation>
 <translation id="9214520840402538427">Lo! Uanzishaji wa muda wa usakinishaji sifa umechina. Tafadhali wasiliana na mwakilishi wako wa kutoa msaada.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Inapatikana kwenye <ph name="DEVICE_TYPE" /> pekee.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
         <ph name="BR" />
         Huonekana kwa jina la <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">Kataa</translation>
+<translation id="954749761428814584">Lugha na mbinu ya kuingiza data</translation>
+<translation id="960987915827980018">Takriban saa 1 imesalia</translation>
+<translation id="995420352808264005">Chagua aina ya uandikishaji wa kifaa</translation>
 </translationbundle>

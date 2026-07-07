@@ -1573,6 +1573,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="628251768213143684">Varat jebkurā laikā pārvaldīt savā Google kontā saglabāto informāciju.</translation>
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Lai ieslēgtu drošo pārlūkošanu, atveriet sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" /> un pieskarieties vienumam Droša pārlūkošana.</translation>
+<translation id="6295140892595702619">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts sadaļā “Gemini Apps darbības” (ja šis iestatījums ir ieslēgts). Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="6295751040240588413">Nederīgs kredītkartes apzīmējums</translation>
 <translation id="629730747756840877">Konts</translation>
 <translation id="6301104306974789820">Saņemt cenu izsekošanas paziņojumus</translation>
@@ -2181,7 +2182,6 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8264966119170358612">Datu aizsardzības pārkāpumā, kas neradās Google serveros, tika atklātas dažas no jūsu saglabātajām parolēm. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="826614135184049678">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPad planšetdatora atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="8270320981823560179">Disks</translation>
-<translation id="8273982424131314219">Jūs aizpildīsiet informāciju vietnē <ph name="URL" />.</translation>
 <translation id="8274795744553482834">Jūs gatavojaties mainīt profilus</translation>
 <translation id="8275068909952022340">Vairāk…</translation>
 <translation id="8280797717392145626">Saites ir saņemtas</translation>
@@ -2415,6 +2415,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, piesprausta vietne</translation>
 <translation id="8990960056509724223">Failu nevarēja saglabāt jūsu organizācijas politiku dēļ.</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
+<translation id="9003263770394939629">Gemini ieteikums. Pārvaldiet uzlaboto automātisko aizpildi iestatījumos.</translation>
 <translation id="9003677638446136377">Pārbaudīt vēlreiz</translation>
 <translation id="9006453925669499173">Izvēlne → Jauna inkognito cilne</translation>
 <translation id="9008201768610948239">Ignorēt</translation>

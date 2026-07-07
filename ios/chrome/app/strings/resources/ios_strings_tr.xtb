@@ -1573,6 +1573,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="628251768213143684">Google Hesabınıza kaydedilen bilgileri istediğiniz zaman yönetebilirsiniz</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> diline çevirmeyi öner</translation>
 <translation id="6293101329759844770">Güvenli Tarama'yı etkinleştirmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ni açıp Güvenli Tarama'ya dokunun.</translation>
+<translation id="6295140892595702619">Gemini ile sohbet etmek için mikrofonunuzu kullanın. Gemini ile konuştuğunuzda ses, Gemini Uygulamaları Etkinliği'ne (açıksa) kaydedilir. Verileriniz, üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz</translation>
 <translation id="6295751040240588413">Kart için geçersiz takma ad</translation>
 <translation id="629730747756840877">Hesap</translation>
 <translation id="6301104306974789820">Fiyat takibi bildirimleri al</translation>
@@ -2181,7 +2182,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8264966119170358612">Google harici bir veri ihlalinde bazı kayıtlı şifreleriniz sızdırılmış. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad sıfırlama işleminin bir parçası olarak <ph name="USER_NAME" /> hesabınızın oturumu kapatıldı. Yeniden oturum açmak için aşağıda "İlerle"ye dokunun.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Bilgileriniz <ph name="URL" /> adresinde doldurulacak</translation>
 <translation id="8274795744553482834">Profil değiştirmek üzeresiniz</translation>
 <translation id="8275068909952022340">Diğer…</translation>
 <translation id="8280797717392145626">Bağlantılar alındı</translation>
@@ -2415,6 +2415,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sabitlenmiş site</translation>
 <translation id="8990960056509724223">Dosya, kuruluşunuzun politikaları nedeniyle kaydedilemedi</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
+<translation id="9003263770394939629">Gemini tarafından önerildi. Gelişmiş otomatik doldurma özelliğini ayarlardan yönetin.</translation>
 <translation id="9003677638446136377">Tekrar kontrol et</translation>
 <translation id="9006453925669499173">Menü → Yeni gizli Sekme</translation>
 <translation id="9008201768610948239">Yoksay</translation>

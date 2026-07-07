@@ -3140,6 +3140,11 @@ Diese Richtlinie hat keine Auswirkungen auf die Richtlinie „<ph name="WEB_APP_
         Diese Richtlinie hat keine Auswirkung auf bereits veröffentlichte Richtlinien.</translation>
 <translation id="3002067315837777719">Aktivieren von Phone Hub-Benachrichtigungen nicht zulassen</translation>
 <translation id="3003490107503207900">Herunterladen von Office-Dokumenten (z. B. von DOCX-Dateien) erzwingen, anstatt sie im <ph name="BASIC_EDITOR_NAME" /> zu öffnen</translation>
+<translation id="3003832749381802588">Steuert, wie <ph name="PRODUCT_OS_NAME" /> mit einem Passwortkonflikt umgeht, der bei einer Onlineanmeldung erkannt wird. Diese Richtlinie bestimmt, was passiert, wenn das Passwort des Nutzers, das über einen Online-Identitätsanbieter (z. B. einen Drittanbieter-IdP oder GAIA) authentifiziert wurde, nicht mit dem Passwort übereinstimmt, das zum Verschlüsseln der lokalen Daten verwendet wurde. Dies geschieht in der Regel, nachdem ein Nutzer sein Passwort extern geändert hat.
+
+Wenn für die Richtlinie „0“ (Standardablauf für Passwortänderungen) festgelegt wird oder sie nicht konfiguriert ist, wird der Standardablauf für Passwortänderungen gestartet. Der Nutzer wird aufgefordert, sein altes Passwort einzugeben, um die Verschlüsselung seiner lokalen Daten zu aktualisieren. Er kann aber auch andere Mechanismen zur Wiederherstellung lokaler Daten verwenden, sofern verfügbar.
+
+Wenn für die Richtlinie „1“ (Automatisches Löschen lokaler Daten) festgelegt wird, wird der standardmäßige Ablauf zum Ändern des Passworts umgangen. Wenn die Passwörter nicht übereinstimmen, werden die lokalen Daten des Nutzers automatisch gelöscht. Dadurch kann sich der Nutzer nahtlos mit seinem neuen Passwort anmelden, aber alle lokal im Nutzerprofil gespeicherten Daten (z. B. Downloads, nicht synchronisierte Einstellungen) gehen verloren. Diese Option ist für Umgebungen vorgesehen, in denen Nutzer Daten hauptsächlich in der Cloud speichern oder das Passwort häufig aktualisiert werden soll.</translation>
 <translation id="300673820739371513">Mit dieser Richtlinie wird festgelegt, ob Nur-Text-Entitäten auf Webseiten erkannt werden. Nutzer können dann Kontextaktionen auslösen, indem sie mit diesen interagieren.
 Die Richtlinie hat mehrere Attribute, eines für jeden Entitätstyp.
 Entitätstypen sind z. B. „<ph name="DEFAULT_ENUM_VALUE" />“ und „<ph name="ADDRESS_ENUM_VALUE" />“.
@@ -8846,6 +8851,7 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 
       Hinweis: Verwende diese Richtlinie mit <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Rechtschreibprüfung aktiviert ist.</translation>
+<translation id="6625424971640741579">Standardablauf für Passwortänderungen</translation>
 <translation id="6625716212597516929">Altes Verhalten des Cookie-Bereichs wiederherstellen</translation>
 <translation id="6626319579493977784">Einstellungen für dynamischen Code</translation>
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
@@ -9050,6 +9056,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="6763023079133439068">Zertifikate ohne die Erweiterung „subjectAlternativeName“ zulassen, wenn sie von lokalen Trust-Anchors ausgestellt sind</translation>
 <translation id="6766216162565713893">Websites dürfen den Nutzer um Zugriff auf ein Bluetooth-Gerät in der Nähe bitten</translation>
 <translation id="6770454900105963262">Informationen zu aktiven Kiosksitzungen senden</translation>
+<translation id="6770703270685871935">Automatisches Löschen lokaler Daten</translation>
 <translation id="6774132787348495175">Nicht zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
 <translation id="6782331708811245959">Melden des Bootmodus auf Geräten aktivieren</translation>
 <translation id="6783578496154221347">Verwende „WeeklyTimeIntervalChecked“ in neuem Code.</translation>
@@ -9343,6 +9350,7 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
       Wenn sie nicht konfiguriert ist, stehen keine Gerätedrucker zur Verfügung und die anderen <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />-Richtlinien werden ignoriert.</translation>
 <translation id="69525503251220566">Parameter für Funktion zur bildgesteuerten Suche für Standardsuchanbieter</translation>
 <translation id="6953102253399571439">PIN-Druckmodus standardmäßig aktivieren</translation>
+<translation id="6953246833109449226">Verhalten bei Online-Passwortkonflikten konfigurieren</translation>
 <translation id="695532899547292238">Erfassen von Protokollen für die Kiosk-App aktivieren</translation>
 <translation id="6956272732789158625">Schlüsselgenerierung für keine Website zulassen</translation>
 <translation id="6960996423652450945">„Caret hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>

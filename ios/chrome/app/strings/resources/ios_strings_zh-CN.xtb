@@ -429,7 +429,7 @@
 <translation id="2367025302166767427">填写信息时遇到问题</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
 <translation id="2371303771137626249">新建</translation>
-<translation id="2375947780110007467">Google 会使用所分享标签页的内容和网址。系统会在新对话中分享当前标签页。您可以随时更改此设置。</translation>
+<translation id="2375947780110007467">Google 会使用共享标签页的内容和网址。系统会在新对话中共享当前标签页。你可以随时更改此设置。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隐藏无痕式标签页</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">您随时可管理您 Google 账号中保存的内容</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
+<translation id="6295140892595702619">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）。您的数据不会用于改进生成式 AI 模型</translation>
 <translation id="6295751040240588413">卡的别名无效</translation>
 <translation id="629730747756840877">账号</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
@@ -2181,7 +2182,6 @@
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8270320981823560179">云端硬盘</translation>
-<translation id="8273982424131314219">信息即将填写到 <ph name="URL" /></translation>
 <translation id="8274795744553482834">您即将切换个人资料</translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8280797717392145626">已收到链接</translation>
@@ -2298,7 +2298,7 @@
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
-<translation id="8642417828095157370">系统会分享标签页以提供更相关的回答</translation>
+<translation id="8642417828095157370">系统会共享标签页以提供更相关的回答</translation>
 <translation id="8643403533759285912">删除分组</translation>
 <translation id="8647280737650867362">无法取消跟踪价格。</translation>
 <translation id="8654802032646794042">取消</translation>
@@ -2415,6 +2415,7 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
 <translation id="8990960056509724223">根据您所在组织的政策，您无法保存文件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
+<translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>
 <translation id="9003677638446136377">再次检查</translation>
 <translation id="9006453925669499173">菜单 → 打开新的无痕式标签页</translation>
 <translation id="9008201768610948239">忽略</translation>

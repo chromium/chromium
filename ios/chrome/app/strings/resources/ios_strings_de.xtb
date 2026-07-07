@@ -484,6 +484,7 @@
 <translation id="2579713773888829241">Geteilte Ablagen</translation>
 <translation id="2580306219079937316">Einstellungen für Übersetzung öffnen</translation>
 <translation id="2583688836549072561">Tabgruppe, „<ph name="GROUP_TITLE" />“, <ph name="TABS_NUMBER" /> Tabs, neue Aktivität.</translation>
+<translation id="2584994295315085351">Neuen Tab öffnen, wenn du nach 4 Stunden zu Chrome zurückkehrst</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Preissenkungen von Produkten beobachten</translation>
 <translation id="2602372807870028932">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät gespeichert sind</translation>
@@ -1572,6 +1573,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="628251768213143684">Du kannst jederzeit festlegen, was in deinem Google-Konto gespeichert werden soll</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
+<translation id="6295140892595702619">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Aktivitätsverlauf in Gemini-Apps gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="6295751040240588413">Ungültiger Kartenalias</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
@@ -2180,7 +2182,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Du gibst Informationen in <ph name="URL" /> ein</translation>
 <translation id="8274795744553482834">Du bist dabei, das Profil zu wechseln</translation>
 <translation id="8275068909952022340">Mehr…</translation>
 <translation id="8280797717392145626">Links empfangen</translation>
@@ -2414,6 +2415,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
 <translation id="8990960056509724223">Die Datei konnte aufgrund der Richtlinien deiner Organisation nicht gespeichert werden</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
+<translation id="9003263770394939629">Von Gemini vorgeschlagen. Du kannst die Funktion „Erweitertes Autofill“ in den Einstellungen verwalten.</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>
 <translation id="9006453925669499173">„Menü“ → „Neuer Inkognitotab“</translation>
 <translation id="9008201768610948239">Ignorieren</translation>

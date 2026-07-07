@@ -1578,6 +1578,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="628251768213143684">अपने Google खाते में सेव की गई जानकारी को किसी भी समय मैनेज किया जा सकता है</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> में अनुवाद करें</translation>
 <translation id="6293101329759844770">Safe Browsing चालू करने के लिए, <ph name="BEGIN_LINK" />Google की सेवाएं<ph name="END_LINK" /> खोलें और Safe Browsing पर टैप करें.</translation>
+<translation id="6295140892595702619">Gemini से बोलकर बातचीत करने के लिए, माइक्रोफ़ोन का इस्तेमाल करें. Gemini से बोलकर बातचीत करने पर, ऑडियो को Gemini Apps में की गई गतिविधि के डेटा में सेव किया जाता है (अगर यह सेटिंग चालू है). आपके डेटा का इस्तेमाल, जनरेटिव एआई मॉडल में सुधार करने के लिए नहीं किया जाता है</translation>
 <translation id="6295751040240588413">कार्ड का कोई दूसरा नाम अमान्य है</translation>
 <translation id="629730747756840877">खाता</translation>
 <translation id="6301104306974789820">प्रॉडक्ट की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
@@ -2186,7 +2187,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8264966119170358612">पासवर्ड मैनेजर में सेव किए गए आपके कुछ पासवर्ड, बिना अनुमति के सार्वजनिक किए गए हैं. ऐसा करने के लिए, Google के बजाय किसी तीसरे पक्ष ने डेटा का गलत इस्तेमाल किया है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad रीसेट होने की वजह से, आपको <ph name="USER_NAME" /> खाते से साइन आउट कर दिया गया था. फिर से साइन इन करने के लिए, नीचे "जारी रखें" पर टैप करें.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">आपको <ph name="URL" /> में जानकारी भरनी होगी</translation>
 <translation id="8274795744553482834">प्रोफ़ाइलें स्विच होने वाली हैं</translation>
 <translation id="8275068909952022340">ज़्यादा…</translation>
 <translation id="8280797717392145626">लिंक मिले</translation>
@@ -2421,6 +2421,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन की गई साइट</translation>
 <translation id="8990960056509724223">आपके संगठन की नीतियों की वजह से, फ़ाइल सेव नहीं की जा सकी</translation>
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
+<translation id="9003263770394939629">Gemini ने सुझाया है. सेटिंग में जाकर, ऑटोमैटिक तरीके से भरने की बेहतर सुविधा मैनेज करें.</translation>
 <translation id="9003677638446136377">फिर से जाँचें</translation>
 <translation id="9006453925669499173">मेन्यू → नया गुप्त टैब</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>

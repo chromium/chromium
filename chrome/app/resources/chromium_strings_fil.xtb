@@ -29,7 +29,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
 <translation id="1287534462498555020">I-download ang Chromium sa iyong telepono</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Isang larawang nagpapakita kung paano mo magagamit ang Paghahanap ng Larawan para maghanap ng produkto</translation>
 <translation id="1315551408014407711">I-set up ang iyong bagong profile sa Chromium</translation>
 <translation id="132092532143527429">Subukan sa Gemini sa Chromium</translation>
 <translation id="1324107359134968521">Kailangan ng Chromium ng access sa Bluetooth para i-explore ang 
@@ -496,7 +495,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="6400112897226594999">Logo ng Chromium sa loob ng screen ng computer.</translation>
 <translation id="6403826409255603130">Ang Chromium ay isang web browser na nagpapatakbo ng mga webpage at application sa bilis ng kidlat. Ito ay mabilis, maaasahan, at madaling gamitin. Mas maingat na mag-browse sa web gamit ang proteksyon ng Chromium laban sa malware at phishing.</translation>
 <translation id="6414624068245092115">Para matiyak na magagamit at mase-save mo ang data ng Chromium sa iyong Google Account anumang oras, i-verify na ikaw ito</translation>
-<translation id="6417332166651156371">Isang pinasimpleng larawan na nagpapakita ng entry point ng Password Manager sa Chromium</translation>
 <translation id="642132557830635295">Mas mabilis na tatakbo ang Chromium at gagana ang mga feature na gumagamit ng JavaScript ayon sa pagkakadisenyo sa mga ito</translation>
 <translation id="6436260184216827876">Hindi available ang Paghahanap ng Larawan. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6442900851116057561">I-restart ang ChromiumOS</translation>

@@ -1127,6 +1127,7 @@
 <translation id="271663710482723385">צריך ללחוץ על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי לצאת מהמסך המלא</translation>
 <translation id="2717336592027046789">Roll</translation>
 <translation id="2718207025093645426">לא נטענה מדיניות למכשיר או למשתמש המנוהל.</translation>
+<translation id="271850739643214113">‏חשבון ה-Pix שלך קושר בהצלחה ל-Google Pay</translation>
 <translation id="2719233594187778789">‏כתובת URL זהה שהמערכת התעלמה ממנה: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">הבקשה בוצעה בהצלחה</translation>
 <translation id="2722622039067384533">ריהוט לסלון</translation>
@@ -1215,6 +1216,7 @@
 <translation id="2903493209154104877">כתובות</translation>
 <translation id="290376772003165898">הדף לא ב<ph name="LANGUAGE" />?</translation>
 <translation id="2904180982022726666">הארגון שלך מגביל את מה שאפשר לשתף</translation>
+<translation id="2905065304080706507">‏כשההגדרה מופעלת, Chrome ישתף את הכרטיסיות הרלוונטיות בחלון הזה כדי לתת לך תשובות יותר רלוונטיות.</translation>
 <translation id="2905107382358353958">התראה לגבי הגדרת תשלום חדשה</translation>
 <translation id="2909946352844186028">אותר שינוי ברשת.</translation>
 <translation id="2910062169995917863">תוקף הסשן פג</translation>
@@ -1417,6 +1419,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> רוצה לאחסן נתונים במכשיר שלך באופן קבוע</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> בשרת <ph name="SERVER_NAME" /></translation>
+<translation id="3196902089458890316">תמיד לשתף את הכרטיסיות הרלוונטיות? זה יעזור לך לקבל תשובות טובות יותר.</translation>
 <translation id="3197136577151645743">האתר יכול לבקש הרשאה לשאול מתי את/ה משתמש/ת בפועל במכשיר</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="3203025201812691413">‏כתובת ה-URL לא יכולה להיות ריקה</translation>
@@ -1566,6 +1569,7 @@
 <translation id="343474037147570563">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">אבטחה</translation>
+<translation id="3436125638121079308">רוצה לשתף את הכרטיסיות הרלוונטיות באופן אוטומטי בשרשור הזה? זה יעזור לך לקבל תשובות טובות יותר.</translation>
 <translation id="3438509337461223476">שיתוף אוטומטי של הכרטיסיות הפתוחות הרלוונטיות בכל השרשורים</translation>
 <translation id="3440783957068352691">ריבוע</translation>
 <translation id="3441653493275994384">מסך</translation>
@@ -1627,6 +1631,7 @@
 <translation id="3537165859691846083">‏8.5x12.67 אינץ' (Letter Plus)</translation>
 <translation id="353816159217417898">Screen (Paged)</translation>
 <translation id="3541016556608204104">‏מידע נוסף על Chrome Enterprise Connectors</translation>
+<translation id="3542005451565251757">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS, והפעלת את אמצעי ההגנה המתקדמת בהגדרות שלך ב-Android. <ph name="LEARN_MORE" /></translation>
 <translation id="3542628208405253498">תמונת הכרטיס</translation>
 <translation id="3542768452570884558">פתיחת הקישור בחלון חדש</translation>
 <translation id="3543597750097719865">‏חתימת X9.62 ECDSA עם SHA-512</translation>
@@ -1786,6 +1791,7 @@
 <translation id="3761718714832595332">הסתרת הסטטוס</translation>
 <translation id="3763752038825281594">בעבר לא נתת הרשאה ל<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="3765588406864124894">תיבת דואר 9</translation>
+<translation id="3766505784424699541">כדי לקבל תשובות שמותאמות לך יותר, יש לך אפשרות לשתף אוטומטית כרטיסיות רלוונטיות בחלון הזה, אם הן קשורות לשרשור.</translation>
 <translation id="3767485424735936570">לפי המדיניות של מנהל המערכת, לא מומלץ להעתיק את התוכן ולהדביק אותו ב-<ph name="VM_NAME" /></translation>
 <translation id="3769584711865378220">‫<ph name="URL" /> רוצה לשנות את הרשאת הגישה למיקום מ"משוער" ל"מדויק"</translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
@@ -1871,6 +1877,7 @@
 <translation id="3901925938762663762">תוקף הכרטיס פג</translation>
 <translation id="390391808978419508">פג הזמן הקצוב לפתיחה</translation>
 <translation id="3905894480064208252">{0,plural, =1{אין אפשרות להעביר את הקובץ}one{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}}</translation>
+<translation id="3906022360148923497">סמל אמצעי התשלום</translation>
 <translation id="3906954721959377182">טאבלט</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">מידע נוסף על תוכן מוטמע</translation>
@@ -2092,6 +2099,7 @@
 <translation id="422722221769396062">שירותי משלוחים ממסעדות</translation>
 <translation id="4230204356098880324">האתר יכול לבקש הרשאה להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="4231448684371260244">‏8x13 אינץ'</translation>
+<translation id="4234996384188431444">‏לא צריך יותר לעבור בין אפליקציות ב-Google Chrome, פשוט משלמים דרך Pix</translation>
 <translation id="4239799716689808527">Labels</translation>
 <translation id="424063167283213501">‏לשמור את מספר ה-KTN?</translation>
 <translation id="4241830393007970744">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך.</translation>
@@ -2108,6 +2116,7 @@
 <translation id="4255487295905690262">יישלחו אליך התראות באימייל אם תהיה הנחה באתר כלשהו.</translation>
 <translation id="425582637250725228">ייתכן שהשינויים שביצעת לא יישמרו.</translation>
 <translation id="4258748452823770588">חתימה שגויה</translation>
+<translation id="4258927999980634471">לשתף אוטומטית את הכרטיסיות הרלוונטיות בשרשור הזה?</translation>
 <translation id="4260407128682690669">‏כדי להעביר היסטוריה מהמכשירים האחרים, צריך לסנכרן אותה ואת הכרטיסיות עם <ph name="ACCOUNT_EMAIL" />. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4265635050210404830">כרטיסי מועדון הלקוחות שלך</translation>
 <translation id="4265872034478892965">אושרה על-ידי מנהל המערכת</translation>
@@ -2175,6 +2184,7 @@
 <translation id="4340810192899866471">‏ייבוא מקובץ JSON</translation>
 <translation id="4340982228985273705">‏המחשב לא זוהה כמכשיר המנוהל על ידי הארגון, כך שלפי המדיניות מותר להתקין אוטומטית רק תוספים מחנות האינטרנט של Chrome. כתובת האתר לעדכונים מחנות האינטרנט של Chrome היא "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">פארקי שעשועים</translation>
+<translation id="4344194909635300809">‏שמות הדפים וכתובות ה-URL שלהם נשלחים אל Google, ויכול להיות שבודקים אנושיים יבדקו אותם.</translation>
 <translation id="4346670990181948854">מידע על נסיעות · כלי רכב</translation>
 <translation id="4348834659292907206">החיבור אל <ph name="SITE" /> אינו מאובטח</translation>
 <translation id="4349365535725594680">אי אפשר לשתף תוכן סודי</translation>
@@ -2182,6 +2192,7 @@
 <translation id="4350629523305688469">מגש מרובה פונקציות</translation>
 <translation id="4351060348582610152">‏<ph name="ORIGIN" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>
 <translation id="4355383636893709732">‏עדכון של ChromeOS לאפליקציות ל-Android</translation>
+<translation id="4357577888320640139">רוצה לשתף אוטומטית את הכרטיסיות הרלוונטיות בכל שרשור?</translation>
 <translation id="4358059973562876591">‏לא ניתן להחיל את התבניות שבחרת עקב שגיאה במדיניות DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">ניהול אמצעי תשלום...</translation>
 <translation id="4359160567981085931">‏הזנת כרגע את הסיסמה שלך באתר מטעה. אפשר לפתור את הבעיה בעזרת Chrome. כדי לשנות את הסיסמה ולהודיע ל-Google שייתכן כי החשבון בסיכון, יש ללחוץ על 'הגנה על החשבון'.</translation>
@@ -2217,6 +2228,7 @@
 <translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">אפשר למחוק את הסיסמאות בהגדרות הניהול שלהן</translation>
 <translation id="4424024547088906515">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי Chrome. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
+<translation id="4425137053900958839">‏עם Pix אפשר לשלם ולהעביר כספים בראש שקט, בבטחה ובנוחות</translation>
 <translation id="4425750422187370446">ביגוד לספורט</translation>
 <translation id="443121186588148776">יציאה טורית</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> לא אישר את אישור ההתחברות שלך, או שלא סופק אישור התחברות.</translation>
@@ -2383,6 +2395,7 @@
 <translation id="4726672564094551039">טעינת המדיניות מחדש</translation>
 <translation id="4728558894243024398">פלטפורמה</translation>
 <translation id="4729147136006144950">צדקה ופילנתרופיה</translation>
+<translation id="4730773064303503917">‏שימוש ב-Pix מאפשר להעביר כסף לחברים ולשלם לעסקים באמצעות Wallet</translation>
 <translation id="4730977633786878901">ביקורות</translation>
 <translation id="4731638775147756694">האפליקציה נחסמה על ידי מנהל המערכת</translation>
 <translation id="4732860731866514038">חבילת השפה <ph name="LANGUAGE" /> בהורדה… <ph name="PERCENT" />%</translation>
@@ -2671,6 +2684,7 @@ Del</translation>
 <translation id="5157504274688344097">חנויות כלבו</translation>
 <translation id="5158275234811857234">שער</translation>
 <translation id="5159010409087891077">‏פתיחת הדף בחלון אנונימי (‎⇧⌘N)</translation>
+<translation id="5160781056848005130">‏שיתוף נתונים עם Google יעזור לנו לשפר את המילוי האוטומטי</translation>
 <translation id="5161334686036120870">נושא:</translation>
 <translation id="5161506081086828129">מערים 9</translation>
 <translation id="5164537320435517152">אפשר למחוק את הקבצים בעוד <ph name="MINUTES" /> דקות</translation>
@@ -3414,6 +3428,7 @@ Del</translation>
 <translation id="6302546952464230349">הצגת פרטי ההרשאה <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">תוכנות מולטימדיה</translation>
 <translation id="6305205051461490394">לא ניתן לגשת אל <ph name="URL" />.</translation>
+<translation id="6305834316918845109">‏כשמקלידים בקשה למילוי אוטומטי משופר, Chrome מתעד את השימוש בתכונה. למשל אם קיבלת, ערכת או התעלמת מהצעות למילוי אוטומטי</translation>
 <translation id="6306713302480826305">הכתובת הזו תימחק מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון</translation>
 <translation id="6307968763353904914">בשלב זה, הבנק שלך לא יכול להציע כרטיסים וירטואליים לאמצעי התשלום הזה, אבל עדיין אפשר להשתמש בכרטיס <ph name="CARD_LABEL" /> לתשלום באינטרנט.</translation>
 <translation id="6311410654831092784">Card Stock</translation>
@@ -3664,6 +3679,7 @@ Del</translation>
 <translation id="6689271823431384964">‏מאחר שנכנסת לחשבון, Chrome מציע לשמור את הכרטיסים שלך בחשבון Google. אפשר לשנות את ההתנהגות הזאת בהגדרות. שם בעל הכרטיס מגיע מהחשבון שלך.</translation>
 <translation id="6690688090329768424">‫"<ph name="PROXY_INVALID_DESTINATION" />" היא תבנית יעד לא תקינה.</translation>
 <translation id="6691397311652656001">צריך לפנות נפח של יותר מ-<ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
+<translation id="6692006953064648573">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS, והחשבון שלך פועל במסגרת תוכנית ההגנה המתקדמת של Google. <ph name="LEARN_MORE" /></translation>
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לאתר את המכשיר דרך חשבון Google</translation>
 <translation id="6695428916538794739">סרטי פעולה והרפתקאות</translation>
 <translation id="6696424331653607346">מדריכי נסיעות ויומני מסע</translation>
@@ -4055,6 +4071,7 @@ Del</translation>
 <translation id="7310392214323165548">המכשיר יופעל מחדש בקרוב</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7313107491291103073">הארגון שלך סימן את האתר הזה כי הוא עלול להפר מדיניות.</translation>
+<translation id="7313260329718515829">‏הבקשות שנשלחות אל AI מותאם אישית ב-Gemini מנותחות כדי לשפר את המילוי האוטומטי</translation>
 <translation id="7316521168101843192">‏הקובץ נשמר ב-OneDrive של מיקרוסופט</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">עזרה בחיבור</translation>
@@ -4504,6 +4521,7 @@ Del</translation>
 <translation id="7966803981046576691">סוג חשבון של העבודה</translation>
 <translation id="7967477318370169806">קרנות נאמנות</translation>
 <translation id="7967636097426665267">ציוד תקשורת</translation>
+<translation id="7967973398323409409">אף אחד לא יכול לראות את הפרטים שמילאת אוטומטית</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>

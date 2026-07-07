@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
 <translation id="1287534462498555020">Chromium auf deinem Smartphone installieren</translation>
 <translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Eine Abbildung, die zeigt, wie du mit der Bildersuche nach einem Produkt suchen kannst</translation>
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
 <translation id="132092532143527429">Mit Gemini in Chromium ausprobieren</translation>
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -493,7 +492,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6400112897226594999">Chromium-Logo auf einem Computerbildschirm.</translation>
 <translation id="6403826409255603130">Chromium ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
 <translation id="6414624068245092115">Damit du Chromium-Daten in deinem Google-Konto jederzeit verwenden und speichern kannst, bestätige deine Identität</translation>
-<translation id="6417332166651156371">Ein vereinfachtes Bild des Einstiegspunkts für den Passwortmanager in Chromium</translation>
 <translation id="642132557830635295">Chrome wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen funktionieren (empfohlen)</translation>
 <translation id="6436260184216827876">Die Bildersuche ist nicht verfügbar. Versuche es später noch einmal.</translation>
 <translation id="6442900851116057561">Chromium OS neu starten</translation>

@@ -302,7 +302,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2297822946037605517">Kopīgot šo lapu</translation>
 <translation id="230115972905494466">Netika atrastas saderīgas ierīces.</translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
-<translation id="2318045970523081853">Pieskarieties, lai zvanītu</translation>
 <translation id="232137538351753795">Velciet no kreisās malas, lai pārietu atpakaļ.</translation>
 <translation id="2323763861024343754">Vietnes krātuve</translation>
 <translation id="2327445548174191329">No ierīces <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Pārbaudīts: pirms 1 dienas}zero{Pārbaudīts: pirms # dienām}one{Pārbaudīts: pirms # dienas}other{Pārbaudīts: pirms # dienām}}</translation>
 <translation id="2842985007712546952">Vecākmape</translation>
 <translation id="2854916915045135148">Pieskarieties un turiet, lai pārslēgtos uz inkognito režīmu.</translation>
-<translation id="2860954141821109167">Šajā ierīcē jābūt iespējotai tālruņa lietotnei</translation>
 <translation id="286473047976978798">Vai lietot jūsu izskata preferences?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> un vēl 1 cilne}zero{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilnes}one{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="URL" /> un vēl <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="2869430948265924908">Lai automašīnā aizsargātu sensitīvu saturu, ir jāiestata automašīnas profila bloķēšana.  To var izdarīt, izmantojot PIN, kodu vai paroli.</translation>
@@ -1272,6 +1270,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6315386555979018699">Dzēst un turpināt</translation>
 <translation id="6316139424528454185">Neatbalstīta Android versija</translation>
 <translation id="631839948975905034">Inkognito logu bloķēšana, aizverot pārlūku Chrome</translation>
+<translation id="6321592572353357376">Paplašinājums “<ph name="EXTENSION_NAME" />” pieprasa, lai jūs pierakstītos pārlūkā Chrome</translation>
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
 <translation id="6324977638108296054">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="6333140779060797560">Kopīgot, izmantojot <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6910211073230771657">Dzēsts</translation>
 <translation id="6916590542764765824">Paplašinājumu pārvaldība</translation>
 <translation id="6918398787259831832">Ja šī problēma atkārtojas, <ph name="BEGIN_LINK" />iegūstiet plašāku informāciju<ph name="END_LINK" /> no uzņēmuma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Izveidot kvadrātkodu šai lapai</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 cilne}zero{<ph name="NUMBER_OF_TABS" /> cilnes}one{<ph name="NUMBER_OF_TABS" /> cilne}other{<ph name="NUMBER_OF_TABS" /> cilnes}}</translation>
 <translation id="6929224077895306814">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
@@ -1541,6 +1541,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7248671827512403053">Lietojumprogramma</translation>
 <translation id="7253951228444156601">Notiek paroļu pārbaude…</translation>
 <translation id="7260367682327802201">Android ierīcē var būt līdzīgs iestatījums. Ja pārlūkā Chrome un jūsu Android ierīcē ir ieslēgta reklāmu izvērtēšana, uzņēmumi var izvērtēt reklāmas efektivitāti jūsu apmeklētajās vietnēs un izmantotajās lietotnēs.</translation>
+<translation id="7265857422443387781">Meklēt cilnē, izmantojot Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Vai iesniegt kodu <ph name="ONE_TIME_CODE" /> vietnē <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloķēta vietne</translation>
 <translation id="7276868533747677875">Ja iepriekš eksportējāt paroles, meklējiet CSV failu savā ierīcē un importējiet paroles savā izvēlētajā paroļu pārvaldniekā.</translation>
@@ -1883,6 +1884,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="860282621117673749">Brīdinājumi par cenu kritumu</translation>
 <translation id="8611922158252451755">Ikviens, kam ir saite, var rediģēt visas cilnes, tāpēc kopīgojot ievērojiet piesardzību. Saite ir derīga 48 stundas.</translation>
 <translation id="8616006591992756292">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Atveriet Chrome izvēlni &gt; Iestatījumi.</translation>
 <translation id="8634050254805484913">Paslēpta šauros ekrānos</translation>
 <translation id="8635399646025169806">Vai paturēt ciļņu grupu?</translation>
@@ -2031,7 +2033,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9204836675896933765">Atlicis 1 fails</translation>
 <translation id="9205933215779845960">Nevar atrast šo lapu. Pārbaudiet pareizrakstību vai meklējiet, izmantojot <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Nevar zvanīt</translation>
 <translation id="9212845824145208577">Zemāku ekrāna daļu nevar ietvert. Mēģiniet iegūt ekrānuzņēmumu no zemākas vietas lapā.</translation>
 <translation id="9218430445555521422">Iestatīt kā noklusējumu</translation>
 <translation id="9219103736887031265">Attēli</translation>

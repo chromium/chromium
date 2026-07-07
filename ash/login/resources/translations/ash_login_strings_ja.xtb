@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
+<translation id="1053898984916097744">作業をすばやく開始したり、作業で必要なサポートを受けたりできます。</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> へようこそ</translation>
+<translation id="1069778954840159202">Android スマートフォンからアカウントを自動的に取得する</translation>
 <translation id="1076766328672150609">お子様は PIN を使用してデバイスのロックを解除できます。</translation>
 <translation id="1097658378307015415">ログインする前に、ゲスト セッションを開始して <ph name="NETWORK_ID" /> ネットワークを有効にしてください</translation>
 <translation id="1111932478203988717">お子様はにこの PIN を使用してデバイスのログインできます</translation>
 <translation id="1122587596907914265">ユニークな壁紙にカスタマイズ</translation>
 <translation id="1131201598497838573">お子様の PIN を更新しました</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
+<translation id="1148669835763563782">セキュリティが強化され、Chromebook の最新機能を利用できるソフトウェア アップデートをダウンロードしています。このアップデートでは、Chromebook をスムーズに開始できるようセットアップ プロセスが改善されています。</translation>
 <translation id="1176864681932214421">AI で画像を作成</translation>
 <translation id="1177073277575830464">Android のクイック セットアップが完了しました。<ph name="DEVICE_TYPE" /> で設定を続行してください。</translation>
 <translation id="1179902906564467236">スマートフォンに表示される手順に沿って操作するか、カメラアプリを使用してください</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1217114730239853757">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。有効にする場合は Space キーを押してください。</translation>
 <translation id="1222835797152767346">PIN を設定して簡単にログイン</translation>
+<translation id="1231426483209637778">次回 <ph name="DEVICE_TYPE" /> を使用するときにご利用のネットワークが表示されます。</translation>
+<translation id="1243002225871118300">ディスプレイとテキストのサイズを変更する</translation>
+<translation id="1256588359404100567">以前のデバイスから設定を同期しました。</translation>
 <translation id="1272978324304772054">このユーザー アカウントは、デバイスが登録されているドメインに属していません。別のドメインに登録する場合は、まず、デバイス リカバリ操作を行う必要があります。</translation>
+<translation id="1293556467332435079">ファイル</translation>
 <translation id="1307559529304613120">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
+<translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />デバッグ機能<ph name="END_H3" />
           <ph name="BR" />
           ChromeOS デバイスでは、カスタムコードをインストールしてテストする目的でデバッグ機能を有効にできます。デバッグ機能を使用すると、次のことができます。<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> このプロセス中にシステムが再起動されます。</translation>
 <translation id="1347625331607114917">Android スマートフォンでコードを確認する</translation>
 <translation id="1347975661240122359">更新は、<ph name="BATTERY_LEVEL" />% まで充電されたときに開始されます。</translation>
+<translation id="1353275871123211385">アプリの許可や利用時間の上限など、保護者による使用制限を設定するには、保護者が管理するお子様用の Google アカウントが必要です。Google Classroom などのツールを使用するための学校用アカウントは、後で追加できます。</translation>
 <translation id="1375557162880614858">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。</translation>
 <translation id="1375938286942050085">セットアップは完了です。デバイスでゲームをお楽しみください</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">診断データと使用状況データを送信します。</translation>
 <translation id="1418882096915998312">Enterprise の登録中</translation>
 <translation id="1426410128494586442">はい</translation>
+<translation id="1427269577154060167">国</translation>
 <translation id="1440090277117135316">教育機関の登録が完了しました</translation>
 <translation id="1473927070149284123">もう一度試すか、手動でネットワークに接続してください</translation>
 <translation id="1503556098270577657">Android スマートフォンを使用して <ph name="USER_EMAIL" /> にログインしました</translation>
+<translation id="1510238584712386396">ランチャー</translation>
 <translation id="1521442365706402292">証明書の管理</translation>
+<translation id="15373452373711364">大きいマウスカーソル</translation>
 <translation id="1540605929960647700">デモモードの有効化</translation>
 <translation id="1572876035008611720">メールアドレスを入力してください</translation>
+<translation id="1588438908519853928">ノーマル</translation>
+<translation id="1620510694547887537">カメラ</translation>
+<translation id="1636212173818785548">OK</translation>
 <translation id="1642494467033190216">他のデバッグ機能を有効にするには、その前に rootfs の保護を削除して再起動する必要があります。</translation>
+<translation id="1646045728251578877">ソフトウェア アップデートがあります</translation>
+<translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
 <translation id="1668435968811469751">手動で登録</translation>
 <translation id="1678919064276516737">入力したメールアドレスと PIN が一致しません</translation>
 <translation id="1692115862433274081">別のアカウントを使用</translation>
 <translation id="1695487653372841667">あなたは Google と共有するデータを設定することができ、これは [設定] でいつでも変更できます。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
+<translation id="1700517974991662022">アクセス済み</translation>
 <translation id="1730666151302379551">以前のパスワードを忘れた場合</translation>
+<translation id="1749645492410897998">ソフトウェアのインストール中</translation>
 <translation id="177053719077591686">Android アプリを Google ドライブにバックアップします。</translation>
+<translation id="1798832846931769717">Google Beam for Meet</translation>
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
 <translation id="1826192255355608658">Chrome ブラウザのブックマーク、パスワード、履歴、その他の設定を同期します</translation>
+<translation id="1826657447823925402">逆スクロールは無効です</translation>
 <translation id="1831848493690504725">接続されたネットワーク経由で Google に接続できません。別のネットワークを選択するか、ネットワーク設定またはプロキシ設定（プロキシを使用している場合）を確認してください。</translation>
 <translation id="1842766183094193446">デモモードを有効にしてもよろしいですか？</translation>
 <translation id="1845060436536902492">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
+<translation id="185766080319917408">ランチャーキーは左 Alt キーの左側にあります</translation>
 <translation id="1868617395637139709">位置情報を Android のアプリとサービスで使用します。</translation>
+<translation id="1877377730633446520">この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE" /> です。</translation>
 <translation id="189035593835762169">利用規約</translation>
+<translation id="189358972401248634">その他の言語</translation>
+<translation id="1915734383465415025">販売店の番号</translation>
+<translation id="1919096511823372013">リンクや絵文字などを挿入したり、Google AI による文書や画像の作成サポートを利用することもできます。</translation>
+<translation id="1922496389170590548">お子様の学校用アカウント</translation>
+<translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1987574314042117472">人気のアプリを選択してインストール</translation>
 <translation id="1991829061375381344">この Google Meet ハードウェア デバイスを登録するには、ライセンスが足りません。さらに購入するには、販売パートナーにお問い合わせください。このメッセージが間違って表示されていると思われる場合は、販売パートナーにお問い合わせください。</translation>
+<translation id="200928901437634269">お子様の Google アカウントまたは学校用アカウントを使用します。保護者による使用制限を設定することもできます。</translation>
+<translation id="2013550551806600826">実際に試してみましょう。設定のオンとオフを切り替え、テストエリアのタッチパッドを 2 本の指でスクロールします。この動作は、後から [設定] &gt; [デバイス] &gt; [マウスとタッチパッド] でも設定できます。</translation>
+<translation id="2018189721942291407">登録が必要かどうかわからない場合</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
 <translation id="2088092308059522196">登録は <ph name="DEVICE_OS" /> をインストールした後にのみ行うことができます。</translation>
 <translation id="208928984520943006">ホーム画面は、下から上にスワイプすれば、いつでも表示できます。</translation>
 <translation id="2090165459409185032">アカウント情報を復旧するには google.com/accounts/recovery に移動します。</translation>
+<translation id="2133775869826239001">設定するその他の機能を選択する</translation>
+<translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2157779167749714207">この <ph name="DEVICE_TYPE" /> には Gemini が搭載されています</translation>
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
+<translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
 <translation id="2178585470774851578">ChromeOS Flex デバッグ機能を有効にしています。この機能を有効にすると、sshd デーモンが設定され USB デバイスからの起動が可能になります。</translation>
+<translation id="2183570493397356669">続行ボタンは無効です</translation>
+<translation id="221872881068107022">逆スクロール</translation>
 <translation id="2219081237089444028"><ph name="DEVICE_TYPE" /> のパスワードを設定して簡単にログイン</translation>
+<translation id="2229161054156947610">あと 1 時間以上</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> は <ph name="EMAIL" /> のログイン時にデバイスをオンラインにするよう求めています</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% 完了</translation>
 <translation id="2319072477089403627">Android スマートフォンに接続中...</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Google API キーがないため、ユーザーを追加できません。詳しくは、<ph name="DETAILS_URL" /> をご覧ください。</translation>
 <translation id="24786041351753425">データ復旧サービスを有効にしてください。</translation>
 <translation id="2485681265915754872">Google Play 利用規約</translation>
+<translation id="248676429071089168">上にスワイプすると、ページ下部に移動します</translation>
 <translation id="2501278716633472235">戻る</translation>
+<translation id="2538084450874617176">この <ph name="DEVICE_TYPE" /> はどなたが使用しますか？</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> は <ph name="NETWORK_ID" /> に接続できませんでした。別のネットワークを選択するか、もう一度お試しください。</translation>
 <translation id="2565214867520763227">スクリーン リーダーをオンにする</translation>
+<translation id="2569972178052279830">販売店の名前</translation>
+<translation id="257779572837908839">Chromebox for meetings として設定</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（プラットフォーム <ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、このデバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">言語</translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">お待ちください...</translation>
 <translation id="2732134891301408122">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="274318651891194348">キーボードを探しています</translation>
 <translation id="2754825024506485820">仕事効率化からエンタメまで、Google Play ストアで必要なアプリを探しましょう。アプリはいつでもインストールできます。</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。位置情報の精度をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">これで準備完了です。</translation>
+<translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="283669119850230892">ネットワーク <ph name="NETWORK_ID" /> を使用するには、まずインターネット接続を完了してください（下記参照）。</translation>
 <translation id="2849767214114481738">PIN を追加しました</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">最大で 30 分ほどかかる場合があります</translation>
 <translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="2902265136119311513">ゲストとしてブラウジングする</translation>
 <translation id="2904210161403910217">前回のログイン後にパスワードが変更されています</translation>
 <translation id="2918484644467055090">このデバイスは、別の組織の管理対象として指定されているため、現在のアカウントの所属先組織に登録することはできません。</translation>
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
+<translation id="2935654492420446828">学校用アカウントは後で追加します</translation>
 <translation id="2950666755714083615">登録</translation>
 <translation id="2979966855249721010">興味や関心に基づいて、おすすめのアプリやヒントなどが表示されます</translation>
 <translation id="3012917896646559015">すぐにハードウェアの製造元に連絡し、パソコンを修理センターに送るよう手配してください。</translation>
+<translation id="3023464535986383522">選択して読み上げ</translation>
 <translation id="3028371505549235127">Google アカウントのパスワードを入力してログインする代わりに、このデバイスの <ph name="DEVICE_TYPE" /> パスワードを作成して使用できます</translation>
 <translation id="3033348223765101500">データの管理</translation>
+<translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
 <translation id="3101924772906986970">Chrome ブラウザのブックマーク、パスワード、履歴などが Google アカウントに保存されます</translation>
 <translation id="313205617302240621">パスワードを忘れた場合</translation>
 <translation id="3162070126914310576">組織部門の数が初期登録の上限に達しているため、このデバイスを今すぐ登録することはできません。サポートをご希望の場合は、管理者にご連絡ください。</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
 <translation id="3177914167275935955">デバイスには Chrome Education Upgrade が含まれていますが、ユーザー名が Google for Education アカウントに関連付けられていません。別のデバイスで g.co/workspace/edusignup にアクセスし、Google for Education アカウントを作成してください。</translation>
 <translation id="3196912927885212665">Android スマートフォンでセットアップするには、Chromebook の Bluetooth をオンにする必要があります</translation>
+<translation id="322708765617468434">設定後にいつでも別のユーザーをデバイスに追加できます。ユーザーごとに使用環境をカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="3238192140106069382">接続と認証を行っています</translation>
+<translation id="3251119461199395237">ファイルの同期</translation>
+<translation id="325238099842880997">お子様がゲームやインターネット、自宅学習にデバイスを利用する際のデジタルルールを設定できます</translation>
+<translation id="3255747772218936245">アップデートをインストール</translation>
 <translation id="3261268979727295785">年長のお子様には、セットアップが完了してから保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
 <translation id="3283148363895519428">スマートフォンの指示に沿って設定を続けます。スマートフォンが近くにあり、Bluetooth がオンになっていることをご確認ください。</translation>
 <translation id="3382073616108123819">このデバイスのデバイス識別子を特定できませんでした。</translation>
 <translation id="3382200254148930874">管理機能を停止しています...</translation>
+<translation id="3384362484379805487">ディスク領域を節約するため、言語ファイルはユーザー間で共有されます。</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
+<translation id="3402585168444815892">デモモードでの登録</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3435896845095436175">有効にする</translation>
 <translation id="3462413494201477527">アカウントの設定をキャンセルしますか？</translation>
 <translation id="3473241910002674503">タブレット モードで、ボタンを使用してホームに移動したり、戻ったり、アプリを切り替えたりできます。</translation>
+<translation id="3473479545200714844">画面拡大鏡</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
+<translation id="350397915809787283">アカウントがない場合は、最初のオプションを選択して作成してください。</translation>
 <translation id="3520824492621090923">キオスクとサイネージ デバイスの登録を確認しますか？</translation>
+<translation id="3547954654003013442">プロキシ設定</translation>
+<translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> のハードウェア データの収集</translation>
+<translation id="3602290021589620013">プレビュー</translation>
+<translation id="3607671391978830431">お子様が使用</translation>
+<translation id="3627320433825461852">あと 1 分未満</translation>
 <translation id="3635199270495525546">Trusted Platform Module（TPM）が検出されました</translation>
 <translation id="3650753875413052677">登録エラー</translation>
 <translation id="3661106764436337772">より確実な文章をすばやく作成</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3712050472459130149">アカウントの更新が必要です</translation>
 <translation id="3733296813637058299">これらのアプリをインストールします。Play ストアでは他にもご利用の <ph name="DEVICE_TYPE" /> 用のアプリを探すことができます。</translation>
+<translation id="3740945083753997630">表示と文字サイズを縮小する</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" /> はどんな用途でお使いですか？</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3800828618615365228">Google Chrome および ChromeOS 追加利用規約</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />、<ph name="BEGIN_LINK3" />Play 利用規約<ph name="END_LINK3" />を確認し、内容に同意します。</translation>
+<translation id="3837569373891539515">該当するものをすべて選択できます。これらのオプションは、<ph name="DEVICE_TYPE" /> の設定完了後に [設定] でも確認できます。</translation>
 <translation id="385051799172605136">戻る</translation>
+<translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> で Google アカウントを使用する</translation>
+<translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> はゲームに適した設計となっています。次に表示される「使い方・ヒント」アプリでは、何百種類もの最新ゲームにアクセスでき、ゲームに関する特典やデバイスに付属のゲームをご覧いただけます。</translation>
+<translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3910588685973519483">AI で壁紙を作成</translation>
+<translation id="3924259174674732591">ディスプレイとテキストのサイズ <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3983400541576569538">一部のアプリのデータは失われる可能性があります</translation>
+<translation id="3984159763196946143">デモモードを開始できませんでした</translation>
 <translation id="3994318741694670028">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、ChromeOS Flex に最新のセキュリティ修正を適用することができません。お使いのパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4044883420905480380">Wi-Fi に接続し、Android スマートフォンを使用して <ph name="USER_EMAIL" /> にログインしました</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Google Chrome および ChromeOS 追加利用規約</translation>
 <translation id="41365691917097717">続行すると、ADB デバッグによる Android アプリの作成とテストが可能になります。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> は有効な組織に属していません。管理者にお問い合わせください。管理者の方は、g.co/ChromeEnterpriseAccount で組織を設定していただけます。</translation>
+<translation id="4209092469652827314">大</translation>
+<translation id="4213918571089943508">お子様の Google アカウント</translation>
+<translation id="4228071595943929139">組織のメールアドレスを使用します</translation>
 <translation id="4232484478444192782">Android スマートフォンがあなたをサポートします。Wi-Fi とパスワードを転送中です。</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4287157641315808225">はい（ChromeVox を有効にする）</translation>
 <translation id="4289732974614035569">PIN の入力</translation>
+<translation id="4291265871880246274">ログイン ダイアログ</translation>
+<translation id="4305817255990598646">切り替え</translation>
 <translation id="4309165024397827958">位置情報の利用権限が設定されている Android アプリやサービスがご利用のデバイスの位置情報を使用することを許可します。Google は位置情報を定期的に収集し、このデータを匿名の方法で活用して位置情報の精度や位置情報を利用したサービスを改善します。</translation>
 <translation id="4317733381297736564">アプリ内購入</translation>
 <translation id="4341905082470253054">TPM のステータスを確認しています...</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4373418556073552953">Android スマートフォンでログイン</translation>
+<translation id="4378556263712303865">デバイスの登録</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。自動レポートでは、ChromeOS がクラッシュした時間、使用されている機能、通常のメモリ使用量、Android アプリの診断データと使用状況データなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。データの確認と削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Bluetooth デバイスと USB デバイスを探しています</translation>
 <translation id="4403266582403435904">データの復元やデバイスの切り替えがいつでも簡単にできます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使用して暗号化されます。</translation>
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> を使用する準備ができました。</translation>
+<translation id="443031431654216610">数字のみ指定可能</translation>
+<translation id="4448560527907365660">保存してもっと見る</translation>
 <translation id="4449948729197510913">お客様のユーザー名は組織の企業アカウントに属しています。アカウントにデバイスを登録するには、まず管理コンソールでドメインの所有権を確認してください。なお、確認にはアカウントの管理者権限が必要です。</translation>
 <translation id="4450974146388585462">診断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
+<translation id="4472298120638043495">Google アカウントの言語（<ph name="NEW_LOCALE_FROM_GAIA" />）を使用できます</translation>
 <translation id="4472575034687746823">始める</translation>
+<translation id="450867954911715010">ユーザー補助機能の設定</translation>
+<translation id="4519605771716872386">ファイルの同期がオンになっています</translation>
+<translation id="4531924570968473143">この <ph name="DEVICE_TYPE" /> にどのユーザーを追加しますか？</translation>
 <translation id="4566170377336116390">登録後に変更する場合は、デバイスを出荷時の設定にリセットする（Powerwash）必要があります。</translation>
 <translation id="4567512141633030272">ログイン オプションが間違っている場合</translation>
+<translation id="4567533462991917415">セットアップが完了したら、いつでもユーザーを追加できます。ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="4568213207643490790">このデバイスでは Google アカウントをご利用いただけません。</translation>
 <translation id="4611759022973144129">このパスワードを使用して、<ph name="DEVICE_TYPE" /> にログインできます。</translation>
+<translation id="4634575639321169635">このデバイスを仕事または個人で使用する</translation>
+<translation id="4689235506267737042">デモ設定の選択</translation>
 <translation id="4727847987444062305">管理対象のゲスト セッション</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目を選択しています</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> は、有効な Google for Education アカウントではありません。管理者にお問い合わせください。管理者の方は、g.co/workspace/edusignup に移動して組織を設定できます</translation>
+<translation id="4780558987886269159">仕事向け</translation>
 <translation id="4806457879608775995">以下の利用規約を確認してデータをコントロールしてください</translation>
+<translation id="4814327014588285482">スキップして後で通知</translation>
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
 <translation id="4837926214103741331">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
+<translation id="4844333629810439236">他のキーボード</translation>
 <translation id="4864369630010738180">ログインしています...</translation>
+<translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
 <translation id="4877652723592270843">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。有効にする場合は、両方の音量キーを 5 秒間長押ししてください。</translation>
 <translation id="4899696330053002588">広告が表示されます</translation>
 <translation id="49027928311173603">サーバーからダウンロードされたポリシーが無効です: <ph name="VALIDATION_ERROR" />。</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
 <translation id="4965808351167763748">このデバイスでハングアウト Meet を実行するように設定してもよろしいですか？</translation>
+<translation id="4987944280765486504">ダウンロードが完了すると Chromebook が再起動し、セットアップを続行できます。</translation>
 <translation id="5029287942302939687">パスワードを設定しました</translation>
 <translation id="503155457707535043">アプリをダウンロード中</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5062930723426326933">ログインできませんでした。インターネットに接続してもう一度お試しください。</translation>
+<translation id="5085162214018721575">アップデートを確認しています</translation>
 <translation id="5097306410549350357">位置情報の使用について詳細を確認する</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Gemini と話しながら、文章作成、計画、学習など、Google AI を活用したさまざまな作業を行うことができます。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />セットアップが完了したら、画面下部のシェルフで Gemini アプリを選択してご利用を開始できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> を電源に接続してください。</translation>
+<translation id="5145876360421795017">デバイスを登録しない</translation>
 <translation id="5147516217412920887">スマートフォンに表示される手順に沿ってコードを確認します</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />デバッグ機能<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> このプロセス中にシステムが再起動されます。</translation>
+<translation id="5215502535566372932">国を選択</translation>
 <translation id="5234523649284990414">ChromeVox は ChromeOS のスクリーン リーダーです。主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5240931875940563122">Android スマートフォンでログイン</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">企業のデバイスを登録</translation>
 <translation id="5372529912055771682">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることを確認してから、もう一度お試しください。</translation>
 <translation id="5397378439569041789">キオスクまたはサイネージ デバイスを登録</translation>
+<translation id="5397794290049113714">あなた</translation>
 <translation id="5411022484772257615">教育機関の登録を完了できませんでした</translation>
 <translation id="5413640305322530561">診断データと使用状況データについて詳細を確認する</translation>
 <translation id="542750953150239272">続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
 <translation id="542948651837270806">Trusted Platform Module ファームウェアのアップデートをインストールする必要があります。<ph name="TPM_FIRMWARE_UPDATE_LINK" /> をご覧ください。</translation>
 <translation id="5448293924669608770">ログイン エラーが発生しました</translation>
+<translation id="5453829744223920473">お子様は、学校のすべてのアプリ、ブックマーク、リソースを授業と同じように利用できます。基本ルールは学校が設定します。</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> のメール通知に登録する</translation>
 <translation id="5473099001878321374">続行すると、Google、お子様がご利用の携帯通信会社、デバイス メーカーからアップデートやアプリをこのデバイスが自動的に（場合によってはモバイルデータ接続を使用して）ダウンロードし、インストールする場合があることに同意したことになります。一部のアプリでは、アプリ内購入をご利用いただけます。</translation>
+<translation id="5502915260472117187">お子様</translation>
 <translation id="5511823366942919280">このデバイスを「Shark」として設定してもよろしいですか？</translation>
+<translation id="5513807280330619196">電卓</translation>
 <translation id="5527474464531963247">別のネットワークも選択できます。</translation>
 <translation id="5539070192556911367">Google に接続できません</translation>
+<translation id="5549511085333906441">設定の選択</translation>
 <translation id="557722062034137776">デバイスをリセットしても、お使いの Google アカウントや、これらのアカウントに同期されているデータには影響しません。ただし、デバイス上でローカルに保存されているすべてのファイルは削除されます。</translation>
 <translation id="5626172233890210551">代わりにパスワードを使用</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />利便性を高めるため、<ph name="DEVICE_OS" /> ではデバイスのハードウェア データを収集し、Google と共有して、適切なアップデートを確認します。さらに、サポートや <ph name="DEVICE_OS" /> の利便性やサービスの改善といった追加の目的で Google がこのデータを使用することを許可できます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />アップデートの確認時のほか、追加の目的で Google とのデータの共有を許可した場合に Google に送信されるデータについては、このデバイスにログインして、chrome://system の chromeosflex_ で始まるフィールドを展開するとご確認いただけます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> が Google と共有するデータおよびその使用方法について詳しくは、g.co/flex/HWDataCollection をご覧ください。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
 <translation id="5655296450510165335">デバイスの登録</translation>
+<translation id="565899488479822148">最新のアップデートをインストールしています</translation>
 <translation id="5659964844710667266">この <ph name="DEVICE_TYPE" /> のパスワードを作成する</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">一部のファイルが破損しており、正常にアップデートできませんでした。同期ファイルは安全です。</translation>
 <translation id="5770125698810550803">ナビゲーション ボタンを表示する</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> のご利用のヒント、特典、最新情報を受け取って、フィードバックをお送りいただけます。</translation>
+<translation id="5800703268655655701">ライトモードまたはダークモードを選択する</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5810809306422959727">このアカウントでは保護者による使用制限を設定できません</translation>
+<translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5852112051279473187">エラー: このデバイスの登録中に問題が発生しました。もう一度お試しいただくか、サポート担当者にお問い合わせください。</translation>
 <translation id="5852137567692933493">再起動して Powerwash を実行する</translation>
 <translation id="5856721540245522153">デバッグ機能を有効にする</translation>
+<translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5870086504539785141">ユーザー補助メニューを閉じる</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5895335062901455404">保存した設定とアクティビティは、Google アカウントでログインする他の ChromeOS Flex デバイスで使用できるようになります。同期する項目は [設定] で選択できます。</translation>
+<translation id="5916664084637901428">オン</translation>
 <translation id="5919305207330938913">すべてのデータは、Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に沿って使用されます。</translation>
 <translation id="5932441198730183141">この Google Meet ハードウェア デバイスを登録するには、ライセンスが足りません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="5939518447894949180">リセット</translation>
+<translation id="5948536763493709626">キーボードまたはマウスを接続するか、タッチスクリーンを使用して、設定を続行してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
+<translation id="6016972670657536680">言語とキーボードのボタンを選択します。現在選択している言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="6055544610007596637">Google Play ストアから <ph name="DEVICE_TYPE" /> のアプリをインストール</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。詳しくは、g.co/flex/HWDataCollection をご覧ください。</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> によるログイン</translation>
 <translation id="6314819609899340042">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能が有効になりました。</translation>
+<translation id="6343262564968371601">Google、ファイル、アプリなどを検索して、探しているものを見つけられます</translation>
 <translation id="635609604405270300">デバイスの電源を切らないでください</translation>
 <translation id="6367097275976877956">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。有効にする場合は Space キーを押してください。</translation>
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6380143666419481200">同意して続行</translation>
 <translation id="640457954117263537">ChromeOS と Android のアプリやサービスで位置情報を使用する。</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。自動レポートでは、ChromeOS がクラッシュした時間、使用されている機能、通常のメモリ使用量などの情報が送信されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">重要なアップデートのインストール</translation>
+<translation id="6478849105642611893">クイック インサート キーはタブキーの下にあります</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
+<translation id="6488384360522318064">言語を選択</translation>
 <translation id="6495266441917713704">Wi-Fi で転送できません</translation>
 <translation id="6515620015470298987">デバイス設定チェックの問題により、ログインできませんでした。<ph name="DEVICE_TYPE" /> で Powerwash を実行して、もう一度お試しください。</translation>
 <translation id="6519689855001245063">利用資格を確認しています</translation>
 <translation id="6532527800157340614">アクセス トークンを取得できなかったため、ログインできませんでした。ネットワーク接続を確認してからもう一度お試しください。</translation>
+<translation id="653920215766444089">ポインティング デバイスを探しています</translation>
 <translation id="65513682072153627">設定や機能が管理者に管理されていると、この管理対象アイコンが表示されます。</translation>
+<translation id="6561726789132298588">Enter</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
 <translation id="6648911618876616409">重要なアップデートをインストールする準備ができました。適用するにはまずログインしてください。</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> の管理対象として設定する</translation>
+<translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="667752334740867460">Wi-Fi 情報を受信しています...</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> を復元できますが、ローカルデータは削除されます。</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
+<translation id="6749473226660745022">写真</translation>
+<translation id="6754918760968695779">クイック インサート</translation>
 <translation id="6789834167207639931">復元を完了するには、次の画面で Google アカウントのパスワードをもう一度入力してください</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量、Android アプリの診断内容と使用状況が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様のデータがお子様の Google アカウントに保存されることがあります。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">あなたの <ph name="DEVICE_TYPE" /> におすすめのアプリ</translation>
 <translation id="682971198310367122">Google プライバシー ポリシー</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
+<translation id="6852529053326738838">組織に問い合わせるか、仕事用メールアドレスを使用して登録を行い、アカウントが対象かどうかを確認します。</translation>
+<translation id="6867671714894555998">新しいキーボードで作業を効率化</translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
+<translation id="6888831646723563669">接続して、新しい <ph name="DEVICE_TYPE" /> のあらゆる機能をご活用ください</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、お子様のドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">同期をオンにする</translation>
 <translation id="6918733588290914545">Android スマートフォンで簡単セットアップ</translation>
 <translation id="6920473853105515518">お使いの <ph name="DEVICE_TYPE" /> がインターネットに接続されていることを確認してから、もう一度お試しください。別のデバイスで play.google/play-terms にアクセスすることもできます。</translation>
+<translation id="6929126689972602640">保護者による使用制限は学校用アカウントではサポートされていません。学校用アカウントを追加し、Google Classroom や他のウェブサイトにアクセスして自宅で学習できるようにするには、まずお子様の個人アカウントでログインしてください。学校用アカウントは設定の後半で追加できます。</translation>
+<translation id="6935031746833428401">デバイス管理の詳細</translation>
+<translation id="6950351336108213154">デバイスの周辺機器を更新しています</translation>
 <translation id="6955698182324067397">ChromeOS のデバッグ機能を有効にしています。この機能を有効にすると、sshd デーモンが設定され、USB デバイスからの起動が可能になります。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6969216690072714773">このデバイスに関連付ける新しい情報を入力するか、既存の情報を更新します。</translation>
@@ -342,23 +484,37 @@
         ネットワーク管理者にプロキシ サーバーが正常に動作しているかどうかを
         確認してください。プロキシ サーバーを使用していない場合は、<ph name="LINK_START" />プロキシ設定<ph name="LINK_END" />を編集してください。</translation>
 <translation id="6996245928508281884">スマートフォンの Bluetooth と Wi-Fi をオンにする</translation>
+<translation id="6996438701394974959">表示と文字サイズを拡大する</translation>
+<translation id="6998793565256476099">デバイスをビデオ会議用に登録</translation>
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
 <translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
+<translation id="7039951224110875196">お子様用の Google アカウントを作成する</translation>
 <translation id="7065223852455347715">このデバイスは企業の登録を防止するモードでロックされています。このデバイスを登録するにはまずデバイスの復元を行ってください。</translation>
+<translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> の設定の選択</translation>
 <translation id="7077829361966535409">現在のプロキシ設定を使用してログイン ページを読み込むことができませんでした。<ph name="GAIA_RELOAD_LINK_START" />もう一度ログイン<ph name="GAIA_RELOAD_LINK_END" />してみるか、別の<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を使用してみてください。</translation>
 <translation id="7088674813905715446">このデバイスは、管理者によりプロビジョニングを解除されている状態です。このデバイスを登録できるようにするには、デバイスを待機状態にするよう管理者に依頼してください。</translation>
 <translation id="7114054701490058191">パスワードが一致しません</translation>
 <translation id="7135729336746831607">Bluetooth をオンにしますか？</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7144878232160441200">再読み込み</translation>
+<translation id="7171259390164035663">登録しない</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="7202337678781136582">Android スマートフォンで QR コードをスキャンする</translation>
+<translation id="7228854227189381547">切り替えない</translation>
+<translation id="7230881857327093958">変更は設定完了後に適用されます</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
+<translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
+<translation id="7311005168897771689">オフラインでも Google ドライブのファイルにアクセス</translation>
 <translation id="7317831949569936035">教育機関の登録</translation>
+<translation id="7326004502692201767">この <ph name="DEVICE_TYPE" /> をお子様向けに設定する</translation>
+<translation id="732659786514229249">デバイスを組織に登録しますか？</translation>
 <translation id="7329154610228416156">保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、ログインできませんでした。管理者にお問い合わせください。</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
+<translation id="7348093485538360975">画面キーボード</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
+<translation id="7403642243184989645">リソースのダウンロード</translation>
+<translation id="7406912950279255498">色反転モード</translation>
 <translation id="7416263748877373774">利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="7475742997309661417">ChromeVox は ChromeOS のスクリーン リーダーです。主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、両方の音量キーを 5 秒間長押しします。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="7476454130948140105">更新するには電池残量が少なすぎます（<ph name="BATTERY_PERCENT" />%）</translation>
@@ -368,39 +524,61 @@
 <translation id="7506541170099744506">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されました。</translation>
 <translation id="7509097596023256288">管理対象の設定</translation>
 <translation id="7543104066686362383">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能を有効にします</translation>
+<translation id="7544227555407951270">デバイスを登録</translation>
+<translation id="7549434883223124329">デバイスの言語を切り替えますか？</translation>
 <translation id="7553242001898162573">パスワードを入力してください</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> ではユーザーの設定を回復することができません。エラーを修正するには、<ph name="SHORT_PRODUCT_NAME" /> が Powerwash でデバイスをリセットする必要があります。</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> の同期</translation>
 <translation id="7571643774869182231">更新に必要な空き容量がありません</translation>
+<translation id="7616214729753637086">デバイスを登録しています...</translation>
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7639914187072011620">サーバーから SAML リダイレクト URL を取得できませんでした</translation>
 <translation id="7643117827468520640">利用規約を確認</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
 <translation id="7660116474961254898">スマートフォンに表示される手順に沿ってください</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
+<translation id="7666531788977935712">続行ボタンは有効です</translation>
 <translation id="7671139479636735732">右クリックでアイデアを簡単に視覚化</translation>
 <translation id="770831926727930011">ローカルデータは以前のパスワードで保護されています。以前のパスワードを入力するとローカルデータを復元できます。</translation>
 <translation id="7722040605881499779">更新に必要な空き容量: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
+<translation id="7746045113967198252">画面上の項目（テキストなど）のサイズを変更します。この操作は [設定] &gt; [デバイス] &gt; [ディスプレイ] でも行うことができます。</translation>
 <translation id="7760176388948986635">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="7784875615510899699">この Google Beam デバイスを登録するには、ライセンスが足りません。さらに購入するには、販売パートナーにお問い合わせください。このメッセージが間違って表示されていると思われる場合は、販売パートナーにお問い合わせください。</translation>
+<translation id="7791269138074599214">入力方法</translation>
+<translation id="7791436592012979144">逆スクロールは有効です</translation>
 <translation id="7792012425874949788">ログイン時に問題が発生しました</translation>
 <translation id="780301667611848630">利用しない</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
+<translation id="7842692330619197998">新しいアカウントを作成するには、g.co/ChromeEnterpriseAccount にアクセスします。</translation>
 <translation id="7851457902707056880">ログインは所有者アカウントのみに制限されています。再起動して、所有者アカウントでログインしてください。30 秒後に自動的に再起動します。</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7883792253546618164">登録はいつでも解除できます。</translation>
+<translation id="7887864092952184874">Bluetooth マウスがペア設定されました</translation>
 <translation id="7906440585529721295">ローカルデータは削除されます</translation>
+<translation id="7910725946105920830">個人の Google アカウントを使用します</translation>
+<translation id="7918257978052780342">登録</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">詳細オプション</translation>
 <translation id="7943311690198910993">ログイン方法を更新しました</translation>
 <translation id="795240231873601803">仕事用アカウントおよび学校用アカウントに企業登録を使用する</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
 <translation id="7975504106303186033">この Chrome Education デバイスを教育機関向けアカウントに登録する必要があります。新しいアカウントに登録する場合は、g.co/workspace/edusignup にアクセスしてください。</translation>
+<translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">このエラーを修正するには、デバイスを再起動してください。</translation>
 <translation id="7990958035181555539">Android スマートフォンから Wi-Fi を自動的に移行</translation>
+<translation id="8022466874160067884">Google アカウントとパスワードを入力する</translation>
+<translation id="8049029041626250638">キーボードまたはマウスを接続してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
+<translation id="8054921503121346576">USB キーボードが接続されました</translation>
 <translation id="8065144531309810062">Google AI を活用して創造力と生産性を高める</translation>
+<translation id="8082106343289440791">「<ph name="DEVICE_NAME" />」とペア設定しますか？</translation>
 <translation id="8097959162767603171">まず管理者の方に管理コンソールの Chrome デバイスリストの利用規約に同意していただく必要があります。</translation>
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
 <translation id="8129265306888404830">組織（<ph name="EMAIL_DOMAIN" />）のメールアドレスを使用するには、企業登録を使用する必要があります。このデバイスを個人で使用している場合は、個人の Google アカウントでログインしてください。</translation>
@@ -408,28 +586,37 @@
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146793085009540321">ログインできませんでした。管理者にお問い合わせいただくか、もう一度お試しください。</translation>
 <translation id="8147346945017130012">Chrome および ChromeOS の機能とパフォーマンスを改善できるよう、クラッシュ レポートと診断データ、使用状況データの自動送信にご協力ください。</translation>
+<translation id="8152760814912191567">Google Beam for Zoom</translation>
 <translation id="815491593104042026">セキュリティで保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、認証に失敗しました。管理者にお問い合わせください。</translation>
 <translation id="8157704005178149728">管理機能の設定</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、デバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> のプロフィールを更新するにはパスワードを再入力してください。</translation>
 <translation id="8239032431519548577">企業の登録が完了しました</translation>
 <translation id="8241806945692107836">デバイスの設定を確認しています...</translation>
 <translation id="8242426110754782860">続行</translation>
 <translation id="826905130698769948">クライアント証明書が無効です</translation>
+<translation id="8271379370373330993">この後、保護者の方用の手順がいくつか続きます。お子様に <ph name="DEVICE_TYPE" /> を渡す前に、アカウント設定を終えてください。</translation>
 <translation id="8274924778568117936">アップデートが完了するまでは、<ph name="DEVICE_TYPE" /> の電源を切ったり蓋を閉じたりしないでください。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動します。</translation>
 <translation id="8281886186245836920">スキップ</translation>
+<translation id="8291942417224950075">個人でのご利用</translation>
 <translation id="8304383784961451596">このデバイスを使用する権限がありません。ログイン権限についてデバイスの管理者に問い合わせるか、ファミリー リンクで管理されている Google アカウントでログインしてください。</translation>
 <translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>
+<translation id="8339288417038613756">ディスプレイとテキストのサイズ</translation>
 <translation id="8354034204605718473">お子様の PIN を追加しました</translation>
 <translation id="8366396658833131068">ネットワーク接続が復元されました。キオスク アプリを起動するには、別のネットワークを選択するか、下の [続行] ボタンを押してください。</translation>
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
 <translation id="8408270600235826886">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。データは Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に従って使用されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。</translation>
 <translation id="8425768983279799676">PIN を使用してデバイスのロックを解除できます。</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="843173223122814223">AI で背景を作成</translation>
 <translation id="8452105022015742247">Android スマートフォンから Google アカウント情報を転送しています</translation>
 <translation id="8464132254133862871">このユーザー アカウントはサービスを利用できません。</translation>
 <translation id="8524841856047224176">ビデオ通話などのカメラの背景をカスタマイズできます</translation>
+<translation id="8527257351549797148">アプリや拡張機能などにアクセスできるように組織から登録を求められる場合があります。登録により、セキュリティやデバイス設定なども組織で管理できるようになります。</translation>
+<translation id="8558063527625343224">Google Beam の設定</translation>
 <translation id="8569673829373920831"><ph name="APP_NAME" /> の詳細</translation>
 <translation id="8586421813321819377">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="8627804903623428808">以下の利用規約を確認してお子様のデータをコントロールしてください</translation>
@@ -438,9 +625,13 @@
         <ph name="BR" />
         付近のデバイスに「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」として表示されます...</translation>
 <translation id="8655972064210167941">パスワードを確認できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やユーザーの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、デバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。位置情報の精度をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、ChromeOS に最新のセキュリティ修正を適用することができません。ご使用のパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="8695139659682234808">セットアップ後に保護者による使用制限を設定できます</translation>
 <translation id="8698269656364382265">前の画面に戻るには、左端から中央にスワイプします。</translation>
+<translation id="8718994464069323380">タッチスクリーンが検出されました</translation>
 <translation id="8725066075913043281">もう一度試す</translation>
 <translation id="8726206820263995930">サーバーからポリシー設定を取得するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="8730621377337864115">完了</translation>
@@ -448,24 +639,36 @@
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8759753423332885148">詳細</translation>
 <translation id="8777628254805677039">ルート パスワード</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Bluetooth のペア設定コードを入力してから、Return キーまたは Enter キーを押してください。</translation>
 <translation id="8794548468611058947">Google アカウントのパスワードを入力してログインする代わりに、この <ph name="DEVICE_TYPE" /> の PIN を作成できます</translation>
 <translation id="8830796635868321089">現在のプロキシ設定を使用してアップデートをチェックできませんでした。<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を調整してください。</translation>
+<translation id="8855977033756560989">この Chromebook Enterprise デバイスには Chrome Enterprise Upgrade が付属しています。エンタープライズ向け機能を活用するには、Google 管理コンソール アカウントを使用してこのデバイスを登録してください。</translation>
 <translation id="885746075120788020">保存した設定とアクティビティは、Google アカウントでログインする他の ChromeOS デバイスで使用できるようになります。同期する項目は [設定] で選択できます。</translation>
+<translation id="8868333925931032127">デモモードを開始します</translation>
 <translation id="8875221558267407626">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます</translation>
+<translation id="8907701755790961703">国を選択してください</translation>
 <translation id="8913163265790894442">スマートフォンで <ph name="DEVICE_TYPE" /> を簡単に設定できます。パスワードを手動で入力しなくても、Wi-Fi や Google アカウントを追加できます。
         <ph name="BR" />
         <ph name="BR" />
         「<ph name="DEVICE_TYPE" />」として表示されます...</translation>
+<translation id="8934732568177537184">続行</translation>
 <translation id="8946359700442089734">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能が完全に有効になっていませんでした。</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
+<translation id="8968906873893164556">設定に使用するアカウントの選択</translation>
+<translation id="8973596347849323817">このデバイスを必要に応じてカスタマイズできます。このユーザー補助機能は後から [設定] で変更できます。</translation>
 <translation id="8975396729541388937">配信登録は、このメールのリンクをクリックして、いつでも解除できます。</translation>
+<translation id="8987305927843254629">ユーザーごとに使用環境をカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> のパスワードを忘れた場合でも、ローカルデータを復元できます。Google アカウントにログインするか、アカウント復元を使用する必要があります。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="903480517321259405">もう一度 PIN を入力してください</translation>
 <translation id="9040473193163777637">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。有効にする場合は、両方の音量キーを 5 秒間長押ししてください。</translation>
 <translation id="9068298336633421551">位置情報の利用権限が設定されている Android アプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は位置情報を定期的に収集し、このデータを匿名の方法で活用して位置情報の精度や位置情報を利用したサービスを改善します。</translation>
+<translation id="9074836595010225693">USB マウスが接続されました</translation>
 <translation id="9076523132036239772">メール アドレスまたはパスワードを確認できませんでした。まずネットワークに接続してください。</translation>
+<translation id="9089959054554410481">タッチパッドのスクロール方向を変更する</translation>
 <translation id="9158715103698450907">認証時にネットワーク通信の問題が発生しました。ネットワーク接続を確認して、もう一度お試しください。</translation>
+<translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="919686179725692564">アプリのバックアップについて詳細を確認する</translation>
 <translation id="9214520840402538427">installation-time 属性の初期化がタイムアウトしました。サポート担当者にお問い合わせください。</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> 限定です。<ph name="END_PARAGRAPH1" />
@@ -475,4 +678,7 @@
         <ph name="BR" />
         「<ph name="DEVICE_TYPE" />」として表示されます...</translation>
 <translation id="951991426597076286">同意しない</translation>
+<translation id="954749761428814584">言語と入力方法</translation>
+<translation id="960987915827980018">あと約 1 時間</translation>
+<translation id="995420352808264005">デバイスの登録タイプを選択してください</translation>
 </translationbundle>

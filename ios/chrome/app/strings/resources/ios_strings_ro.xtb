@@ -1573,6 +1573,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="628251768213143684">Poți gestiona oricând ce se salvează în Contul tău Google</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pentru a activa Navigarea sigură, deschide <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" /> și atinge Navigare sigură.</translation>
+<translation id="6295140892595702619">Folosește microfonul pentru a conversa prin chat cu Gemini. Când vorbești cu Gemini, conținutul audio este stocat în Activitatea din Aplicațiile Gemini (dacă este activată). Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="6295751040240588413">Pseudonimul cardului nu este valid</translation>
 <translation id="629730747756840877">Cont</translation>
 <translation id="6301104306974789820">Primește notificări de urmărire a prețurilor</translation>
@@ -2181,7 +2182,6 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="8264966119170358612">Unele dintre parolele salvate au fost expuse într-o încălcare a securității datelor independentă de Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul procesului de resetare a dispozitivului iPad. Pentru a te conecta din nou, atinge Continuă mai jos.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Vei completa informațiile la <ph name="URL" /></translation>
 <translation id="8274795744553482834">Ești pe cale să schimbi profilul</translation>
 <translation id="8275068909952022340">Mai multe…</translation>
 <translation id="8280797717392145626">Linkuri primite</translation>
@@ -2415,6 +2415,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixat</translation>
 <translation id="8990960056509724223">Fișierul nu a putut fi salvat din cauza politicilor organizației.</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
+<translation id="9003263770394939629">Sugestie de la Gemini. Gestionează completarea automată îmbunătățită în setări.</translation>
 <translation id="9003677638446136377">Verifică din nou</translation>
 <translation id="9006453925669499173">Meniu → Filă incognito nouă</translation>
 <translation id="9008201768610948239">Ignorați</translation>

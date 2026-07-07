@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1005333234656240382">Galluogi dadfygio ADB?</translation>
+<translation id="1053898984916097744">Dechreuwch rywbeth newydd neu gael help yn y llif.</translation>
+<translation id="1061130374843955397">Croeso i'ch <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Cael cyfrif yn awtomatig o ffôn Android</translation>
 <translation id="1076766328672150609">Gall eich plentyn ddefnyddio PIN i ddatgloi'r ddyfais.</translation>
 <translation id="1097658378307015415">Cyn mewngofnodi, defnyddiwch y modd Gwestai i weithredu'r rhwydwaith <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Gall eich plentyn ddefnyddio'r PIN hwn i fewngofnodi i'w ddyfais</translation>
 <translation id="1122587596907914265">Steiliwch bapurau wal unigryw</translation>
 <translation id="1131201598497838573">Cafodd PIN eich plentyn ei ddiweddaru</translation>
 <translation id="1147322039136785890">Nawr, tro <ph name="SUPERVISED_USER_NAME" /> yw hi</translation>
+<translation id="1148669835763563782">Rydych yn cael y diweddariad meddalwedd diweddaraf ar gyfer diogelwch uwch a'r nodweddion Chromebook mwyaf newydd. Mae'r diweddariad hwn yn cynnwys profiad gosod gwell i'ch helpu i ddechrau'n ddidrafferth ar eich Chromebook.</translation>
 <translation id="1176864681932214421">Creu lluniau gydag AI</translation>
 <translation id="1177073277575830464">Mae proses gosodiad cyflym Android wedi'i gorffen. Parhau i osod ar eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">Dilynwch y cyfarwyddiadau ar eich ffôn neu defnyddiwch yr ap camera</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1217114730239853757">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex? Os felly, pwyswch Space.</translation>
 <translation id="1222835797152767346">Gosodwch PIN i'w gwneud yn haws mewngofnodi</translation>
+<translation id="1231426483209637778">Byddwn yn cofio eich rhwydwaith y tro nesaf y byddwch yn defnyddio <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Newid yr arddangosiad a maint y testun</translation>
+<translation id="1256588359404100567">Mae'r gosodiad wedi'i gysoni o'ch dyfais flaenorol.</translation>
 <translation id="1272978324304772054">Nid yw'r cyfrif defnyddiwr hwn yn perthyn i'r parth y mae'r ddyfais wedi'i gofrestru iddo.  Os ydych chi eisiau cofrestru i barth gwahanol mae angen i chi fynd drwy adfer dyfais yn gyntaf.</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1307559529304613120">Wps!  Gwnaeth y system fethu â storio'r tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
+<translation id="1335929031622236846">Cofrestrwch eich dyfais</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Nodweddion dadfygio<ph name="END_H3" />
           <ph name="BR" />
           Gallwch alluogi'r nodweddion dadfygio ar eich dyfais ChromeOS er mwyn gosod a phrofi cod personol ar eich dyfais.  Bydd hyn yn eich galluogi i:<ph name="BR" />
@@ -37,6 +46,7 @@
     <ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" />  Bydd y system yn ailgychwyn yn ystod y broses.</translation>
 <translation id="1347625331607114917">Dilyswch y cod ar eich ffôn Android</translation>
 <translation id="1347975661240122359">Bydd y diweddariad yn dechrau pan fydd y batri yn cyrraedd <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Er mwyn defnyddio rheolaethau rhieni megis cymeradwyaeth apiau a therfynau amser sgrîn, rhaid i blentyn fod â Chyfrif Google a reolir gan riant. Gellir ychwanegu cyfrif ysgol yn nes ymlaen ar gyfer offer megis Google Classroom.</translation>
 <translation id="1375557162880614858">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Wedi cwblhau gosod! Paratowch eich dyfais ar gyfer chwarae gemau nesaf</translation>
 <translation id="1377600615067678409">Neidio am nawr</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Anfon data diagnosteg a data defnydd.</translation>
 <translation id="1418882096915998312">Wrthi'n cofrestru i Enterprise</translation>
 <translation id="1426410128494586442">Iawn</translation>
+<translation id="1427269577154060167">Gwlad</translation>
 <translation id="1440090277117135316">Cofrestru ysgol wedi'i gwblhau</translation>
 <translation id="1473927070149284123">Rhowch gynnig arall arni neu cysylltwch â rhwydwaith yn bwrpasol</translation>
 <translation id="1503556098270577657">Rydych wedi mewngofnodi i <ph name="USER_EMAIL" /> gan ddefnyddio'ch ffôn Android</translation>
+<translation id="1510238584712386396">Lansiwr</translation>
 <translation id="1521442365706402292">Rheoli tystysgrifau</translation>
+<translation id="15373452373711364">Cyrchwr llygoden mawr</translation>
 <translation id="1540605929960647700">Galluogi'r modd demo</translation>
 <translation id="1572876035008611720">Rhowch eich e-bost</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Camera</translation>
+<translation id="1636212173818785548">Iawn</translation>
 <translation id="1642494467033190216">Mae angen cael gwared ar amddiffyniad rootfs ac ailgychwyn cyn galluogi nodweddion dadfygio eraill.</translation>
+<translation id="1646045728251578877">Diweddariad meddalwedd ar gael</translation>
+<translation id="1650801028905250434">Bydd eich ffeiliau yn My Drive yn cysoni â'ch Chromebook yn awtomatig fel y gallwch gael mynediad atynt heb gysylltiad rhyngrwyd. Gallwch newid hyn unrhyw bryd yn y Gosodiadau &gt; Ffeiliau.</translation>
 <translation id="1668435968811469751">Cofrestru eich hun</translation>
 <translation id="1678919064276516737">Nid yw'r e-bost a'r PIN a roddwyd gennych yn cyfateb</translation>
 <translation id="1692115862433274081">Defnyddio cyfrif arall</translation>
 <translation id="1695487653372841667">Gallwch reoli pa ddata sy'n cael eu rhannu gyda Google. Gallwch newid hyn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="169675691788639886">Mae gan ddyfais weinydd SSH sydd wedi'i ffurfweddu. Peidiwch â mewngofnodi â chyfrifon sensitif.</translation>
+<translation id="1700517974991662022">Ymwelwyd</translation>
 <translation id="1730666151302379551">Wedi anghofio hen gyfrinair</translation>
+<translation id="1749645492410897998">Wrthi'n gosod meddalwedd</translation>
 <translation id="177053719077591686">Gwneud copïau wrth gefn o Apiau Android i Google Drive.</translation>
+<translation id="1798832846931769717">Google Beam ar gyfer Meet</translation>
 <translation id="1806335016774576568">Newid i ap arall sydd ar agor</translation>
 <translation id="1826192255355608658">Cysoni eich nodau tudalen Chrome, cyfrineiriau, hanes a rhagor</translation>
+<translation id="1826657447823925402">Mae sgrolio tuag yn ôl wedi'i analluogi</translation>
 <translation id="1831848493690504725">Ni allwn gyrraedd Google drwy'r rhwydwaith cysylltiedig. Rhowch gynnig ar ddewis rhwydwaith gwahanol neu wirio eich gosodiadau rhwydwaith neu osodiadau dirprwy (os ydych yn defnyddio dirprwy).</translation>
 <translation id="1842766183094193446">Ydych chi'n siŵr eich bod eisiau galluogi'r modd demo?</translation>
 <translation id="1845060436536902492">Mae'r darllenydd sgrîn ar ChromeOS Flex, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu arddangosfa braille. Pwyswch Space i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
+<translation id="185766080319917408">Mae'r fysell Lansiwr wedi'i lleoli i'r chwith o'r fysell Alt chwith</translation>
 <translation id="1868617395637139709">Defnyddio lleoliad ar gyfer apiau a gwasanaethau Android.</translation>
+<translation id="1877377730633446520">Bydd hyn yn defnyddio tua <ph name="REQUIRED_SPACE" />. Mae gennych <ph name="FREE_SPACE" /> ar gael ar hyn o bryd.</translation>
 <translation id="189035593835762169">Amodau a thelerau</translation>
+<translation id="189358972401248634">Ieithoedd eraill</translation>
+<translation id="1915734383465415025">Rhif y Siop</translation>
+<translation id="1919096511823372013">Mewnosod dolenni, emojis, a rhagor. Gallwch hefyd gael help i ysgrifennu a chreu lluniau gyda Google AI.</translation>
+<translation id="1922496389170590548">Cyfrif ysgol y plentyn</translation>
+<translation id="1944528062465413897">Cod paru Bluetooth:</translation>
 <translation id="1987574314042117472">Dewis a gosod apiau poblogaidd</translation>
 <translation id="1991829061375381344">Nid oes gennych ddigon o drwyddedau ar gael i gofrestru'r ddyfais caledwedd Google Meet hon. Cysylltwch â'ch ailwerthwr i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon mewn camgymeriad, cysylltwch â'ch ailwerthwr.</translation>
+<translation id="200928901437634269">Defnyddiwch Gyfrif Google neu gyfrif ysgol eich plentyn. Gallwch hefyd osod rheolaethau rhieni.</translation>
+<translation id="2013550551806600826">Rhowch gynnig arni. Trowch y gosodiad ymlaen neu i ffwrdd, yna sgroliwch gyda dau fys ar eich pad cyffwrdd yn yr ardal brawf. Gallwch hefyd ddod o hyd i hwn yn nes ymlaen yn y Gosodiadau &gt; Dyfais &gt; Llygoden a phad cyffwrdd.</translation>
+<translation id="2018189721942291407">Ddim yn siŵr a ddylech chi gofrestru?</translation>
 <translation id="2040460856718599782">Wps!  Aeth rhywbeth o'i le wrth geisio eich dilysu.  Gwiriwch eich tystlythyrau mewngofnodi eto a rhowch gynnig arall arni.</translation>
 <translation id="2052572566310583903">Wedi'u gosod ar eich dyfeisiau eraill</translation>
 <translation id="2088092308059522196">Dim ond ar ôl gosod <ph name="DEVICE_OS" /> y cefnogir cofrestru.</translation>
 <translation id="208928984520943006">I gyrraedd y sgrîn Hafan ar unrhyw adeg, sweipiwch i fyny o'r gwaelod.</translation>
 <translation id="2090165459409185032">I adfer gwybodaeth eich cyfrif, ewch i: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Dewiswch ragor o nodweddion i'w gosod</translation>
+<translation id="2135456203358955318">Chwyddwr sydd wedi'i docio</translation>
 <translation id="2157779167749714207">Mae eich <ph name="DEVICE_TYPE" /> yn dod gyda Gemini</translation>
 <translation id="2163470535490402084">Cysylltwch i'r Rhyngrwyd i fewngofnodi i'ch <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2173801458090845390">Ychwanegu rhif adnabod yr ymholiad at y ddyfais hon</translation>
 <translation id="2178585470774851578">Rydych yn galluogi nodweddion dadfygio ChromeOS Flex a fydd yn gosod sshd daemon ac yn galluogi cychwyn o yriannau USB.</translation>
+<translation id="2183570493397356669">Analluogwyd botwm parhau</translation>
+<translation id="221872881068107022">Sgrolio tuag yn ôl</translation>
 <translation id="2219081237089444028">Gosodwch gyfrinair <ph name="DEVICE_TYPE" /> i'w gwneud hi'n haws mewngofnodi</translation>
+<translation id="2229161054156947610">Mwy nag 1 awr ar ôl</translation>
 <translation id="2296022312651137376">Mae <ph name="DOMAIN_NAME" /> yn ei gwneud yn ofynnol i'r ddyfais hon fod ar-lein wrth fewngofnodi i <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">Wedi cwblhau <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">Wrthi'n cysylltu â'ch ffôn Android...</translation>
@@ -91,12 +129,18 @@
 <translation id="2450223707519584812">Ni fyddwch yn gallu ychwanegu defnyddwyr oherwydd bod allweddi API Google ar goll. Gweler <ph name="DETAILS_URL" /> am fanylion.</translation>
 <translation id="24786041351753425">Galluogi'r gwasanaeth adfer data.</translation>
 <translation id="2485681265915754872">Telerau gwasanaeth Google Play</translation>
+<translation id="248676429071089168">Sweipiwch i fyny i symud y dudalen i lawr</translation>
 <translation id="2501278716633472235">Mynd yn ôl</translation>
+<translation id="2538084450874617176">Pwy sy'n defnyddio'r <ph name="DEVICE_TYPE" /> hwn?</translation>
+<translation id="2553340429761841190">Gwnaeth <ph name="PRODUCT_NAME" /> fethu â chysylltu â <ph name="NETWORK_ID" />. Dewiswch rwydwaith arall neu rhowch gynnig arall arni.</translation>
 <translation id="2565214867520763227">Troi'r darllenydd sgrîn ymlaen</translation>
+<translation id="2569972178052279830">Enw'r Adwerthwr</translation>
+<translation id="257779572837908839">Gosod fel Chromebox ar gyfer cyfarfodydd</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platfform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Na, parhau heb ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Mae gwasanaeth lleoliad Google yn defnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol a synwyryddion i helpu i amcangyfrif lleoliad y ddyfais hon.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd lleoliad Android ar y ddyfais hon unrhyw bryd drwy fynd i Gosodiadau &gt; Apiau &gt; Google Play Store &gt; Rheoli dewisiadau Android &gt; Diogelwch a lleoliad &gt; Lleoliad. Gallwch hefyd ddiffodd y defnydd o Wi-Fi, rhwydweithiau symudol, a synwyryddion ar gyfer lleoliad Android drwy ddiffodd “Cywirdeb Lleoliad Google” yn yr un ddewislen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Iaith</translation>
 <translation id="2687407218262674387">Telerau Gwasanaeth Google</translation>
 <translation id="2688196195245426394">Bu gwall wrth gofrestru'r ddyfais gyda'r gweinydd: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Dyfais sydd wedi'i bwndelu yw hon ac ni ellir ei chofrestru gydag Uwchraddiad Ciosg ac Arwyddion.</translation>
@@ -104,26 +148,32 @@
 <translation id="2731700343119398978">Arhoswch...</translation>
 <translation id="2732134891301408122">Cynnwys ychwanegol <ph name="CURRENT_ELEMENT" /> allan o <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Iawn</translation>
+<translation id="274318651891194348">Wrthi'n chwilio am fysellfwrdd</translation>
 <translation id="2754825024506485820">Dewch o hyd i'r apiau sydd eu hangen arnoch, o gynhyrchiant i adloniant, ar y Google Play Store. Gallwch osod apiau unrhyw bryd.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Pan fydd Cywirdeb Lleoliad ymlaen, defnyddir gwybodaeth am signalau diwifr, megis pwyntiau mynediad Wi-Fi a thyrau rhwydwaith symudol, ynghyd â data synhwyrydd dyfeisiau, megis mesurydd cyflymu a gyrosgop, i amcangyfrif lleoliad dyfais yn fwy cywir, y mae apiau a gwasanaethau Android yn ei ddefnyddio i ddarparu nodweddion sy'n seiliedig ar leoliad. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn cyfrannu at leoliadau signal diwifr a gasglwyd drwy gyfrannu torfol.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Mae Google yn defnyddio'r wybodaeth hon a gasglwyd o'r ddyfais hon i: wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad; a gwella, darparu a chynnal gwasanaethau Google yn gyffredinol. Rydym yn prosesu'r wybodaeth hon yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd partïon i wasanaethu anghenion defnyddwyr. Ni ddefnyddir y wybodaeth hon i adnabod unrhyw unigolyn.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Gallwch ddiffodd Cywirdeb Lleoliad ar unrhyw adeg yng ngosodiadau lleoliad y ddyfais hon o dan Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad i leoliad &gt; Gosodiadau lleoliad uwch. Os yw Cywirdeb Lleoliad wedi'i ddiffodd, ni fydd data Cywirdeb Lleoliad yn cael eu casglu. Ar gyfer apiau a gwasanaethau Android, dim ond cyfeiriad IP a ddefnyddir, os yw ar gael, i bennu lleoliad y ddyfais hon, a allai effeithio ar argaeledd a chywirdeb lleoliadau ar gyfer apiau a gwasanaethau Android megis Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Rydych yn barod i fynd!</translation>
+<translation id="2819519502129272135">Mae cysoni ffeiliau wedi'i ddiffodd</translation>
 <translation id="2832124733806557606">Gall eich plentyn ddefnyddio PIN i fewngofnodi neu ddatgloi'r ddyfais.</translation>
 <translation id="283669119850230892">I ddefnyddio'r rhwydwaith <ph name="NETWORK_ID" />, cwblhewch eich cysylltiad â'r Rhyngrwyd isod yn gyntaf.</translation>
 <translation id="2849767214114481738">Mae'ch PIN wedi'i ychwanegu</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, a faint o gof a ddefnyddiwyd yn nodweddiadol.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Gallai hyn gymryd hyd at 30 eiliad</translation>
 <translation id="2893180576842394309">Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill</translation>
 <translation id="2902265136119311513">Pori fel Gwestai</translation>
 <translation id="2904210161403910217">Mae eich cyfrinair wedi newid ers y tro diwethaf i chi fewngofnodi</translation>
 <translation id="2918484644467055090">Ni ellir cofrestru'r ddyfais hon i'r sefydliad y mae eich cyfrif yn perthyn iddo oherwydd bod y ddyfais wedi'i marcio i'w rheoli gan sefydliad gwahanol.</translation>
 <translation id="2921081876747860777">Crëwch gyfrinair i amddiffyn eich data lleol.</translation>
+<translation id="2935654492420446828">Ychwanegu cyfrif ysgol yn nes ymlaen</translation>
 <translation id="2950666755714083615">Cofrestru fi</translation>
 <translation id="2979966855249721010">Yn seiliedig ar eich diddordebau, mae'n bosib y byddwch yn gweld argymhellion apiau, awgrymiadau a rhagor</translation>
 <translation id="3012917896646559015">Cysylltwch â'ch gwneuthurwr caledwedd ar unwaith i anfon eich cyfrifiadur i gyfleuster trwsio.</translation>
+<translation id="3023464535986383522">Dewis i siarad</translation>
 <translation id="3028371505549235127">Yn lle rhoi cyfrinair eich Cyfrif Google i fewngofnodi, gallwch greu cyfrinair <ph name="DEVICE_TYPE" /> ar gyfer y ddyfais hon</translation>
 <translation id="3033348223765101500">Rheoli eich data</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" wedi'i baru</translation>
 <translation id="3101924772906986970">Mae eich nodau tudalen porwr Chrome, cyfrineiriau, hanes a rhagor yn cael eu cadw yn eich Cyfrif Google</translation>
 <translation id="313205617302240621">Wedi anghofio'ch cyfrinair?</translation>
 <translation id="3162070126914310576">Nid oes modd cofrestru'r ddyfais hon ar hyn o bryd oherwydd bod eich uned sefydliadol wedi cyrraedd ei therfyn cofrestru cychwynnol. Cysylltwch â'ch gweinyddwr am gymorth.</translation>
@@ -131,20 +181,34 @@
 <translation id="3170072451822350649">Gallwch hefyd hepgor mewngofnodi a <ph name="LINK_START" />phori fel Gwestai<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Mae eich dyfais yn cynnwys Uwchraddiad Chrome Education, ond nid yw eich enw defnyddiwr wedi'i gysylltu â chyfrif Google for Education. Crëwch gyfrif Google for Education trwy fynd i g.co/workspace/edusignup ar ddyfais eilaidd.</translation>
 <translation id="3196912927885212665">Er mwyn gosod gyda'ch ffôn Android, mae angen i Bluetooth eich Chromebook fod ymlaen</translation>
+<translation id="322708765617468434">Gallwch chi bob amser ychwanegu person arall at y ddyfais ar ôl gosod. Gall pob person bersonoleiddio eu profiad a chadw data yn breifat.</translation>
 <translation id="3238192140106069382">Wrthi'n cysylltu ac yn dilysu</translation>
+<translation id="3251119461199395237">Cysoni ffeil</translation>
+<translation id="325238099842880997">Pennwch reolau sylfaenol digidol i helpu plant i chwarae, archwilio a gwneud gwaith ysgol gartref</translation>
+<translation id="3255747772218936245">Gosod diweddariad</translation>
 <translation id="3261268979727295785">Ar gyfer plant hŷn, gallwch ychwanegu rheolaethau rhieni ar ôl i chi orffen gosod. Byddwch yn gweld gwybodaeth am reolaethau rhieni yn yr ap Explore.</translation>
 <translation id="3278001907972365362">Mae angen eich sylw ar eich Cyfrif(on) Google</translation>
 <translation id="3283148363895519428">Dilynwch y cyfarwyddiadau ar eich ffôn i barhau i osod. Sicrhewch fod eich ffôn gerllaw a bod Bluetooth wedi'i droi ymlaen.</translation>
 <translation id="3382073616108123819">Wps!  Gwnaeth y system fethu â phenodi'r dynodwyr dyfais ar gyfer y ddyfais hon.</translation>
 <translation id="3382200254148930874">Wrthi'n stopio goruchwyliaeth...</translation>
+<translation id="3384362484379805487">Rhennir ffeiliau iaith ymhlith defnyddwyr i gadw lle ar y disg.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">Mae'r darllenydd sgrîn ar ChromeOS Flex, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu arddangosfa braille. Pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
+<translation id="3402585168444815892">Wrthi'n cofrestru yn y Modd Demo</translation>
 <translation id="3433621910545056227">Wps!  Gwnaeth y system fethu â sefydlu clo priodweddau amser gosod y ddyfais.</translation>
 <translation id="3435896845095436175">Galluogi</translation>
 <translation id="3462413494201477527">Canslo gosod cyfrif?</translation>
 <translation id="3473241910002674503">Gallwch lywio i'r dudalen hafan, yn ôl, a newid apiau gyda botymau yn y modd tabled.</translation>
+<translation id="3473479545200714844">Chwyddwydr sgrîn</translation>
 <translation id="3491669675709357988">Nid yw cyfrif eich plentyn wedi'i osod ar gyfer rheolaethau rhieni Family Link. Gallwch ychwanegu rheolaethau rhieni ar ôl i chi orffen gosod. Byddwch yn gweld gwybodaeth am reolaethau rhieni yn yr ap Explore.</translation>
+<translation id="350397915809787283">Os nad oes gennych gyfrif, dewiswch yr opsiwn cyntaf i greu un.</translation>
 <translation id="3520824492621090923">Cadarnhau cofrestru dyfais ciosg neu arwyddion?</translation>
+<translation id="3547954654003013442">Gosodiadau dirprwyol</translation>
+<translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3577745545227000795">Casgliad data caledwedd <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Rhagolwg</translation>
+<translation id="3607671391978830431">Ar gyfer plentyn</translation>
+<translation id="3627320433825461852">Llai na 1 funud ar ôl</translation>
 <translation id="3635199270495525546">Canfu Modiwl Platfform Dibynadwy (TPM)</translation>
 <translation id="3650753875413052677">Gwall Cofrestru</translation>
 <translation id="3661106764436337772">Ysgrifennu yn gyflymach ac yn fwy hyderus</translation>
@@ -156,16 +220,23 @@
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
 <translation id="3712050472459130149">Angen diweddariad cyfrif</translation>
 <translation id="3733296813637058299">Byddwn yn gosod yr apiau hynny i chi. Gallwch ddod o hyd i ragor o apiau ar gyfer eich <ph name="DEVICE_TYPE" /> yn Play Store.</translation>
+<translation id="3740945083753997630">Lleihau yr arddangosiad a maint y testun</translation>
 <translation id="376841534249795524">Ar gyfer beth fyddwch chi'n defnyddio eich <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Rydw i wedi darllen ac yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Gosod</translation>
 <translation id="3800828618615365228">Telerau Ychwanegol Google Chrome a ChromeOS</translation>
 <translation id="3828953470056652895">Rydw i wedi darllen ac yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />Thelerau Gwasanaeth Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Gallwch ddewis pob un sy'n berthnasol. Gallwch hefyd ddod o hyd i'r opsiynau hyn yn y Gosodiadau ar ôl i chi orffen gosod eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Nôl</translation>
+<translation id="3856470183388031602">Defnyddio eich Cyfrif Google ar eich <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
 <translation id="3897746662269329507">Mae eich <ph name="DEVICE_TYPE" /> wedi'i adeiladu ar gyfer chwarae gemau. Bydd yr ap Explore yn agor nesaf, lle gallwch gael mynediad at gannoedd o'r gemau diweddaraf, gweld cynigion chwarae gemau a darganfod nodweddion chwarae gemau sy'n dod gyda'ch dyfais.</translation>
+<translation id="389901847090970821">Dewis bysellfwrdd</translation>
 <translation id="3910588685973519483">Creu papurau wal gydag AI</translation>
+<translation id="3924259174674732591">Maint y sgrîn a thestun <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Mewngofnodwch</translation>
 <translation id="3983400541576569538">Mae'n bosib y bydd data o rai apiau yn cael eu colli</translation>
+<translation id="3984159763196946143">Methu â dechrau'r modd demo</translation>
 <translation id="3994318741694670028">Yn anffodus, mae eich cyfrifiadur wedi'i ffurfweddu â chaledwedd sydd wedi'i gamffurfio. Mae hyn yn atal ChromeOS Flex rhag diweddaru gyda'r gwelliannau diogelwch diweddaraf ac <ph name="BEGIN_BOLD" />mae'n bosib y bydd eich cyfrifiadur yn agored i ymosodiadau maleisus<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Gosod PIN</translation>
 <translation id="4044883420905480380">Fe wnaethoch chi gysylltu â Wi-Fi a mewngofnodi i <ph name="USER_EMAIL" /> gan ddefnyddio'ch ffôn Android</translation>
@@ -176,6 +247,9 @@
 <translation id="4135746311382563554">Telerau Gwasanaeth ychwanegol Google Chrome a Chrome OS</translation>
 <translation id="41365691917097717">Bydd parhau yn galluogi dadfygio ADB ar gyfer creu a phrofi apiau Android. Sylwer bod y weithred hon yn caniatáu gosod apiau Android nad ydynt wedi'u dilysu gan Google, ac mae angen ailosod i'r gosodiadau ffatri i'w hanalluogi.</translation>
 <translation id="4165942112764990069">Nid yw <ph name="USER_EMAIL" /> yn perthyn i sefydliad dilys. Cysylltwch â'ch gweinyddwr. Os ydych yn weinyddwr, gallwch osod eich sefydliad drwy fynd i: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Mawr</translation>
+<translation id="4213918571089943508">Cyfrif Google y plentyn</translation>
+<translation id="4228071595943929139">Defnyddiwch gyfeiriad e-bost eich sefydliad</translation>
 <translation id="4232484478444192782">Mae eich ffôn Android yn gofalu amdanoch chi. Mae eich WiFi a'ch cyfrinair yn cael eu trosglwyddo drosodd.</translation>
 <translation id="4242145785130247982">Ni chefnogir mwy nag un dystysgrif cleient</translation>
 <translation id="4242577469625748426">Wedi methu â gosod y gosodiadau polisi ar y ddyfais: <ph name="VALIDATION_ERROR" />.</translation>
@@ -185,33 +259,50 @@
 <translation id="4278498748067682896">Byddwch yn defnyddio Uwchraddiad Ciosg ac Arwyddion sydd ond yn caniatáu i'r ddyfais redeg yn y modd ciosg neu arwyddion. Os hoffech i ddefnyddwyr fewngofnodi i'r ddyfais, ewch yn ôl a chofrestrwch gan ddefnyddio Uwchraddiad Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Ie, gweithredu ChromeVox</translation>
 <translation id="4289732974614035569">Dewiswch PIN</translation>
+<translation id="4291265871880246274">Deialog Mewngofnodi</translation>
+<translation id="4305817255990598646">Newid</translation>
 <translation id="4309165024397827958">Caniatáu i apiau Android a gwasanaethau sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad.</translation>
 <translation id="4317733381297736564">Pryniannau o fewn yr ap</translation>
 <translation id="4341905082470253054">Wrthi'n gwirio'r statws TPM...</translation>
 <translation id="4370975561335139969">Nid yw'r e-bost a'r cyfrinair a roddwyd gennych yn cyfateb</translation>
 <translation id="4373418556073552953">Mewngofnodi gyda'ch ffôn Android</translation>
+<translation id="4378556263712303865">Hawlio dyfais</translation>
 <translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio, faint o gof rydych yn ei ddefnyddio, a data diagnostig a defnydd apiau Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw amser yn eich gosodiadau dyfais ChromeOS. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer eich Cyfrif Google, gellir cadw eich data Android i'ch Cyfrif Google. Gallwch weld eich data, eu dileu, a newid gosodiadau eich cyfrif yn account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Wrthi'n chwilio am ddyfeisiau Bluetooth a USB</translation>
 <translation id="4403266582403435904">Adfer data neu newid dyfeisiau yn hawdd unrhyw bryd. Mae copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair Cyfrif Google eich plentyn.</translation>
 <translation id="4410545552906060960">Defnyddiwch rif (PIN) yn hytrach na chyfrinair i ddatgloi eich dyfais. Ewch i'r gosodiadau i osod eich PIN yn nes ymlaen.</translation>
 <translation id="4415213869328311284">Rydych yn barod i ddechrau defnyddio <ph name="DEVICE_TYPE" />.</translation>
+<translation id="443031431654216610">Defnyddiwch ddigidau rhifiadol yn unig</translation>
+<translation id="4448560527907365660">Cadw a gweld mwy</translation>
 <translation id="4449948729197510913">Mae eich enw defnyddiwr yn perthyn i gyfrif busnes eich sefydliad. Er mwyn cofrestru dyfeisiau i'r cyfrif, yn gyntaf rhaid i chi ddilysu perchnogaeth o'r parth yn y panel gweinyddwr. Bydd angen breintiau gweinyddwr arnoch ar gyfer y cyfrif i'w ddilysu.</translation>
 <translation id="4450974146388585462">Diagnosio</translation>
 <translation id="445099924538929605">Canfu <ph name="DEVICE_OS" /> TPM gweithredol a all storio'ch data yn fwy diogel.</translation>
+<translation id="4472298120638043495">Gallwch ddefnyddio'r dewis iaith o'ch Cyfrif Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Cychwyn arni</translation>
+<translation id="450867954911715010">Gosodiadau hygyrchedd</translation>
+<translation id="4519605771716872386">Cysoni ffeil wedi'i droi ymlaen</translation>
+<translation id="4531924570968473143">Pwy hoffech chi ychwanegu at y <ph name="DEVICE_TYPE" /> hwn?</translation>
 <translation id="4566170377336116390">Os ydych am newid ar ôl cofrestru, bydd angen i chi ailosod eich dyfais i'r gosodiadau ffatri (powerwash).</translation>
 <translation id="4567512141633030272">Opsiwn mewngofnodi anghywir?</translation>
+<translation id="4567533462991917415">Gallwch bob amser ychwanegu rhagor o bobl ar ôl gosod. Gall pob person bersonoleiddio ei gyfrif a chadw data yn breifat.</translation>
 <translation id="4568213207643490790">Mae'n ddrwg gennym, ni chaniateir cyfrifon Google ar y ddyfais hon.</translation>
 <translation id="4611759022973144129">Gallwch ddefnyddio'r cyfrinair hwn i fewngofnodi i'ch <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">Gosod y ddyfais hon at ddibenion personol neu waith</translation>
+<translation id="4689235506267737042">Dewiswch eich dewisiadau demo</translation>
 <translation id="4727847987444062305">Sesiwn gwestai sydd wedi'i reoli</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="473936925429402449">Wedi'i ddewis, cynnwys ychwanegol <ph name="CURRENT_ELEMENT" /> allan o <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119">Nid yw <ph name="USER_EMAIL" /> yn gyfrif Google for Education dilys. Cysylltwch â'ch gweinyddwr. Os ydych yn weinyddwr, gallwch osod eich sefydliad drwy fynd i: g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Ar gyfer gwaith</translation>
 <translation id="4806457879608775995">Darllen y telerau hyn a rheoli eich data</translation>
+<translation id="4814327014588285482">Hepgor ac atgoffa fi yn nes ymlaen</translation>
 <translation id="4830502475412647084">Yn gosod diweddariad OS</translation>
 <translation id="4837926214103741331">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â pherchennog y ddyfais i gael caniatâd mewngofnodi.</translation>
+<translation id="4844333629810439236">Bysellfyrddau eraill</translation>
 <translation id="4864369630010738180">Wrthi'n mewngofnodi...</translation>
+<translation id="4867272607148176509">Gall rhieni gymeradwyo neu rwystro apiau, gosod terfynau amser, a rheoli pori gwe. Gellir ychwanegu cyfrif ysgol yn ddiweddarach i gael mynediad at y rhan fwyaf o adnoddau ysgol.</translation>
 <translation id="4877652723592270843">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex? Os felly, pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad.</translation>
 <translation id="4899696330053002588">Yn cynnwys hysbysebion</translation>
 <translation id="49027928311173603">Mae'r polisi a lawrlwythwyd o'r gweinydd yn annilys: <ph name="VALIDATION_ERROR" />.</translation>
@@ -219,14 +310,17 @@
 <translation id="4944310289250773232">Mae'r gwasanaeth dilysu hwn wedi'i gynnal gan <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Dewiswch eich PIN</translation>
 <translation id="4965808351167763748">Ydych chi'n siŵr eich bod chi am osod y ddyfais hon i redeg Hangouts Meet?</translation>
+<translation id="4987944280765486504">Bydd eich Chromebook yn ailgychwyn unwaith y bydd y lawrlwythiad wedi'i gwblhau a gallwch barhau i osod.</translation>
 <translation id="5029287942302939687">Mae eich cyfrinair wedi'i osod</translation>
 <translation id="503155457707535043">Wrthi'n lawrlwytho apiau</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5062930723426326933">Methwyd â mewngofnodi, cysylltwch i'r we a rhowch gynnig arall arni.</translation>
+<translation id="5085162214018721575">Wrthi'n gwirio am ddiweddariadau</translation>
 <translation id="5097306410549350357">Dysgu rhagor am ddefnyddio lleoliad</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Sgwrsiwch gyda Gemini i ddechrau ysgrifennu, cynllunio, dysgu a rhagor gydag AI Google.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Ar ôl gosod, dechreuwch ddefnyddio Gemini trwy ddewis yr ap Gemini ar eich silff, ar waelod eich sgrin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Rhowch eich <ph name="DEVICE_TYPE" /> i mewn i gyflenwad pŵer.</translation>
+<translation id="5145876360421795017">Peidio â chofrestru'r ddyfais</translation>
 <translation id="5147516217412920887">Dilynwch gyfarwyddiadau ar eich ffôn i ddilysu'r cod</translation>
 <translation id="5160857336552977725">Mewngofnodi i'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Nodweddion dadfygio<ph name="END_H3" />
@@ -247,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" />  Bydd y system yn ailgychwyn yn ystod y broses.</translation>
+<translation id="5215502535566372932">Dewiswch wlad</translation>
 <translation id="5234523649284990414">Mae'r darllenydd sgrîn ar ChromeOS, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu ddangosydd braille. Pwyswch Space i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
 <translation id="523505283826916779">Gosodiadau hygyrchedd</translation>
 <translation id="5240931875940563122">Mewngofnodwch gyda ffôn Android</translation>
@@ -259,16 +354,21 @@
 <translation id="5355501370336370394">Cofrestru dyfais Enterprise</translation>
 <translation id="5372529912055771682">Nid yw'r dull cofrestru a ddarparir yn cael ei gefnogi gan y fersiwn hon o'r system weithredu.  Gwnewch yn siŵr eich bod yn rhedeg y fersiwn fwyaf newydd a rhowch gynnig arall arni.</translation>
 <translation id="5397378439569041789">Cofrestru Kiosk neu ddyfais arwyddion</translation>
+<translation id="5397794290049113714">Chi</translation>
 <translation id="5411022484772257615">Methu â chwblhau cofrestru ysgol</translation>
 <translation id="5413640305322530561">Dysgu rhagor am ddata defnydd a diagnostig</translation>
 <translation id="542750953150239272">Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, eich cludwr, a gwneuthurwr eich dyfais, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap.</translation>
 <translation id="542948651837270806">Mae angen gosod diweddariad ar gyfer cadarnwedd y Modiwl Platfform Cymeradwy. Gweler <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Wps, aeth rhywbeth o'i le wrth fewngofnodi</translation>
+<translation id="5453829744223920473">Gall eich plentyn ddefnyddio ei holl apiau ysgol, nodau tudalen, ac adnoddau yn union fel y maent yn ei wneud yn y dosbarth. Yr ysgol sy'n gosod y rheolau sylfaenol.</translation>
 <translation id="5463450804024056231">Cofrestru ar gyfer e-byst <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, cludydd eich plentyn a gwneuthurwr y ddyfais hon, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap.</translation>
+<translation id="5502915260472117187">Plentyn</translation>
 <translation id="5511823366942919280">Ydych chi'n siŵr eich bod am osod y ddyfais hon fel "Siarc"?</translation>
+<translation id="5513807280330619196">Cyfrifiannell</translation>
 <translation id="5527474464531963247">Gallwch hefyd ddewis rhwydwaith arall.</translation>
 <translation id="5539070192556911367">Methu â chyrraedd Google</translation>
+<translation id="5549511085333906441">Dewiswch eich gosodiad</translation>
 <translation id="557722062034137776">Ni fydd ailosod eich dyfais yn effeithio ar eich cyfrifon Google nac unrhyw ddata sy'n cael eu cysoni i'r cyfrifon hyn. Fodd bynnag, bydd yr holl ffeiliau a gedwir yn lleol ar eich dyfais yn cael eu dileu.</translation>
 <translation id="5626172233890210551">Defnyddiwch gyfrinair yn lle hynny</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />I ddarparu'r profiad gorau, mae <ph name="DEVICE_OS" /> yn casglu data caledwedd am ddyfeisiau ac yn eu rhannu gyda Google i benderfynu pa ddiweddariadau y dylid eu hanfon. Gallwch ddewis i ganiatáu i Google ddefnyddio'r data hyn at ddibenion ychwanegol megis cymorth a gwelliannau i'r profiad a gwasanaeth <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
@@ -276,6 +376,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Am ragor o fanylion ar ddata y gall <ph name="DEVICE_OS" /> eu rhannu â Google, a sut maent yn cael eu defnyddio, ewch i g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Er mwyn defnyddio <ph name="NETWORK_ID" /> mae'n bosib y bydd rhaid i chi <ph name="LINK_START" />fynd i dudalen fewngofnodi'r rhwydwaith<ph name="LINK_END" /> yn gyntaf, a fydd yn agor yn awtomatig ymhen rhai eiliadau. Os na fydd yn agor yn awtomatig, ni fydd modd i chi ddefnyddio'r rhwydwaith.</translation>
 <translation id="5655296450510165335">Cofrestru dyfais</translation>
+<translation id="565899488479822148">Wrthi'n gosod y diweddariad diweddaraf</translation>
 <translation id="5659964844710667266">Creu cyfrinair ar gyfer y <ph name="DEVICE_TYPE" /> hwn</translation>
 <translation id="5684661240348539843">Dynodwr Asedau</translation>
 <translation id="5684950556880280580">Mae eich cyfrinair wedi'i ddiweddaru</translation>
@@ -285,19 +386,26 @@
 <translation id="5765425701854290211">Mae'n ddrwg gennym, cafodd rhai ffeiliau eu difrodi ac nid oedd y diweddariad yn llwyddiannus. Mae eich ffeiliau sydd wedi'u cysoni'n ddiogel.</translation>
 <translation id="5770125698810550803">Dangos botymau llywio</translation>
 <translation id="5799478978078236781">Cael awgrymiadau, cynigion, a diweddariadau <ph name="DEVICE_TYPE" /> a rhannu adborth.</translation>
+<translation id="5800703268655655701">Dewis thema golau neu dywyll</translation>
 <translation id="5804259315582798390">Wedi methu â galluogi adferiad data lleol</translation>
 <translation id="5810809306422959727">Nid yw'r cyfrif hwn yn gymwys ar gyfer rheolaethau rhieni</translation>
+<translation id="5834581999798853053">Tua <ph name="TIME" /> o funudau ar ôl</translation>
 <translation id="5852112051279473187">Wps!  Aeth rhywbeth o'i le wrth gofrestru'r ddyfais hon.  Rhowch gynnig arall arni neu cysylltwch â'ch cynrychiolydd cymorth.</translation>
 <translation id="5852137567692933493">Ailddechrau a chlirio'r ddyfais yn gyfan gwbl</translation>
 <translation id="5856721540245522153">Galluogi nodweddion dadfygio</translation>
+<translation id="5860033963881614850">Diffodd</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
+<translation id="5870086504539785141">Cau dewislen hygyrchedd</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="5895335062901455404">Bydd eich dewisiadau a'ch gweithgarwch sydd wedi'u cadw yn barod ar unrhyw ddyfais ChromeOS Flex pan fyddwch yn mewngofnodi i'ch Cyfrif Google. Gallwch ddewis beth i'w gysoni yn y Gosodiadau.</translation>
+<translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5919305207330938913">Defnyddir yr holl ddata a gesglir yn ôl <ph name="BEGIN_LINK" />Polisi Preifatrwydd<ph name="END_LINK" /> Google.</translation>
 <translation id="5932441198730183141">Nid oes gennych ddigon o drwyddedau ar gael i gofrestru'r ddyfais caledwedd Google Meet hon. Cysylltwch â'r tîm gwerthu i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon drwy gamgymeriad, cysylltwch â'r tîm cymorth.</translation>
 <translation id="5939518447894949180">Ailosod</translation>
+<translation id="5948536763493709626">Gallwch gysylltu bysellfwrdd neu lygoden, neu barhau i osod gan ddefnyddio'ch sgrîn gyffwrdd. Os ydych yn defnyddio dyfeisiau Bluetooth, gwnewch yn siŵr eu bod yn barod i baru.</translation>
 <translation id="5959471481388474538">Nid yw'r rhwydwaith ar gael</translation>
 <translation id="6016178549409952427">Llywio i gynnwys ychwanegol <ph name="CURRENT_ELEMENT" /> o <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Dewis iaith a botwm bysellfwrdd. Yr iaith a ddewisir ar hyn o bryd yw <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6051354611314852653">Wps!  Gwnaeth y system fethu ag awdurdodi mynediad API ar gyfer y ddyfais hon.</translation>
 <translation id="6055544610007596637">Gosod apiau ar gyfer eich <ph name="DEVICE_TYPE" /> o'r Google Play Store</translation>
@@ -318,6 +426,7 @@
 <translation id="6301300352769835063">Gadael i Google ddefnyddio eich data caledwedd i helpu gwella <ph name="DEVICE_OS" /> Os ydych yn gwrthod, bydd y data yn parhau i gael ei anfon at Google i benderfynu ar ddiweddariadau cywir, ond nid yw'n cael ei storio na'i ddefnyddio fel arall. Dysgu rhagor yn g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Mae mewngofnodi wedi'i ddarparu gan <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Rydych wedi galluogi nodweddion dadfygio ar y ddyfais <ph name="IDS_SHORT_PRODUCT_NAME" /> hon yn llwyddiannus.</translation>
+<translation id="6343262564968371601">Dewch o hyd i'r hyn rydych yn chwilio amdano trwy chwilio Google, ffeiliau, apiau a rhagor</translation>
 <translation id="635609604405270300">Cadw'r ddyfais ymlaen</translation>
 <translation id="6367097275976877956">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS? Os felly, pwyswch Space.</translation>
 <translation id="636850387210749493">Cofrestru menter</translation>
@@ -326,20 +435,27 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio a faint o gof rydych yn ei ddefnyddio yn nodweddiadol.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Gosod diweddariad critigol</translation>
+<translation id="6478849105642611893">Mae'r fysell Mewnosod Cyflym wedi'i lleoli o dan fysell y Tab</translation>
 <translation id="6480327114083866287">Rheolir gan <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Dewis iaith</translation>
 <translation id="6495266441917713704">Methu â throsglwyddo Wi-Fi</translation>
 <translation id="6515620015470298987">Wedi methu â mewngofnodi oherwydd problem gwirio ffurfweddiad dyfais. Cliriwch eich <ph name="DEVICE_TYPE" /> yn gyfan gwbl a rhowch gynnig arall arni.</translation>
 <translation id="6519689855001245063">Wrthi'n gwirio cymhwysedd</translation>
 <translation id="6532527800157340614">Gwnaeth mewngofnodi fethu oherwydd na ellid adfer eich tocyn mynediad. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
+<translation id="653920215766444089">Wrthi'n chwilio am ddyfais sy'n pwyntio</translation>
 <translation id="65513682072153627">Byddwch yn gweld yr eicon Rheolir pan fydd gosodiad neu nodwedd yn cael eu rheoli gan eich gweinyddwr.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021">Mae <ph name="USER_EMAIL" /> eisoes yn cael ei reoli gan <ph name="DOMAIN" />. I ddefnyddio rheolaethau rhieni gyda Chyfrif Google gwahanol, allgofnodwch ar ôl gosod, yna dewiswch "Ychwanegu person" ar y sgrîn mewngofnodi.</translation>
 <translation id="6642720633335369752">I weld holl ffenestri apiau sydd ar agor, sweipiwch i fyny o'r gwaelod a daliwch.</translation>
 <translation id="6648911618876616409">Mae diweddariad critigol yn barod i'w osod. Mewngofnodwch i gychwyn arni.</translation>
 <translation id="6671497123040790595">Wrthi'n gosod rheolaeth gan <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Wedi cysylltu'r ddyfais pwyntio</translation>
 <translation id="667752334740867460">Wrthi'n derbyn gwybodaeth Wi-Fi...</translation>
 <translation id="6680442031740878064">Ar gael: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Gallwch adfer <ph name="EMAIL" />, ond bydd data lleol yn cael eu dileu.</translation>
 <translation id="6748980958975836188">Rydw i wedi darllen ac yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Lluniau</translation>
+<translation id="6754918760968695779">Mewnosod Cyflym</translation>
 <translation id="6789834167207639931">Rhowch eich cyfrinair Cyfrif Google eto ar y sgrîn nesaf i orffen yr adferiad</translation>
 <translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fydd ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, faint o gof a ddefnyddiwyd yn nodweddiadol, a data diagnostig a defnydd ap Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
@@ -348,12 +464,18 @@
 <translation id="682971198310367122">Polisi preifatrwydd Google</translation>
 <translation id="6835762382653651563">Cysylltwch â'r Rhyngrwyd i ddiweddaru eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Mae mewngofnodi wedi newid</translation>
+<translation id="6852529053326738838">Gofynnwch i'ch sefydliad, neu cofrestrwch gyda'ch e-bost gwaith i wirio a yw'ch cyfrif yn gymwys.</translation>
+<translation id="6867671714894555998">Gwnewch bethau'n gyflym gyda'r bysellfwrdd newydd</translation>
 <translation id="6883319974225028188">Wps!  Gwnaeth y system fethu â chadw ffufrweddiad dyfais.</translation>
+<translation id="6888831646723563669">Cysylltwch er mwyn mwynhau'r nodweddion ar eich <ph name="DEVICE_TYPE" /> newydd</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Gall data apiau fod yn unrhyw ddata y mae ap wedi'u cadw (yn seiliedig ar y gosodiadau datblygwr), gan gynnwys data megis cysylltiadau, negeseuon a lluniau. Ni fydd data wrth gefn yn cyfrif tuag at gwota storfa Drive eich plentyn.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddiffodd y gwasanaeth hwn yn y Gosodiadau.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Troi cysoni ymlaen</translation>
 <translation id="6918733588290914545">Gosodiad cyflym gyda ffôn Android</translation>
 <translation id="6920473853105515518">Gwnewch yn siŵr bod eich <ph name="DEVICE_TYPE" /> wedi'i chysylltu â'r rhyngrwyd a rhowch gynnig arall arni. Gallwch hefyd fynd i play.google/play-terms ar ddyfais arall.</translation>
+<translation id="6929126689972602640">Ni chefnogir rheolaethau rhieni ar gyfer cyfrifon ysgol. I ychwanegu cyfrif ysgol i gael mynediad at Google Classroom a gwefannau eraill ar gyfer gwaith ysgol gartref, mewngofnodwch gyda chyfrif personol y plentyn yn gyntaf. Gallwch ychwanegu cyfrif yr ysgol yn nes ymlaen wrth osod.</translation>
+<translation id="6935031746833428401">Dysgu rhagor am Reoli Dyfais</translation>
+<translation id="6950351336108213154">Diweddaru perifferolion dyfais</translation>
 <translation id="6955698182324067397">Rydych yn galluogi nodweddion dadfygio ChromeOS a fydd yn gosod sshd daemon ac yn galluogi cychwyn o yriannau USB.</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6969216690072714773">Rhowch wybodaeth newydd neu ddiweddarwch y wybodaeth bresennol i fod yn gysylltiedig â'r ddyfais hon.</translation>
@@ -363,23 +485,37 @@
         dirprwyol yn gweithio. Os nad ydych yn credu y dylech fod yn defnyddio
         gweinydd dirprwyol, addaswch eich <ph name="LINK_START" />gosodiadau dirprwyol<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Trowch Bluetooth a Wi-Fi eich ffôn ymlaen</translation>
+<translation id="6996438701394974959">Cynyddu yr arddangosiad a maint y testun</translation>
+<translation id="6998793565256476099">Cofrestru dyfais ar gyfer cynadledda</translation>
 <translation id="7025082428878635038">Ffordd newydd i lywio gydag ystumiau</translation>
 <translation id="7034692021407794547">Rhaid i weinyddwr sydd â breintiau Rheoli Biliau dderbyn Telerau Gwasanaeth Caledwedd Google Meet yn adran Caledwedd Google Meet y Panel gweinyddwr yn gyntaf.</translation>
+<translation id="7039951224110875196">Creu Cyfrif Google ar gyfer plentyn</translation>
 <translation id="7065223852455347715">Mae'r ddyfais hon wedi'i chloi yn y modd sy'n atal cofrestriad menter.  Os ydych chi eisiau cofrestru'r ddyfais mae angen i chi adfer y ddyfais yn gyntaf.</translation>
+<translation id="7066572364168923329">Dewis gosodiad eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Gwnaeth y dudalen mewngofnodi fethu â llwytho gan ddefnyddio'r gosodiadau dirprwyol presennol. <ph name="GAIA_RELOAD_LINK_START" />Rhowch gynnig arall ar fewngofnodi<ph name="GAIA_RELOAD_LINK_END" />, neu defnyddiwch <ph name="PROXY_SETTINGS_LINK_START" />gosodiadau dirprwyol<ph name="PROXY_SETTINGS_LINK_END" /> gwahanol.</translation>
 <translation id="7088674813905715446">Mae'r ddyfais hon wedi'i rhoi mewn cyflwr dad-ddarpariaeth gan y gweinyddwr. Er mwyn ei galluogi i'w chofrestru, gofynnwch i'ch gweinyddwr ei rhoi mewn cyflwr ar y gweill.</translation>
 <translation id="7114054701490058191">Nid yw'r cyfrineiriau'n cyfateb</translation>
 <translation id="7135729336746831607">Troi Bluetooth ymlaen?</translation>
 <translation id="7141105143012495934">Wedi methu â mewngofnodi oherwydd na ellid adfer manylion eich cyfrif. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
+<translation id="7171259390164035663">Peidio â chofrestru</translation>
 <translation id="7189451821249468368">Nid oes gennych ddigon o uwchraddiadau i gofrestru'r ddyfais hon. Cysylltwch â'r tîm gwerthu i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon drwy gamgymeriad, cysylltwch â'r tîm cymorth.</translation>
 <translation id="7202337678781136582">Sganiwch y cod QR gyda'ch ffôn Android</translation>
+<translation id="7228854227189381547">Peidio â newid</translation>
+<translation id="7230881857327093958">Bydd newidiadau yn cael eu cymhwyso ar ôl gosod</translation>
 <translation id="7260186537988033909">Wedi cwblhau cofrestru dyfais ciosg neu arwyddion</translation>
+<translation id="7284411326658527427">Gall pob person bersonoleiddio ei gyfrif a chadw data yn breifat.</translation>
 <translation id="7290242001003353852">Mae'r gwasanaeth mewngofnodi hwn, sy'n cael ei gynnal gan <ph name="SAML_DOMAIN" />, yn cyrchu'ch camera.</translation>
+<translation id="7311005168897771689">Cael mynediad at eich ffeiliau Google Drive pan fyddwch all-lein</translation>
 <translation id="7317831949569936035">Cofrestru ysgol</translation>
+<translation id="7326004502692201767">Gosod y <ph name="DEVICE_TYPE" /> hwn ar gyfer plentyn</translation>
+<translation id="732659786514229249">Cofrestru'r ddyfais yn eich sefydliad?</translation>
 <translation id="7329154610228416156">Wedi methu â mewngofnodi oherwydd ei fod wedi'i ffurfweddu i ddefnyddio URL nad yw'n ddiogel (<ph name="BLOCKED_URL" />). Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="7345706641791090287">Cadarnhewch eich cyfrinair</translation>
+<translation id="7348093485538360975">Bysellfwrdd ar y sgrîn</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
+<translation id="7403642243184989645">Wrthi'n Lawrlwytho Adnoddau</translation>
+<translation id="7406912950279255498">Modd gwrthdroad lliw</translation>
 <translation id="7416263748877373774">Ni ellir llwytho'r Telerau Gwasanaeth. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
 <translation id="7475742997309661417">Mae'r darllenydd sgrîn ar ChromeOS, ChromeVox, yn cael ei ddefnyddio'n bennaf gan bobl â dallineb neu olwg gwan i ddarllen testun sy'n cael ei arddangos ar y sgrîn gyda syntheseisydd lleferydd neu ddangosydd braille. Pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad i droi ChromeVox ymlaen. Pan fydd ChromeVox wedi'i weithredu, byddwch yn mynd trwy daith gyflym.</translation>
 <translation id="7476454130948140105">Mae'r batri yn rhy isel i ddiweddaru (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -389,10 +525,13 @@
 <translation id="7506541170099744506">Mae eich <ph name="DEVICE_TYPE" /> wedi cael ei gofrestru'n llwyddiannus ar gyfer rheoli menter.</translation>
 <translation id="7509097596023256288">Wrthi'n gosod rheolaeth</translation>
 <translation id="7543104066686362383">Galluogi nodweddion dadfygio ar y ddyfais <ph name="IDS_SHORT_PRODUCT_NAME" /> hon</translation>
+<translation id="7544227555407951270">Cofrestrwch y ddyfais</translation>
+<translation id="7549434883223124329">Newid iaith y ddyfais?</translation>
 <translation id="7553242001898162573">Rhowch eich cyfrinair</translation>
 <translation id="7556242789364317684">Yn anffodus, ni all <ph name="SHORT_PRODUCT_NAME" /> adfer eich gosodiadau. I drwsio'r gwall, rhaid i <ph name="SHORT_PRODUCT_NAME" /> ailosod eich dyfais gyda Powerwash.</translation>
 <translation id="7560756177962144929">Cysoni eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">Nid oes digon o le storio i'w ddiweddaru</translation>
+<translation id="7616214729753637086">Wrthi'n cofrestru dyfais...</translation>
 <translation id="7622114377921274169">Wrthi'n gwefru.</translation>
 <translation id="7630426712700473382">Rheolir y ddyfais hon gan <ph name="MANAGER" /> ac mae'n gofyn i chi fewngofnodi bob tro.</translation>
 <translation id="7639914187072011620">Methwyd â nôl yr URL ailgyfeirio SAML o'r gweinydd</translation>
@@ -404,28 +543,43 @@
 <translation id="7659584679870740384">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â'r gweinyddwr i gael caniatâd mewngofnodi.</translation>
 <translation id="7660116474961254898">Dilynwch y cyfarwyddiadau ar eich ffôn</translation>
 <translation id="7661451191293163002">Ni ellid cael tystysgrif gofrestru.</translation>
+<translation id="7666531788977935712">Galluogwyd botwm parhau</translation>
 <translation id="7671139479636735732">De-gliciwch i ddelweddu'ch syniadau'n hawdd</translation>
 <translation id="770831926727930011">Mae eich data lleol yn cael eu gwarchod gan eich hen gyfrinair. Rhowch eich hen gyfrinair i adfer data lleol.</translation>
 <translation id="7722040605881499779">Roedd angen diweddaru: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Wrthi'n paru â "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7746045113967198252">Gwneud eitemau ar eich sgrîn, gan gynnwys testun, yn fwy neu'n llai. Gallwch hefyd ddod o hyd i hwn yn nes ymlaen yn y Gosodiadau &gt; Dyfais &gt; Arddangos.</translation>
 <translation id="7760176388948986635">Caniatáu i apiau, gwefannau a gwasanaethau Android a ChromeOS sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau Android. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'r ddyfais hon er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb adnabod unrhyw unigolyn i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal gwasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr.</translation>
 <translation id="7784875615510899699">Nid oes gennych ddigon o drwyddedau ar gael i gofrestru'r ddyfais Google Beam hon. Cysylltwch â'ch ailwerthwr i brynu rhagor. Os ydych yn credu eich bod yn gweld y neges hon mewn camgymeriad, cysylltwch â'ch ailwerthwr.</translation>
+<translation id="7791269138074599214">Dull mewnbynnu</translation>
+<translation id="7791436592012979144">Mae sgrolio tuag yn ôl wedi'i alluogi</translation>
 <translation id="7792012425874949788">Aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7803657407897251194">I barhau i osod eich dyfais Android, cysylltwch eich <ph name="DEVICE_TYPE" /> i rwydwaith.</translation>
+<translation id="7842692330619197998">Ewch i g.co/ChromeEnterpriseAccount os oes angen i chi greu cyfrif newydd.</translation>
 <translation id="7851457902707056880">Cyfyngwyd mewngofnodi i gyfrif y perchennog yn unig. Ailgychwynnwch a mewngofnodwch gyda chyfrif y perchennog. Bydd y peiriant yn ailgychwyn yn awtomatig mewn 30 eiliad.</translation>
 <translation id="7870730066603611552">Adolygu dewisiadau cysoni ar ôl gosod</translation>
 <translation id="7883792253546618164">Gallwch ddad-danysgrifio unrhyw bryd.</translation>
+<translation id="7887864092952184874">Wedi paru'r llygoden Bluetooth</translation>
 <translation id="7906440585529721295">Bydd data lleol yn cael eu dileu</translation>
+<translation id="7910725946105920830">Defnyddiwch eich Cyfrif Google personol</translation>
+<translation id="7918257978052780342">Cofrestru</translation>
 <translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, a faint o gof a ddefnyddiwyd yn nodweddiadol.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Dewisiadau uwch</translation>
 <translation id="7943311690198910993">Diweddarwyd y dull mewngofnodi</translation>
 <translation id="795240231873601803">Defnyddio cofrestru Enterprise ar gyfer cyfrifon gwaith ac ysgol</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
 <translation id="7975504106303186033">Rhaid i chi gofrestru'r ddyfais Chrome Education hon i gyfrif addysg. I gofrestru ar gyfer cyfrif newydd, ewch i g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">Rhif adnabod yr ased: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Ailddechreuwch eich dyfais i drwsio'r gwall hwn.</translation>
 <translation id="7990958035181555539">Trosglwyddo WiFi yn awtomatig o'ch ffôn Android</translation>
+<translation id="8022466874160067884">Rhowch eich Cyfrif Google a'ch cyfrinair</translation>
+<translation id="8049029041626250638">Cysylltwch fysellfwrdd neu lygoden. Os ydych yn defnyddio dyfeisiau Bluetooth, gwnewch yn siŵr eu bod yn barod i baru.</translation>
 <translation id="8054563304616131773">Nodwch gyfeiriad e-bost dilys</translation>
+<translation id="8054921503121346576">Mae bysellfwrdd USB wedi'i gysylltu</translation>
 <translation id="8065144531309810062">Defnyddiwch AI Google i fod yn fwy creadigol a chynhyrchiol</translation>
+<translation id="8082106343289440791">Paru â "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Rhaid i'ch gweinyddwr dderbyn y telerau gwasanaeth yn rhestr dyfeisiau Panel Defnyddwyr Chrome yn gyntaf.</translation>
 <translation id="8098616321286360457">Mae angen cysylltiad rhwydwaith</translation>
 <translation id="8129265306888404830">I ddefnyddio eich cyfeiriad e-bost gan eich sefydliad (<ph name="EMAIL_DOMAIN" />), mae angen i chi ddefnyddio cofrestru Enterprise. Os yw'r ddyfais hon at eich defnydd personol chi, mewngofnodwch gyda'ch Cyfrif Google personol.</translation>
@@ -433,6 +587,7 @@
 <translation id="8146177459103116374">Os ydych eisoes wedi cofrestru ar y ddyfais hon, gallwch <ph name="LINK2_START" />fewngofnodi fel defnyddiwr presennol<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Wedi methu â mewngofnodi. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>
 <translation id="8147346945017130012">Helpu i wella nodweddion a pherfformiad Chrome a ChromeOS drwy anfon adroddiadau toriadau yn awtomatig ynghyd â data diagnostig a defnydd at Google.</translation>
+<translation id="8152760814912191567">Google Beam ar gyfer Zoom</translation>
 <translation id="815491593104042026">Wps!  Wedi methu â dilysu oherwydd ei fod wedi'i ffurfweddu i ddefnyddio URL nad yw'n ddiogel (<ph name="BLOCKED_URL" />). Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="8157704005178149728">Wrthi'n gosod goruchwyliaeth</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
@@ -443,20 +598,26 @@
 <translation id="8241806945692107836">Wrthi'n pennu ffurfweddiad y ddyfais...</translation>
 <translation id="8242426110754782860">Parhau</translation>
 <translation id="826905130698769948">Tystysgrif cleient annilys</translation>
+<translation id="8271379370373330993">Rhieni, mae'r camau nesaf ar eich cyfer chi. Gallwch roi'r ddyfais <ph name="DEVICE_TYPE" /> yn ôl i'r plentyn ar ôl gosod y cyfrif.</translation>
 <translation id="8274924778568117936">Peidiwch â diffodd na chau eich <ph name="DEVICE_TYPE" /> nes bod y diweddariad wedi gorffen. Bydd eich <ph name="DEVICE_TYPE" /> yn ailgychwyn ar ôl i'r gosodiad orffen.</translation>
 <translation id="8281886186245836920">Neidio</translation>
+<translation id="8291942417224950075">At ddefnydd personol</translation>
 <translation id="8304383784961451596">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â'r gweinyddwr i gael caniatâd mewngofnodi neu mewngofnodwch gyda chyfrif Google dan oruchwyliaeth Family Link.</translation>
 <translation id="8321837372750396788">Bydd y <ph name="DEVICE_TYPE" /> hwn yn cael ei reoli gan <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Arddangos a maint testun</translation>
 <translation id="8354034204605718473">Cafodd PIN eich plentyn ei ychwanegu</translation>
 <translation id="8366396658833131068">Mae eich cysylltiad rhwydwaith wedi'i adfer. Dewiswch rwydwaith arall neu pwyswch y botwm 'Parhau' isod i lansio eich ap Kiosk.</translation>
 <translation id="8401432541486058167">Rhowch y PIN sy'n gysylltiedig â'ch cerdyn smart.</translation>
 <translation id="8408270600235826886">Gallwch reoli pa ddata sy'n cael eu rhannu gyda Google. Gallwch newid hyn unrhyw bryd yn y Gosodiadau. Defnyddir data yn ôl <ph name="BEGIN_LINK" />Polisi Preifatrwydd<ph name="END_LINK" /> Google.</translation>
 <translation id="8413956290606243087">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS?</translation>
 <translation id="8425768983279799676">Gallwch ddefnyddio'ch PIN i ddatgloi'ch dyfais.</translation>
+<translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="843173223122814223">Creu cefndiroedd gydag AI</translation>
 <translation id="8452105022015742247">Trosglwyddo gwybodaeth Cyfrif Google o'ch ffôn Android</translation>
 <translation id="8464132254133862871">Nid yw'r cyfrif defnyddiwr hwn yn gymwys ar gyfer y gwasanaeth.</translation>
 <translation id="8524841856047224176">Personoleiddio cefndir eich camera ar gyfer galwadau fideo a rhagor</translation>
+<translation id="8527257351549797148">Mae'n bosib y bydd angen cofrestru ar eich sefydliad er mwyn i chi allu cyrchu apiau, estyniadau a rhagor. Mae hyn hefyd yn caniatáu i'ch sefydliad reoli pethau megis gosodiadau diogelwch a dyfais.</translation>
+<translation id="8558063527625343224">Gosod Google Beam</translation>
 <translation id="8569673829373920831">Rhagor am <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Caniatáu i apiau, gwefannau a gwasanaethau Android a ChromeOS sydd â chaniatâd lleoliad ddefnyddio lleoliad eich dyfais. Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau Android. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb eich adnabod i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal gwasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr.</translation>
 <translation id="8627804903623428808">Darllen y telerau hyn a rheoli data eich plentyn</translation>
@@ -471,6 +632,7 @@
 <translation id="8674903726754070732">Yn anffodus, mae eich cyfrifiadur wedi'i ffurfweddu â chaledwedd sydd wedi'i gamffurfio. Mae hyn yn atal ChromeOS rhag diweddaru gyda'r gwelliannau diogelwch diweddaraf ac <ph name="BEGIN_BOLD" />mae'n bosib y bydd eich cyfrifiadur yn agored i ymosodiadau maleisus<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Ychwanegu rheolaethau rhieni ar ôl gosod</translation>
 <translation id="8698269656364382265">I ddychwelyd i'r sgrîn flaenorol, sweipiwch o'r ochr chwith.</translation>
+<translation id="8718994464069323380">Mae sgrîn gyffwrdd wedi'i chanfod</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8726206820263995930">Gwall wrth nôl gosodiadau polisi o'r gweinydd: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
@@ -478,24 +640,36 @@
 <translation id="8740247629089392745">Gallwch roi'r Chromebook hwn i <ph name="SUPERVISED_USER_NAME" />. Mae'r gosod bron wedi gorffen, bydd yn amser archwilio wedyn.</translation>
 <translation id="8759753423332885148">Dysgu rhagor.</translation>
 <translation id="8777628254805677039">cyfrinair gwraidd</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Teipiwch y cod paru Bluetooth yna pwyswch Return neu Enter.</translation>
 <translation id="8794548468611058947">Yn lle rhoi cyfrinair eich Cyfrif Google i fewngofnodi, gallwch greu PIN ar gyfer y <ph name="DEVICE_TYPE" /> hwn</translation>
 <translation id="8830796635868321089">Wedi methu â gwirio am ddiweddariadau gan ddefnyddio'r gosodiadau dirprwyol presennol. Addaswch eich <ph name="PROXY_SETTINGS_LINK_START" />gosodiadau dirprwyol<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Daw'r ddyfais Chromebook Enterprise hon wedi'i bwndelu gyda'r Uwchraddiad Chrome Enterprise. Er mwyn manteisio ar y galluoedd menter, cofrestrwch y ddyfais hon gyda chyfrif gweinyddwr Google.</translation>
 <translation id="885746075120788020">Bydd eich dewisiadau a'ch gweithgarwch sydd wedi'u cadw yn barod ar unrhyw ddyfais ChromeOS pan fyddwch yn mewngofnodi i'ch Cyfrif Google. Gallwch ddewis beth i'w gysoni yn y Gosodiadau.</translation>
+<translation id="8868333925931032127">Wrthi'n cychwyn y Modd Demo</translation>
 <translation id="8875221558267407626">Crynhoi cynnwys, symleiddio iaith gymhleth, neu ofyn cwestiynau</translation>
+<translation id="8907701755790961703">Dewiswch wlad</translation>
 <translation id="8913163265790894442">Gosod eich <ph name="DEVICE_TYPE" /> yn hawdd gyda'ch ffôn. Gallwch ychwanegu'ch Wi-Fi a'ch Cyfrif Google heb nodi'ch cyfrineiriau yn bwrpasol.
         <ph name="BR" />
         <ph name="BR" />
         I'w weld fel <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">Parhau</translation>
 <translation id="8946359700442089734">Ni alluogwyd nodweddion dadfygio'n llwyr ar y ddyfais <ph name="IDS_SHORT_PRODUCT_NAME" /> hon.</translation>
 <translation id="8965037249707889821">Rhowch yr hen gyfrinair</translation>
+<translation id="8968906873893164556">Dewiswch y cyfrif i'w ddefnyddio ar gyfer gosod</translation>
+<translation id="8973596347849323817">Gallwch bersonoleiddio'r ddyfais hon i ddiwallu'ch anghenion. Gellir newid y nodweddion hygyrchedd hyn yn nes ymlaen yn y Gosodiadau.</translation>
 <translation id="8975396729541388937">Gallwch ddad-danysgrifio unrhyw bryd drwy glicio'r ddolen yn yr e-byst rydych yn eu cael.</translation>
+<translation id="8987305927843254629">Gall pob person bersonoleiddio eu profiad a chadw data yn breifat.</translation>
 <translation id="8993059306046735527">Os byddwch yn anghofio eich cyfrinair <ph name="DEVICE_TYPE" />, gallwch barhau i adfer eich data lleol. Bydd angen i chi fewngofnodi i'ch Cyfrif Google neu ddefnyddio adferiad cyfrif.</translation>
 <translation id="9033765790910064284">Parhau beth bynnag</translation>
 <translation id="903480517321259405">Teipiwch y PIN eto</translation>
 <translation id="9040473193163777637">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS? Os felly, pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad.</translation>
 <translation id="9068298336633421551">Caniatáu i apiau Android a gwasanaethau sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad.</translation>
+<translation id="9074836595010225693">Mae llygoden USB wedi'i chysylltu</translation>
 <translation id="9076523132036239772">Mae'n ddrwg gennym, ni ellid dilysu'ch e-bost na'ch cyfrinair. Rhowch gynnig ar gysylltu i rwydwaith yn gyntaf.</translation>
+<translation id="9089959054554410481">Newid cyfeiriad sgrolio'r pad cyffwrdd</translation>
 <translation id="9158715103698450907">Wps!  Bu problem cyfathrebu rhwydwaith yn ystod y broses dilysu.  Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
+<translation id="9186963452600581158">Mewngofnodi gyda Chyfrif Google plentyn</translation>
 <translation id="919686179725692564">Dysgu rhagor am wneud copïau wrth gefn o'ch apiau</translation>
 <translation id="9214520840402538427">Wps!  Mae cychwyn y priodweddau amser gosod wedi darfod.  Cysylltwch â'ch cynrychiolydd cymorth.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Unigryw ar gyfer <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -505,4 +679,7 @@
         <ph name="BR" />
         I'w weld fel <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">Gwrthod</translation>
+<translation id="954749761428814584">Iaith a dull mewnbynnu</translation>
+<translation id="960987915827980018">Tua 1 awr ar ôl</translation>
+<translation id="995420352808264005">Dewiswch fath o gofrestru dyfais</translation>
 </translationbundle>

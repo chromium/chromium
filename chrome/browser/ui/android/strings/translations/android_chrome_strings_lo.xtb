@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">ແບ່ງປັນໜ້ານີ້</translation>
 <translation id="230115972905494466">ບໍ່ພົບອຸປະກອນທີ່ເຂົ້າກັນໄດ້</translation>
 <translation id="2316129865977710310">ບໍ່​, ​ຂອບ​ໃຈ</translation>
-<translation id="2318045970523081853">ແຕະເພື່ອໂທອອກ</translation>
 <translation id="232137538351753795">ປັດຈາກຂອບຊ້າຍເພື່ອກັບຄືນ</translation>
 <translation id="2323763861024343754">ບ່ອນເກັບຂໍ້ມູນຂອງເວັບໄຊ</translation>
 <translation id="2327445548174191329">ຈາກ <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ກວດແລ້ວເມື່ອ 1 ມື້ກ່ອນ}other{ກວດແລ້ວເມື່ອ # ມື້ກ່ອນ}}</translation>
 <translation id="2842985007712546952">ໂຟ​ລ​ເດີ​ພໍ່​ແມ່</translation>
 <translation id="2854916915045135148">ແຕະຄ້າງໄວ້ເພື່ອປ່ຽນໄປໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
-<translation id="2860954141821109167">ກວດໃຫ້ແນ່ໃຈວ່າໄດ້ເປີດນຳໃຊ້ແອັບໂທລະສັບໃນອຸປະກອນນີ້ແລ້ວ</translation>
 <translation id="286473047976978798">ນຳໃຊ້ຄ່າກຳນົດທີ່ປາກົດຂອງທ່ານບໍ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ແລະ ອີກ 1 ແຖບ}other{<ph name="URL" /> ແລະ ອີກ <ph name="TAB_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2869430948265924908">ເພື່ອປົກປ້ອງເນື້ອຫາທີ່ລະອຽດອ່ອນຂອງທ່ານໃນລົດ, ທ່ານຈະຕ້ອງສ້າງການລັອກໂປຣໄຟລ໌ລົດກ່ອນ.  ທ່ານສາມາດເຮັດໄດ້ໂດຍການໃຊ້ PIN, ລະຫັດ ຫຼື ລະຫັດຜ່ານ.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">ລຶບ ແລະ ສືບຕໍ່</translation>
 <translation id="6316139424528454185">ບໍ່ຮອງຮັບເວີຊັນ Android</translation>
 <translation id="631839948975905034">ລັອກໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານອອກຈາກ Chrome</translation>
+<translation id="6321592572353357376">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6324916366299863871">ແກ້ໄຂທາງລັດ</translation>
 <translation id="6324977638108296054">ບໍ່ສາມາດສ້າງລິ້ງໄປຍັງໄຮໄລ້ໄດ້</translation>
 <translation id="6333140779060797560">ແຊຣ໌ຜ່ານ <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">ລຶບແລ້ວ</translation>
 <translation id="6916590542764765824">ຈັດ​ການ​ສ່ວນ​ຂະ​ຫຍາຍ</translation>
 <translation id="6918398787259831832">ຫາກບັນຫານີ້ຍັງເກີດຂຶ້ນຢູ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ<ph name="END_LINK" /> ຈາກ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">ສ້າງລະຫັດ QR ສຳລັບໜ້ານີ້</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເວັບໄຊເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ແຖບ}other{<ph name="NUMBER_OF_TABS" /> ແຖບ}}</translation>
 <translation id="6929224077895306814">ລະຫັດຄວາມປອດໄພທັງໝົດທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ໃນບັນຊີ Google ຂອງທ່ານຈະຖືກລຶບອອກ</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">ແອັບພລິເຄຊັນ</translation>
 <translation id="7253951228444156601">ກຳລັງກວດລະຫັດຜ່ານ…</translation>
 <translation id="7260367682327802201">ອຸປະກອນ Android ຂອງທ່ານອາດຮວມມີການຕັ້ງຄ່າທີ່ຄ້າຍຄືກັນ. ຖ້າການວັດແທກການໂຄສະນາເປີດຢູ່ໃນ Chrome ແລະ ໃນອຸປະກອນ Android ຂອງທ່ານ, ບໍລິສັດອາດຈະສາມາດວັດແທກປະສິດທິຜົນຂອງການໂຄສະນາໃນທົ່ວເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ແອັບທີ່ທ່ານໃຊ້.</translation>
+<translation id="7265857422443387781">ຊອກຫາແຖບດ້ວຍ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">ສົ່ງ <ph name="ONE_TIME_CODE" /> ໄປໃຫ້ <ph name="ORIGIN" /> ບໍ?</translation>
 <translation id="7274013316676448362">ເວັບໄຊທີ່ຖືກບລັອກໄວ້</translation>
 <translation id="7276868533747677875">ຫາກທ່ານເຄີຍສົ່ງອອກລະຫັດຜ່ານແລ້ວ, ໃຫ້ຊອກຫາໄຟລ໌ CSV ໃນອຸປະກອນຂອງທ່ານ ແລ້ວນຳເຂົ້າໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານທີ່ທ່ານຕ້ອງການ.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">ແຈ້ງເຕືອນຫຼຸດລາຄາ</translation>
 <translation id="8611922158252451755">ທຸກຄົນທີ່ມີລິ້ງສາມາດແກ້ໄຂແຖບທັງໝົດໄດ້, ດັ່ງນັ້ນກະລຸນາແບ່ງປັນຢ່າງລະມັດລະວັງ. ລິ້ງຈະໝົດອາຍຸໃນ 48 ຊົ່ວໂມງ.</translation>
 <translation id="8616006591992756292">ບັນຊີ Google ຂອງທ່ານອາດຈະມີຮູບແບບອື່ນຂອງປະຫວັດການທ່ອງເວັບຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">ແປເປັນພາສາ <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">ເປີດເມນູ Chrome &gt; ການຕັ້ງຄ່າ</translation>
 <translation id="8634050254805484913">ເຊື່ອງໄວ້ຢູ່ໃນໜ້າຈໍແຄບ</translation>
 <translation id="8635399646025169806">ເກັບກຸ່ມແຖບໄວ້ບໍ?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">ຍັງເຫຼືອ 1 ໄຟລ໌</translation>
 <translation id="9205933215779845960">ບໍ່ສາມາດຊອກເຫັນໜ້ານັ້ນໄດ້. ກະລຸນາກວດສອບການສະກົດຄຳຂອງທ່ານ ຫຼື ລອງຊອກຫາຢູ່ <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">ກ</translation>
-<translation id="9209888181064652401">ບໍ່ສາມາດໂທອອກໄດ້</translation>
 <translation id="9212845824145208577">ບໍ່ສາມາດລົງໄປຕ່ຳກວ່ານີ້ໄດ້. ໃຫ້ລອງເລີ່ມຈາກທາງລຸ່ມຂອງໜ້າ.</translation>
 <translation id="9218430445555521422">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="9219103736887031265">ຮູບ</translation>

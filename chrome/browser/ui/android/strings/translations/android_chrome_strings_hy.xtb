@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Կիսվել այս էջով</translation>
 <translation id="230115972905494466">Համատեղելի սարքեր չեն գտնվել</translation>
 <translation id="2316129865977710310">Ոչ</translation>
-<translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
 <translation id="232137538351753795">Մատը սահեցրեք էկրանի ձախ եզրից՝ հետ գնալու համար</translation>
 <translation id="2323763861024343754">Կայքի օգտագործած տարածքը</translation>
 <translation id="2327445548174191329">Աղբյուրը՝ <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ստուգվել է 1 օր առաջ}one{Ստուգվել է # օր առաջ}other{Ստուգվել է # օր առաջ}}</translation>
 <translation id="2842985007712546952">Վերադաս պանակ</translation>
 <translation id="2854916915045135148">Հպեք և պահեք՝ ինկոգնիտո ռեժիմին անցնելու համար</translation>
-<translation id="2860954141821109167">Համոզվեք, որ «Հեռախոս» հավելվածը միացված է այս սարքում</translation>
 <translation id="286473047976978798">Կիրառե՞լ արտաքին տեսքի կարգավորումները</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ու ևս 1 ներդիր}one{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2869430948265924908">Մեքենայում ձեր զգայուն բովանդակությունը պաշտպանելու համար դուք պետք է ստեղծեք մեքենայի պրոֆիլի կողպում։  Դա կարող եք անել PIN կոդի, ծածկագրի կամ գաղտնաբառի միջոցով։</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">Ջնջել և շարունակել</translation>
 <translation id="6316139424528454185">Android-ի հնացած տարբերակ</translation>
 <translation id="631839948975905034">Կողպել ինկոգնիտո պատուհանները Chrome-ը փակելուց հետո</translation>
+<translation id="6321592572353357376">«<ph name="EXTENSION_NAME" />» ընդլայնումն ուզում է, որ դուք մուտք գործեք Chrome</translation>
 <translation id="6324916366299863871">Փոփոխել դյուրանցումը</translation>
 <translation id="6324977638108296054">Չհաջողվեց ստեղծել ընդգծված տեքստի հղում։</translation>
 <translation id="6333140779060797560">Կիսվել <ph name="APPLICATION" />-ի միջոցով</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">Ջնջված</translation>
 <translation id="6916590542764765824">Կառավարել ընդլայնումները</translation>
 <translation id="6918398787259831832">Եթե խնդիրը չվերանա, <ph name="BEGIN_LINK" />ստացեք լրացուցիչ տեղեկություններ<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից։</translation>
+<translation id="6920262510368602827">Ստեղծել QR կոդ այս էջի համար</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ներդիր}one{<ph name="NUMBER_OF_TABS" /> ներդիր}other{<ph name="NUMBER_OF_TABS" /> ներդիր}}</translation>
 <translation id="6929224077895306814">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">Հավելված</translation>
 <translation id="7253951228444156601">Գաղտնաբառերը ստուգվում են…</translation>
 <translation id="7260367682327802201">Ձեր Android սարքում կարող է նմանատիպ կարգավորում լինել։ Եթե գովազդի արդյունավետության գնահատումը Chrome-ում և ձեր Android սարքում միացված է, ընկերությունները կարող են գնահատել գովազդի արդյունավետությունը ձեր այցելած կայքերում և ձեր կողմից օգտագործվող հավելվածներում։</translation>
+<translation id="7265857422443387781">Որոնել ներդիրում Google Տեսապակիով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="ORIGIN" /> կայքին</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
 <translation id="7276868533747677875">Եթե նախկինում գաղտնաբառեր եք արտահանել, ձեր սարքում փնտրեք CSV ֆայլ և ներմուծեք դրանք ձեր նախընտրած գաղտնաբառերի կառավարիչ։</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">Գների իջեցման մասին ծանուցումներ</translation>
 <translation id="8611922158252451755">Ցանկացած մեկը, ով ունի այս հղումը, կարող է փոփոխել բոլոր ներդիրները, այնպես որ հղումով կիսվելուց առաջ միշտ ծանրութեթև արեք։ Հղումը կգործի 48 ժամ։</translation>
 <translation id="8616006591992756292">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
+<translation id="8626572875733549102">Թարգմանել <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Անցեք Chrome-ի ընտրացանկ &gt; Կարգավորումներ</translation>
 <translation id="8634050254805484913">Չի ցուցադրվում նեղ էկրաններին</translation>
 <translation id="8635399646025169806">Պահպանե՞լ ներդիրների խումբը</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>
 <translation id="9205933215779845960">Չի հաջողվում գտնել էջը։ Եթե վստահ եք, որ հարցումը ճիշտ եք մուտքագրել, փորձեք որոնել <ph name="SEARCH_ENGINE" />-ում։</translation>
 <translation id="9206873250291191720">Ա</translation>
-<translation id="9209888181064652401">Չի հաջողվում զանգել</translation>
 <translation id="9212845824145208577">Հնարավոր չէ ավելի ներքևից նշել։ Փորձեք նշել էջի ներքևից։</translation>
 <translation id="9218430445555521422">Սահմանել որպես կանխադրված</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>

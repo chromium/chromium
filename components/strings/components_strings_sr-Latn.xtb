@@ -504,6 +504,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="175656076281618225">Magija</translation>
 <translation id="1757773103848038814">Font fiksne širine</translation>
 <translation id="1757935267918149452">Dugme Promeni Google lozinku, aktivirajte ga da biste promenili lozinku za Google nalog</translation>
+<translation id="1759776526873274358">Automatski popunjavaj verifikacione kodove koje sajtovi koriste radi poboljšanja bezbednosti. Chrome može da dobija te kodove iz Gmail-a. <ph name="BEGIN_LINK" />Saznajte više o ovoj funkciji<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; operativni sistem uređaja nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pokušajte da pokrenete Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Slika (arhivska)</translation>
@@ -3129,6 +3130,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5862579898803147654">8. pregrada za slaganje</translation>
 <translation id="5863515189965725638">Izmenite IBAN</translation>
+<translation id="5863517400058880216">Automatski popunjavaj verifikacione kodove iz Gmail-a</translation>
 <translation id="5863847714970149516">Sledeća stranica može da pokuša da vam nešto naplati</translation>
 <translation id="5866257070973731571">Dodajte broj telefona</translation>
 <translation id="5866327164731551901">Iz <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4518,6 +4520,7 @@ Dodatni detalji:
 <translation id="7967973398323409409">Informacije koje automatski popunjavate niko ne vidi</translation>
 <translation id="79682505114836835">Vrednost <ph name="VALUE" /> je nevažeća heksadecimalna boja.</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
+<translation id="7971403153351954587">Organizacija nadgleda kopiranje</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 sa RSA šifrovanjem</translation>
 <translation id="7976053965094442846">Izdavaoci opcije Kupite odmah, platite kasnije dostupni za plaćanje tokom vremena. Tastatura je sakrivena.</translation>
 <translation id="7976214039405368314">Previše je zahteva</translation>

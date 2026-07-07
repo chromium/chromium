@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">ចែករំលែកទំព័រនេះ</translation>
 <translation id="230115972905494466">រកមិន​ឃើញ​ឧបករណ៍​ដែល​ត្រូវគ្នាទេ</translation>
 <translation id="2316129865977710310">ទេ អរគុណ</translation>
-<translation id="2318045970523081853">ចុច​ដើម្បី​ហៅទូរសព្ទ</translation>
 <translation id="232137538351753795">អូសពីគែម​ខាងឆ្វេង ដើម្បី​ថយក្រោយ</translation>
 <translation id="2323763861024343754">ទំហំផ្ទុកទិន្នន័យ</translation>
 <translation id="2327445548174191329">ពី <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{បានពិនិត្យមើល​កាលពី 1 ថ្ងៃមុន}other{បានពិនិត្យមើល​កាលពី # ថ្ងៃមុន}}</translation>
 <translation id="2842985007712546952">ថតឯកសារមេ</translation>
 <translation id="2854916915045135148">ចុចឱ្យ​ជាប់ ដើម្បី​ប្ដូរទៅ​មុខងារ​ឯកជន</translation>
-<translation id="2860954141821109167">សូមប្រាកដថា កម្មវិធី​ទូរសព្ទត្រូវបានបើក​នៅលើឧបករណ៍នេះ</translation>
 <translation id="286473047976978798">ប្រើ​ចំណូលចិត្ត​រូបរាង​របស់អ្នក​ឬ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> និង 1 ផ្ទាំង​ផ្សេងទៀត}other{<ph name="URL" /> និង <ph name="TAB_COUNT_MANY" /> ផ្ទាំង​ផ្សេង​ទៀត}}</translation>
 <translation id="2869430948265924908">ដើម្បីការពារ​ខ្លឹមសារ​រសើប​របស់អ្នក​នៅ​ក្នុង​រថយន្ដ អ្នក​ត្រូវ​តែ​បង្កើត​ការចាក់​សោកម្រងព័ត៌មាន​រថយន្ដ។  អ្នក​អាច​ធ្វើ​បែបនេះ​បាន​ដោយប្រើ​កូដ pin, លេខកូដ ឬ​ពាក្យសម្ងាត់។</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">លុប និង​បន្ត</translation>
 <translation id="6316139424528454185">មិន​អាច​ប្រើកំណែ Android បានទេ</translation>
 <translation id="631839948975905034">ចាក់សោ​ផ្ទាំងឯកជន នៅពេលអ្នក​ចាកចេញពី Chrome</translation>
+<translation id="6321592572353357376">កម្មវិធី​បន្ថែម "<ph name="EXTENSION_NAME" />" ចង់ឱ្យ​អ្នកចូលគណនី Chrome</translation>
 <translation id="6324916366299863871">កែសម្រួលផ្លូវកាត់</translation>
 <translation id="6324977638108296054">មិនអាចបង្កើតតំណ​ទៅកាន់អត្ថបទ​ដែលបានរំលេចបានទេ</translation>
 <translation id="6333140779060797560">ចែករំលែកតាមរយៈ <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">បានលុប</translation>
 <translation id="6916590542764765824">គ្រប់គ្រងកម្មវិធីបន្ថែម</translation>
 <translation id="6918398787259831832">ប្រសិនបើ​បញ្ហានេះនៅតែកើតមានទៀត សូម<ph name="BEGIN_LINK" />ទទួល​ព័ត៌មាន​បន្ថែម<ph name="END_LINK" />ពី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
+<translation id="6920262510368602827">បង្កើត​កូដ QR សម្រាប់​ទំព័រនេះ</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome បានដក​ការអនុញ្ញាត​ទាំងនេះ​ចេញ ដោយសារ​អ្នកមិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ផ្ទាំង}other{<ph name="NUMBER_OF_TABS" /> ផ្ទាំង}}</translation>
 <translation id="6929224077895306814">លេខកូដ​សុវត្ថិភាព​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក និង​នៅក្នុង​គណនី Google របស់អ្នក​នឹងត្រូវបានលុប</translation>
@@ -2033,7 +2033,6 @@
 <translation id="9204836675896933765">នៅសល់ឯកសារចំនួន 1</translation>
 <translation id="9205933215779845960">រកមិនឃើញទំព័រនោះទេ។ សូមពិនិត្យមើលអក្ខរាវិរុទ្ធរបស់អ្នក ឬសាកល្បងស្វែងរកនៅលើ <ph name="SEARCH_ENGINE" />។</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">មិនអាច​ហៅទូរសព្ទ​បានទេ</translation>
 <translation id="9212845824145208577">មិនអាចរំកិលទៅក្រោមជាងនេះទៀតបានទេ។ សូមសាកល្បងចាប់ផ្ដើមពីផ្នែកខាងក្រោមជាងនេះនៅលើទំព័រ។</translation>
 <translation id="9218430445555521422">កំណត់ជាលំនាំដើម</translation>
 <translation id="9219103736887031265">រូបភាព</translation>

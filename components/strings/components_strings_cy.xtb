@@ -504,6 +504,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="175656076281618225">Hud a lledrith</translation>
 <translation id="1757773103848038814">Ffont Lled Sefydlog</translation>
 <translation id="1757935267918149452">Botwm newid cyfrinair Google, gweithredwch i newid cyfrinair eich Cyfrif Google</translation>
+<translation id="1759776526873274358">Awtolenwi codau dilysu y mae gwefannau'n eu defnyddio i wella'ch diogelwch. Gall Chrome gael y codau hyn o'ch Gmail. <ph name="BEGIN_LINK" />Dysgu rhagor am y nodwedd hon<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw system weithredu eich dyfais yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rhowch gynnig ar redeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Llun (Archifal)</translation>
@@ -3129,6 +3130,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5862579898803147654">Pentyrrwr 8</translation>
 <translation id="5863515189965725638">Golygu'r IBAN</translation>
+<translation id="5863517400058880216">Awtolenwi codau dilysu o Gmail</translation>
 <translation id="5863847714970149516">Gallai'r dudalen rydych ar fin mynd arni geisio codi tâl arnoch</translation>
 <translation id="5866257070973731571">Ychwanegu Rhif Ffôn</translation>
 <translation id="5866327164731551901">O <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4518,6 +4520,7 @@ Manylion ychwanegol:
 <translation id="7967973398323409409">Nid yw'r wybodaeth rydych yn ei hawtolenwi byth yn cael ei gweld gan unrhyw un</translation>
 <translation id="79682505114836835">Mae'r gwerth "<ph name="VALUE" />" yn lliw hecs annilys.</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
+<translation id="7971403153351954587">Mae eich sefydliad yn monitro copïo</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Gydag Amgryptio RSA</translation>
 <translation id="7976053965094442846">Cyhoeddwyr Prynu-Nawr-Talu-Yn-Ddiweddarach ar gael i dalu dros amser. Mae'r bysellfwrdd wedi'i guddio.</translation>
 <translation id="7976214039405368314">Gormod o geisiadau</translation>

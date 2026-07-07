@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">分享此頁面</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="2316129865977710310">不用了，謝謝</translation>
-<translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="232137538351753795">從左邊向右輕掃即可返回</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2854916915045135148">按住以進入無痕模式</translation>
-<translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="286473047976978798">要套用外觀偏好設定嗎？</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 和另外 1 個分頁}other{<ph name="URL" /> 和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="2869430948265924908">為保護車上的敏感內容，請建立汽車個人檔案鎖定。你可設定 PIN、代碼或密碼。</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">刪除並繼續</translation>
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
 <translation id="631839948975905034">離開 Chrome 時鎖定無痕式視窗</translation>
+<translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6324977638108296054">無法建立突顯文字的連結</translation>
 <translation id="6333140779060797560">透過 <ph name="APPLICATION" /> 分享</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">已刪除</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6918398787259831832">如果此問題持續發生，你可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />取得更多資訊<ph name="END_LINK" />。</translation>
+<translation id="6920262510368602827">為此頁面建立二維條碼</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由於你最近沒有瀏覽過此網站，因此 Chrome 已移除有關權限</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
 <translation id="6929224077895306814">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
@@ -2033,7 +2033,6 @@
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查拼字，或嘗試在 <ph name="SEARCH_ENGINE" /> 上搜尋。</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">無法撥打電話</translation>
 <translation id="9212845824145208577">無法再往下移動。請嘗試從下一頁開始。</translation>
 <translation id="9218430445555521422">設定為預設</translation>
 <translation id="9219103736887031265">圖片</translation>

@@ -1287,6 +1287,7 @@
 <translation id="5336910966955551309">Mantén premuts els teus llocs web preferits per fixar-los</translation>
 <translation id="5338512273860059533">Inici de sessió en curs.</translation>
 <translation id="5343472494710226394">Notícies, esports i contingut basat en els teus interessos.</translation>
+<translation id="5351613737248079168">Has d'haver iniciat la sessió per utilitzar Level Up</translation>
 <translation id="5352128922772839949">Desa el fitxer</translation>
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="536067926684072644">Mostra adreces d'interès</translation>
@@ -1572,6 +1573,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="628251768213143684">Pots gestionar en qualsevol moment què es desa al teu Compte de Google</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>
+<translation id="6295140892595702619">Utilitza el micròfon per xatejar amb Gemini. Quan parles amb Gemini, l'àudio s'emmagatzema a Activitat en aplicacions de Gemini (si està activada). Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="6295751040240588413">L'àlies de la targeta no és vàlid</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Rep notificacions de seguiment de preus</translation>
@@ -1742,7 +1744,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6770452996697898492">[RESERVAT]</translation>
 <translation id="6775952316617222141">Utilitza Live amb Gemini a Chrome</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
-<translation id="6782531425936234573">Exporta dades</translation>
+<translation id="6782531425936234573">Exporta les dades</translation>
 <translation id="6791425686608802741">Toca Afegeix una pestanya al grup nou</translation>
 <translation id="6794476726485507147">Tria la data i l'hora en què vols rebre una notificació de recordatori per tornar a visitar aquesta pàgina</translation>
 <translation id="6797543908718012274">Activa el mode de lectura</translation>
@@ -2180,7 +2182,6 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8264966119170358612">Algunes de les teves contrasenyes desades han estat exposades en haver-se produït una violació de les dades fora de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPad. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Emplenaràs informació a <ph name="URL" /></translation>
 <translation id="8274795744553482834">Estàs a punt de canviar de perfil</translation>
 <translation id="8275068909952022340">Més…</translation>
 <translation id="8280797717392145626">Enllaços rebuts</translation>
@@ -2261,6 +2262,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8534481786647257214">S'ha completat la publicació a Google+.</translation>
 <translation id="8535368836838588657">Mostra la contrasenya</translation>
 <translation id="8540426897269305488">Inicia la sessió amb <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">Hi ha hagut un error. Toca el botó Live per tornar-ho a provar.</translation>
 <translation id="8545276357312221485">Comprova la configuració del navegador predeterminat</translation>
 <translation id="854938212724803178">Tens 1 contrasenya en perill. Corregeix el problema per protegir-te.</translation>
 <translation id="8551311254462607218">A la barra d'adreces, toca la icona de càmera de Google Lens</translation>
@@ -2413,6 +2415,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, lloc web fixat</translation>
 <translation id="8990960056509724223">El fitxer no s'ha pogut desar a causa de les polítiques de l'organització</translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
+<translation id="9003263770394939629">Suggerit per Gemini. Gestiona l'emplenament automàtic millorat a la configuració.</translation>
 <translation id="9003677638446136377">Torna-ho a provar</translation>
 <translation id="9006453925669499173">Menú → Nova pestanya d'incògnit</translation>
 <translation id="9008201768610948239">Ignora</translation>

@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1005333234656240382">Vai iespējot ADB atkļūdošanu?</translation>
+<translation id="1053898984916097744">Iesāciet ko jaunu vai saņemiet palīdzību, kamēr esat plūsmas stāvoklī.</translation>
+<translation id="1061130374843955397">Laipni lūdzam ierīcē <ph name="DEVICE_TYPE" />!</translation>
+<translation id="1069778954840159202">Automātiski iegūt kontu no Android tālruņa</translation>
 <translation id="1076766328672150609">Jūsu bērns var izmantot PIN, lai atbloķētu ierīci.</translation>
 <translation id="1097658378307015415">Pirms pierakstāties, uzsāciet viesa sesiju, lai aktivizētu tīklu <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Bērns var izmantot šo PIN, lai pierakstītos savā ierīcē</translation>
 <translation id="1122587596907914265">Izvēlieties unikālu fona tapešu stilu.</translation>
 <translation id="1131201598497838573">Bērna PIN ir atjaunināts</translation>
 <translation id="1147322039136785890">Tagad <ph name="SUPERVISED_USER_NAME" /> var izmantot ierīci</translation>
+<translation id="1148669835763563782">Jūs saņemat visjaunāko programmatūras atjauninājumu, kas ietver uzlabotu drošību un jaunākās Chromebook funkcijas. Šajā atjauninājumā ir ietvertas uzlabotas iestatīšanas iespējas sekmīgākai darba uzsākšanai jūsu Chromebook datorā.</translation>
 <translation id="1176864681932214421">Attēlu izveide, izmantojot MI</translation>
 <translation id="1177073277575830464">Android ātrā iestatīšana ir pabeigta. Turpiniet iestatīšanu savā ierīcē (<ph name="DEVICE_TYPE" />)!</translation>
 <translation id="1179902906564467236">Izpildiet tālrunī sniegtos norādījumus vai izmantojiet kameras lietotni.</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1217114730239853757">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet atstarpes taustiņu.</translation>
 <translation id="1222835797152767346">Lai pierakstīšanās būtu ērtāka, iestatiet PIN</translation>
+<translation id="1231426483209637778">Jūsu tīkls tiks saglabāts, kad nākamreiz izmantosiet ierīci <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1243002225871118300">Attēlojuma un teksta lieluma mainīšana</translation>
+<translation id="1256588359404100567">Iestatījums ir sinhronizēts no jūsu iepriekšējās ierīces.</translation>
 <translation id="1272978324304772054">Šis lietotāja konts nepieder domēnam, kurā ierīce ir reģistrēta. Ja vēlaties ierīci reģistrēt citā domēnā, vispirms ir jāveic ierīces atkopšana.</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="1307559529304613120">Hmm... Sistēmai neizdevās saglabāt šīs ierīces ilgtermiņa API piekļuves pilnvaru.</translation>
+<translation id="1335929031622236846">Ierīces reģistrēšana</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Atkļūdošanas funkcijas<ph name="END_H3" />
           <ph name="BR" />
           Varat iespējot atkļūdošanas funkcijas savā ChromeOS ierīcē, lai tajā instalētu un testētu pielāgotu kodu. Tādējādi varēsiet veikt tālāk norādītās darbības.<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Procesa laikā sistēma tiks atkārtoti palaista.</translation>
 <translation id="1347625331607114917">Koda verificēšana Android tālrunī</translation>
 <translation id="1347975661240122359">Atjaunināšana tiks sākta, kad akumulatora uzlādes līmenis būs <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Lai varētu izmantot vecāku kontroli, piemēram, lietotņu apstiprināšanu un izmantošanas ilguma ierobežojumus, bērnam ir nepieciešams Google konts, ko pārvalda vecāki. Vēlāk var pievienot mācību iestādes kontu izmantošanai ar tādiem rīkiem kā Google Classroom.</translation>
 <translation id="1375557162880614858">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox?</translation>
 <translation id="1375938286942050085">Iestatīšana ir pabeigta! Tagad ierīce jāsagatavo spēlēšanai</translation>
 <translation id="1377600615067678409">Pašlaik izlaist</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="1418882096915998312">Notiek reģistrēšanās Enterprise versijai</translation>
 <translation id="1426410128494586442">Jā</translation>
+<translation id="1427269577154060167">Valsts</translation>
 <translation id="1440090277117135316">Skolas ierīces reģistrēšana ir pabeigta</translation>
 <translation id="1473927070149284123">Mēģiniet vēlreiz vai manuāli izveidojiet savienojumu ar tīklu.</translation>
 <translation id="1503556098270577657">Jūs pierakstījāties kontā <ph name="USER_EMAIL" />, izmantojot Android tālruni</translation>
+<translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1521442365706402292">Pārvaldīt sertifikātus</translation>
+<translation id="15373452373711364">Liels peles kursors</translation>
 <translation id="1540605929960647700">Demonstrācijas režīma iespējošana</translation>
 <translation id="1572876035008611720">Ievadiet savu e-pasta adresi.</translation>
+<translation id="1588438908519853928">Parasts</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Labi</translation>
 <translation id="1642494467033190216">Lai varētu iespējot citas atkļūdošanas funkcijas, ir jānoņem rootfs aizsardzība un jāveic restartēšana.</translation>
+<translation id="1646045728251578877">Ir pieejams programmatūras atjauninājums</translation>
+<translation id="1650801028905250434">Mapē “Mans disks” esošie faili tiks automātiski sinhronizēti ar Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma. Šo opciju jebkurā brīdī varat mainīt sadaļā Iestatījumi &gt; Faili.</translation>
 <translation id="1668435968811469751">Reģistrēties manuāli</translation>
 <translation id="1678919064276516737">Ievadītā e-pasta adrese un PIN neatbilst.</translation>
 <translation id="1692115862433274081">Izmantot citu kontu</translation>
 <translation id="1695487653372841667">Jūs nosakāt, kādi dati tiek kopīgoti ar Google. Iestatījumos varat jebkurā laikā to mainīt.</translation>
 <translation id="169675691788639886">Ierīcei ir konfigurēts SSH serveris. Nepierakstieties, izmantojot sensitīvus kontus.</translation>
+<translation id="1700517974991662022">Apmeklēta</translation>
 <translation id="1730666151302379551">Aizmirsu iepriekšējo paroli</translation>
+<translation id="1749645492410897998">Notiek programmatūras instalēšana…</translation>
 <translation id="177053719077591686">Dublējiet Android lietotnes Google diskā.</translation>
+<translation id="1798832846931769717">Google Beam for Meet</translation>
 <translation id="1806335016774576568">Pāriešana uz citu atvērtu lietotni</translation>
 <translation id="1826192255355608658">Sinhronizējiet pārlūkā Chrome saglabātās grāmatzīmes, paroles, vēsturi u.c. saturu</translation>
+<translation id="1826657447823925402">Ritināšana pretējā virzienā ir atspējota</translation>
 <translation id="1831848493690504725">Mēs nevaram izveidot savienojumu ar Google, izmantojot pievienoto tīklu. Izvēlieties citu tīklu vai pārbaudiet sava tīkla iestatījumus vai starpniekservera iestatījumus (ja izmantojat starpniekserveri).</translation>
 <translation id="1842766183094193446">Vai tiešām vēlaties iespējot demonstrācijas režīmu?</translation>
 <translation id="1845060436536902492">ChromeOS Flex ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet atstarpes taustiņu. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
+<translation id="185766080319917408">Palaidēja taustiņš atrodas pa kreisi no kreisā taustiņa Alt</translation>
 <translation id="1868617395637139709">Atrašanās vietas datu izmantošana Android lietotnēm un pakalpojumiem</translation>
+<translation id="1877377730633446520">Nepieciešamā vieta: apm. <ph name="REQUIRED_SPACE" />. Pašlaik pieejamā vieta: <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">Pakalpojumu sniegšanas noteikumi</translation>
+<translation id="189358972401248634">Citas valodas</translation>
+<translation id="1915734383465415025">Veikala numurs</translation>
+<translation id="1919096511823372013">Ievietojiet saites, emocijzīmes un citu saturu. Varat arī saņemt palīdzību ar rakstīšanu un attēlu veidošanu, izmantojot Google MI.</translation>
+<translation id="1922496389170590548">Bērna mācību iestādes konts</translation>
+<translation id="1944528062465413897">Bluetooth kods savienošanai pārī:</translation>
 <translation id="1987574314042117472">Atlasīt un instalēt populāras lietotnes</translation>
 <translation id="1991829061375381344">Jums nav pietiekami daudz pieejamu licenču, lai reģistrētu šo Google Meet aparatūras ierīci. Lai iegādātos papildu licences, sazinieties ar tālākpārdevēju. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar tālākpārdevēju.</translation>
+<translation id="200928901437634269">Izmantojiet bērna Google kontu vai mācību iestādes kontu. Varat arī iestatīt vecāku kontroli.</translation>
+<translation id="2013550551806600826">Izmēģiniet. Ieslēdziet vai izslēdziet iestatījumu un pēc tam ar diviem pirkstiem ritiniet skārienpaliktņa testa apgabalā. Vēlāk varēsiet šo iestatījumu atrast sadaļā Iestatījumi &gt; Ierīce &gt; Pele un skārienpaliktnis.</translation>
+<translation id="2018189721942291407">Vai neesat pārliecināts, ka jums vajag reģistrēties?</translation>
 <translation id="2040460856718599782">Diemžēl, mēģinot jūs autentificēt, radās problēma. Lūdzu, vēlreiz pārbaudiet savus akreditācijas datus un mēģiniet vēlreiz pierakstīties.</translation>
 <translation id="2052572566310583903">Instalēta citās jūsu ierīcēs</translation>
 <translation id="2088092308059522196">Reģistrēšanās ir atbalstīta tikai pēc <ph name="DEVICE_OS" /> instalēšanas.</translation>
 <translation id="208928984520943006">Lai jebkurā brīdī pārietu uz sākuma ekrānu, velciet augšup no ekrāna apakšdaļas.</translation>
 <translation id="2090165459409185032">Lai atgūtu konta informāciju, apmeklējiet vietni google.com/accounts/recovery.</translation>
+<translation id="2133775869826239001">Citu iestatāmo funkciju izvēle</translation>
+<translation id="2135456203358955318">Dokota lupa</translation>
 <translation id="2157779167749714207">Jūsu ierīcē (<ph name="DEVICE_TYPE" />) ir ietverts pakalpojums Gemini</translation>
 <translation id="2163470535490402084">Lai pierakstītos savā <ph name="DEVICE_TYPE" /> ierīcē, lūdzu, izveidojiet savienojumu ar internetu.</translation>
+<translation id="2173801458090845390">Pievienot pieprasījuma ID šai ierīcei</translation>
 <translation id="2178585470774851578">Jūs iespējojat Chrome OS Flex atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
+<translation id="2183570493397356669">Poga “Turpināt” ir atspējota</translation>
+<translation id="221872881068107022">Ritināšana pretējā virzienā</translation>
 <translation id="2219081237089444028">Lai pierakstīšanās būtu ērtāka, iestatiet paroli šai ierīcei: <ph name="DEVICE_TYPE" /></translation>
+<translation id="2229161054156947610">Atlikusi vairāk nekā 1 stunda</translation>
 <translation id="2296022312651137376">Domēnā <ph name="DOMAIN_NAME" /> var pierakstīties kontā <ph name="EMAIL" /> tikai tad, ja ierīce ir tiešsaistē.</translation>
 <translation id="2317842250900878657">Pabeigti: <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2319072477089403627">Notiek savienojuma izveide ar jūsu Android tālruni…</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Jūs nevarēsiet pievienot lietotājus, jo trūkst Google API atslēgu. Detalizētu informāciju skatiet vietnē <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Iespējojiet datu atkopšanas pakalpojumu</translation>
 <translation id="2485681265915754872">Google Play pakalpojumu sniegšanas noteikumi</translation>
+<translation id="248676429071089168">Velciet augšup, lai pārvietotu lapu uz leju</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
+<translation id="2538084450874617176">Kas lietos šo ierīci (<ph name="DEVICE_TYPE" />)?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> nevarēja pievienoties tīklam <ph name="NETWORK_ID" />. Lūdzu, izvēlieties citu tīklu vai mēģiniet vēlreiz.</translation>
 <translation id="2565214867520763227">Ekrāna lasītāja ieslēgšana</translation>
+<translation id="2569972178052279830">Mazumtirgotāja nosaukums</translation>
+<translation id="257779572837908839">Iestatīt kā sistēmu “Chromebox sapulcēm”</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Nē, turpināt bez ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google vietsaistītajā pakalpojumā tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt šīs ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt Android atrašanās vietu pakalpojumus šajā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Lietotnes &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Drošība un atrašanas vieta &gt; Atrašanās vieta. Varat arī izslēgt Wi‑Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot opciju “Google atrašanās vietas precizitāte” tajā pašā izvēlnē.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Valoda</translation>
 <translation id="2687407218262674387">Google pakalpojumu sniegšanas noteikumi</translation>
 <translation id="2688196195245426394">Reģistrējot ierīci serverī, radās kļūda: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Šī ierīce ir daļa no komplekta, un to nevar reģistrēt licencei Kiosk &amp; Signage Upgrade.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Lūdzu, uzgaidiet...</translation>
 <translation id="2732134891301408122">Papildu satura <ph name="CURRENT_ELEMENT" />. elements no <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Labi</translation>
+<translation id="274318651891194348">Notiek tastatūras meklēšana…</translation>
 <translation id="2754825024506485820">Google Play veikalā varat atrast nepieciešamās lietotnes — sākot no produktivitātes un beidzot ar izklaidi. Varat instalēt lietotnes jebkurā brīdī.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Kad iestatījums “Atrašanās vietas precizitāte” ir ieslēgts, informācija par bezvadu signāliem (piemēram, Wi-Fi piekļuves punkti un mobilā tīkla torņi, kā arī ierīces sensoru dati, tostarp no akselerometra un žiroskopa) tiek izmantota, lai noteiktu precīzāku ierīces atrašanās vietu. Noteiktā atrašanās vieta savukārt tiek izmantota Android lietotnēs un pakalpojumos, lai nodrošinātu funkcijas, kuru pamatā ir atrašanās vieta. Šim nolūkam Google periodiski vāc informāciju par ierīces sensoriem un bezvadu signāliem šīs ierīces tuvumā, lai kolektīvajos pakalpojumos nodrošinātu bezvadu signālu atrašanās vietu informāciju.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google izmanto šo no šīs ierīces ievākto informāciju, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus. Mēs apstrādājam šo informāciju, pamatojoties uz Google un trešo pušu likumīgajām interesēm sniegt lietotāju vajadzībām atbilstošu pakalpojumus. Šī informācija netiek izmantota, lai identificētu atsevišķas personas.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Jūs jebkurā brīdī varat izslēgt iestatījumu “Atrašanās vietas precizitāte” šīs ierīces atrašanās vietas iestatījumos sadaļā Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai &gt; Atrašanās vietas papildu iestatījumi. Ja iestatījums “Atrašanās vietas precizitāte” ir izslēgts, netiek vākti nekādi atrašanās vietas precizitātes dati. Android lietotnēs un pakalpojumos ierīces atrašanās vietas noteikšanai tiek izmantota tikai IP adrese (ja tā ir pieejama). Tas var ietekmēt Android lietotņu un pakalpojumu, piemēram, Google Maps, pieejamību un atrašanās vietu precizitāti.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Viss ir iestatīts!</translation>
+<translation id="2819519502129272135">Failu sinhronizācija ir izslēgta</translation>
 <translation id="2832124733806557606">Jūsu bērns var izmantot PIN, lai pierakstītos ierīcē vai to atbloķētu.</translation>
 <translation id="283669119850230892">Lai izmantotu tīklu <ph name="NETWORK_ID" />, vispirms pabeidziet savienojuma izveidi ar internetu tālāk.</translation>
 <translation id="2849767214114481738">Jūsu PIN ir pievienots</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, kā arī informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Šī darbība var ilgt pat 30 minūtes.</translation>
 <translation id="2893180576842394309">Google var izmantot jūsu vēsturi, lai personalizētu Meklēšanu un citus Google pakalpojumus.</translation>
 <translation id="2902265136119311513">Pārlūkošana kā viesim</translation>
 <translation id="2904210161403910217">Jūsu parole ir mainīta kopš pēdējās pierakstīšanās reizes</translation>
 <translation id="2918484644467055090">Šo ierīci nevar reģistrēt organizācijā, kurai pieder jūsu konts, jo ierīce ir iestatīta pārvaldībai citā organizācijā.</translation>
 <translation id="2921081876747860777">Paroles izveide lokālo datu aizsardzībai</translation>
+<translation id="2935654492420446828">Skolas kontu varēs pievienot vēlāk</translation>
 <translation id="2950666755714083615">Reģistrēties</translation>
 <translation id="2979966855249721010">Pamatojoties uz jūsu interesēm, jums var tikt rādīti lietotņu ieteikumi, padomi un cits saturs.</translation>
 <translation id="3012917896646559015">Lūdzu, nekavējoties sazinieties ar savas aparatūras ražotāju, lai nosūtītu datoru uz remontu.</translation>
+<translation id="3023464535986383522">Atlasīt, lai izrunātu</translation>
 <translation id="3028371505549235127">Lai pierakstoties nebūtu jāievada Google konta parole, varat izveidot paroli šai ierīcei (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3033348223765101500">Pārvaldiet savus datus</translation>
+<translation id="3090871774332213558">Izveidots savienojums pārī ar ierīci “<ph name="DEVICE_NAME" />”.</translation>
 <translation id="3101924772906986970">Jūsu pārlūkā Chrome saglabātās grāmatzīmes, paroles, vēsture un citi dati ir saglabāti jūsu Google kontā</translation>
 <translation id="313205617302240621">Vai aizmirsāt paroli?</translation>
 <translation id="3162070126914310576">Šo ierīci pašlaik nevar reģistrēt, jo jūsu organizācijas vienībai ir sasniegts sākotnējās reģistrācijas ierobežojums. Lai saņemtu palīdzību, sazinieties ar administratoru.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Varat arī izlaist pierakstīšanos un <ph name="LINK_START" />veikt pārlūkošanu kā viesis<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Jūsu ierīces komplektācijā ir iekļauts jauninājums Chrome Education Upgrade, taču jūsu lietotājvārds nav saistīts ar Google for Education kontu. Lūdzu, izveidojiet Google for Education kontu, otrā ierīcē apmeklējot vietni g.co/workspace/edusignup.</translation>
 <translation id="3196912927885212665">Lai iestatītu Android tālrunī, Chromebook datorā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
+<translation id="322708765617468434">Pēc iestatīšanas varēsiet jebkurā brīdī ierīcē pievienot citu personu. Katra persona var personalizēt savu pieredzi, un katras personas dati ir konfidenciāli.</translation>
 <translation id="3238192140106069382">Notiek savienojuma izveide un apstiprināšana</translation>
+<translation id="3251119461199395237">Failu sinhronizācija</translation>
+<translation id="325238099842880997">Iestatiet digitālā satura izmantošanas pamatnoteikumus, lai palīdzētu bērniem spēlēties, izpētīt digitālo vidi un attālināti mācīties</translation>
+<translation id="3255747772218936245">Instalēt atjauninājumu</translation>
 <translation id="3261268979727295785">Vecākiem bērniem varat pievienot vecāku kontroli pēc iestatīšanas pabeigšanas. Informāciju par vecāku kontroli varat atrast lietotnē Izpēte.</translation>
 <translation id="3278001907972365362">Pievērsiet uzmanību savam(-iem) Google kontam(-iem).</translation>
 <translation id="3283148363895519428">Izpildiet tālrunī sniegtos norādījumus, lai turpinātu iestatīšanu. Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="3382073616108123819">Diemžēl sistēmai neizdevās noteikt šīs ierīces identifikatorus.</translation>
 <translation id="3382200254148930874">Notiek uzraudzības pārtraukšana...</translation>
+<translation id="3384362484379805487">Lai ietaupītu vietu diskā, valodu failus koplieto visi lietotāji.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">ChromeOS Flex ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
+<translation id="3402585168444815892">Notiek reģistrēšanās demonstrācijas režīmā</translation>
 <translation id="3433621910545056227">Hmm... Sistēma nevarēja iestatīt ierīces instalēšanas laika atribūta bloķēšanu.</translation>
 <translation id="3435896845095436175">Iespējot</translation>
 <translation id="3462413494201477527">Vai atcelt konta iestatīšanu?</translation>
 <translation id="3473241910002674503">Pārejiet uz sākumu, atpakaļ un pārslēdziet lietotnes, izmantojot pogas planšetdatora režīmā.</translation>
+<translation id="3473479545200714844">Ekrāna lupa</translation>
 <translation id="3491669675709357988">Jūsu bērna kontam nav iestatīta Family Link vecāku kontrole. Varat pievienot vecāku kontroli pēc iestatīšanas pabeigšanas. Informāciju par vecāku kontroli varat atrast lietotnē Izpēte.</translation>
+<translation id="350397915809787283">Ja jums nav konta, atlasiet pirmo opciju, lai izveidotu kontu.</translation>
 <translation id="3520824492621090923">Vai apstiprināt kioska un digitālā ceļrāža ierīces reģistrāciju?</translation>
+<translation id="3547954654003013442">Starpniekservera iestatījumi</translation>
+<translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3577745545227000795">Aparatūras datu vākšana operētājsistēmā <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Priekšskatīt</translation>
+<translation id="3607671391978830431">Bērnam</translation>
+<translation id="3627320433825461852">Atlikusi mazāk nekā 1 minūte</translation>
 <translation id="3635199270495525546">Noteikts uzticamas platformas modulis (TPM)</translation>
 <translation id="3650753875413052677">Reģistrācijas kļūda</translation>
 <translation id="3661106764436337772">Rakstiet ātrāk un ar lielāku pārliecību</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="3712050472459130149">Nepieciešama konta atjaunināšana</translation>
 <translation id="3733296813637058299">Mēs instalēsim jums šīs lietotnes. Vairāk lietotņu savai <ph name="DEVICE_TYPE" /> ierīcei varat atrast Play veikalā.</translation>
+<translation id="3740945083753997630">Samazināt attēlojuma un teksta lielumu</translation>
 <translation id="376841534249795524">Kādam nolūkam būs paredzēts jūsu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3800828618615365228">Google Chrome un Chrome OS papildu noteikumi</translation>
 <translation id="3828953470056652895">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />Play pakalpojumu sniegšanas noteikumus<ph name="END_LINK3" /> un piekrītu tiem.</translation>
+<translation id="3837569373891539515">Varat atlasīt visas atbilstošās opcijas. Šīs opcijas varat atrast arī sadaļā “Iestatījumi”, kad būsiet iestatījis savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
+<translation id="3856470183388031602">Google konta izmantošana ierīcē <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (balss komentāri)</translation>
 <translation id="3897746662269329507">Ierīce <ph name="DEVICE_TYPE" /> ir radīta spēlēšanai. Tiks atvērta lietotne Izpēte, kurā varēsiet piekļūt simtiem jaunāko spēļu, skatīt spēļu piedāvājumus un atklāt ierīces komplektācijā ietvertās spēļu funkcijas.</translation>
+<translation id="389901847090970821">Tastatūras atlasīšana</translation>
 <translation id="3910588685973519483">Fona tapešu izveide, izmantojot MI</translation>
+<translation id="3924259174674732591">Attēlojuma un teksta lielums: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3983400541576569538">No dažām programmām vāktie dati var tikt zaudēti</translation>
+<translation id="3984159763196946143">Nevarēja sākt demonstrācijas režīmu</translation>
 <translation id="3994318741694670028">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Tādēļ operētājsistēmu Chrome OS Flex nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, <ph name="BEGIN_BOLD" />iespējams, nav aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4044883420905480380">Jūs izveidojāt savienojumu ar Wi-Fi tīklu un pierakstījāties kontā <ph name="USER_EMAIL" />, izmantojot Android tālruni.</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="41365691917097717">Turpinot jūs iespējosiet ADB atkļūdošanu Android lietotņu izveidei un testēšanai. Ņemiet vērā, ka šī darbība ļauj instalēt Android lietotnes, ko uzņēmums Google nav verificējis, un rīka atspējošanai ir nepieciešams atjaunot rūpnīcas iestatījumus.</translation>
 <translation id="4165942112764990069">Konts <ph name="USER_EMAIL" /> nepieder derīgai organizācijai. Sazinieties ar administratoru. Ja esat administrators, varat iestatīt savu organizāciju, apmeklējot šo vietni: g.co/ChromeEnterpriseAccount.</translation>
+<translation id="4209092469652827314">Liels</translation>
+<translation id="4213918571089943508">Bērna Google konts</translation>
+<translation id="4228071595943929139">Izmantot organizācijas e-pasta adresi</translation>
 <translation id="4232484478444192782">Izmantosim Android tālrunī saglabāto informāciju. Notiek jūsu Wi-Fi un paroles pārsūtīšana.</translation>
 <translation id="4242145785130247982">Vairāku klienta sertifikātu lietošana netiek atbalstīta</translation>
 <translation id="4242577469625748426">Neizdevās ierīcē instalēt politikas iestatījumus: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Jūs izmantosiet kioska un digitālā ceļrāža jauninājumu, kas ļauj ierīcei darboties tikai kioska vai digitālā ceļrāža režīmā. Ja vēlaties, lai lietotāji pierakstītos ierīcē, atgriezieties un reģistrējiet ierīci, izmantojot jauninājumu Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Jā, aktivizēt ChromeVox</translation>
 <translation id="4289732974614035569">Izvēlieties PIN</translation>
+<translation id="4291265871880246274">Pieteikšanās dialoglodziņš</translation>
+<translation id="4305817255990598646">Pāriet</translation>
 <translation id="4309165024397827958">Atļaujiet Android lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google varēs periodiski vākt atrašanās vietas datus un tos anonīmi izmantot, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="4317733381297736564">Pirkumi lietotnēs</translation>
 <translation id="4341905082470253054">Notiek TPM statusa pārbaude...</translation>
 <translation id="4370975561335139969">Ievadītā e-pasta adrese un parole neatbilst.</translation>
 <translation id="4373418556073552953">Pierakstīšanās, izmantojot Android tālruni</translation>
+<translation id="4378556263712303865">Ierīces pieprasījums</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, izmantotās funkcijas, atmiņas lietojuma apjomu un Android lietotņu diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā. Lai skatītu vai dzēstu datus vai mainītu konta iestatījumus, atveriet vietni account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Notiek Bluetooth un USB ierīču meklēšana…</translation>
 <translation id="4403266582403435904">Varat jebkurā laikā ērti atjaunot datus vai nomainīt ierīci. Dublējumi tiek augšupielādēti Google serveros un tiek šifrēti, izmantojot jūsu bērna Google konta paroli.</translation>
 <translation id="4410545552906060960">Savas ierīces atbloķēšanai izmantojiet numuru (PIN), nevis paroli. Lai iestatītu PIN kodu vēlāk, atveriet iestatījumus.</translation>
 <translation id="4415213869328311284">Jūsu <ph name="DEVICE_TYPE" /> ir gatavs lietošanai.</translation>
+<translation id="443031431654216610">Ievadiet tikai ciparus.</translation>
+<translation id="4448560527907365660">Saglabāt un skatīt vairāk</translation>
 <translation id="4449948729197510913">Jūsu lietotājvārds pieder jūsu organizācijas kontam. Lai reģistrētu ierīces kontā, vispirms administrēšanas konsolē verificējiet domēna īpašumtiesības. Lai varētu veikt verificēšanu, būs nepieciešamas konta administratora privilēģijas.</translation>
 <translation id="4450974146388585462">Diagnosticēt</translation>
 <translation id="445099924538929605">Operētājsistēma <ph name="DEVICE_OS" /> noteica aktīvu uzticamas platformas moduli (TPM), kurā jūsu datus var glabāt drošākā veidā.</translation>
+<translation id="4472298120638043495">Varat izmantot vēlamo Google konta valodu (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
+<translation id="450867954911715010">Pieejamības iestatījumi</translation>
+<translation id="4519605771716872386">Failu sinhronizācija ir ieslēgta.</translation>
+<translation id="4531924570968473143">Kuru lietotāju vēlaties pievienot šai <ph name="DEVICE_TYPE" /> ierīcei?</translation>
 <translation id="4566170377336116390">Lai pārslēgtos pēc reģistrācijas, jums būs jāveic rūpnīcas datu atiestatīšana (jāizmanto funkcija Powerwash) savā ierīcē.</translation>
 <translation id="4567512141633030272">Vai nepareiza pierakstīšanās opcija?</translation>
+<translation id="4567533462991917415">Pēc iestatīšanas jebkurā laikā varēsiet pievienot citas personas. Katra persona var personalizēt savu kontu, un katras personas dati ir konfidenciāli.</translation>
 <translation id="4568213207643490790">Diemžēl Google kontus nav atļauts izmantot šajā ierīcē.</translation>
 <translation id="4611759022973144129">Varat izmantot šo paroli, lai pierakstītos savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="4634575639321169635">Iestatīt šo ierīci darbam vai personīgai lietošanai</translation>
+<translation id="4689235506267737042">Demonstrācijas režīma preferenču izvēle</translation>
 <translation id="4727847987444062305">Pārvaldīta viesa sesija</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="473936925429402449">Atlasīts, papildu satura <ph name="CURRENT_ELEMENT" />. elements no <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> nav derīgs Google for Education konts. Sazinieties ar administratoru. Ja esat administrators, varat iestatīt savu organizāciju, apmeklējot šo vietni: g.co/workspace/edusignup.</translation>
+<translation id="4780558987886269159">Darbam</translation>
 <translation id="4806457879608775995">Pārskatiet šos noteikumus un pārvaldiet savus datus</translation>
+<translation id="4814327014588285482">Izlaist un atgādināt vēlāk</translation>
 <translation id="4830502475412647084">OS atjauninājuma instalēšana</translation>
 <translation id="4837926214103741331">Jums nav atļaujas izmantot šo ierīci. Lūdzu, sazinieties ar ierīces īpašnieku, lai saņemtu pierakstīšanās atļauju.</translation>
+<translation id="4844333629810439236">Citas tastatūras</translation>
 <translation id="4864369630010738180">Pierakstīšanās...</translation>
+<translation id="4867272607148176509">Vecāki var apstiprināt vai bloķēt lietotnes, iestatīt laika ierobežojumus un kontrolēt tīmekļa pārlūkošanu. Vēlāk varēs pievienot mācību iestādes kontu, lai piekļūtu lielākajai daļai mācību resursu.</translation>
 <translation id="4877652723592270843">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas.</translation>
 <translation id="4899696330053002588">Ietver reklāmas</translation>
 <translation id="49027928311173603">No servera lejupielādētā politika nav derīga: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">Šo autentifikācijas pakalpojumu mitina <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Izvēlieties PIN</translation>
 <translation id="4965808351167763748">Vai tiešām vēlaties iestatīt šo ierīci darbam ar Hangouts Meet?</translation>
+<translation id="4987944280765486504">Kad lejupielāde būs pabeigta, Chromebook dators tiks restartēts, un pēc tam varēsiet turpināt iestatīšanu.</translation>
 <translation id="5029287942302939687">Parole ir iestatīta</translation>
 <translation id="503155457707535043">Pašlaik lejupielādētās lietotnes</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5062930723426326933">Pierakstīšanās neizdevās. Lūdzu, izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
+<translation id="5085162214018721575">Notiek pārbaude, vai ir pieejami atjauninājumi.</translation>
 <translation id="5097306410549350357">Uzzināt vairāk par atrašanās vietas izmantošanu</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Tērzējiet ar Gemini, lai sāktu rakstīt, plānot, mācīties un veikt citas darbības, izmantojot Google MI.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pēc iestatīšanas sāciet izmantot Gemini, atlasot Gemini lietotni no plaukta, kas tiek rādīts ekrāna apakšējā daļā.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Lūdzu, pievienojiet savu <ph name="DEVICE_TYPE" /> ierīci strāvas avotam.</translation>
+<translation id="5145876360421795017">Nereģistrēt ierīci</translation>
 <translation id="5147516217412920887">Izpildiet tālrunī sniegtos norādījumus, lai verificētu kodu.</translation>
 <translation id="5160857336552977725">Pierakstieties ierīcē <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Atkļūdošanas funkcijas<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Procesa laikā sistēma tiks atkārtoti palaista.</translation>
+<translation id="5215502535566372932">Atlasīt valsti</translation>
 <translation id="5234523649284990414">ChromeOS ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet atstarpes taustiņu. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
 <translation id="5240931875940563122">Pierakstīties, izmantojot Android tālruni</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Reģistrēt uzņēmuma ierīci</translation>
 <translation id="5372529912055771682">Nodrošinātais reģistrācijas režīms netiek atbalstīts šajā operētājsistēmas versijā. Noteikti lietojiet jaunāko versiju un mēģiniet vēlreiz.</translation>
 <translation id="5397378439569041789">Reģistrēt kioska vai digitālā ceļrāža ierīci</translation>
+<translation id="5397794290049113714">Jūs</translation>
 <translation id="5411022484772257615">Nevarēja pabeigt skolas ierīces reģistrēšanu</translation>
 <translation id="5413640305322530561">Uzzināt vairāk par diagnostiku un lietojuma datiem</translation>
 <translation id="542750953150239272">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes, ko nodrošina Google, jūsu mobilo sakaru operators un ierīces ražotājs. Iespējams, tiks izmantoti mobilie dati. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
 <translation id="542948651837270806">Ir jāinstalē uzticama platformas moduļa aparātprogrammatūras atjauninājums. Skatiet: <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Diemžēl pierakstīšanās neizdevās</translation>
+<translation id="5453829744223920473">Bērns var izmantot visas savas mācību iestādes lietotnes, grāmatzīmes un resursus tieši tāpat, kā to var darīt klasē. Mācību iestāde nosaka pamatnoteikumus.</translation>
 <translation id="5463450804024056231">Reģistrēties <ph name="DEVICE_TYPE" /> e-pasta ziņojumiem</translation>
 <translation id="5473099001878321374">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes no Google, jūsu bērna mobilo sakaru operatora un šīs ierīces ražotāja, iespējams, izmantojot mobilos datus. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
+<translation id="5502915260472117187">Bērns</translation>
 <translation id="5511823366942919280">Vai tiešām vēlaties iestatīt šai ierīcei nosaukumu “Shark”?</translation>
+<translation id="5513807280330619196">Kalkulators</translation>
 <translation id="5527474464531963247">Varat arī atlasīt citu tīklu.</translation>
 <translation id="5539070192556911367">Nevar izveidot savienojumu ar Google</translation>
+<translation id="5549511085333906441">Iestatījumu izvēle</translation>
 <translation id="557722062034137776">Ierīces atiestatīšana neietekmēs jūsu Google kontus un ar tiem sinhronizētos datus, taču tiks dzēsti visi faili, kuri ierīcē ir saglabāti lokāli.</translation>
 <translation id="5626172233890210551">Tomēr izmantot paroli</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Lai nodrošinātu vislabāko pieredzi, operētājsistēmā <ph name="DEVICE_OS" /> tiek vākti aparatūras dati par ierīcēm, un tie tiek kopīgoti ar uzņēmumu Google, lai noteiktu, kādus atjauninājumus piegādāt. Varat arī atļaut uzņēmumam Google izmantot šos datus citiem mērķiem, piemēram, operētājsistēmas <ph name="DEVICE_OS" /> lietošanas iespēju un klientu apkalpošanas atbalstam un uzlabojumiem.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Varat pieteikties šajā ierīcē un skatīt laukus, kas norādīti kā chromeosflex_ vietnē chrome://system, lai uzzinātu, kādi dati tiek sūtīti uzņēmumam Google atjauninājumu filtrēšanai, kā arī uzzinātu par citiem gadījumiem, kad izvēlaties kopīgot datus ar uzņēmumu Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Plašāku informāciju par datiem, ko <ph name="DEVICE_OS" /> var kopīgot ar uzņēmumu Google, un to izmantošanu skatiet vietnē g.co/flex/HWDataCollection<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Lai izmantotu <ph name="NETWORK_ID" />, iespējams, jums vispirms būs <ph name="LINK_START" />jāapmeklē tīkla pierakstīšanās lapa<ph name="LINK_END" />, kas tiks automātiski atvērta pēc dažām sekundēm. Ja tā nenotiek, tīklu nevar izmantot.</translation>
 <translation id="5655296450510165335">Ierīces reģistrācija</translation>
+<translation id="565899488479822148">Notiek visjaunākā atjauninājuma instalēšana</translation>
 <translation id="5659964844710667266">Izveidot paroli šai ierīcei (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5684661240348539843">Līdzekļu identifikators</translation>
 <translation id="5684950556880280580">Jūsu parole ir atjaunināta</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Diemžēl daži faili bija bojāti, un atjaunināšana nebija sekmīga. Jūsu sinhronizētie faili ir drošībā.</translation>
 <translation id="5770125698810550803">Rādīt navigācijas pogas</translation>
 <translation id="5799478978078236781">Saņemiet padomus par <ph name="DEVICE_TYPE" /> ierīcēm, piedāvājumus un jaunumus, kā arī sniedziet atsauksmes.</translation>
+<translation id="5800703268655655701">Gaišā vai tumšā motīva atlase</translation>
 <translation id="5804259315582798390">Neizdevās iespējot lokālo datu atkopšanu</translation>
 <translation id="5810809306422959727">Šis konts nav piemērots vecāku kontrolei</translation>
+<translation id="5834581999798853053">Atlikušas apmēram <ph name="TIME" /> minūtes</translation>
 <translation id="5852112051279473187">Vai! Palaižot ierīci, kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz vai sazinieties ar savu atbalsta pārstāvi.</translation>
 <translation id="5852137567692933493">Restartēt un aktivizēt funkciju Powerwash</translation>
 <translation id="5856721540245522153">Atkļūdošanas funkciju iespējošana</translation>
+<translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
+<translation id="5870086504539785141">Aizvērt pieejamības izvēlni</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5895335062901455404">Jūsu saglabātās preferences un darbības būs pieejamas jebkurā Chrome OS Flex ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
+<translation id="5916664084637901428">Iesl.</translation>
 <translation id="5919305207330938913">Visi vāktie dati tiks izmantoti saskaņā ar Google <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">Jums nav pietiekami daudz pieejamu licenču, lai reģistrētu šo Google Meet aparatūras ierīci. Lai iegādātos papildu licences, sazinieties ar pārdošanas nodaļu. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
+<translation id="5948536763493709626">Pievienojiet tastatūru vai peli vai turpiniet iestatīšanu, izmantojot skārienekrānu. Ja izmantojat Bluetooth ierīces, jūsu ierīcēm ir jābūt gatavām savienošanai pārī.</translation>
 <translation id="5959471481388474538">Tīkls nav pieejams.</translation>
 <translation id="6016178549409952427">Pāriet uz papildu satura <ph name="CURRENT_ELEMENT" />. elementu no <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Atlasiet valodas un tastatūras pogu. Pašlaik atlasītā valoda: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6051354611314852653">Hmm... Sistēmai neizdevās autorizēt šo ierīci API piekļuvei.</translation>
 <translation id="6055544610007596637">Instalējiet lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />) no Google Play veikala</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Atļaut uzņēmumam Google izmantot jūsu aparatūras datus, lai palīdzētu uzlabot operētājsistēmu <ph name="DEVICE_OS" />. Ja to neatļausiet, šie dati joprojām tiks nosūtīti uzņēmumam Google, lai noteiktu atbilstošus atjauninājumus, taču netiks saglabāti vai kā citādi izmantoti. Plašāka informācija ir pieejama vietnē g.co/flex/HWDataCollection</translation>
 <translation id="6308493641021088955">Pierakstīšanos nodrošina <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Atkļūdošanas funkcijas šajā <ph name="IDS_SHORT_PRODUCT_NAME" /> ierīcē ir veiksmīgi iespējotas.</translation>
+<translation id="6343262564968371601">Atrodiet vajadzīgo, meklējot pakalpojumā Google, failos, lietotnēs un citur.</translation>
 <translation id="635609604405270300">Neizslēdziet ierīci</translation>
 <translation id="6367097275976877956">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet atstarpes taustiņu.</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
 <translation id="6380143666419481200">Apstiprināt un turpināt</translation>
 <translation id="640457954117263537">Atrašanās vietas datu izmantošana ChromeOS un Android lietotnēm un pakalpojumiem.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, kā arī informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Kritiska atjauninājuma instalēšana</translation>
+<translation id="6478849105642611893">Ātrās ievietošanas taustiņš atrodas zem tabulēšanas taustiņa</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Atlasīt valodu</translation>
 <translation id="6495266441917713704">Nevar pārsūtīt Wi-Fi</translation>
 <translation id="6515620015470298987">Pierakstīšanās neizdevās ierīces konfigurācijas pārbaudes problēmas dēļ. Lūdzu, ierīcei (<ph name="DEVICE_TYPE" />) izmantojiet funkciju Powerwash un mēģiniet vēlreiz.</translation>
 <translation id="6519689855001245063">Notiek piemērotības pārbaude</translation>
 <translation id="6532527800157340614">Neizdevās pierakstīties, jo nevarēja izgūt piekļuves pilnvaru. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
+<translation id="653920215766444089">Notiek rādītājierīces meklēšana…</translation>
 <translation id="65513682072153627">Būs redzama ikona “Pārvaldīts”, ja iestatījumu vai funkciju pārvalda jūsu administrators.</translation>
+<translation id="6561726789132298588">Ievadīt</translation>
 <translation id="6607890859198268021">Konts <ph name="USER_EMAIL" /> jau tiek pārvaldīts domēnā <ph name="DOMAIN" />. Lai izmantotu vecāku kontroli citā Google kontā, pēc iestatīšanas izrakstieties un pierakstīšanās ekrānā atlasiet “Pievienot personu”.</translation>
 <translation id="6642720633335369752">Lai skatītu visus atvērto lietotņu logus, velciet augšup no ekrāna apakšdaļas un turiet.</translation>
 <translation id="6648911618876616409">Svarīgs atjauninājums ir pieejams instalēšanai. Pierakstieties, lai sāktu.</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> pārvaldības iespēju iestatīšana</translation>
+<translation id="6675665718701918026">Rādītājierīce ir pievienota.</translation>
 <translation id="667752334740867460">Notiek Wi-Fi informācijas saņemšana…</translation>
 <translation id="6680442031740878064">Pieejamā vieta: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Varat atkopt kontu <ph name="EMAIL" />, taču lokālie dati tiks dzēsti.</translation>
 <translation id="6748980958975836188">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
+<translation id="6749473226660745022">Fotoattēli</translation>
+<translation id="6754918760968695779">Ātrā ievietošana</translation>
 <translation id="6789834167207639931">Lai pabeigtu atkopšanu, nākamajā ekrānā vēlreiz ievadiet sava Google konta paroli.</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu, kā arī Android lietotņu diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot bērna ChromeOS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Ja bērna Google kontam ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, bērna dati var tikt saglabāti viņa Google kontā. Plašāku informāciju par šiem iestatījumiem un to pielāgošanu skatiet vietnē families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Populārākās lietotnes jūsu ierīcei (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="682971198310367122">Google konfidencialitātes politika</translation>
 <translation id="6835762382653651563">Lai atjauninātu savu <ph name="DEVICE_TYPE" /> ierīci, lūdzu, izveidojiet savienojumu ar internetu.</translation>
 <translation id="6839916869147598086">Pierakstīšanās ir mainīta</translation>
+<translation id="6852529053326738838">Vaicājiet savai organizācijai vai reģistrējieties, izmantojot darba e-pasta kontu, lai pārbaudītu, vai jūsu konts ir piemērots.</translation>
+<translation id="6867671714894555998">Ātri paveiciet darbus, izmantojot jauno tastatūru</translation>
 <translation id="6883319974225028188">Diemžēl sistēmai neizdevās saglabāt ierīces konfigurāciju.</translation>
+<translation id="6888831646723563669">Izveidojiet savienojumu, lai izbaudītu visas jaunās <ph name="DEVICE_TYPE" /> funkcijas</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Lietotņu dati var būt jebkādi lietotņu saglabātie dati (atkarībā no izstrādātāja iestatījumiem), tostarp kontaktpersonas, ziņojumi un fotoattēli. Dublētie dati netiks ieskaitīti jūsu bērna Diska krātuves kvotā.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Šo pakalpojumu varat izslēgt iestatījumos.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6918733588290914545">Veikt ātro iestatīšanu ar Android tālruni</translation>
 <translation id="6920473853105515518">Pārbaudiet, vai jūsu ierīce (<ph name="DEVICE_TYPE" />) ir savienota ar internetu, un mēģiniet vēlreiz. Varat arī apmeklēt vietni play.google/play-terms citā ierīcē.</translation>
+<translation id="6929126689972602640">Vecāku kontrole netiek atbalstīta mācību iestāžu kontos. Lai pievienotu mācību iestādes kontu un piekļūtu pakalpojumam Google Classroom un citām attālināto mācību vietnēm, vispirms pierakstieties bērna personīgajā kontā. Vēlāk varēsiet pievienot mācību iestādes kontu.</translation>
+<translation id="6935031746833428401">Uzzināt vairāk par ierīču pārvaldību</translation>
+<translation id="6950351336108213154">Notiek perifērijas ierīču atjaunināšana</translation>
 <translation id="6955698182324067397">Jūs iespējojat Chrome OS atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6969216690072714773">Ievadiet jaunu informāciju, kas jāsaista ar šo ierīci, vai atjauniniet esošo informāciju.</translation>
@@ -343,23 +485,37 @@
         darbojas. Ja jums nav jālieto starpniekserveris,
         pielāgojiet <ph name="LINK_START" />starpniekservera iestatījumus<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Ieslēdziet tālruņa Bluetooth un Wi-Fi savienojumu</translation>
+<translation id="6996438701394974959">Palielināt attēlojuma un teksta lielumu</translation>
+<translation id="6998793565256476099">Reģistrēt ierīci videokonferencēm</translation>
 <translation id="7025082428878635038">Jauns navigācijas veids, izmantojot žestus</translation>
 <translation id="7034692021407794547">Vispirms administratoram ar norēķinu pārvaldības atļauju ir jāpiekrīt Google Meet aparatūras pakalpojumu sniegšanas noteikumiem, kas pieejami administrēšanas konsoles sadaļā par Google Meet aparatūru.</translation>
+<translation id="7039951224110875196">Izveidot Google kontu bērnam</translation>
 <translation id="7065223852455347715">Šī ierīce ir fiksēta režīmā, kas neļauj veikt uzņēmuma reģistrēšanu. Ja vēlaties reģistrēt šo ierīci, vispirms ir jāveic tās atkopšana.</translation>
+<translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> ierīces iestatījumu izvēle</translation>
 <translation id="7077829361966535409">Pierakstīšanās lapu neizdevās ielādēt, izmantojot pašreizējos starpniekservera iestatījumus. <ph name="GAIA_RELOAD_LINK_START" />Mēģiniet pierakstīties vēlreiz<ph name="GAIA_RELOAD_LINK_END" /> vai izmantojiet citus <ph name="PROXY_SETTINGS_LINK_START" />starpniekservera iestatījumus<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">Administrators šai ierīcei ir piešķīris noņemšanas statusu. Lai tiktu aktivizēta šīs ierīces reģistrēšana, lūdziet administratoram piešķirt tai gaidīšanas statusu.</translation>
 <translation id="7114054701490058191">Paroles nav vienādas</translation>
 <translation id="7135729336746831607">Vai ieslēgt Bluetooth?</translation>
 <translation id="7141105143012495934">Neizdevās pierakstīties, jo nevarēja izgūt konta informāciju. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
+<translation id="7171259390164035663">Nereģistrēties</translation>
 <translation id="7189451821249468368">Jums nav pietiekami daudz jauninātu licenču, lai reģistrētu šo ierīci. Lūdzu, sazinieties ar tirdzniecības nodaļu, lai iegādātos vairāk licenču. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
 <translation id="7202337678781136582">Kvadrātkoda skenēšana, izmantojot Android tālruni</translation>
+<translation id="7228854227189381547">Nepārslēgt</translation>
+<translation id="7230881857327093958">Izmaiņas tiks lietotas pēc iestatīšanas</translation>
 <translation id="7260186537988033909">Kioska un digitālā ceļrāža ierīces reģistrācija pabeigta</translation>
+<translation id="7284411326658527427">Katra persona var personalizēt savu kontu, un katras personas dati ir konfidenciāli.</translation>
 <translation id="7290242001003353852">Šis domēnā <ph name="SAML_DOMAIN" /> mitinātais pierakstīšanās pakalpojums piekļūst jūsu kamerai.</translation>
+<translation id="7311005168897771689">Piekļuve Google diska failiem bezsaistē</translation>
 <translation id="7317831949569936035">Skolas ierīces reģistrēšana</translation>
+<translation id="7326004502692201767"><ph name="DEVICE_TYPE" /> ierīces iestatīšana bērnam</translation>
+<translation id="732659786514229249">Vai reģistrēt ierīci jūsu organizācijā?</translation>
 <translation id="7329154610228416156">Neizdevās pierakstīties, jo konfigurācijā tika norādīts izmantot nedrošu URL (<ph name="BLOCKED_URL" />). Lūdzu, sazinieties ar savu administratoru.</translation>
 <translation id="7345706641791090287">Apstipriniet savu paroli</translation>
+<translation id="7348093485538360975">Ekrāntastatūra</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
+<translation id="7403642243184989645">Notiek resursu lejupielāde</translation>
+<translation id="7406912950279255498">Krāsu inversijas režīms</translation>
 <translation id="7416263748877373774">Nevar ielādēt pakalpojumu sniegšanas noteikumus. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="7475742997309661417">ChromeOS ekrāna lasītāju ChromeVox galvenokārt izmanto neredzīgi vai vājredzīgi lietotāji, lai ekrānā redzamo tekstu atskaņotu ar runas sintezatoru vai lasītu Braila displejā. Lai ieslēgtu ChromeVox, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas. Kad ChromeVox būs aktivizēts, tiks parādīts īss ceļvedis.</translation>
 <translation id="7476454130948140105">Nevar veikt atjaunināšanu, jo akumulatora uzlādes līmenis ir pārāk zems (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -369,39 +525,61 @@
 <translation id="7506541170099744506">Jūsu <ph name="DEVICE_TYPE" /> ierīce ir sekmīgi reģistrēta uzņēmuma pārvaldībai.</translation>
 <translation id="7509097596023256288">Pārvaldības iestatīšana</translation>
 <translation id="7543104066686362383">Iespējot atkļūdošanas funkcijas šajā <ph name="IDS_SHORT_PRODUCT_NAME" /> ierīcē</translation>
+<translation id="7544227555407951270">Reģistrēt ierīci</translation>
+<translation id="7549434883223124329">Vai pārslēgt ierīces valodu?</translation>
 <translation id="7553242001898162573">Ievadiet paroli.</translation>
 <translation id="7556242789364317684">Diemžēl <ph name="SHORT_PRODUCT_NAME" /> nevar atkopt jūsu iestatījumus. Lai novērstu šo kļūdu, pārlūkam <ph name="SHORT_PRODUCT_NAME" /> ir jāatiestata jūsu ierīce, izmantojot funkciju Powerwash.</translation>
 <translation id="7560756177962144929">Sinhronizējiet savu ierīci (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7571643774869182231">Krātuvē nepietiek vietas atjauninājumam</translation>
+<translation id="7616214729753637086">Notiek ierīces reģistrēšana...</translation>
 <translation id="7622114377921274169">Notiek uzlāde.</translation>
 <translation id="7630426712700473382">Šo ierīci pārvalda <ph name="MANAGER" />, un, to izmantojot, jums ir jāpierakstās katru reizi.</translation>
 <translation id="7639914187072011620">Neizdevās izgūt SAML novirzīšanas URL no servera.</translation>
 <translation id="7643117827468520640">Pārskatiet šos noteikumus</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Lietotņu dati var būt jebkādi lietotņu saglabātie dati (atkarībā no izstrādātāja iestatījumiem), tostarp kontaktpersonas, ziņojumi un fotoattēli. Dublētie dati netiks ieskaitīti jūsu Diska krātuves kvotā.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Šo pakalpojumu varat izslēgt iestatījumos.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7659584679870740384">Jums nav atļaujas izmantot šo ierīci. Lūdzu, sazinieties ar administratoru, lai saņemtu pierakstīšanās atļauju.</translation>
 <translation id="7660116474961254898">Izpildiet tālrunī redzamos norādījumus.</translation>
 <translation id="7661451191293163002">Nevarēja iegūt reģistrācijas sertifikātu.</translation>
+<translation id="7666531788977935712">Poga “Turpināt” ir iespējota</translation>
 <translation id="7671139479636735732">Noklikšķiniet ar peles labo pogu, lai ērti vizualizētu savas idejas.</translation>
 <translation id="770831926727930011">Jūsu lokālos datus aizsargā iepriekšējā parole. Ievadiet iepriekšējo paroli, lai atkoptu lokālos datus.</translation>
 <translation id="7722040605881499779">Atjauninājumam nepieciešamā vieta: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Notiek savienošana pārī ar ierīci <ph name="DEVICE_NAME" />...</translation>
+<translation id="7746045113967198252">Palieliniet vai samaziniet ekrānā redzamos vienumus, tostarp tekstu. Šo iespēju varēsiet arī vēlāk atrast sadaļā Iestatījumi &gt; Ierīce &gt; Displeji.</translation>
 <translation id="7760176388948986635">Ļauj ChromeOS un Android lietotnēm, vietnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot šīs ierīces atrašanās vietas datus. Iestatījums “Atrašanās vietas precizitāte” Android lietotnēm un pakalpojumiem nodrošina precīzāku atrašanās vietu informāciju. Šim nolūkam Google periodiski apstrādā informāciju par ierīces sensoriem un no šīs ierīces saņemtos bezvadu signālus, lai ar kolektīvo pakalpojumu palīdzību noteiktu bezvadu signālu atrašanās vietas. Neidentificējot nevienu personu, šie dati tiek izmantoti, lai uzlabotu atrašanās vietu precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī uzlabotu, nodrošinātu un uzturētu Google pakalpojumus saskaņā ar Google un trešo pušu likumīgām interesēm sniegt lietotāja vajadzībām atbilstošus pakalpojumus.</translation>
 <translation id="7784875615510899699">Jums nav pietiekami daudz pieejamu licenču, lai reģistrētu šo Google Beam ierīci. Lai iegādātos papildu licences, sazinieties ar tālākpārdevēju. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar tālākpārdevēju.</translation>
+<translation id="7791269138074599214">Ievades metode</translation>
+<translation id="7791436592012979144">Ritināšana pretējā virzienā ir iespējota</translation>
 <translation id="7792012425874949788">Pierakstīšanās neizdevās</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7803657407897251194">Lai turpinātu iestatīšanu, izmantojot Android ierīci, savienojiet <ph name="DEVICE_TYPE" /> ar tīklu</translation>
+<translation id="7842692330619197998">Ja nepieciešams izveidot jaunu kontu, apmeklējiet vietni g.co/ChromeEnterpriseAccount.</translation>
 <translation id="7851457902707056880">Drīkst pierakstīties tikai īpašnieka kontā. Lūdzu, atsāknējiet ierīci un pierakstieties īpašnieka kontā. Ierīce tiks automātiski atsāknēta pēc 30 sekundēm.</translation>
 <translation id="7870730066603611552">Sinhronizācijas opciju pārskatīšana pēc iestatīšanas</translation>
 <translation id="7883792253546618164">Varat jebkurā brīdī anulēt abonementu.</translation>
+<translation id="7887864092952184874">Bluetooth pele ir savienota pārī.</translation>
 <translation id="7906440585529721295">Lokālie dati tiks dzēsti</translation>
+<translation id="7910725946105920830">Izmantot personīgo Google kontu</translation>
+<translation id="7918257978052780342">Reģistrēties</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, kā arī informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot bērna ChromeOS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Papildopcijas</translation>
 <translation id="7943311690198910993">Pierakstīšanās metode ir atjaunināta</translation>
 <translation id="795240231873601803">Darba un mācību iestāžu kontiem nepieciešama uzņēmuma reģistrācija</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
 <translation id="7975504106303186033">Šī Chrome Education ierīce ir jāreģistrē mācību iestādes kontā. Lai reģistrētu jaunu kontu, lūdzu, apmeklējiet vietni g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">Līdzekļa ID: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Lai novērstu šo kļūdu, lūdzu, restartējiet ierīci.</translation>
 <translation id="7990958035181555539">Automātiski pārsūtiet Wi-Fi no Android tālruņa</translation>
+<translation id="8022466874160067884">Ievadiet savu Google kontu un paroli</translation>
+<translation id="8049029041626250638">Pievienojiet tastatūru vai peli. Ja izmantojat Bluetooth ierīces, jūsu ierīcēm ir jābūt gatavām savienošanai pārī.</translation>
 <translation id="8054563304616131773">Lūdzu, ievadiet derīgu e-pasta adresi.</translation>
+<translation id="8054921503121346576">USB tastatūra ir pievienota.</translation>
 <translation id="8065144531309810062">Izmantojiet Google MI, lai uzlabotu radošumu un produktivitāti</translation>
+<translation id="8082106343289440791">Vai izveidot savienojumu pārī ar ierīci <ph name="DEVICE_NAME" />?</translation>
 <translation id="8097959162767603171">Jūsu administratoram vispirms ir jāpiekrīt pakalpojumu sniegšanas noteikumiem administrēšanas konsoles Chrome ierīču sarakstā.</translation>
 <translation id="8098616321286360457">Nepieciešams tīkla savienojums</translation>
 <translation id="8129265306888404830">Lai varētu izmantot savas organizācijas e-pasta adresi (<ph name="EMAIL_DOMAIN" />), jums ir nepieciešama uzņēmuma reģistrācija. Ja šī ierīce ir paredzēta personiskām vajadzībām, pierakstieties savā personīgajā Google kontā.</translation>
@@ -409,28 +587,37 @@
 <translation id="8146177459103116374">Ja esat jau reģistrējies šajā ierīcē, varat <ph name="LINK2_START" />pierakstīties kā esošs lietotājs<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Neizdevās pierakstīties. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
 <translation id="8147346945017130012">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem avāriju pārskatus, kā arī diagnostikas un lietojuma datus.</translation>
+<translation id="8152760814912191567">Google Beam for Zoom</translation>
 <translation id="815491593104042026">Diemžēl autentifikācija neizdevās, jo konfigurācijā tika norādīts izmantot nedrošu URL (<ph name="BLOCKED_URL" />). Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="8157704005178149728">Notiek uzraudzības iestatīšana</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google vietsaistītajā pakalpojumā tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt jūsu ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt Android atrašanās vietu pakalpojumus savā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Lietotnes &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Drošība un atrašanas vieta &gt; Atrašanās vieta. Varat arī izslēgt Wi‑Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot opciju “Google atrašanās vietas precizitāte” tajā pašā izvēlnē.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Lai atjauninātu savu <ph name="DEVICE_TYPE" /> profilu, lūdzu, atkārtoti ievadiet paroli.</translation>
 <translation id="8239032431519548577">Uzņēmuma reģistrācija pabeigta</translation>
 <translation id="8241806945692107836">Tiek noteikta ierīces konfigurācija...</translation>
 <translation id="8242426110754782860">Turpināt</translation>
 <translation id="826905130698769948">Nederīgs klienta sertifikāts</translation>
+<translation id="8271379370373330993">Vecāki, nākamās darbības ir jāveic jums. Kad būsiet iestatījis kontu, varēsiet <ph name="DEVICE_TYPE" /> ierīci atdot bērnam.</translation>
 <translation id="8274924778568117936">Neizslēdziet un neaizveriet savu <ph name="DEVICE_TYPE" /> ierīci, kamēr notiek atjaunināšana. Pēc instalēšanas pabeigšanas jūsu <ph name="DEVICE_TYPE" /> ierīce tiks restartēta.</translation>
 <translation id="8281886186245836920">Izlaist</translation>
+<translation id="8291942417224950075">Personiskai lietošanai</translation>
 <translation id="8304383784961451596">Jums nav atļaujas izmantot šo ierīci. Sazinieties ar administratoru, lai saņemtu pierakstīšanās atļauju, vai pierakstieties Google kontā, kas tiek pārraudzīts pakalpojumā Family Link.</translation>
 <translation id="8321837372750396788">Šo <ph name="DEVICE_TYPE" /> ierīci pārvaldīs <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Attēlojuma un teksta lielums</translation>
 <translation id="8354034204605718473">Jūsu bērna PIN ir pievienots</translation>
 <translation id="8366396658833131068">Tīkla savienojums ir atjaunots. Lūdzu, atlasiet citu tīklu vai nospiediet tālāk esošo pogu “Turpināt”, lai palaistu savu kioska lietotni.</translation>
 <translation id="8401432541486058167">Norādiet PIN, kas ir saistīts ar jūsu viedkarti.</translation>
 <translation id="8408270600235826886">Jūs nosakāt, kādi dati tiek kopīgoti ar Google. Iestatījumos varat jebkurā laikā to mainīt. Dati tiks izmantoti saskaņā ar Google <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox?</translation>
 <translation id="8425768983279799676">Varat izmantot PIN kodu, lai atbloķētu savu ierīci.</translation>
+<translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="843173223122814223">Fonu izveide, izmantojot MI</translation>
 <translation id="8452105022015742247">Notiek Google konta datu pārsūtīšana no Android tālruņa</translation>
 <translation id="8464132254133862871">Šis lietotāja konts pakalpojumam nav atbilstošs.</translation>
 <translation id="8524841856047224176">Personalizējiet kameras fonus videozvaniem un citiem nolūkiem.</translation>
+<translation id="8527257351549797148">Jūsu organizācija var pieprasīt reģistrāciju, lai jūs varētu piekļūt lietotnēm, paplašinājumiem un citām iespējām. Tādējādi jūsu organizācija varēs arī pārvaldīt tādu informāciju kā drošības un ierīces iestatījumi.</translation>
+<translation id="8558063527625343224">Google Beam iestatīšana</translation>
 <translation id="8569673829373920831">Plašāka informācija par lietotni <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Ļauj ChromeOS un Android lietotnēm, vietnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Iestatījums “Atrašanās vietas precizitāte” Android lietotnēm un pakalpojumiem nodrošina precīzāku atrašanās vietu informāciju. Šim nolūkam Google periodiski apstrādā informāciju par ierīces sensoriem un no jūsu ierīces saņemtos bezvadu signālus, lai ar kolektīvo pakalpojumu palīdzību noteiktu bezvadu signālu atrašanās vietas. Neidentificējot jūs, šie dati tiek izmantoti, lai uzlabotu atrašanās vietu precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī uzlabotu, nodrošinātu un uzturētu Google pakalpojumus saskaņā ar Google un trešo pušu likumīgām interesēm sniegt lietotāja vajadzībām atbilstošus pakalpojumus.</translation>
 <translation id="8627804903623428808">Pārskatiet šos noteikumus un pārvaldiet bērna datus</translation>
@@ -439,9 +626,13 @@
         <ph name="BR" />
         Redzama tuvumā esošām ierīcēm ar nosaukumu <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="8655972064210167941">Neizdevās pierakstīties, jo nevarēja apstiprināt paroli. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Kad iestatījums “Atrašanās vietas precizitāte” ir ieslēgts, informācija par bezvadu signāliem (piemēram, Wi-Fi piekļuves punkti un mobilā tīkla torņi, kā arī ierīces sensoru dati, tostarp no akselerometra un žiroskopa) tiek izmantota, lai noteiktu precīzāku ierīces atrašanās vietu. Noteiktā atrašanās vieta savukārt tiek izmantota Android lietotnēs un pakalpojumos, lai nodrošinātu funkcijas, kuru pamatā ir atrašanās vieta. Šim nolūkam Google periodiski vāc informāciju par ierīces sensoriem un bezvadu signāliem jūsu tuvumā, lai kolektīvajos pakalpojumos nodrošinātu bezvadu signālu atrašanās vietu informāciju.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Neidentificējot jūs, Google izmanto šo informāciju, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus. Mēs apstrādājam šo informāciju, pamatojoties uz Google un trešo pušu likumīgajām interesēm sniegt lietotāju vajadzībām atbilstošu pakalpojumus.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Jūs jebkurā brīdī varat izslēgt iestatījumu “Atrašanās vietas precizitāte” savas ierīces atrašanās vietas iestatījumos sadaļā Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai &gt; Atrašanās vietas papildu iestatījumi. Ja iestatījums “Atrašanās vietas precizitāte” ir izslēgts, netiek vākti nekādi atrašanās vietas precizitātes dati. Android lietotnēs un pakalpojumos jūsu ierīces atrašanās vietas noteikšanai tiek izmantota tikai IP adrese (ja tā ir pieejama). Tas var ietekmēt Android lietotņu un pakalpojumu, piemēram, Google Maps, pieejamību un atrašanās vietu precizitāti.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Tādēļ operētājsistēmu Chrome OS nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, <ph name="BEGIN_BOLD" />iespējams, nav aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Vecāku kontroles pievienošana pēc iestatīšanas</translation>
 <translation id="8698269656364382265">Lai atgrieztos iepriekšējā ekrānā, velciet no ekrāna kreisās malas.</translation>
+<translation id="8718994464069323380">Konstatēts skārienekrāns</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8726206820263995930">Iegūstot politikas iestatījumus no servera, radās kļūda: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Gatavs</translation>
@@ -449,24 +640,36 @@
 <translation id="8740247629089392745">Varat iedot šo Chromebook datoru lietotājam <ph name="SUPERVISED_USER_NAME" />. Kad iestatīšana būs pabeigta, šo datoru varēs izmantot.</translation>
 <translation id="8759753423332885148">Uzziniet vairāk.</translation>
 <translation id="8777628254805677039">saknes parole</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Ierakstiet kodu Bluetooth savienošanai pārī un pēc tam nospiediet ievadīšanas taustiņu.</translation>
 <translation id="8794548468611058947">Lai pierakstoties nebūtu jāievada Google konta parole, varat izveidot PIN šai ierīcei (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8830796635868321089">Atjauninājumu pārbaude, izmantojot esošos starpniekservera iestatījumus, neizdevās. Lūdzu, pielāgojiet <ph name="PROXY_SETTINGS_LINK_START" />starpniekservera iestatījumus<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Šīs Chromebook uzņēmuma ierīces komplektācijā ir iekļauts Chrome uzņēmuma versijas jauninājums. Lai izmantotu uzņēmuma iespējas, reģistrējiet šo ierīci, izmantojot Google administratora kontu.</translation>
 <translation id="885746075120788020">Jūsu saglabātās preferences un darbības būs pieejamas jebkurā Chrome OS ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
+<translation id="8868333925931032127">Notiek demonstrācijas režīma palaišana</translation>
 <translation id="8875221558267407626">Iegūstiet satura apkopojumu, vienkāršojiet sarežģītu tekstu vai uzdodiet jautājumus</translation>
+<translation id="8907701755790961703">Lūdzu, atlasiet valsti</translation>
 <translation id="8913163265790894442">Ērti iestatiet savu ierīci (<ph name="DEVICE_TYPE" />), izmantojot tālruni. Varat pievienot Wi-Fi tīklu un Google kontu, manuāli neievadot paroles.
         <ph name="BR" />
         <ph name="BR" />
         Redzama ar nosaukumu <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">Turpināt</translation>
 <translation id="8946359700442089734">Atkļūdošanas funkcijas šajā <ph name="IDS_SHORT_PRODUCT_NAME" /> ierīcē netika pilnībā iespējotas.</translation>
 <translation id="8965037249707889821">Ievadiet veco paroli</translation>
+<translation id="8968906873893164556">Izvēlieties kontu, ko izmantot iestatīšanai</translation>
+<translation id="8973596347849323817">Varat pielāgot šo ierīci savām vajadzībām. Šīs pieejamības funkcijas var mainīt vēlāk sadaļā Iestatījumi.</translation>
 <translation id="8975396729541388937">Varat jebkurā laikā anulēt abonementu, saņemtajos e-pasta ziņojumos noklikšķinot uz attiecīgās saites.</translation>
+<translation id="8987305927843254629">Katra persona var personalizēt savu pieredzi, un katras personas dati ir konfidenciāli.</translation>
 <translation id="8993059306046735527">Ja aizmirsīsiet paroli, ar ko jāatbloķē <ph name="DEVICE_TYPE" />, joprojām varēsiet atjaunot ierīces datus. Jums būs jāpierakstās savā Google kontā vai jāizmanto konta atkopšana.</translation>
 <translation id="9033765790910064284">Tik un tā turpināt</translation>
 <translation id="903480517321259405">Vēlreiz ievadiet PIN</translation>
 <translation id="9040473193163777637">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet un piecas sekundes turiet nospiestus abus skaļuma taustiņus.</translation>
 <translation id="9068298336633421551">Atļaujiet Android lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot šīs ierīces atrašanās vietas datus. Google varēs periodiski vākt atrašanās vietas datus un tos anonīmi izmantot, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
+<translation id="9074836595010225693">USB pele ir pievienota.</translation>
 <translation id="9076523132036239772">Diemžēl jūsu e-pasta adresi vai paroli nevarēja verificēt. Vispirms mēģiniet izveidot savienojumu ar tīklu.</translation>
+<translation id="9089959054554410481">Skārienpaliktņa ritināšanas virziena maiņa</translation>
 <translation id="9158715103698450907">Hmm... Autentificēšanas laikā radās tīkla komunikācijas problēma. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
+<translation id="9186963452600581158">Pierakstīties bērna Google kontā</translation>
 <translation id="919686179725692564">Uzzināt vairāk par datu dublēšanu</translation>
 <translation id="9214520840402538427">Instalācijas laika atribūtu inicializēšanā diemžēl iestājās noildze. Lūdzu, sazinieties ar savu atbalsta pārstāvi.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Tikai ierīcei <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@
         <ph name="BR" />
         Redzama ar nosaukumu <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">Noraidīt</translation>
+<translation id="954749761428814584">Valoda un ievades metode</translation>
+<translation id="960987915827980018">Atlikusi apmēram 1 stunda</translation>
+<translation id="995420352808264005">Ierīces reģistrācijas veida izvēle</translation>
 </translationbundle>

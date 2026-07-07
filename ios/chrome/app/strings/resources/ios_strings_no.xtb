@@ -1573,6 +1573,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="628251768213143684">Du kan når som helst administrere hva som lagres i Google-kontoen din</translation>
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">For å slå på Safe Browsing, åpne <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> og trykk på Safe Browsing.</translation>
+<translation id="6295140892595702619">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på). Dataene dine brukes ikke til å forbedre generative AI-modeller</translation>
 <translation id="6295751040240588413">Ugyldig kallenavn på kortet</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få varsler om prissporing</translation>
@@ -2181,7 +2182,6 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8264966119170358612">Noen av de lagrede passordene dine ble avdekket i et databrudd utenfor Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPad. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="8270320981823560179">Disk</translation>
-<translation id="8273982424131314219">Du fyller ut informasjon på <ph name="URL" /></translation>
 <translation id="8274795744553482834">Du er i ferd med å bytte profil</translation>
 <translation id="8275068909952022340">Mer…</translation>
 <translation id="8280797717392145626">Mottatte linker</translation>
@@ -2415,6 +2415,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, festet nettsted</translation>
 <translation id="8990960056509724223">Filen kunne ikke lagres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
+<translation id="9003263770394939629">Foreslått av Gemini. Administrer forbedret autofyll i innstillingene.</translation>
 <translation id="9003677638446136377">Sjekk på nytt</translation>
 <translation id="9006453925669499173">Meny → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>

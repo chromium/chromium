@@ -302,7 +302,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2297822946037605517">Partekatu orria</translation>
 <translation id="230115972905494466">Ez da aurkitu gailu bateragarririk</translation>
 <translation id="2316129865977710310">Ez, eskerrik asko</translation>
-<translation id="2318045970523081853">Sakatu hau dei bat egiteko</translation>
 <translation id="232137538351753795">Atzera egiteko, pasatu hatza ezkerreko ertzetik erdirantz</translation>
 <translation id="2323763861024343754">Webguneen datuak</translation>
 <translation id="2327445548174191329">Iturburua: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Duela egun bat egiaztatu zuen}other{Duela # egun egiaztatu zuen}}</translation>
 <translation id="2842985007712546952">Karpeta nagusia</translation>
 <translation id="2854916915045135148">Ezkutuko modura aldatzeko, eduki sakatuta hau</translation>
-<translation id="2860954141821109167">Ziurtatu telefonoetarako aplikazio bat gaituta dagoela gailu honetan</translation>
 <translation id="286473047976978798">Itxuraren hobespenak aplikatu nahi dituzu?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> eta beste fitxa bat}other{<ph name="URL" /> eta beste <ph name="TAB_COUNT_MANY" /> fitxa}}</translation>
 <translation id="2869430948265924908">Autoko kontuzko edukia babesteko, autorako profilaren blokeo bat sortu behar duzu.  Horretarako, PIN, kode edo pasahitz bat erabil dezakezu.</translation>
@@ -1272,6 +1270,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6315386555979018699">Ezabatu eta egin aurrera</translation>
 <translation id="6316139424528454185">Android-en bertsio bateraezina</translation>
 <translation id="631839948975905034">Blokeatu ezkutuko moduko leihoak Chrome-tik irteten zarenean</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" luzapenak Chrome-n saioa has dezazun behar du</translation>
 <translation id="6324916366299863871">Editatu lasterbidea</translation>
 <translation id="6324977638108296054">Ezin da sortu nabarmendutako testurako estekarik</translation>
 <translation id="6333140779060797560">Partekatu <ph name="APPLICATION" /> bidez</translation>
@@ -1450,6 +1449,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6910211073230771657">Ezabatu egin da</translation>
 <translation id="6916590542764765824">Kudeatu luzapenak</translation>
 <translation id="6918398787259831832">Arazoak badirau, <ph name="BEGIN_LINK" />lortu informazio gehiago<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearengandik.</translation>
+<translation id="6920262510368602827">Sortu orriaren QR kodea</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome-k baimen horiek kendu ditu, azkenaldian ez duzulako bisitatu webgune hori</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fitxa}other{<ph name="NUMBER_OF_TABS" /> fitxa}}</translation>
 <translation id="6929224077895306814">Zure gailuko eta Google Kontua ataleko segurtasun-kode guztiak ezabatuko dira</translation>
@@ -1541,6 +1541,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7248671827512403053">Aplikazioa</translation>
 <translation id="7253951228444156601">Pasahitzak egiaztatzen…</translation>
 <translation id="7260367682327802201">Baliteke Android-eko gailuak antzeko ezarpen bat izatea. Chrome-n eta Android-eko gailuan Iragarkien neurketa aktibatuta badaukazu, erabiltzen dituzun webgune eta aplikazioetan agertzen diren iragarkien eraginkortasuna neurtu ahal izango dute enpresek.</translation>
+<translation id="7265857422443387781">Bilatu fitxan Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> domeinura bidali nahi duzu <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="7274013316676448362">Blokeatutako webgunea</translation>
 <translation id="7276868533747677875">Aurretik pasahitzak esportatu badituzu, bilatu CSV fitxategi bat gailuan eta inporta ezazu nahi duzun pasahitz-kudeatzailera.</translation>
@@ -1883,6 +1884,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="860282621117673749">Prezio-jaitsierei buruzko alertak</translation>
 <translation id="8611922158252451755">Esteka duten guztiek fitxa guztiak edita ditzakete; beraz, parteka itzazu arduraz. 48 ordu barru iraungiko da esteka.</translation>
 <translation id="8616006591992756292">Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
+<translation id="8626572875733549102">Itzuli hizkuntza honetara: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Ireki Chrome-ko menua &gt; Ezarpenak</translation>
 <translation id="8634050254805484913">Pantaila estuetan ezkutatuta</translation>
 <translation id="8635399646025169806">Fitxa taldea mantendu nahi duzu?</translation>
@@ -2031,7 +2033,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="9204836675896933765">1 fitxategi gelditzen da</translation>
 <translation id="9205933215779845960">Ezin da aurkitu orria. Egiaztatu zuzen idatzi duzula edo bila ezazu <ph name="SEARCH_ENGINE" /> bidez.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Ezin da deirik egin</translation>
 <translation id="9212845824145208577">Ezin zara gehiago jaitsi. Hasi beherago orrian.</translation>
 <translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
 <translation id="9219103736887031265">Irudiak</translation>

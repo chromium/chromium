@@ -1574,6 +1574,7 @@
 <translation id="628251768213143684">আপনার Google অ্যাকাউন্টে কী কী সেভ করা রয়েছে, তা সব সময় ম্যানেজ করতে পারবেন</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>
+<translation id="6295140892595702619">Gemini-র সাথে চ্যাট করতে আপনার মাইক্রোফোন ব্যবহার করুন। Gemini-র সাথে কথা বললে, অডিও Gemini অ্যাপ অ্যাক্টিভিটিতে (এটি চালু থাকলে) সেভ হয়। জেনারেটিভ AI মডেল উন্নত করতে আপনার ডেটা ব্যবহার করা হয় না</translation>
 <translation id="6295751040240588413">কার্ডের ডাকনাম সঠিক নয়</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
@@ -2182,7 +2183,6 @@
 <translation id="8264966119170358612">Google-এর নয়, এমন ডেটার নিরাপত্তা লঙ্ঘনের সময় আপনার সেভ করা কিছু পাসওয়ার্ড ফাঁস হয়ে গেছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">আপনার iPad রিসেটের অংশ হিসেবে আপনার অ্যাকাউন্ট <ph name="USER_NAME" /> থেকে সাইন-আউট হয়ে গেছেন। আবার সাইন ইন করতে, নিচে "চালিয়ে যান" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">আপনি <ph name="URL" />-এ তথ্য পূরণ করবেন</translation>
 <translation id="8274795744553482834">আপনি প্রোফাইল সুইচ করতে চলেছেন</translation>
 <translation id="8275068909952022340">আরও…</translation>
 <translation id="8280797717392145626">লিঙ্ক পাওয়া গেছে</translation>
@@ -2416,6 +2416,7 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন করা সাইট</translation>
 <translation id="8990960056509724223">আপনার প্রতিষ্ঠানের নীতির কারণে ফাইল সেভ করা যায়নি</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
+<translation id="9003263770394939629">Gemini-র সাজেশন সেটিংস থেকে উন্নত অটোফিল ম্যানেজ করুন।</translation>
 <translation id="9003677638446136377">আবার পরীক্ষা করুন</translation>
 <translation id="9006453925669499173">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>

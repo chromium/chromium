@@ -302,7 +302,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2297822946037605517">Ibahagi ang pahinang ito</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
-<translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="232137538351753795">Mag-swipe mula sa kaliwang gilid para bumalik</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
 <translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
 <translation id="2854916915045135148">Pindutin nang matagal para lumipat sa Incognito</translation>
-<translation id="2860954141821109167">Tiyaking may naka-enable na phone app sa device na ito</translation>
 <translation id="286473047976978798">I-apply ang iyong mga preference sa hitsura?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> at 1 pang tab}one{<ph name="URL" /> at <ph name="TAB_COUNT_MANY" /> pang tab}other{<ph name="URL" /> at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
 <translation id="2869430948265924908">Para maprotektahan ang iyong sensitibong content sa kotse, dapat kang gumawa ng lock ng profile ng kotse.  Magagawa mo ito gamit ang isang pin, code, o password.</translation>
@@ -1272,6 +1270,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6315386555979018699">I-delete at magpatuloy</translation>
 <translation id="6316139424528454185">Hindi sinusuportahan ang bersyon ng Android</translation>
 <translation id="631839948975905034">I-lock ang mga incognito window kapag umalis ka sa Chrome</translation>
+<translation id="6321592572353357376">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chrome</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
 <translation id="6324977638108296054">Hindi makagawa ng link sa highlight</translation>
 <translation id="6333140779060797560">Ibahagi sa pamamagitan ng <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6910211073230771657">Na-delete</translation>
 <translation id="6916590542764765824">Pamahalaan ang Mga Extension</translation>
 <translation id="6918398787259831832">Kung patuloy na nangyayari ang isyung ito, <ph name="BEGIN_LINK" />kumuha ng higit pang impormasyon<ph name="END_LINK" /> mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Gumawa ng QR code para sa page na ito</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil hindi ka bumisita kamakailan</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}one{<ph name="NUMBER_OF_TABS" /> tab}other{<ph name="NUMBER_OF_TABS" /> na tab}}</translation>
 <translation id="6929224077895306814">Made-delete ang lahat ng panseguridad na code na naka-save sa iyong device at sa Google Account mo</translation>
@@ -1541,6 +1541,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Sinusuri ang mga password…</translation>
 <translation id="7260367682327802201">Posibleng may kasamang katulad na setting ang iyong Android device. Kung naka-on ang pagsukat ng Ad sa Chrome at sa iyong Android device, posibleng masukat ng kumpanya ang pagiging epektibo ng isang ad sa lahat ng binibisita mong web site at ginagamit mong app.</translation>
+<translation id="7265857422443387781">Maghanap sa tab gamit ang Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Naka-block na site</translation>
 <translation id="7276868533747677875">Kung nag-export ka na dati ng mga password, maghanap ng CSV file sa iyong device at i-import ito sa gusto mong password manager.</translation>
@@ -1883,6 +1884,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="860282621117673749">Mga alerto sa pagbaba ng presyo</translation>
 <translation id="8611922158252451755">Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pag-share. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="8616006591992756292">Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Isalin sa <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Buksan ang menu ng Chrome &gt; Mga Setting</translation>
 <translation id="8634050254805484913">Naka-hide sa maliliit na screen</translation>
 <translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
@@ -2031,7 +2033,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9204836675896933765">1 file ang natitira</translation>
 <translation id="9205933215779845960">Hindi makita ang page na iyon. Suriin ang iyong spelling o subukang maghanap sa <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Hindi makatawag</translation>
 <translation id="9212845824145208577">Hindi na maibababa pa. Subukang magsimula sa mas mababang bahagi ng page.</translation>
 <translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>

@@ -302,7 +302,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2297822946037605517">यो पेज सेयर गर्नुहोस्</translation>
 <translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
 <translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
-<translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="232137538351753795">पछि फर्कन बायाँ किनाराबाट स्वाइप गर्नुहोस्</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> बाट</translation>
@@ -436,7 +435,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{१ दिनअघि जाँच गरिएको}other{# दिनअघि जाँच गरिएको}}</translation>
 <translation id="2842985007712546952">अभिभावक फोल्डर</translation>
 <translation id="2854916915045135148">इन्कोग्निटो मोड प्रयोग गर्न टच एण्ड होल्ड गर्नुहोस्</translation>
-<translation id="2860954141821109167">यस यन्त्रमा कुनै फोन एप सक्षम गरिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="286473047976978798">स्वरूपसम्बन्धी तपाईंका प्राथमिकताहरू लागू गर्ने हो?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> र अन्य एउटा ट्याब}other{<ph name="URL" /> र अन्य <ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="2869430948265924908">कारमा भएको आफ्नो संवेदनशील सामग्री सुरक्षित राख्न तपाईंले अनिवार्य रूपमा कार प्रोफाइल लक बनाउनु पर्छ।  तपाईं पिन, कोड वा पासवर्ड राखेर कार प्रोफाइल लक बनाउन सक्नुहुन्छ।</translation>
@@ -1271,6 +1269,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6315386555979018699">मेटाउनुहोस् र जारी राख्नुहोस्</translation>
 <translation id="6316139424528454185">Android को संस्करण समर्थित छैन</translation>
 <translation id="631839948975905034">तपाईं Chrome बाट बाहिरिँदा इन्कोग्निटो विन्डोहरू लक गर्नुहोस्</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले तपाईंलाई Chrome मा साइन गर्न अनुरोध गरिरहेको छ</translation>
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6324977638108296054">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> मार्फत साझा गर्नुहोस्</translation>
@@ -1449,6 +1448,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="6916590542764765824">विस्तार व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6918398787259831832">यो समस्या अझै पनि देखिएको खण्डमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट <ph name="BEGIN_LINK" />थप जानकारी प्राप्त गर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="6920262510368602827">यो पृष्ठको लागि QR कोड सिर्जना गर्नुहोस्</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{एउटा ट्याब}other{<ph name="NUMBER_OF_TABS" /> वटा ट्याब}}</translation>
 <translation id="6929224077895306814">तपाईंको डिभाइस र Google खातामा सेभ गरिएका सबै सेक्युरिटी कोडहरू मेटाइने छन्</translation>
@@ -1540,6 +1540,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7248671827512403053">एप</translation>
 <translation id="7253951228444156601">पासवर्डहरू जाँच गरिँदै…</translation>
 <translation id="7260367682327802201">तपाईंको Android डिभाइसमा यस्तै सेटिङ हुन सक्छ। Chrome र तपाईंको Android डिभाइसमा विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा अन गरिएको छ भने कुनै पनि कम्पनी तपाईंले खोल्ने वेबसाइट र तपाईंले प्रयोग गर्ने एपहरूमा देखाइने विज्ञापनको प्रभावकारिता मापन गर्न सक्षम हुन सक्छन्।</translation>
+<translation id="7265857422443387781">Google लेन्स प्रयोग गरी ट्याब खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7276868533747677875">तपाईंले पहिले पासवर्डहरू एक्स्पोर्ट गर्नुभएको थियो भने आफ्नो डिभाइसमा CSV फाइल खोज्नुहोस् र उक्त फाइल प्रयोग गरी आफ्ना पासवर्डहरू आफ्नो रोजाइको पासवर्ड म्यानेजरमा इम्पोर्ट गर्नुहोस्।</translation>
@@ -1882,6 +1883,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="860282621117673749">मूल्य घटेको कुरासम्बन्धी अलर्टहरू</translation>
 <translation id="8611922158252451755">यो लिंक हुने जोकोहीले सबै ट्याब सम्पादन गर्न सक्ने भएकाले लिंक सेयर गर्दा ख्याल गर्नुहोस्। यो लिंकको म्याद ४८ घण्टामा सकिन्छ।</translation>
 <translation id="8616006591992756292">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य प्रकारका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" /> भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="8629093325209491835">"Chrome मेनु &gt; सेटिङ" खोल्नुहोस्</translation>
 <translation id="8634050254805484913">साँघुरा स्क्रिनहरूमा लुकाइएको हुन्छ</translation>
 <translation id="8635399646025169806">ट्याब समूह राखिराख्न चाहनुहुन्छ?</translation>
@@ -2030,7 +2032,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9204836675896933765">१ फाइल बाँकी</translation>
 <translation id="9205933215779845960">उक्त पेज भेट्टाउन सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा <ph name="SEARCH_ENGINE" /> मा खोजी हेर्नुहोस्।</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">कल गर्न सकिएन</translation>
 <translation id="9212845824145208577">योभन्दा तल जान मिल्दैन। यो पेजको अझै तल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="9218430445555521422">डिफल्टका रूपमा सेट गर्नुहोस्</translation>
 <translation id="9219103736887031265">फोटो</translation>

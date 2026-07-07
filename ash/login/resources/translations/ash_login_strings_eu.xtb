@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1005333234656240382">ADB arazketa gaitu nahi duzu?</translation>
+<translation id="1053898984916097744">Hasi zerbait berria edo jaso laguntza prozesuan.</translation>
+<translation id="1061130374843955397">Ongi etorri <ph name="DEVICE_TYPE" /> gailura</translation>
+<translation id="1069778954840159202">Eskuratu kontua automatikoki Android-eko telefonotik</translation>
 <translation id="1076766328672150609">Haurrak PIN bat erabil dezake gailua desblokeatzeko.</translation>
 <translation id="1097658378307015415">Saioa hasi aurretik, sartu gonbidatu gisa <ph name="NETWORK_ID" /> sarea aktibatzeko</translation>
 <translation id="1111932478203988717">Haurrak gailuan saioa hasteko erabil dezake PIN hau</translation>
 <translation id="1122587596907914265">Atondu horma-paper esklusiboak</translation>
 <translation id="1131201598497838573">Eguneratu da haurraren PINa</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> erabiltzailearen txanda da orain</translation>
+<translation id="1148669835763563782">Chromebook-aren eginbiderik berrienak eta segurtasun hobetua lortzeko jaso duzu azken software-eguneratzea. Eguneratze honek konfigurazio-prozesu hobetu bat dauka, Chromebook-a arazorik gabe erabiltzen hasteko.</translation>
 <translation id="1176864681932214421">Sortu irudiak AArekin</translation>
 <translation id="1177073277575830464">Gauzatu da Android-en konfigurazio bizkorra. Jarraitu <ph name="DEVICE_TYPE" /> gailuan konfiguratzen.</translation>
 <translation id="1179902906564467236">Jarraitu zure telefonoko jarraibideei edo erabili Kamera aplikazioa</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1217114730239853757">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, sakatu zuriune-barra.</translation>
 <translation id="1222835797152767346">Ezarri PIN bat, saioa hastea errazteko</translation>
+<translation id="1231426483209637778"><ph name="DEVICE_TYPE" /> gailua erabiltzen duzun hurrengoan, sarea gogoratuko dugu</translation>
+<translation id="1243002225871118300">Aldatu pantailaren eta testuaren tamaina</translation>
+<translation id="1256588359404100567">Aurreko gailuko ezarpena sinkronizatu da.</translation>
 <translation id="1272978324304772054">Erabiltzaile-kontu hau ez da gailua erregistratu den domeinukoa. Beste domeinu batean erregistratu ahal izateko, gailua berreskuratu behar duzu.</translation>
+<translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1307559529304613120">Sistemak ezin izan du biltegiratu gailu honi dagokion APIaren epe luzerako sarbide-tokena.</translation>
+<translation id="1335929031622236846">Erregistratu gailua</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
           <ph name="BR" />
           Chrome OS-eko gailuan arazketa-eginbideak gai ditzakezu bertan kode pertsonalizatua instalatzeko eta probatzeko. Horri esker, honako hauek egin ahalko dituzu:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> sistema berrabiarazi egingo da prozesuan zehar.</translation>
 <translation id="1347625331607114917">Egiaztatu kodea Android-eko telefonoarekin</translation>
 <translation id="1347975661240122359">Bateriaren gutxienez % <ph name="BATTERY_LEVEL" /> duzunean hasiko da eguneratzen.</translation>
+<translation id="1353275871123211385">Guraso-murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke gero, Google Classroom-en eta antzeko tresnetan erabiltzeko.</translation>
 <translation id="1375557162880614858">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
 <translation id="1375938286942050085">Konfiguratu da. Ondoren, prestatu gailua bideojokoetan aritzeko.</translation>
 <translation id="1377600615067678409">Saltatu, momentuz</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Bidali diagnostiko- eta erabilera-datuak.</translation>
 <translation id="1418882096915998312">Abian da enpresen erregistratze-prozesua</translation>
 <translation id="1426410128494586442">Bai</translation>
+<translation id="1427269577154060167">Herrialdea</translation>
 <translation id="1440090277117135316">Osatu da ikastetxeko gailuaren erregistroa</translation>
 <translation id="1473927070149284123">Saiatu berriro edo konektatu sare batera eskuz</translation>
 <translation id="1503556098270577657"><ph name="USER_EMAIL" /> kontuan saioa hasi duzu Android-eko mugikorraren bidez</translation>
+<translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1521442365706402292">Kudeatu ziurtagiriak</translation>
+<translation id="15373452373711364">Saguaren kurtsore handia</translation>
 <translation id="1540605929960647700">Gaitu demo modua</translation>
 <translation id="1572876035008611720">Idatzi zure helbide elektronikoa</translation>
+<translation id="1588438908519853928">Arrunta</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Ados</translation>
 <translation id="1642494467033190216">rootfs bidezko babesa kendu eta gailua berriro abiarazi behar duzu beste arazketa-eginbide batzuk gaitzeko.</translation>
+<translation id="1646045728251578877">Software-eguneratze bat erabilgarri</translation>
+<translation id="1650801028905250434">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatuko dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak &gt; Fitxategiak atalera.</translation>
 <translation id="1668435968811469751">Erregistratu eskuz</translation>
 <translation id="1678919064276516737">Idatzitako helbide elektronikoa eta PINa ez datoz bat</translation>
 <translation id="1692115862433274081">Erabili beste kontu bat</translation>
 <translation id="1695487653372841667">Google-rekin zer datu partekatzen diren kontrola dezakezu. Ezarpenetan alda dezakezu aukera hori.</translation>
 <translation id="169675691788639886">Gailuak SSH zerbitzari bat dauka konfiguratuta. Ez hasi saioa kontuzko informazioa duten kontuekin.</translation>
+<translation id="1700517974991662022">Bisitatuta</translation>
 <translation id="1730666151302379551">Aurreko pasahitza ahaztu zaizu?</translation>
+<translation id="1749645492410897998">Softwarea instalatzen</translation>
 <translation id="177053719077591686">Egin Android-erako aplikazioen babeskopiak Google Drive-n.</translation>
+<translation id="1798832846931769717">Meet-erako Google Beam</translation>
 <translation id="1806335016774576568">Aldatu irekita dagoen beste aplikazio batera</translation>
 <translation id="1826192255355608658">Sinkronizatu Chrome arakatzaileko laster-markak, pasahitzak, historia eta abar</translation>
+<translation id="1826657447823925402">Desgaituta dago gora edo behera alderantziz egiteko aukera</translation>
 <translation id="1831848493690504725">Ezin gara konektatu Google-ra sare honen bidez. Aukeratu beste sare bat, edo begiratu sarearen edo proxyaren ezarpenetan (proxy bat erabiltzen ari bazara).</translation>
 <translation id="1842766183094193446">Ziur demo modua gaitu nahi duzula?</translation>
 <translation id="1845060436536902492">ChromeOS Flex-eko pantaila-irakurgailua, ChromeVox, pertsona itsuek eta ikusmen urriko pertsonek erabiltzen dute nagusiki, pantailan bistaratutako testua irakurtzeko hizketa-sintetizatzaile baten edo braille-pantaila baten bidez. ChromeVox aktibatzeko, sakatu zuriune-barra. ChromeVox aktibatzen denean, txango bizkor bat egingo duzu.</translation>
+<translation id="185766080319917408">Exekutatzeko tresnaren tekla ezkerreko Alt teklaren ezkerraldean dago</translation>
 <translation id="1868617395637139709">Erabili kokapena Android-erako aplikazio eta zerbitzuetan.</translation>
+<translation id="1877377730633446520"><ph name="REQUIRED_SPACE" /> erabiliko dira gutxi gorabehera. Une honetan, <ph name="FREE_SPACE" /> daude libre.</translation>
 <translation id="189035593835762169">Zehaztapenak eta baldintzak</translation>
+<translation id="189358972401248634">Beste hizkuntzak</translation>
+<translation id="1915734383465415025">Denda-zenbakia</translation>
+<translation id="1919096511823372013">Txertatu estekak, emojiak eta beste. Idazteko eta irudiak sortzeko laguntza ere lor dezakezu Google-ren AA bidez.</translation>
+<translation id="1922496389170590548">Haurraren ikastetxeko kontua</translation>
+<translation id="1944528062465413897">Bluetooth bidez konektatzeko parekatze-kodea:</translation>
 <translation id="1987574314042117472">Hautatu eta instalatu aplikazio ezagunak</translation>
 <translation id="1991829061375381344">Ez dituzu behar adina lizentzia erabilgarri Google Meet-en hardware-gailu hau erregistratzeko. Gehiago erosteko, jarri saltzailearekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri saltzailearekin harremanetan.</translation>
+<translation id="200928901437634269">Erabili haurraren Google-ko kontua edo ikastetxeko kontu bat. Era berean, guraso-murriztapenak ezar ditzakezu.</translation>
+<translation id="2013550551806600826">Proba ezazu. Aktibatu edo desaktibatu ezarpena eta egin gora edo behera proba-eremuan ukipen-panela bi hatzekin ukituta. Ezarpenak &gt; Gailua &gt; Sagua eta ukipen-panela atalean ere aurki dezakezu aukera hau.</translation>
+<translation id="2018189721942291407">Ez zaude ziur erregistratu behar duzun?</translation>
 <translation id="2040460856718599782">Arazo bat izan da zu autentifikatzen saiatzean. Egiaztatu bi aldiz saioa hasteko erabili dituzun kredentzialak eta saiatu berriro.</translation>
 <translation id="2052572566310583903">Beste gailuetan instalatuta daukazu</translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> instalatu behar da erregistratu ahal izateko.</translation>
 <translation id="208928984520943006">Edozein unetan orri nagusira joateko, pasatu hatza pantailaren behealdetik gora.</translation>
 <translation id="2090165459409185032">Kontuko informazioa berreskuratzeko, joan hona: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Aukeratu konfiguratu nahi dituzun eginbide gehiago</translation>
+<translation id="2135456203358955318">Lupa ainguratua</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> gailuak Gemini dakar</translation>
 <translation id="2163470535490402084">Konektatu Internetera <ph name="DEVICE_TYPE" /> gailuan saioa hasteko.</translation>
+<translation id="2173801458090845390">Gehitu eskaera-identifikatzailea gailu honetan</translation>
 <translation id="2178585470774851578">ChromeOS Flex-en arazketa-eginbideak gaitzera zoaz. Eginbide horiek sshd daemon konfiguratuko dute, eta USB bidezko unitateetatik abiarazteko aukera gaituko.</translation>
+<translation id="2183570493397356669">Aurrera egiteko botoia desgaituta</translation>
+<translation id="221872881068107022">Gora edo behera alderantziz egitea</translation>
 <translation id="2219081237089444028">Ezarri <ph name="DEVICE_TYPE" /> gailuko pasahitz bat, saioa hastea errazteko</translation>
+<translation id="2229161054156947610">Ordu bat baino gehiago geratzen da</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> erabiltzailearekin saioa hasten duzunean gailuak sarera konektatuta egotea eskatzen du <ph name="DOMAIN_NAME" /> domeinuak</translation>
 <translation id="2317842250900878657">% <ph name="PROGRESS_PERCENT" /> eginda</translation>
 <translation id="2319072477089403627">Android-eko telefonora konektatzen…</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Ezin izango dituzu erabiltzaileak gehitu, Google APIko gakoak falta direlako. Xehetasun gehiago nahi badituzu, ikusi <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Gaitu datuak berreskuratzeko zerbitzua.</translation>
 <translation id="2485681265915754872">Google Play-ren Zerbitzu-baldintzak</translation>
+<translation id="248676429071089168">Pasatu hatza gorantz orria beherantz mugitzeko</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
+<translation id="2538084450874617176">Nor ari da <ph name="DEVICE_TYPE" /> erabiltzen?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> programak ezin izan da konektatu <ph name="NETWORK_ID" /> sarera. Hautatu beste sare bat edo saiatu berriro.</translation>
 <translation id="2565214867520763227">Aktibatu pantaila-irakurgailua</translation>
+<translation id="2569972178052279830">Saltzailearen izena</translation>
+<translation id="257779572837908839">Konfiguratu bileretarako Chromebox gisa</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> plataforma) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Ez, egin aurrera ChromeVox gabe</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Gailu honen kokapena estimatzeko, wifi-sareak, sare mugikorrak eta sentsoreak erabiltzen ditu Google-ren kokapen-zerbitzuak.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Gailu honetan Android-en kokapena desaktibatzeko, joan Ezarpenak &gt; Aplikazioak &gt; Google Play Store &gt; Kudeatu Android-eko hobespenak &gt; Segurtasuna eta kokapena &gt; Kokapena atalera. Halaber, Android-en kokapena zehazteko wifi-sareak, sare mugikorrak eta sentsoreak erabiltzeko aukera desaktiba dezakezu. Horretarako, desaktibatu "Google-ren Kokapen-zehaztasuna" ezarpena menu berean.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Hizkuntza</translation>
 <translation id="2687407218262674387">Google-ren Zerbitzu-baldintzak</translation>
 <translation id="2688196195245426394">Errore bat gertatu da gailua zerbitzariarekin erregistratzean: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Sorta batean dagoen gailu bat da hau eta ezin da erregistratu kiosko eta seinaleztatze moduaren bertsio berrian.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Itxaron, mesedez…</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
 <translation id="2740531572673183784">Ados</translation>
+<translation id="274318651891194348">Teklatu bat bilatzen</translation>
 <translation id="2754825024506485820">Bilatu behar dituzun aplikazioak (direla produktibitaterako, direla aisiarako) Google Play Store-n. Edonoiz instala ditzakezu aplikazioak.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Kokapen-zehaztasuna aktibatuta dagoenean, hari gabeko seinaleak (adibidez, wifi bidezko sarbide-puntuak eta sare mugikorren dorreak) gailuaren sentsoreen datuekin batera (esaterako, abiadura-neurgailua eta giroskopioa) erabiltzen dira, gailuaren kokapen zehatzagoa estimatzeko. Android-erako aplikazio eta zerbitzuek kokapenean oinarritutako eginbideak eskaintzeko erabiltzen dute datu hori. Horretarako, Google-k gailu honen inguruko gailuen sentsoreei eta hari gabeko seinaleei buruzko informazioa biltzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzen laguntzeko.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google-k helburu hauekin erabiltzen du gailu honetatik bildutako informazio hori: kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzea eta, orokorrean, Google-ren zerbitzuak hobetu, eman eta mantentzea. Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta prozesatzen dugu informazio hori. Informazio hori ez da erabiltzen inor identifikatzeko.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Kokapen-zehaztasuna desaktibatzeko, joan gailuaren kokapen-ezarpenetako Ezarpenak &gt; Pribatutasuna eta segurtasuna &gt; Pribatutasun-ezarpenak &gt; Kokapena erabiltzeko baimena &gt; Kokapen-ezarpen aurreratuak atalera. Kokapen-zehaztasuna desaktibatuta badago, ez da bilduko kokapen-zehaztasunarekin lotutako daturik. Android-erako aplikazio eta zerbitzuetarako, IP helbidea soilik erabiltzen da (erabilgarri badago) gailuaren kokapena zehazteko; beraz, baliteke Android-erako aplikazio eta zerbitzuetako (adibidez, Google Maps) kokapenen erabilgarritasunean eta zehaztasunean eragitea.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Dena prest!</translation>
+<translation id="2819519502129272135">Fitxategiak sinkronizatzeko aukera desaktibatuta dago</translation>
 <translation id="2832124733806557606">Haurrak PIN bat erabil dezake saioa hasteko edo gailua desblokeatzeko.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> sarea erabiltzeko, lehendabizi, osatu Interneterako konexioa hemen behean.</translation>
 <translation id="2849767214114481738">Gehitu da PINa</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan honako hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabili diren eta zenbat memoria erabili ohi den.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Baliteke 30 minuturaino behar izatea.</translation>
 <translation id="2893180576842394309">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="2902265136119311513">Arakatu gonbidatu gisa</translation>
 <translation id="2904210161403910217">Zure pasahitza aldatu egin da saioa hasi zenuen azken alditik</translation>
 <translation id="2918484644467055090">Ezin da erregistratu gailua zure kontuari dagokion erakundean, gailua beste erakunde batek kudeatzeko markatuta dagoelako.</translation>
 <translation id="2921081876747860777">Sortu pasahitz bat gailuko datuak babesteko.</translation>
+<translation id="2935654492420446828">Gehitu ikastetxeko kontu bat geroago</translation>
 <translation id="2950666755714083615">Eman izena</translation>
 <translation id="2979966855249721010">Zure interesetan oinarrituta, baliteke aplikazioei buruzko iradokizunak, aholkuak eta abar ikustea</translation>
 <translation id="3012917896646559015">Jarri harremanetan berehala hardware-fabrikatzailearekin ordenagailua konpontze-lantegi batera bidaltzeko.</translation>
+<translation id="3023464535986383522">Hautatu ozen irakurtzeko</translation>
 <translation id="3028371505549235127">Saioa hasteko Google-ko kontuko pasahitza idatzi ordez, <ph name="DEVICE_TYPE" /> gailurako pasahitz bat sor dezakezu</translation>
 <translation id="3033348223765101500">Kontrolatu datuak</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" parekatu da</translation>
 <translation id="3101924772906986970">Chrome arakatzaileko laster-markak, pasahitzak, historia eta abar Google-ko kontuan gordetzen dira</translation>
 <translation id="313205617302240621">Pasahitza ahaztu zaizu?</translation>
 <translation id="3162070126914310576">Une honetan ezin da erregistratu gailua, erakundearen unitatea hasierako erregistro-mugara iritsi delako. Laguntza jasotzeko, jarri administratzailearekin harremanetan.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Nahi baduzu, saioa hasi gabe, <ph name="LINK_START" />gonbidatu gisa araka dezakezu<ph name="LINK_END" /> sarea.</translation>
 <translation id="3177914167275935955">Gailuak Chrome Education Upgrade dakar, baina zure erabiltzaile-izena ez dago erlazionatuta Google for Education-eko ezein konturekin. Google for Education-eko kontu bat sortzeko, joan g.co/workspace/edusignup helbidera beste gailu batean.</translation>
 <translation id="3196912927885212665">Android-eko telefonoan konfiguratzeko, Chromebook-aren Bluetoothak piztuta egon behar du</translation>
+<translation id="322708765617468434">Konfigurazio-prozesua amaitu ondoren ere, beste pertsona bat gehi dezakezu gailuan. Bakoitzak bere erabilera pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="3238192140106069382">Konektatzen eta egiaztatzen</translation>
+<translation id="3251119461199395237">Fitxategiak sinkronizatzea</translation>
+<translation id="325238099842880997">Ezarri oinarrizko arau digitalak haurrak etxean jolas daitezen, sarea araka dezaten eta etxerako lanak egin ditzaten</translation>
+<translation id="3255747772218936245">Instalatu eguneratzea</translation>
 <translation id="3261268979727295785">Haur nagusiagoen kasuan, konfiguratzen amaitzen duzunean gehi ditzakezu guraso-murriztapenak. Arakatu aplikazioan aurkituko duzu guraso-murriztapenei buruzko informazioa.</translation>
 <translation id="3278001907972365362">Google-ko kontuak zure arreta behar du</translation>
 <translation id="3283148363895519428">Konfiguratzen jarraitzeko, jarraitu telefonoko argibideei. Ziurtatu telefonoa inguruan dagoela, eta Bluetootha aktibatuta daukala.</translation>
 <translation id="3382073616108123819">Sistemak ezin izan ditu gailu-identifikatzaileak zehaztu.</translation>
 <translation id="3382200254148930874">Gainbegiratzea gelditzen…</translation>
+<translation id="3384362484379805487">Erabiltzaileek hizkuntza-fitxategiak partekatzen dituzte, diskoko tokia aurrezteko.</translation>
+<translation id="3385092118218578224">% <ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3391721320619127327">ChromeOS Flex-eko pantaila-irakurgailua, ChromeVox, pertsona itsuek eta ikusmen urriko pertsonek erabiltzen dute nagusiki, pantailan bistaratutako testua irakurtzeko hizketa-sintetizatzaile baten edo braille-pantaila baten bidez. ChromeVox aktibatzeko, eduki sakatuta bi bolumen-botoiak 5 segundoz. ChromeVox aktibatzen denean, txango bizkor bat egingo duzu.</translation>
+<translation id="3402585168444815892">Demo moduan erregistratzen</translation>
 <translation id="3433621910545056227">Sistemak ezin izan du ezarri gailuaren instalazio-atributuen blokeoa.</translation>
 <translation id="3435896845095436175">Gaitu</translation>
 <translation id="3462413494201477527">Kontuaren konfigurazioa utzi nahi duzu?</translation>
 <translation id="3473241910002674503">Tableta moduan, erabili botoiak orri nagusira joateko, atzera egiteko eta aplikazioz aldatzeko.</translation>
+<translation id="3473479545200714844">Lupa</translation>
 <translation id="3491669675709357988">Haurraren kontua ez dago konfiguratuta Family Link-en guraso-murriztapenetan. Konfiguratzen amaitzen duzunean gehi ditzakezu guraso-murriztapenak. Arakatu aplikazioan aurkituko duzu guraso-murriztapenei buruzko informazioa.</translation>
+<translation id="350397915809787283">Konturik ez baduzu, hautatu lehenengo aukera eta sortu bat.</translation>
 <translation id="3520824492621090923">Gailuaren erregistroa (kiosko eta seinaleztatze modua) berretsi nahi duzu?</translation>
+<translation id="3547954654003013442">Proxy-ezarpenak</translation>
+<translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> sistemaren hardware-datuak biltzea</translation>
+<translation id="3602290021589620013">Aurrebista</translation>
+<translation id="3607671391978830431">Haur batentzat</translation>
+<translation id="3627320433825461852">Minutu bat baino gutxiago gelditzen da</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) bat hauteman da</translation>
 <translation id="3650753875413052677">Erregistro-errorea</translation>
 <translation id="3661106764436337772">Idatzi bizkorrago eta ziurrago</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3712050472459130149">Kontua eguneratu egin behar da</translation>
 <translation id="3733296813637058299">Guk instalatuko dizkizugu aplikazioak. Google Play Store-n aplikazio gehiago aurki ditzakezu <ph name="DEVICE_TYPE" /> gailurako.</translation>
+<translation id="3740945083753997630">Txikitu pantailaren eta testuaren tamaina</translation>
 <translation id="376841534249795524">Zertarako erabiliko duzu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="3800828618615365228">Chrome-ren eta ChromeOS-ren baldintza gehigarriak</translation>
 <translation id="3828953470056652895">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />Google Play-ren Zerbitzu-baldintzak<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Dagozkion guztiak hauta ditzakezu. <ph name="DEVICE_TYPE" /> gailua konfiguratzen amaitzean, Ezarpenak atalean aurkituko dituzu aukera hauek.</translation>
 <translation id="385051799172605136">Atzera</translation>
+<translation id="3856470183388031602">Erabili Google-ko kontua <ph name="DEVICE_TYPE" /> gailuan</translation>
+<translation id="3893630138897523026">ChromeVox (ahozko argibideak)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> gailua bideojokoak erabiltzeko dago diseinatuta. Orain, "Arakatu" aplikazioa irekiko da; bertan, ehunka bideojoko berri atzi ditzakezu, bai eta bideojokoen eskaintzak ikusi eta gailuak bideojokoetarako dakartzan eginbideak ezagutu ere.</translation>
+<translation id="389901847090970821">Hautatu teklatua</translation>
 <translation id="3910588685973519483">Sortu horma-paperak AA bidez</translation>
+<translation id="3924259174674732591">Pantailaren eta testuaren tamaina: % <ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3983400541576569538">Baliteke aplikazio batzuetako datuak galtzea</translation>
+<translation id="3984159763196946143">Ezin izan da abiarazi demo modua</translation>
 <translation id="3994318741694670028">Ordenagailua gaizki eratutako hardware-identifikatzaile batekin konfiguratuta dago. Ondorioz, ezin da eguneratu ChromeOS Flex azken segurtasun-konponketekin, eta baliteke ordenagailuak <ph name="BEGIN_BOLD" />asmo txarreko erasoak jasotzea<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">PIN kodearen konfigurazioa</translation>
 <translation id="4044883420905480380">Android-eko telefonoaren bidez wifira konektatu zara eta <ph name="USER_EMAIL" /> erabiltzailearekin saioa hasi duzu</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Google Chrome eta Chrome OS-ren zerbitzu-baldintza gehigarriak</translation>
 <translation id="41365691917097717">Aurrera eginez gero, ADB arazketa gaituko da Android-erako aplikazioak sortu eta probatzeko. Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ez da balio duen erakunde batekoa. Jarri administratzailearekin harremanetan. Administratzaile bat bazara, joan g.co/ChromeEnterpriseAccount helbidera erakundea konfiguratzeko.</translation>
+<translation id="4209092469652827314">Handia</translation>
+<translation id="4213918571089943508">Haurraren Google-ko kontua</translation>
+<translation id="4228071595943929139">Erabili erakundearen helbide elektronikoa</translation>
 <translation id="4232484478444192782">Android-eko telefonoak behar duzuna dauka. Wifia eta pasahitza transferitzen ari dira.</translation>
 <translation id="4242145785130247982">Ezin dira erabili bezero-ziurtagiri bat baino gehiago</translation>
 <translation id="4242577469625748426">Ezin izan dira instalatu gidalerroaren ezarpenak gailuan: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Gailuari kiosko edo seinaleztatzeko moduan soilik funtzionatzeko baimena ematen dion Kiosko- eta seinaleztatze-bertsio berri bat erabiliko duzu. Erabiltzaileek gailuan saioa hastea nahi baduzu, itzuli eta erregistratu Chrome Enterprise Upgrade bidez.</translation>
 <translation id="4287157641315808225">Bai, aktibatu ChromeVox</translation>
 <translation id="4289732974614035569">Aukeratu PIN bat</translation>
+<translation id="4291265871880246274">Saioa hasteko leihoa</translation>
+<translation id="4305817255990598646">Aldatu</translation>
 <translation id="4309165024397827958">Eman gailuaren kokapena erabiltzeko baimena kokapena erabiltzeko baimena duten Android-erako aplikazio eta zerbitzuei. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
 <translation id="4317733381297736564">Aplikazioko erosketak ditu</translation>
 <translation id="4341905082470253054">TPMaren egoera egiaztatzen…</translation>
 <translation id="4370975561335139969">Idatzitako helbide elektronikoa eta pasahitza ez datoz bat</translation>
 <translation id="4373418556073552953">Hasi saioa Android-eko telefonoarekin</translation>
+<translation id="4378556263712303865">Gailuaren eskaera</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, besteak beste: ChromeOS-en gertatzen diren hutsegiteak, zein eginbide erabiltzen dituzun, zenbat memoria erabili ohi duzun eta Android-erako aplikazioen diagnostiko- eta erabilera-datuak. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei).<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Google-ko kontuko Sareko eta aplikazioetako jarduerak ezarpena aktibatuta badago, baliteke Android-eko datuak Google-ko kontuan gordetzea. Datuak ikusteko edo ezabatzeko, edo kontuaren ezarpenak aldatzeko, joan account.google.com helbidera.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Bluetooth eta USB bidezko gailuak bilatzen</translation>
 <translation id="4403266582403435904">Leheneratu datuak erraz edo aldatu gailuz edozein unetan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuko pasahitza erabilita.</translation>
 <translation id="4410545552906060960">Pasahitz baten ordez, erabili zenbaki bat (PINa) gailua desblokeatzeko. PINa geroago ezartzeko, joan Ezarpenak atalera.</translation>
 <translation id="4415213869328311284">Prest zaude <ph name="DEVICE_TYPE" /> gailua erabiltzeko.</translation>
+<translation id="443031431654216610">Erabili zenbakiak soilik</translation>
+<translation id="4448560527907365660">Gorde eta ikusi gehiago</translation>
 <translation id="4449948729197510913">Erabiltzaile-izen hori erakundearen enpresako kontuari dagokio. Kontu horretan gailuak erregistratzeko, egiaztatu domeinuaren jabetza administrazio-kontsolan. Egiaztapena egiteko, administrazio-pribilegioak eduki beharko dituzu kontuan.</translation>
 <translation id="4450974146388585462">Diagnostikatu</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> sistemak TPM aktibo bat hauteman du; haren bidez, segurtasun handiagoz gorde daitezke datuak.</translation>
+<translation id="4472298120638043495">Google-ko kontuaren hizkuntza hobetsia erabil dezakezu (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
+<translation id="450867954911715010">Erabilerraztasun-ezarpenak</translation>
+<translation id="4519605771716872386">Fitxategiak sinkronizatzeko aukera aktibatuta dago</translation>
+<translation id="4531924570968473143">Nor gehitu nahi duzu <ph name="DEVICE_TYPE" /> gailuan?</translation>
 <translation id="4566170377336116390">Erregistroa amaitu ondoren moduz aldatu nahi baduzu, gailuaren jatorrizko datuak berrezarri beharko dituzu (Powerwash bidez).</translation>
 <translation id="4567512141633030272">Saioa hasteko okerreko modua hautatu duzu?</translation>
+<translation id="4567533462991917415">Konfiguratzen amaitu ondoren jende gehiago gehi dezakezu. Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="4568213207643490790">Gailu honetan ezin da erabili Google-ko konturik.</translation>
 <translation id="4611759022973144129">Pasahitz hau erabil dezakezu <ph name="DEVICE_TYPE" /> gailuan saioa hasteko.</translation>
+<translation id="4634575639321169635">Konfiguratu gailua lanerako edo erabilera pertsonalerako</translation>
+<translation id="4689235506267737042">Aukeratu demo moduaren hobespenak</translation>
 <translation id="4727847987444062305">Gonbidatuentzako saio kudeatua</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="473936925429402449">Hautatuta, <ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ez da balio duen Google for Education-eko kontu bat. Jarri administratzailearekin harremanetan. Administratzailea bazara, joan g.co/workspace/edusignup helbidera erakundea konfiguratzeko.</translation>
+<translation id="4780558987886269159">Lanerako</translation>
 <translation id="4806457879608775995">Berrikusi baldintza hauek eta kontrolatu zure datuak</translation>
+<translation id="4814327014588285482">Saltatu eta gogorarazi geroago</translation>
 <translation id="4830502475412647084">Sistema eragilearen eguneratzea instalatzen</translation>
 <translation id="4837926214103741331">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren jabearekin harremanetan.</translation>
+<translation id="4844333629810439236">Bestelako teklatuak</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
+<translation id="4867272607148176509">Gurasoek aplikazioak onartu edo blokeatzeko, denbora-mugak ezartzeko eta sarea arakatzeko modua kontrolatzeko aukera dute. Ikastetxeko kontu bat gehi daiteke gero, ikastetxeko baliabide gehienak erabiltzeko.</translation>
 <translation id="4877652723592270843">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, eduki sakatuta bi bolumen-botoiak bost segundoz.</translation>
 <translation id="4899696330053002588">Iragarkiak ditu</translation>
 <translation id="49027928311173603">Zerbitzarirako deskargatu diren gidalerroek ez dute balio: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> da autentifikazio-zerbitzuaren ostalaria</translation>
 <translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
+<translation id="4987944280765486504">Deskarga osatzean, Chromebook-a berrabiaraziko da, eta konfiguratzen jarraitu ahal izango duzu.</translation>
 <translation id="5029287942302939687">Ezarri da pasahitza</translation>
 <translation id="503155457707535043">Deskargatzen ari dira aplikazioak</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="5062930723426326933">Ezin izan da saioa hasi. Konektatu Internetera eta saiatu berriro.</translation>
+<translation id="5085162214018721575">Eguneratzeak bilatzen</translation>
 <translation id="5097306410549350357">Lortu kokapena erabiltzeari buruzko informazio gehiago</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Txateatu Gemini-rekin, Google-ren AA bidez idazten, antolatzen, ikasten eta abar egiten hasteko.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Konfiguratu ondoren, hasi Gemini erabiltzen pantailaren behealdean agertzen den apaleko Gemini aplikazioa hautatuta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Konektatu <ph name="DEVICE_TYPE" /> gailua energia-iturri batera.</translation>
+<translation id="5145876360421795017">Ez erregistratu gailua</translation>
 <translation id="5147516217412920887">Kodea egiaztatzeko, jarraitu telefonoko argibideei</translation>
 <translation id="5160857336552977725">Hasi saioa <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> sistema berrabiarazi egingo da prozesuan zehar.</translation>
+<translation id="5215502535566372932">Hautatu herrialdea</translation>
 <translation id="5234523649284990414">ChromeOS-eko pantaila-irakurgailua, ChromeVox, pertsona itsuek eta ikusmen urriko pertsonek erabiltzen dute nagusiki, pantailan bistaratutako testua irakurtzeko hizketa-sintetizatzaile baten edo braille-pantaila baten bidez. ChromeVox aktibatzeko, sakatu zuriune-barra. ChromeVox aktibatzen denean, txango bizkor bat egingo duzu.</translation>
 <translation id="523505283826916779">Erabilerraztasun-ezarpenak</translation>
 <translation id="5240931875940563122">Hasi saioa Android-eko telefonoan</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Erregistratu enpresa-gailu bat</translation>
 <translation id="5372529912055771682">Sistema eragilearen bertsio honek ez du onartzen erregistratzeko adierazitako modua. Egiaztatu bertsiorik berriena erabiltzen ari zarela eta saiatu berriro.</translation>
 <translation id="5397378439569041789">Erregistratu kiosko moduan edo seinaleztatze moduan funtzionatzen duen gailu bat</translation>
+<translation id="5397794290049113714">Zu</translation>
 <translation id="5411022484772257615">Ezin izan da osatu ikastetxeko gailuaren erregistroa</translation>
 <translation id="5413640305322530561">Lortu diagnostiko- eta erabilera-datuei buruzko informazio gehiago</translation>
 <translation id="542750953150239272">Halaber, aurrera eginez gero, onartu egingo duzu litekeena dela Google-ren, operadorearen edo fabrikatzailearen eguneratzeak eta aplikazioak automatikoki deskargatu eta instalatzea, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea.</translation>
 <translation id="542948651837270806">Trusted Platform Module firmwarearen eguneratze bat instalatu behar da. Ikusi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Arazo bat izan da saioa hastean</translation>
+<translation id="5453829744223920473">Haurrak ikastetxean darabiltzan aplikazio, laster-marka eta baliabide guztiak erabil ditzake, ikasgelan bezalaxe. Ikastetxeak ezartzen ditu oinarrizko arauak.</translation>
 <translation id="5463450804024056231">Erregistratu <ph name="DEVICE_TYPE" />-ari buruzko mezu elektronikoak jasotzeko</translation>
 <translation id="5473099001878321374">Aurrera eginez gero, onartu egingo duzu litekeena dela gailuak automatikoki deskargatu eta instalatzea Google-ren, haurraren operadorearen eta fabrikatzailearen eguneratzeak eta aplikazioak, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea.</translation>
+<translation id="5502915260472117187">Haur bat</translation>
 <translation id="5511823366942919280">Ziur gailua "Shark" gailu gisa ezarri nahi duzula?</translation>
+<translation id="5513807280330619196">Kalkulagailua</translation>
 <translation id="5527474464531963247">Beste sare bat ere aukera dezakezu.</translation>
 <translation id="5539070192556911367">Ezin da konektatu Google-ra</translation>
+<translation id="5549511085333906441">Aukeratu konfigurazioa</translation>
 <translation id="557722062034137776">Gailua berrezartzeak ez die eragingo zure Google-ko kontuei edo kontu horiekin sinkronizatutako datuei. Hala ere, gailuan bertan gorde dituzun fitxategi guztiak ezabatuko dira.</translation>
 <translation id="5626172233890210551">Horren ordez, erabili pasahitza</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Ahalik eta zerbitzurik onena eskaintzeko, gailuei buruzko hardware-datuak biltzen ditu <ph name="DEVICE_OS" /> sistemak, eta Google-rekin partekatzen ditu instalatu behar diren eguneratzeak zehazteko. Nahi baduzu, datuok beste helburu batzuetarako erabiltzeko baimena eman diezaiokezu Google-ri, hala nola laguntza-zerbitzua eskaintzeko, eta <ph name="DEVICE_OS" /> eta hark eskainitako zerbitzua hobetzeko.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Eguneratzeak iragazteko Google-ra zer datu bidaliko diren ikusteko, hasi saioa gailuan eta ikusi chrome://system agindua sakatzean agertzen diren chromeosflex_ gisa zerrendatutako eremuak. Datuak Google-rekin partekatzea zer beste kasutan aukeratu zenuen ere ikusiko duzu bertan.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> sistemak Google-rekin partekatzen dituen datuei eta datu horiek erabiltzeko moduari buruzko xehetasun gehiago lortzeko, joan g.co/flex/HWDataCollection helbidera.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> erabiltzeko, agian <ph name="LINK_START" />sarearen saio-hasierako orrira<ph name="LINK_END" /> joan beharko zara; segundo gutxi barru irekiko da hori automatikoki. Hala ez bada, ezin izango duzu sarea erabili.</translation>
 <translation id="5655296450510165335">Gailuaren erregistroa</translation>
+<translation id="565899488479822148">Azken eguneratzea instalatzen</translation>
 <translation id="5659964844710667266">Sortu pasahitz bat <ph name="DEVICE_TYPE" /> honetarako</translation>
 <translation id="5684661240348539843">Aktibo-identifikatzailea.</translation>
 <translation id="5684950556880280580">Eguneratu da pasahitza</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Ezin izan da eguneratu fitxategi batzuk kaltetuta zeudelako. Sinkronizatutako fitxategiak gordeta geratu dira.</translation>
 <translation id="5770125698810550803">Erakutsi nabigazio-botoiak</translation>
 <translation id="5799478978078236781">Lortu <ph name="DEVICE_TYPE" /> gailuari buruzko aholkuak, eskaintzak eta berritasunak, eta partekatu zure iritzia.</translation>
+<translation id="5800703268655655701">Hautatu gai argia edo iluna</translation>
 <translation id="5804259315582798390">Ezin izan da gaitu gailuko datuak berreskuratzeko aukera</translation>
 <translation id="5810809306422959727">Ezin dituzu ezarri guraso-murriztapenak kontu honetan</translation>
+<translation id="5834581999798853053"><ph name="TIME" /> minutu inguru geratzen dira</translation>
 <translation id="5852112051279473187">Arazo larriren bat gertatu da gailua erregistratzean. Saiatu berriro edo jarri harremanetan laguntza-zerbitzuko ordezkariren batekin.</translation>
 <translation id="5852137567692933493">Berrabiarazi eta berrezarri fabrikako ezarpenak Powerwash bidez</translation>
 <translation id="5856721540245522153">Gaitu arazketa-eginbideak</translation>
+<translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
+<translation id="5870086504539785141">Itxi erabilerraztasun-menua</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5895335062901455404">Gordetako hobespenak eta jarduerak prest egongo dira ChromeOS Flex-eko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
+<translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5919305207330938913">Google-ren <ph name="BEGIN_LINK" />Pribatutasun-gidalerroei<ph name="END_LINK" /> jarraikiz erabiliko dira bildutako datu guztiak.</translation>
 <translation id="5932441198730183141">Ez dituzu behar adina lizentzia erabilgarri Google Meet-en hardware-gailu hau erregistratzeko. Lizentzia gehiago erosteko, jarri salmenta-sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
+<translation id="5948536763493709626">Konektatu teklatu edo sagu bat, edo jarraitu gailuak konfiguratzen ukipen-pantaila erabilita. Bluetooth bidezko gailuak erabiltzen ari bazara, ziurtatu parekatzeko prest daudela.</translation>
 <translation id="5959471481388474538">Sarea ez dago erabilgarri</translation>
 <translation id="6016178549409952427">Joan <ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
+<translation id="6016972670657536680">Hizkuntza eta teklatua hautatzeko botoia. <ph name="LANGUAGE" /> daukazu hautatuta.</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
 <translation id="6055544610007596637">Instalatu <ph name="DEVICE_TYPE" /> gailurako aplikazioak Google Play Store-tik</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Utzi Google-ri hardware-datuak erabiltzen <ph name="DEVICE_OS" /> hobetzeko. Aukera hau baztertu arren, datuak Google-ra bidaliko dira eguneratze egokiak zehazteko. Alabaina, ez dira ez gordeko, ez beste ezertarako erabiliko. Lortu informazio gehiago g.co/flex/HWDataCollection webgunean.</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> luzapenaren bidezko saio-hasiera</translation>
 <translation id="6314819609899340042">Behar bezala gaitu dituzu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailuko arazketa-eginbideak.</translation>
+<translation id="6343262564968371601">Aurkitu bilatzen ari zarena Google-n, fitxategietan, aplikazioetan eta beste toki batzuetan bilatuz</translation>
 <translation id="635609604405270300">Mantendu gailua piztuta</translation>
 <translation id="6367097275976877956">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, sakatu zuriune-barra.</translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="6380143666419481200">Onartu eta jarraitu</translation>
 <translation id="640457954117263537">Erabili kokapena ChromeOS-erako eta Android-erako aplikazio eta zerbitzuetarako.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabiltzen dituzun eta zenbat memoria erabili ohi duzun.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Instalatu ezinbesteko eguneratzea</translation>
+<translation id="6478849105642611893">Txertatze bizkorra tekla tabuladorearen azpian dago</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Hautatu hizkuntza</translation>
 <translation id="6495266441917713704">Ezin da transferitu wifia</translation>
 <translation id="6515620015470298987">Ezin izan da hasi saioa, gailuaren konfigurazioaren egiaztapen-arazo batengatik. Leheneratu <ph name="DEVICE_TYPE" /> Powerwash bidez eta saiatu berriro.</translation>
 <translation id="6519689855001245063">Egokitasuna egiaztatzen</translation>
 <translation id="6532527800157340614">Ezin izan da hasi saioa, ezin izan delako eskuratu sarbide-tokena. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
+<translation id="653920215766444089">Gailu erakuslea bilatzen</translation>
 <translation id="65513682072153627">Ezarpen edo eginbide bat administratzaileak kudeatzen badu agertuko da "Kudeatua" dela dioen ikonoa.</translation>
+<translation id="6561726789132298588">sartu</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> da <ph name="USER_EMAIL" /> kontuaren kudeatzailea. Google-ko beste kontu batekin guraso-murriztapenak erabiltzeko, amaitu saioa konfigurazioa osatu ondoren. Gero, hautatu "Gehitu pertsona bat" saioa hasteko pantailan.</translation>
 <translation id="6642720633335369752">Aplikazioaren leiho ireki guztiak ikusteko, pasatu hatza behetik gorantz eta eduki pantaila sakatuta.</translation>
 <translation id="6648911618876616409">Ezinbesteko eguneratze bat instalatzeko prest dago. Hasi saioa instalatzen hasteko.</translation>
 <translation id="6671497123040790595">Kudeaketa konfiguratzen ari da <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Konektatu da gailu erakuslea</translation>
 <translation id="667752334740867460">Wifiari buruzko informazioa jasotzen…</translation>
 <translation id="6680442031740878064">Libre: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> berreskura dezakezu, baina gailuko datuak ezabatuko dira.</translation>
 <translation id="6748980958975836188">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Argazkiak</translation>
+<translation id="6754918760968695779">Txertatze bizkorra</translation>
 <translation id="6789834167207639931">Berreskuratze-prozesua amaitzeko, idatzi berriro Google-ko kontuko pasahitza</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, besteak beste: ChromeOS-en gertatzen diren hutsegiteak, zein eginbide erabiltzen diren, zenbat memoria erabili ohi den eta Android-erako aplikazioen diagnostiko- eta erabilera-datuak. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei).<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan haurraren ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Haurraren Google-ko kontuaren Sareko eta aplikazioetako jarduerak ezarpena aktibatuta badago, baliteke haurraren datuak haren Google-ko kontuan gordetzea. Lortu ezarpen horiei buruzko informazio gehiago eta haiek doitzeko argibideak families.google.com helbidean.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Zure <ph name="DEVICE_TYPE" /> gailurako aplikazio nagusiak</translation>
 <translation id="682971198310367122">Google-ren Pribatutasun-gidalerroak</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
 <translation id="6839916869147598086">Aldatu egin da saioa hasteko modua</translation>
+<translation id="6852529053326738838">Kontuak baldintzak betetzen dituen ala ez jakiteko, galdetu erakundeari, edo erregistratu zure laneko helbide elektronikoarekin.</translation>
+<translation id="6867671714894555998">Egin gauzak bizkor teklatu berriarekin</translation>
 <translation id="6883319974225028188">Sistemak ezin izan du gorde gailuaren konfigurazioa.</translation>
+<translation id="6888831646723563669"><ph name="DEVICE_TYPE" /> gailuaren eginbide berri guztiez gozatzeko, konekta zaitez</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Aplikazioek gordetako datu guztiak sartzen dira aplikazioetako datuetan (garatzaileen ezarpenen arabera), kontaktuak, mezuak eta argazkiak barne. Babeskopiek ez dute hartzen tokirik haurraren Drive-ko biltegian.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezarpenak atalean desaktiba dezakezu zerbitzu hori.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6918733588290914545">Konfiguratu bizkor Android-eko telefonoarekin</translation>
 <translation id="6920473853105515518">Ziurtatu <ph name="DEVICE_TYPE" /> Internetera konektatuta dagoela eta saiatu berriro. Bestela, play.google/play-terms beste gailu batean ireki dezakezu.</translation>
+<translation id="6929126689972602640">Ez dira onartzen guraso-murriztapenak ikastetxeko kontuetan. Ikastetxeko kontu bat gehitu nahi izanez gero Google Classroom-en eta antzeko webguneetan etxerako lanak egin ahal izateko, lehendabizi hasi saioa haurraren kontu pertsonalean. Geroago, konfigurazioan gehitu ahalko duzu ikastetxeko kontua.</translation>
+<translation id="6935031746833428401">Lortu informazio gehiago gailu-kudeatzaileari buruz</translation>
+<translation id="6950351336108213154">Gailuaren periferikoak eguneratzen</translation>
 <translation id="6955698182324067397">Chrome OS-ren arazketa-eginbideak gaitzera zoaz. Eginbide horiek sshd daemon konfiguratuko dute, eta USB bidezko unitateetatik abiarazteko aukera gaituko.</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6969216690072714773">Idatzi gailu honekin erlazionatu nahi duzun informazio berria edo eguneratu lehendik dagoena.</translation>
@@ -343,23 +485,37 @@
         funtzionatzen duela egiaztatzeko. Proxy-zerbitzaririk
         erabili behar duzula uste ez baduzu, aldatu <ph name="LINK_START" />proxy-ezarpenak<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Aktibatu telefonoaren Bluetootha eta wifia</translation>
+<translation id="6996438701394974959">Handitu pantailaren eta testuaren tamaina</translation>
+<translation id="6998793565256476099">Erregistratu gailua bideokonferentziak egiteko</translation>
 <translation id="7025082428878635038">Keinuekin nabigatzeko modu berri bat aurkeztu nahi dizugu</translation>
 <translation id="7034692021407794547">Fakturazio-pribilegioak dituzten administratzaileek Google Meet-en hardwarearen Zerbitzu-baldintzak onartu behar dituzte lehendabizi administrazio-kontsolako Google Meet-en hardwarea atalean.</translation>
+<translation id="7039951224110875196">Sortu Google-ko kontu bat haur batentzat</translation>
 <translation id="7065223852455347715">Erakundeetan erregistratzea galarazten duen modu batean dago blokeatuta gailua. Gailua erregistratzeko, gailua berreskuratzeko prozesua gauzatu behar duzu.</translation>
+<translation id="7066572364168923329">Aukeratu <ph name="DEVICE_TYPE" /> gailuaren konfigurazioa</translation>
 <translation id="7077829361966535409">Ezin izan da kargatu saioa hasteko orria oraingo proxy-ezarpenekin. <ph name="GAIA_RELOAD_LINK_START" />Saiatu saioa berriro hasten<ph name="GAIA_RELOAD_LINK_END" /> edo erabili beste <ph name="PROXY_SETTINGS_LINK_START" />proxy-ezarpen<ph name="PROXY_SETTINGS_LINK_END" /> batzuk.</translation>
 <translation id="7088674813905715446">Administratzaileak gailuaren hornikuntza kendu du. Erregistratzeko gaitzeko, eskatu administratzaileari gailua zain ezartzeko.</translation>
 <translation id="7114054701490058191">Pasahitzak ez datoz bat</translation>
 <translation id="7135729336746831607">Bluetootha aktibatu nahi duzu?</translation>
 <translation id="7141105143012495934">Ezin izan da hasi saioa, ezin izan direlako eskuratu kontuaren xehetasunak. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
+<translation id="7171259390164035663">Ez erregistratu</translation>
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
 <translation id="7202337678781136582">Eskaneatu QR kodea Android-eko telefonoarekin</translation>
+<translation id="7228854227189381547">Ez aldatu</translation>
+<translation id="7230881857327093958">Konfigurazioa amaitu ostean aplikatuko dira aldaketak</translation>
 <translation id="7260186537988033909">Osatu da gailuaren erregistroa (kiosko eta seinaleztatze modua)</translation>
+<translation id="7284411326658527427">Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="7290242001003353852">Saioa hasteko zerbitzuaren ostalaria <ph name="SAML_DOMAIN" /> da eta zure kamera erabiltzen ari da.</translation>
+<translation id="7311005168897771689">Atzitu Google Drive-ko fitxategiak Interneteko konexiorik ez daukazunean</translation>
 <translation id="7317831949569936035">Ikastetxeko gailuaren erregistroa</translation>
+<translation id="7326004502692201767">Konfiguratu <ph name="DEVICE_TYPE" /> hau haur batentzat</translation>
+<translation id="732659786514229249">Gailua erakundean erregistratu nahi duzu?</translation>
 <translation id="7329154610228416156">Ezin izan da hasi saioa, segurua ez den URL bat (<ph name="BLOCKED_URL" />) erabiltzeko konfiguratu delako. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7345706641791090287">Berretsi pasahitza</translation>
+<translation id="7348093485538360975">Pantailako teklatua</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
+<translation id="7403642243184989645">Baliabideak deskargatzen</translation>
+<translation id="7406912950279255498">Koloreak alderantzikatzeko modua</translation>
 <translation id="7416263748877373774">Ezin dira kargatu Zerbitzu-baldintzak. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="7475742997309661417">ChromeOS-eko pantaila-irakurgailua, ChromeVox, pertsona itsuek eta ikusmen urriko pertsonek erabiltzen dute nagusiki, pantailan bistaratutako testua irakurtzeko hizketa-sintetizatzaile baten edo braille-pantaila baten bidez. ChromeVox aktibatzeko, eduki sakatuta bi bolumen-botoiak 5 segundoz. ChromeVox aktibatzen denean, txango bizkor bat egingo duzu.</translation>
 <translation id="7476454130948140105">Ez daukazu eguneratzeko behar adina bateria (% <ph name="BATTERY_PERCENT" />)</translation>
@@ -369,39 +525,61 @@
 <translation id="7506541170099744506">Erregistratu duzu <ph name="DEVICE_TYPE" /> enpresak kudeatzeko.</translation>
 <translation id="7509097596023256288">Kudeaketa konfiguratzen</translation>
 <translation id="7543104066686362383">Gaitu arazketa-eginbideak <ph name="IDS_SHORT_PRODUCT_NAME" /> gailuan</translation>
+<translation id="7544227555407951270">Erregistratu gailua</translation>
+<translation id="7549434883223124329">Gailuaren hizkuntza aldatu nahi duzu?</translation>
 <translation id="7553242001898162573">Idatzi pasahitza</translation>
 <translation id="7556242789364317684">Tamalez, <ph name="SHORT_PRODUCT_NAME" /> programak ezin ditu berreskuratu zure ezarpenak. Errorea konpontzeko, <ph name="SHORT_PRODUCT_NAME" /> programak gailuaren fabrikako ezarpenak berrezarri behar ditu Powerwash erabilita.</translation>
 <translation id="7560756177962144929">Sinkronizatu <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="7571643774869182231">Ez dago eguneratzeko behar adina toki</translation>
+<translation id="7616214729753637086">Gailua erregistratzen…</translation>
 <translation id="7622114377921274169">Kargatzen.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta saioa hasteko eskatzen du hura erabiltzen duzun bakoitzean.</translation>
 <translation id="7639914187072011620">Ezin izan da eskuratu SAMLko birbideratze URLa zerbitzaritik</translation>
 <translation id="7643117827468520640">Berrikusi baldintza hauek</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Aplikazioek gordetako datu guztiak sartzen dira aplikazioetako datuetan (garatzaileen ezarpenen arabera), kontaktuak, mezuak eta argazkiak barne. Babeskopiek ez dute hartzen tokirik Drive-ko biltegian.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezarpenak atalean desaktiba dezakezu zerbitzu hori.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7659584679870740384">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
 <translation id="7660116474961254898">Jarraitu telefonoko argibideei</translation>
 <translation id="7661451191293163002">Ezin izan da lortu erregistro-ziurtagiri bat.</translation>
+<translation id="7666531788977935712">Aurrera egiteko botoia gaituta</translation>
 <translation id="7671139479636735732">Egin klik eskuineko botoiarekin ideiak erraz irudikatzeko</translation>
 <translation id="770831926727930011">Aurreko pasahitzaren bidez daude babestuta gailuko datuak. Haiek berreskuratzeko, idatzi aurreko pasahitza.</translation>
 <translation id="7722040605881499779">Eguneratzeko behar dena: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" gailuarekin parekatzen…</translation>
+<translation id="7746045113967198252">Handitu edo txikitu pantailako elementuak, testua barne. Ezarpenak &gt; Gailua &gt; Pantailak atalean ere aurki dezakezu aukera hau.</translation>
 <translation id="7760176388948986635">Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Inor identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta.</translation>
 <translation id="7784875615510899699">Ez dituzu behar adina lizentzia erabilgarri Google Beam-en gailu hau erregistratzeko. Gehiago erosteko, jarri saltzailearekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri saltzailearekin harremanetan.</translation>
+<translation id="7791269138074599214">Idazketa-metodoa</translation>
+<translation id="7791436592012979144">Gaituta dago gora edo behera alderantziz egiteko aukera</translation>
 <translation id="7792012425874949788">Arazo bat izan da saioa hastean</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7803657407897251194">Android-eko gailuarekin konfiguratzen jarraitzeko, konektatu <ph name="DEVICE_TYPE" /> gailua sare batera</translation>
+<translation id="7842692330619197998">Kontu bat sortu behar baduzu, joan g.co/ChromeEnterpriseAccount helbidera.</translation>
 <translation id="7851457902707056880">Jabearen kontuarekin soilik has daiteke saioa. Berrabiarazi eta hasi saioa jabearen kontuarekin. Makina automatikoki berrabiaraziko da 30 segundo barru.</translation>
 <translation id="7870730066603611552">Berrikusi sinkronizazio-aukerak konfigurazioaren ondoren</translation>
 <translation id="7883792253546618164">Edonoiz ken dezakezu harpidetza.</translation>
+<translation id="7887864092952184874">Bluetooth sagua parekatuta dago</translation>
 <translation id="7906440585529721295">Gailuko datuak ezabatuko dira</translation>
+<translation id="7910725946105920830">Erabili Google-ko kontu pertsonala</translation>
+<translation id="7918257978052780342">Erregistratu</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan honako hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabili diren eta zenbat memoria erabili ohi den.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan haurraren ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Aukera aurreratuak</translation>
 <translation id="7943311690198910993">Eguneratu da saioa hasteko metodoa</translation>
 <translation id="795240231873601803">Erabili enpresako erregistroa laneko eta ikastetxeko kontuetarako</translation>
 <translation id="7968982339740310781">Ikusi xehetasunak</translation>
 <translation id="7975504106303186033">Chrome Education-eko gailu hau G Suite for Education-eko kontu batekin erregistratu behar duzu. Beste kontu bat erregistratzeko, joan g.co/workspace/edusignup helbidera.</translation>
+<translation id="7980084013673500153">Erreproduzigai-identifikatzailea: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Errorea konpontzeko, berrabiarazi gailua.</translation>
 <translation id="7990958035181555539">Transferitu wifia Android-eko telefonotik automatikoki</translation>
+<translation id="8022466874160067884">Idatzi Google-ko kontua eta pasahitza</translation>
+<translation id="8049029041626250638">Konektatu teklatu edo sagu bat. Bluetooth bidezko gailuak erabiltzen ari bazara, ziurtatu parekatzeko prest daudela.</translation>
 <translation id="8054563304616131773">Idatzi balio duen helbide elektroniko bat</translation>
+<translation id="8054921503121346576">USB teklatua konektatu da</translation>
 <translation id="8065144531309810062">Erabili Google-ren AA sormena eta produktibitatea handitzeko</translation>
+<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" gailuarekin parekatu?</translation>
 <translation id="8097959162767603171">Administratzaileak Zerbitzu-baldintzak onartu behar ditu administrazio-kontsolaren Chrome-ko gailuen zerrendan.</translation>
 <translation id="8098616321286360457">Sarera konektatuta egon behar duzu</translation>
 <translation id="8129265306888404830">Zure erakundeko helbide elektronikoa erabiltzeko (<ph name="EMAIL_DOMAIN" />), enpresan erregistratu behar zara. Gailua erabilera pertsonalerako behar baduzu, hasi saioa Google-ko kontuarekin.</translation>
@@ -409,28 +587,37 @@
 <translation id="8146177459103116374">Dagoeneko gailu honetan erregistratu bazara, <ph name="LINK2_START" />lehendik zegoen erabiltzaile gisa has dezakezu saioa<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Ezin izan da hasi saioa. Jarri harremanetan administratzailearekin edo saiatu berriro.</translation>
 <translation id="8147346945017130012">Lagundu Chrome eta ChromeOS-ren eginbideak eta funtzionamendua hobetzen Google-ri hutsegite-txostenak, diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
+<translation id="8152760814912191567">Zoom-erako Google Beam</translation>
 <translation id="815491593104042026">Autentifikazioak huts egin du segurua ez den URL bat (<ph name="BLOCKED_URL" />) erabiltzeko konfiguratu delako. Jarri administratzailearekin harremanetan.</translation>
 <translation id="8157704005178149728">Gainbegiratzea konfiguratzen</translation>
 <translation id="8174047975335711832">Gailuaren informazioa</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Gailu honen kokapena estimatzeko, wifi-sareak, sare mugikorrak eta sentsoreak erabiltzen ditu Google-ren kokapen-zerbitzuak.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Gailuan Android-en kokapena desaktibatzeko, joan Ezarpenak &gt; Aplikazioak &gt; Google Play Store &gt; Kudeatu Android-eko hobespenak &gt; Segurtasuna eta kokapena &gt; Kokapena atalera. Halaber, Android-en kokapena zehazteko wifi-sareak, sare mugikorrak eta sentsoreak erabiltzeko aukera desaktiba dezakezu. Horretarako, desaktibatu "Google-ren Kokapen-zehaztasuna" ezarpena menu berean.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Idatzi berriro pasahitza <ph name="DEVICE_TYPE" /> gailuko profila eguneratzeko.</translation>
 <translation id="8239032431519548577">Osatu da enpresaren erregistroa</translation>
 <translation id="8241806945692107836">Gailuaren konfigurazioa zehazten…</translation>
 <translation id="8242426110754782860">Egin aurrera</translation>
 <translation id="826905130698769948">Bezero-ziurtagiriak ez du balio</translation>
+<translation id="8271379370373330993">Hurrengo pausoak gurasoek egin behar dituzte. Kontua konfiguratzen amaitutakoan itzuli ahalko diozu <ph name="DEVICE_TYPE" /> gailua haurrari.</translation>
 <translation id="8274924778568117936">Eguneratzen amaitu arte, ez itzali edo itxi <ph name="DEVICE_TYPE" /> gailua. Instalatzen amaitutakoan, berrabiarazi egingo da <ph name="DEVICE_TYPE" />-a.</translation>
 <translation id="8281886186245836920">Saltatu</translation>
+<translation id="8291942417224950075">Erabilera pertsonalerako</translation>
 <translation id="8304383784961451596">Ez duzu baimenik gailu hau erabiltzeko. Jarri harremanetan administratzailearekin saioa hasteko baimena lortzeko, edo hasi saioa Family Link-ek gainbegiratutako Google-ko kontu batean.</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> domeinuak kudeatuko du <ph name="DEVICE_TYPE" /> gailua.</translation>
+<translation id="8339288417038613756">Pantailaren eta testuaren tamaina</translation>
 <translation id="8354034204605718473">Gehitu da haurraren PINa</translation>
 <translation id="8366396658833131068">Sareko konexioa leheneratu da. Hautatu beste sare bat edo sakatu hemen behean dagoen "Jarraitu" botoia kiosko-aplikazioa exekutatzeko.</translation>
 <translation id="8401432541486058167">Eman txartel adimendunarekin lotutako PINa.</translation>
 <translation id="8408270600235826886">Google-rekin zer datu partekatzen diren kontrola dezakezu. Ezarpenetan alda dezakezu aukera hori. Google-ren <ph name="BEGIN_LINK" />Pribatutasun-gidalerroen<ph name="END_LINK" /> arabera erabiliko dira datuak.</translation>
 <translation id="8413956290606243087">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
 <translation id="8425768983279799676">Gailua desblokeatzeko erabil dezakezu PINa.</translation>
+<translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="843173223122814223">Sortu atzeko planoak AA bidez</translation>
 <translation id="8452105022015742247">Android-eko telefonotik Google-ko kontuaren informazioa transferitzen</translation>
 <translation id="8464132254133862871">Ezin da erabiltzaile-kontu honekin zerbitzua erabili.</translation>
 <translation id="8524841856047224176">Pertsonalizatu kameraren atzeko planoak bideodeietarako eta beste</translation>
+<translation id="8527257351549797148">Aplikazioak, luzapenak eta bestelakoak erabiltzeko, agian erregistratzeko eskatuko dizu erakundeak. Segurtasuna eta gailuaren ezarpenak kudeatzeko aukera ematen dio horrek erakundeari.</translation>
+<translation id="8558063527625343224">Konfiguratu Google Beam</translation>
 <translation id="8569673829373920831"><ph name="APP_NAME" /> aplikazioari buruzko informazio gehiago</translation>
 <translation id="8586421813321819377">Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Zu identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta.</translation>
 <translation id="8627804903623428808">Berrikusi baldintza hauek eta kontrolatu haurraren datuak</translation>
@@ -439,9 +626,13 @@
         <ph name="BR" />
         <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> gisa dago ikusgai inguruko gailuetarako…</translation>
 <translation id="8655972064210167941">Ezin izan da hasi saioa, ezin izan delako egiaztatu pasahitza. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Kokapen-zehaztasuna aktibatuta dagoenean, hari gabeko seinaleak (adibidez, wifi bidezko sarbide-puntuak eta sare mugikorren dorreak) gailuaren sentsoreen datuekin batera (esaterako, abiadura-neurgailua eta giroskopioa) erabiltzen dira, gailuaren kokapen zehatzagoa estimatzeko. Android-erako aplikazio eta zerbitzuek kokapenean oinarritutako eginbideak eskaintzeko erabiltzen dute datu hori. Horretarako, Google-k zure inguruko gailuen sentsoreei eta hari gabeko seinaleei buruzko informazioa biltzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzen laguntzeko.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google-k zu identifikatu gabe erabiltzen du informazio hori, helburu hauekin: kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzea eta, orokorrean, Google-ren zerbitzuak hobetu, eman eta mantentzea. Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta prozesatzen dugu informazio hori.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Kokapen-zehaztasuna desaktibatzeko, joan gailuaren kokapen-ezarpenetako Ezarpenak &gt; Pribatutasuna eta segurtasuna &gt; Pribatutasun-ezarpenak &gt; Kokapena erabiltzeko baimena &gt; Kokapen-ezarpen aurreratuak atalera. Kokapen-zehaztasuna desaktibatuta badago, ez da bilduko kokapen-zehaztasunarekin lotutako daturik. Android-erako aplikazio eta zerbitzuetarako, IP helbidea soilik erabiltzen da (erabilgarri badago) gailuaren kokapena zehazteko. Beraz, baliteke Android-erako aplikazio eta zerbitzuetarako (adibidez, Google Maps) kokapenen erabilgarritasunean eta zehaztasunean eragitea.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Ordenagailua gaizki eratutako hardware-identifikatzaile batekin konfiguratuta dago. Ondorioz, ezin da eguneratu Chrome OS azken segurtasun-konponketekin, eta baliteke ordenagailuak <ph name="BEGIN_BOLD" />asmo txarreko erasoak jasotzea<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Gehitu guraso-murriztapenak konfiguratzen amaitzen duzunean</translation>
 <translation id="8698269656364382265">Aurreko pantailara itzultzeko, pasatu hatza ezkerraldeko albotik erdialdera.</translation>
+<translation id="8718994464069323380">Ukipen-pantaila bat hauteman da</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8726206820263995930">Errore bat gertatu da gidalerroen ezarpenak zerbitzaritik eskuratzean: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Eginda</translation>
@@ -449,24 +640,36 @@
 <translation id="8740247629089392745">Eman Chromebook-a <ph name="SUPERVISED_USER_NAME" /> erabiltzaileari. Ia amaitu duzue konfiguratzen. Arakatzen hasteko moduan izango zara laster.</translation>
 <translation id="8759753423332885148">Lortu informazio gehiago.</translation>
 <translation id="8777628254805677039">erroko pasahitza</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Idatzi Bluetooth bidez konektatzeko parekatze-kodea eta sakatu Itzuli edo Sartu.</translation>
 <translation id="8794548468611058947">Saioa hasteko Google-ko kontuko pasahitza idatzi ordez, <ph name="DEVICE_TYPE" /> honetarako PIN bat sor dezakezu</translation>
 <translation id="8830796635868321089">Ezin izan da egiaztatu eguneratzerik dagoen oraingo proxy-ezarpenak erabilita. Doitu <ph name="PROXY_SETTINGS_LINK_START" />proxy-ezarpenak<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Chromebook Enterprise-ko gailuak Chrome Enterprise Upgrade dakar. Enpresaren eginbideak erabiltzeko, erregistratu gailua Google-ren administratzaile-kontu batekin.</translation>
 <translation id="885746075120788020">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS-ko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
+<translation id="8868333925931032127">Demo modua abiarazten</translation>
 <translation id="8875221558267407626">Laburbildu edukia, sinplifikatu hizkera konplexua edo egin galderak</translation>
+<translation id="8907701755790961703">Hautatu herrialde bat</translation>
 <translation id="8913163265790894442">Konfiguratu <ph name="DEVICE_TYPE" /> erraz telefonoarekin. Wifia eta Google-ko kontua pasahitzak eskuz idatzi gabe gehi ditzakezu.
         <ph name="BR" />
         <ph name="BR" />
         <ph name="DEVICE_TYPE" /> gisa ikusgai…</translation>
+<translation id="8934732568177537184">Egin aurrera</translation>
 <translation id="8946359700442089734">Arazketa-eginbideak ez dira guztiz gaitu <ph name="IDS_SHORT_PRODUCT_NAME" /> gailu honetan.</translation>
 <translation id="8965037249707889821">Idatzi aurreko pasahitza</translation>
+<translation id="8968906873893164556">Aukeratu konfiguratzeko erabili nahi duzun kontua</translation>
+<translation id="8973596347849323817">Doitu gailua zure beharretara. Ezarpenak atalean alda ditzakezu erabilerraztasun-eginbideak.</translation>
 <translation id="8975396729541388937">Harpidetza kentzeko, sakatu horretarako esteka jasotzen dituzun mezu elektronikoetan.</translation>
+<translation id="8987305927843254629">Bakoitzak bere erabilera pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> gailuko pasahitza ahazten baduzu ere, gailuko datuak lehenera ditzakezu. Horretarako, Google-ko kontuan saioa hasi beharko duzu, edo kontua berreskuratzeko eginbidea erabili.</translation>
 <translation id="9033765790910064284">Jarraitu, halere</translation>
 <translation id="903480517321259405">Idatzi berriro PINa</translation>
 <translation id="9040473193163777637">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, eduki sakatuta bi bolumen-botoiak bost segundoz.</translation>
 <translation id="9068298336633421551">Eman gailuaren kokapena erabiltzeko baimena kokapena erabiltzeko baimena duten Android-erako aplikazio eta zerbitzuei. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
+<translation id="9074836595010225693">USB sagua konektatu da</translation>
 <translation id="9076523132036239772">Ezin izan da helbide elektronikoa edo pasahitza egiaztatu. Saiatu sare batera konektatzen lehendabizi.</translation>
+<translation id="9089959054554410481">Aldatu ukipen-panelaren korritze-norabidea</translation>
 <translation id="9158715103698450907">Sareko komunikazioko arazo bat gertatu da autentifikatzean. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
+<translation id="9186963452600581158">Hasi saioa haurraren Google-ko kontuan</translation>
 <translation id="919686179725692564">Lortu aplikazioen babeskopiak egiteari buruzko informazio gehiago</translation>
 <translation id="9214520840402538427">Instalazioko atributuak abiarazteko denbora-muga gainditu da. Jarri harremanetan laguntza emateko ordezkariarekin.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Esklusiboa <ph name="DEVICE_TYPE" /> gailuetarako.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@
         <ph name="BR" />
         <ph name="DEVICE_TYPE" /> gisa ikusgai…</translation>
 <translation id="951991426597076286">Baztertu</translation>
+<translation id="954749761428814584">Hizkuntza eta idazketa-metodoa</translation>
+<translation id="960987915827980018">Gutxi gorabehera, ordubete falta da</translation>
+<translation id="995420352808264005">Aukeratu gailua erregistratzeko mota</translation>
 </translationbundle>

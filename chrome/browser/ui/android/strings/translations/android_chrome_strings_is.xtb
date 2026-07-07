@@ -302,7 +302,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2297822946037605517">Deila þessari síðu</translation>
 <translation id="230115972905494466">Engin samhæf tæki fundust</translation>
 <translation id="2316129865977710310">Nei, takk</translation>
-<translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="232137538351753795">Strjúktu frá vinstri brún til að fara til baka</translation>
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
 <translation id="2327445548174191329">Frá <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Síðast athugað fyrir 1 degi}one{Síðast athugað fyrir # degi}other{Síðast athugað fyrir # dögum}}</translation>
 <translation id="2842985007712546952">Yfirmappa</translation>
 <translation id="2854916915045135148">Haltu inni til að skipta yfir í huliðsstillingu</translation>
-<translation id="2860954141821109167">Gakktu úr skugga um að símaforritið sé virkt í þessu tæki</translation>
 <translation id="286473047976978798">Nota útlitsstillingarnar?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> og 1 annar flipi}one{<ph name="URL" /> og <ph name="TAB_COUNT_MANY" /> annar flipi}other{<ph name="URL" /> og <ph name="TAB_COUNT_MANY" /> aðrir flipar}}</translation>
 <translation id="2869430948265924908">Til að vernda viðkvæmt efni í bílnum þarftu að búa til prófíllás fyrir bílinn.  Það má gera með PIN-númeri, kóða eða aðgangsorði.</translation>
@@ -1272,6 +1270,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6315386555979018699">Eyða og halda áfram</translation>
 <translation id="6316139424528454185">Android-útgáfa ekki studd</translation>
 <translation id="631839948975905034">Læsa huliðsgluggum þegar þú lokar Chrome</translation>
+<translation id="6321592572353357376">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chrome</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6324977638108296054">Ekki er hægt að búa til tengil í merktan texta</translation>
 <translation id="6333140779060797560">Deila í gegnum <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6910211073230771657">Eytt</translation>
 <translation id="6916590542764765824">Stjórna viðbótum</translation>
 <translation id="6918398787259831832">Ef þetta vandamál heldur áfram að koma upp <ph name="BEGIN_LINK" />geturðu fengið meiri upplýsingar<ph name="END_LINK" /> frá <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Búa til QR-kóða fyrir þessa síðu</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því þú hefur ekki heimsótt nýlega</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flipi}one{<ph name="NUMBER_OF_TABS" /> flipi}other{<ph name="NUMBER_OF_TABS" /> flipar}}</translation>
 <translation id="6929224077895306814">Öllum öryggisnúmerum sem vistuð eru í tækinu og á Google-reikningnum þínum verður eytt</translation>
@@ -1541,6 +1541,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7248671827512403053">Forrit</translation>
 <translation id="7253951228444156601">Athugar aðgangsorð…</translation>
 <translation id="7260367682327802201">Hugsanlega er svipuð stilling í Android-tækinu þínu. Ef kveikt er á auglýsingamælingum í Chrome og Android-tækinu þínu getur fyrirtæki hugsanlega mælt árangur auglýsingar á vefsvæðum sem þú heimsækir og í forritum sem þú notar.</translation>
+<translation id="7265857422443387781">Leita í flipa með Google-linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Senda <ph name="ONE_TIME_CODE" /> til <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Vefsvæði á bannlista</translation>
 <translation id="7276868533747677875">Ef þú hefur áður flutt út aðgangsorð skaltu leita að CSV-skrá í tækinu þínu og flytja þau inn í aðgangsorðastjórnun að eigin vali.</translation>
@@ -1883,6 +1884,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="860282621117673749">Tilkynningar um verðlækkanir</translation>
 <translation id="8611922158252451755">Allir með tengilinn geta gert breytingar á öllum flipum og farðu því varlega í að deila. Tengillinn rennur út eftir 48 klukkustundir.</translation>
 <translation id="8616006591992756292">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Þýða yfir á <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Farðu í „Valmynd Chrome &gt; Stillingar“</translation>
 <translation id="8634050254805484913">Faldir eða mjóir skjáir</translation>
 <translation id="8635399646025169806">Halda flipahóp?</translation>
@@ -2031,7 +2033,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="9204836675896933765">Ein skrá eftir</translation>
 <translation id="9205933215779845960">Finn ekki síðuna. Athugaðu stafsetninguna eða prófaðu að leita á <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Ekki er hægt að hringja</translation>
 <translation id="9212845824145208577">Ekki er hægt að fara neðar. Prófaðu að byrja neðar á síðunni.</translation>
 <translation id="9218430445555521422">Velja sem sjálfgefið</translation>
 <translation id="9219103736887031265">Myndir</translation>

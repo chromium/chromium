@@ -3142,6 +3142,11 @@ Cette règle n'affecte pas la règle "<ph name="WEB_APP_INSTALL_FORCE_LIST_POLIC
         Cette règle n'a aucune incidence sur les règles déjà publiées.</translation>
 <translation id="3002067315837777719">Ne pas autoriser l'activation des notifications Phone Hub</translation>
 <translation id="3003490107503207900">Forcer le téléchargement des documents Office (.docx, par exemple) au lieu de les ouvrir dans <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Contrôle la façon dont <ph name="PRODUCT_OS_NAME" /> gère une non-concordance de mot de passe détectée lors d'une connexion en ligne. Cette règle détermine ce qui se passe lorsque le mot de passe de l'utilisateur, authentifié via un IdP en ligne (par exemple, un IdP tiers ou Gaia), ne correspond pas au mot de passe utilisé pour chiffrer ses données locales. Cela se produit généralement après qu'un utilisateur a modifié son mot de passe depuis un service externe.
+
+Si vous définissez la règle sur "0" (processus standard de modification du mot de passe) ou si vous ne la configurez pas, le processus standard de modification du mot de passe est lancé. L'utilisateur sera invité à saisir son ancien mot de passe pour mettre à jour le chiffrement de ses données locales. Il pourra aussi utiliser d'autres mécanismes de récupération des données locales, si disponibles.
+
+Si cette règle est définie sur "1" (effacement automatique des données locales), le processus standard de modification du mot de passe est contourné. En cas de détection d'une non-concordance de mot de passe, les données locales de l'utilisateur seront automatiquement effacées. L'utilisateur peut ainsi se connecter facilement avec son nouveau mot de passe, mais toutes les données stockées localement dans son profil (les téléchargements et les paramètres non synchronisés, par exemple) sont perdues. Cette option est destinée aux environnements dans lesquels les utilisateurs stockent principalement des données dans le cloud ou dans lesquels le mot de passe doit être mis à jour fréquemment.</translation>
 <translation id="300673820739371513">Cette règle détermine si des entités de texte brut sont détectées sur les pages Web, ce qui permet aux utilisateurs de déclencher des actions contextuelles en interagissant avec elles.
 La règle comporte une propriété distincte pour chaque type d'entité.
 Les types d'entités sont <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />…
@@ -8858,6 +8863,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 
       Remarque : Utilisez cette règle avec la règle "<ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />".</translation>
 <translation id="6625136649067113817">Flag booléen spécifiant si le correcteur orthographique est disponible ou non avec le clavier à l'écran.</translation>
+<translation id="6625424971640741579">Processus standard de modification du mot de passe</translation>
 <translation id="6625716212597516929">Rétablir l'ancien comportement du champ d'application des cookies</translation>
 <translation id="6626319579493977784">Paramètres du code dynamique</translation>
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
@@ -9063,6 +9069,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="6763023079133439068">Autoriser les certificats sans extension subjectAlternativeName lorsqu'ils sont émis par des ancres de confiance locales</translation>
 <translation id="6766216162565713893">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil Bluetooth à proximité</translation>
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
+<translation id="6770703270685871935">Effacement automatique des données locales</translation>
 <translation id="6774132787348495175">Ne pas autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="6782331708811245959">Activer les rapports sur le mode de démarrage de l'appareil</translation>
 <translation id="6783578496154221347">Utiliser WeeklyTimeIntervalChecked dans le nouveau code.</translation>
@@ -9357,6 +9364,7 @@ Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression ho
       Si elle n'est pas configurée, aucune imprimante associée à un appareil n'est affichée, et les autres règles <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> sont ignorées.</translation>
 <translation id="69525503251220566">Paramètre qui active la fonctionnalité de recherche par image pour le moteur de recherche par défaut</translation>
 <translation id="6953102253399571439">Activer l'impression par code définie par défaut</translation>
+<translation id="6953246833109449226">Configurer le comportement en cas de non-concordance des mots de passe en ligne</translation>
 <translation id="695532899547292238">Activer la collecte des journaux d'applis kiosque</translation>
 <translation id="6956272732789158625">Interdire à tous les sites d'utiliser la génération de clé</translation>
 <translation id="6960996423652450945">Désactiver la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>

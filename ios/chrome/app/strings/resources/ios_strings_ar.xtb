@@ -1571,6 +1571,7 @@
 <translation id="628251768213143684">‏يمكنك في أي وقت إدارة البيانات التي يتم حفظها في حسابك على Google.</translation>
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
+<translation id="6295140892595702619">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم تخزين الصوت في "نشاطك على تطبيقات Gemini" (إذا كان مفعّلاً). ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي</translation>
 <translation id="6295751040240588413">لقب البطاقة غير صالح</translation>
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
@@ -2180,7 +2181,6 @@
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط جهاز iPad. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">سيتم ملء المعلومات في <ph name="URL" />.</translation>
 <translation id="8274795744553482834">أنت على وشك التبديل بين الملفات الشخصية</translation>
 <translation id="8275068909952022340">المزيد…</translation>
 <translation id="8280797717392145626">الروابط التي تم تلقّيها</translation>
@@ -2414,6 +2414,7 @@
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
 <translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
+<translation id="9003263770394939629">‏من اقتراح Gemini. يمكنك إدارة ميزة "الملء التلقائي المحسّن" في الإعدادات.</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>
 <translation id="9006453925669499173">"القائمة" ← "علامة تبويب جديدة في وضع التصفّح المتخفي"</translation>
 <translation id="9008201768610948239">تجاهل</translation>

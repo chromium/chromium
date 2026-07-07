@@ -302,7 +302,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2297822946037605517">Share this page</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2316129865977710310">No, thanks</translation>
-<translation id="2318045970523081853">Tap to make call</translation>
 <translation id="232137538351753795">Swipe from the left edge to go back</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2327445548174191329">From <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
 <translation id="2854916915045135148">Touch and hold to switch to Incognito</translation>
-<translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="286473047976978798">Apply your appearance preferences?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> and one other tab}other{<ph name="URL" /> and <ph name="TAB_COUNT_MANY" /> other tabs}}</translation>
 <translation id="2869430948265924908">To protect your sensitive content in the car, you must create a car profile lock.  You can do this with a pin, code or password.</translation>
@@ -1272,6 +1270,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6315386555979018699">Delete and continue</translation>
 <translation id="6316139424528454185">Android version is unsupported</translation>
 <translation id="631839948975905034">Lock Incognito windows when you leave Chrome</translation>
+<translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6324977638108296054">Can’t create link to highlight</translation>
 <translation id="6333140779060797560">Share via <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6916590542764765824">Manage Extensions</translation>
 <translation id="6918398787259831832">If this issue keeps happening, <ph name="BEGIN_LINK" />get more information<ph name="END_LINK" /> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Create QR code for this page</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tabs}}</translation>
 <translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
@@ -2031,7 +2031,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9204836675896933765">1 file left</translation>
 <translation id="9205933215779845960">Can’t find that page. Check your spelling or try a search on <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Can't make calls</translation>
 <translation id="9212845824145208577">Can\u2019t go lower. Try starting from further down the page.</translation>
 <translation id="9218430445555521422">Set as default</translation>
 <translation id="9219103736887031265">Images</translation>

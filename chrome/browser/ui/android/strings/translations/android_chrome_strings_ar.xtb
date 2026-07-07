@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">مشاركة هذه الصفحة</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
 <translation id="2316129865977710310">لا، شكرًا</translation>
-<translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="232137538351753795">مرِّر سريعًا من الحافة اليمنى للرجوع</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
 <translation id="2327445548174191329">من جهاز "<ph name="DEVICE_NAME" />"</translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{تمّ إجراء عملية التحقُّق قبل يوم واحد.}zero{تمّ إجراء عملية التحقُّق قبل # يوم.}two{تمّ إجراء عملية التحقُّق قبل يومَين.}few{تمّ إجراء عملية التحقُّق قبل # أيام.}many{تمّ إجراء عملية التحقُّق قبل # يومًا.}other{تمّ إجراء عملية التحقُّق قبل # يوم.}}</translation>
 <translation id="2842985007712546952">المجلد الرئيسي</translation>
 <translation id="2854916915045135148">انقر مع الاستمرار للتبديل إلى "وضع التصفّح المتخفي"</translation>
-<translation id="2860954141821109167">يُرجى التأكُّد من تفعيل تطبيق هاتف على هذا الجهاز.</translation>
 <translation id="286473047976978798">تطبيق الإعدادات المفضّلة للمظهر؟</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{‫<ph name="URL" /> وعلامة تبويب واحدة إضافية}zero{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}two{‫<ph name="URL" /> وعلامَتا تبويب أخرى (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب أخرى}many{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}other{‫<ph name="URL" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب أخرى}}</translation>
 <translation id="2869430948265924908">لحماية المحتوى الحسّاس في السيارة، عليك إنشاء قفل للملف الشخصي للسيارة.  ويمكنك تنفيذ هذا الإجراء باستخدام رقم تعريف شخصي أو رمز أو كلمة مرور.</translation>
@@ -1273,6 +1271,7 @@
 <translation id="6315386555979018699">الحذف والمتابعة</translation>
 <translation id="6316139424528454185">‏إصدار Android غير متوافق</translation>
 <translation id="631839948975905034">‏قفل نوافذ التصفّح المتخفي عند إغلاق Chrome</translation>
+<translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6324977638108296054">يتعذّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
@@ -1451,6 +1450,7 @@
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="6916590542764765824">إدارة الإضافات</translation>
 <translation id="6918398787259831832">في حال استمرار حدوث هذه المشكلة، يمكنك <ph name="BEGIN_LINK" />الحصول على مزيد من المعلومات<ph name="END_LINK" /> من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="6920262510368602827">إنشاء رمز استجابة سريعة لهذه الصفحة</translation>
 <translation id="6922812712751566567">‏<ph name="PERMISSION" /> <ph name="SEPARATOR" /> أزال Chrome هذا الإذن لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{علامة تبويب واحدة}zero{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}two{علامتا تبويب (<ph name="NUMBER_OF_TABS" />)}few{‫<ph name="NUMBER_OF_TABS" /> علامات تبويب}many{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}other{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}}</translation>
 <translation id="6929224077895306814">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي حسابك على Google.</translation>
@@ -1543,6 +1543,7 @@
 <translation id="7248671827512403053">تطبيق</translation>
 <translation id="7253951228444156601">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="7260367682327802201">‏قد يتضمّن جهاز Android إعدادًا مشابهًا. في حال تفعيل الإعداد "قياس أداء الإعلانات" في Chrome وعلى جهاز Android، يمكن للشركات قياس مدى فعالية الإعلان المعروض على المواقع الإلكترونية التي تزورها والتطبيقات التي تستخدمها.</translation>
+<translation id="7265857422443387781">‏البحث في علامة التبويب باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">هل المطلوب إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
 <translation id="7274013316676448362">تم حظر الموقع.</translation>
 <translation id="7276868533747677875">‏إذا سبق لك تصدير كلمات المرور، يمكنك البحث عن ملف CSV على جهازك واستيرادها إلى مدير كلمات المرور المفضّل لديك.</translation>
@@ -1887,6 +1888,7 @@
 <translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>
 <translation id="8611922158252451755">بإمكان أي مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند مشاركته. ويُرجى العِلم بأنّ صلاحية الرابط تنتهي بعد 48 ساعة.</translation>
 <translation id="8616006591992756292">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">الترجمة إلى <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">‏افتح قائمة Chrome &gt; "الإعدادات"</translation>
 <translation id="8634050254805484913">هذا الشريط مخفي على الشاشات الضيقة</translation>
 <translation id="8635399646025169806">هل تريد الاحتفاظ بمجموعة علامات التبويب؟</translation>
@@ -2035,7 +2037,6 @@
 <translation id="9204836675896933765">ملف واحد متبقٍ</translation>
 <translation id="9205933215779845960">لم نتمكّن من العثور على تلك الصفحة. تحقّق من تهجئة الكلمات أو جرِّب البحث على <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">لا يمكن إجراء المكالمات</translation>
 <translation id="9212845824145208577">لا يمكن السحب أدنى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أدنى في الصفحة.</translation>
 <translation id="9218430445555521422">الضبط كخيار تلقائي</translation>
 <translation id="9219103736887031265">الصور</translation>

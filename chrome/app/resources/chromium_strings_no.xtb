@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chromium med den samme kontoen</translation>
 <translation id="1287534462498555020">Skaff deg Chromium på telefonen</translation>
 <translation id="1290883685122687410">Konfigureringsfeil: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">En illustrasjon som viser hvordan du kan bruke bildesøk til å søke etter et produkt</translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
 <translation id="132092532143527429">Prøv med Gemini i Chromium</translation>
 <translation id="1324107359134968521">Chromium trenger Bluetooth-tilgang for å utforske 
@@ -494,7 +493,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6400112897226594999">Chromium-logo på en dataskjerm.</translation>
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
 <translation id="6414624068245092115">For å sikre at du alltid kan bruke og lagre Chromium-data i Google-kontoen din, må du bekrefte at det er deg</translation>
-<translation id="6417332166651156371">Et forenklet bilde som viser inngangspunktet for Passordlagring i Chromium</translation>
 <translation id="642132557830635295">Chromium kjører raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet</translation>
 <translation id="6436260184216827876">Bildesøk er ikke tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="6442900851116057561">Start ChromiumOS på nytt</translation>

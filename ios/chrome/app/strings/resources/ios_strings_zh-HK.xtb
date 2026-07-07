@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">你隨時可管理儲存在 Google 帳戶中的內容</translation>
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
+<translation id="6295140892595702619">使用麥克風與 Gemini 對話。當你與 Gemini 對話，音訊會儲存在「Gemini 應用程式活動」(如已啟用)。你的資料不會用於改善生成式 AI 模型</translation>
 <translation id="6295751040240588413">信用卡暱稱無效</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
@@ -2179,7 +2180,6 @@
 <translation id="8264966119170358612">非 Google 資料外洩中包含部分您儲存的密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕按下方的 [繼續]。</translation>
 <translation id="8270320981823560179">雲端硬碟</translation>
-<translation id="8273982424131314219">你將在 <ph name="URL" /> 中填入資料</translation>
 <translation id="8274795744553482834">即將切換設定檔</translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8280797717392145626">已收到連結</translation>

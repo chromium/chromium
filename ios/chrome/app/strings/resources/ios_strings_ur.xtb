@@ -1573,6 +1573,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="628251768213143684">‏آپ ہمیشہ اپنے Google اکاؤنٹ میں محفوظ کردہ چیزوں کا نظم کر سکتے ہیں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
+<translation id="6295140892595702619">‏‫Gemini کی مدد سے چیٹ کرنے کیلئے اپنا مائیکروفون استعمال کریں۔ جب آپ Gemini سے بات کرتے ہیں تو آڈیو Gemini ایپس کی سرگرمی (اس کے آن ہونے پر) میں اسٹور کیا جاتا ہے۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے</translation>
 <translation id="6295751040240588413">کارڈ کا غلط عرفی نام</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
@@ -2181,7 +2182,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8264966119170358612">‏آپ کے محفوظ کردہ کچھ پاس ورڈز غیر Google ڈیٹا کی خلاف ورزی میں افشاء ہو گئے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ واپس سائن ان کرنے کے لیے، نیچے "جاری رکھیں" پر تھپتھپائیں۔</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">آپ <ph name="URL" /> میں معلومات پر کریں گے</translation>
 <translation id="8274795744553482834">آپ پروفائلز کو سوئچ کرنے والے ہیں</translation>
 <translation id="8275068909952022340">مزید…</translation>
 <translation id="8280797717392145626">لنکس موصول ہوئے</translation>
@@ -2415,6 +2415,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، پن کردہ سائٹ</translation>
 <translation id="8990960056509724223">آپ کی تنظیم کی پالیسیوں کی وجہ سے فائل محفوظ نہیں ہو سکی</translation>
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
+<translation id="9003263770394939629">‏‫Gemini کی طرف سے تجویز کردہ۔ ترتیبات میں بہتر کردہ آٹو فل کا نظم کریں۔</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9006453925669499173">مینو ← نیا پوشیدگی ٹیب</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>

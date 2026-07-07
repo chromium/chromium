@@ -302,7 +302,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2297822946037605517">Осы бетті бөлісу</translation>
 <translation id="230115972905494466">Үйлесімді құрылғылар табылмады</translation>
 <translation id="2316129865977710310">Жоқ, рақмет</translation>
-<translation id="2318045970523081853">Қоңырау шалу үшін түртіңіз.</translation>
 <translation id="232137538351753795">Артқа оралу үшін сол жақ шеттен сырғытыңыз.</translation>
 <translation id="2323763861024343754">Сайт деректері</translation>
 <translation id="2327445548174191329">Жіберген: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 күн бұрын тексерілді.}other{# күн бұрын тексерілді.}}</translation>
 <translation id="2842985007712546952">Түпкі қалта</translation>
 <translation id="2854916915045135148">Инкогнито режиміне ауысу үшін түртіп, басып тұрыңыз.</translation>
-<translation id="2860954141821109167">Бұл құрылғыда телефон қолданбасы қосулы екенін тексеріңіз.</translation>
 <translation id="286473047976978798">Көрініс параметрлерін қолдану керек пе?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> және тағы 1 қойынды}other{<ph name="URL" /> және тағы <ph name="TAB_COUNT_MANY" /> қойынды}}</translation>
 <translation id="2869430948265924908">Көліктегі шетін контентті қорғау үшін көліктің профиль құлпын жасауыңыз керек.  Оны PIN кодымен, кодпен немесе құпия сөзбен жасауға болады.</translation>
@@ -1272,6 +1270,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6315386555979018699">Жою және жалғастыру</translation>
 <translation id="6316139424528454185">Android: қолдау көрсетілмейді</translation>
 <translation id="631839948975905034">Chrome-нан шығу кезінде инкогнито терезелерін құлыптау</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" кеңейтімін қолдану үшін Chrome-ға кіруіңіз керек</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
 <translation id="6324977638108296054">Ерекшеленген мәтіннің сілтемесі жасалмады.</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
@@ -1450,6 +1449,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
 <translation id="6918398787259831832">Бұл мәселе қайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерінен <ph name="BEGIN_LINK" />қосымша ақпарат алыңыз<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">Осы бетке QR код жасау</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі сіз соңғы уақытта бұл сайтқа кірмегенсіз.</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 қойынды}other{<ph name="NUMBER_OF_TABS" /> қойынды}}</translation>
 <translation id="6929224077895306814">Құрылғы мен Google аккаунтында сақталған барлық қауіпсіздік коды жойылады.</translation>
@@ -1541,6 +1541,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7248671827512403053">Қолданба</translation>
 <translation id="7253951228444156601">Құпия сөздер тексерілуде…</translation>
 <translation id="7260367682327802201">Android құрылғыңызда ұқсас параметр болуы мүмкін. Chrome браузерінде және Android құрылғыңызда "Жарнама көрсеткіштерін өлшеу" функциясы қосылса, компания сіз кірген веб-сайттар мен пайдаланған қолданбалардағы жарнаманың тиімділігін өлшей алады.</translation>
+<translation id="7265857422443387781">Қойындыны Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> коды <ph name="ORIGIN" /> сайтына жіберілсін бе?</translation>
 <translation id="7274013316676448362">Блокталған сайт</translation>
 <translation id="7276868533747677875">Құпия сөздерді экспорттаған болсаңыз, құрылғыңыздан CSV файлын тауып, қалаған Password Manager-ге импорттаңыз.</translation>
@@ -1883,6 +1884,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="860282621117673749">Бағаның төмендеуі туралы хабарландырулар</translation>
 <translation id="8611922158252451755">Сілтемені алған кез келген адам барлық қойындыны өзгерте алады, сол себепті тек тиісті адамдармен бөлісіңіз. Сілтеме мерзімі 48 сағаттан кейін аяқталады.</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> мекенжайында Google аккаунтымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
+<translation id="8626572875733549102">Аударма тілі: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">"Chrome мәзірі &gt; Параметрлер" тармағын ашыңыз.</translation>
 <translation id="8634050254805484913">Тар экрандарда жасырылады.</translation>
 <translation id="8635399646025169806">Қойындылар тобын қалдыру керек пе?</translation>
@@ -2031,7 +2033,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="9204836675896933765">1 файл қалды</translation>
 <translation id="9205933215779845960">Бет табылмады. Емлені тексеріңіз немесе <ph name="SEARCH_ENGINE" /> арқылы іздеп көріңіз.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Қоңырау шалу мүмкін емес</translation>
 <translation id="9212845824145208577">Бұдан төмен түспейді. Беттің төменгі жағынан бастап көріңіз.</translation>
 <translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
 <translation id="9219103736887031265">Кескіндер</translation>

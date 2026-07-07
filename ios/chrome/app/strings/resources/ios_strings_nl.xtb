@@ -1573,6 +1573,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="628251768213143684">Je kunt altijd bepalen wat wordt opgeslagen in je Google-account</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>
+<translation id="6295140892595702619">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat). Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="6295751040240588413">Ongeldige bijnaam kaart</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
@@ -2181,7 +2182,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8274795744553482834">Je staat op het punt van profiel te wisselen</translation>
 <translation id="8275068909952022340">Meer…</translation>
 <translation id="8280797717392145626">Links ontvangen</translation>
@@ -2415,6 +2415,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vastgezette site</translation>
 <translation id="8990960056509724223">Kan het bestand niet opslaan vanwege het beleid van je organisatie</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
+<translation id="9003263770394939629">Voorgesteld door Gemini. Beheer verbeterd automatisch invullen in de instellingen.</translation>
 <translation id="9003677638446136377">Nogmaals controleren</translation>
 <translation id="9006453925669499173">Menu → Nieuw incognitotabblad</translation>
 <translation id="9008201768610948239">Negeren</translation>

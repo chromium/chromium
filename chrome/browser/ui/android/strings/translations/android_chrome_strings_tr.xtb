@@ -302,7 +302,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2297822946037605517">Bu sayfayı paylaş</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
 <translation id="2316129865977710310">Hayır, teşekkürler</translation>
-<translation id="2318045970523081853">Aramak için dokunun</translation>
 <translation id="232137538351753795">Geri gitmek için sol kenardan kaydırın</translation>
 <translation id="2323763861024343754">Site depolama alanı</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ile başlayan fiyatlarla</translation>
@@ -436,7 +435,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 gün önce kontrol edildi}other{# gün önce kontrol edildi}}</translation>
 <translation id="2842985007712546952">Ana klasör</translation>
 <translation id="2854916915045135148">Gizli moda geçmek için dokunup basılı tutun</translation>
-<translation id="2860954141821109167">Bu cihazda bir telefon uygulamasının etkinleştirildiğinden emin olun</translation>
 <translation id="286473047976978798">Görünüm tercihleriniz uygulansın mı?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ve 1 sekme daha}other{<ph name="URL" /> ve <ph name="TAB_COUNT_MANY" /> sekme daha}}</translation>
 <translation id="2869430948265924908">Arabadaki hassas içeriklerinizi korumak için araba profil kilidi oluşturmanız gerekir.  Bu işlemi PIN, kod veya şifre kullanarak yapabilirsiniz.</translation>
@@ -1272,6 +1270,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6315386555979018699">Sil ve devam et</translation>
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
 <translation id="631839948975905034">Chrome'dan ayrıldığımda gizli pencereleri kilitle</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" uzantısı, Chrome'da oturum açmanızı istiyor</translation>
 <translation id="6324916366299863871">Kısayolu düzenle</translation>
 <translation id="6324977638108296054">Seçili metne bağlantı oluşturulamıyor</translation>
 <translation id="6333140779060797560">Paylaşım yöntemi: <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6910211073230771657">Silindi</translation>
 <translation id="6916590542764765824">Uzantıları yönet</translation>
 <translation id="6918398787259831832">Bu sorun çözülmezse <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile ilgili <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">Bu sayfa için QR kodu oluştur</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome, yakın zamanda ziyaret etmediğiniz için bu izinleri kaldırdı</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 sekme}other{<ph name="NUMBER_OF_TABS" /> sekme}}</translation>
 <translation id="6929224077895306814">Cihazınızda ve Google Hesabınızda kayıtlı tüm güvenlik kodları silinecek</translation>
@@ -1541,6 +1541,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7248671827512403053">Uygulama</translation>
 <translation id="7253951228444156601">Şifreler kontrol ediliyor…</translation>
 <translation id="7260367682327802201">Android cihazınızda benzer bir ayar olabilir. Chrome'da ve Android cihazınızda reklam ölçümü etkinse bir şirket, ziyaret ettiğiniz web siteleri ve kullandığınız uygulamalardaki reklamların etkinliğini ölçebilir.</translation>
+<translation id="7265857422443387781">Sekmeyi Google Lens ile ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> adresine <ph name="ONE_TIME_CODE" /> gönderilsin mi?</translation>
 <translation id="7274013316676448362">Engellenmiş site</translation>
 <translation id="7276868533747677875">Daha önce şifreleri dışa aktardıysanız cihazınızda bir CSV dosyası arayın ve bu dosyayı tercih ettiğiniz şifre yöneticisine aktarın.</translation>
@@ -1883,6 +1884,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="860282621117673749">Fiyat düşüşü uyarıları</translation>
 <translation id="8611922158252451755">Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir. Bu nedenle paylaşım yaparken dikkatli olun. Bağlantı 48 saat süreyle geçerlidir.</translation>
 <translation id="8616006591992756292">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" /> diline çevir</translation>
 <translation id="8629093325209491835">Chrome menüsü &gt; Ayarlar'ı açın.</translation>
 <translation id="8634050254805484913">Dar ekranlarda gizlenir</translation>
 <translation id="8635399646025169806">Sekme grubu tutulsun mu?</translation>
@@ -2031,7 +2033,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9204836675896933765">1 dosya kaldı</translation>
 <translation id="9205933215779845960">Sayfa bulunamadı. Yazımınızı kontrol edin veya <ph name="SEARCH_ENGINE" /> üzerinde arama yapmayı deneyin.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Arama yapılamıyor</translation>
 <translation id="9212845824145208577">Daha aşağı inilemiyor. Sayfanın daha aşağısından başlamayı deneyin.</translation>
 <translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>

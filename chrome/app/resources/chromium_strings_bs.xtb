@@ -29,7 +29,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="126567311906253476">Prilikom prijave na Googleove usluge kao što su Gmail ili YouTube koristeći <ph name="USER_EMAIL" /> možete se automatski prijaviti u Chromium putem istog računa</translation>
 <translation id="1287534462498555020">Nabavite Chromium na telefonu</translation>
 <translation id="1290883685122687410">Greška prilikom postavljanja: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Ilustracija koja prikazuje kako možete koristiti pretraživanje pomoću slika da potražite proizvod</translation>
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
 <translation id="132092532143527429">Isprobajte putem Geminija u Chromiumu</translation>
 <translation id="1324107359134968521">Chromiumu je potreban pristup Bluetoothu da istraži 
@@ -496,7 +495,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="6400112897226594999">Logotip Chromiuma na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je novi preglednik koji pokreće web stranice i aplikacije brzinom svjetlosti. On je brz, stabilan i jednostavan za upotrebu. Krećite se internetom u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima koji su ugrađeni u Chromium.</translation>
 <translation id="6414624068245092115">Da uvijek možete koristiti i pohranjivati podatke Chromiuma na Google računu, potvrdite identitet</translation>
-<translation id="6417332166651156371">Pojednostavljena slika koja prikazuje ulaznu tačku Upravitelja lozinki u Chromiumu</translation>
 <translation id="642132557830635295">Chromium radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno</translation>
 <translation id="6436260184216827876">Pretraživanje pomoću slika nije dostupno. Pokušajte ponovo kasnije.</translation>
 <translation id="6442900851116057561">Ponovo pokrenite ChromiumOS</translation>

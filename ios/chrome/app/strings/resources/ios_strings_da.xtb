@@ -1573,6 +1573,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="628251768213143684">Du kan til altid administrere, hvad der gemmes på din Google-konto</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
+<translation id="6295140892595702619">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret). Dine data anvendes ikke til at forbedre generativ AI-modeller</translation>
 <translation id="6295751040240588413">Kortets kaldenavn er ugyldigt</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få notifikationer om prissporing</translation>
@@ -2181,7 +2182,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8264966119170358612">Nogle af dine gemte adgangskoder er blevet offentliggjort som følge af et brud på datasikkerheden uden for Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du blev logget ud af din konto, <ph name="USER_NAME" />, som en del af nulstillingen af din iPad. Tryk på "Fortsæt" nedenfor for at logge ind igen.</translation>
 <translation id="8270320981823560179">Drev</translation>
-<translation id="8273982424131314219">Du skal udfylde oplysningerne på <ph name="URL" /></translation>
 <translation id="8274795744553482834">Du er ved at skifte profil</translation>
 <translation id="8275068909952022340">Mere…</translation>
 <translation id="8280797717392145626">Der er modtaget links</translation>
@@ -2415,6 +2415,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fastgjort website</translation>
 <translation id="8990960056509724223">Filen kunne ikke gemmes på grund af din organisations politikker</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
+<translation id="9003263770394939629">Foreslået af Gemini. Administrer forbedret autofyld i indstillingerne.</translation>
 <translation id="9003677638446136377">Kontrollér igen</translation>
 <translation id="9006453925669499173">Menu → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>

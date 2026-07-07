@@ -504,6 +504,7 @@
 <translation id="175656076281618225">手品</translation>
 <translation id="1757773103848038814">Monospace フォント</translation>
 <translation id="1757935267918149452">[Google のパスワードを変更] ボタンです。実行すると、Google アカウントのパスワードを変更できます</translation>
+<translation id="1759776526873274358">セキュリティ向上のためにサイトが使用する確認コードを自動入力します。このコードはお使いの Gmail から取得されます。<ph name="BEGIN_LINK" />この機能の詳細<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">写真（アーカイバル）</translation>
@@ -3129,6 +3130,7 @@
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5862579898803147654">スタッカー 8</translation>
 <translation id="5863515189965725638">IBAN の編集</translation>
+<translation id="5863517400058880216">Gmail から確認コードを自動入力する</translation>
 <translation id="5863847714970149516">表示しようとしているページでは課金される恐れがあります</translation>
 <translation id="5866257070973731571">電話番号の追加</translation>
 <translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> から</translation>
@@ -4519,6 +4521,7 @@
 <translation id="7967973398323409409">自動入力された情報は誰にも閲覧されません</translation>
 <translation id="79682505114836835">値「<ph name="VALUE" />」は無効な 16 進数色コードです。</translation>
 <translation id="7968982339740310781">詳細を表示</translation>
+<translation id="7971403153351954587">組織がコピー操作をモニタリングしています</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
 <translation id="7976053965094442846">分割払いを利用できる後払い決済のカード発行会社です。キーボードは非表示です。</translation>
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
@@ -5133,6 +5136,7 @@
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>
 <translation id="9001701119003382280">コンピュータ周辺機器</translation>
 <translation id="9001963517402879850">ジャンプ！</translation>
+<translation id="9003263770394939629">Gemini による提案。高精度の自動入力は [設定] で管理できます。</translation>
 <translation id="9003639428623471314">Kahu 封筒</translation>
 <translation id="9004367719664099443">VR セッションが進行中</translation>
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>

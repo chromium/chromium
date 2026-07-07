@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1005333234656240382">‏להפעיל ניפוי באגים באמצעות ADB?</translation>
+<translation id="1053898984916097744">אפשר להתחיל משהו חדש או לקבל עזרה במהלך העבודה.</translation>
+<translation id="1061130374843955397">טוב לראות אותך ב-<ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">‏קבלת חשבון באופן אוטומטי מטלפון Android</translation>
 <translation id="1076766328672150609">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי לבטל את נעילת המכשיר הזה.</translation>
 <translation id="1097658378307015415">לפני הכניסה לחשבון, יש להיכנס כאורח כדי להפעיל את הרשת <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">לילד או לילדה שלך יש אפשרות להשתמש בקוד האימות הזה כדי להיכנס למכשיר שלהם</translation>
 <translation id="1122587596907914265">עיצוב טפטים ייחודיים</translation>
 <translation id="1131201598497838573">קוד האימות של הילד או הילדה עודכן</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">‏אנחנו מספקים לך עכשיו את עדכון התוכנה האחרון לאבטחה משופרת ואת התכונות החדשות ביותר של Chromebook. העדכון הזה כולל חוויית הגדרה משופרת כדי שיהיה לך קל להתחיל לעבוד בצורה חלקה ב-Chromebook.</translation>
 <translation id="1176864681932214421">‏יצירת תמונות באמצעות AI</translation>
 <translation id="1177073277575830464">‏ההגדרה המהירה של Android הושלמה. צריך להמשיך את ההגדרה במכשיר <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">צריך לפעול לפי ההוראות בטלפון או להשתמש באפליקציית המצלמה</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1217114730239853757">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex? אם כן, יש להקיש על מקש הרווח.</translation>
 <translation id="1222835797152767346">אפשר להגדיר קוד אימות כדי שיהיה יותר קל להיכנס לחשבון</translation>
+<translation id="1231426483209637778">נזכור את הרשת שלך בשימוש הבא ב-<ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">שינוי גודל הטקסט והתצוגה</translation>
+<translation id="1256588359404100567">ההגדרה סונכרנה מהמכשיר הקודם שלך.</translation>
 <translation id="1272978324304772054">חשבון משתמש זה אינו שייך לדומיין שאליו רשום המכשיר. אם ברצונך להירשם לדומיין אחר, ראשית עליך לבצע שחזור מכשיר.</translation>
+<translation id="1293556467332435079">קבצים</translation>
 <translation id="1307559529304613120">‏אופס! המערכת לא הצליחה לאחסן את טוקן הגישה לטווח ארוך אל ממשק ה-API עבור המכשיר הזה.</translation>
+<translation id="1335929031622236846">רישום המכשיר שלך</translation>
 <translation id="1346669614038013595">‏<ph name="BEGIN_H3" />תכונות לניפוי באגים<ph name="END_H3" />
           <ph name="BR" />
           כדי להתקין ולבדוק קוד מותאם אישית במכשיר ה-ChromeOS שלך, יש לך אפשרות להפעיל תכונות לניפוי באגים במכשיר. הפעולה הזו תאפשר לך:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> המערכת תבצע הפעלה מחדש בזמן התהליך.</translation>
 <translation id="1347625331607114917">‏אימות הקוד בטלפון Android</translation>
 <translation id="1347975661240122359">העדכון יתחיל כשהסוללה תיטען ל-%<ph name="BATTERY_LEVEL" />.</translation>
+<translation id="1353275871123211385">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או מגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בכלים כמו Google Classroom.</translation>
 <translation id="1375557162880614858">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex?</translation>
 <translation id="1375938286942050085">ההגדרה הושלמה. עכשיו אפשר להכין את המכשיר לגיימינג</translation>
 <translation id="1377600615067678409">דילוג לעת עתה</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">שליחה של נתוני אבחון ונתוני שימוש במכשיר.</translation>
 <translation id="1418882096915998312">‏מתבצע רישום ל-Enterprise</translation>
 <translation id="1426410128494586442">כן</translation>
+<translation id="1427269577154060167">מדינה</translation>
 <translation id="1440090277117135316">ההרשמה לשימוש בית ספרי הושלמה</translation>
 <translation id="1473927070149284123">אפשר לנסות שוב או להתחבר לרשת באופן ידני</translation>
 <translation id="1503556098270577657">‏נכנסת לחשבון <ph name="USER_EMAIL" /> באמצעות טלפון Android</translation>
+<translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1521442365706402292">ניהול אישורים</translation>
+<translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1540605929960647700">הפעלת מצב הדגמה</translation>
 <translation id="1572876035008611720">יש להזין את כתובת האימייל</translation>
+<translation id="1588438908519853928">רגיל</translation>
+<translation id="1620510694547887537">מצלמה</translation>
+<translation id="1636212173818785548">אישור</translation>
 <translation id="1642494467033190216">‏הסרה של הגנת rootfs והפעלה מחדש נדרשות לפני שמפעילים תכונות אחרות של ניפוי באגים.</translation>
+<translation id="1646045728251578877">יש עדכון תוכנה</translation>
+<translation id="1650801028905250434">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט. תמיד אפשר לשנות זאת דרך 'הגדרות' &gt; 'קבצים'.</translation>
 <translation id="1668435968811469751">הרשמה ידנית</translation>
 <translation id="1678919064276516737">כתובת האימייל וקוד האימות שהזנת לא תואמים</translation>
 <translation id="1692115862433274081">חשבון אחר</translation>
 <translation id="1695487653372841667">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'.</translation>
 <translation id="169675691788639886">‏למכשיר מוגדר שרת SSH. אין להיכנס לחשבונות רגישים.</translation>
+<translation id="1700517974991662022">הופעל</translation>
 <translation id="1730666151302379551">שכחתי את הסיסמה הישנה</translation>
+<translation id="1749645492410897998">התוכנה בתהליך התקנה</translation>
 <translation id="177053719077591686">‏גיבוי אפליקציות ל-Android ב-Google Drive.</translation>
+<translation id="1798832846931769717">‏‫Google Beam ל-Meet</translation>
 <translation id="1806335016774576568">מעבר לאפליקציה פתוחה אחרת</translation>
 <translation id="1826192255355608658">‏סנכרון הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות של דפדפן Chrome</translation>
+<translation id="1826657447823925402">הגלילה ההפוכה מושבתת</translation>
 <translation id="1831848493690504725">‏לא ניתן להתחבר ל-Google דרך הרשת המחוברת. אפשר לנסות לבחור רשת אחרת או לבדוק את הגדרות הרשת או ההגדרות לשרת ה-proxy (אם משתמשים בשרת proxy).</translation>
 <translation id="1842766183094193446">להפעיל מצב הדגמה?</translation>
 <translation id="1845060436536902492">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר דיבור או צג ברייל. כדי להפעיל את ChromeVox, מקישים על מקש הרווח. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
+<translation id="185766080319917408">‏מקש מרכז האפליקציות נמצא משמאל למקש Alt השמאלי</translation>
 <translation id="1868617395637139709">‏שימוש במיקום באפליקציות ובשירותים של Android.</translation>
+<translation id="1877377730633446520">זה ישתמש בנפח של <ph name="REQUIRED_SPACE" /> בערך. עכשיו יש מקום פנוי בנפח <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">תנאים והגבלות</translation>
+<translation id="189358972401248634">שפות אחרות</translation>
+<translation id="1915734383465415025">מספר החנות</translation>
+<translation id="1919096511823372013">‏מוסיפים קישורים, סמלי אמוג'י ועוד. ניתן גם לקבל עזרה בכתיבה וביצירת תמונות עם AI מבית Google.</translation>
+<translation id="1922496389170590548">חשבון בית ספרי של הילד או הילדה</translation>
+<translation id="1944528062465413897">‏קוד התאמת Bluetooth:</translation>
 <translation id="1987574314042117472">בחירה והתקנה של האפליקציות הפופולריות</translation>
 <translation id="1991829061375381344">‏אין לך מספיק רישיונות זמינים כדי לשייך את המכשיר הזה ל-Google Meet. כדי לרכוש רישיונות נוספים, צריך לפנות למפיץ. אם לדעתך ההודעה הזו מוצגת לך בטעות, עליך לפנות למפיץ.</translation>
+<translation id="200928901437634269">‏שימוש בחשבון Google של הילד או הילדה או בחשבון בית ספרי. אפשר גם להגדיר אמצעי בקרת הורים.</translation>
+<translation id="2013550551806600826">רוצה לנסות? פשוט מפעילים או משביתים את ההגדרה וגוללים עם שתי אצבעות על לוח המגע באזור הבדיקה. ניתן גם להגיע לאפשרות הזו מאוחר יותר דרך 'הגדרות' &gt; 'מכשיר' &gt; 'עכבר ולוח מגע'.</translation>
+<translation id="2018189721942291407">לא בטוחים אם כדאי להירשם?</translation>
 <translation id="2040460856718599782">אופס! משהו השתבש במהלך ניסיון האימות שלך. יש לבדוק שוב את פרטי הכניסה שלך ולנסות שוב.</translation>
 <translation id="2052572566310583903">מותקנת במכשירים אחרים שלך</translation>
 <translation id="2088092308059522196">הרישום אפשרי רק לאחר התקנה של <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">כדי לעבור למסך הבית בכל שלב, מחליקים כלפי מעלה מתחתית המסך.</translation>
 <translation id="2090165459409185032">‏כדי לשחזר את המידע מהחשבון, יש לעבור אל: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">בחירת תכונות נוספות להגדרה</translation>
+<translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
 <translation id="2157779167749714207">‏מכשיר <ph name="DEVICE_TYPE" /> שלך מגיע עם Gemini</translation>
 <translation id="2163470535490402084">צריך להתחבר לאינטרנט כדי להיכנס אל ה-<ph name="DEVICE_TYPE" />.</translation>
+<translation id="2173801458090845390">הוספת מזהה דרישה למכשיר זה</translation>
 <translation id="2178585470774851578">‏פעולה זו מאפשרת פעילות של תכונות לניפוי באגים במערכת ההפעלה של ChromeOS Flex שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
+<translation id="2183570493397356669">הכפתור 'המשך' מושבת</translation>
+<translation id="221872881068107022">גלילה לאחור</translation>
 <translation id="2219081237089444028">מגדירים סיסמה ל-<ph name="DEVICE_TYPE" /> ונכנסים לחשבון בקלות</translation>
+<translation id="2229161054156947610">נותרה יותר משעה אחת</translation>
 <translation id="2296022312651137376">התקבלה דרישה מהדומיין <ph name="DOMAIN_NAME" /> שהמכשיר יהיה אונליין כשנכנסים לחשבון <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657">%<ph name="PROGRESS_PERCENT" />הושלמו</translation>
 <translation id="2319072477089403627">‏מתבצע חיבור לטלפון Android…</translation>
@@ -91,10 +129,16 @@
 <translation id="2450223707519584812">‏לא תהיה אפשרות להוסיף משתמשים מפני שהמפתחות של Google API חסרים. לפרטים, יש לעבור אל <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">הפעלה של שירות שחזור הנתונים</translation>
 <translation id="2485681265915754872">‏התנאים וההגבלות של Google Play</translation>
+<translation id="248676429071089168">החלקה למעלה להזזת הדף למטה</translation>
 <translation id="2501278716633472235">חזרה</translation>
+<translation id="2538084450874617176">מי משתמש/ת במכשיר <ph name="DEVICE_TYPE" /> הזה?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> לא הצליח להתחבר אל <ph name="NETWORK_ID" />. יש לבחור רשת אחרת או לנסות שוב.</translation>
 <translation id="2565214867520763227">הפעלת קורא המסך</translation>
+<translation id="2569972178052279830">שם הקמעונאי</translation>
+<translation id="257779572837908839">‏הגדרה כ-Chromebox לניהול פגישות</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (פלטפורמה <ph name="PLATFORM_VERSION" />‏) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">‏לא, אמשיך בלי ChromeVox</translation>
+<translation id="2663302507110284145">שפה</translation>
 <translation id="2687407218262674387">‏תנאים והגבלות של Google</translation>
 <translation id="2688196195245426394">אירעה שגיאה בעת רישום המכשיר בשרת: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
@@ -102,21 +146,27 @@
 <translation id="2731700343119398978">יש להמתין...</translation>
 <translation id="2732134891301408122">תוכן נוסף של <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">אישור</translation>
+<translation id="274318651891194348">המערכת מחפשת מקלדת</translation>
 <translation id="2754825024506485820">‏בחנות Google Play ניתן למצוא את כל האפליקציות שצריכים, בכל התחומים – מפרודוקטיביות ועד בידור אפשר להתקין אפליקציות בכל שלב.</translation>
 <translation id="2805539617243680210">הכול מוכן!</translation>
+<translation id="2819519502129272135">סנכרון הקבצים מושבת</translation>
 <translation id="2832124733806557606">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי להיכנס למכשיר הזה או לבטל את הנעילה שלו.</translation>
 <translation id="283669119850230892">כדי להשתמש ב-<ph name="NETWORK_ID" /> של הרשת, יש להשלים קודם את ההתחברות לאינטרנט, למטה.</translation>
 <translation id="2849767214114481738">קוד האימות שלך נוסף</translation>
+<translation id="2886119409731773154">התהליך עשוי להימשך עד 30 דקות</translation>
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2902265136119311513">גלישה כאורח</translation>
 <translation id="2904210161403910217">הסיסמה שלך השתנתה מאז הכניסה האחרונה לחשבון</translation>
 <translation id="2918484644467055090">לא ניתן לרשום את המכשיר הזה לארגון שאליו שייך החשבון שלך מפני שהמכשיר מסומן לניהול על ידי ארגון אחר.</translation>
 <translation id="2921081876747860777">יצירת סיסמה להגנה על הנתונים המקומיים שלך.</translation>
+<translation id="2935654492420446828">הוספת חשבון בית ספרי מאוחר יותר</translation>
 <translation id="2950666755714083615">אני רוצה להירשם</translation>
 <translation id="2979966855249721010">יכול להיות שיוצגו לך המלצות לאפליקציות, טיפים ועוד לפי תחומי העניין שלך</translation>
 <translation id="3012917896646559015">יש ליצור קשר עם יצרן החומרה באופן מיידי כדי לשלוח את המחשב לתיקון.</translation>
+<translation id="3023464535986383522">הקראה</translation>
 <translation id="3028371505549235127">‏במקום להזין את הסיסמה לחשבון Google כדי להיכנס, אפשר ליצור סיסמה ל-<ph name="DEVICE_TYPE" /> למכשיר הזה</translation>
 <translation id="3033348223765101500">כך אפשר לשלוט בנתונים שלך</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" מותאם</translation>
 <translation id="3101924772906986970">‏הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות של דפדפן Chrome נשמרות בחשבון שלך ב-Google</translation>
 <translation id="313205617302240621">שכחת את הסיסמה?</translation>
 <translation id="3162070126914310576">‏אי אפשר לרשום את המכשיר הזה כרגע כי היחידה הארגונית שלך (OU) הגיעה למגבלת הרישום הראשונית. צריך לפנות לאדמין לקבלת עזרה.</translation>
@@ -124,20 +174,34 @@
 <translation id="3170072451822350649">ניתן גם לדלג על הכניסה ו<ph name="LINK_START" />לגלוש כאורח<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">‏המכשיר כולל אפשרות שדרוג ל-Chrome Education, אבל שם המשתמש שלך לא משויך לחשבון Google for Education. יש ליצור חשבון Google for Education בכתובת g.co/workspace/edusignup במכשיר אחר.</translation>
 <translation id="3196912927885212665">‏כדי להגדיר באמצעות טלפון Android, צריך להפעיל את ה-Bluetooth של ה-Chromebook</translation>
+<translation id="322708765617468434">תמיד אפשר להוסיף אדם נוסף למכשיר אחרי ההגדרה. כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="3238192140106069382">מתבצעים התחברות ואימות</translation>
+<translation id="3251119461199395237">סנכרון קבצים</translation>
+<translation id="325238099842880997">מומלץ להגדיר כללים דיגיטליים כדי לעזור לילדים לשחק, לחקור ולעשות שיעורי בית</translation>
+<translation id="3255747772218936245">התקנת העדכון</translation>
 <translation id="3261268979727295785">‏בחשבונות של ילדים בוגרים יותר יש לך אפשרות להוסיף בקרת הורים לאחר סיום ההגדרה. באפליקציה 'מה חדש ב-Chromebook' מפורט מידע נוסף על בקרת הורים.</translation>
 <translation id="3278001907972365362">‏כדאי לבדוק אם צריך לבצע פעולה כלשהי בחשבונות Google שלך</translation>
 <translation id="3283148363895519428">‏כדי להמשיך בהגדרה, עליך לפעול לפי ההוראות בטלפון. חשוב לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="3382073616108123819">אופס! המערכת לא הצליחה לקבוע את המזהים של מכשיר זה.</translation>
 <translation id="3382200254148930874">הפיקוח מופסק...</translation>
+<translation id="3384362484379805487">קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן.</translation>
+<translation id="3385092118218578224">%<ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3391721320619127327">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר דיבור או צג ברייל. כדי להפעיל את ChromeVox, לוחצים לחיצה ארוכה על שני מקשי עוצמת הקול למשך 5 שניות. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
+<translation id="3402585168444815892">מתבצעת הרשמה למצב הדגמה</translation>
 <translation id="3433621910545056227">אופס!  המערכת לא הצליחה ליצור את נעילת התכונות של המכשיר המתרחשת בזמן ההתקנה.</translation>
 <translation id="3435896845095436175">הפעלה</translation>
 <translation id="3462413494201477527">האם לבטל את הגדרת החשבון?</translation>
 <translation id="3473241910002674503">במצב טאבלט אפשר להשתמש בכפתורים כדי לעבור אל דף הבית, לחזור לדף הקודם ולעבור בין אפליקציות.</translation>
+<translation id="3473479545200714844">מגדיל התצוגה</translation>
 <translation id="3491669675709357988">‏בחשבון של הילד או הילדה שלך לא מוגדרת בקרת הורים של Family Link. יש לך אפשרות להוסיף בקרת הורים לאחר סיום ההגדרה. באפליקציה 'מה חדש ב-Chromebook' מפורט מידע נוסף על בקרת הורים.</translation>
+<translation id="350397915809787283">אם אין לך חשבון, עליך לבחור באפשרות הראשונה כדי ליצור חשבון.</translation>
 <translation id="3520824492621090923">לאשר את הרישום של מכשיר השילוט והקיוסק?</translation>
+<translation id="3547954654003013442">‏הגדרות Proxy</translation>
+<translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577745545227000795">איסוף נתוני חומרה של <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">תצוגה מקדימה</translation>
+<translation id="3607671391978830431">לילד או לילדה</translation>
+<translation id="3627320433825461852">נותרה פחות מדקה אחת</translation>
 <translation id="3635199270495525546">‏זוהה מודול פלטפורמה מהימן (TPM)</translation>
 <translation id="3650753875413052677">שגיאה בהרשמה</translation>
 <translation id="3661106764436337772">לכתוב מהר יותר ועם יותר ביטחון</translation>
@@ -149,16 +213,23 @@
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="3712050472459130149">יש לעדכן את החשבון</translation>
 <translation id="3733296813637058299">‏נתקין את האפליקציות האלו בשבילך. אפליקציות נוספות בשביל <ph name="DEVICE_TYPE" /> זמינות בחנות Play.</translation>
+<translation id="3740945083753997630">הקטנה של התצוגה והטקסט</translation>
 <translation id="376841534249795524">למה ישמש אותך ה-<ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google‎<ph name="END_LINK1" />‏ ואת <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ואני מאשר/ת אותם.</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3800828618615365228">‏תנאים נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="3828953470056652895">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />התנאים וההגבלות של Google Play<ph name="END_LINK3" /> ואני מאשר/ת אותם.</translation>
+<translation id="3837569373891539515">אפשר לבחור את כל האפשרויות המתאימות האפשרויות האלה זמינות גם בהגדרות לאחר סיום ההגדרה של ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="385051799172605136">חזרה</translation>
+<translation id="3856470183388031602">‏שימוש בחשבון Google ב-<ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
 <translation id="3897746662269329507">‏מכשיר <ph name="DEVICE_TYPE" /> מיועד למשחקים. בשלב הבא, תיפתח האפליקציה 'מה חדש ב-Chromebook', ובה תהיה לך גישה למאות משחקים עדכניים, למבצעים על משחקים ולתכונות הגיימינג של המכשיר.</translation>
+<translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3910588685973519483">‏יצירת טפטים באמצעות AI</translation>
+<translation id="3924259174674732591">גודל הטקסט והתצוגה: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3983400541576569538">ייתכן אובדן של נתונים מכמה אפליקציות</translation>
+<translation id="3984159763196946143">לא ניתן היה להתחיל מצב הדגמה</translation>
 <translation id="3994318741694670028">‏לצערנו, המחשב שלך מוגדר באמצעות מזהה חומרה פגום. המצב הזה מונע מ-ChromeOS Flex להתקין את עדכוני האבטחה האחרונים, <ph name="BEGIN_BOLD" />ויכול להיות שהמחשב שלך יהיה חשוף להתקפות זדוניות<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">הגדרת קוד אימות</translation>
 <translation id="4044883420905480380">‏התחברת ל-Wi-Fi ונכנסת אל <ph name="USER_EMAIL" /> באמצעות טלפון Android</translation>
@@ -169,6 +240,9 @@
 <translation id="4135746311382563554">‏תנאים והגבלות נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="41365691917097717">‏בחירה להמשיך תגרום להפעלת ניפוי באגים באמצעות ADB במהלך היצירה והבדיקה של אפליקציות ל-Android. חשוב לשים לב שהפעולה הזו מאפשרת את ההתקנה של אפליקציות ל-Android שלא אומתו על ידי Google. כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות המקוריות.</translation>
 <translation id="4165942112764990069">‏החשבון <ph name="USER_EMAIL" /> לא שייך לארגון תקין. יש לפנות אל מנהל המערכת. מנהלי מערכת יכולים להגדיר את הארגון שלהם בכתובת: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">גדול</translation>
+<translation id="4213918571089943508">‏חשבון Google של הילד או הילדה</translation>
+<translation id="4228071595943929139">שימוש בכתובת האימייל של הארגון שלך</translation>
 <translation id="4232484478444192782">‏יש כל מה שצריך בטלפון Android שלך. רשת ה-Wi-Fi והסיסמה מועברות.</translation>
 <translation id="4242145785130247982">אין תמיכה באישורי לקוח מרובים.</translation>
 <translation id="4242577469625748426">התקנת הגדרות המדיניות במכשיר: <ph name="VALIDATION_ERROR" /> נכשלה.</translation>
@@ -178,30 +252,47 @@
 <translation id="4278498748067682896">‏השימוש בשדרוג של הקיוסק והשילוט מאפשר למכשיר לפעול רק במצב קיוסק או שילוט. אם רוצים לאפשר למשתמשים להיכנס לחשבון במכשיר, צריך לחזור אחורה ולבצע רישום באמצעות שדרוג ל-Chrome Enterprise.</translation>
 <translation id="4287157641315808225">‏כן, להפעלת ChromeVox</translation>
 <translation id="4289732974614035569">בחירת קוד אימות</translation>
+<translation id="4291265871880246274">תיבת דו-שיח להתחברות</translation>
+<translation id="4305817255990598646">מעבר</translation>
 <translation id="4309165024397827958">‏מומלץ לאפשר לאפליקציות ולשירותים של Android עם הרשאת מיקום להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום.</translation>
 <translation id="4317733381297736564">רכישות מתוך האפליקציות</translation>
 <translation id="4341905082470253054">‏סטטוס ה-TPM בבדיקה…</translation>
 <translation id="4370975561335139969">כתובת האימייל והסיסמה שהזנת אינן תואמות</translation>
 <translation id="4373418556073552953">‏כניסה באמצעות טלפון Android</translation>
+<translation id="4378556263712303865">דרישה למכשיר</translation>
+<translation id="4385905942116811558">‏המערכת מחפשת מכשירי Bluetooth ו-USB</translation>
 <translation id="4403266582403435904">‏קל לשחזר נתונים או להחליף מכשירים בכל שלב. הגיבויים מועלים ל-Google ומוצפנים באמצעות הסיסמה לחשבון Google של הילד או הילדה שלך.</translation>
 <translation id="4410545552906060960">אפשר להשתמש במספר (קוד) במקום בסיסמה כדי לבטל את נעילת המכשיר. ניתן להגדיר את הקוד מאוחר יותר ב'הגדרות'.</translation>
 <translation id="4415213869328311284">ה-<ph name="DEVICE_TYPE" /> שלך מוכן לשימוש.</translation>
+<translation id="443031431654216610">יש להשתמש בספרות בלבד</translation>
+<translation id="4448560527907365660">שמירה והצגת פריטים נוספים</translation>
 <translation id="4449948729197510913">‏שם המשתמש שלך שייך לחשבון הארגוני של הארגון שלך. כדי לרשום מכשירים בחשבון, תחילה יש לאמת שיש לך בעלות על הדומיין במסוף Admin. נדרשות הרשאות אדמין בחשבון כדי לבצע את האימות.</translation>
 <translation id="4450974146388585462">אבחן</translation>
 <translation id="445099924538929605">‏מערכת <ph name="DEVICE_OS" /> זיהתה TPM פעיל שניתן לשמור בו את הנתונים שלך באופן מאובטח יותר.</translation>
+<translation id="4472298120638043495">‏אפשר להשתמש בשפה המועדפת שהגדרת בחשבון Google ‏(<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
+<translation id="450867954911715010">הגדרות נגישות</translation>
+<translation id="4519605771716872386">סנכרון הקבצים מופעל</translation>
+<translation id="4531924570968473143">את מי ברצונך להוסיף אל <ph name="DEVICE_TYPE" /> זה?</translation>
 <translation id="4566170377336116390">‏אם רוצים להחליף אחרי הרישום, צריך לבצע איפוס להגדרות המקוריות (Powerwash) במכשיר.</translation>
 <translation id="4567512141633030272">אפשרות הכניסה שגויה?</translation>
+<translation id="4567533462991917415">תמיד אפשר להוסיף עוד אנשים לאחר ההגדרה. כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="4568213207643490790">‏מצטערים, לא ניתן להשתמש בחשבונות Google במכשיר זה.</translation>
 <translation id="4611759022973144129">אפשר להזין את הסיסמה הזו כדי להיכנס אל <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">אפשר להגדיר את המכשיר לעבודה או לשימוש אישי</translation>
+<translation id="4689235506267737042">בחירת העדפות ההדגמה</translation>
 <translation id="4727847987444062305">גלישה מנוהלת כאורח</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="473936925429402449">נבחר, תוכן נוסף <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119">‏<ph name="USER_EMAIL" /> הוא לא חשבון חוקי של Google for Education. יש לפנות לאדמין. אדמינים יכולים להגדיר את הארגון שלהם בכתובת g.co/workspace/edusignup.</translation>
+<translation id="4780558987886269159">לעבודה</translation>
 <translation id="4806457879608775995">בדיקת התנאים ושליטה בנתונים שלך</translation>
+<translation id="4814327014588285482">אני רוצה לדלג ולקבל תזכורת מאוחר יותר</translation>
 <translation id="4830502475412647084">‏מתקין עדכון OS</translation>
 <translation id="4837926214103741331">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם בעל המכשיר כדי לקבל הרשאת כניסה.</translation>
+<translation id="4844333629810439236">מקלדות אחרות</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
+<translation id="4867272607148176509">ההורים יכולים לאשר או לחסום אפליקציות, להגדיר מגבלות זמן ולשלוט בגלישה באינטרנט. אפשר להוסיף חשבון בית ספרי בשלב מאוחר יותר כדי לגשת לרוב משאבי בית הספר.</translation>
 <translation id="4877652723592270843">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex? אם כן, יש ללחוץ לחיצה ארוכה על 2 הלחצנים של עוצמת הקול למשך 5 שניות.</translation>
 <translation id="4899696330053002588">מכילה מודעות</translation>
 <translation id="49027928311173603">המדיניות שהורדה מהשרת אינה חוקית: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +300,17 @@
 <translation id="4944310289250773232">שירות האימות הזה מתארח בדומיין <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">בחירת קוד</translation>
 <translation id="4965808351167763748">‏בחרת להגדיר שהמכשיר הזה יפעיל את Hangouts Meet. להמשיך?</translation>
+<translation id="4987944280765486504">‏ה-Chromebook יופעל מחדש כשההורדה תסתיים, וניתן יהיה להמשיך בהגדרה.</translation>
 <translation id="5029287942302939687">הסיסמה הוגדרה</translation>
 <translation id="503155457707535043">הורדת האפליקציות מתבצעת</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
 <translation id="5062930723426326933">הכניסה לחשבון נכשלה. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
+<translation id="5085162214018721575">חיפוש עדכונים מתבצע</translation>
 <translation id="5097306410549350357">מידע נוסף על השימוש במיקום</translation>
 <translation id="5107486920067578245">‏<ph name="BEGIN_PARAGRAPH1" />רוצה להתחיל לכתוב, לתכנן, ללמוד ועוד בעזרת Google AI? כל מה שצריך הוא להתכתב בצ׳אט עם Gemini<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />כדי להתחיל להשתמש ב-Gemini אחרי ההגדרה, אפשר לבחור את האפליקציה במדף, שנמצא בחלק התחתון של המסך.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">חבר את ה-<ph name="DEVICE_TYPE" /> למקור חשמל.</translation>
+<translation id="5145876360421795017">אני לא רוצה לרשום את המכשיר</translation>
 <translation id="5147516217412920887">כדי לאמת את הקוד, עליך לפעול לפי ההוראות בטלפון</translation>
 <translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591">‏<ph name="BEGIN_H3" />תכונות לניפוי באגים<ph name="END_H3" />
@@ -237,6 +331,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" />  המערכת תבצע הפעלה מחדש בזמן התהליך.</translation>
+<translation id="5215502535566372932">יש לבחור מדינה</translation>
 <translation id="5234523649284990414">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר של דיבור או צג ברייל. כדי להפעיל את ChromeVox, מקישים על מקש הרווח. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5240931875940563122">‏כניסה באמצעות טלפון Android</translation>
@@ -249,20 +344,26 @@
 <translation id="5355501370336370394">רישום של מכשיר ארגוני</translation>
 <translation id="5372529912055771682">מצב ההרשמה שסופק אינו נתמך על ידי גרסה זו של מערכת ההפעלה. יש לוודא שפועלת הגרסה החדשה ביותר ולנסות שוב.</translation>
 <translation id="5397378439569041789">רישום של מכשיר שילוט או קיוסק</translation>
+<translation id="5397794290049113714">את/ה</translation>
 <translation id="5411022484772257615">לא ניתן היה להשלים את ההרשמה לשימוש בית ספרי</translation>
 <translation id="5413640305322530561">מידע נוסף על נתוני השימוש וניתוח הביצועים</translation>
 <translation id="542750953150239272">‏המשך מבטא את הסכמתך לכך שהמכשיר יוכל להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק ומיצרן המכשיר שלך, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. ייתכן שיחולו חיובים על השימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מהאפליקציה.</translation>
 <translation id="542948651837270806">‏צריך להתקין עדכון לקושחה של Trusted Platform Module. יש לעיין בכתובת <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">אופס. משהו השתבש בכניסה לחשבון</translation>
+<translation id="5453829744223920473">הילד או הילדה יכולים להשתמש בכל האפליקציות, הסימניות והמשאבים של בית הספר, בדיוק כמו שהם משתמשים בכיתה. בית הספר קובע את הכללים המנחים.</translation>
 <translation id="5463450804024056231">הרשמה לקבלת אימיילים לגבי <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">‏המשך הפעולה מבטא את הסכמתך לכך שהמכשיר הזה יוכל גם להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק של הילד או הילדה שלך ומיצרן המכשיר, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מתוך האפליקציה.</translation>
+<translation id="5502915260472117187">ילד או ילדה</translation>
 <translation id="5511823366942919280">בטוח שברצונך להגדיר מכשיר זה כ'כריש'?</translation>
+<translation id="5513807280330619196">מחשבון</translation>
 <translation id="5527474464531963247">אפשר גם לבחור רשת אחרת.</translation>
 <translation id="5539070192556911367">‏לא ניתן להתחבר ל-Google</translation>
+<translation id="5549511085333906441">בחירת ההגדרה</translation>
 <translation id="557722062034137776">‏איפוס של המכשיר לא ישפיע על חשבונות Google שלך או על נתונים המסונכרנים לחשבונות אלה. אך כל הקבצים המאוחסנים במכשיר באופן מקומי יימחקו.</translation>
 <translation id="5626172233890210551">אפשר גם להשתמש בסיסמה</translation>
 <translation id="5636996382092289526">כדי להשתמש ב-<ph name="NETWORK_ID" /> ייתכן שראשית יהיה עליך <ph name="LINK_START" />להיכנס לדף הכניסה של הרשת<ph name="LINK_END" />, שייפתח אוטומטית בעוד כמה שניות. אם הוא לא נפתח, לא ניתן יהיה להשתמש ברשת.</translation>
 <translation id="5655296450510165335">שיוך מכשיר לארגון</translation>
+<translation id="565899488479822148">מתבצעת התקנה של העדכון האחרון</translation>
 <translation id="5659964844710667266">יצירת סיסמה למכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">מזהה נכסים</translation>
 <translation id="5684950556880280580">הסיסמה שלך עודכנה</translation>
@@ -272,19 +373,26 @@
 <translation id="5765425701854290211">אנחנו מצטערים, אבל חלק מהקבצים נפגמו והעדכון לא הצליח. הקבצים המסונכרנים שלך לא נפגעו.</translation>
 <translation id="5770125698810550803">הצגת כפתורי ניווט</translation>
 <translation id="5799478978078236781">אפשר לקבל טיפים, מידע על מבצעים ועדכונים בנוגע ל-<ph name="DEVICE_TYPE" /> ולשתף משוב.</translation>
+<translation id="5800703268655655701">בחירת עיצוב בהיר או כהה</translation>
 <translation id="5804259315582798390">נכשלה ההפעלה של שחזור הנתונים המקומיים</translation>
 <translation id="5810809306422959727">החשבון הזה לא מתאים לבקרת הורים</translation>
+<translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>
 <translation id="5852112051279473187">אופס! משהו השתבש בעת הרשמת התקן זה. יש לנסות שוב או לפנות לנציג תמיכה.</translation>
 <translation id="5852137567692933493">‏הפעלה מחדש וביצוע Powerwash</translation>
 <translation id="5856721540245522153">הפעלת תכונות לניפוי באגים</translation>
+<translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5870086504539785141">סגירת תפריט הנגישות</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895335062901455404">‏הפעילות וההעדפות השמורות שלך יהיו מוכנות בכל מכשיר ChromeOS Flex לאחר הכניסה באמצעות חשבון Google. יש לך אפשרות לבחור מה לסנכרן בהגדרות.</translation>
+<translation id="5916664084637901428">פועל</translation>
 <translation id="5919305207330938913">‏השימוש בנתונים ייעשה בהתאם ל<ph name="BEGIN_LINK" />מדיניות הפרטיות של Google<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">‏אין ברשותך מספיק רישיונות זמינים לשיוך המכשיר הזה ל-Google Meet. עליך לפנות למחלקת המכירות כדי לרכוש רישיונות נוספים. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="5939518447894949180">איפוס</translation>
+<translation id="5948536763493709626">‏יש לחבר מקלדת או עכבר, או להמשיך בהגדרה באמצעות מסך המגע. אם ברצונך להשתמש במכשירי Bluetooth, עליך לוודא שהמכשירים מוכנים להתאמה.</translation>
 <translation id="5959471481388474538">הרשת לא זמינה</translation>
 <translation id="6016178549409952427">ניווט אל תוכן נוסף <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">כפתור לבחירת שפה ומקלדת. השפה המוגדרת עכשיו היא <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6051354611314852653">‏אופס!  המערכת לא הצליחה לאמת את הגישה של מכשיר זה לממשק ה-API.</translation>
 <translation id="6055544610007596637">‏התקנת אפליקציות ל-<ph name="DEVICE_TYPE" /> מחנות Google Play</translation>
@@ -305,35 +413,49 @@
 <translation id="6301300352769835063">‏מתן הרשאה ל-Google להשתמש בנתוני החומרה כדי לעזור בשיפור של <ph name="DEVICE_OS" />. אם לא מעניקים הרשאה, הנתונים האלה עדיין נשלחים אל Google כדי לקבוע מהם העדכונים המתאימים, אבל הנתונים לא נשמרים ולא נעשה בהם שימוש אחר. מידע נוסף זמין בכתובת g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">הכניסה מבוצעת בעזרת <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">הפעלת בהצלחה תכונות ניפוי באגים במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
+<translation id="6343262564968371601">‏מוצאים את מה שמחפשים באמצעות חיפוש ב-Google, בקבצים, באפליקציות ועוד</translation>
 <translation id="635609604405270300">אין לכבות את המכשיר</translation>
 <translation id="6367097275976877956">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS? אם כן, יש להקיש על מקש הרווח.</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6380143666419481200">בסדר, מקובל עליי</translation>
 <translation id="640457954117263537">‏שימוש בנתוני המיקום באפליקציות ובשירותים של ChromeOS ו-Android.</translation>
 <translation id="6418511932144861495">התקנה של עדכון קריטי</translation>
+<translation id="6478849105642611893">‏מקש ההוספה המהירה נמצא מתחת למקש Tab</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">בחירת שפה</translation>
 <translation id="6495266441917713704">‏לא ניתן להעביר Wi-Fi</translation>
 <translation id="6515620015470298987">‏הכניסה נכשלה בגלל בעיה בבדיקת תצורת המכשיר. כדאי לבצע Powerwash במכשיר <ph name="DEVICE_TYPE" /> ולנסות שוב.</translation>
 <translation id="6519689855001245063">בדיקת זכאות</translation>
 <translation id="6532527800157340614">הכניסה נכשלה כי לא ניתן היה לאחזר את טוקן הגישה שלך. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
+<translation id="653920215766444089">המערכת מחפשת אמצעי הצבעה</translation>
 <translation id="65513682072153627">סמל הניהול מוצג כשהגדרה או תכונה כלשהי מנוהלת על ידי האדמין.</translation>
+<translation id="6561726789132298588">Enter</translation>
 <translation id="6607890859198268021">‏החשבון <ph name="USER_EMAIL" /> כבר מנוהל על ידי <ph name="DOMAIN" />. כדי להשתמש בבקרת הורים בחשבון Google אחר, יש לצאת לאחר ההגדרה ולבחור באפשרות "הוספת משתמש" במסך הכניסה.</translation>
 <translation id="6642720633335369752">כדי להציג את כל החלונות הפתוחים של האפליקציות, מחליקים כלפי מעלה מתחתית המסך ולוחצים לחיצה ארוכה.</translation>
 <translation id="6648911618876616409">יש עדכון קריטי המוכן להתקנה. צריך להיכנס לחשבון כדי להתחיל.</translation>
 <translation id="6671497123040790595">ההגדרה של ניהול על ידי <ph name="MANAGER" /> מתבצעת</translation>
+<translation id="6675665718701918026">התקן הצבעה מחובר</translation>
 <translation id="667752334740867460">‏מתקבלים פרטי Wi-Fi…</translation>
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">יש לך אפשרות לשחזר את <ph name="EMAIL" />, אבל הנתונים המקומיים יימחקו.</translation>
 <translation id="6748980958975836188">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google‎<ph name="END_LINK1" />‏ ואת <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ואני מאשר/ת אותם.</translation>
+<translation id="6749473226660745022">תמונות</translation>
+<translation id="6754918760968695779">הוספה מהירה</translation>
 <translation id="6789834167207639931">‏יש להזין שוב את הסיסמה לחשבון Google במסך הבא כדי להשלים את השחזור</translation>
 <translation id="6800893479155997609">האפליקציות המובילות ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">‏מדיניות הפרטיות של Google</translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">תהליך הכניסה השתנה</translation>
+<translation id="6852529053326738838">כדאי לבקש מהארגון שלך, או להירשם באמצעות האימייל בעבודה, כדי לבדוק אם החשבון שלך עומד בדרישות.</translation>
+<translation id="6867671714894555998">מקלדת חדשה שעוזרת לבצע דברים במהירות</translation>
 <translation id="6883319974225028188">אופס! המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
+<translation id="6888831646723563669">כדאי להתחבר כדי ליהנות מכל התכונות של מכשיר <ph name="DEVICE_TYPE" /> החדש</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6918733588290914545">‏הגדרה מהירה בעזרת טלפון Android</translation>
 <translation id="6920473853105515518">‏כדאי לוודא שמכשיר <ph name="DEVICE_TYPE" /> מחובר לאינטרנט ולנסות שוב. אפשר גם לעבור לכתובת play.google/play-terms במכשיר אחר.</translation>
+<translation id="6929126689972602640">‏בחשבונות בית ספריים, אין תמיכה באמצעי בקרת הורים. כדי להוסיף חשבון בית ספרי לצורך גישה אל Google Classroom ואתרים אחרים למטלות לימודיות, תחילה יש להיכנס באמצעות החשבון האישי של הילד או הילדה. ניתן להוסיף את החשבון הבית ספרי בשלב מאוחר יותר בהגדרה.</translation>
+<translation id="6935031746833428401">מידע נוסף על ניהול מכשירים</translation>
+<translation id="6950351336108213154">הציוד ההיקפי של המכשיר מתעדכן</translation>
 <translation id="6955698182324067397">‏הפעולה הזו מאפשרת את פעילות התכונות לניפוי באגים ב-ChromeOS שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6969216690072714773">הזנת פרטים חדשים או עדכון פרטים קיימים שישויכו למכשיר הזה.</translation>
@@ -343,23 +465,37 @@
         אם אין צורך להשתמש
         בו, צריך לשנות את <ph name="LINK_START" />ההגדרות לשרת proxy<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">‏עליך להפעיל את ה-Bluetooth וה-Wi-Fi בטלפון</translation>
+<translation id="6996438701394974959">הגדלה של התצוגה והטקסט</translation>
+<translation id="6998793565256476099">רישום של מכשיר לשיחות ועידה בווידאו</translation>
 <translation id="7025082428878635038">דרכים חדשות לנווט באמצעות תנועות</translation>
 <translation id="7034692021407794547">‏תחילה מנהל מערכת עם הרשאות 'ניהול חיובים' חייב לקבל את התנאים וההגבלות של הציוד ל-Google Meet בקטע 'ציוד ל-Google Meet' של מסוף ה-Admin.</translation>
+<translation id="7039951224110875196">‏יצירת חשבון Google לילד או לילדה</translation>
 <translation id="7065223852455347715">מכשיר זה נעול במצב שמונע הרשמה של ארגונים. אם ברצונך לרשום את המכשיר, עליך לעבור תחילה להגדרות של גילוי מכשירים.</translation>
+<translation id="7066572364168923329">בחירת ההגדרה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">‏טעינת דף הכניסה באמצעות הגדרות שרת ה-proxy הנוכחיות נכשלה. <ph name="GAIA_RELOAD_LINK_START" />יש לנסות להיכנס שוב<ph name="GAIA_RELOAD_LINK_END" /> או להשתמש ב<ph name="PROXY_SETTINGS_LINK_START" />הגדרות שונות לשרת ה-proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">המכשיר הזה הועבר למצב 'ללא הקצאה' על ידי מנהל המערכת. על מנת להפעיל אותו עבור הרשמה, יש לבקש ממנהל המערכת להעביר את המכשיר למצב המתנה.</translation>
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
 <translation id="7135729336746831607">‏האם להפעיל את Bluetooth?</translation>
 <translation id="7141105143012495934">הכניסה נכשלה מפני שלא ניתן היה לאחזר את פרטי החשבון. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
+<translation id="7171259390164035663">אני לא רוצה להירשם</translation>
 <translation id="7189451821249468368">אין לך מספיק שדרוגים כדי לרשום את המכשיר הזה. ניתן לרכוש עוד שדרוגים דרך מחלקת המכירות. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="7202337678781136582">‏צריך לסרוק את קוד ה-QR באמצעות טלפון Android</translation>
+<translation id="7228854227189381547">לא רוצה לעבור</translation>
+<translation id="7230881857327093958">השינויים יוחלו לאחר ההגדרה</translation>
 <translation id="7260186537988033909">הרישום של מכשיר השילוט והקיוסק הושלם</translation>
+<translation id="7284411326658527427">כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="7290242001003353852">שירות הכניסה הזה, המתארח ב-<ph name="SAML_DOMAIN" />, ניגש אל המצלמה שלך.</translation>
+<translation id="7311005168897771689">‏גישה לקבצים ב-Google Drive במצב אופליין</translation>
 <translation id="7317831949569936035">הרשמה לשימוש בית ספרי</translation>
+<translation id="7326004502692201767">הגדרת מכשיר <ph name="DEVICE_TYPE" /> הזה בשביל ילד או ילדה</translation>
+<translation id="732659786514229249">לרשום את המכשיר בארגון שלך?</translation>
 <translation id="7329154610228416156">הכניסה נכשלה מפני שהוגדר שימוש בכתובת אתר לא מאובטחת (<ph name="BLOCKED_URL" />). יש ליצור קשר עם מנהל המערכת.</translation>
 <translation id="7345706641791090287">עליך לאשר את הסיסמה שלך</translation>
+<translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
+<translation id="7403642243184989645">מתבצעת הורדת משאבים</translation>
+<translation id="7406912950279255498">מצב היפוך צבעים</translation>
 <translation id="7416263748877373774">לא ניתן לטעון את התנאים וההגבלות. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="7475742997309661417">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר של דיבור או צג ברייל. כדי להפעיל את ChromeVox, לוחצים לחיצה ארוכה על שני מקשי עוצמת הקול למשך 5 שניות. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
 <translation id="7476454130948140105">‏הסוללה חלשה מדי להתקנת העדכון (‎<ph name="BATTERY_PERCENT" />%‎)</translation>
@@ -369,10 +505,13 @@
 <translation id="7506541170099744506">הרישום של המכשיר שלך <ph name="DEVICE_TYPE" /> לניהול ארגוני הסתיים בהצלחה.</translation>
 <translation id="7509097596023256288">מתבצעת הגדרה של הניהול</translation>
 <translation id="7543104066686362383">יש להפעיל תכונות ניפוי באגים במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה</translation>
+<translation id="7544227555407951270">רישום המכשיר</translation>
+<translation id="7549434883223124329">רוצה לעבור לשפה אחרת במכשיר?</translation>
 <translation id="7553242001898162573">הזנת הסיסמה</translation>
 <translation id="7556242789364317684">‏לצערנו, <ph name="SHORT_PRODUCT_NAME" /> לא יכול לשחזר את ההגדרות שלך. כדי לתקן את השגיאה, <ph name="SHORT_PRODUCT_NAME" /> צריך לאפס את המכשיר שלך באמצעות Powerwash.</translation>
 <translation id="7560756177962144929">סנכרון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">אין מספיק שטח אחסון לעדכון</translation>
+<translation id="7616214729753637086">רישום המכשיר מתבצע...</translation>
 <translation id="7622114377921274169">בטעינה.</translation>
 <translation id="7630426712700473382">המכשיר הזה מנוהל על ידי <ph name="MANAGER" />, וכדי להשתמש בו צריך להיכנס לחשבון בכל פעם.</translation>
 <translation id="7639914187072011620">‏נכשל הניסיון לאחזר את ההפניה האוטומטית אל SAML מהשרת</translation>
@@ -382,26 +521,41 @@
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
 <translation id="7660116474961254898">יש לפעול לפי ההוראות בטלפון</translation>
 <translation id="7661451191293163002">לא ניתן להשיג אישור הרשמה.</translation>
+<translation id="7666531788977935712">הכפתור 'המשך' מופעל</translation>
 <translation id="7671139479636735732">אפשר ללחוץ לחיצה ימנית כדי להמחיש את הרעיונות שלך בקלות</translation>
 <translation id="770831926727930011">הנתונים המקומיים מוגנים באמצעות הסיסמה הישנה שלך. עליך להזין את הסיסמה הישנה כדי לשחזר את הנתונים המקומיים.</translation>
 <translation id="7722040605881499779">השטח שנדרש כדי לעדכן: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">מתבצעת התאמה עם "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7746045113967198252">הגדלה או הקטנה של פריטים במסך, כולל טקסט. ניתן גם להגיע לאפשרות הזו מאוחר יותר דרך 'הגדרות' &gt; 'מכשיר' &gt; 'מסכים'.</translation>
 <translation id="7760176388948986635">‏מתן אפשרות לאפליקציות, לאתרים ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר הזה. ההגדרה 'קביעת מיקום יותר מדויקת' מספקת מיקום מדויק יותר לאפליקציות ולשירותים של Android. כדי לעשות את זה Google מעבדת מדי פעם נתונים על חיישני מכשיר ואותות אלחוטיים מהמכשיר הזה כדי לתמוך במיקור המונים של מיקומי אותות אלחוטיים. השימוש בנתונים האלה נעשה ללא זיהוי של המשתמש כדי לשפר את מידת הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום. כמו כן, הנתונים משמשים כדי לשפר, לספק ולתחזק את השירותים של Google על סמך האינטרסים הלגיטימיים של Google ושל צדדים שלישיים כדי לשרת את צורכי המשתמשים.</translation>
 <translation id="7784875615510899699">‏אין לך מספיק רישיונות זמינים כדי לשייך את המכשיר הזה ל-Google Beam. כדי לרכוש רישיונות נוספים, צריך לפנות למפיץ. אם לדעתך ההודעה הזו מוצגת לך בטעות, עליך לפנות למפיץ.</translation>
+<translation id="7791269138074599214">שיטת הקלט</translation>
+<translation id="7791436592012979144">הגלילה ההפוכה מופעלת</translation>
 <translation id="7792012425874949788">משהו השתבש בכניסה לחשבון</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7803657407897251194">‏כדי להמשיך בהגדרה במכשיר Android, עליך לחבר את <ph name="DEVICE_TYPE" /> לרשת</translation>
+<translation id="7842692330619197998">‏אם צריך ליצור חשבון חדש, ניתן לעשות זאת בכתובת g.co/ChromeEnterpriseAccount.</translation>
 <translation id="7851457902707056880">הכניסה הוגבלה לחשבון הבעלים בלבד. יש לבצע אתחול מחדש ולהיכנס באמצעות חשבון הבעלים. המערכת תבצע אתחול מחדש באופן אוטומטי בתוך 30 שניות.</translation>
 <translation id="7870730066603611552">בדיקת אפשרויות הסינכרון אחרי ההגדרה</translation>
 <translation id="7883792253546618164">בכל שלב ניתן לבטל את ההרשמה.</translation>
+<translation id="7887864092952184874">‏עכבר Bluetooth מחובר</translation>
 <translation id="7906440585529721295">הנתונים המקומיים יימחקו</translation>
+<translation id="7910725946105920830">‏לשימוש בחשבון Google האישי שלך</translation>
+<translation id="7918257978052780342">הרשמה</translation>
+<translation id="7939062555109487992">אפשרויות מתקדמות</translation>
 <translation id="7943311690198910993">שיטת הכניסה לחשבון עודכנה</translation>
 <translation id="795240231873601803">הרשמה לארגון באמצעות חשבון לצורכי עבודה וחשבון בית ספרי</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7975504106303186033">‏עליך לרשום את המכשיר עם Chrome Education לחשבון ששייך למוסד לימודים. כדי להירשם לחשבון חדש, יש להיכנס לכתובת g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">מזהה נכס: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">כדאי לאתחל את המכשיר כדי לתקן את השגיאה.</translation>
 <translation id="7990958035181555539">‏העברת ההגדרות של ה-Wi-Fi באופן אוטומטי מטלפון Android</translation>
+<translation id="8022466874160067884">‏צריך להזין את חשבון Google ואת הסיסמה</translation>
+<translation id="8049029041626250638">‏יש לחבר מקלדת או עכבר. אם ברצונך להשתמש במכשירי Bluetooth, עליך לוודא שהמכשירים מוכנים להתאמה.</translation>
 <translation id="8054563304616131773">יש להזין כתובת אימייל חוקית</translation>
+<translation id="8054921503121346576">‏מקלדת USB מחוברת</translation>
 <translation id="8065144531309810062">‏שימוש ב-AI מבית Google לשיפור היצירתיות והפרודוקטיביות</translation>
+<translation id="8082106343289440791">האם להתאים עם "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">‏מנהל המערכת צריך קודם לאשר את התנאים וההגבלות ברשימת מכשירי Chrome שבמסוף ה-Admin.</translation>
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="8129265306888404830">‏כדי להשתמש בכתובת האימייל של הארגון שלך (<ph name="EMAIL_DOMAIN" />), עליך להירשם לארגון. אם המכשיר הזה מיועד לשימוש אישי, עליך להיכנס באמצעות חשבון Google האישי.</translation>
@@ -409,6 +563,7 @@
 <translation id="8146177459103116374">אם נרשמת כבר במכשיר זה, יהיה באפשרותך <ph name="LINK2_START" />להתחבר כמשתמש קיים<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">הכניסה נכשלה. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
 <translation id="8147346945017130012">‏שליחה אוטומטית של דוחות קריסה ושל נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS.</translation>
+<translation id="8152760814912191567">‏‫Google Beam ל-Zoom</translation>
 <translation id="815491593104042026">אופס! האימות נכשל מפני שהוא הוגדר להשתמש בכתובת אתר לא-מאובטחת (<ph name="BLOCKED_URL" />). יש לפנות למנהל המערכת.</translation>
 <translation id="8157704005178149728">המערכת מגדירה פיקוח</translation>
 <translation id="8174047975335711832">מידע מהמכשיר</translation>
@@ -417,20 +572,26 @@
 <translation id="8241806945692107836">קביעת תצורת המכשיר...</translation>
 <translation id="8242426110754782860">המשך</translation>
 <translation id="826905130698769948">אישור לקוח לא חוקי</translation>
+<translation id="8271379370373330993">עכשיו יש כמה שלבים שהורים צריכים להשלים. אפשר יהיה להחזיר את ה-<ph name="DEVICE_TYPE" /> לילד/ה לאחר הגדרת החשבון.</translation>
 <translation id="8274924778568117936">אין לכבות או לסגור את ה-<ph name="DEVICE_TYPE" /> לפני סיום העדכון. ה-<ph name="DEVICE_TYPE" /> יופעל מחדש באופן אוטומטי בסיום ההתקנה.</translation>
 <translation id="8281886186245836920">דילוג</translation>
+<translation id="8291942417224950075">לשימוש אישי</translation>
 <translation id="8304383784961451596">‏אין לך הרשאה להשתמש במכשיר הזה. עליך לפנות למנהל המערכת לקבלת הרשאת כניסה או להיכנס באמצעות חשבון Google בפיקוח של Family Link.</translation>
 <translation id="8321837372750396788">מכשיר <ph name="DEVICE_TYPE" /> זה ינוהל על ידי <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">גודל הטקסט והתצוגה</translation>
 <translation id="8354034204605718473">קוד האימות של הילד או הילדה נוסף</translation>
 <translation id="8366396658833131068">קישוריות הרשת שלך התחדשה. יש לבחור רשת אחרת או ללחוץ על הכפתור 'המשך' שלמטה כדי להפעיל את יישום הקיוסק.</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
 <translation id="8408270600235826886">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'. הנתונים ישמשו בהתאם ל<ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של Google.</translation>
 <translation id="8413956290606243087">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS?</translation>
 <translation id="8425768983279799676">קוד האימות מאפשר לבטל את נעילת המכשיר.</translation>
+<translation id="8428213095426709021">הגדרות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>
 <translation id="8452105022015742247">‏פרטי חשבון Google מועברים מטלפון Android</translation>
 <translation id="8464132254133862871">חשבון משתמש זה אינו זכאי לקבלת השירות.</translation>
 <translation id="8524841856047224176">התאמה אישית של הרקעים במצלמה לשיחות וידאו ועוד</translation>
+<translation id="8527257351549797148">הארגון שלך עשוי לדרוש הרשמה כדי לגשת לאפליקציות, לתוספים ועוד. ההרשמה הזו גם מאפשרת לארגון שלך לנהל דברים כמו אבטחה והגדרות מכשיר.</translation>
+<translation id="8558063527625343224">‏הגדרת Google Beam</translation>
 <translation id="8569673829373920831">מידע נוסף על <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">‏מתן אפשרות לאפליקציות, לאתרים ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר. ההגדרה 'קביעת מיקום יותר מדויקת' מספקת מיקום מדויק יותר לאפליקציות ולשירותים של Android. כדי לעשות את זה, Google מעבדת מדי פעם נתונים על חיישני מכשיר ואותות אלחוטיים מהמכשיר שלך כדי לתמוך במיקור המונים של מיקומי אותות אלחוטיים. השימוש בנתונים האלה נעשה בלי לזהות אותך כדי לשפר את מידת הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום. כמו כן, הנתונים משמשים כדי לשפר, לספק ולתחזק את השירותים של Google על סמך האינטרסים הלגיטימיים של Google ושל צדדים שלישיים כדי לשרת את צורכי המשתמשים.</translation>
 <translation id="8627804903623428808">בדיקת התנאים האלה ושליטה בנתונים של הילד או הילדה שלך</translation>
@@ -442,6 +603,7 @@
 <translation id="8674903726754070732">‏לצערנו, המחשב שלך מוגדר באמצעות מזהה חומרה פגום. המצב הזה מונע מ-ChromeOS להתקין את עדכוני האבטחה האחרונים, <ph name="BEGIN_BOLD" />ויכול להיות שהמחשב שלך יהיה חשוף להתקפות זדוניות<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">הוספה של בקרת הורים לאחר ההגדרה</translation>
 <translation id="8698269656364382265">כדי לחזור למסך הקודם, מחליקים מצד ימין.</translation>
+<translation id="8718994464069323380">זוהה מסך מגע</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8726206820263995930">אירעה שגיאה בעת הבאת הגדרות מדיניות מהשרת: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -449,24 +611,36 @@
 <translation id="8740247629089392745">‏אפשר להעביר את ה-Chromebook הזה אל <ph name="SUPERVISED_USER_NAME" />. ההתקנה כמעט הסתיימה. מיד ניתן יהיה לחקור ולהתנסות.</translation>
 <translation id="8759753423332885148">למידע נוסף</translation>
 <translation id="8777628254805677039">‏סיסמת root</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">‏עליך להקליד את קוד ההתאמה ל-Bluetooth ולאחר מכן ללחוץ על Return או Enter.</translation>
 <translation id="8794548468611058947">‏במקום להזין את הסיסמה לחשבון Google כדי להיכנס, אפשר ליצור קוד אימות למכשיר <ph name="DEVICE_TYPE" /> הזה</translation>
 <translation id="8830796635868321089">‏בדיקת העדכון נכשלה עם ההגדרות הנוכחיות של שרת ה-proxy‏. יש להתאים את <ph name="PROXY_SETTINGS_LINK_START" />הגדרות שרת ה-proxy שלך<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">‏מכשיר Chromebook Enterprise הזה מגיע עם שדרוג ל-Chrome Enterprise כחלק מהחבילה. כדי ליהנות מהיכולות הארגוניות של המכשיר, מומלץ לרשום אותו עם חשבון אדמין של Google.</translation>
 <translation id="885746075120788020">‏הפעילות וההעדפות השמורות שלך יהיו מוכנות בכל מכשיר ChromeOS לאחר הכניסה באמצעות חשבון Google. יש לך אפשרות לבחור מה לסנכרן בהגדרות.</translation>
+<translation id="8868333925931032127">מתבצעת הפעלה של מצב הדגמה</translation>
 <translation id="8875221558267407626">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות</translation>
+<translation id="8907701755790961703">בחר ארץ</translation>
 <translation id="8913163265790894442">‏קל להגדיר את ה-<ph name="DEVICE_TYPE" /> באמצעות הטלפון. אפשר להוסיף את ה-Wi-Fi ואת החשבון שלך ב-Google, גם בלי להקליד את הסיסמאות.
         <ph name="BR" />
         <ph name="BR" />
         גלוי בתור <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">המשך</translation>
 <translation id="8946359700442089734">תכונות לניפוי באגים לא הופעלו באופן מלא במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
 <translation id="8965037249707889821">יש להזין את הסיסמה הישנה</translation>
+<translation id="8968906873893164556">בחירת החשבון שישמש להגדרה</translation>
+<translation id="8973596347849323817">ניתן להתאים אישית את המכשיר הזה כדי שיתאים לצרכיך. ניתן לשנות את תכונות הנגישות מאוחר יותר ב'הגדרות'.</translation>
 <translation id="8975396729541388937">ניתן לבטל את ההרשמה בכל שלב בלחיצה על הקישור בהודעות האימייל שמקבלים.</translation>
+<translation id="8987305927843254629">כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="8993059306046735527">‏אם שכחת את הסיסמה של <ph name="DEVICE_TYPE" />, עדיין אפשר לשחזר את הנתונים המקומיים. עליך להיכנס לחשבון Google או להשתמש בתכונת שחזור החשבון.</translation>
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
 <translation id="903480517321259405">יש להקליד שוב את קוד האימות</translation>
 <translation id="9040473193163777637">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS? אם כן, יש ללחוץ לחיצה ארוכה על 2 הלחצנים של עוצמת הקול למשך 5 שניות.</translation>
 <translation id="9068298336633421551">‏מומלץ לאפשר לאפליקציות ולשירותים של Android עם הרשאת מיקום להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום</translation>
+<translation id="9074836595010225693">‏עכבר USB מחובר</translation>
 <translation id="9076523132036239772">מצטערים, לא ניתן לאמת את האימייל או הסיסמה שלך. יש לנסות תחילה להתחבר לרשת.</translation>
+<translation id="9089959054554410481">שינוי כיוון הגלילה של לוח המגע</translation>
 <translation id="9158715103698450907">אופס! אירעה בעיה של תקשורת רשת במהלך האימות. יש לבדוק את חיבור הרשת ולנסות שוב.</translation>
+<translation id="9186963452600581158">‏כניסה באמצעות חשבון Google של ילד או ילדה</translation>
 <translation id="919686179725692564">מידע נוסף על גיבוי האפליקציות שלך</translation>
 <translation id="9214520840402538427">אופס! תם הזמן הקצוב לאתחול של מאפייני זמן ההתקנה. יש לפנות אל נציג התמיכה שלך.</translation>
 <translation id="9217002308921247002">‏<ph name="BEGIN_PARAGRAPH1" />בלעדי ל-<ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -476,4 +650,7 @@
         <ph name="BR" />
         גלוי בתור <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">דחייה</translation>
+<translation id="954749761428814584">השפה ושיטת הקלט</translation>
+<translation id="960987915827980018">נותרה בערך שעה אחת</translation>
+<translation id="995420352808264005">בחירת סוג שיוך המכשיר לארגון</translation>
 </translationbundle>

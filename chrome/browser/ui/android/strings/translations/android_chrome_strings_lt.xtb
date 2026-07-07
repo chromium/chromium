@@ -302,7 +302,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2297822946037605517">Bendrinti šį puslapį</translation>
 <translation id="230115972905494466">Nerasta jokių suderinamų įrenginių</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
-<translation id="2318045970523081853">Palieskite ir skambinkite</translation>
 <translation id="232137538351753795">Perbraukite iš kairiojo krašto, kad grįžtumėte</translation>
 <translation id="2323763861024343754">Svetainės saugykla</translation>
 <translation id="2327445548174191329">Iš <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}many{Tikrinta prieš # dienos}other{Tikrinta prieš # dienų}}</translation>
 <translation id="2842985007712546952">Viršaplankis</translation>
 <translation id="2854916915045135148">Palieskite ir palaikykite, kad perjungtumėte į inkognito režimą</translation>
-<translation id="2860954141821109167">Įsitikinkite, kad šiame įrenginyje įgalinta telefono programa</translation>
 <translation id="286473047976978798">Taikyti išvaizdos nuostatas?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ir dar 1 skirtukas}one{<ph name="URL" /> ir dar <ph name="TAB_COUNT_MANY" /> skirtukas}few{<ph name="URL" /> ir dar <ph name="TAB_COUNT_MANY" /> skirtukai}many{<ph name="URL" /> ir dar <ph name="TAB_COUNT_MANY" /> skirtuko}other{<ph name="URL" /> ir dar <ph name="TAB_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="2869430948265924908">Jei norite apsaugoti neskelbtiną turinį automobilyje, turite sukurti automobilio profilio užraktą.  Tai galite padaryti naudodami PIN kodą, kodą arba slaptažodį.</translation>
@@ -1272,6 +1270,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6315386555979018699">Ištrinti ir tęsti</translation>
 <translation id="6316139424528454185">„Android“ versija nepalaikoma</translation>
 <translation id="631839948975905034">Inkognito langų užrakinimas uždarius „Chrome“</translation>
+<translation id="6321592572353357376">Norint naudoti plėtinį „<ph name="EXTENSION_NAME" />“, reikia prisijungti prie „Chrome“</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>
 <translation id="6324977638108296054">Nepavyko sukurti nuorodos į paryškintą tekstą</translation>
 <translation id="6333140779060797560">Bendrinti per „<ph name="APPLICATION" />“</translation>
@@ -1450,6 +1449,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6910211073230771657">Ištrintas</translation>
 <translation id="6916590542764765824">Plėtinių tvarkymas</translation>
 <translation id="6918398787259831832">Jei ši problema kartosis, <ph name="BEGIN_LINK" />gaukite daugiau informacijos<ph name="END_LINK" /> iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
+<translation id="6920262510368602827">Sukurti šio puslapio QR kodą</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> „Chrome“ pašalino šiuos leidimus, nes pastaruoju metu nesilankėte</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{Vienas skirtukas}one{<ph name="NUMBER_OF_TABS" /> skirtukas}few{<ph name="NUMBER_OF_TABS" /> skirtukai}many{<ph name="NUMBER_OF_TABS" /> skirtuko}other{<ph name="NUMBER_OF_TABS" /> skirtukų}}</translation>
 <translation id="6929224077895306814">Visi įrenginyje ir „Google“ paskyroje išsaugoti saugos kodai bus ištrinti</translation>
@@ -2033,7 +2033,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9204836675896933765">Liko failų: 1</translation>
 <translation id="9205933215779845960">Nepavyko rasti šio puslapio. Patikrinkite rašybą arba pabandykite ieškoti sistemoje „<ph name="SEARCH_ENGINE" />“.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Nepavyksta skambinti</translation>
 <translation id="9212845824145208577">Negalima eiti žemiau. Pabandykite pradėti toliau žemiau esančiame puslapyje.</translation>
 <translation id="9218430445555521422">Nustatyti kaip numatytąjį</translation>
 <translation id="9219103736887031265">Vaizdai</translation>

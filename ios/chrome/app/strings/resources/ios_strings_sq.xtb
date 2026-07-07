@@ -1573,6 +1573,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="628251768213143684">Mund të menaxhosh gjithmonë se çfarë ruhet në "Llogarinë tënde të Google"</translation>
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
+<translation id="6295140892595702619">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është aktivizuar). Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese</translation>
 <translation id="6295751040240588413">Pseudonim i pavlefshëm karte</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
@@ -2181,7 +2182,6 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Ke dalë nga llogaria jote, <ph name="USER_NAME" />, si pjesë e rivendosjes së pajisjes iPad. Për t'u identifikuar përsëri, trokit te "Vazhdo" më poshtë.</translation>
 <translation id="8270320981823560179">Disku</translation>
-<translation id="8273982424131314219">Do të plotësosh informacionet në <ph name="URL" /></translation>
 <translation id="8274795744553482834">Je gati të ndërrosh profilet</translation>
 <translation id="8275068909952022340">Më shumë…</translation>
 <translation id="8280797717392145626">Lidhjet u morën</translation>
@@ -2415,6 +2415,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sajt i gozhduar</translation>
 <translation id="8990960056509724223">Skedari nuk mund të ruhej për shkak të politikave të organizatës sate</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
+<translation id="9003263770394939629">Sugjeruar nga Gemini. Menaxho plotësimin automatik të përmirësuar te cilësimet.</translation>
 <translation id="9003677638446136377">Kontrollo sërish</translation>
 <translation id="9006453925669499173">Menyja → Skedë e re "e fshehtë"</translation>
 <translation id="9008201768610948239">Shpërfill</translation>

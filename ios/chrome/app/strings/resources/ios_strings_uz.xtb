@@ -1578,6 +1578,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="628251768213143684">Google hisobida nimalar saqlanishini istalgan vaqt boshqarish mumkin</translation>
 <translation id="6284652193729350524">Bu tildagi sahifalar tarjimasi taklif qilinsin: <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Saytlarni xavfsiz kezish rejimini yoqish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bandini oching va Saytlarni xavfsiz kezish ustiga bosing.</translation>
+<translation id="6295140892595702619">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa). Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="6295751040240588413">Karta nomi yaroqsiz</translation>
 <translation id="629730747756840877">Hisob</translation>
 <translation id="6301104306974789820">Kuzatiladigan narxlar boʻyicha bildirishnomalar olish</translation>
@@ -2186,7 +2187,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8264966119170358612">Saqlangan parollaringizdan ayrimlari Googledan boshqa tashqi xizmatlarning sizib chiqarilgan axborotlari ichidan topildi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad qurilmasini tiklash mobaynida <ph name="USER_NAME" /> hisobingizdan chiqarildingiz. Hisobga qayta kirish uchun “Davom etish” ustiga bosing.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Axborot <ph name="URL" /> sahifasida kiritiladi</translation>
 <translation id="8274795744553482834">Profilni almashtirish arafasidasiz</translation>
 <translation id="8275068909952022340">Yana…</translation>
 <translation id="8280797717392145626">Havolalar qabul qilindi</translation>

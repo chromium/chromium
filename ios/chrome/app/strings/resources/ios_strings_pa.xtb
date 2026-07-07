@@ -1573,6 +1573,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="628251768213143684">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ਦੇ ਅਨੁਵਾਦ ਲਈ ਪੇਸ਼ਕਸ਼</translation>
 <translation id="6293101329759844770">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> ਖੋਲ੍ਹੋ ਅਤੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
+<translation id="6295140892595702619">Gemini ਨਾਲ ਚੈਟ ਕਰਨ ਲਈ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਜਦੋਂ ਤੁਸੀਂ Gemini ਨਾਲ ਗੱਲ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਡੀਓ Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ ਵਿੱਚ ਸਟੋਰ ਹੋ ਜਾਂਦੀ ਹੈ (ਜੇ ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ)। ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="6295751040240588413">ਕਾਰਡ ਦਾ ਉਪਨਾਮ ਅਵੈਧ ਹੈ</translation>
 <translation id="629730747756840877">ਖਾਤਾ</translation>
 <translation id="6301104306974789820">ਟਰੈਕਿੰਗ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -2181,7 +2182,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8264966119170358612">ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਵਿੱਚੋਂ ਕੁਝ ਗੈਰ-Google ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਪ੍ਰਗਟ ਹੋਏ ਸਨ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ iPad ਰੀਸੈੱਟ ਕਰਨ ਦੇ ਹਿੱਸੇ ਵਜੋਂ ਆਪਣੇ ਖਾਤੇ <ph name="USER_NAME" /> ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ ਸੀ। ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਹੇਠਾਂ "ਜਾਰੀ ਰੱਖੋ" 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">ਤੁਸੀਂ <ph name="URL" /> ਵਿੱਚ ਜਾਣਕਾਰੀ ਭਰੋਗੇ</translation>
 <translation id="8274795744553482834">ਤੁਸੀਂ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰਨ ਜਾ ਰਹੇ ਹੋ</translation>
 <translation id="8275068909952022340">ਹੋਰ…</translation>
 <translation id="8280797717392145626">ਪ੍ਰਾਪਤ ਕੀਤੇ ਲਿੰਕ</translation>
@@ -2415,6 +2415,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਸਾਈਟ</translation>
 <translation id="8990960056509724223">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="8998289560386111590">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="9003263770394939629">Gemini ਵੱਲੋਂ ਸੁਝਾਇਆ ਗਿਆ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="9003677638446136377">ਦੁਬਾਰਾ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="9006453925669499173">ਮੀਨੂ → ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="9008201768610948239">ਅਣਡਿੱਠ ਕਰੋ</translation>

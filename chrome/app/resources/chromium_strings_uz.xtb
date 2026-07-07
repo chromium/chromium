@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromeʼga ham shu hisobdan kirishingiz mumkin</translation>
 <translation id="1287534462498555020">Telefoningizda Chromium oʻrnating</translation>
 <translation id="1290883685122687410">Sozlash xatosi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Rasm orqali qidiruv yordamida mahsulotlarni topish tartibi aks etgan tasvir</translation>
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="132092532143527429">Chromium ichida Gemini bilan sinang</translation>
 <translation id="1324107359134968521">Qurilmalarni topish uchun Chromium Bluetooth aloqadan foydalanishiga ruxsat bering. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -422,6 +421,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="5768371961535086509">Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Operativ xotirani tejash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, hisobingizda Chromium maʼlumotlarini <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromiumni oʻzingizga moslab, boshqaring. Chromiumni asosiy brauzer etib belgilang.</translation>
+<translation id="5802618941556161431">Chromiumni birlamchi brauzer qilib belgilash orqali parollar, bukmarklar va tarixni qurilmalararo mukammal sinxronlashda davom eting.</translation>
 <translation id="5809516625706423866">Internetga ulanmadi. HTTP 401, ruxsat berilmagan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="5817952762723416573">Chromium V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chromium brauzerining hujumlardan himoyasini biroz pasaytiradi. Bu sozlama oʻchiq.</translation>
 <translation id="5821520528363214608">Chromium maʼlumotlarini ishlatish va Google hisobingizda saqlash uchun Chromiumni yangilang</translation>
@@ -491,7 +491,6 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="6400112897226594999">Kompyuter ekranida Chromium logotipi aks etgan tasvir</translation>
 <translation id="6403826409255603130">Chromium - veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Chromium brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="6414624068245092115">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
-<translation id="6417332166651156371">Chromiumda Parollar menejeriga kirish qismi aks ettirilgan sodda tasvir</translation>
 <translation id="642132557830635295">Chromium tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
 <translation id="6436260184216827876">Rasm orqali qidiruv ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="6442900851116057561">ChromiumOS tizimini ishga tushirish</translation>

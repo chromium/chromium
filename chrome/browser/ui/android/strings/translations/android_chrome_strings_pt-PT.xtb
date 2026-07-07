@@ -302,7 +302,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2297822946037605517">Partilhar esta página</translation>
 <translation id="230115972905494466">Não foram encontrados dispositivos compatíveis.</translation>
 <translation id="2316129865977710310">Não</translation>
-<translation id="2318045970523081853">Toque para efetuar uma chamada</translation>
 <translation id="232137538351753795">Deslize a partir da extremidade esquerda para retroceder</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Última verificação há 1 dia}other{Última verificação há # dias}}</translation>
 <translation id="2842985007712546952">Pasta superior</translation>
 <translation id="2854916915045135148">Toque sem soltar para mudar para a Navegação anónima</translation>
-<translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
 <translation id="286473047976978798">Aplicar as suas preferências de aspeto?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> e mais 1 separador}other{<ph name="URL" /> e mais <ph name="TAB_COUNT_MANY" /> separadores}}</translation>
 <translation id="2869430948265924908">Para proteger o seu conteúdo sensível no carro, tem de criar um bloqueio do perfil do carro.  Pode fazê-lo com um PIN, um código ou uma palavra-passe.</translation>
@@ -1272,6 +1270,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6315386555979018699">Eliminar e continuar</translation>
 <translation id="6316139424528454185">Versão Android não suportada.</translation>
 <translation id="631839948975905034">Bloqueie as janelas de navegação anónima quando sai do Chrome</translation>
+<translation id="6321592572353357376">A extensão "<ph name="EXTENSION_NAME" />" quer que inicie sessão no Chrome</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6324977638108296054">Não é possível criar o link para realçar.</translation>
 <translation id="6333140779060797560">Partilhar através de <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6916590542764765824">Gerir extensões</translation>
 <translation id="6918398787259831832">Se este problema continuar a acontecer, <ph name="BEGIN_LINK" />receba mais informações<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Criar código QR para esta página</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> O Chrome removeu estas autorizações porque não visitou recentemente o site</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 separador}other{<ph name="NUMBER_OF_TABS" /> separadores}}</translation>
 <translation id="6929224077895306814">Todos os códigos de segurança guardados no seu dispositivo e Conta Google são eliminados</translation>
@@ -2033,7 +2033,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9204836675896933765">Falta 1 ficheiro</translation>
 <translation id="9205933215779845960">Não é possível encontrar a página. Verifique a ortografia ou experimente pesquisar no <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Não é possível efetuar chamadas</translation>
 <translation id="9212845824145208577">Não é possível descer mais. Tente começar mais abaixo na página.</translation>
 <translation id="9218430445555521422">Predefinir</translation>
 <translation id="9219103736887031265">Imagens</translation>

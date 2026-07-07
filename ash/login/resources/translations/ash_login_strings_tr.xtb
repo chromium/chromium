@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1005333234656240382">ADB hata ayıklama işlevi etkinleştirilsin mi?</translation>
+<translation id="1053898984916097744">Yeni bir şey başlatın veya akışla ilgili yardım alın.</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> cihazınıza hoş geldiniz</translation>
+<translation id="1069778954840159202">Hesabı Android telefondan otomatik olarak al</translation>
 <translation id="1076766328672150609">Çocuğunuz, cihazın kilidini açmak için PIN kullanabilir.</translation>
 <translation id="1097658378307015415">Oturum açmadan önce <ph name="NETWORK_ID" /> ağını etkinleştirmek için lütfen Misafir olarak giriş yapın</translation>
 <translation id="1111932478203988717">Çocuğunuz, cihazında oturum açmak için bu PIN'i kullanabilir</translation>
 <translation id="1122587596907914265">Benzersiz duvar kağıtları tasarlayın</translation>
 <translation id="1131201598497838573">Çocuğunuzun PIN'i güncellendi</translation>
 <translation id="1147322039136785890">Şimdi sıra <ph name="SUPERVISED_USER_NAME" /> adlı kullanıcıda</translation>
+<translation id="1148669835763563782">Gelişmiş güvenlik ve en yeni Chromebook özellikleri için en son yazılım güncellemesini alıyorsunuz. Bu güncelleme, Chromebook'unuzda sorunsuz bir başlangıç yapmanıza yardımcı olacak gelişmiş bir kurulum deneyimi içerir.</translation>
 <translation id="1176864681932214421">Yapay zeka ile resim oluşturun</translation>
 <translation id="1177073277575830464">Android cihazınızla hızlı kurulum tamamlandı. Kuruluma <ph name="DEVICE_TYPE" /> cihazınızda devam edin.</translation>
 <translation id="1179902906564467236">Telefonunuzdaki talimatları uygulayın veya kamera uygulamasını kullanın</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1217114730239853757">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise boşluk çubuğuna basın.</translation>
 <translation id="1222835797152767346">Oturum açmayı kolaylaştırmak için PIN ayarlayın</translation>
+<translation id="1231426483209637778"><ph name="DEVICE_TYPE" /> cihazını tekrar kullandığınızda ağınız hatırlanacak</translation>
+<translation id="1243002225871118300">Görüntü ve metin boyutunu değiştirme</translation>
+<translation id="1256588359404100567">Ayar, önceki cihazınızdan senkronize edildi.</translation>
 <translation id="1272978324304772054">Bu kullanıcı hesabı, cihazın kaydedildiği alan adına ait değil. Farklı bir alan adına kaydolmak istiyorsanız, öncelikle cihaz kurtarma işlemini tamamlamanız gerekir.</translation>
+<translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1307559529304613120">Hata! Sistem bu cihaza ait uzun vadeli API erişim verisini kaydedemedi.</translation>
+<translation id="1335929031622236846">Cihazınızı kaydettirin</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Hata Ayıklama Özellikleri<ph name="END_H3" />
       <ph name="BR" />
       ChromeOS cihazınızda özel kodları yüklemek ve test edebilmek için hata ayıklama özelliklerini etkinleştirebilirsiniz. Bu işlev, şunları yapmanıza olanak sağlar:<ph name="BR" />
@@ -36,6 +45,7 @@
       <ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> İşlem sırasında sistem yeniden başlatılacaktır.</translation>
 <translation id="1347625331607114917">Android telefonunuzdaki kodu doğrulayın</translation>
 <translation id="1347975661240122359">Güncelleme işlemi, pil gücü %<ph name="BATTERY_LEVEL" /> düzeyine ulaştığında başlayacak.</translation>
+<translation id="1353275871123211385">Uygulama onayı ve ekran başında kalma süresi sınırları gibi ebeveyn denetimlerini kullanmak için çocuğun ebeveyn tarafından yönetilen Google Hesabı olmalıdır. Okul hesabı, Google Classroom gibi araçlar için daha sonra eklenebilir.</translation>
 <translation id="1375557162880614858">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz?</translation>
 <translation id="1375938286942050085">Kurulum tamamlandı. Sonraki adımda cihazınızı oyun oynamaya hazırlayın</translation>
 <translation id="1377600615067678409">Şimdilik atla</translation>
@@ -44,38 +54,66 @@
 <translation id="1417497355604638350">Teşhis ve kullanım verilerini gönderin.</translation>
 <translation id="1418882096915998312">Kurumsal kayıt devam ediyor</translation>
 <translation id="1426410128494586442">Evet</translation>
+<translation id="1427269577154060167">Ülke</translation>
 <translation id="1440090277117135316">Okula kayıt tamamlandı</translation>
 <translation id="1473927070149284123">Tekrar deneyin veya bir ağa manuel olarak bağlanın</translation>
 <translation id="1503556098270577657">Android telefonunuzu kullanarak <ph name="USER_EMAIL" /> hesabında oturum açtınız</translation>
+<translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1521442365706402292">Sertifikaları yönet</translation>
+<translation id="15373452373711364">Büyük fare imleci</translation>
 <translation id="1540605929960647700">Demo modunu etkinleştir</translation>
 <translation id="1572876035008611720">E-postanızı girin</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Tamam</translation>
 <translation id="1642494467033190216">Diğer hata ayıklama özelliklerinin etkinleştirilebilmesi için rootfs korumasının kaldırılması ve cihazın yeniden başlatılması gerekir.</translation>
+<translation id="1646045728251578877">Yazılım güncellemesi mevcut</translation>
+<translation id="1650801028905250434">Drive'ım bölümündeki dosyalarınız Chromebook'unuzla otomatik olarak senkronize edildiği için bu dosyalara internet bağlantısı olmadan erişebilirsiniz. Bu tercihinizi istediğiniz zaman Ayarlar &gt; Dosyalar'dan değiştirebilirsiniz.</translation>
 <translation id="1668435968811469751">Manuel olarak kaydol</translation>
 <translation id="1678919064276516737">Girdiğiniz e-posta ve PIN eşleşmiyor</translation>
 <translation id="1692115862433274081">Başka bir hesap kullan</translation>
 <translation id="1695487653372841667">Google'la hangi bilgilerin paylaşılacağını siz belirleyebilirsiniz. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz.</translation>
 <translation id="169675691788639886">Cihazın SSH sunucusu yapılandırılmış. Hassas içerik barındıran hesaplarda oturum açmayın.</translation>
+<translation id="1700517974991662022">Ziyaret edildi</translation>
 <translation id="1730666151302379551">Eski şifreyi unuttum</translation>
+<translation id="1749645492410897998">Yazılım yükleniyor</translation>
 <translation id="177053719077591686">Android uygulamalarını Google Drive'da yedekleyin.</translation>
+<translation id="1798832846931769717">Google Beam for Meet</translation>
 <translation id="1806335016774576568">Başka bir açık uygulamaya geçiş yap</translation>
 <translation id="1826192255355608658">Chrome tarayıcınızdaki yer işaretleriniz, şifreleriniz, geçmişiniz ve daha fazlasını senkronize edin</translation>
+<translation id="1826657447823925402">Ters kaydırma devre dışı bırakıldı</translation>
 <translation id="1831848493690504725">Bağlı ağ üzerinden Google'a ulaşılamıyor. Farklı bir ağ seçmeyi veya ağ ayarlarınızı ya da proxy ayarlarınızı (proxy kullanıyorsanız) kontrol etmeyi deneyin.</translation>
 <translation id="1842766183094193446">Demo modunu etkinleştirmek istediğinizden emin misiniz?</translation>
 <translation id="1845060436536902492">ChromeOS Flex'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için boşluk çubuğuna basın. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
+<translation id="185766080319917408">Başlatıcı tuşu, soldaki alt tuşunun solunda yer alır</translation>
 <translation id="1868617395637139709">Android uygulamaları ve hizmetleri için konumu kullanın.</translation>
+<translation id="1877377730633446520">Yaklaşık <ph name="REQUIRED_SPACE" /> depolama alanı kullanılacak. Şu anda <ph name="FREE_SPACE" /> alanınız var.</translation>
 <translation id="189035593835762169">Şartlar ve koşullar</translation>
+<translation id="189358972401248634">Diğer diller</translation>
+<translation id="1915734383465415025">Mağaza Numarası</translation>
+<translation id="1919096511823372013">Bağlantılar, emojiler ve diğer öğeleri ekleyin. Ayrıca, Google Yapay Zeka'dan yazma ve resim oluşturma konusunda yardım alabilirsiniz.</translation>
+<translation id="1922496389170590548">Çocuğun okul hesabı</translation>
+<translation id="1944528062465413897">Bluetooth eşleme kodu:</translation>
 <translation id="1987574314042117472">Popüler uygulamaları seçip yükleyin</translation>
 <translation id="1991829061375381344">Bu Google Meet hardware cihazını kaydetmek için yeterli miktarda kullanılabilir lisansa sahip değilsiniz. Daha fazla lisans satın almak için lütfen bayinizle iletişime geçin. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen bayinizle görüşün.</translation>
+<translation id="200928901437634269">Çocuğunuzun Google Hesabını veya okul hesabını kullanın. Ebeveyn denetimlerini de ayarlayabilirsiniz.</translation>
+<translation id="2013550551806600826">Deneyin. Ayarı açın veya kapatın, ardından test alanındaki dokunmatik alanda iki parmağınızla kaydırın. Bu ayarlara daha sonra Ayarlar &gt; Cihaz &gt; Fare ve dokunmatik alan bölümünden de ulaşabilirsiniz.</translation>
+<translation id="2018189721942291407">Kaydolmanız gerekip gerekmediğinden emin değil misiniz?</translation>
 <translation id="2040460856718599782">Hata! Kimliğiniz doğrulanmaya çalışılırken bir şeyler ters gitti. Lütfen oturum açma kimlik bilgilerinizi tekrar kontrol edin ve yeniden deneyin.</translation>
 <translation id="2052572566310583903">Diğer cihazlarınızda yüklü</translation>
 <translation id="2088092308059522196">Kayıt, yalnızca <ph name="DEVICE_OS" /> yüklemesinden sonra desteklenir.</translation>
 <translation id="208928984520943006">İstediğiniz zaman Ana ekrana dönmek için ekranın altından yukarı kaydırın.</translation>
 <translation id="2090165459409185032">Hesap bilgilerinizi kurtarmak için şu adrese gidin: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Ayarlanacak daha fazla özellik seçin</translation>
+<translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> cihazınızda Gemini yüklüdür</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> cihazınızda oturum açmak için lütfen İnternet'e bağlanın.</translation>
+<translation id="2173801458090845390">Bu cihaza talep kimliği ekleyin</translation>
 <translation id="2178585470774851578">ChromeOS Flex hata ayıklama özelliklerini etkinleştiriyorsunuz. Bu işlem sshd arka plan programını kurar ve USB sürücüden başlatmayı etkinleştirir.</translation>
+<translation id="2183570493397356669">Devam düğmesi devre dışı bırakıldı</translation>
+<translation id="221872881068107022">Ters kaydırma</translation>
 <translation id="2219081237089444028">Oturum açmayı kolaylaştırmak için <ph name="DEVICE_TYPE" /> şifresi ayarlayın</translation>
+<translation id="2229161054156947610">1 saatten fazla bir süre kaldı</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" />, <ph name="EMAIL" /> hesabında oturum açarken cihazın internete bağlı olmasını gerektiriyor</translation>
 <translation id="2317842250900878657">%<ph name="PROGRESS_PERCENT" /> tamamlandı</translation>
 <translation id="2319072477089403627">Android telefonunuza bağlanılıyor...</translation>
@@ -90,10 +128,18 @@
 <translation id="2450223707519584812">Google API anahtarları eksik olduğundan kullanıcı ekleyemezsiniz. Ayrıntılar için <ph name="DETAILS_URL" /> sayfasına bakın.</translation>
 <translation id="24786041351753425">Veri kurtarma hizmetini etkinleştirme.</translation>
 <translation id="2485681265915754872">Google Play hizmet şartları</translation>
+<translation id="248676429071089168">Sayfayı aşağı taşımak için yukarı kaydırın</translation>
 <translation id="2501278716633472235">Geri dön</translation>
+<translation id="2538084450874617176">Bu <ph name="DEVICE_TYPE" /> cihazını kimler kullanacak?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> ağına bağlanamadı. Lütfen başka bir ağ seçin veya tekrar deneyin.</translation>
 <translation id="2565214867520763227">Ekran okuyucuyu açın</translation>
+<translation id="2569972178052279830">Perakendeci Adı</translation>
+<translation id="257779572837908839">Chromebox video konferansı olarak kurun</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform: <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Hayır, ChromeVox olmadan devam et</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google'ın konum hizmeti, bu cihazın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ayarlar &gt; Uygulamalar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Güvenlik ve konum &gt; Konum bölümüne giderek bu cihazdaki Android konumunu istediğiniz zaman kapatabilirsiniz. Ayrıca aynı menüden "Google Konum Doğruluğu" ayarını kapatarak kablosuz, mobil ağlar ve Android konum sensörlerinin kullanılmasını da devre dışı bırakabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Dil</translation>
 <translation id="2687407218262674387">Google hizmet şartları</translation>
 <translation id="2688196195245426394">Cihaz sunucuya kaydedilirken hata oluştu: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Paket halinde sunulan bu cihaz, Kiosk ve Tabela Güncellemesi'ne kaydedilemez.</translation>
@@ -101,21 +147,32 @@
 <translation id="2731700343119398978">Lütfen bekleyin...</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> ekstra içerik</translation>
 <translation id="2740531572673183784">Tamam</translation>
+<translation id="274318651891194348">Klavye aranıyor</translation>
 <translation id="2754825024506485820">Üretkenlikten eğlenceye kadar ihtiyacınız olan uygulamaları Google Play Store'da bulun. İstediğiniz zaman uygulama yükleyebilirsiniz.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Konum Doğruluğu etkinken kablosuz ağ erişim noktaları ve baz istasyonları gibi kablosuz sinyaller hakkındaki bilgilerin yanı sıra ivme ölçer ve jiroskop gibi cihaz sensör verileri, cihaz konumunu daha doğru bir şekilde tahmin etmek için kullanılır. Android uygulamaları ve hizmetleri de konuma dayalı özellikleri sunmak için bu tahminlerden yararlanır. Google bunu yapmak için kitle kaynaklı kablosuz sinyal konumlarına katkıda bulunmak amacıyla bu cihazın yakınındaki sensörleri ve kablosuz bağlantı sinyalleriyle ilgili bilgileri düzenli aralıklarla toplar.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google, bu cihazdan toplanan bilgileri şu amaçlarla kullanır: konum doğruluğu ve konuma dayalı hizmetleri iyileştirme; Google hizmetlerini genel anlamda geliştirme, sunma ve sürdürme. Bu bilgileri, Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak için işleriz. Bu bilgiler, herhangi bir şahsı tanımlamak için kullanılmaz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Konum Doğruluğu'nu dilediğiniz zaman bu cihazın konum ayarlarından (Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi &gt; Gelişmiş konum ayarları) devre dışı bırakabilirsiniz. Konum Doğruluğu devre dışıyken bu özellikle ilgili veri toplanmaz. Android uygulamaları ve hizmetlerinde bu cihazın konumunu belirlemek için mevcutsa yalnızca IP adresi kullanılır. Bu durum, Google Haritalar gibi Android uygulamaları ve hizmetlerindeki konumların kullanılabilirliğini ve doğruluğunu etkileyebilir.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Her şey hazır!</translation>
+<translation id="2819519502129272135">Dosya senkronizasyonu devre dışı</translation>
 <translation id="2832124733806557606">Çocuğunuz, cihazda oturum açmak veya cihazın kilidini açmak için PIN kullanabilir.</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> ağını kullanmak için önce aşağıdan İnternet bağlantınızı yapın.</translation>
 <translation id="2849767214114481738">PIN'iniz eklendi</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. Bu raporlarda ChromeOS'in ne zaman kilitlendiği, hangi özelliklerin kullanıldığı ve genel olarak ne kadar bellek kullanıldığı gibi bilgiler yer alabilir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstediğiniz zaman Chrome cihaz ayarlarınızda bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Bu işlem 30 kadar dakika sürebilir</translation>
 <translation id="2893180576842394309">Google; Arama ve diğer Google hizmetlerini kişiselleştirmek için geçmişinizi kullanabilir</translation>
 <translation id="2902265136119311513">Misafir olarak göz atma</translation>
 <translation id="2904210161403910217">Şifreniz, son oturum açmanızdan bu yana değişti</translation>
 <translation id="2918484644467055090">Bu cihaz, farklı bir kuruluş tarafından yönetilen cihaz olarak işaretlendiğinden hesabınızın ait olduğu kuruluşa kaydettirilemiyor.</translation>
 <translation id="2921081876747860777">Yerel verilerinizi korumak için lütfen bir şifre oluşturun.</translation>
+<translation id="2935654492420446828">Okul hesabını daha sonra ekleyin</translation>
 <translation id="2950666755714083615">Kaydolmak istiyorum</translation>
 <translation id="2979966855249721010">İlgi alanlarınıza dayalı uygulama önerileri, ipuçları ve daha fazlasını görebilirsiniz</translation>
 <translation id="3012917896646559015">Lütfen bilgisayarınızı bir onarım tesisine göndermek üzere derhal donanım üreticinizle bağlantı kurun.</translation>
+<translation id="3023464535986383522">Seç ve dinle</translation>
 <translation id="3028371505549235127">Oturum açarken Google Hesabı şifrenizi girmek yerine bu cihaz için <ph name="DEVICE_TYPE" /> şifresi oluşturabilirsiniz</translation>
 <translation id="3033348223765101500">Verilerinizi kontrol edin</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" eşlendi</translation>
 <translation id="3101924772906986970">Chrome Tarayıcınızdaki yer işaretleri, şifreler, geçmiş ve diğer içerikler Google Hesabınıza kaydedilir</translation>
 <translation id="313205617302240621">Şifrenizi mi unuttunuz?</translation>
 <translation id="3162070126914310576">Kuruluş biriminiz ilk kayıt sınırına ulaştığı için bu cihaz şu anda kaydedilemiyor. Yardım için yöneticinizle iletişime geçin.</translation>
@@ -123,20 +180,34 @@
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Cihazınızda bir Chrome Education Yükseltme mevcut, ancak kullanıcı adınız bir Google for Education hesabıyla ilişkilendirilmemiş. Lütfen ikinci bir cihazda g.co/workspace/edusignup adresine giderek Google for Education hesabı oluşturun.</translation>
 <translation id="3196912927885212665">Android telefonunuzla kurulum için Chromebook'taki Bluetooth'un açık olması gerekir</translation>
+<translation id="322708765617468434">Kurulumdan sonra istediğiniz zaman cihaza başka bir kişi ekleyebilirsiniz. Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="3238192140106069382">Bağlanıyor ve doğrulanıyor</translation>
+<translation id="3251119461199395237">Dosya senkronizasyonu</translation>
+<translation id="325238099842880997">Çocukların oyun oynamasına, keşfetmesine ve evde ödev yapmasına yardımcı olmak için dijital temel kurallar belirleyin</translation>
+<translation id="3255747772218936245">Güncellemeyi yükle</translation>
 <translation id="3261268979727295785">Kurulumu tamamladıktan sonra büyük çocuklar için ebeveyn denetimlerini ekleyebilirsiniz. Ebeveyn denetimleri hakkında bilgileri Keşfet uygulamasında bulabilirsiniz.</translation>
 <translation id="3278001907972365362">Google Hesabınız/Hesaplarınız işlem gerektiriyor</translation>
 <translation id="3283148363895519428">Kuruluma devam etmek için telefonunuzdaki talimatları uygulayın. Telefonunuzun yakında ve Bluetooth'un açık olduğundan emin olun.</translation>
 <translation id="3382073616108123819">Hata! Sistem, bu cihaz için cihaz tanıtıcılarını belirleyemedi.</translation>
 <translation id="3382200254148930874">Gözetim durduruluyor...</translation>
+<translation id="3384362484379805487">Disk alanından tasarruf etmek için dil dosyaları kullanıcılar arasında paylaşılır.</translation>
+<translation id="3385092118218578224">%<ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3391721320619127327">ChromeOS Flex'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için ses seviyesi tuşlarının ikisini birden beş saniye boyunca basılı tutun. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
+<translation id="3402585168444815892">Demo Modu'na Kaydolunuyor</translation>
 <translation id="3433621910545056227">Hata! Sistem, cihaz yükleme zamanı özellikleri kilidini oluşturamadı.</translation>
 <translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="3462413494201477527">Hesap kurulumu iptal edilsin mi?</translation>
 <translation id="3473241910002674503">Tablet modunda düğmelerle ana ekrana gidin, geri dönün ve uygulamalar arasında geçiş yapın.</translation>
+<translation id="3473479545200714844">Ekran büyüteci</translation>
 <translation id="3491669675709357988">Çocuğunuzun hesabında Family Link ebeveyn denetimleri kurulu değil. Kurulumu tamamladıktan sonra ebeveyn denetimlerini ekleyebilirsiniz. Ebeveyn denetimleri hakkında bilgileri Keşfet uygulamasında bulabilirsiniz.</translation>
+<translation id="350397915809787283">Hesabınız yoksa ilk seçeneği kullanarak hesap oluşturun.</translation>
 <translation id="3520824492621090923">Kiosk ve tabela cihaz kaydı onaylansın mı?</translation>
+<translation id="3547954654003013442">Proxy ayarları</translation>
+<translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> donanım verileri toplama</translation>
+<translation id="3602290021589620013">Önizleme</translation>
+<translation id="3607671391978830431">Çocuk için</translation>
+<translation id="3627320433825461852">1 dakikadan az kaldı</translation>
 <translation id="3635199270495525546">Güvenilir Platform Modülü (TPM) saptandı</translation>
 <translation id="3650753875413052677">Kayıt Hatası</translation>
 <translation id="3661106764436337772">Daha hızlı ve kendinize güvenerek yazın</translation>
@@ -148,16 +219,23 @@
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="3712050472459130149">Hesabın güncellenmesi gerekiyor</translation>
 <translation id="3733296813637058299">Bu uygulamaları sizin için yükleyeceğiz. Play Store'da <ph name="DEVICE_TYPE" /> cihazınız için daha fazla uygulama bulabilirsiniz.</translation>
+<translation id="3740945083753997630">Görüntü ve metin boyutunu küçültün</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" /> cihazınızı hangi amaçla kullanacaksınız?</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı okudum ve kabul ediyorum.</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3800828618615365228">Google Chrome ve ChromeOS Ek Şartları</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" /> ile <ph name="BEGIN_LINK3" />Play Hizmet Şartları<ph name="END_LINK3" />'nı okudum ve kabul ediyorum.</translation>
+<translation id="3837569373891539515">Geçerli olan tüm seçenekleri belirleyebilirsiniz. Söz konusu seçeneklere, <ph name="DEVICE_TYPE" /> cihazınızın kurulumunu tamamladıktan sonra Ayarlar'dan da ulaşabilirsiniz.</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="3856470183388031602">Google Hesabınızı <ph name="DEVICE_TYPE" /> cihazınızda kullanma</translation>
+<translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" />, oyun oynamaya yönelik tasarlanmıştır. Sonraki adımda Keşfet uygulaması açılacaktır. Bu uygulamadan yüzlerce yeni oyuna erişebilir, oyun tekliflerini görebilir ve cihazınızda bulunan oyun özelliklerini keşfedebilirsiniz.</translation>
+<translation id="389901847090970821">Klavye seçin</translation>
 <translation id="3910588685973519483">Yapay zeka ile duvar kağıdı üretin</translation>
+<translation id="3924259174674732591">Görüntü ve metin boyutu %<ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3983400541576569538">Bazı uygulamalara ait veriler kaybolabilir</translation>
+<translation id="3984159763196946143">Demo modu başlatılamadı</translation>
 <translation id="3994318741694670028">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum ChromeOS Flex'in en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="4002440992267487163">Pin kurulumu</translation>
 <translation id="4044883420905480380">Android telefonunuzla kablosuz ağa bağlanıp <ph name="USER_EMAIL" /> adresinde oturum açtınız</translation>
@@ -168,6 +246,9 @@
 <translation id="4135746311382563554">Google Chrome ve ChromeOS ek hizmet şartları</translation>
 <translation id="41365691917097717">Devam edilirse ADB hata ayıklama işlevi, Android uygulaması oluşturmak ve test etmek için etkinleştirilir. Bu işlemin Google tarafından doğrulanmamış Android uygulamalarının yüklenmesine izin verdiğini, fabrika ayarlarına sıfırlama işlemi yapılmadan devre dışı bırakılamayacağını unutmayın.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> geçerli bir kuruluşa ait değil. Yöneticinizle iletişime geçin. Yöneticiyseniz g.co/ChromeEnterpriseAccount adresinden kuruluşunuzu kaydedebilirsiniz.</translation>
+<translation id="4209092469652827314">Büyük</translation>
+<translation id="4213918571089943508">Çocuğun Google Hesabı</translation>
+<translation id="4228071595943929139">Kuruluşunuzun e-posta adresini kullanın</translation>
 <translation id="4232484478444192782">Android telefonunuz halleder. Kablosuz bilgileriniz ve şifreniz aktarılıyor.</translation>
 <translation id="4242145785130247982">Birden fazla istemci sertifikası desteklenmiyor</translation>
 <translation id="4242577469625748426">Politika ayarları cihaza yüklenemedi: <ph name="VALIDATION_ERROR" />.</translation>
@@ -177,30 +258,50 @@
 <translation id="4278498748067682896">Cihazın yalnızca kiosk veya tabela modunda çalışmasına izin veren Kiosk ve Tabela Güncellemesi'ni kullanacaksınız. Kullanıcıların cihazda oturum açmasını istiyorsanız lütfen geri dönüp Chrome Enterprise Yükseltme kullanarak kaydolun.</translation>
 <translation id="4287157641315808225">Evet, ChromeVox'u etkinleştir</translation>
 <translation id="4289732974614035569">PIN seçin</translation>
+<translation id="4291265871880246274">Giriş İletişimi</translation>
+<translation id="4305817255990598646">Anahtar</translation>
 <translation id="4309165024397827958">Konum izinleri olan Android uygulama ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
 <translation id="4317733381297736564">Uygulama içi satın alma işlemleri</translation>
 <translation id="4341905082470253054">TPM durumu kontrol ediliyor...</translation>
 <translation id="4370975561335139969">Girdiğiniz e-posta ve şifre eşleşmiyor</translation>
 <translation id="4373418556073552953">Android telefonunuzla oturum açma</translation>
+<translation id="4378556263712303865">Cihaz talebi</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. ChromeOS kilitlenme zamanları, kullandığınız özellikler, genellikle kullandığınız bellek miktarı ve Android uygulamalarının teşhis ile kullanım verileri gibi bilgiler bu raporlarda yer alabilir. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstediğiniz zaman ChromeOS cihaz ayarlarınızda bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Google Hesabınızda Web ve Uygulama Etkinliği ayarı açıksa Android verileriniz Google Hesabınıza kaydedilebilir. Account.google.com adresinde verilerinizi görebilir, silebilir ve hesap ayarlarınızı değiştirebilirsiniz.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Bluetooth ve USB cihazları aranıyor</translation>
 <translation id="4403266582403435904">Verileri istediğiniz zaman kolayca geri yükleyebilir veya cihazlar arasında geçiş yapabilirsiniz. Yedek veriler Google'a yüklenir ve çocuğunuzun Google Hesabının şifresi kullanılarak şifrelenir.</translation>
 <translation id="4410545552906060960">Cihazınızın kilidini açmak için şifre yerine bir sayı (PIN) kullanın. PIN'inizi daha sonra ayarlamak için Ayarlar'a gidin.</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> cihazınızı kullanmaya hazırsınız.</translation>
+<translation id="443031431654216610">Yalnızca rakam kullanın</translation>
+<translation id="4448560527907365660">Kaydet ve daha fazla göster</translation>
 <translation id="4449948729197510913">Kullanıcı adınız, kuruluşunuzun kurumsal hesabına aittir. Hesaba cihaz kaydettirmek için önce Yönetici konsolunda alan sahipliğini doğrulayın. Doğrulamak için hesapta yönetici ayrıcalıklarınızın olması gerekir.</translation>
 <translation id="4450974146388585462">Teşhis Et</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" />, verilerinizi daha güvenle depolayabilecek etkin bir TPM saptadı.</translation>
+<translation id="4472298120638043495">Tercih ettiğiniz Google Hesabı dilini (<ph name="NEW_LOCALE_FROM_GAIA" />) kullanabilirsiniz.</translation>
 <translation id="4472575034687746823">Başlayın</translation>
+<translation id="450867954911715010">Erişilebilirlik ayarları</translation>
+<translation id="4519605771716872386">Dosya senkronizasyonu açık</translation>
+<translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> cihazına kimleri eklemek istersiniz?</translation>
 <translation id="4566170377336116390">Kaydolduktan sonra geçiş yapmak isterseniz cihazınızı fabrika ayarlarına sıfırlamanız (powerwash) gerekir.</translation>
 <translation id="4567512141633030272">Oturum açma seçeneği yanlış mı?</translation>
+<translation id="4567533462991917415">Kurulumdan sonra her zaman daha fazla kullanıcı ekleyebilirsiniz. Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="4568213207643490790">Maalesef bu cihazda Google hesaplarına izin verilmiyor.</translation>
 <translation id="4611759022973144129">Bu şifreyi <ph name="DEVICE_TYPE" /> cihazınızda oturum açmak için kullanabilirsiniz.</translation>
+<translation id="4634575639321169635">Bu cihazı iş amaçlı veya kişisel kullanım için kurun</translation>
+<translation id="4689235506267737042">Demo tercihlerinizi belirleyin</translation>
 <translation id="4727847987444062305">Yönetilen misafir oturumu</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="473936925429402449"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> ekstra içerik seçildi</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" />, geçerli bir Google for Education hesabı değil. Yöneticinizle iletişime geçin. Yöneticiyseniz g.co/workspace/edusignup adresinden kuruluşunuzu kaydedebilirsiniz.</translation>
+<translation id="4780558987886269159">İş için</translation>
 <translation id="4806457879608775995">İlgili şartları gözden geçirip verilerinizi kontrol edin</translation>
+<translation id="4814327014588285482">Atlayıp daha sonra hatırlat</translation>
 <translation id="4830502475412647084">OS güncellemesini yükleyin</translation>
 <translation id="4837926214103741331">Bu cihazı kullanma yetkiniz yok. Oturum açma izni almak için lütfen cihaz sahibiyle iletişime geçin.</translation>
+<translation id="4844333629810439236">Diğer klavyeler</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
+<translation id="4867272607148176509">Ebeveynler uygulamaları onaylayabilir ya da engelleyebilir, zaman sınırları belirleyebilir ve web'de gezinmeyi kontrol edebilirler. Çoğu okul kaynağına erişmek için daha sonra okul hesabı eklenebilir.</translation>
 <translation id="4877652723592270843">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise ses seviyesi tuşlarının ikisini birden beş saniyeliğine basılı tutun.</translation>
 <translation id="4899696330053002588">Reklam içerir</translation>
 <translation id="49027928311173603">Sunucudan indirilen politika geçersiz: <ph name="VALIDATION_ERROR" />.</translation>
@@ -208,14 +309,17 @@
 <translation id="4944310289250773232">Bu kimlik doğrulama hizmeti <ph name="SAML_DOMAIN" /> tarafından barındırılıyor.</translation>
 <translation id="4955710816792587366">PIN'inizi seçin</translation>
 <translation id="4965808351167763748">Bu cihazı Hangouts Meet'i çalıştırmak üzere ayarlamak istediğinizden emin misiniz?</translation>
+<translation id="4987944280765486504">İndirme işlemi tamamlandığında Chromebook'unuz yeniden başlatılacak ve kuruluma devam edebileceksiniz.</translation>
 <translation id="5029287942302939687">Şifreniz ayarlandı</translation>
 <translation id="503155457707535043">Uygulamalar indiriliyor</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="5062930723426326933">Oturum açma başarısız oldu. Lütfen İnternet'e bağlanın ve tekrar deneyin.</translation>
+<translation id="5085162214018721575">Güncellemeler denetleniyor</translation>
 <translation id="5097306410549350357">Konum kullanma hakkında daha fazla bilgi edinin</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Google AI sayesinde yazma, planlama, öğrenme ve daha fazlasını yapmaya başlamak için Gemini ile sohbet edin.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Kurulumdan sonra ekranınızın alt kısmındaki rafınızda yer alan Gemini uygulamasını seçerek Gemini'ı kullanmaya başlayabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Lütfen <ph name="DEVICE_TYPE" /> cihazınızı bir güç kaynağına takın.</translation>
+<translation id="5145876360421795017">Cihazı kaydetme</translation>
 <translation id="5147516217412920887">Kodu doğrulamak için telefonunuzdaki talimatları uygulayın</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınızda oturum açın</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Hata Ayıklama Özellikleri<ph name="END_H3" />
@@ -235,6 +339,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> İşlem sırasında sistem yeniden başlatılacaktır.</translation>
+<translation id="5215502535566372932">Ülke seçin</translation>
 <translation id="5234523649284990414">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için boşluk çubuğuna basın. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5240931875940563122">Android telefonla oturum açın</translation>
@@ -247,20 +352,29 @@
 <translation id="5355501370336370394">Kurumsal cihazı kaydet</translation>
 <translation id="5372529912055771682">Sağlanan kayıt modu işletim sisteminin bu sürümü tarafından desteklenmiyor. Lütfen en yeni sürümü kullandığınızdan emin olun ve tekrar deneyin.</translation>
 <translation id="5397378439569041789">Kiosk veya tabela cihazını kaydet</translation>
+<translation id="5397794290049113714">Siz</translation>
 <translation id="5411022484772257615">Okula kayıt tamamlanamadı</translation>
 <translation id="5413640305322530561">Teşhis ve kullanım verileri hakkında daha fazla bilgi edinin</translation>
 <translation id="542750953150239272">Devam ederek bu cihazın Google'dan, operatörünüzden ve cihazınızın üreticisinden (muhtemelen hücresel veri kullanarak) gönderilen güncelleme ve uygulamaları otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
 <translation id="542948651837270806">Güvenilir Platform Modülü donanım yazılımı için bir güncellemenin yüklenmesi gerekiyor. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ürününe göz atın</translation>
 <translation id="5448293924669608770">Hata! Oturum açarken bir hata oluştu</translation>
+<translation id="5453829744223920473">Çocuğunuz tüm okul uygulamaları, yer işaretleri ve kaynaklarını sınıftaki gibi kullanabilir. Temel kuralları okul belirler.</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> e-postalarına kaydolun</translation>
 <translation id="5473099001878321374">Devam ederek bu cihazın Google'dan, çocuğunuzun operatöründen ve bu cihazın üreticisinden güncellemeleri ve uygulamaları, muhtemelen hücresel veri üzerinden otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
+<translation id="5502915260472117187">Çocuk</translation>
 <translation id="5511823366942919280">Bu cihazı bir "Köpekbalığı" olarak ayarlamak istediğinizden emin misiniz?</translation>
+<translation id="5513807280330619196">Hesap Makinesi</translation>
 <translation id="5527474464531963247">Başka bir ağ da seçebilirsiniz.</translation>
 <translation id="5539070192556911367">Google'a erişilemiyor</translation>
+<translation id="5549511085333906441">Kurulumunuzu seçin</translation>
 <translation id="557722062034137776">Cihazınızı sıfırlamak Google hesaplarınızı veya o hesaplarla senkronize edilmiş verileri etkilemez. Ancak yerel olarak cihazınıza kaydedilmiş tüm dosyalar silinir.</translation>
 <translation id="5626172233890210551">Bunun yerine şifre kullan</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" />, hangi güncellemenin sağlanması gerektiğini belirlemek için cihazlarla ilgili donanım verilerini toplayıp Google'la paylaşarak en iyi deneyimi sağlamayı amaçlar. İsterseniz Google'ın bu verileri <ph name="DEVICE_OS" /> deneyimini ve hizmetini destekleyip iyileştirmesi gibi ek amaçlar için kullanmasına izin verebilirsiniz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu cihazda giriş yapıp chrome://system adresinde chromeosflex_ olarak listelenen alanları inceleyerek güncelleme filtrelemesi için Google'a gönderilen verileri ve Google ile veri paylaşmayı seçtiğiniz diğer örnekleri görebilirsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> işletim sisteminin Google ile paylaşabileceği veriler ve bu verilerin nasıl kullanıldığıyla ilgili daha fazla bilgi için g.co/flex/HWDataCollection sayfasını ziyaret edebilirsiniz.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ağını kullanabilmek için öncelikle <ph name="LINK_START" />ağın oturum açma sayfasını ziyaret etmeniz<ph name="LINK_END" /> gerekebilir. Söz konusu sayfa birkaç saniye içinde otomatik olarak açılacaktır. Açılmazsa, ağ kullanılamaz.</translation>
 <translation id="5655296450510165335">Cihaz kaydı</translation>
+<translation id="565899488479822148">En son güncelleme yükleniyor</translation>
 <translation id="5659964844710667266">Bu <ph name="DEVICE_TYPE" /> için şifre oluşturun</translation>
 <translation id="5684661240348539843">Öğe Tanımlayıcı</translation>
 <translation id="5684950556880280580">Şifreniz güncellendi</translation>
@@ -270,19 +384,26 @@
 <translation id="5765425701854290211">Maalesef bazı dosyalar hasar gördü ve güncelleme başarılı olmadı. Senkronize edilen dosyalarınız güvende.</translation>
 <translation id="5770125698810550803">Gezinme düğmelerini göster</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> ile ilgili ipuçları, fırsatlar ve güncellemeler alın, geri bildirimlerinizi paylaşın.</translation>
+<translation id="5800703268655655701">Açık veya koyu temayı seçin</translation>
 <translation id="5804259315582798390">Yerel veri kurtarma özelliği etkinleştirilemedi</translation>
 <translation id="5810809306422959727">Bu hesap, ebeveyn denetimleri için uygun değil</translation>
+<translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
 <translation id="5852112051279473187">Hata! Bu cihaz kaydettirilirken bir sorun oluştu. Lütfen tekrar deneyin veya destek temsilcinizle iletişim kurun.</translation>
 <translation id="5852137567692933493">Tekrar başlat ve Powerwash uygula</translation>
 <translation id="5856721540245522153">Hata ayıklama özelliklerini etkinleştirin</translation>
+<translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
+<translation id="5870086504539785141">Erişilebilirlik menüsünü kapat</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5895335062901455404">Google Hesabınızla oturum açtığınızda kayıtlı tercihleriniz herhangi bir ChromeOS Flex cihazda hazır olur. Neyin senkronize edileceğini Ayarlar'dan seçebilirsiniz.</translation>
+<translation id="5916664084637901428">Açık</translation>
 <translation id="5919305207330938913">Toplanan tüm veriler Google'ın <ph name="BEGIN_LINK" />Gizlilik Politikası<ph name="END_LINK" />'na uygun olarak kullanılır.</translation>
 <translation id="5932441198730183141">Bu Google Meet hardware cihazını kaydetmek için yeterli kullanılabilir lisansa sahip değilsiniz. Daha fazla lisans satın almak için lütfen satış temsilcisiyle iletişime geçin. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destek birimiyle bağlantı kurun.</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
+<translation id="5948536763493709626">Klavye veya fare bağlayın ya da kuruluma dokunmatik ekranınızı kullanarak devam edin. Bluetooth cihazları kullanıyorsanız cihazlarınızın eşlemeye hazır olduğundan emin olun.</translation>
 <translation id="5959471481388474538">Ağ kullanılamıyor</translation>
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> ekstra içeriğe git</translation>
+<translation id="6016972670657536680">Dil ve klavye düğmesini seçin. Şu anda seçili dil: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6051354611314852653">Hata!  Sistem bu cihaz için API erişimini yetkilendiremedi.</translation>
 <translation id="6055544610007596637"><ph name="DEVICE_TYPE" /> cihazınız için Google Play Store'dan uygulama yükleyin</translation>
@@ -303,35 +424,56 @@
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> işletim sistemini iyileştirmemize yardımcı olmak için Google'ın donanım verilerinizi kullanmasına izin verin. Reddetmeniz durumunda bu veriler uygun güncellemeleri belirlemek için Google'a gönderilmeye devam eder ancak başka şekilde depolanmaz veya kullanılmaz. Daha fazla bilgiyi g.co/flex/HWDataCollection sayfasında bulabilirsiniz.</translation>
 <translation id="6308493641021088955">Oturum açma işlemi <ph name="EXTENSION_NAME" /> tarafından sağlanmıştır</translation>
 <translation id="6314819609899340042">Bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında hata ayıklama özelliklerini başarıyla etkinleştirdiniz.</translation>
+<translation id="6343262564968371601">Google, dosyalar, uygulamalar ve daha fazlasında arama yaparak aradığınızı bulun.</translation>
 <translation id="635609604405270300">Cihazı kapatmayın</translation>
 <translation id="6367097275976877956">ChromeOS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise boşluk çubuğuna basın.</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="6380143666419481200">Kabul et ve devam et</translation>
 <translation id="640457954117263537">ChromeOS ile Android uygulamaları ve hizmetleri için konumu kullanın</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. ChromeOS kilitlenme zamanı, kullandığınız özellikler ve genellikle kullandığınız bellek miktarı gibi bilgiler bu raporlarda yer alabilir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />İstediğiniz zaman Chrome cihaz ayarlarınızda bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Kritik güncellemeyi yükleyin</translation>
+<translation id="6478849105642611893">Hızlı Yapıştır tuşu, sekme tuşunun altında yer alır</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
+<translation id="6488384360522318064">Dil seçin</translation>
 <translation id="6495266441917713704">Kablosuz bağlantı aktarılamıyor</translation>
 <translation id="6515620015470298987">Cihaz yapılandırma kontrolü sorunu nedeniyle oturum açılamadı. Lütfen <ph name="DEVICE_TYPE" /> cihazınızda powerwash yapıp tekrar deneyin.</translation>
 <translation id="6519689855001245063">Uygunluk durumu kontrol ediliyor</translation>
 <translation id="6532527800157340614">Erişim jetonu alınamadığından oturum açılamadı. Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
+<translation id="653920215766444089">İşaretleme cihazı aranıyor</translation>
 <translation id="65513682072153627">Bir ayar veya özellik, yöneticiniz tarafından yönetiliyorsa "Yönetilen" simgesini görürsünüz.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> zaten <ph name="DOMAIN" /> tarafından yönetiliyor. Ebeveyn denetimlerini farklı bir Google Hesabıyla kullanmak için kurulumdan sonra oturumu kapatıp oturum açma ekranında "Kişi ekle"yi seçin.</translation>
 <translation id="6642720633335369752">Tüm açık pencereleri görmek için düğmeden yukarı kaydırıp basılı tutun.</translation>
 <translation id="6648911618876616409">Önemli bir güncelleme yüklenmeye hazır. Başlamak için oturum açın.</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> denetimi kuruluyor</translation>
+<translation id="6675665718701918026">İşaretleme cihazı bağlı</translation>
 <translation id="667752334740867460">Kablosuz bilgileri alınıyor...</translation>
 <translation id="6680442031740878064">Kullanılabilir alan: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> hesabını kurtarabilirsiniz, ancak yerel veriler silinir.</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı okudum ve kabul ediyorum.</translation>
+<translation id="6749473226660745022">Fotoğraflar</translation>
+<translation id="6754918760968695779">Hızlı Yapıştır</translation>
 <translation id="6789834167207639931">Kurtarma işlemini tamamlamak için sonraki ekranda Google Hesabınızın şifresini tekrar girin</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. Bu raporlarda ChromeOS'in ne zaman kilitlendiği, hangi özelliklerin kullanıldığı, genel olarak ne kadar bellek kullanıldığı gibi bilgilerin yanı sıra Android uygulaması teşhis ve kullanım verileri yer alabilir. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Çocuğunuzun ChromeOS cihaz ayarlarından istediğiniz zaman bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Çocuğunuzun Google Hesabında Web ve Uygulama Etkinliği ayarı açıksa çocuğunuzun verileri Google Hesabına kaydedilebilir. Bu ayarlar hakkında daha fazla bilgiyi ve nasıl düzenleneceklerini families.google.com sayfasında bulabilirsiniz.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> cihazınız için en popüler uygulamalar</translation>
 <translation id="682971198310367122">Google gizlilik politikası</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6839916869147598086">Oturum açma değişti</translation>
+<translation id="6852529053326738838">Hesabınızın uygun olup olmadığını kontrol etmek için kuruluşunuza sorun veya iş e-posta hesabınızla kaydolun.</translation>
+<translation id="6867671714894555998">Yeni klavye ile işlerinizi hızlıca halledin</translation>
 <translation id="6883319974225028188">Hay aksi! Sistem cihaz yapılandırmasını kaydedemedi.</translation>
+<translation id="6888831646723563669">Yeni <ph name="DEVICE_TYPE" /> cihazınızdaki tüm özelliklerden yararlanmak için ağa bağlanın</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Uygulama verileri, geliştiricinin ayarlarına bağlı olarak bir uygulamanın kaydettiği her tür veri olabilir. Bunlar arasında kişiler, mesajlar ve fotoğraflar gibi veriler bulunabilir. Yedekleme verileri, çocuğunuzun Drive depolama alanı kotasından düşülmez.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu hizmeti Ayarlar'dan kapatabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Senkronizasyonu aç</translation>
 <translation id="6918733588290914545">Android telefonla hızlı kurulum</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> cihazınızın internete bağlı olduğundan emin olup tekrar deneyin. play.google/play-terms adresini başka bir cihazda da ziyaret edebilirsiniz.</translation>
+<translation id="6929126689972602640">Ebeveyn denetimleri, okul hesapları için desteklenmez. Hem Google Classroom'a hem de evde ödev yapmak amacıyla diğer sitelere erişmek için okul hesabı eklemek üzere önce çocuğun kişisel hesabıyla oturum açın. Okul hesabını daha sonra kurulumda ekleyebilirsiniz.</translation>
+<translation id="6935031746833428401">Cihaz yönetimi hakkında daha fazla bilgi</translation>
+<translation id="6950351336108213154">Cihaz çevre birimleri güncelleniyor</translation>
 <translation id="6955698182324067397">sshd yardımcı programını ayarlayacak ve USB sürücülerinden önyüklemeyi etkinleştirecek ChromeOS hata ayıklama özelliklerini etkinleştiriyorsunuz.</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6969216690072714773">Bu cihazla ilişkilendirilecek yeni bilgiler girin veya varolan bilgileri güncelleyin.</translation>
@@ -341,23 +483,37 @@
           Proxy sunucu kullanmamanız gerektiğine inanıyorsanız, <ph name="LINK_START" />proxy ayarlarınızı<ph name="LINK_END" />
           düzenleyin:</translation>
 <translation id="6996245928508281884">Telefonunuzun Bluetooth ve kablosuz bağlantısını açın</translation>
+<translation id="6996438701394974959">Görüntü ve metin boyutunu büyütün</translation>
+<translation id="6998793565256476099">Video konferans için cihazı kaydetme</translation>
 <translation id="7025082428878635038">Hareketlerle gezinme için yeni bir yol</translation>
 <translation id="7034692021407794547">Faturalandırma Yönetimi ayrıcalıklarına sahip yönetici, önce Yönetici konsolunun Google Meet Hardware bölümünde Google Meet Hardware Hizmet Şartları'nı kabul etmelidir.</translation>
+<translation id="7039951224110875196">Çocuk için Google Hesabı oluşturun</translation>
 <translation id="7065223852455347715">Bu cihaz, kurumsal kaydı engelleyen bir modda kilitlenmiş. Cihazı kaydetmek istiyorsanız önce cihaz kurtarma işlemini gerçekleştirmeniz gerekir.</translation>
+<translation id="7066572364168923329"><ph name="DEVICE_TYPE" /> cihazınızın kurulumunu seçin</translation>
 <translation id="7077829361966535409">Oturum açma sayfası, mevcut proxy ayarları kullanılarak yüklenemedi. Lütfen <ph name="GAIA_RELOAD_LINK_START" />tekrar oturum açmayı deneyin<ph name="GAIA_RELOAD_LINK_END" /> veya farklı <ph name="PROXY_SETTINGS_LINK_START" />proxy ayarları<ph name="PROXY_SETTINGS_LINK_END" /> kullanın.</translation>
 <translation id="7088674813905715446">Bu cihaz, yönetici tarafından "sağlanmıyor" durumuna alınmış. Kayıt için tekrar etkinleştirmek üzere lütfen yöneticinizden cihazı bekleme durumuna almasını isteyin.</translation>
 <translation id="7114054701490058191">Şifreler eşleşmiyor</translation>
 <translation id="7135729336746831607">Bluetooth açılsın mı?</translation>
 <translation id="7141105143012495934">Hesap ayrıntılarınız alınamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
+<translation id="7171259390164035663">Kaydolma</translation>
 <translation id="7189451821249468368">Bu cihazı kaydetmek için yeterli yükseltmeye sahip değilsiniz. Daha fazla yazılım satın almak için lütfen satış birimiyle bağlantı kurun. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destekle bağlantı kurun.</translation>
 <translation id="7202337678781136582">QR kodunu Android telefonunuzla tarayın</translation>
+<translation id="7228854227189381547">Değiştirme</translation>
+<translation id="7230881857327093958">Değişiklikler, kurulumdan sonra uygulanır</translation>
 <translation id="7260186537988033909">Kiosk ve tabela cihaz kaydı tamamlandı</translation>
+<translation id="7284411326658527427">Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> tarafından barındırılan bu oturum açma hizmeti kameranıza erişiyor.</translation>
+<translation id="7311005168897771689">İnternete bağlı değilken Google Drive dosyalarınıza kolayca erişin</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>
+<translation id="7326004502692201767">Bu <ph name="DEVICE_TYPE" /> cihazı çocuk için kurun</translation>
+<translation id="732659786514229249">Cihaz, kuruluşunuza kaydedilsin mi?</translation>
 <translation id="7329154610228416156">Güvenli olmayan bir URL (<ph name="BLOCKED_URL" />) kullanmak üzere yapılandırıldığından oturum açılamadı. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="7345706641791090287">Şifrenizi onaylayın</translation>
+<translation id="7348093485538360975">Dokunmatik klavye</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
+<translation id="7403642243184989645">Kaynaklar indiriliyor</translation>
+<translation id="7406912950279255498">Rengi ters çevirme modu</translation>
 <translation id="7416263748877373774">Hizmet Şartları yüklenemiyor. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="7475742997309661417">ChromeOS'teki ekran okuyucu olan ChromeVox, özellikle görme engelli ve az gören kişiler tarafından konuşma sentezleyici ya da Braille ekranla birlikte ekranda gösterilen metni okumak için kullanılır. ChromeVox'u açmak için ses seviyesi tuşlarının ikisini birden beş saniye boyunca basılı tutun. ChromeVox etkinleştirildiğinde hızlı bir tura çıkarsınız.</translation>
 <translation id="7476454130948140105">Pil gücü güncelleme için yeterli değil (%<ph name="BATTERY_PERCENT" />)</translation>
@@ -367,39 +523,61 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> cihazınız kurumsal yönetim için başarıyla kaydettirildi.</translation>
 <translation id="7509097596023256288">Yönetim kuruluyor</translation>
 <translation id="7543104066686362383">Bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında hata ayıklama özelliklerini etkinleştir</translation>
+<translation id="7544227555407951270">Cihazı kaydettirin</translation>
+<translation id="7549434883223124329">Cihaz dili değiştirilsin mi?</translation>
 <translation id="7553242001898162573">Şifrenizi girin</translation>
 <translation id="7556242789364317684">Maalesef <ph name="SHORT_PRODUCT_NAME" />, ayarlarınızı kurtaramıyor. Hatayı düzeltmek için <ph name="SHORT_PRODUCT_NAME" /> cihazınızı Powerwash ile sıfırlamalısınız.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> cihazınızı senkronize edin</translation>
 <translation id="7571643774869182231">Depolama alanı güncelleme için yeterli değil</translation>
+<translation id="7616214729753637086">Cihaz kaydediliyor...</translation>
 <translation id="7622114377921274169">Şarj oluyor.</translation>
 <translation id="7630426712700473382">Bu cihaz, <ph name="MANAGER" /> tarafından yönetilmekte olup her defasında oturum açmanızı gerektirmektedir.</translation>
 <translation id="7639914187072011620">Sunucudan SAML yönlendirme URL'si alınamadı</translation>
 <translation id="7643117827468520640">Bu şartları inceleyin</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Uygulama verileri, geliştiricinin ayarlarına bağlı olarak bir uygulamanın kaydettiği her tür veri olabilir. Bunlar arasında kişiler, mesajlar ve fotoğraflar gibi veriler bulunabilir. Yedekleme verileri Drive depolama alanı kotanızdan düşülmez.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bu hizmeti Ayarlar'dan kapatabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659584679870740384">Bu cihazı kullanma yetkiniz yok. Oturum açma izni almak için lütfen yöneticiyle iletişim kurun.</translation>
 <translation id="7660116474961254898">Telefonunuzdaki talimatları uygulayın</translation>
 <translation id="7661451191293163002">Kayıt sertifikası alınamadı.</translation>
+<translation id="7666531788977935712">Devam düğmesi etkinleştirildi</translation>
 <translation id="7671139479636735732">Fikirlerinizi kolayca görselleştirmek için sağ tıklayın</translation>
 <translation id="770831926727930011">Yerel verileriniz eski şifrenizle korunuyor. Yerel verileri kurtarmak için eski şifrenizi girin.</translation>
 <translation id="7722040605881499779">Güncelleme için gereken: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ile eşleniyor...</translation>
+<translation id="7746045113967198252">Metin de dahil olmak üzere ekranınızdaki öğeleri büyütün veya küçültün. Bu ayarlara daha sonra Ayarlar &gt; Cihaz &gt; Ekranlar bölümünden de ulaşabilirsiniz.</translation>
 <translation id="7760176388948986635">Chrome OS'in ve konum izni olan Android uygulamaları, web siteleri ve hizmetlerin bu cihazın konumunu kullanmasına izin verin. Konum Doğruluğu, Android uygulamaları ve hizmetleri için daha doğru konum bilgisi sunar. Google bunu yapmak için bu cihazdan kitle kaynaklı kablosuz sinyal konumlarına gönderilen kablosuz sinyaller ve cihaz sensörleri hakkındaki bilgileri düzenli aralıklarla işler. Bu bilgiler, konum doğruluğunu artırmanın ve konuma dayalı hizmetleri geliştirmenin yanı sıra Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak üzere Google'ın hizmetlerinin geliştirilmesi, sağlanması ve sürdürülmesi için hiçbir şahsın kimliğini tanımlamadan kullanılır.</translation>
 <translation id="7784875615510899699">Bu Google Beam cihazını kaydetmek için yeterli miktarda kullanılabilir lisansa sahip değilsiniz. Daha fazla lisans satın almak için lütfen bayinizle iletişime geçin. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen bayinizle görüşün.</translation>
+<translation id="7791269138074599214">Giriş yöntemi</translation>
+<translation id="7791436592012979144">Ters kaydırma etkinleştirildi</translation>
 <translation id="7792012425874949788">Oturum açarken bir hata oluştu</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7803657407897251194">Kuruluma Android cihazınızla devam etmek için <ph name="DEVICE_TYPE" /> cihazınızı bir ağa bağlayın</translation>
+<translation id="7842692330619197998">Yeni bir hesap oluşturmanız gerekiyorsa g.co/ChromeEnterpriseAccount adresini ziyaret edin.</translation>
 <translation id="7851457902707056880">Oturum açma sadece sahip hesabı üzerinden yapılabilir. Lütfen yeniden başlatın ve sahip hesabı ile oturum açın. Makine 30 saniye içerisinde otomatik olarak yeniden başlayacaktır.</translation>
 <translation id="7870730066603611552">Kurulumdan sonra senkronizasyon seçeneklerini inceleyin</translation>
 <translation id="7883792253546618164">İstediğiniz zaman aboneliğinizi iptal edebilirsiniz.</translation>
+<translation id="7887864092952184874">Bluetooth fare eşlendi</translation>
 <translation id="7906440585529721295">Yerel veriler silinecek</translation>
+<translation id="7910725946105920830">Kişisel Google Hesabınızı kullanın</translation>
+<translation id="7918257978052780342">Kaydol</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. Bu raporlarda ChromeOS'in ne zaman kilitlendiği, hangi özelliklerin kullanıldığı ve genel olarak ne kadar bellek kullanıldığı gibi bilgiler yer alabilir.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Çocuğunuzun ChromeOS cihaz ayarlarından istediğiniz zaman bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Gelişmiş seçenekler</translation>
 <translation id="7943311690198910993">Oturum açma yöntemi güncellendi</translation>
 <translation id="795240231873601803">İş ve okul hesapları için kurumsal kayıt yapın</translation>
 <translation id="7968982339740310781">Ayrıntıları görüntüle</translation>
 <translation id="7975504106303186033">Bu Chrome Education cihazını bir eğitim hesabına kaydettirmelisiniz. Yeni bir hesaba kaydolmak için lütfen g.co/workspace/edusignup adresini ziyaret edin.</translation>
+<translation id="7980084013673500153">Öğe kimliği: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Bu hatayı düzeltmek için lütfen cihazınızı yeniden başlatın.</translation>
 <translation id="7990958035181555539">Android telefonunuzdan kablosuz bağlantıyı otomatik olarak aktarın</translation>
+<translation id="8022466874160067884">Google Hesabınızı ve şifrenizi girin</translation>
+<translation id="8049029041626250638">Bir klavye veya fare bağlayın. Bluetooth cihazları kullanıyorsanız cihazlarınızın eşlemeye hazır olduğundan emin olun.</translation>
 <translation id="8054563304616131773">Lütfen geçerli bir e-posta adresi girin</translation>
+<translation id="8054921503121346576">USB klavyesi bağlandı</translation>
 <translation id="8065144531309810062">Yaratıcılığınızı ve üretkenliğinizi artırmak için Google Yapay Zeka'yı kullanın</translation>
+<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" ile eşlensin mi?</translation>
 <translation id="8097959162767603171">Yöneticiniz önce Yönetici konsolu Chrome cihaz listesindeki hizmet şartlarını kabul etmelidir.</translation>
 <translation id="8098616321286360457">Ağ bağlantısı gerekiyor</translation>
 <translation id="8129265306888404830">Kuruluşunuzun e-posta adresini (<ph name="EMAIL_DOMAIN" />) kullanmak için kurumsal kayıt yapmanız gerekir. Bu cihaz kişisel kullanımınız içinse kişisel Google Hesabınızla oturum açın.</translation>
@@ -407,28 +585,37 @@
 <translation id="8146177459103116374">Zaten bu cihazda kayıtlıysanız, <ph name="LINK2_START" />varolan kullanıcı olarak oturum açabilirsiniz<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
 <translation id="8147346945017130012">Kilitlenme raporlarının yanı sıra teşhis ve kullanım verilerini Google'a otomatik olarak göndererek Chrome ve ChromeOS özellikleri ile performansını iyileştirmeye yardımcı olun.</translation>
+<translation id="8152760814912191567">Zoom için Google Beam</translation>
 <translation id="815491593104042026">Hata! Güvenli olmayan bir URL (<ph name="BLOCKED_URL" />) kullanmak üzere yapılandırıldığından kimlik doğrulama başarısız oldu. Lütfen yöneticinizle bağlantı kurun.</translation>
 <translation id="8157704005178149728">Gözetim kuruluyor</translation>
 <translation id="8174047975335711832">Cihaz bilgileri</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Google'ın konum hizmeti, cihazınızın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ayarlar &gt; Uygulamalar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Güvenlik ve konum &gt; Konum bölümüne giderek cihazınızdaki Android konumunu istediğiniz zaman kapatabilirsiniz. Ayrıca aynı menüden "Google Konum Doğruluğu" ayarını kapatarak kablosuz, mobil ağlar ve Android konum sensörlerinin kullanılmasını da devre dışı bırakabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> profilinizi güncellemek için lütfen şifrenizi tekrar girin.</translation>
 <translation id="8239032431519548577">Kurumsal kayıt tamamlandı</translation>
 <translation id="8241806945692107836">Cihaz yapılandırması belirleniyor...</translation>
 <translation id="8242426110754782860">Devam et</translation>
 <translation id="826905130698769948">Geçersiz istemci sertifikası</translation>
+<translation id="8271379370373330993">Ebeveynler, sonraki birkaç adım sizin için. Hesap kurulumundan sonra <ph name="DEVICE_TYPE" /> cihazını çocuğa geri verebilirsiniz.</translation>
 <translation id="8274924778568117936">Güncelleme bitene kadar <ph name="DEVICE_TYPE" /> cihazınızı kapatmayın. Yükleme işlemi tamamlandıktan sonra <ph name="DEVICE_TYPE" /> cihazınız yeniden başlatılacaktır.</translation>
 <translation id="8281886186245836920">Atla</translation>
+<translation id="8291942417224950075">Kişisel kullanım için</translation>
 <translation id="8304383784961451596">Bu cihazı kullanmak için yetkili değilsiniz. Oturum açma izni için lütfen yöneticinize danışın veya Family Link gözetimindeki bir Google hesabı ile oturum açın.</translation>
 <translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> cihaz, <ph name="MANAGER" /> tarafından yönetilecek.</translation>
+<translation id="8339288417038613756">Görüntü ve metin boyutu</translation>
 <translation id="8354034204605718473">Çocuğunuzun PIN'i eklendi</translation>
 <translation id="8366396658833131068">Ağ bağlantınız geri yüklendi. Lütfen farklı bir ağ seçin veya kiosk uygulamanızı başlatmak için "Devam Et" düğmesine basın.</translation>
 <translation id="8401432541486058167">Akıllı kartınızla ilişkilendirilen PIN'i girin.</translation>
 <translation id="8408270600235826886">Google'la hangi bilgilerin paylaşılacağını siz belirleyebilirsiniz. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz. Veriler Google’ın <ph name="BEGIN_LINK" />Gizlilik Politikası<ph name="END_LINK" />'na uygun olarak kullanılır.</translation>
 <translation id="8413956290606243087">ChromeOS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz?</translation>
 <translation id="8425768983279799676">Cihazınızın kilidini açmak için PIN'inizi kullanabilirsiniz.</translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="843173223122814223">Yapay zeka ile arka plan üretin</translation>
 <translation id="8452105022015742247">Android telefonunuzdaki Google Hesabı bilgileri aktarılıyor</translation>
 <translation id="8464132254133862871">Bu kullanıcı hesabı hizmet için uygun değil.</translation>
 <translation id="8524841856047224176">Görüntülü görüşmeler ve diğer etkinlikler için kameranızın arka planlarını kişiselleştirin</translation>
+<translation id="8527257351549797148">Uygulamalara, uzantılara ve diğer öğelere erişebilmeniz için kuruluşunuz kaydolma işlemini zorunlu kılabilir. Bu şekilde kuruluşunuz güvenlik ve cihaz ayarları gibi konuları da yönetebilir.</translation>
+<translation id="8558063527625343224">Google Beam'i ayarlayın</translation>
 <translation id="8569673829373920831"><ph name="APP_NAME" /> hakkında daha fazla bilgi</translation>
 <translation id="8586421813321819377">Konum izinleri olan ChromeOS ile Android uygulamaları, web siteleri ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Konum Doğruluğu, Android uygulamaları ve hizmetleri için daha doğru konum bilgisi sunar. Google bunu yapmak için bu cihazdan kitle kaynaklı kablosuz sinyal konumlarına gönderilen kablosuz sinyaller ve cihaz sensörleri hakkındaki bilgileri düzenli aralıklarla işler. Bu bilgiler, konum doğruluğunu artırmanın ve konuma dayalı hizmetleri geliştirmenin yanı sıra Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak üzere Google'ın hizmetlerinin sağlanması, sürdürülmesi ve geliştirilmesi için kimliğinizi tanımlamadan kullanılır.</translation>
 <translation id="8627804903623428808">İlgili şartları gözden geçirip çocuğunuzun verilerini kontrol edin</translation>
@@ -437,9 +624,13 @@
         <ph name="BR" />
         Yakındaki cihazlar, <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> olarak görebilir.</translation>
 <translation id="8655972064210167941">Şifreniz doğrulanamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Konum Doğruluğu etkinken kablosuz ağ erişim noktaları ve baz istasyonları gibi kablosuz sinyaller hakkındaki bilgilerin yanı sıra ivme ölçer ve jiroskop gibi cihaz sensör verileri, cihaz konumunu daha doğru bir şekilde tahmin etmek için kullanılır. Android uygulamaları ve hizmetleri de konuma dayalı özellikleri sunmak için bu tahminlerden yararlanır. Google bunu yapmak için kitle kaynaklı kablosuz sinyal konumlarına katkıda bulunmak amacıyla yakınınızdaki cihaz sensörleri ve kablosuz bağlantı sinyalleriyle ilgili bilgileri düzenli aralıklarla toplar.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google, bu bilgileri kimliğinizi belirlemeden şu amaçlarla kullanır: konum doğruluğu ve konuma dayalı hizmetleri iyileştirme; Google hizmetlerini genel anlamda geliştirme, sunma ve sürdürme. Bu bilgileri, Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak için işleriz.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Konum Doğruluğu'nu dilediğiniz zaman cihazınızın konum ayarlarından (Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi &gt; Gelişmiş konum ayarları) devre dışı bırakabilirsiniz. Konum Doğruluğu devre dışıyken bu özellikle ilgili veri toplanmaz. Android uygulamaları ve hizmetlerinde cihazınızın konumunu belirlemek için mevcutsa yalnızca IP adresi kullanılır. Bu durum, Google Haritalar gibi Android uygulamaları ve hizmetlerindeki konumların kullanılabilirliğini ve doğruluğunu etkileyebilir.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum ChromeOS'nin en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="8695139659682234808">Kurulumdan sonra ebeveyn denetimleri ekleme</translation>
 <translation id="8698269656364382265">Önceki ekrana dönmek için sol kenardan kaydırın.</translation>
+<translation id="8718994464069323380">Dokunmatik ekran algılandı</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8726206820263995930">Sunucudan politika ayarları alınırken hata oluştu: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Bitti</translation>
@@ -447,24 +638,36 @@
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı kullanıcıya verebilirsiniz. Kurulum tamamlanmak üzere, ardından keşfetmeye başlayabilirsiniz.</translation>
 <translation id="8759753423332885148">Daha fazla bilgi edinin.</translation>
 <translation id="8777628254805677039">kök şifre</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Bluetoth eşleme kodunu yazıp Return veya Enter tuşuna basın.</translation>
 <translation id="8794548468611058947">Oturum açarken Google Hesabınızın şifresini girmek yerine bu <ph name="DEVICE_TYPE" /> için PIN oluşturabilirsiniz</translation>
 <translation id="8830796635868321089">Mevcut proxy ayarları kullanılarak yapılan güncelleme kontrolü başarısız oldu. Lütfen <ph name="PROXY_SETTINGS_LINK_START" />proxy ayarlarınızı<ph name="PROXY_SETTINGS_LINK_END" /> düzenleyin.</translation>
+<translation id="8855977033756560989">Bu Chromebook Enterprise cihaz, Chrome Enterprise Yükseltme ile birlikte paket halinde gelir. Kurumsal işlevlerden yararlanmak için bu cihazı bir Google yönetici hesabıyla kaydedin.</translation>
 <translation id="885746075120788020">Google Hesabınızla oturum açtığınızda kayıtlı tercihleriniz herhangi bir ChromeOS cihazında hazır olur. Neyin senkronize edileceğini Ayarlar'dan seçebilirsiniz.</translation>
+<translation id="8868333925931032127">Demo Modu Başlatılıyor</translation>
 <translation id="8875221558267407626">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun</translation>
+<translation id="8907701755790961703">Lütfen bir ülke seçin</translation>
 <translation id="8913163265790894442"><ph name="DEVICE_TYPE" /> cihazınızı telefonunuzla kolayca kurun. Kablosuz ağınızı ve Google Hesabınızı, şifrelerinizi manuel olarak girmeden ekleyebilirsiniz.
         <ph name="BR" />
     <ph name="BR" />
     <ph name="DEVICE_TYPE" /> olarak görünür...</translation>
+<translation id="8934732568177537184">Devam</translation>
 <translation id="8946359700442089734">Hata ayıklama özellikleri bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazda tam olarak etkinleştirilmemişti.</translation>
 <translation id="8965037249707889821">Eski şifreyi girin</translation>
+<translation id="8968906873893164556">Kurulum için kullanılacak hesabı seçin</translation>
+<translation id="8973596347849323817">Bu cihazı ihtiyaçlarınıza uygun şekilde özelleştirebilirsiniz. Bu erişilebilirlik özellikleri daha sonra Ayarlar'dan değiştirilebilir.</translation>
 <translation id="8975396729541388937">Aldığınız e-postalardaki bağlantıyı tıklayarak istediğiniz zaman e-posta listesinden çıkabilirsiniz.</translation>
+<translation id="8987305927843254629">Her kullanıcı, hesabını kişiselleştirip verilerini gizli tutabilir.</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> şifrenizi unutsanız bile, yerel verilerinizi geri yükleyebilirsiniz. Google Hesabınızda oturum açmanız veya hesap kurtarma özelliğini kullanmanız gerekir.</translation>
 <translation id="9033765790910064284">Yine de devam et</translation>
 <translation id="903480517321259405">PIN'i tekrar yazın</translation>
 <translation id="9040473193163777637">ChromeOS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise ses seviyesi tuşlarının ikisini birden beş saniyeliğine basılı tutun.</translation>
 <translation id="9068298336633421551">Konum izinleri olan Android uygulama ve hizmetlerinin bu cihazın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
+<translation id="9074836595010225693">USB fare bağlandı</translation>
 <translation id="9076523132036239772">Maalesef, e-postanız veya şifreniz doğrulanamadı. Önce bir ağa bağlanmayı deneyin.</translation>
+<translation id="9089959054554410481">Dokunmatik alan kaydırma yönünü değiştirin</translation>
 <translation id="9158715103698450907">Hata! Kimlik doğrulama sırasında bir ağ iletişim sorunu oldu. Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
+<translation id="9186963452600581158">Çocuğunuzun Google Hesabıyla oturum açın</translation>
 <translation id="919686179725692564">Verilerinizi yedekleme hakkında daha fazla bilgi edinin</translation>
 <translation id="9214520840402538427">Hata! Yükleme zamanı özniteliklerini başlatma işlemi zaman aşımına uğradı. Lütfen destek temsilcinizle görüşün.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> cihazlara özel.<ph name="END_PARAGRAPH1" />
@@ -474,4 +677,7 @@
     <ph name="BR" />
     <ph name="DEVICE_TYPE" /> olarak görünür...</translation>
 <translation id="951991426597076286">Reddet</translation>
+<translation id="954749761428814584">Dil ve giriş yöntemi</translation>
+<translation id="960987915827980018">Yaklaşık 1 saat kaldı</translation>
+<translation id="995420352808264005">Cihaz kaydı türünü seçin</translation>
 </translationbundle>

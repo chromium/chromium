@@ -3196,6 +3196,11 @@ Questa policy non influisce sulla policy "<ph name="WEB_APP_INSTALL_FORCE_LIST_P
         La policy non ha effetto su quelle già pubblicati.</translation>
 <translation id="3002067315837777719">Non consentire l'attivazione delle notifiche Phone Hub</translation>
 <translation id="3003490107503207900">Forza il download dei documenti Office (ad esempio .docx) anziché aprirli in <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Controlla come <ph name="PRODUCT_OS_NAME" /> gestisce una mancata corrispondenza della password rilevata durante un accesso online. Questa policy determina cosa succede quando la password dell'utente, autenticata tramite un IdP online (ad es. IdP di terze parti, Gaia), non corrisponde alla password utilizzata per criptare i dati locali. Ciò accade solitamente quando un utente modifica la propria password esternamente.
+
+Impostando la policy su 0 (Procedura standard di modifica della password) o lasciandola non configurata, viene avviata la procedura standard di modifica della password. All'utente verrà chiesto di inserire la password precedente per aggiornare la crittografia dei dati locali oppure potrà utilizzare altri meccanismi di recupero dei dati locali, se disponibili.
+
+Impostando la policy su 1 (Cancellazione automatica dei dati locali), la procedura standard di modifica della password viene bypassata. Se viene rilevata una mancata corrispondenza della password, i dati locali dell'utente verranno cancellati automaticamente. In questo modo, l'utente può accedere senza problemi con la nuova password, ma ciò comporta la perdita di tutti i dati archiviati localmente nel profilo (ad es. download e impostazioni non sincronizzate). Questa opzione è pensata per ambienti in cui gli utenti archiviano i dati principalmente nel cloud o in cui si prevede che la password venga aggiornata spesso.</translation>
 <translation id="300673820739371513">Questa policy consente di stabilire se nelle pagine web vengono rilevate entità di testo normale, consentendo agli utenti di attivare azioni contestuali interagendo con loro.
 La policy ha più proprietà, una per ogni tipo di entità.
 I tipi di entità sono <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />…
@@ -6456,7 +6461,7 @@ Se questa policy viene impostata su Attivata o se non viene configurata, la prop
 
 Se viene impostata su Disattivata, la proprietà CSS "zoom" utilizzerà il comportamento precedente pre-standardizzato.
 
-Questa policy è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche una prova dell'origine ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questa policy è impostata su Disattivata. Questa policy verrà rimossa e il comportamento "Attivata" verrà reso permanente nella versione 134.</translation>
+Questa policy è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche un origin trial ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questa policy è impostata su Disattivata. Questa policy verrà rimossa e il comportamento "Attivata" verrà reso permanente nella versione 134.</translation>
 <translation id="5088303895040832480">Utilizza UsbDeviceId nel nuovo codice.</translation>
 <translation id="5090791951240382356">Consenti l'unione delle policy del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
@@ -8989,6 +8994,7 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
 
       Nota: usa questa policy insieme alla policy <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un flag booleano che indica se la tastiera sullo schermo può offrire il controllo ortografico.</translation>
+<translation id="6625424971640741579">Procedura standard di modifica della password</translation>
 <translation id="6625716212597516929">Ripristina il comportamento precedente per l'ambito dei cookie</translation>
 <translation id="6626319579493977784">Impostazioni codice dinamico</translation>
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
@@ -9200,6 +9206,7 @@ la configurazione.</translation>
 <translation id="6763023079133439068">Consenti i certificati privi di un'estensione subjectAlternativeName se sono stati emessi da trust anchor locali</translation>
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>
+<translation id="6770703270685871935">Cancellazione automatica dei dati locali</translation>
 <translation id="6774132787348495175">Non consentire agli utenti di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="6782331708811245959">Attiva report sulla modalità di avvio dispositivo</translation>
 <translation id="6783578496154221347">Utilizza WeeklyTimeIntervalChecked nel nuovo codice.</translation>
@@ -9504,6 +9511,7 @@ Questa policy verrà rimossa in futuro, una volta completata l'implementazione d
       Se la policy non viene configurata, non ci saranno stampanti per i dispositivi e le altre policy <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> verranno ignorate.</translation>
 <translation id="69525503251220566">Parametro che fornisce la funzione di ricerca tramite immagine per il provider di ricerca predefinito</translation>
 <translation id="6953102253399571439">Attiva la stampa PIN per impostazione predefinita</translation>
+<translation id="6953246833109449226">Configura il comportamento per le mancate corrispondenze delle password online</translation>
 <translation id="695532899547292238">Abilita la raccolta di log a livello di applicazione kiosk</translation>
 <translation id="6956272732789158625">Non consentire a nessun sito di utilizzare la generazione di chiavi</translation>
 <translation id="6960996423652450945">Disattiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>

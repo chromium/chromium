@@ -302,7 +302,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2297822946037605517">Deli ovu stranicu</translation>
 <translation id="230115972905494466">Nije pronađen nijedan kompatibilan uređaj</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
-<translation id="2318045970523081853">Dodirnite da biste uputili poziv</translation>
 <translation id="232137538351753795">Prevucite od leve ivice da biste se vratili</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provereno pre 1 dan}one{Provereno pre # dan}few{Provereno pre # dana}other{Provereno pre # dana}}</translation>
 <translation id="2842985007712546952">Nadređeni folder</translation>
 <translation id="2854916915045135148">Dodirnite i zadržite da biste prešli u režim bez arhiviranja</translation>
-<translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="286473047976978798">Želite da primenite podešavanja izgleda?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> i još 1 kartica}one{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="URL" /> i još <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="2869430948265924908">Da biste zaštitili osetljiv sadržaj u automobilu, morate da primenite zaključavanje profila automobila.  To možete da uradite pomoću PIN-a, koda ili lozinke.</translation>
@@ -1272,6 +1270,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6315386555979018699">Izbriši i nastavi</translation>
 <translation id="6316139424528454185">Nepodržana verzija Android-a</translation>
 <translation id="631839948975905034">Zaključajte prozore bez arhiviranja posle zatvaranja Chrome-a</translation>
+<translation id="6321592572353357376">Dodatak <ph name="EXTENSION_NAME" /> želi da se prijavite u Chrome</translation>
 <translation id="6324916366299863871">Izmeni prečicu</translation>
 <translation id="6324977638108296054">Pravljenje linka do istaknutog teksta nije uspelo</translation>
 <translation id="6333140779060797560">Deljenje preko <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6910211073230771657">Izbrisano</translation>
 <translation id="6916590542764765824">Upravljajte dodacima</translation>
 <translation id="6918398787259831832">Ako se ovaj problem nastavi, <ph name="BEGIN_LINK" />saznajte više<ph name="END_LINK" /> od: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Napravi QR kôd za ovu stranicu</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome je uklonio dozvole za ove sajtove jer ih niste nedavno posećivali</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 kartica}one{<ph name="NUMBER_OF_TABS" /> kartica}few{<ph name="NUMBER_OF_TABS" /> kartice}other{<ph name="NUMBER_OF_TABS" /> kartica}}</translation>
 <translation id="6929224077895306814">Svi bezbednosni kodovi sačuvani na uređaju i Google nalogu će biti izbrisani</translation>
@@ -2033,7 +2033,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9205933215779845960">Nismo uspeli da pronađemo tu stranicu. Proverite pravopis ili probajte da pretražite na <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Upućivanje poziva nije uspelo</translation>
 <translation id="9212845824145208577">Ne možete da odete niže. Probajte da počnete sa manje visine na stranici.</translation>
 <translation id="9218430445555521422">Podesi kao podrazumevano</translation>
 <translation id="9219103736887031265">Slike</translation>

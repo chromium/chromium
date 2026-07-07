@@ -302,7 +302,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
-<translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="232137538351753795">Pasa o dedo desde o bordo esquerdo para volver</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A comprobación realizouse hai 1 día}other{A comprobación realizouse hai # días}}</translation>
 <translation id="2842985007712546952">Cartafol principal</translation>
 <translation id="2854916915045135148">Mantén premido o botón para cambiar ao modo de incógnito</translation>
-<translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="286473047976978798">Queres aplicar as túas preferencias de aparencia?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> e 1 pestana máis}other{<ph name="URL" /> e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="2869430948265924908">Para protexer o teu contido confidencial no coche, debes crear un bloqueo do perfil do coche.  Podes facelo cun PIN, cun código ou cun contrasinal.</translation>
@@ -1272,6 +1270,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6315386555979018699">Eliminar e continuar</translation>
 <translation id="6316139424528454185">Versión Android non compatible</translation>
 <translation id="631839948975905034">Bloquear ventás do modo de incógnito ao saír de Chrome</translation>
+<translation id="6321592572353357376">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chrome</translation>
 <translation id="6324916366299863871">Editar atallo</translation>
 <translation id="6324977638108296054">Non se puido crear unha ligazón ao texto destacado</translation>
 <translation id="6333140779060797560">Comparte a través de <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6910211073230771657">Eliminado</translation>
 <translation id="6916590542764765824">Xestionar extensións</translation>
 <translation id="6918398787259831832">Se o problema persiste, <ph name="BEGIN_LINK" />obtén máis información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Crear código QR para esta páxina</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestana}other{<ph name="NUMBER_OF_TABS" /> pestanas}}</translation>
 <translation id="6929224077895306814">Eliminaranse todos os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
@@ -1541,6 +1541,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7253951228444156601">Comprobando contrasinais…</translation>
 <translation id="7260367682327802201">O teu dispositivo Android pode incluír unha opción de configuración similar. Se activas a medición de anuncios en Chrome e no teu dispositivo Android, as empresas poderán medir a eficacia dos anuncios nos sitios web que visites e nas aplicacións que uses.</translation>
+<translation id="7265857422443387781">Buscar pestana con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Queres enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
 <translation id="7276868533747677875">Se anteriormente exportaches contrasinais, busca un ficheiro CVS no teu dispositivo e impórtao ao teu xestor de contrasinais preferido.</translation>
@@ -1883,6 +1884,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8611922158252451755">Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao compartila. A ligazón caduca ás 48 horas.</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Traducir ao <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Abre Menú de Chrome &gt; Configuración</translation>
 <translation id="8634050254805484913">Oculta en pantallas estreitas</translation>
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
@@ -2031,7 +2033,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9205933215779845960">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar a busca en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Non se pode realizar chamadas</translation>
 <translation id="9212845824145208577">Non se pode seguir baixando. Proba a comezar desde máis abaixo na páxina.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imaxes</translation>

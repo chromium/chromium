@@ -1573,6 +1573,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="628251768213143684">You can always manage what's saved in your Google Account</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">To turn on Safe Browsing, open <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /> and tap Safe Browsing.</translation>
+<translation id="6295140892595702619">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on). Your data is not used to improve generative AI models</translation>
 <translation id="6295751040240588413">Invalid card nickname</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
@@ -2181,7 +2182,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8264966119170358612">Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8274795744553482834">You're about to switch profiles</translation>
 <translation id="8275068909952022340">More…</translation>
 <translation id="8280797717392145626">Links received</translation>

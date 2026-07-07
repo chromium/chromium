@@ -1573,6 +1573,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="628251768213143684">Puedes administrar la información que se guarda en tu Cuenta de Google en cualquier momento</translation>
 <translation id="6284652193729350524">Ofrecer traducción al <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Si quieres activar la Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y, luego, presiona Navegación segura.</translation>
+<translation id="6295140892595702619">Usa el micrófono para conversar con Gemini. Cuando le hablas a Gemini, el audio se almacena en la Actividad en las Apps con Gemini (si está activada). Tus datos no se usan para mejorar modelos de IA generativa</translation>
 <translation id="6295751040240588413">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
@@ -2181,7 +2182,6 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Se rellenará la información en <ph name="URL" /></translation>
 <translation id="8274795744553482834">Estás a punto de cambiar de perfil</translation>
 <translation id="8275068909952022340">Más…</translation>
 <translation id="8280797717392145626">Vínculos recibidos</translation>
@@ -2415,6 +2415,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
 <translation id="8990960056509724223">No se pudo guardar el archivo debido a las políticas de tu organización</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
+<translation id="9003263770394939629">Sugerido por Gemini. Administra la función de autocompletado mejorado en la configuración.</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>
 <translation id="9006453925669499173">Menú → Nueva pestaña de incógnito</translation>
 <translation id="9008201768610948239">Ignorar</translation>

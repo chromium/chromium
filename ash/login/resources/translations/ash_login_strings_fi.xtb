@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1005333234656240382">Otetaanko ADB-virheenkorjaus käyttöön?</translation>
+<translation id="1053898984916097744">Aloita jotain uutta tai pyydä apua.</translation>
+<translation id="1061130374843955397">Tervetuloa käyttäjäksi: <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Hae tili automaattisesti Android-puhelimesta</translation>
 <translation id="1076766328672150609">Lapsi voi avata tämän laitteen PIN-koodilla.</translation>
 <translation id="1097658378307015415">Aloita vierailijakäyttö ennen sisäänkirjautumista aktivoidaksesi verkon <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Lapsi voi kirjautua laitteelle tällä PIN-koodilla</translation>
 <translation id="1122587596907914265">Suunnittele yksilöllisiä taustakuvia</translation>
 <translation id="1131201598497838573">Lapsen PIN-koodi on lisätty</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> voi nyt ottaa ohjat</translation>
+<translation id="1148669835763563782">Saat viimeisimmän ohjelmistopäivityksen, joka parantaa turvallisuutta ja sisältää Chromebookin uusimmat ominaisuudet. Tämä päivitys sisältää parannetun käyttöönottokokemuksen, joten Chromebookin käytön aloittaminen on helppoa.</translation>
 <translation id="1176864681932214421">Luo kuvia tekoälyn avulla</translation>
 <translation id="1177073277575830464">Androidin pikakäyttöönotto on valmis. Avaa <ph name="DEVICE_TYPE" /> ja jatka käyttöönottoa sillä.</translation>
 <translation id="1179902906564467236">Seuraa puhelimen ohjeita tai käytä kamerasovellusta</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1217114730239853757">Haluatko aktivoida ChromeVoxin, ChromeOS Flexin sisäänrakennetun näytönlukijan? Jos haluat, paina välilyöntiä.</translation>
 <translation id="1222835797152767346">Helpota sisäänkirjautumista valitsemalla PIN-koodi</translation>
+<translation id="1231426483209637778">Muistamme verkkosi, kun käytät laitetta (<ph name="DEVICE_TYPE" />) seuraavan kerran</translation>
+<translation id="1243002225871118300">Näytön ja tekstin koon muuttaminen</translation>
+<translation id="1256588359404100567">Asetus synkronoitu edellisestä laitteestasi.</translation>
 <translation id="1272978324304772054">Tämä käyttäjätili ei kuulu verkkotunnukselle, jossa laite on otettu käyttöön. Jos haluat ottaa laitteen käyttöön eri verkkotunnuksessa, sinun tulee ensin suorittaa laitteen palauttaminen.</translation>
+<translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1307559529304613120">Hups! Järjestelmä ei voinut tallentaa laitteelle pitkäaikaista API-käyttötunnusta.</translation>
+<translation id="1335929031622236846">Rekisteröi laite</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Virheenkorjausominaisuudet<ph name="END_H3" />
           <ph name="BR" />
           Voit ottaa virheenkorjausominaisuudet käyttöön, jos haluat asentaa ja testata muokattua koodia ChromeOS-laitteella. Tällöin voit<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Huom.<ph name="END_BOLD" /> Järjestelmä käynnistyy uudelleen prosessin aikana.</translation>
 <translation id="1347625331607114917">Vahvista koodi Android-puhelimella</translation>
 <translation id="1347975661240122359">Päivitys alkaa, kun akun lataustaso on <ph name="BATTERY_LEVEL" /> %.</translation>
+<translation id="1353275871123211385">Lapsella on oltava vanhemman ylläpitämä Google-tili, jotta tämä voi käyttää lapsilukkoasetuksia, kuten sovellusten hyväksyntää ja käyttöaikarajoituksia. Koulutili voidaan lisätä myöhemmin Google Classroomin kaltaisten työkalujen käyttöä varten.</translation>
 <translation id="1375557162880614858">Haluatko aktivoida ChromeVoxin, ChromeOS Flexin sisäänrakennetun näytönlukijan?</translation>
 <translation id="1375938286942050085">Käyttöönotto on valmis. Valmistele laite pelaamista varten</translation>
 <translation id="1377600615067678409">Ohita toistaiseksi</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Lähetä diagnostiikka- ja käyttödataa.</translation>
 <translation id="1418882096915998312">Enterpriseen rekisteröityminen käynnissä</translation>
 <translation id="1426410128494586442">Kyllä</translation>
+<translation id="1427269577154060167">Maa</translation>
 <translation id="1440090277117135316">Kouluun rekisteröityminen onnistui</translation>
 <translation id="1473927070149284123">Yritä uudelleen tai yhdistä verkkoon manuaalisesti</translation>
 <translation id="1503556098270577657">Kirjauduit tilille <ph name="USER_EMAIL" /> Android-puhelimella</translation>
+<translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1521442365706402292">Hallinnoi varmenteita</translation>
+<translation id="15373452373711364">Suuri hiiren osoitin</translation>
 <translation id="1540605929960647700">Ota esittelytila käyttöön</translation>
 <translation id="1572876035008611720">Anna sähköpostiosoitteesi.</translation>
+<translation id="1588438908519853928">Normaali</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">OK</translation>
 <translation id="1642494467033190216">Rootfs-suojauksen poisto ja uudelleenkäynnistys vaaditaan, ennen kuin muut virheenkorjausominaisuudet voidaan ottaa käyttöön.</translation>
+<translation id="1646045728251578877">Ohjelmistopäivitys saatavilla</translation>
+<translation id="1650801028905250434">Omassa Drivessa olevat tiedostot synkronoituvat Chromebookiin automaattisesti, joten voit käyttää niitä ilman internetyhteyttä. Voit muuttaa tätä koska tahansa valitsemalla Asetukset &gt; Tiedostot.</translation>
 <translation id="1668435968811469751">Rekisteröidy manuaalisesti</translation>
 <translation id="1678919064276516737">Syöttämäsi sähköpostiosoite ja PIN-koodi eivät täsmää</translation>
 <translation id="1692115862433274081">Käytä toista tiliä</translation>
 <translation id="1695487653372841667">Voit hallita, mitä dataa Googlessa jaetaan. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="169675691788639886">Laitteelle on määritetty SSH-palvelin. Älä kirjaudu sisään arkaluontoisilla tileillä.</translation>
+<translation id="1700517974991662022">Käyty</translation>
 <translation id="1730666151302379551">Salasana unohtunut</translation>
+<translation id="1749645492410897998">Asennetaan ohjelmistoa</translation>
 <translation id="177053719077591686">Varmuuskopioi Android-sovelluksia Google Driveen.</translation>
+<translation id="1798832846931769717">Google Beam Meetissä</translation>
 <translation id="1806335016774576568">Vaihda toiseen avoimeen sovellukseen</translation>
 <translation id="1826192255355608658">Synkronoi muun muassa Chrome-selaimen kirjanmerkit, salasanat ja historia</translation>
+<translation id="1826657447823925402">Käänteinen vieritys pois käytöstä</translation>
 <translation id="1831848493690504725">Emme saa yhdistetyn verkon kautta yhteyttä Googleen. Kokeile valita toinen verkko tai tarkista verkkoasetukset tai välityspalvelimen asetukset (jos käytät välityspalvelinta).</translation>
 <translation id="1842766183094193446">Haluatko varmasti ottaa esittelytilan käyttöön?</translation>
 <translation id="1845060436536902492">ChromeOS Flexin ja ChromeVoxin näytönlukuohjelmaa käyttävät ensisijaisesti sokeat ja heikkonäköiset. Sen avulla näytöllä näkyvää tekstiä voi lukea puhesyntetisaattorilla tai pistekirjoitusnäytöllä. Laita ChromeVox päälle painamalla välilyöntiä. Kun ChromeVox on aktivoitu, näet lyhyen esittelyn.</translation>
+<translation id="185766080319917408">Hakunäppäin on vasemman alt-näppäimen vasemmalla puolella</translation>
 <translation id="1868617395637139709">Käytä sijaintia Android-sovelluksissa ja ‑palveluissa.</translation>
+<translation id="1877377730633446520">Tämä edellyttää, että tilaa on noin <ph name="REQUIRED_SPACE" />. Tällä hetkellä vapaana on <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">Käyttöehdot</translation>
+<translation id="189358972401248634">Muut kielet</translation>
+<translation id="1915734383465415025">Kaupan numero</translation>
+<translation id="1919096511823372013">Lisää esimerkiksi linkkejä ja emojeita. Voit myös saada Googlen tekoälyltä apua kirjoittamiseen ja kuvien luomiseen.</translation>
+<translation id="1922496389170590548">Lapsen koulutili</translation>
+<translation id="1944528062465413897">Bluetooth-yhdistämiskoodi:</translation>
 <translation id="1987574314042117472">Valitse ja asenna suosittuja sovelluksia</translation>
 <translation id="1991829061375381344">Sinulla ei ole tarpeeksi lisenssejä tämän Google Meet ‑laitteen rekisteröintiin. Voit ostaa lisää lisenssejä jälleenmyyjältä. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä jälleenmyyjään.</translation>
+<translation id="200928901437634269">Käytä lapsen Google-tiliä tai koulutiliä. Voit myös ottaa lapsilukon käyttöön.</translation>
+<translation id="2013550551806600826">Kokeile. Laita asetus päälle tai pois päältä ja vieritä kosketuslevyä kahdella sormella testialueella. Löydät asetuksen myös myöhemmin valitsemalla Asetukset &gt; Laite &gt; Hiiri ja kosketuslevy.</translation>
+<translation id="2018189721942291407">Etkö ole varma, onko rekisteröityminen kannattavaa?</translation>
 <translation id="2040460856718599782">Hups! Jotain meni vikaan todennuksen aikana. Tarkista kirjautumistietosi ja yritä uudelleen.</translation>
 <translation id="2052572566310583903">Asennettu muille laitteillesi</translation>
 <translation id="2088092308059522196">Rekisteröinti on mahdollista vasta, kun <ph name="DEVICE_OS" /> on asennettu.</translation>
 <translation id="208928984520943006">Voit siirtyä aloitusnäytölle milloin tahansa pyyhkäisemällä alareunasta ylöspäin.</translation>
 <translation id="2090165459409185032">Saat tilisi tiedot takaisin käyttöön osoitteessa google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Valitse lisää ominaisuuksia</translation>
+<translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> sisältää Geminin</translation>
 <translation id="2163470535490402084">Kirjaudu laitteelle <ph name="DEVICE_TYPE" /> muodostamalla verkkoyhteys.</translation>
+<translation id="2173801458090845390">Lisää pyynnön tunnus tähän laitteeseen</translation>
 <translation id="2178585470774851578">Olet ottamassa käyttöön ChromeOS Flexin viankorjausominaisuudet, jotka määrittävät sshd daemon -toiminnon ja ottavat käyttöön USB-muistitikulta käynnistyksen.</translation>
+<translation id="2183570493397356669">Jatka-painike ei ole käytössä</translation>
+<translation id="221872881068107022">Käänteinen vieritys</translation>
 <translation id="2219081237089444028">Helpota kirjautumista valitsemalla salasana laitteelle (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="2229161054156947610">Yli tunti jäljellä</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> edellyttää, että laite on yhteydessä verkkoon kirjautuessaan tilille <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % valmis</translation>
 <translation id="2319072477089403627">Yhdistetään Android-puhelimeen…</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Et voi lisätä käyttäjiä, koska Google-sovellusliittymäavaimia ei löydy. Saat lisätietoja osoitteesta <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Ota datan palautuspalvelu käyttöön.</translation>
 <translation id="2485681265915754872">Google Playn käyttöehdot</translation>
+<translation id="248676429071089168">Siirry alaspäin sivulla pyyhkäisemällä ylöspäin</translation>
 <translation id="2501278716633472235">Takaisin</translation>
+<translation id="2538084450874617176">Kuka käyttää tätä laitetta: <ph name="DEVICE_TYPE" />?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ei voinut yhdistää verkkoon <ph name="NETWORK_ID" />. Valitse toinen verkko tai yritä uudelleen.</translation>
 <translation id="2565214867520763227">Laita näytönlukuohjelma päälle</translation>
+<translation id="2569972178052279830">Jälleenmyyjän nimi</translation>
+<translation id="257779572837908839">Määritä Chromebox kokouksille ‑tilaan</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (alusta <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">En, jatka ilman ChromeVoxia</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelut pyrkivät arvioimaan tämän laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit milloin tahansa laittaa Androidin sijainnin pois päältä tällä laitteella: avaa Asetukset &gt; Sovellukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Suojaus ja sijainti &gt; Sijainti. Voit myös laittaa pois päältä Wi-Fi- ja mobiiliverkkojen sekä antureiden käytön Androidin sijainnin määrityksessä: laita samasta valikosta "Googlen sijaintitietojen tarkkuus" pois päältä.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Kieli</translation>
 <translation id="2687407218262674387">Googlen käyttöehdot</translation>
 <translation id="2688196195245426394">Virhe rekisteröitäessä laitetta palvelimelle: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Tämä on laite kuuluu pakettiin, eikä sitä voi rekisteröidä Kiosk &amp; Signage Upgradeen.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Odota...</translation>
 <translation id="2732134891301408122">Ylimääräinen sisältö: <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="274318651891194348">Etsitään näppäimistöä</translation>
 <translation id="2754825024506485820">Löydä tarvitsemasi sovellukset, esim. tuottavuus- ja viihdesovellukset, Google Play Kaupasta. Voit asentaa sovelluksia milloin tahansa.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Kun sijaintitietojen tarkkuus on päällä, laitteen tarkemman sijainnin arvioimiseen käytetään langattomista signaaleista (esim. Wi-Fi-tukiasemista ja mobiiliverkkotorneista) peräisin olevia tietoja sekä laitteen anturien (esim. akselerometri ja gyroskooppi) keräämää dataa. Android-sovellukset ja ‑palvelut käyttävät kyseisiä tietoja sijaintiin perustuvien ominaisuuksien tarjoamiseen. Google selvittää sijainnin keräämällä ajoittain laitteen anturien ja lähellä olevien langattomien signaalien tietoja, jotka lisätään langattomien signaalien crowdsource-verkoston sijainteihin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google käyttää laitteelta kerättyjä tietoja sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palvelujen parantamiseen, tarjoamiseen ja ylläpitämiseen. Käsittelemme tietoja perustuen Googlen ja kolmansien osapuolten oikeutettuun vastataksemme käyttäjien tarpeisiin. Kyseisiä tietoja ei käytetä henkilöiden tunnistamiseen.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Voit milloin tahansa laittaa sijaintitietojen tarkkuuden pois päältä laitteen sijaintiasetuksista valitsemalla Asetukset &gt; Yksityisyys ja turvallisuus &gt; Yksityisyysasetukset &gt; Sijainnin käyttöoikeus &gt; Sijainnin lisäasetukset. Jos sijaintitietojen tarkkuus on poissa päältä, sijaintitietojen tarkkuusdataa ei kerätä. Android-sovellusten ja ‐palveluiden osalta laitteen sijainnin määrittämiseen käytetään vain IP-osoitetta, jos sellainen on saatavilla. Tämä voi vaikuttaa sijaintien saatavuuteen ja tarkkuuteen Android-sovelluksissa ja ‐palveluissa (esim. Google Mapsissa).<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Kaikki on valmista.</translation>
+<translation id="2819519502129272135">Tiedostojen synkronointi on pois päältä</translation>
 <translation id="2832124733806557606">Lapsi voi avata tämän laitteen tai kirjautua sille PIN-koodilla.</translation>
 <translation id="283669119850230892">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, määritä ensin internetyhteyden muodostus alla.</translation>
 <translation id="2849767214114481738">PIN-koodisi on lisätty</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Sallimalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista ja käytetyistä ominaisuuksista sekä siitä, miten paljon muistia on yleensä käytetty.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa Chrome-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolista.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Tässä menee enintään 30 minuuttia</translation>
 <translation id="2893180576842394309">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella</translation>
 <translation id="2902265136119311513">Vierailijana selaaminen</translation>
 <translation id="2904210161403910217">Salasanasi on muuttunut edellisen kirjautumisen jälkeen</translation>
 <translation id="2918484644467055090">Tätä laitetta ei voi rekisteröidä organisaatiolle, johon tilisi kuuluu, koska laite on merkitty eri organisaation hallinnoitavaksi.</translation>
 <translation id="2921081876747860777">Suojaa paikalliset tiedot luomalla salasana</translation>
+<translation id="2935654492420446828">Lisää koulutili myöhemmin</translation>
 <translation id="2950666755714083615">Kyllä kiitos</translation>
 <translation id="2979966855249721010">Kiinnostuksen kohteidesi perusteella voit nähdä esimerkiksi sovellussuosituksia ja vinkkejä</translation>
 <translation id="3012917896646559015">Ota heti yhteys tietokoneesi valmistajaan ja toimita se korjattavaksi.</translation>
+<translation id="3023464535986383522">Teksti puhuttuna</translation>
 <translation id="3028371505549235127">Voit luoda laitteelle (<ph name="DEVICE_TYPE" />) paikallisen salasanan Google-tilin salasanan käyttämisen sijaan</translation>
 <translation id="3033348223765101500">Hallitse dataasi</translation>
+<translation id="3090871774332213558">Laitepari muodostettu laitteen <ph name="DEVICE_NAME" /> kanssa</translation>
 <translation id="3101924772906986970">Chrome-selaimen kirjanmerkit, salasanat, historia ja muu data tallennetaan Google-tilillesi</translation>
 <translation id="313205617302240621">Unohditko salasanasi?</translation>
 <translation id="3162070126914310576">Tätä laitetta ei voi rekisteröidä nyt, koska organisaatioyksikön alkuperäinen rekisteröintiraja on saavutettu. Pyydä apua järjestelmänvalvojalta.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Voit myös ohittaa sisäänkirjautumisen ja <ph name="LINK_START" />selata vierailijana<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Laitteesi sisältää Chrome Education Upgraden, mutta käyttäjänimeäsi ei ole liitetty Google for Education ‐tiliin. Luo Google for Education ‐tili siirtymällä toisella laitteella osoitteeseen g.co/workspace/edusignup.</translation>
 <translation id="3196912927885212665">Chromebookin Bluetoothin täytyy olla päällä, jotta käyttöönotto onnistuu Android-puhelimella</translation>
+<translation id="322708765617468434">Voit lisätä laitteelle toisen henkilön milloin tahansa käyttöönoton jälkeen. Jokainen henkilö voi personoida kokemuksensa ja pitää datan yksityisenä.</translation>
 <translation id="3238192140106069382">Yhdistetään ja tarkistetaan</translation>
+<translation id="3251119461199395237">Tiedostojen synkronointi</translation>
+<translation id="325238099842880997">Määritä digitaaliset pelisäännöt, joiden avulla lapsesi voi pelata, tutkia ja oppia sekä tehdä koulutehtäviä kotona.</translation>
+<translation id="3255747772218936245">Asenna päivitys</translation>
 <translation id="3261268979727295785">Jos kyseessä on vanhempi lapsi, voit lisätä lapsilukon, kun käyttöönotto on valmis. Voit lukea lisää lapsilukosta Explore-sovelluksesta.</translation>
 <translation id="3278001907972365362">Google-tilisi vaativat toimenpiteitä</translation>
 <translation id="3283148363895519428">Jatka käyttöönottoa seuraamalla puhelimen ohjeita. Varmista, että puhelin on lähistöllä ja Bluetooth päällä.</translation>
 <translation id="3382073616108123819">Hups! Järjestelmä ei onnistunut määrittämään tämän laitteen laitetunnisteita.</translation>
 <translation id="3382200254148930874">Lopetetaan valvontaa...</translation>
+<translation id="3384362484379805487">Kielitiedostot jaetaan käyttäjien kesken levytilan säästämiseksi.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3391721320619127327">ChromeOS Flexin ja ChromeVoxin näytönlukuohjelmaa käyttävät ensisijaisesti sokeat ja heikkonäköiset. Sen avulla näytöllä näkyvää tekstiä voi lukea puhesyntetisaattorilla tai pistekirjoitusnäytöllä. Laita ChromeVox päälle painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan. Kun ChromeVox on aktivoitu, näet lyhyen esittelyn.</translation>
+<translation id="3402585168444815892">Liitytään demotilaan</translation>
 <translation id="3433621910545056227">Hups! Järjestelmä ei voi lukita laitteen asennuksen aikaisia attribuutteja.</translation>
 <translation id="3435896845095436175">Ota käyttöön</translation>
 <translation id="3462413494201477527">Perutaanko tilin luominen?</translation>
 <translation id="3473241910002674503">Tablettitilan painikkeilla voit siirtyä aloitusnäytölle, takaisin ja vaihtaa sovellusta.</translation>
+<translation id="3473479545200714844">Ruudun suurentaminen</translation>
 <translation id="3491669675709357988">Lapsesi tilillä ei ole otettu käyttöön Family Linkin lapsilukkoa. Voit lisätä lapsilukon, kun käyttöönotto on valmis. Voit lukea lisää lapsilukosta Explore-sovelluksesta.</translation>
+<translation id="350397915809787283">Jos sinulla ei vielä ole tiliä, luo sellainen valitsemalla ensimmäinen vaihtoehto.</translation>
 <translation id="3520824492621090923">Vahvistetaanko kioski- ja opastelaitteen rekisteröinti?</translation>
+<translation id="3547954654003013442">Välityspalvelimen asetukset</translation>
+<translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577745545227000795">Laitedatan kerääminen: <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Esikatselu</translation>
+<translation id="3607671391978830431">Lapselle</translation>
+<translation id="3627320433825461852">Alle minuutti jäljellä</translation>
 <translation id="3635199270495525546">Trusted Platform ‑moduuli (TPM) havaittu</translation>
 <translation id="3650753875413052677">Rekisteröintivirhe</translation>
 <translation id="3661106764436337772">Kirjoita nopeammin ja itsevarmemmin</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3712050472459130149">Tilin päivitys vaaditaan</translation>
 <translation id="3733296813637058299">Asennamme nämä sovellukset puolestasi. Play Kaupasta löydät lisää sovelluksia laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="3740945083753997630">Pienennä näytön ja tekstin kokoa</translation>
 <translation id="376841534249795524">Mihin <ph name="DEVICE_TYPE" /> on tarkoitettu?</translation>
 <translation id="3772046291955677288">Olen lukenut ja hyväksyn <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />Chromen ja ChromeOS:n lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="3800828618615365228">Google Chromen ja ChromeOS:n lisäehdot</translation>
 <translation id="3828953470056652895">Olen lukenut ja hyväksyn <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chromen ja ChromeOS:n lisäkäyttöehdot<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />Playn käyttöehdot<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Voit valita kaikki sopivat. Löydät nämä vaihtoehdot myös asetuksista, kun <ph name="DEVICE_TYPE" /> on otettu käyttöön.</translation>
 <translation id="385051799172605136">Takaisin</translation>
+<translation id="3856470183388031602">Google-tilin käyttäminen laitteella <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> on suunniteltu pelaamiseen. Seuraavaksi avautuu Explore-sovellus, jonka kautta voit pelata satoja uusimpia pelejä, löytää tarjouksia ja tutustua laitteen peliominaisuuksiin.</translation>
+<translation id="389901847090970821">Valitse näppäimistö</translation>
 <translation id="3910588685973519483">Luo taustakuvia tekoälyn avulla</translation>
+<translation id="3924259174674732591">Näytön ja tekstin koko <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3983400541576569538">Joidenkin sovellusten data voi kadota</translation>
+<translation id="3984159763196946143">Demotilan käynnistys epäonnistui</translation>
 <translation id="3994318741694670028">Tietokoneesi on valitettavasti määritetty virheellisellä laitteistotunnuksella. Tämän takia ChromeOS Flex ei voi asentaa uusimpia tietoturvapäivityksiä ja tietokoneesi <ph name="BEGIN_BOLD" />voi altistua hyökkäyksille<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Aseta PIN</translation>
 <translation id="4044883420905480380">Olet yhteydessä Wi-Fi-verkkoon ja kirjautunut tilille <ph name="USER_EMAIL" /> Android-puhelimella</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Google Chromen ja ChromeOS:n lisäkäyttöehdot</translation>
 <translation id="41365691917097717">Jatkamalla otat ADB-virheenkorjauksen käyttöön Android-sovellusten luomista ja testausta varten. Huomaa, että tämä sallii sellaisten Android-sovellusten asentamisen, joita Google ei ole vahvistanut. Ominaisuuden käytöstä poistaminen edellyttää tehdasasetusten palautusta.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ei kuulu hyväksyttävälle organisaatiolle. Ota yhteyttä järjestelmänvalvojaan. Jos olet järjestelmänvalvoja, voit ottaa organisaation käyttöön osoitteessa g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Suuri</translation>
+<translation id="4213918571089943508">Lapsen Google-tili</translation>
+<translation id="4228071595943929139">Käytä organisaatiosi sähköpostiosoitetta</translation>
 <translation id="4232484478444192782">Android-puhelimesi huolehtii kaikesta. Wi-Fi-yhteyttä ja salasanaa siirretään.</translation>
 <translation id="4242145785130247982">Useita käyttöoikeusvarmenteita ei tueta</translation>
 <translation id="4242577469625748426">Käytäntöasetuksien asentaminen laitteelle epäonnistui: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Käytät Kiosk &amp; Signage Upgrade ‑lisenssiä, joka sallii laitteen käyttämisen vain kioski- tai opastetilassa. Jos haluat käyttäjien kirjautuvan laitteelle, palaa takaisin ja rekisteröidy Chrome Enterprise Upgraden avulla.</translation>
 <translation id="4287157641315808225">Kyllä, aktivoi ChromeVox</translation>
 <translation id="4289732974614035569">Valitse PIN-koodi</translation>
+<translation id="4291265871880246274">Sisäänkirjautumisen valintaikkuna</translation>
+<translation id="4305817255990598646">Vaihda</translation>
 <translation id="4309165024397827958">Salli laitteen sijainnin käyttäminen Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="4317733381297736564">Sovelluksensisäiset ostokset</translation>
 <translation id="4341905082470253054">Tarkistetaan TPM:n tilaa…</translation>
 <translation id="4370975561335139969">Antamasi sähköpostiosoite ja salasana eivät vastaa toisiaan.</translation>
 <translation id="4373418556073552953">Sisäänkirjautuminen Android-puhelimella</translation>
+<translation id="4378556263712303865">Laitepyyntö</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Sallimalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista, käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolista.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi. Voit nähdä dataa, poistaa sitä ja muuttaa tiliasetuksia osoitteesta account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Etsitään Bluetoothia ja USB-laitteita</translation>
 <translation id="4403266582403435904">Palauta dataa tai vaihda laitetta helposti milloin tahansa. Varmuuskopiot ladataan Googleen ja salataan lapsesi Google-tilin salasanalla.</translation>
 <translation id="4410545552906060960">Avaa laitteen lukitus PIN-koodilla salasanan sijaan. Voit määrittää PIN-koodin myöhemmin siirtymällä asetuksiin.</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> on käyttövalmis.</translation>
+<translation id="443031431654216610">Käytä vain numeroita</translation>
+<translation id="4448560527907365660">Tallenna ja katso lisää</translation>
 <translation id="4449948729197510913">Käyttäjänimesi kuuluu organisaatiosi yritystiliin. Jos haluat lisätä tilille laitteita, vahvista ensin verkkotunnuksen omistajuus hallintakonsolista. Vahvistusta varten tarvitset tilin järjestelmänvalvojan oikeudet.</translation>
 <translation id="4450974146388585462">Diagnosoi</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> havaitse aktiivisen TPM:n, joka voi tallentaa dataasi turvallisemmin.</translation>
+<translation id="4472298120638043495">Voit käyttää haluamaasi Google-tilin kieltä (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Aloita</translation>
+<translation id="450867954911715010">Saavutettavuusasetukset</translation>
+<translation id="4519605771716872386">Tiedostojen synkronointi on päällä</translation>
+<translation id="4531924570968473143">Kenet haluat lisätä tälle laitteelle (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4566170377336116390">Jos haluat vaihtaa rekisteröinnin jälkeen, sinun täytyy palauttaa laitteen tehdasasetukset (ns. powerwash).</translation>
 <translation id="4567512141633030272">Onko sisäänkirjautumisvaihtoehto väärä?</translation>
+<translation id="4567533462991917415">Voit lisätä käyttöönoton jälkeen muita henkilöitä. Jokainen henkilö voi tehdä tilistään omannäköisen ja pitää datansa yksityisenä.</translation>
 <translation id="4568213207643490790">Google-tilit eivät ole sallittuja tällä laitteella.</translation>
 <translation id="4611759022973144129">Voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) tällä salasanalla.</translation>
+<translation id="4634575639321169635">Määritä tämä laite töitä varten tai henkilökohtaiseen käyttöön</translation>
+<translation id="4689235506267737042">Valitse esittelyasetukset</translation>
 <translation id="4727847987444062305">Hallinnoitu Vierailija-käyttökerta</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="473936925429402449">Valittu, ylimääräinen sisältö: <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ei ole kelvollinen Google for Education ‐tili. Ota yhteyttä järjestelmänvalvojaan. Jos olet järjestelmänvalvoja, voit ottaa organisaation käyttöön osoitteessa g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Työntekoon</translation>
 <translation id="4806457879608775995">Tarkista ehdot ja päätä datankäytöstäsi</translation>
+<translation id="4814327014588285482">Ohita ja muistuta myöhemmin</translation>
 <translation id="4830502475412647084">Asennetaan käyttöjärjestelmäpäivitystä</translation>
 <translation id="4837926214103741331">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä laitteen omistajalta kirjautumislupa.</translation>
+<translation id="4844333629810439236">Muut näppäimistöt</translation>
 <translation id="4864369630010738180">Kirjaudutaan...</translation>
+<translation id="4867272607148176509">Vanhemmat voivat hyväksyä tai estää sovelluksia, asettaa aikarajoituksia ja hallita selaamista. Oppilaitoksen tili voidaan lisätä myöhemmin, jotta voit käyttää useimpia koulumateriaaleja.</translation>
 <translation id="4877652723592270843">Haluatko aktivoida ChromeVoxin, ChromeOS Flexin sisäänrakennetun näytönlukijan? Jos haluat, paina molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
 <translation id="4899696330053002588">Sisältää mainoksia</translation>
 <translation id="49027928311173603">Palvelimelta ladattu käytäntö on virheellinen: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">Todennuspalvelun tarjoaa <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Valitse PIN-koodi</translation>
 <translation id="4965808351167763748">Haluatko varmasti määrittää tämän laitteen käyttämään Hangouts Meetiä?</translation>
+<translation id="4987944280765486504">Kun lataus on valmis, Chromebook käynnistyy kerran uudelleen ja voit jatkaa käyttöönottoa.</translation>
 <translation id="5029287942302939687">Salasana on asetettu</translation>
 <translation id="503155457707535043">Sovelluksia ladataan</translation>
 <translation id="5045550434625856497">Väärä salasana</translation>
 <translation id="5062930723426326933">Kirjautuminen epäonnistui. Muodosta verkkoyhteys ja yritä uudelleen.</translation>
+<translation id="5085162214018721575">Haetaan päivityksiä</translation>
 <translation id="5097306410549350357">Lue lisää sijainnin käytöstä</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Keskustele Geminin kanssa ja aloita esimerkiksi kirjoittaminen, suunnittelu ja oppiminen Googlen tekoälyn avulla.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Aloita Geminin käyttäminen käyttöönoton jälkeen valitsemalla Gemini-sovellus näytön alareunasta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Liitä <ph name="DEVICE_TYPE" /> virtalähteeseen.</translation>
+<translation id="5145876360421795017">Älä rekisteröi laitetta</translation>
 <translation id="5147516217412920887">Vahvista koodi seuraamalla puhelimen ohjeita</translation>
 <translation id="5160857336552977725">Kirjaudu sisään <ph name="DEVICE_TYPE" />-laitteeseesi.</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Virheenkorjausominaisuudet<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Huom.<ph name="END_BOLD" /> Järjestelmä käynnistyy uudelleen prosessin aikana.</translation>
+<translation id="5215502535566372932">Valitse maa</translation>
 <translation id="5234523649284990414">ChromeOS:n ja ChromeVoxin näytönlukuohjelmaa käyttävät ensisijaisesti sokeat ja heikkonäköiset. Sen avulla näytöllä näkyvää tekstiä voi lukea puhesyntetisaattorilla tai pistekirjoitusnäytöllä. Laita ChromeVox päälle painamalla välilyöntiä. Kun ChromeVox on aktivoitu, näet lyhyen esittelyn.</translation>
 <translation id="523505283826916779">Saavutettavuusasetukset</translation>
 <translation id="5240931875940563122">Kirjaudu Android-puhelimella</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Rekisteröi yrityksen laite</translation>
 <translation id="5372529912055771682">Tämä käyttöjärjestelmän versio ei tue annettua käyttöönottotilaa. Varmista, että käytössä on uusin versio, ja yritä uudelleen.</translation>
 <translation id="5397378439569041789">Rekisteröi kioski- tai opastelaite</translation>
+<translation id="5397794290049113714">Sinä</translation>
 <translation id="5411022484772257615">Kouluun rekisteröinti ei onnistunut</translation>
 <translation id="5413640305322530561">Lue lisää diagnostiikka- ja käyttödatasta</translation>
 <translation id="542750953150239272">Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista voivat tarjota sovelluksensisäisiä ostoksia.</translation>
 <translation id="542948651837270806">Trusted Platform Modulen päivitys on asennettava. Näytä <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hups, jotain meni vikaan kirjautumisessa</translation>
+<translation id="5453829744223920473">Lapsesi voi käyttää kaikkia oppilaitoksen sovelluksia, kirjanmerkkejä ja materiaaleja. Koulu asettaa pelisäännöt.</translation>
 <translation id="5463450804024056231">Tilaa sähköpostit: <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Jatkamalla hyväksyt, että laite voi myös automaattisesti ladata ja asentaa Googlen, lapsen operaattorin tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista voivat tarjota sovelluksensisäisiä ostoksia.</translation>
+<translation id="5502915260472117187">Lapsi</translation>
 <translation id="5511823366942919280">Haluatko varmasti antaa tälle laitteelle tunnuksen Shark?</translation>
+<translation id="5513807280330619196">Laskin</translation>
 <translation id="5527474464531963247">Voit myös valita muun verkon.</translation>
 <translation id="5539070192556911367">Googleen ei saa yhteyttä</translation>
+<translation id="5549511085333906441">Valitse asetuksesi</translation>
 <translation id="557722062034137776">Laitteen nollaus ei vaikuta Google-tileihisi tai mihinkään näihin tileihin synkronoituihin tietoihin. Kaikki paikallisesti laitteellesi tallennetut tiedostot kuitenkin poistetaan.</translation>
 <translation id="5626172233890210551">Käytä salasanaa</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> kerää laitedataa ja jakaa sen Googlelle parhaan mahdollisen käyttökokemuksen tarjoamiseksi. Näin voidaan slevittää, millaisia päivityksiä tarvitaan. Voit halutessasi antaa Googlelle luvan käyttää dataa myös muihin tarkoituksiin, esim. käyttökokemuksen ja palvelun (<ph name="DEVICE_OS" />) tukemiseen ja kehittämiseen.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Näet Googlelle päivitysten suodattamista varten lähetetyn datan ja kaiken muun Googlelle jakamasi datan kirjautumalla laitteelle ja tarkistamalla chromeosflex_-kentät (chrome://system).<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Lisätietoa datasta, jota <ph name="DEVICE_OS" /> voi jakaa Googlelle, ja sen käytöstä saat osoitteesta g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, voit joutua <ph name="LINK_START" />käymään verkon kirjautumissivulla<ph name="LINK_END" />, joka avautuu automaattisesti muutaman sekunnin kuluttua. Jos sivu ei avaudu, tätä verkkoa ei voi käyttää.</translation>
 <translation id="5655296450510165335">Laitteen rekisteröinti</translation>
+<translation id="565899488479822148">Asennetaan uusinta päivitystä</translation>
 <translation id="5659964844710667266">Luo salasana laitteelle (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5684661240348539843">Laitteen tunnus</translation>
 <translation id="5684950556880280580">Salasanasi on päivitetty</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Jotkin tiedostot vahingoittuivat, joten päivitys epäonnistui. Synkronoidut tiedostosi ovat turvassa.</translation>
 <translation id="5770125698810550803">Näytä navigointipainikkeet</translation>
 <translation id="5799478978078236781">Tilaa vinkkejä, tarjouksia ja päivityksiä (<ph name="DEVICE_TYPE" />) ja anna palautetta.</translation>
+<translation id="5800703268655655701">Valitse vaalea tai tumma teema</translation>
 <translation id="5804259315582798390">Paikallisen datan palauttamisen käyttöönotto epäonnistui</translation>
 <translation id="5810809306422959727">Tällä tilillä ei voi käyttää lapsilukkoa</translation>
+<translation id="5834581999798853053">Noin <ph name="TIME" /> minuuttia jäljellä</translation>
 <translation id="5852112051279473187">Hups! Jotakin meni vikaan laitteen käyttöönoton yhteydessä. Yritä uudelleen tai ota yhteyttä tukipalveluun.</translation>
 <translation id="5852137567692933493">Käynnistä uudelleen ja suorita Powerwash</translation>
 <translation id="5856721540245522153">Ota käyttöön virheenkorjausominaisuudet</translation>
+<translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
+<translation id="5870086504539785141">Sulje käytettävyysvalikko</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5895335062901455404">Tallentamasi asetukset ja toiminta ovat valmiina millä tahansa ChromeOS Flex ‑laitteella, kun kirjaudut sisään Google-tilillesi. Voit valita synkronoitavan sisällön asetuksissa.</translation>
+<translation id="5916664084637901428">Päällä</translation>
 <translation id="5919305207330938913">Kakkea kerättyä dataa käytetään <ph name="BEGIN_LINK" />Googlen tietosuojakäytännön<ph name="END_LINK" /> mukaisesti.</translation>
 <translation id="5932441198730183141">Sinulla ei ole tarpeeksi lisenssejä tämän Google Meet ‑laitteen rekisteröintiin. Osta lisää lisenssejä myyntitiimiltä. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
+<translation id="5948536763493709626">Yhdistä näppäimistö tai hiiri, tai jatka käyttöönottoa käyttämällä kosketusnäyttöä. Jos käytät Bluetooth-laitteita, varmista että laitteesi ovat valmiita muodostamaan laiteparin.</translation>
 <translation id="5959471481388474538">Verkko ei käytettävissä</translation>
 <translation id="6016178549409952427">Siirry ylimääräiseen sisältöön: <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Valitse kieli ja näppäimistöpainike. <ph name="LANGUAGE" /> on nyt valittuna.</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6051354611314852653">Hups! Järjestelmä ei voinut sallia sovellusliittymän käyttöä tälle laitteelle.</translation>
 <translation id="6055544610007596637">Lataa sovelluksia laitteelle <ph name="DEVICE_TYPE" /> Google Play Kaupasta</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Salli Googlen käyttää laitedataasi palvelun (<ph name="DEVICE_OS" />) kehittämiseksi. Jos kieltäydyt, dataa lähetetään Googlelle tarvittavien päivitysten selvittämiseksi, mutta sitä ei tallenneta tai käytetä muihin tarkoituksiin. Lue lisää osoitteesta g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Kirjautumisen tarjoaa <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042"><ph name="IDS_SHORT_PRODUCT_NAME" />-laitteen virheenkorjausominaisuuksien käyttöönotto onnistui.</translation>
+<translation id="6343262564968371601">Löydä etsimäsi Googlesta, tiedostoista, sovelluksista ja muualta</translation>
 <translation id="635609604405270300">Pidä laite päällä</translation>
 <translation id="6367097275976877956">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukuohjelman? Jos haluat, paina välilyöntiä.</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6380143666419481200">Hyväksy ja jatka</translation>
 <translation id="640457954117263537">Käytä sijaintia ChromeOS- ja Android-sovelluksissa ja ‐palveluissa.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Sallimalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista ja käytetyistä ominaisuuksista sekä tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa Chrome-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolista.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Asenna tärkeä päivitys</translation>
+<translation id="6478849105642611893">Pikalisäysnäppäin on sarkainnäppäimen alla</translation>
 <translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Valitse kieli</translation>
 <translation id="6495266441917713704">Wi-Fi-yhteyttä ei voi siirtää</translation>
 <translation id="6515620015470298987">Sisäänkirjautuminen epäonnistui laitteen määrityksen tarkistusongelman vuoksi. Tee laitteelle (<ph name="DEVICE_TYPE" />) powerwash ja yritä uudelleen.</translation>
 <translation id="6519689855001245063">Kelpoisuuden tarkistaminen käynnissä</translation>
 <translation id="6532527800157340614">Sisäänkirjautuminen epäonnistui, koska käyttötunnustasi ei voitu noutaa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
+<translation id="653920215766444089">Etsitään osoitinlaitetta</translation>
 <translation id="65513682072153627">Näet Ylläpidetty-kuvakkeen, kun järjestelmänvalvoja ylläpitää asetusta tai ominaisuutta.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021">Tiliä (<ph name="USER_EMAIL" />) hallinnoi jo <ph name="DOMAIN" />. Jos haluat käyttää lapsilukkoa eri Google-tilillä, kirjaudu ulos käyttöönoton jälkeen, ja valitse sitten kirjautumisnäytöltä Lisää henkilö.</translation>
 <translation id="6642720633335369752">Jos haluat nähdä kaikki avoimet sovellusikkunat, pyyhkäise alareunasta ylöspäin ja paina pitkään.</translation>
 <translation id="6648911618876616409">Tärkeä päivitys on valmis asennettavaksi. Aloita kirjautumalla sisään.</translation>
 <translation id="6671497123040790595">Otetaan käyttöön hallinnointia: <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Osoitinlaite yhdistetty.</translation>
 <translation id="667752334740867460">Vastaanotetaan Wi-Fi-tietoja…</translation>
 <translation id="6680442031740878064">Käytettävissä: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Voit palauttaa tilin <ph name="EMAIL" />, mutta paikallinen data poistetaan.</translation>
 <translation id="6748980958975836188">Olen lukenut ja hyväksyn <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />Chromen ja ChromeOS:n lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Kuvat</translation>
+<translation id="6754918760968695779">Pikalisäys</translation>
 <translation id="6789834167207639931">Viimeistele palautus lisäämällä Google-tilisi salasana uudelleen seuraavalla näytöllä</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Sallimalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista, käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolista.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, dataa voidaan tallentaa hänen tililleen. Lue lisää näistä asetuksista ja niiden muuttamisesta osoitteesta families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Suosituimmat sovellukset <ph name="DEVICE_TYPE" />-laitteelle</translation>
 <translation id="682971198310367122">Googlen tietosuojakäytäntö</translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Kirjautuminen on muuttunut</translation>
+<translation id="6852529053326738838">Kysy organisaatioltasi tai rekisteröi työsähköpostisi ja tarkista, täyttääkö tilisi ehdot.</translation>
+<translation id="6867671714894555998">Hoida asiat nopeasti uudella näppäimistöllä</translation>
 <translation id="6883319974225028188">Hups – laitteen kokoonpanon tallentaminen epäonnistui.</translation>
+<translation id="6888831646723563669">Yhdistä verkkoon ja käytä kaikkia ominaisuuksia uudella laitteella (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjäasetusten perusteella), esim. yhteystietoja, viestejä ja kuvia. Varmuuskopioitu data ei kuluta lapsen Drive-tallennuskiintiötä.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit poistaa palvelun käytöstä asetuksista.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Ota synkronointi käyttöön</translation>
 <translation id="6918733588290914545">Nopea käyttöönotto Android-puhelimella</translation>
 <translation id="6920473853105515518">Varmista, että <ph name="DEVICE_TYPE" /> on yhteydessä internetiin, ja yritä uudelleen. Voit myös siirtyä toisella laitteella osoitteeseen play.google/play-terms.</translation>
+<translation id="6929126689972602640">Koulutilit eivät tue lapsilukkotoimintojen käyttöä. Jos haluat lisätä koulutilin koulutehtävien tekemistä varten Google Classroomin ja muiden sivustojen kautta, kirjaudu ensin sisään lapsen henkilökohtaisella tilillä. Voit lisätä koulutilin myöhemmin määrityksen aikana.</translation>
+<translation id="6935031746833428401">Lue lisää laitehallinnasta</translation>
+<translation id="6950351336108213154">Päivitetään laitteen lisälaitteita</translation>
 <translation id="6955698182324067397">Olet ottamassa käyttöön Chrome-käyttöjärjestelmän virheenkorjausominaisuudet, jotka määrittävät sshd daemon -toiminnon ja ottavat käyttöön USB-muistitikulta käynnistyksen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6969216690072714773">Lisää uudet tai päivitä aiemmat tiedot, jotta laiteyhteyden voi muodostaa.</translation>
@@ -343,23 +485,37 @@
         että välityspalvelin toimii. Jos et usko tarvitsevasi
         välityspalvelinta, muokkaa <ph name="LINK_START" />välityspalvelimen asetuksia<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Laita puhelimen Bluetooth ja Wi-Fi päälle</translation>
+<translation id="6996438701394974959">Suurenna näytön ja tekstin kokoa</translation>
+<translation id="6998793565256476099">Ota videokonferenssit käyttöön laitteessa</translation>
 <translation id="7025082428878635038">Uusi tapa liikkua eleiden avulla</translation>
 <translation id="7034692021407794547">Järjestelmänvalvojan, jolla on Laskutuksen hallinta ‑lupa, täytyy ensin hyväksyä Google Meet ‑laitteiston käyttöehdot hallintakonsolin kohdasta "Google Meet ‑laitteisto".</translation>
+<translation id="7039951224110875196">Luo Google-tili lapselle</translation>
 <translation id="7065223852455347715">Laite on lukittu tilaan, jossa yrityskäyttö on estetty. Jos haluat ottaa yrityskäyttötilan käyttöön, sinun täytyy suorittaa laitteen palautus.</translation>
+<translation id="7066572364168923329">Valitse asetukset: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Kirjautumissivun lataaminen epäonnistui nykyisillä välityspalvelimen asetuksilla. <ph name="GAIA_RELOAD_LINK_START" />Kirjaudu sisään uudelleen<ph name="GAIA_RELOAD_LINK_END" /> tai muokkaa <ph name="PROXY_SETTINGS_LINK_START" />välityspalvelimen asetuksia<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">Järjestelmänvalvoja on asettanut tämän laitteen poistotilaan. Voit asettaa sen käyttöönottotilaan pyytämällä järjestelmänvalvojaa asettamaan laitteen odottavaan tilaan.</translation>
 <translation id="7114054701490058191">Salasanat eivät täsmää</translation>
 <translation id="7135729336746831607">Laitetaanko Bluetooth päälle?</translation>
 <translation id="7141105143012495934">Sisäänkirjautuminen epäonnistui, koska tilitietojasi ei löytynyt. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
+<translation id="7171259390164035663">Älä rekisteröi</translation>
 <translation id="7189451821249468368">Sinulla ei ole tarpeeksi päivityksiä tämän laitteen rekisteröintiä varten. Osta niitä lisää ottamalla yhteyttä myyntitiimiin. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
 <translation id="7202337678781136582">Skannaa QR-koodi Android-puhelimella</translation>
+<translation id="7228854227189381547">Älä vaihda</translation>
+<translation id="7230881857327093958">Muutokset otetaan käyttöön käyttöönoton jälkeen</translation>
 <translation id="7260186537988033909">Kioski- ja opastelaitteen rekisteröinti valmis</translation>
+<translation id="7284411326658527427">Jokainen henkilö voi tehdä tilistään omannäköisen ja pitää datansa yksityisenä.</translation>
 <translation id="7290242001003353852">Tämä kirjautumispalvelu, jota isännöi <ph name="SAML_DOMAIN" />, käyttää kameraasi.</translation>
+<translation id="7311005168897771689">Käytä Google Drive ‐tiedostoja offline-tilassa</translation>
 <translation id="7317831949569936035">Kouluun rekisteröinti</translation>
+<translation id="7326004502692201767">Määritä tämä <ph name="DEVICE_TYPE" /> lapsen käyttöön</translation>
+<translation id="732659786514229249">Rekisteröidäänkö laite organisaatioosi?</translation>
 <translation id="7329154610228416156">Sisäänkirjautuminen epäonnistui, koska se määritettiin käyttämään suojaamatonta URL-osoitetta (<ph name="BLOCKED_URL" />). Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="7345706641791090287">Vahvista salasanasi</translation>
+<translation id="7348093485538360975">Näyttönäppäimistö</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
+<translation id="7403642243184989645">Ladataan resursseja</translation>
+<translation id="7406912950279255498">Käänteiset värit ‑tila</translation>
 <translation id="7416263748877373774">Käyttöehtojen lataaminen ei onnistu. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="7475742997309661417">ChromeOS:n ja ChromeVoxin näytönlukuohjelmaa käyttävät ensisijaisesti sokeat ja heikkonäköiset. Sen avulla näytöllä näkyvää tekstiä voi lukea puhesyntetisaattorilla tai pistekirjoitusnäytöllä. Laita ChromeVox päälle painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan. Kun ChromeVox on aktivoitu, näet lyhyen esittelyn.</translation>
 <translation id="7476454130948140105">Akun varaus ei riitä päivittämiseen (<ph name="BATTERY_PERCENT" /> %).</translation>
@@ -369,39 +525,61 @@
 <translation id="7506541170099744506">Yrityshallinta on otettu käyttöön laitteessa <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7509097596023256288">Otetaan hallinointia käyttöön</translation>
 <translation id="7543104066686362383">Ota virheenkorjausominaisuudet käyttöön tällä <ph name="IDS_SHORT_PRODUCT_NAME" />-laitteella..</translation>
+<translation id="7544227555407951270">Rekisteröi laite</translation>
+<translation id="7549434883223124329">Vaihdetaanko laitteen kieli?</translation>
 <translation id="7553242001898162573">Lisää salasana</translation>
 <translation id="7556242789364317684">Valitettavasti <ph name="SHORT_PRODUCT_NAME" /> ei voi palauttaa asetuksiasi. Jos haluat korjata tämän virheen, kohteen <ph name="SHORT_PRODUCT_NAME" /> on nollattava laitteesi Powerwashilla.</translation>
 <translation id="7560756177962144929">Synkronoi <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">Tallennustila ei riitä päivitykseen.</translation>
+<translation id="7616214729753637086">Lisätään laitetta…</translation>
 <translation id="7622114377921274169">Ladataan</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> hallinnoi tätä laitetta ja edellyttää sinua kirjautumaan sisään joka kerta.</translation>
 <translation id="7639914187072011620">SAML-uudelleenohjauksen URL-osoitetta ei voitu noutaa palvelimelta</translation>
 <translation id="7643117827468520640">Lue ehdot</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Sovellusdata voi olla mitä tahansa dataa, jota sovellus on tallentanut (kehittäjäasetusten perusteella), esim. yhteystietoja, viestejä ja kuvia. Varmuuskopioidut tiedot eivät kuluta Drive-tallennuskiintiötä.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit poistaa palvelun käytöstä asetuksista.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7659584679870740384">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä järjestelmänvalvojalta kirjautumislupa.</translation>
 <translation id="7660116474961254898">Seuraa puhelimessa näkyviä ohjeita</translation>
 <translation id="7661451191293163002">Rekisteröintivarmenteen noutaminen epäonnistui.</translation>
+<translation id="7666531788977935712">Jatka-painike on käytössä</translation>
 <translation id="7671139479636735732">Visualisoi ideasi helposti klikkaamalla kakkospainikkeella</translation>
 <translation id="770831926727930011">Paikallinen data on suojattu vanhalla salasanallasi. Lisää vanha salasana, jos haluat palauttaa paikallisen datan.</translation>
 <translation id="7722040605881499779">Päivitykseen tarvitaan <ph name="NECESSARY_SPACE" />.</translation>
+<translation id="7737115349420013392"><ph name="DEVICE_NAME" /> lisätään laitepariksi…</translation>
+<translation id="7746045113967198252">Suurentaa tai pienentää näytöllä olevia kohteita, esimerkiksi tekstiä. Löydät asetuksen myös myöhemmin valitsemalla Asetukset &gt; Laite &gt; Näytöt.</translation>
 <translation id="7760176388948986635">Salli laitteen sijainnin käyttäminen ChromeOS- ja Android-sovelluksille, -verkkosivustoille ja -palveluille, joilla on sijaintilupa. Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin Android-sovelluksille ja ‑palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja laitteeltasi langattomien signaalien sijainnin keräämistä varten. Näitä anonyymejä tietoja käytetään sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen, Googlen palveluiden parantamiseen, tarjoamiseen ja ylläpitämiseen Googlen ja kolmansien osapuolten oikeutetun edun mukaisesti.</translation>
 <translation id="7784875615510899699">Sinulla ei ole tarpeeksi lisenssejä tämän Google Beam ‑laitteen rekisteröintiin. Voit ostaa lisää lisenssejä jälleenmyyjältä. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä jälleenmyyjään.</translation>
+<translation id="7791269138074599214">Syöttötapa</translation>
+<translation id="7791436592012979144">Käänteinen vieritys käytössä</translation>
 <translation id="7792012425874949788">Jotain meni pieleen. kirjautumisessa</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7803657407897251194">Jos haluat jatkaa käyttöönottoa Android-laitteella, yhdistä <ph name="DEVICE_TYPE" /> verkkoon</translation>
+<translation id="7842692330619197998">Jos haluat luoda uuden tilin, avaa g.co/ChromeEnterpriseAccount.</translation>
 <translation id="7851457902707056880">Kirjautuminen on sallittu vain omistajatilillä. Käynnistä tietokone uudelleen ja kirjaudu omistajatilillä. Tietokone käynnistetään uudelleen 30 sekunnin kuluttua.</translation>
 <translation id="7870730066603611552">Tarkista synkronointiasetukset määrityksen jälkeen</translation>
 <translation id="7883792253546618164">Voit perua tilauksen milloin tahansa.</translation>
+<translation id="7887864092952184874">Laitepari muodostettu Bluetooth-hiiren kanssa</translation>
 <translation id="7906440585529721295">Paikallinen data poistetaan</translation>
+<translation id="7910725946105920830">Käytä henkilökohtaista Google-tiliä</translation>
+<translation id="7918257978052780342">Rekisteröidy</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Sallimalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista ja käytetyistä ominaisuuksista sekä siitä, miten paljon muistia on yleensä käytetty.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolista.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Lisäasetukset</translation>
 <translation id="7943311690198910993">Kirjautumistapa päivitetty</translation>
 <translation id="795240231873601803">Rekisteröidy yritysversiolla yritys- ja koulutileillä</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>
 <translation id="7975504106303186033">Sinun on lisättävä tämä Chrome Education ‑laite oppilaitostilille. Voit luoda uuden tilin osoitteessa g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">Sisältötunnus: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Korjaa tämä virhe käynnistämällä laitteesi uudelleen.</translation>
 <translation id="7990958035181555539">Siirrä Wi-Fi-yhteys automaattisesti Android-puhelimesta</translation>
+<translation id="8022466874160067884">Lisää Google-tilisi ja salasanasi</translation>
+<translation id="8049029041626250638">Yhdistä näppäimistö tai hiiri. Jos käytät Bluetooth-laitteita, varmista että laitteesi ovat valmiita muodostamaan laiteparin.</translation>
 <translation id="8054563304616131773">Anna voimassa oleva sähköpostiosoite.</translation>
+<translation id="8054921503121346576">USB-näppäimistö yhdistetty</translation>
 <translation id="8065144531309810062">Ole luovempi ja tuotteliaampi Googlen tekoälyn avulla</translation>
+<translation id="8082106343289440791">Lisätäänkö <ph name="DEVICE_NAME" /> laitepariksi?</translation>
 <translation id="8097959162767603171">Järjestelmänvalvojan on ensin hyväksyttävä käyttöehdot hallintakonsolin Chrome-laitelistassa.</translation>
 <translation id="8098616321286360457">Verkkoyhteys vaaditaan</translation>
 <translation id="8129265306888404830">Jos haluat käyttää organisaatiosi (<ph name="EMAIL_DOMAIN" />) sähköpostiosoitetta, sinun on rekisteröidyttävä yritysversion kautta. Jos laite on tarkoitettu henkilökohtaiseen käyttöön, kirjaudu sisään henkilökohtaisella Google-tililläsi.</translation>
@@ -409,28 +587,37 @@
 <translation id="8146177459103116374">Jos olet jo rekisteröitynyt tällä laitteella, voit <ph name="LINK2_START" />kirjautua sisään olemassa olevana käyttäjänä<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Sisäänkirjautuminen epäonnistui. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>
 <translation id="8147346945017130012">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä automaattisesti virheraportteja sekä diagnostiikka- ja käyttödataa Googlelle.</translation>
+<translation id="8152760814912191567">Google Beam Zoomissa</translation>
 <translation id="815491593104042026">Hups! Todennus epäonnistui, koska se määritettiin käyttämään suojaamatonta URL-osoitetta (<ph name="BLOCKED_URL" />). Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="8157704005178149728">Määritetään valvontaa</translation>
 <translation id="8174047975335711832">Laitteen tiedot</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelut pyrkivät arvioimaan laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Voit milloin tahansa laittaa Androidin sijainnin pois päältä laitteellasi: valitse Asetukset &gt; Sovellukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Suojaus ja sijainti &gt; Sijainti. Voit myös laittaa pois päältä Wi-Fi- ja mobiiliverkkojen sekä antureiden käytön Androidin sijainnin määrityksessä: laita samasta valikosta "Googlen sijaintitietojen tarkkuus" pois päältä.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Päivitä <ph name="DEVICE_TYPE" />-profiilisi kirjoittamalla salasanasi uudelleen.</translation>
 <translation id="8239032431519548577">Yrityksen rekisteröinti valmis</translation>
 <translation id="8241806945692107836">Selvitetään laitteen kokoonpanoa…</translation>
 <translation id="8242426110754782860">Jatka</translation>
 <translation id="826905130698769948">Virheellinen käyttöoikeusvarmenne</translation>
+<translation id="8271379370373330993">Seuraavat vaiheet on tarkoitettu vanhemmille. <ph name="DEVICE_TYPE" /> voidaan antaa lapselle tilin määrityksen jälkeen.</translation>
 <translation id="8274924778568117936">Pidä <ph name="DEVICE_TYPE" /> päällä, kunnes päivitys on valmis. <ph name="DEVICE_TYPE" /> käynnistyy uudelleen, kun asennus on valmis.</translation>
 <translation id="8281886186245836920">Ohita</translation>
+<translation id="8291942417224950075">Yksityiskäyttöön</translation>
 <translation id="8304383784961451596">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä kirjautumislupaa järjestelmänvalvojalta tai kirjaudu sisään Google-tilillä, jota valvotaan Family Linkillä.</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8339288417038613756">Näytön ja tekstin koko</translation>
 <translation id="8354034204605718473">Lapsen PIN-koodi on lisätty</translation>
 <translation id="8366396658833131068">Verkkoyhteytesi on palautettu. Valitse eri verkko tai paina alla olevaa Jatka-painiketta, jos haluat käynnistää kioskisovelluksen.</translation>
 <translation id="8401432541486058167">Ilmoita älykorttiisi liittyvä PIN-koodi.</translation>
 <translation id="8408270600235826886">Voit hallita, mitä dataa Googlessa jaetaan. Voit vaihtaa valintasi milloin tahansa asetuksista. Tietoja käytetään Googlen <ph name="BEGIN_LINK" />tietosuojakäytännön<ph name="END_LINK" /> mukaisesti.</translation>
 <translation id="8413956290606243087">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukuohjelman?</translation>
 <translation id="8425768983279799676">Voit avata laitteen lukituksen PIN-koodilla.</translation>
+<translation id="8428213095426709021">Asetukset</translation>
 <translation id="843173223122814223">Luo taustoja tekoälyn avulla</translation>
 <translation id="8452105022015742247">Google-tilitietoja siirretään Android-puhelimesta</translation>
 <translation id="8464132254133862871">Palvelua ei voi käyttää tällä käyttäjätilillä.</translation>
 <translation id="8524841856047224176">Personoi kameran taustoja esimerkiksi videopuheluja varten</translation>
+<translation id="8527257351549797148">Organisaatiosi voi edellyttää rekisteröitymistä, jotta voit käyttää esimerkiksi sovelluksia ja laajennuksia. Näin organisaatiosi voi myös hallinnoida esimerkiksi suojaus- ja laiteasetuksia.</translation>
+<translation id="8558063527625343224">Ota Google Beam käyttöön</translation>
 <translation id="8569673829373920831">Lisätietoa: <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Salli laitteen sijainnin käyttäminen ChromeOS‑ ja Android-sovelluksille, ‑verkkosivustoille ja ‑palveluille, joilla on sijaintilupa. Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin Android-sovelluksille ja ‑palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja langattomien signaalien sijainnin keräämistä varten. Näitä tietoja käytetään (sinua tunnistamatta) sijaintitietojen tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palvelujen kehittämiseen, tarjoamiseen ja ylläpitämiseen. Tämä perustuu Googlen ja kolmansien osapuolten oikeutettuun etuun palvella käyttäjien tarpeita.</translation>
 <translation id="8627804903623428808">Tarkista ehdot ja päätä lapsesi datankäytöstä</translation>
@@ -439,9 +626,13 @@
         <ph name="BR" />
         Näkyy lähellä oleville laitteille nimellä <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="8655972064210167941">Sisäänkirjautuminen epäonnistui, koska salasanasi vahvistaminen epäonnistui. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Kun sijaintitietojen tarkkuus on päällä, laitteen tarkemman sijainnin arvioimiseen käytetään langattomista signaaleista (esim. Wi-Fi-tukiasemista ja mobiiliverkkotorneista) peräisin olevia tietoja sekä laitteen anturien (esim. akselerometri ja gyroskooppi) keräämää dataa. Android-sovellukset ja ‑palvelut käyttävät kyseisiä tietoja sijaintiin perustuvien ominaisuuksien tarjoamiseen. Google selvittää sijainnin keräämällä ajoittain laitteen anturien ja lähellä olevien langattomien signaalien tietoja, jotka lisätään langattomien signaalien crowdsource-verkoston sijainteihin.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google käyttää kyseisiä tietoja (sinua tunnistamatta) sijaintitietojen tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palveluiden kehittämiseen, tarjoamiseen ja ylläpitoon. Käsittelemme tietoja perustuen Googlen ja kolmansien osapuolten oikeutettuun vastataksemme käyttäjien tarpeisiin.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Voit milloin tahansa laittaa sijaintitietojen tarkkuuden pois päältä laitteen sijaintiasetuksista valitsemalla Asetukset &gt; Yksityisyys ja turvallisuus &gt; Yksityisyysasetukset &gt; Sijainnin käyttöoikeus &gt; Sijainnin lisäasetukset. Jos sijaintitietojen tarkkuus on poissa päältä, sijaintitietojen tarkkuusdataa ei kerätä. Android-sovellusten ja ‐palveluiden osalta laitteen sijainnin määrittämiseen käytetään vain IP-osoitetta, jos sellainen on saatavilla. Tämä voi vaikuttaa sijaintien saatavuuteen ja tarkkuuteen Android-sovelluksissa ja ‐palveluissa (esim. Google Mapsissa).<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Tietokoneesi on valitettavasti määritetty virheellisellä laitteistotunnuksella. Tämän takia Chrome-käyttöjärjestelmä ei voi asentaa uusimpia tietoturvapäivityksiä ja tietokoneesi <ph name="BEGIN_BOLD" />voi altistua hyökkäyksille<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Lisää lapsilukko käyttöönoton jälkeen</translation>
 <translation id="8698269656364382265">Voit palata edelliselle näytölle pyyhkäisemällä vasemmasta reunasta.</translation>
+<translation id="8718994464069323380">Kosketusnäyttö havaittu</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8726206820263995930">Virhe noudettaessa käytäntöasetuksia palvelimelta: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Valmis</translation>
@@ -449,24 +640,36 @@
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> voi nyt saada tämän Chromebookin. Käyttöönotto on melkein valmis, pian on aika tutkia.</translation>
 <translation id="8759753423332885148">Lisätietoja</translation>
 <translation id="8777628254805677039">pääkäyttäjän salasana</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Kirjoita Bluetooth-yhdistämiskoodi ja paina sitten Return tai Enter.</translation>
 <translation id="8794548468611058947">Voit luoda laitteelle (<ph name="DEVICE_TYPE" />) PIN-koodin sisäänkirjautumista varten Google-tilin salasanan sijaan</translation>
 <translation id="8830796635868321089">Päivitystarkistus epäonnistui nykyisillä välityspalvelinasetuksilla. Muuta <ph name="PROXY_SETTINGS_LINK_START" />välityspalvelinasetuksia<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Tämän Chromebook Enterprise ‑laitteen mukana tulee Chrome Enterprise ‑päivitys. Rekisteröi tälle laitteelle Google-järjestelmänvalvojan tili, jotta saat kaiken irti yritysominaisuuksista.</translation>
 <translation id="885746075120788020">Tallentamasi asetukset ja toiminta ovat valmiina millä tahansa Chrome-käyttöjärjestelmän laitteella, kun kirjaudut sisään Google-tilillesi. Voit valita synkronoitavan sisällön asetuksissa.</translation>
+<translation id="8868333925931032127">Käynnistetään demotilaa</translation>
 <translation id="8875221558267407626">Tee yhteenveto sisällöstä, yksinkertaista monimutkaista kieltä tai kysy kysymyksiä</translation>
+<translation id="8907701755790961703">Valitse maa</translation>
 <translation id="8913163265790894442">Ota <ph name="DEVICE_TYPE" /> helposti käyttöön puhelimella. Voit lisätä Wi-Fi-yhteyden ja Google-tilin ilman salasanojen manuaalista lisäämistä.
         <ph name="BR" />
         <ph name="BR" />
         Näkyvillä nimellä <ph name="DEVICE_TYPE" />…</translation>
+<translation id="8934732568177537184">Jatka</translation>
 <translation id="8946359700442089734">Virheenkorjausominaisuudet eivät olleet täysin käytössä tällä <ph name="IDS_SHORT_PRODUCT_NAME" />-laitteella.</translation>
 <translation id="8965037249707889821">Syötä vanha salasana</translation>
+<translation id="8968906873893164556">Valitse käyttöönotossa käytettävä tili</translation>
+<translation id="8973596347849323817">Voit muokata laitteen ominaisuuksia tarpeidesi mukaan. Esteettömyysominaisuuksia voi muuttaa myöhemmin asetuksissa.</translation>
 <translation id="8975396729541388937">Voit perua tilauksen milloin tahansa klikkaamalla linkkiä, joka löytyy saamistasi sähköposteista.</translation>
+<translation id="8987305927843254629">Jokainen henkilö voi personoida kokemuksensa ja pitää datan yksityisenä.</translation>
 <translation id="8993059306046735527">Jos unohdat salasanan (<ph name="DEVICE_TYPE" />), voit silti palauttaa paikallisen datan. Sinun on kirjauduttava Google-tilillesi tai käytettävä tilin palautusta.</translation>
 <translation id="9033765790910064284">Jatka silti</translation>
 <translation id="903480517321259405">Kirjoita PIN-koodi uudelleen</translation>
 <translation id="9040473193163777637">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukuohjelman? Jos haluat, paina molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
 <translation id="9068298336633421551">Salli laitteen sijainnin käyttäminen Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
+<translation id="9074836595010225693">USB-hiiri yhdistetty</translation>
 <translation id="9076523132036239772">Sähköpostiosoitettasi tai salasanaasi ei voi vahvistaa. Muodosta ensin verkkoyhteys.</translation>
+<translation id="9089959054554410481">Kosketuslevyn vierityssuunnan muuttaminen</translation>
 <translation id="9158715103698450907">Hups! Todennuksen aikana tapahtui verkkovirhe. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
+<translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
 <translation id="919686179725692564">Lue lisää sovellusten varmuuskopioinnista</translation>
 <translation id="9214520840402538427">Hups! Asennus-aika-attribuuttien alustaminen on aikakatkaistu. Ota yhteyttä tukipalveluun.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Saatavilla vain näillä laitteilla: <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@
         <ph name="BR" />
         Näkyvillä nimellä <ph name="DEVICE_TYPE" />…</translation>
 <translation id="951991426597076286">Hylkää</translation>
+<translation id="954749761428814584">Kieli ja syöttötapa</translation>
+<translation id="960987915827980018">Noin tunti jäljellä</translation>
+<translation id="995420352808264005">Valitse laitteen rekisteröintityyppi</translation>
 </translationbundle>

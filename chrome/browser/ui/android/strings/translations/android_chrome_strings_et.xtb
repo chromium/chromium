@@ -302,7 +302,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2297822946037605517">Jaga seda lehte</translation>
 <translation id="230115972905494466">Ühilduvaid seadmeid ei leitud</translation>
 <translation id="2316129865977710310">Ei, aitäh</translation>
-<translation id="2318045970523081853">Puudutage helistamiseks</translation>
 <translation id="232137538351753795">Tagasiliikumiseks pühkige vasakust servast</translation>
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
 <translation id="2327445548174191329">Seadmest <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolliti 1 päev tagasi}other{Kontrolliti # päeva tagasi}}</translation>
 <translation id="2842985007712546952">Emakaust</translation>
 <translation id="2854916915045135148">Inkognito režiimile lülitumiseks puudutage pikalt</translation>
-<translation id="2860954141821109167">Veenduge, et telefonirakendus oleks selles seadmes lubatud</translation>
 <translation id="286473047976978798">Kas rakendada teie välimuse eelistused?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ja veel üks vaheleht.}other{<ph name="URL" /> ja veel <ph name="TAB_COUNT_MANY" /> vahelehte.}}</translation>
 <translation id="2869430948265924908">Oma tundliku sisu kaitsmiseks autos tuleb luua auto profiililukk.  Seda saate teha PIN-koodi, koodi või parooliga.</translation>
@@ -1272,6 +1270,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6315386555979018699">Kustuta ja jätka</translation>
 <translation id="6316139424528454185">Seda Androidi versiooni ei toetata</translation>
 <translation id="631839948975905034">Chrome'ist lahkumisel inkognito akende lukustamine</translation>
+<translation id="6321592572353357376">Laiendus „<ph name="EXTENSION_NAME" />“ soovib, et logiksite Chrome'i sisse</translation>
 <translation id="6324916366299863871">Otsetee muutmine</translation>
 <translation id="6324977638108296054">Esiletõstu linki ei õnnestu luua</translation>
 <translation id="6333140779060797560">Jagamine rakenduse <ph name="APPLICATION" /> kaudu</translation>
@@ -1450,6 +1449,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6910211073230771657">Kustutatud</translation>
 <translation id="6916590542764765824">Laienduste haldamine</translation>
 <translation id="6918398787259831832">Kui probleem jääb korduma, <ph name="BEGIN_LINK" />saate lisateavet<ph name="END_LINK" /> teenusest <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Loo selle lehe jaoks QR-kood</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> – Chrome eemaldas need load, kuna te pole hiljuti külastanud</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 vaheleht}other{<ph name="NUMBER_OF_TABS" /> vahelehte}}</translation>
 <translation id="6929224077895306814">Kõik teie seadmesse ja Google’i kontole salvestatud turvakoodid kustutatakse</translation>
@@ -1541,6 +1541,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7248671827512403053">Rakendus</translation>
 <translation id="7253951228444156601">Paroolide kontrollimine …</translation>
 <translation id="7260367682327802201">Teie Android-seadmes võib olla sarnane seade. Kui reklaamide mõõtmine on Chrome'is ja teie Android-seadmes sisse lülitatud, võib ettevõttel olla võimalik mõõta reklaami tõhusust veebisaitidel, mida külastate, ja rakendustes, mida kasutate.</translation>
+<translation id="7265857422443387781">Otsige vahelehelt Google Lensiga <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Kas saata kood <ph name="ONE_TIME_CODE" /> saidile <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokeeritud sait</translation>
 <translation id="7276868533747677875">Kui eksportisite eelnevalt paroolid, leidke oma seadmes CSV-fail ja importige see eelistatud paroolihaldurisse.</translation>
@@ -1883,6 +1884,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="860282621117673749">Hinnalanguse märguanded</translation>
 <translation id="8611922158252451755">Valige hoolega, kellega linke jagate, sest kõiki vahelehti saab muuta igaüks, kellel on link. Link aegub 48 tunni pärast.</translation>
 <translation id="8616006591992756292">Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
+<translation id="8626572875733549102">Tõlgi <ph name="LANGUAGE" /> keelde</translation>
 <translation id="8629093325209491835">Avage Chrome'i menüü &gt; Seaded.</translation>
 <translation id="8634050254805484913">Kitsastel ekraanidel peidetud</translation>
 <translation id="8635399646025169806">Kas säilitada vahelehegrupid?</translation>
@@ -2031,7 +2033,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9204836675896933765">Üks fail on jäänud</translation>
 <translation id="9205933215779845960">Seda lehte ei leitud. Kontrollige õigekirja või proovige otsida teenuses <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Ei saa helistada</translation>
 <translation id="9212845824145208577">Madalamale ei saa minna. Alustage lehel altpoolt.</translation>
 <translation id="9218430445555521422">Määra vaikeseadeks</translation>
 <translation id="9219103736887031265">Pildid</translation>

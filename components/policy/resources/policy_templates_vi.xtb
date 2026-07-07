@@ -3158,6 +3158,11 @@ Chính sách này không ảnh hưởng đến chính sách "<ph name="WEB_APP_I
         Chính sách này không ảnh hưởng đến các chính sách đã phát hành.</translation>
 <translation id="3002067315837777719">Không cho phép bật thông báo của Trung tâm điều khiển điện thoại</translation>
 <translation id="3003490107503207900">Buộc tải tài liệu Office (ví dụ: .docx) xuống thay vì mở tài liệu trong <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Kiểm soát cách <ph name="PRODUCT_OS_NAME" /> xử lý trường hợp phát hiện mật khẩu không khớp trong quá trình đăng nhập trực tuyến. Chính sách này xác định những việc sẽ xảy ra khi mật khẩu của người dùng, được xác thực qua IdP (nhà cung cấp danh tính) trực tuyến (ví dụ: IdP bên thứ ba, Gaia) không trùng khớp với mật khẩu dùng để mã hoá dữ liệu cục bộ của họ. Điều này thường xảy ra sau khi người dùng thay đổi mật khẩu từ bên ngoài.
+
+Nếu bạn đặt chính sách này thành 0 (Quy trình thay đổi mật khẩu tiêu chuẩn) hoặc không đặt, quy trình thay đổi mật khẩu tiêu chuẩn sẽ được bắt đầu. Người dùng sẽ được nhắc nhập mật khẩu cũ để cập nhật mã hoá dữ liệu cục bộ hoặc họ có thể sử dụng các cơ chế khôi phục dữ liệu cục bộ khác (nếu có).
+
+Nếu bạn đặt chính sách này thành 1 (Tự động xoá sạch dữ liệu cục bộ), quy trình thay đổi mật khẩu tiêu chuẩn sẽ được bỏ qua. Sau khi phát hiện mật khẩu không khớp, dữ liệu cục bộ của người dùng sẽ tự động bị xoá sạch. Tuỳ chọn này cho phép người dùng đăng nhập liền mạch bằng mật khẩu mới nhưng sẽ làm mất toàn bộ dữ liệu được lưu trữ cục bộ trong hồ sơ của họ (ví dụ: Tệp đã tải xuống, cài đặt chưa đồng bộ hoá). Tuỳ chọn này dành cho các môi trường mà người dùng chủ yếu lưu trữ dữ liệu trên đám mây hoặc được yêu cầu cập nhật mật khẩu thường xuyên.</translation>
 <translation id="300673820739371513">Chính sách này xác định khả năng phát hiện thực thể văn bản thuần tuý trên trang web để từ đó, người dùng có thể kích hoạt thao tác theo ngữ cảnh bằng việc tương tác với thực thể này.
 Chính sách này có nhiều thuộc tính, mỗi thuộc tính tương ứng với một loại thực thể.
 Có các loại thực thể là <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />, v.v.
@@ -9019,6 +9024,7 @@ Các thay đổi đối với chính sách chỉ được áp dụng khi ARC kh�
 
       Lưu ý: Sử dụng chính sách này với <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Một cờ boolean cho biết liệu bàn phím ảo có thể cung cấp tính năng kiểm tra lỗi chính tả hay không.</translation>
+<translation id="6625424971640741579">Quy trình thay đổi mật khẩu tiêu chuẩn</translation>
 <translation id="6625716212597516929">Quay lại hành vi cũ của phạm vi truy cập cookie</translation>
 <translation id="6626319579493977784">Cài đặt mã động</translation>
 <translation id="66265932317331474">Báo cáo thông tin CPU</translation>
@@ -9224,6 +9230,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="6763023079133439068">Cho phép các chứng chỉ thiếu tiện ích subjectAlternativeName nếu chứng chỉ là do các neo tin cậy cục bộ phát hành</translation>
 <translation id="6766216162565713893">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào thiết bị Bluetooth lân cận</translation>
 <translation id="6770454900105963262">Báo cáo thông tin về các phiên kiosk hiện hoạt</translation>
+<translation id="6770703270685871935">Tự động xoá sạch dữ liệu cục bộ</translation>
 <translation id="6774132787348495175">Không cho phép người dùng sử dụng máy ảo cần thiết để hỗ trợ các ứng dụng Linux</translation>
 <translation id="6782331708811245959">Bật tính năng báo cáo chế độ khởi động thiết bị</translation>
 <translation id="6783578496154221347">Sử dụng WeeklyTimeIntervalChecked trong mã mới.</translation>
@@ -9531,6 +9538,7 @@ Chính sách này sẽ bị xoá trong tương lai, sau khi chúng tôi triển 
       Nếu bạn không đặt chính sách này, sẽ không có máy in nào trên thiết bị, đồng thời, các chính sách <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> sẽ bị bỏ qua.</translation>
 <translation id="69525503251220566">Tham số cung cấp tính năng tìm theo hình ảnh cho nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="6953102253399571439">Cho phép in mã PIN theo mặc định</translation>
+<translation id="6953246833109449226">Định cấu hình hành vi trong trường hợp mật khẩu trực tuyến không khớp</translation>
 <translation id="695532899547292238">Bật tính năng thu thập nhật ký ứng dụng kiosk</translation>
 <translation id="6956272732789158625">Không cho phép bất kỳ trang web nào sử dụng tạo khóa</translation>
 <translation id="6960996423652450945">Tắt tính năng làm nổi bật con nháy trên màn hình đăng nhập</translation>

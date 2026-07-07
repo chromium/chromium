@@ -302,7 +302,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2297822946037605517">Az oldal megosztása</translation>
 <translation id="230115972905494466">Nem találhatók kompatibilis eszközök</translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
-<translation id="2318045970523081853">Koppintson a hívás indításához</translation>
 <translation id="232137538351753795">A visszalépéshez csúsztasson a képernyő bal széléről</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
 <translation id="2327445548174191329">Forrás: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
 <translation id="2854916915045135148">Tartsa lenyomva az ujját az inkognitó módba való váltáshoz</translation>
-<translation id="2860954141821109167">Győződjön meg arról, hogy van engedélyezett telefonalkalmazás ezen az eszközön</translation>
 <translation id="286473047976978798">Alkalmazza a megjelenési beállításokat?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> és további 1 lap}other{<ph name="URL" /> és további <ph name="TAB_COUNT_MANY" /> lap}}</translation>
 <translation id="2869430948265924908">Profilzárolást kell létrehoznia, hogy meg tudja védeni az autóban a bizalmas tartalmait.  Ezt PIN-kód, kód vagy jelszó segítségével teheti meg.</translation>
@@ -1272,6 +1270,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6315386555979018699">Törlés és folytatás</translation>
 <translation id="6316139424528454185">Nem támogatott Android-verzió</translation>
 <translation id="631839948975905034">Inkognitó ablakok zárolása a Chrome elhagyásakor</translation>
+<translation id="6321592572353357376">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chrome-ba</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6324977638108296054">Nem sikerült linket létrehozni a kiemelt szöveghez</translation>
 <translation id="6333140779060797560">Megosztás a következőn keresztül: <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6910211073230771657">Törölve</translation>
 <translation id="6916590542764765824">Bővítmények kezelése</translation>
 <translation id="6918398787259831832">Ha a probléma továbbra is fennáll, <ph name="BEGIN_LINK" />itt talál további információt<ph name="END_LINK" /> a következőről: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">QR-kód létrehozása ehhez az oldalhoz</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert Ön az utóbbi időben nem kereste fel ezt a webhelyet</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 lap}other{<ph name="NUMBER_OF_TABS" /> lap}}</translation>
 <translation id="6929224077895306814">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
@@ -1541,6 +1541,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7248671827512403053">Alkalmazás</translation>
 <translation id="7253951228444156601">Jelszavak ellenőrzése…</translation>
 <translation id="7260367682327802201">Előfordulhat, hogy Android-eszköze is rendelkezik hasonló beállítással. Ha a hirdetésmérés be van kapcsolva a Chrome-ban és Android-eszközén, akkor a vállalatok képesek lehetnek az egyes hirdetések hatékonyságának mérésére az Ön által felkeresett webhelyeken és az Ön által használt alkalmazásokban is.</translation>
+<translation id="7265857422443387781">Keresés a lapon a Google Lensszel <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Elküldi a(z) <ph name="ONE_TIME_CODE" /> kódot ide: <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Letiltott oldal</translation>
 <translation id="7276868533747677875">Ha korábban exportálta a jelszavait, keresse meg a CSV-fájlt az eszközén, majd importálja a kívánt jelszókezelőbe.</translation>
@@ -1883,6 +1884,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="860282621117673749">Árcsökkenési értesítések</translation>
 <translation id="8611922158252451755">A link birtokában bárki szerkesztheti az összes lapot, ezért legyen körültekintő a megosztáskor. A link 48 óra múlva lejár.</translation>
 <translation id="8616006591992756292">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>
+<translation id="8626572875733549102">Fordítás <ph name="LANGUAGE" /> nyelvre</translation>
 <translation id="8629093325209491835">Nyissa meg a Chrome-menü Beállítások szakaszát.</translation>
 <translation id="8634050254805484913">Elrejtve keskeny képernyőkön</translation>
 <translation id="8635399646025169806">Megtartja a lapcsoportot?</translation>
@@ -2031,7 +2033,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9204836675896933765">1 fájl maradt</translation>
 <translation id="9205933215779845960">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni a következő keresőben: <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Nem lehet hívást indítani</translation>
 <translation id="9212845824145208577">Nem lehet lejjebb menni. Próbálkozzon a lap lentebbi részével való kezdéssel.</translation>
 <translation id="9218430445555521422">Alapbeállítás</translation>
 <translation id="9219103736887031265">Képek</translation>

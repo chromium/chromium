@@ -29,7 +29,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="126567311906253476">Kada se prijavljujete u Google usluge kao što su Gmail ili YouTube pomoću naloga <ph name="USER_EMAIL" />, možete automatski da se prijavite u Chromium pomoću istog naloga</translation>
 <translation id="1287534462498555020">Preuzmite Chromium na telefon</translation>
 <translation id="1290883685122687410">Greška pri podešavanju: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Ilustracija koja prikazuje kako možete da koristite pretragu slika da biste potražili proizvod</translation>
 <translation id="1315551408014407711">Podesite nov Chromium profil</translation>
 <translation id="132092532143527429">Isprobajte sa Gemini-jem u Chromium-u</translation>
 <translation id="1324107359134968521">Chromium zahteva pristup Bluetooth-u da bi istraživao 
@@ -496,7 +495,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="6400112897226594999">Chromium logotip na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je veb pregledač koji pokreće veb-stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za korišćenje. Pregledajte Veb bezbednije sa zaštitom od malvera i „pecanja“ koja je ugrađena u Chromium.</translation>
 <translation id="6414624068245092115">Da biste bili sigurni da uvek možete da koristite i čuvate Chromium podatke na Google nalogu, potvrdite svoj identitet</translation>
-<translation id="6417332166651156371">Pojednostavljena slika koja prikazuje ulaznu tačku Menadžera lozinki u Chromium-u</translation>
 <translation id="642132557830635295">Chromium radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno</translation>
 <translation id="6436260184216827876">Pretraga slika nije dostupna. Probajte ponovo kasnije.</translation>
 <translation id="6442900851116057561">Restartujte Chromium OS</translation>

@@ -3068,6 +3068,11 @@ PAC 樣式的字串：
         這項政策不會影響已發布的政策。</translation>
 <translation id="3002067315837777719">不允許啟用 Phone Hub 通知</translation>
 <translation id="3003490107503207900">強制下載 Office 文件 (例如 .docx)，而是不在「<ph name="BASIC_EDITOR_NAME" />」中開啟</translation>
+<translation id="3003832749381802588">控管 <ph name="PRODUCT_OS_NAME" /> 在線上登入過程偵測到密碼不符時的處理方式。這項政策可決定當使用者透過線上 IdP (例如第三方 IdP、GAIA) 驗證的密碼，與用於加密本機資料的密碼不符時，系統應採取的行動。這種情況通常發生在使用者於外部變更密碼之後。
+
+如果將這項政策設為 0 (標準密碼變更流程) 或不設定，就會啟動標準密碼變更流程。系統會提示使用者輸入舊密碼，以更新本機資料加密設定，或是使用其他可用的本機資料復原機制。
+
+如果將這項政策設為 1 (自動抹除本機資料)，系統會略過標準密碼變更流程。偵測到密碼不符時，系統會自動抹除使用者的本機資料。這項設定可讓使用者以新密碼順暢登入，但會導致儲存在使用者設定檔中的所有本機資料遺失 (例如下載內容、未同步的設定)。此選項適用於使用者主要將資料儲存在雲端，或是預計會頻繁更新密碼的環境。</translation>
 <translation id="300673820739371513">這項政策可決定是否在網頁上偵測純文字實體，讓使用者能夠與之互動來觸發關聯動作。
 這項政策含有多項屬性，每個實體類型一項屬性。
 實體類型包括 <ph name="DEFAULT_ENUM_VALUE" />、<ph name="ADDRESS_ENUM_VALUE" /> 等等。如未設定實體的值，會套用 <ph name="DEFAULT_ENUM_VALUE" /> 實體的行為。<ph name="DEFAULT_ENUM_VALUE" /> 的預設行為已設為 <ph name="ENABLED_ENUM_VALUE" />。
@@ -8640,6 +8645,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
       注意：這項政策必須與 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="6625136649067113817">布林值標記，表示螢幕小鍵盤是否能提供拼字檢查功能。</translation>
+<translation id="6625424971640741579">標準密碼變更流程</translation>
 <translation id="6625716212597516929">還原為舊的 Cookie 範圍行為</translation>
 <translation id="6626319579493977784">動態程式碼設定</translation>
 <translation id="66265932317331474">回報 CPU 資訊</translation>
@@ -8842,6 +8848,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6763023079133439068">允許缺少 subjectAlternativeName 擴充功能的憑證 (但必須由本機信任錨點核發)</translation>
 <translation id="6766216162565713893">允許網站要求使用者授權存取附近的藍牙裝置</translation>
 <translation id="6770454900105963262">回報運作中資訊站工作階段相關資訊</translation>
+<translation id="6770703270685871935">自動抹除本機資料</translation>
 <translation id="6774132787348495175">不允許使用者透過虛擬機器執行 Linux 應用程式</translation>
 <translation id="6782331708811245959">啟用裝置啟動模式回報功能</translation>
 <translation id="6783578496154221347">請在新程式碼中使用 WeeklyTimeIntervalChecked。</translation>
@@ -9127,6 +9134,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果不設定，代表未指定任何裝置印表機，而系統會忽略其他 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 政策。</translation>
 <translation id="69525503251220566">為預設搜尋引擎提供圖片搜尋功能的參數</translation>
 <translation id="6953102253399571439">預設為啟用 PIN 碼列印模式</translation>
+<translation id="6953246833109449226">設定線上密碼不符時的處理方式</translation>
 <translation id="695532899547292238">啟用資訊站應用程式記錄收集功能</translation>
 <translation id="6956272732789158625">不允許任何網站使用金鑰產生功能</translation>
 <translation id="6960996423652450945">在登入畫面上停用插入點醒目顯示功能</translation>

@@ -1573,6 +1573,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="628251768213143684">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କଣ ସେଭ କରାଯାଏ ତାହା ଆପଣ ସର୍ବଦା ପରିଚାଳନା କରିପାରିବେ</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />କୁ ଅନୁବାଦ କରିବା ପାଇଁ ଅଫର୍ କରନ୍ତୁ</translation>
 <translation id="6293101329759844770">ସେଫ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କରିବାକୁ, <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକ<ph name="END_LINK" /> ଖୋଲନ୍ତୁ ଏବଂ ସେଫ୍ ବ୍ରାଉଜିଂରେ ଟାପ୍ କରନ୍ତୁ।</translation>
+<translation id="6295140892595702619">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପରେ ଅଡିଓ ଷ୍ଟୋର ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)। ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡାଟାକୁ ବ୍ୟବହାର କରାଯାଏ ନାହିଁ</translation>
 <translation id="6295751040240588413">କାର୍ଡର ଡାକନାମ ଅବୈଧ ଅଟେ</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
 <translation id="6301104306974789820">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
@@ -2181,7 +2182,6 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8264966119170358612">ଏକ ଅଣ-Google ଡାଟା ଉଲ୍ଲଙ୍ଘନ ଯୋଗୁଁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା କିଛି ପାସୱାର୍ଡ ଚୋରି ହୋଇଯାଇଛି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">ଆପଣଙ୍କ iPad ରିସେଟର ଅଂଶ ଭାବରେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ, <ph name="USER_NAME" />ରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି। ପୁଣି ସାଇନ ଇନ କରିବାକୁ ନିମ୍ନରେ "ଜାରି ରଖନ୍ତୁ"ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">ଆପଣ <ph name="URL" />ରେ ସୂଚନା ପୂରଣ କରିବେ</translation>
 <translation id="8274795744553482834">ଆପଣ ପ୍ରୋଫାଇଲ ସ୍ୱିଚ କରିବାକୁ ଯାଉଛନ୍ତି</translation>
 <translation id="8275068909952022340">ଅଧିକ…</translation>
 <translation id="8280797717392145626">ଲିଙ୍କଗୁଡ଼ିକ ମିଳିଛି</translation>
@@ -2415,6 +2415,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ପିନ କରାଯାଇଥିବା ସାଇଟ</translation>
 <translation id="8990960056509724223">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତି ଯୋଗୁଁ ଫାଇଲ ସେଭ ହୋଇପାରିଲା ନାହିଁ</translation>
 <translation id="8998289560386111590">ଆପଣଙ୍କ ଡିଭାଇସରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="9003263770394939629">Gemini ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଛି। ସେଟିଂସରେ ଉନ୍ନତ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9003677638446136377">ପୁଣି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="9006453925669499173">ମେନୁ → ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="9008201768610948239">ଅଣଦେଖା କରନ୍ତୁ</translation>

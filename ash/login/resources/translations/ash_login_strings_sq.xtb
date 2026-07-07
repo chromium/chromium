@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1005333234656240382">Të aktivizohet korrigjimi i ADB-së?</translation>
+<translation id="1053898984916097744">Nis diçka të re ose merr ndihmë gjatë rrjedhës.</translation>
+<translation id="1061130374843955397">Mirë se erdhe në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Merr automatikisht llogarinë nga telefoni Android</translation>
 <translation id="1076766328672150609">Fëmija yt mund të përdorë një PIN për ta shkyçur këtë pajisje.</translation>
 <translation id="1097658378307015415">Para se të identifikohesh, hyr si vizitor për të aktivizuar rrjetin <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Fëmija yt mund ta përdorë këtë kod PIN për t'u identifikuar në pajisjen e vet</translation>
 <translation id="1122587596907914265">Dizajno imazhe unike sfondi</translation>
 <translation id="1131201598497838573">Kodi PIN i fëmijës tënd është përditësuar</translation>
 <translation id="1147322039136785890">Tani është radha e <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">Po merr përditësimin më të fundit të softuerit për një siguri të përmirësuar dhe veçoritë më të reja të Chromebook. Ky përditësim përfshin një përvojë të përmirësuar me konfigurimin për të të ndihmuar të fillosh pa probleme në Chromebook.</translation>
 <translation id="1176864681932214421">Krijo imazhe me IA-në</translation>
 <translation id="1177073277575830464">Konfigurimi i shpejtë i Android ka përfunduar. Vazhdo konfigurimin në <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1179902906564467236">Ndiq udhëzimet në telefon ose përdor aplikacionin e kamerës</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Para</translation>
 <translation id="1217114730239853757">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp tastin e hapësirës.</translation>
 <translation id="1222835797152767346">Cakto një kod PIN për ta bërë më të lehtë të identifikohesh</translation>
+<translation id="1231426483209637778">Ne do ta kujtojmë rrjetin tënd herën tjetër që ti përdor <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Ndrysho madhësinë e ekranit dhe të tekstit</translation>
+<translation id="1256588359404100567">Cilësimi u sinkronizua nga pajisja jote e mëparshme.</translation>
 <translation id="1272978324304772054">Kjo llogari përdoruesi nuk i përket domenit me të cilin është regjistruar kjo pajisje. Nëse do të regjistrohesh në një domen tjetër, së pari duhet të kontrollosh rikuperimin e pajisjes.</translation>
+<translation id="1293556467332435079">Skedarët</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
+<translation id="1335929031622236846">Regjistro pajisjen tënde</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Veçoritë e korrigjimit<ph name="END_H3" />
           <ph name="BR" />
           Mund të aktivizosh veçoritë e korrigjimit në pajisjen tënde me ChromeOS për të instaluar dhe për të testuar kodin e personalizuar në pajisjen tënde. Kjo do të të lejojë që:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" />  Sistemi do të rindizet gjatë procesit.</translation>
 <translation id="1347625331607114917">Verifiko kodin në telefonin tënd Android</translation>
 <translation id="1347975661240122359">Përditësimi do të fillojë kur bateria të arrijë në <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Për të përdorur kontrolle prindërore si miratimin e aplikacioneve dhe kufijtë e kohës para ekranit, një fëmijë duhet të ketë një "Llogari të Google" të menaxhuar nga një prind. Mund të shtohet më vonë një llogari shkolle për vegla si Google Classroom.</translation>
 <translation id="1375557162880614858">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex?</translation>
 <translation id="1375938286942050085">Konfigurimi përfundoi! Përgatite pajisjen për lojërat më pas</translation>
 <translation id="1377600615067678409">Kapërceje tani</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Dërgo të dhënat e përdorimit dhe të dhënat diagnostikuese.</translation>
 <translation id="1418882096915998312">Regjistrimi i Chrome Enterprise në vazhdim</translation>
 <translation id="1426410128494586442">Po</translation>
+<translation id="1427269577154060167">Shteti</translation>
 <translation id="1440090277117135316">Regjistrimi për përdorimin në shkollë përfundoi</translation>
 <translation id="1473927070149284123">Provo përsëri ose lidhu me një rrjet në mënyrë manuale</translation>
 <translation id="1503556098270577657">U identifikove në <ph name="USER_EMAIL" /> duke përdorur telefonin tënd Android</translation>
+<translation id="1510238584712386396">Nisësi</translation>
 <translation id="1521442365706402292">Menaxho certifikatat</translation>
+<translation id="15373452373711364">Kursor i madh</translation>
 <translation id="1540605929960647700">Aktivizo modalitetin e demonstrimit</translation>
 <translation id="1572876035008611720">Fut mail-in</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Në rregull</translation>
 <translation id="1642494467033190216">Kërkohet heqja e mbrojtjes së rrënjës dhe rifillimi para aktivizimit të funksioneve të tjera të korrigjimit të gabimeve.</translation>
+<translation id="1646045728251578877">Ofrohet një përditësim i softuerit</translation>
+<translation id="1650801028905250434">Skedarët e tu te "Disku im" do të sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti. Këtë mund ta ndryshosh në çdo kohë te Cilësimet &gt; Skedarët.</translation>
 <translation id="1668435968811469751">Regjistrohu manualisht</translation>
 <translation id="1678919064276516737">Email-i dhe kodi PIN që ke futur nuk përputhen</translation>
 <translation id="1692115862433274081">Përdor një llogari tjetër</translation>
 <translation id="1695487653372841667">Mund të kontrollosh se çfarë të dhënash ndahen me Google. Këtë mund ta ndryshosh në çdo kohë te "Cilësimet".</translation>
 <translation id="169675691788639886">Pajisja ka të konfiguruar serverin SSH. Mos u identifiko me llogari delikate.</translation>
+<translation id="1700517974991662022">E vizituar</translation>
 <translation id="1730666151302379551">Harrove fjalëkalimin e vjetër</translation>
+<translation id="1749645492410897998">Po instalohet softueri</translation>
 <translation id="177053719077591686">Rezervo aplikacionet për Android në "Diskun e Google".</translation>
+<translation id="1798832846931769717">Google Beam për Meet</translation>
 <translation id="1806335016774576568">Kalo te një aplikacion tjetër i hapur</translation>
 <translation id="1826192255355608658">Sinkronizo faqeshënuesit, fjalëkalimet, historikun etj. të shfletuesit tënd Chrome</translation>
+<translation id="1826657447823925402">Lëvizja në të kundërt u çaktivizua</translation>
 <translation id="1831848493690504725">Nuk mund të lidhemi me Google nëpërmjet rrjetit të lidhur. Provo të zgjedhësh një rrjet tjetër ose të kontrollosh cilësimet e rrjetit ose cilësimet e proxy-it (nëse po përdor një proxy).</translation>
 <translation id="1842766183094193446">Je i sigurt për aktivizimin e modalitetit të demonstrimit?</translation>
 <translation id="1845060436536902492">Lexuesi i ekranit në ChromeOS Flex, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp shiritin e hapësirës për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
+<translation id="185766080319917408">Tasti i "Nisësit" ndodhet në të majtë të tastit të majtë Alt</translation>
 <translation id="1868617395637139709">Përdor vendndodhjen për aplikacionet dhe shërbimet e Android.</translation>
+<translation id="1877377730633446520">Kjo do të përdorë rreth <ph name="REQUIRED_SPACE" />. Aktualisht ke <ph name="FREE_SPACE" /> në dispozicion.</translation>
 <translation id="189035593835762169">Kushtet e përgjithshme</translation>
+<translation id="189358972401248634">Gjuhë të tjera</translation>
+<translation id="1915734383465415025">Numri i dyqanit</translation>
+<translation id="1919096511823372013">Fut lidhje, emoji etj. Mund të marrësh gjithashtu ndihmë për të shkruar dhe krijuar imazhe me IA-në e Google.</translation>
+<translation id="1922496389170590548">Llogaria e shkollës e fëmijës</translation>
+<translation id="1944528062465413897">Kodi i çiftimit të Bluetooth-it:</translation>
 <translation id="1987574314042117472">Zgjidh dhe instalo aplikacione të mirënjohura</translation>
 <translation id="1991829061375381344">Nuk ke licenca të mjaftueshme të disponueshme për të regjistruar këtë pajisje të harduerit të Google Meet. Kontakto me rishitësin për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me rishitësin tënd.</translation>
+<translation id="200928901437634269">Përdor "Llogarinë e Google" ose një llogari shkolle të fëmijës. Mund të caktosh po ashtu kontrollet prindërore.</translation>
+<translation id="2013550551806600826">Provoje. Aktivizo ose çaktivizo cilësimin dhe më pas lëviz me dy gishta në bllokun me prekje në zonën e testimit. Këtë mund ta gjesh po ashtu më vonë te Cilësimet &gt; Pajisja &gt; Miu dhe blloku me prekje.</translation>
+<translation id="2018189721942291407">Nuk je i sigurt nëse duhet të regjistrohesh?</translation>
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
 <translation id="2052572566310583903">Instaluar në pajisje të tjera</translation>
 <translation id="2088092308059522196">Regjistrimi mbështetet vetëm pasi të kesh instaluar <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Për të shkuar në ekranin bazë në çdo kohë, rrëshqit shpejt lart nga fundi i ekranit.</translation>
 <translation id="2090165459409185032">Për të rikuperuar informacionet e llogarisë tënde, shko te: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Zgjidh veçori të tjera për të konfiguruar</translation>
+<translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
 <translation id="2157779167749714207">Pajisja jote <ph name="DEVICE_TYPE" /> vjen me Gemini</translation>
 <translation id="2163470535490402084">Lidhu në internet për t'u futur te pajisja <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2173801458090845390">Shto ID-në e kërkesës në këtë pajisje</translation>
 <translation id="2178585470774851578">Po aktivizon veçoritë e korrigjimit në pajisjet Chrome OS Flex që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
+<translation id="2183570493397356669">Butoni "Vazhdo" është çaktivizuar</translation>
+<translation id="221872881068107022">Lëvizje e kundërt</translation>
 <translation id="2219081237089444028">Cakto një fjalëkalim për <ph name="DEVICE_TYPE" /> për ta bërë më të lehtë që të identifikohesh</translation>
+<translation id="2229161054156947610">Më shumë se 1 orë më parë</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> kërkon që pajisja të jetë online kur identifikohesh në <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% i kryer</translation>
 <translation id="2319072477089403627">Po lidhet me telefonin tënd Android...</translation>
@@ -91,12 +129,18 @@
 <translation id="2450223707519584812">Nuk do të jesh në gjendje të shtosh përdorues sepse mungojnë çelësat e API Google. Shiko <ph name="DETAILS_URL" /> për detaje.</translation>
 <translation id="24786041351753425">Aktivizo shërbimin e rikuperimit të të dhënave.</translation>
 <translation id="2485681265915754872">Kushtet e shërbimit të Google Play</translation>
+<translation id="248676429071089168">Rrëshqit shpejt lart për ta zhvendosur faqen poshtë</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
+<translation id="2538084450874617176">Kush po e përdor këtë pajisje <ph name="DEVICE_TYPE" />?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ishte e pamundur të lidhej me <ph name="NETWORK_ID" />. Përzgjidh një rrjet tjetër ose provo sërish.</translation>
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
+<translation id="2569972178052279830">Emri i shitësit me pakicë</translation>
+<translation id="257779572837908839">Konfiguroje si "Chromebox për takime"</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Jo, vazhdo me ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Shërbimi i vendndodhjes i Google përdor burime të tilla si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së kësaj pajisjeje.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh vendndodhjen e Android në këtë pajisje në çdo kohë duke shkuar te "Cilësimet" &gt; "Aplikacionet" &gt; "Dyqani i Google Play" &gt; "Menaxho preferencat e Android" &gt; "Siguria dhe vendndodhja" &gt; "Vendndodhja". Mund të çaktivizosh gjithashtu përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen e Android duke çaktivizuar "Saktësinë e vendndodhjes të Google" në të njëjtën meny.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Gjuha</translation>
 <translation id="2687407218262674387">Kushtet e shërbimit të Google</translation>
 <translation id="2688196195245426394">Gabim gjatë regjistrimit të pajisjes në server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Kjo është një pajisje pjesë e një pakete dhe nuk mund të regjistrohet me përmirësimin e kioskës dhe sinjalizimit.</translation>
@@ -104,26 +148,32 @@
 <translation id="2731700343119398978">Qëndro në pritje...</translation>
 <translation id="2732134891301408122">Përmbajtja shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Në rregull</translation>
+<translation id="274318651891194348">Po kërkon për tastierën</translation>
 <translation id="2754825024506485820">Gjej aplikacionet që të nevojiten, nga produktiviteti e deri tek argëtimi, në "Dyqanin e Google Play". Mund të instalosh aplikacione në çdo kohë.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Kur "Saktësia e vendndodhjes" është aktive, informacionet për sinjalet wireless, si p.sh. pikat e qasjes Wi-Fi dhe kullat e rrjetit celular, bashkë me të dhënat e sensorëve të pajisjes, si p.sh. përshpejtuesi dhe xhiroskopi, përdoren për të përllogaritur një vendndodhje më të saktë të pajisjes, të cilën shërbimet dhe aplikacionet për Android e përdorin për të ofruar veçoritë bazuar te vendndodhja. Për ta bërë këtë, Google mbledh në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless në afërsi me këtë pajisje për të kontribuar në mbledhjen e vendndodhjeve të sinjaleve wireless.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google i përdor këto informacione të mbledhura nga kjo pajisje për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur në përgjithësi shërbimet e Google. Ne i përpunojmë këto informacione bazuar në interesat legjitimë të Google dhe palëve të treta për t'u shërbyer nevojave të përdoruesve. Këto informacione nuk përdoren për të identifikuar asnjë individ.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Mund ta çaktivizosh "Saktësinë e vendndodhjes" në çdo kohë te cilësimet e vendndodhjes së kësaj pajisjeje te Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja &gt; Cilësimet e përparuara të vendndodhjes. Nëse "Saktësia e vendndodhjes" është joaktive, nuk do të mblidhen të dhëna të "Saktësisë së vendndodhjes". Për shërbimet dhe aplikacionet për Android, vetëm adresa IP përdoret, nëse ofrohet, për të përcaktuar vendndodhjen e kësaj pajisjeje, gjë që mund të ketë ndikim në disponueshmërinë dhe saktësinë e vendndodhjeve për shërbimet dhe aplikacionet për Android, si p.sh. Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Je plotësisht gati!</translation>
+<translation id="2819519502129272135">Sinkronizimi i skedarëve është çaktivizuar</translation>
 <translation id="2832124733806557606">Fëmija yt mund të përdorë një PIN për t'u identifikuar ose për të shkyçur pajisjen.</translation>
 <translation id="283669119850230892">Për të përdorur rrjetin <ph name="NETWORK_ID" />, në fillim përfundo lidhjen tënde me internetin më poshtë.</translation>
 <translation id="2849767214114481738">PIN-i yt u shtua</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori janë përdorur dhe sa memorie përdoret zakonisht.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes sate me Chrome. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Kjo mund të zgjasë deri në 30 minuta</translation>
 <translation id="2893180576842394309">Google mund ta përdorë historikun tënd për të personalizuar "Kërko me Google" dhe shërbime të tjera të Google</translation>
 <translation id="2902265136119311513">Shfleto si vizitor</translation>
 <translation id="2904210161403910217">Fjalëkalimi yt është ndryshuar që prej herës së fundit kur je identifikuar</translation>
 <translation id="2918484644467055090">Kjo pajisje nuk mund të regjistrohet në organizatën të cilës i përket llogaria jote sepse pajisja është e shënuar për menaxhim nga një organizatë tjetër.</translation>
 <translation id="2921081876747860777">Krijo një fjalëkalimin për të mbrojtur të dhënat e tua lokale.</translation>
+<translation id="2935654492420446828">Shto një llogari shkolle më vonë</translation>
 <translation id="2950666755714083615">Më regjistro</translation>
 <translation id="2979966855249721010">Bazuar në interesat e tu, mund të shikosh rekomandime për aplikacione, këshilla etj.</translation>
 <translation id="3012917896646559015">Kontakto menjëherë prodhuesin tënd të harduerëve për ta dërguar kompjuterin tënd në një qendër riparimi.</translation>
+<translation id="3023464535986383522">Zgjidh që të thuhet</translation>
 <translation id="3028371505549235127">Në vend që të futësh fjalëkalimin e "Llogarisë sate të Google" për t'u identifikuar, mund të krijosh një fjalëkalim të <ph name="DEVICE_TYPE" /> për këtë pajisje</translation>
 <translation id="3033348223765101500">Kontrollo të dhënat e tua</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" u çiftua</translation>
 <translation id="3101924772906986970">Faqeshënuesit, fjalëkalimet, historiku etj. të shfletuesit tënd Chrome ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="313205617302240621">E harrove fjalëkalimin?</translation>
 <translation id="3162070126914310576">Kjo pajisje nuk mund të regjistrohet për momentin sepse njësia jote e organizatës ka arritur kufirin e regjistrimeve fillestare. Kontakto me administratorin tënd për ndihmë.</translation>
@@ -131,20 +181,34 @@
 <translation id="3170072451822350649">Mund ta shmangësh po ashtu identifikimin dhe <ph name="LINK_START" />të shfletosh si "Vizitor"<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Pajisja jote përfshin një përmirësim të Chrome për edukimin, por emri yt i përdoruesit nuk lidhet me një llogari të Google for Education. Krijo një llogari të Google for Education duke vizituar g.co/workspace/edusignup në një pajisje të dytë.</translation>
 <translation id="3196912927885212665">Për të konfiguruar me telefoni tënd Android, Bluetooth-i i pajisjes sate Chromebook duhet të jetë aktiv</translation>
+<translation id="322708765617468434">Mund të shtosh gjithmonë një person tjetër te pajisja pas konfigurimit. Çdo person mund ta personalizojë përvojën e vet dhe t'i mbajë të dhënat private.</translation>
 <translation id="3238192140106069382">Po lidh dhe po verifikon</translation>
+<translation id="3251119461199395237">Sinkronizimi i skedarëve</translation>
+<translation id="325238099842880997">Cakto rregulla dixhitale bazë për t'i ndihmuar fëmijët të luajnë, të eksplorojnë dhe të bëjnë detyrat e shkollës në shtëpi</translation>
+<translation id="3255747772218936245">Instalo përditësimin</translation>
 <translation id="3261268979727295785">Për fëmijët më të rritur, mund t'i shtosh kontrollet prindërore pasi të përfundosh konfigurimin. Informacionet për kontrollet prindërore mund t'i gjesh në aplikacionin "Eksploro".</translation>
 <translation id="3278001907972365362">"Llogaria(të) jote e Google" ka nevojë për vëmendje</translation>
 <translation id="3283148363895519428">Ndiq udhëzimet në telefon për të vazhduar konfigurimin. Sigurohu që telefoni të jetë në afërsi dhe Bluetooth-i të jetë i aktivizuar.</translation>
 <translation id="3382073616108123819">Mos! Sistemi nuk arriti të përcaktonte identifikuesit e pajisjeve për këtë pajisje.</translation>
 <translation id="3382200254148930874">Po ndalon mbikëqyrjen...</translation>
+<translation id="3384362484379805487">Skedarët e gjuhës ndahen mes përdoruesve për të kursyer hapësirë disku.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">Lexuesi i ekranit në ChromeOS Flex, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp dhe mbaj shtypur të dyja tastet e volumit për pesë sekonda për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
+<translation id="3402585168444815892">Po regjistrohesh në modalitetin e demonstrimit</translation>
 <translation id="3433621910545056227">Gabim! Sistemi dështoi në vendosjen e kyçjes së cilësive të instalimit në kohë të pajisjes.</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
 <translation id="3462413494201477527">Të anulohet konfigurimi i llogarisë?</translation>
 <translation id="3473241910002674503">Navigo për në faqen kryesore, kthehu prapa dhe ndërro aplikacionet me butonat në modalitetin e tabletit.</translation>
+<translation id="3473479545200714844">Zmadhuesi i ekranit</translation>
 <translation id="3491669675709357988">Llogaria e fëmijës tënd nuk është konfiguruar për kontrollet prindërore të Family Link. Mund t'i shtosh kontrollet prindërore pasi të përfundosh konfigurimin. Informacionet për kontrollet prindërore mund t'i gjesh në aplikacionin "Eksploro".</translation>
+<translation id="350397915809787283">Nëse nuk ke një llogari, zgjidh opsionin e parë për të krijuar një të tillë.</translation>
 <translation id="3520824492621090923">Të konfirmohet regjistrimi i kioskës dhe pajisjes sinjalizuese?</translation>
+<translation id="3547954654003013442">Cilësimet e përfaqësuesit</translation>
+<translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577745545227000795">Mbledhja e të dhënave të harduerit të <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Pamje paraprake</translation>
+<translation id="3607671391978830431">Për një fëmijë</translation>
+<translation id="3627320433825461852">Mbetet më pak se 1 minutë</translation>
 <translation id="3635199270495525546">U zbulua "Moduli i platformës së besuar" (TPM)</translation>
 <translation id="3650753875413052677">Gabim gjatë regjistrimit</translation>
 <translation id="3661106764436337772">Shkruaj më shpejt dhe me më shumë vetëbesim</translation>
@@ -156,16 +220,23 @@
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3712050472459130149">Kërkohet përditësimi i llogarisë</translation>
 <translation id="3733296813637058299">Do t'i instalojmë ato aplikacione për ty. Mund të gjesh më shumë aplikacione për pajisjen tënde <ph name="DEVICE_TYPE" /> në "Dyqanin e Play".</translation>
+<translation id="3740945083753997630">Zvogëlo madhësinë e ekranit dhe të tekstit</translation>
 <translation id="376841534249795524">Për çfarë do ta përdorësh <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Chrome dhe ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3800828618615365228">Kushtet shtesë të Google Chrome dhe ChromeOS</translation>
 <translation id="3828953470056652895">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Chrome dhe ChromeOS<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />"Kushtet e shërbimit" të Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Mund të zgjedhësh të gjitha ato që janë të vlefshme. Këto opsione mund t'i gjesh po ashtu te "Cilësimet" pasi të përfundosh me konfigurimin e <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Prapa</translation>
+<translation id="3856470183388031602">Përdor "Llogarinë tënde të Google" në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
 <translation id="3897746662269329507">Pajisja jote <ph name="DEVICE_TYPE" /> është ndërtuar për lojëra. Më pas do të hapet aplikacioni "Eksploro", ku mund të qasesh në qindra prej lojërave më të fundit, mund të shikosh oferta për lojërat dhe të zbulosh veçoritë e lojërave që janë të përfshira në pajisjen tënde.</translation>
+<translation id="389901847090970821">Zgjidh tastierën</translation>
 <translation id="3910588685973519483">Krijo imazhe sfondi me inteligjencën artificiale</translation>
+<translation id="3924259174674732591">Madhësia e ekranit dhe e tekstit <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3983400541576569538">Të dhënat nga disa aplikacione mund të humbasin</translation>
+<translation id="3984159763196946143">Nuk mund të hapej modaliteti i demonstrimit</translation>
 <translation id="3994318741694670028">Fatkeqësisht, kompjuteri yt është konfiguruar me një ID hardueri të keqformuar. Kjo parandalon përditësimin e Chrome OS Flex me rregullimet më të fundit të sigurisë dhe kompjuteri yt <ph name="BEGIN_BOLD" />mund të jetë i cenueshëm ndaj sulmeve keqdashëse<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4044883420905480380">Ti u lidhe me Wi-Fi dhe u identifikove në <ph name="USER_EMAIL" /> duke përdorur telefonin tënd Android</translation>
@@ -176,6 +247,9 @@
 <translation id="4135746311382563554">Kushtet shtesë të shërbimit të Google Chrome dhe ChromeOS</translation>
 <translation id="41365691917097717">Vazhdimi do të aktivizojë korrigjimin e ADB-së për krijimin dhe testimin e aplikacioneve të Android. Ki parasysh se ky veprim lejon instalimin e aplikacioneve të Android që nuk janë verifikuar nga Google dhe për çaktivizimin kërkohet rivendosja e cilësimeve të fabrikës.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nuk përkon me një organizatë të vlefshme. Kontakto me administratorin tënd. Nëse je administrator, mund ta konfigurosh organizatën tënde duke vizituar: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">E madhe</translation>
+<translation id="4213918571089943508">"Llogaria e Google" e fëmijës</translation>
+<translation id="4228071595943929139">Përdor adresën e email-it të organizatës sate</translation>
 <translation id="4232484478444192782">Telefoni yt Android është kujdesur për të gjitha. WiFi dhe fjalëkalimi po transferohen.</translation>
 <translation id="4242145785130247982">Nuk mbështeten shumë certifikata të klientëve</translation>
 <translation id="4242577469625748426">Dështoi në instalimin e cilësimeve në këtë pajisje: <ph name="VALIDATION_ERROR" />.</translation>
@@ -185,33 +259,50 @@
 <translation id="4278498748067682896">Do të përdorësh një përmirësim të kioskës dhe sinjalizimit, i cili e lejon pajisjen të ekzekutohet vetëm në modalitetin e kioskës ose të sinjalizimit. Nëse dëshiron që përdoruesit të identifikohen në këtë pajisje, kthehu dhe regjistrohu duke përdorur përmirësimin e Chrome Enterprise.</translation>
 <translation id="4287157641315808225">Po, aktivizo ChromeVox</translation>
 <translation id="4289732974614035569">Zgjidh një PIN</translation>
+<translation id="4291265871880246274">Dialogu i identifikimit</translation>
+<translation id="4305817255990598646">Ndërro</translation>
 <translation id="4309165024397827958">Jepu aplikacioneve dhe shërbimeve të Android leje për të përdorur vendndodhjen e pajisjes sate. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara në vendndodhje.</translation>
 <translation id="4317733381297736564">Blerjet përmes aplikacionit</translation>
 <translation id="4341905082470253054">Po kontrollohet statusi i TPM-së...</translation>
 <translation id="4370975561335139969">Mail-i dhe fjalëkalimi që ke futur nuk përputhen</translation>
 <translation id="4373418556073552953">Identifikohu me telefonin tënd Android</translation>
+<translation id="4378556263712303865">Kërkesa e pajisjes</translation>
 <translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor, sa memorie përdor ti zakonisht dhe të dhënat e diagnostikimit dhe të përdorimit të aplikacioneve për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes sate me ChromeOS. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktiv për "Llogarinë tënde të Google", të dhënat e tua të Android mund të ruhen në atë llogari. Mund t'i shikosh të dhënat, t'i fshish ato dhe të ndryshosh cilësimet e tua të llogarisë tek account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Po kërkon për pajisjet me Bluetooth dhe USB</translation>
 <translation id="4403266582403435904">Restauro të dhënat ose ndërro pajisjet në çdo kohë me lehtësi. Rezervimet ngarkohen në Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë së Google" të fëmijës tënd.</translation>
 <translation id="4410545552906060960">Përdor një numër (PIN) në vend të një fjalëkalimi për të shkyçur pajisjen tënde. Për ta caktuar kodin PIN më vonë, shko te "Cilësimet".</translation>
 <translation id="4415213869328311284">Je gati për të filluar përdorimin e pajisjes sate <ph name="DEVICE_TYPE" />.</translation>
+<translation id="443031431654216610">Përdor vetëm shifra numerike</translation>
+<translation id="4448560527907365660">Ruaj dhe shiko më shumë</translation>
 <translation id="4449948729197510913">Emri yt i përdoruesit i përket llogarisë së ndërmarrjes së organizatës sate. Për të regjistruar pajisjet te llogaria, në fillim verifiko pronësinë e domenit në "Panelin e administratorit". Do të duhen privilegjet administrative në llogari për ta verifikuar.</translation>
 <translation id="4450974146388585462">Diagnostiko</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> zbuloi një TPM aktive, e cila mund t'i ruajë të dhënat e tua në mënyrë më të sigurt.</translation>
+<translation id="4472298120638043495">Mund të përdorësh gjuhën tënde të preferuar të "Llogarisë së Google" (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Fillo</translation>
+<translation id="450867954911715010">Cilësimet e qasjes</translation>
+<translation id="4519605771716872386">Sinkronizimi i skedarëve u aktivizua</translation>
+<translation id="4531924570968473143">Kë dëshiron të shtosh te kjo pajisje <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Nëse dëshiron ta ndryshosh pas regjistrimit, do të të duhet ta rivendosësh pajisjen tënde në gjendje fabrike (Powerwash).</translation>
 <translation id="4567512141633030272">Opsioni i gabuar i identifikimit?</translation>
+<translation id="4567533462991917415">Mund të shtosh gjithmonë persona të tjerë pas konfigurimit. Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
 <translation id="4568213207643490790">Na vjen keq, llogaritë e Google nuk lejohen në këtë pajisje.</translation>
 <translation id="4611759022973144129">Mund ta përdorësh këtë fjalëkalim për t'u identifikuar në <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">Konfiguroje këtë pajisje për përdorim pune ose personal</translation>
+<translation id="4689235506267737042">Zgjidh preferencat e tua për demonstrimin</translation>
 <translation id="4727847987444062305">Sesioni i menaxhuar i vizitorit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="473936925429402449">Zgjedhur, elementi shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> nuk është një llogari e vlefshme e Google for Education. Kontakto me administratorin tënd. Nëse je administrator, mund ta konfigurosh organizatën tënde duke vizituar: g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Për punë</translation>
 <translation id="4806457879608775995">Shqyrto këto kushte dhe kontrollo të dhënat e tua</translation>
+<translation id="4814327014588285482">Kapërceje dhe më kujto më vonë</translation>
 <translation id="4830502475412647084">Po instalon përditësimin e sistemit operativ</translation>
 <translation id="4837926214103741331">Nuk je i autorizuar të përdorësh këtë pajisje. Kontakto me zotëruesin e pajisjes për të marrë leje për identifikim.</translation>
+<translation id="4844333629810439236">Tastiera të tjera</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
+<translation id="4867272607148176509">Prindërit mund të miratojnë ose të bllokojnë aplikacionet, të caktojnë kufijtë kohorë dhe të kontrollojnë shfletimin në ueb. Mund të shtohet më vonë një llogari shkolle për t'u qasur në shumicën e burimeve të shkollës.</translation>
 <translation id="4877652723592270843">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp dhe mbaj shtypur të dy tastet e volumit për pesë sekonda.</translation>
 <translation id="4899696330053002588">Përmban reklama</translation>
 <translation id="49027928311173603">Politika e shkarkuar nga serveri është e pavlefshme: <ph name="VALIDATION_ERROR" />.</translation>
@@ -219,14 +310,17 @@
 <translation id="4944310289250773232">Ky shërbim vërtetimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Zgjidh kodin PIN</translation>
 <translation id="4965808351167763748">Je i sigurt që dëshiron ta konfigurosh këtë pajisje për të ekzekutuar Hangouts Meet?</translation>
+<translation id="4987944280765486504">Pajisja jote Chromebook do të riniset kur të përfundojë shkarkimi dhe mund të vazhdosh me konfigurimin.</translation>
 <translation id="5029287942302939687">Fjalëkalimi yt është caktuar</translation>
 <translation id="503155457707535043">Po shkarkon aplikacionet</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5062930723426326933">Identifikimi dështoi. Lidhu me internetin dhe provo sërish.</translation>
+<translation id="5085162214018721575">Po kontrollon për përditësime</translation>
 <translation id="5097306410549350357">Mëso më shumë rreth përdorimit të vendndodhjes</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Bisedo me Gemini për të filluar të shkruash, të planifikosh, të mësosh etj. me IA-në e Google.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pas konfigurimit, fillo të përdorësh Gemini duke zgjedhur aplikacionin Gemini në raftin tënd në fund të ekranit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Lidhe pajisjen tënde <ph name="DEVICE_TYPE" /> me një burim energjie.</translation>
+<translation id="5145876360421795017">Mos e regjistro pajisjen</translation>
 <translation id="5147516217412920887">Ndiq udhëzimet në telefon për të verifikuar kodin</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Veçoritë e korrigjimit<ph name="END_H3" />
@@ -247,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" />  Sistemi do të rindizet gjatë procesit.</translation>
+<translation id="5215502535566372932">Zgjidh vendin</translation>
 <translation id="5234523649284990414">Lexuesi i ekranit në ChromeOS, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp shiritin e hapësirës për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5240931875940563122">Identifikohu me telefonin Android</translation>
@@ -259,16 +354,21 @@
 <translation id="5355501370336370394">Regjistro pajisjen e ndërmarrjes</translation>
 <translation id="5372529912055771682">Modaliteti i dhënë i regjistrimit nuk mbështetet nga ky version i sistemit operativ. Sigurohu që po përdor versionin më të fundit dhe provo sërish.</translation>
 <translation id="5397378439569041789">Regjistro kioskën ose pajisjen sinjalizuese</translation>
+<translation id="5397794290049113714">Ti</translation>
 <translation id="5411022484772257615">Regjistrimi për përdorimin në shkollë nuk mund të përfundohej</translation>
 <translation id="5413640305322530561">Mëso më shumë rreth të dhënave diagnostike dhe të përdorimit</translation>
 <translation id="542750953150239272">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori yt celular dhe nga prodhuesi pajisjes sate, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
 <translation id="542948651837270806">Duhet të instalohet një përditësim për firmuerin e "Modulit të platformës së besuar". Shiko <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Mos! Ndodhi një gabim me identifikimin</translation>
+<translation id="5453829744223920473">Fëmija yt mund të përdorë të gjitha aplikacionet, faqeshënuesit dhe burimet e veta të shkollës ashtu si vepron në klasë. Shkolla vendos rregullat bazë.</translation>
 <translation id="5463450804024056231">Regjistrohu për email-et në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori celular i fëmijës dhe nga prodhuesi i kësaj pajisjeje, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
+<translation id="5502915260472117187">Një fëmijë</translation>
 <translation id="5511823366942919280">Je i sigurt që dëshiron ta konfigurosh këtë pajisje si një "Peshkaqen"?</translation>
+<translation id="5513807280330619196">Makina llogaritëse</translation>
 <translation id="5527474464531963247">Mund të zgjedhësh po ashtu një rrjet tjetër.</translation>
 <translation id="5539070192556911367">Google nuk mund të arrihet</translation>
+<translation id="5549511085333906441">Zgjidh konfigurimin tënd</translation>
 <translation id="557722062034137776">Rivendosja e pajisjes nuk do të ndikojë në llogaritë e tua të Google dhe të dhënat e sinkronizuara te këto llogari. Sidoqoftë, të gjithë skedarët e ruajtur lokalisht në pajisjen tënde do të fshihen.</translation>
 <translation id="5626172233890210551">Përdor më mirë fjalëkalimin</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />Për të ofruar përvojën më të mirë, <ph name="DEVICE_OS" /> mbledh të dhënat e harduerit rreth pajisjeve dhe i ndan ato me Google për të përcaktuar se cilat përditësime duhet të dërgohen. Ndryshe, mund të lejosh që Google t'i përdorë këto të dhëna për qëllime shtesë, si p.sh. për të mbështetur dhe përmirësuar përvojën dhe shërbimin e <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
@@ -276,6 +376,7 @@
         <ph name="BEGIN_PARAGRAPH3" />Për më shumë detaje rreth të dhënave që <ph name="DEVICE_OS" /> mund të ndajë me Google dhe se si përdoren ato, vizito g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Për të përdorur <ph name="NETWORK_ID" /> së pari mund të të duhet të <ph name="LINK_START" />vizitosh faqen e identifikimit të rrjetit<ph name="LINK_END" />, e cila do të hapet automatikisht brenda disa sekondave. Nëse kjo nuk ndodh, rrjeti nuk mund të përdoret.</translation>
 <translation id="5655296450510165335">Regjistrimi i pajisjes</translation>
+<translation id="565899488479822148">Po instalohet përditësimi më i fundit</translation>
 <translation id="5659964844710667266">Krijo një fjalëkalim për këtë <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">Identifikuesi i aseteve</translation>
 <translation id="5684950556880280580">Fjalëkalimi yt është përditësuar</translation>
@@ -285,19 +386,26 @@
 <translation id="5765425701854290211">Na vjen keq, por disa skedarë janë dëmtuar dhe përditësimi nuk u krye me sukses. Skedarët e tu të sinkronizuar janë të sigurt.</translation>
 <translation id="5770125698810550803">Shfaq butonat e navigimit</translation>
 <translation id="5799478978078236781">Merr këshilla, oferta dhe përditësime për <ph name="DEVICE_TYPE" /> dhe ndaj komentet e tua.</translation>
+<translation id="5800703268655655701">Zgjidh temën e ndriçuar ose të errët</translation>
 <translation id="5804259315582798390">Aktivizimi i rikuperimit të të dhënave lokale dështoi</translation>
 <translation id="5810809306422959727">Kjo llogari nuk është e përshtatshme për kontrollet prindërore</translation>
+<translation id="5834581999798853053">Rreth <ph name="TIME" /> minuta të mbetura</translation>
 <translation id="5852112051279473187">Gabim! Ndodhi vërtet një gabim i rëndë gjatë regjistrimit të kësaj pajisjeje. Provo përsëri ose kontakto me përfaqësuesin e shërbimit të mbështetjes.</translation>
 <translation id="5852137567692933493">Rifillo dhe zbato Powerwash</translation>
 <translation id="5856721540245522153">Aktivizo funksionet e korrigjimit</translation>
+<translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5870086504539785141">Mbylle menynë e qasjes</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5895335062901455404">Aktiviteti dhe preferencat e tua të ruajtura do të jenë gati në çdo pajisje Chrome OS Flex kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
+<translation id="5916664084637901428">Aktiv</translation>
 <translation id="5919305207330938913">Të gjitha të dhënat e mbledhura do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
 <translation id="5932441198730183141">Nuk ke licenca të mjaftueshme të disponueshme për të regjistruar këtë pajisje të harduerit të Google Meet. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="5939518447894949180">Rivendos</translation>
+<translation id="5948536763493709626">Lidh një tastierë ose mi, ose vazhdo me konfigurimin duke përdorur ekranin me prekje. Nëse po përdor pajisjet e tua me Bluetooth, sigurohu që pajisjet e tua janë gati për t'u çiftuar.</translation>
 <translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
 <translation id="6016178549409952427">Navigo te përmbajtja shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Zgjidh butonin e gjuhës dhe të tastierës. Gjuha e zgjedhur aktualisht është <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6051354611314852653">Mos! Sistemi nuk arriti të autorizonte qasjen e API-së për këtë pajisje.</translation>
 <translation id="6055544610007596637">Instalo aplikacione për pajisjen tënde <ph name="DEVICE_TYPE" /> nga "Dyqani i Google Play"</translation>
@@ -318,6 +426,7 @@
 <translation id="6301300352769835063">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren. Mëso më shumë në g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Identifikimi ofrohet nga <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Ke aktivizuar me sukses funksionet e korrigjimit në këtë pajisje të <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
+<translation id="6343262564968371601">Gjej atë për të cilën po shikon duke kërkuar në Google, te skedarët, aplikacionet etj.</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
 <translation id="6367097275976877956">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS? Nëse po, shtyp tastin e hapësirës.</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
@@ -326,20 +435,27 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor dhe sa memorie përdor ti zakonisht.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes sate me Chrome. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Instalo përditësimin kritik</translation>
+<translation id="6478849105642611893">Tasti i futjes së shpejtë ndodhet poshtë tastit Tab</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Zgjidh gjuhën</translation>
 <translation id="6495266441917713704">Wi-Fi nuk mund të transferohet</translation>
 <translation id="6515620015470298987">Identifikimi dështoi për shkak të një problemi me kontrollin e konfigurimit të pajisjes. Kryej Powerwash për <ph name="DEVICE_TYPE" /> dhe provo përsëri.</translation>
 <translation id="6519689855001245063">Po kontrollon përshtatshmërinë</translation>
 <translation id="6532527800157340614">Identifikimi dështoi sepse kodi i qasjes nuk mund të merrej. Kontrollo lidhjen e rrjetit dhe provo përsëri.</translation>
+<translation id="653920215766444089">Po kërkon për pajisjen treguese</translation>
 <translation id="65513682072153627">Do të shohësh ikonën "Menaxhuar" kur një cilësim ose veçori menaxhohet nga administratori yt.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> po menaxhohet tashmë nga <ph name="DOMAIN" />. Për t'i përdorur kontrollet prindërore me një "Llogari tjetër të Google", dil pas konfigurimit dhe më pas zgjidh "Shto një person" në ekranin e identifikimit.</translation>
 <translation id="6642720633335369752">Për të shikuar të gjitha dritaret e hapura të aplikacioneve, rrëshqit shpejt lart nga fundi i ekranit dhe mbaje të shtypur.</translation>
 <translation id="6648911618876616409">Një përditësim kritik është gati për t'u instaluar. Identifikohu për të filluar.</translation>
 <translation id="6671497123040790595">Menaxhimi po konfigurohet nga <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Është lidhur pajisja treguese</translation>
 <translation id="667752334740867460">Informacionet e Wi-Fi po merren...</translation>
 <translation id="6680442031740878064">Në dispozicion: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Mund ta rikuperosh <ph name="EMAIL" />, por të dhënat lokale do të fshihen.</translation>
 <translation id="6748980958975836188">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Fotografitë</translation>
+<translation id="6754918760968695779">Fut shpejt</translation>
 <translation id="6789834167207639931">Fut përsëri fjalëkalimin e "Llogarisë sate të Google" në ekranin tjetër për të përfunduar rikuperimin</translation>
 <translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori janë përdorur, sa memorie përdoret zakonisht dhe të dhënat e përdorimit dhe diagnostike të aplikacionit për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
@@ -348,12 +464,18 @@
 <translation id="682971198310367122">Politika e privatësisë së Google</translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Identifikimi ka ndryshuar</translation>
+<translation id="6852529053326738838">Pyet organizatën tënde ose regjistrohu me email-in tënd të punës për të kontrolluar nëse llogaria jote kualifikohet.</translation>
+<translation id="6867671714894555998">Realizoji gjërat me shpejtësi me tastierën e re</translation>
 <translation id="6883319974225028188">Mos! Sistemi nuk arriti të ruante konfigurimin e pajisjes.</translation>
+<translation id="6888831646723563669">Lidhu për të shijuar të gjitha veçoritë në pajisjen tënde të re <ph name="DEVICE_TYPE" /></translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Të dhënat e aplikacionit mund të jenë çfarëdo të dhënash që një aplikacion ka ruajtur (bazuar në cilësimet e zhvilluesit), duke përfshirë të dhënat si kontaktet, mesazhet dhe fotografitë. Të dhënat e rezervimit nuk do të llogariten në kuotën e hapësirës ruajtëse të "Diskut" të fëmijës tënd.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këtë shërbim mund ta çaktivizosh te "Cilësimet".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6918733588290914545">Konfiguro shpejt me telefonin Android</translation>
 <translation id="6920473853105515518">Sigurohu që pajisja jote <ph name="DEVICE_TYPE" /> është e lidhur me internetin dhe provo përsëri. Mund të vizitosh gjithashtu play.google/play-terms në një pajisje tjetër.</translation>
+<translation id="6929126689972602640">Kontrollet prindërore nuk mbështeten për llogaritë e shkollës. Për të shtuar një llogari shkolle për t'u qasur te "Klasa e Google" dhe sajte të tjera të uebit për detyrat e shkollës në shtëpi, në fillim identifikohu me llogarinë personale të fëmijës. Mund ta shtosh llogarinë e shkollës më vonë te konfigurimi.</translation>
+<translation id="6935031746833428401">Mëso më shumë për menaxhimin e pajisjes</translation>
+<translation id="6950351336108213154">Pajisjet periferike të pajisjes po përditësohen</translation>
 <translation id="6955698182324067397">Po aktivizon veçoritë e korrigjimit në pajisjet me ChromeOS që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6969216690072714773">Fut informacione të reja ose përditëso informacionet ekzistuese për t'i lidhur me këtë pajisje.</translation>
@@ -363,23 +485,37 @@
         po punon. Nëse nuk beson se duhet të përdorësh një
         server proxy, rregullo <ph name="LINK_START" />cilësimet e proxy-it<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Aktivizo Bluetooth-in dhe Wi-Fi në telefonin tënd</translation>
+<translation id="6996438701394974959">Rrit madhësinë e ekranit dhe të tekstit</translation>
+<translation id="6998793565256476099">Regjistro pajisjen për video-konferencë</translation>
 <translation id="7025082428878635038">Prezantimi i një mënyre të re për të naviguar me gjeste</translation>
 <translation id="7034692021407794547">Një administrator me privilegjet e "Menaxhimit të faturimit" duhet të pranojë në fillim Kushtet e shërbimit të Google Meet Hardware në seksionin Google Meet Hardware të panelit të administratorit.</translation>
+<translation id="7039951224110875196">Krijo një "Llogari të Google" për një fëmijë</translation>
 <translation id="7065223852455347715">Kjo pajisje është e kyçur në një modalitet që parandalon regjistrimin për sipërmarrjet. Nëse dëshiron ta regjistrosh pajisjen, duhet t'i nënshtrohesh fillimisht rikuperimit të pajisjes.</translation>
+<translation id="7066572364168923329">Zgjidh konfigurimin e <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Faqja e identifikimit dështoi të ngarkohet duke përdorur cilësimet aktuale të përfaqësimit. <ph name="GAIA_RELOAD_LINK_START" />Provo të identifikohesh sërish<ph name="GAIA_RELOAD_LINK_END" /> ose përdor <ph name="PROXY_SETTINGS_LINK_START" />cilësime përfaqësimi<ph name="PROXY_SETTINGS_LINK_END" /> të tjera.</translation>
 <translation id="7088674813905715446">Kjo pajisje është vendosur në gjendje jashtë shërbimi nga administratori. Për ta aktivizuar për regjistrim, kërkoji administratorit të vendosë pajisjen në gjendje pritjeje.</translation>
 <translation id="7114054701490058191">Fjalëkalimet nuk përputhen</translation>
 <translation id="7135729336746831607">Të aktivizohet Bluetooth-i?</translation>
 <translation id="7141105143012495934">Identifikimi dështoi pasi detajet e llogarisë tënde nuk mund të verifikoheshin. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
+<translation id="7171259390164035663">Mos u regjistro</translation>
 <translation id="7189451821249468368">Nuk ke përmirësime të mjaftueshme për të regjistruar këtë pajisje. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="7202337678781136582">Skano kodin QR me telefonin tënd Android</translation>
+<translation id="7228854227189381547">Mos ndërro</translation>
+<translation id="7230881857327093958">Ndryshimet do të zbatohen pas konfigurimit</translation>
 <translation id="7260186537988033909">Regjistrimi i kioskës dhe i pajisjes sinjalizuese përfundoi</translation>
+<translation id="7284411326658527427">Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
 <translation id="7290242001003353852">Ky shërbim identifikimi i strehuar nga <ph name="SAML_DOMAIN" />, ka qasje te kamera jote.</translation>
+<translation id="7311005168897771689">Qasu te skedarët e tu të "Diskut të Google" kur je offline</translation>
 <translation id="7317831949569936035">Regjistrimi për përdorimin në shkollë</translation>
+<translation id="7326004502692201767">Konfiguroje këtë <ph name="DEVICE_TYPE" /> për një fëmijë</translation>
+<translation id="732659786514229249">Të regjistrohet pajisja në organizatën tënde?</translation>
 <translation id="7329154610228416156">Identifikimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt <ph name="BLOCKED_URL" />. Kontakto me administratorin.</translation>
 <translation id="7345706641791090287">Konfirmo fjalëkalimin</translation>
+<translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
+<translation id="7403642243184989645">Po shkarkohen burimet</translation>
+<translation id="7406912950279255498">Modaliteti i anasjelljes së ngjyrës</translation>
 <translation id="7416263748877373774">"Kushtet e shërbimit" nuk mund të ngarkohen. Kontrollo lidhjen me rrjetin dhe provo përsëri.</translation>
 <translation id="7475742997309661417">Lexuesi i ekranit në ChromeOS, ChromeVox, përdoret kryesisht nga personat e verbër ose me shikim të dobët për të lexuar tekstin e shfaqur në ekran me një sintetizues të ligjërimit ose me një ekran breil. Shtyp dhe mbaj shtypur të dyja tastet e volumit për pesë sekonda për të aktivizuar ChromeVox. Kur të aktivizohet ChromeVox, do të kryesh një udhëzues të shpejtë.</translation>
 <translation id="7476454130948140105">Niveli i baterisë është shumë i ulët për përditësimin (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -389,10 +525,13 @@
 <translation id="7506541170099744506">Pajisja jote <ph name="DEVICE_TYPE" /> është regjistruar me sukses për menaxhimin e ndërmarrjes.</translation>
 <translation id="7509097596023256288">Menaxhimi po konfigurohet</translation>
 <translation id="7543104066686362383">Aktivizo funksionet e korrigjimit në këtë pajisje të <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544227555407951270">Regjistro pajisjen</translation>
+<translation id="7549434883223124329">Të ndërrohet gjuha e pajisjes?</translation>
 <translation id="7553242001898162573">Fut fjalëkalimin</translation>
 <translation id="7556242789364317684">Fatkeqësisht, <ph name="SHORT_PRODUCT_NAME" /> nuk mund të rikuperojë cilësimet e tua. Për të rregulluar gabimin, <ph name="SHORT_PRODUCT_NAME" /> duhet ta rivendosësh pajisjen tënde me Powerwash.</translation>
 <translation id="7560756177962144929">Sinkronizo <ph name="DEVICE_TYPE" /> tënde</translation>
 <translation id="7571643774869182231">Nuk ka hapësirë ruajtëse të mjaftueshme për përditësimin</translation>
+<translation id="7616214729753637086">Pajisja po regjistrohet...</translation>
 <translation id="7622114377921274169">Po ngarkohet.</translation>
 <translation id="7630426712700473382">Kjo pajisje menaxhohet nga <ph name="MANAGER" /> dhe të kërkon të identifikohesh çdo herë.</translation>
 <translation id="7639914187072011620">Nuk mundi të merrte URL e ridrejtimit SAML nga serveri</translation>
@@ -404,28 +543,43 @@
 <translation id="7659584679870740384">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për të marrë leje për identifikim.</translation>
 <translation id="7660116474961254898">Ndiq udhëzimet në telefonin tënd</translation>
 <translation id="7661451191293163002">Nuk mund të merrej një certifikatë regjistrimi.</translation>
+<translation id="7666531788977935712">Butoni "Vazhdo" është aktivizuar</translation>
 <translation id="7671139479636735732">Kliko me butonin djathtas për të vizualizuar me lehtësi idetë e tua</translation>
 <translation id="770831926727930011">Të dhënat e tua lokale janë të mbrojtura nga fjalëkalimi yt i vjetër. Fut fjalëkalimin e vjetër për të rikuperuar të dhënat lokale.</translation>
 <translation id="7722040605881499779">Nevojitet për përditësimin: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Po çiftohet me "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7746045113967198252">Bëji artikujt në ekran më të vegjël ose më të mëdhenj, duke përfshirë edhe tekstin Këtë mund ta gjesh po ashtu më vonë te Cilësimet &gt; Pajisja &gt; Ekranet.</translation>
 <translation id="7760176388948986635">Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e kësaj pajisjeje. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga kjo pajisje për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa identifikuar asnjë individ për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve.</translation>
 <translation id="7784875615510899699">Nuk ke licenca të mjaftueshme të disponueshme për të regjistruar këtë pajisje të Google Beam. Kontakto me rishitësin për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me rishitësin tënd.</translation>
+<translation id="7791269138074599214">Metoda e hyrjes</translation>
+<translation id="7791436592012979144">Lëvizja në të kundërt u aktivizua</translation>
 <translation id="7792012425874949788">Diçka shkoi keq me identifikimin</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7803657407897251194">Për të vazhduar konfigurimin me pajisjen tënde Android, lidhe <ph name="DEVICE_TYPE" /> me një rrjet</translation>
+<translation id="7842692330619197998">Vizito g.co/ChromeEnterpriseAccount nëse të duhet të krijosh një llogari të re.</translation>
 <translation id="7851457902707056880">Identifikimi është i kufizuar vetëm për llogarinë e zotëruesit. Rindize dhe identifikohu me llogarinë e zotëruesit. Kompjuteri do të rindizet për 30 sekonda.</translation>
 <translation id="7870730066603611552">Rishiko opsionet e sinkronizimit pas konfigurimit</translation>
 <translation id="7883792253546618164">Çregjistrohu në çdo kohë.</translation>
+<translation id="7887864092952184874">Miu me Bluetooth u çiftua</translation>
 <translation id="7906440585529721295">Të dhënat lokale do të fshihen</translation>
+<translation id="7910725946105920830">Përdor "Llogarinë tënde personale të Google"</translation>
+<translation id="7918257978052780342">Regjistroje</translation>
 <translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori janë përdorur dhe sa memorie përdoret zakonisht.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Opsionet e përparuara</translation>
 <translation id="7943311690198910993">Metoda e identifikimit u përditësua</translation>
 <translation id="795240231873601803">Përdor regjistrimin e ndërmarrjes për llogaritë e punës dhe të shkollës</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
 <translation id="7975504106303186033">Duhet ta regjistrosh këtë pajisje të Chrome Education në një llogari arsimore. Për t'u regjistruar për një llogari të re, vizito g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">ID-ja e punës: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Rinise pajisjen tënde për të rregulluar këtë gabim.</translation>
 <translation id="7990958035181555539">Transfero automatikisht WiFi nga telefoni yt Android</translation>
+<translation id="8022466874160067884">Fut "Llogarinë e Google" dhe fjalëkalimin tënd</translation>
+<translation id="8049029041626250638">Lidh një tastierë ose mi. Nëse po përdor pajisjet me Bluetooth, sigurohu që pajisjet e tua janë gati për t'u çiftuar.</translation>
 <translation id="8054563304616131773">Fut një adresë të vlefshme mail-i.</translation>
+<translation id="8054921503121346576">Tastiera USB është e lidhur</translation>
 <translation id="8065144531309810062">Përdor inteligjencën artificiale të Google për të qenë më krijues dhe më produktiv</translation>
+<translation id="8082106343289440791">Të çiftohet me "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Administratori yt duhet të pranojë fillimisht kushtet e shërbimit në listën e pajisjeve Chrome të "Panelit të administratorit".</translation>
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
 <translation id="8129265306888404830">Për të përdorur adresën e email-it nga organizata jote (<ph name="EMAIL_DOMAIN" />), duhet të përdorësh regjistrimin e ndërmarrjes. Nëse kjo pajisje është për përdorim personal, identifikohu me "Llogarinë tënde personale të Google".</translation>
@@ -433,6 +587,7 @@
 <translation id="8146177459103116374">Nëse je i regjistruar tashmë në këtë pajisje, mund <ph name="LINK2_START" />të identifikohesh si përdorues ekzistues<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Identifikimi dështoi. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="8147346945017130012">Ndihmo në përmirësimin e veçorive dhe performancës së Chrome dhe ChromeOS duke dërguar automatikisht te Google raporte të ndërprerjeve aksidentale, si dhe të dhëna përdorimi dhe diagnostikuese.</translation>
+<translation id="8152760814912191567">Google Beam për Zoom</translation>
 <translation id="815491593104042026">Gabim! Vërtetimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt (<ph name="BLOCKED_URL" />). Kontakto me administratorin tënd.</translation>
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
 <translation id="8174047975335711832">Informacioni i pajisjes</translation>
@@ -443,20 +598,26 @@
 <translation id="8241806945692107836">Po përcakton konfigurimin e pajisjes...</translation>
 <translation id="8242426110754782860">Vazhdo</translation>
 <translation id="826905130698769948">Certifikatë e pavlefshme e klientit</translation>
+<translation id="8271379370373330993">Prindër, këta hapa në vijim janë për ju. Mund t'ia jepni pajisjen <ph name="DEVICE_TYPE" /> përsëri fëmijës pas konfigurimit të llogarisë.</translation>
 <translation id="8274924778568117936">Mos e fik dhe mos e mbyll pajisjen tënde <ph name="DEVICE_TYPE" /> deri sa të përfundojë përditësimi. Pajisja <ph name="DEVICE_TYPE" /> do të riniset pas përfundimit të instalimit.</translation>
 <translation id="8281886186245836920">Anashkalo</translation>
+<translation id="8291942417224950075">Për përdorim personal</translation>
 <translation id="8304383784961451596">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për lejen e identifikimit ose identifikohu me një "Llogari të Google" të mbikëqyrur nga Family Link.</translation>
 <translation id="8321837372750396788">Kjo pajisje <ph name="DEVICE_TYPE" /> do të menaxhohet nga <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Madhësia e ekranit dhe e tekstit</translation>
 <translation id="8354034204605718473">PIN-i i fëmijës tënd u shtua</translation>
 <translation id="8366396658833131068">Lidhja jote e rrjetit është restauruar. Zgjidh një rrjet tjetër ose shtyp butonin "Vazhdo" poshtë për të nisur aplikacionin "kioskë".</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
 <translation id="8408270600235826886">Mund të kontrollosh se çfarë të dhënash ndahen me Google. Këtë mund ta ndryshosh në çdo kohë te "Cilësimet". Të dhënat do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
 <translation id="8413956290606243087">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS?</translation>
 <translation id="8425768983279799676">Mund të përdorësh kodin tënd PIN për të shkyçur pajisjen tënde.</translation>
+<translation id="8428213095426709021">Cilësimet</translation>
 <translation id="843173223122814223">Krijo sfonde me inteligjencën artificiale</translation>
 <translation id="8452105022015742247">Informacionet e "Llogarisë sate të Google" po transferohen nga telefoni yt Android</translation>
 <translation id="8464132254133862871">Kjo llogari përdoruesi nuk është e përshtatshme për shërbimin.</translation>
 <translation id="8524841856047224176">Personalizo sfondet e kamerës për videotelefonatat dhe më shumë</translation>
+<translation id="8527257351549797148">Organizata jote mund të kërkojë regjistrimin që të mund të qasesh te aplikacionet, shtesat etj. Kjo e lejon po ashtu organizatën tënde që të menaxhojë gjëra të tilla si cilësimet e sigurisë dhe të pajisjes.</translation>
+<translation id="8558063527625343224">Konfiguro Google Beam</translation>
 <translation id="8569673829373920831">Më shumë rreth: <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e pajisjes sate. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga pajisja jote për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa të të identifikuar ty për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve.</translation>
 <translation id="8627804903623428808">Shqyrto këto kushte dhe kontrollo të dhënat e fëmijës</translation>
@@ -471,6 +632,7 @@
 <translation id="8674903726754070732">Fatkeqësisht, kompjuteri yt është konfiguruar me një ID hardueri të keqformuar. Kjo parandalon përditësimin e CromeOS me rregullimet më të fundit të sigurisë dhe kompjuteri yt <ph name="BEGIN_BOLD" />mund të jetë i cenueshëm ndaj sulmeve keqdashëse<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Shto kontrollet prindërore pas konfigurimit</translation>
 <translation id="8698269656364382265">Për t'u kthyer në ekranin e mëparshëm, rrëshqit shpejt nga ana e majtë.</translation>
+<translation id="8718994464069323380">U zbulua ekran me prekje</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8726206820263995930">Gabim gjatë marrjes së cilësimeve të politikës nga serveri: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">U krye</translation>
@@ -478,24 +640,36 @@
 <translation id="8740247629089392745">Këtë Chromebook mund t'ia dorëzosh <ph name="SUPERVISED_USER_NAME" />. Konfigurimi pothuajse mbaroi, më pas është koha për eksplorim.</translation>
 <translation id="8759753423332885148">Mëso më shumë.</translation>
 <translation id="8777628254805677039">fjalëkalimi rrënjë</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Shkruaj kodin e çiftimit të Bluetooth-it, pastaj shtyp "Kthehu" ose "Hyr"</translation>
 <translation id="8794548468611058947">Në vend që të futësh fjalëkalimin e "Llogarisë sate të Google" për t'u identifikuar, mund të krijosh një kod PIN për këtë pajisje <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830796635868321089">Kontrolli i përditësimit dështoi gjatë përdorimit të cilësimeve të përfaqësuesit aktual. Rregullo <ph name="PROXY_SETTINGS_LINK_START" />cilësimet e përfaqësuesit<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Kjo pajisje Chromebook Enterprise vjen si pjesë e paketës me Chrome Enterprise Upgrade. Për të përfituar nga kapacitetet për ndërmarrjet, regjistroje këtë pajisje me një llogari administratori të Google.</translation>
 <translation id="885746075120788020">Preferencat dhe aktiviteti i ruajtur do të jenë gati në çdo pajisje me ChromeOS kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
+<translation id="8868333925931032127">Po niset modaliteti i demonstrimit</translation>
 <translation id="8875221558267407626">Përmblidh përmbajtjet, thjeshtëso gjuhën e ndërlikuar ose bëj pyetje</translation>
+<translation id="8907701755790961703">Zgjidh një shtet</translation>
 <translation id="8913163265790894442">Konfiguro me lehtësi pajisjen tënde <ph name="DEVICE_TYPE" /> me telefonin tënd. Mund të shtosh rrjetin Wi-Fi dhe "Llogarinë tënde të Google" pa futur fjalëkalimet e tua në mënyrë manuale.
         <ph name="BR" />
         <ph name="BR" />
         E dukshme si <ph name="DEVICE_TYPE" />...</translation>
+<translation id="8934732568177537184">Vazhdo</translation>
 <translation id="8946359700442089734">Karakteristikat e korrigjimit të gabimeve nuk u aktivizuan plotësisht në këtë pajisje <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8965037249707889821">Fut fjalëkalimin e vjetër</translation>
+<translation id="8968906873893164556">Zgjidh llogarinë që do të përdorësh për konfigurimin</translation>
+<translation id="8973596347849323817">Mund ta personalizosh këtë pajisje për t'iu përshtatur nevojave të tua. Këto veçori të qasshmërisë mund të ndryshohen më vonë te "Cilësimet".</translation>
 <translation id="8975396729541388937">Çregjistrohu në çdo kohë duke klikuar te lidhja në email-et që merr.</translation>
+<translation id="8987305927843254629">Çdo person mund ta personalizojë përvojën e vet dhe t'i mbajë të dhënat private.</translation>
 <translation id="8993059306046735527">Nëse e harron fjalëkalimin e <ph name="DEVICE_TYPE" />, mund t'i restaurosh përsëri të dhënat e tua lokale. Do të duhet të identifikohesh në "Llogarinë tënde të Google" ose të përdorësh rikuperimin e llogarisë.</translation>
 <translation id="9033765790910064284">Vazhdo gjithsesi</translation>
 <translation id="903480517321259405">Shkruaj përsëri PIN-in</translation>
 <translation id="9040473193163777637">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS? Nëse po, shtyp dhe mbaj shtypur të dy tastet e volumit për pesë sekonda.</translation>
 <translation id="9068298336633421551">Jepu aplikacioneve dhe shërbimeve të Android leje për të përdorur vendndodhjen e kësaj pajisjeje. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara në vendndodhje.</translation>
+<translation id="9074836595010225693">Miu me USB u lidh</translation>
 <translation id="9076523132036239772">Na vjen keq, por mail-i yt ose fjalëkalimi nuk mundën të verifikoheshin. Provo të lidhesh me një rrjet në fillim.</translation>
+<translation id="9089959054554410481">Ndrysho drejtimin e lëvizjes së bllokut me prekje</translation>
 <translation id="9158715103698450907">Gabim! Gjatë verifikimit ndodhi një problem në komunikimin e rrjetit. Kontrollo lidhjen tënde të rrjetit dhe provo sërish.</translation>
+<translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
 <translation id="919686179725692564">Mëso më shumë rreth rezervimit të aplikacioneve</translation>
 <translation id="9214520840402538427">Mos! Nisjes së atributeve të kohës së instalimit i ka përfunduar afati. Kontakto me përfaqësuesin e mbështetjes.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Ekskluzive për <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -505,4 +679,7 @@
         <ph name="BR" />
         E dukshme si <ph name="DEVICE_TYPE" />...</translation>
 <translation id="951991426597076286">Refuzo</translation>
+<translation id="954749761428814584">Gjuha dhe metoda e hyrjes</translation>
+<translation id="960987915827980018">Rreth 1 orë e mbetur</translation>
+<translation id="995420352808264005">Zgjidh llojin e regjistrimit të pajisjes</translation>
 </translationbundle>

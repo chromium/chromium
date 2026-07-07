@@ -1573,6 +1573,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="628251768213143684">‏همواره می‌توانید آنچه را در «حساب Google» شما ذخیره می‌شود مدیریت کنید</translation>
 <translation id="6284652193729350524">پیشنهاد ترجمه <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» تک‌ضرب بزنید.</translation>
+<translation id="6295140892595702619">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی با Gemini صحبت می‌کنید، صدای شما در «فعالیت برنامه‌های Gemini» (درصورت فعال بودن) ذخیره می‌شود. داده‌هایتان برای بهبود دادن مدل‌های هوش مصنوعی زایا استفاده نخواهند شد</translation>
 <translation id="6295751040240588413">نام مستعار کارت نامعتبر است</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
@@ -2181,7 +2182,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8264966119170358612">‏برخی‌از گذرواژه‌های ذخیره‌شده‌تان به‌دلیل سرقت اطلاعات شبکه در سایت غیر Google لو رفته‌اند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر تک‌ضرب بزنید.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">اطلاعات را در <ph name="URL" /> تکمیل خواهید کرد</translation>
 <translation id="8274795744553482834">درحال عوض کردن نمایه هستید</translation>
 <translation id="8275068909952022340">بیشتر…</translation>
 <translation id="8280797717392145626">پیوندها دریافت شدند</translation>
@@ -2415,6 +2415,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، سایت سنجاق‌شده</translation>
 <translation id="8990960056509724223">به‌دلیل خط‌مشی‌های سازمانتان، فایل ذخیره نشد</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
+<translation id="9003263770394939629">‏پیشنهادشده توسط Gemini. مدیریت کردن تکمیل خودکار بهبودیافته در تنظیمات</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>
 <translation id="9006453925669499173">منو ← زبانه ناشناس جدید</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>

@@ -504,6 +504,7 @@
 <translation id="175656076281618225">Магија</translation>
 <translation id="1757773103848038814">Фонт фиксне ширине</translation>
 <translation id="1757935267918149452">Дугме Промени Google лозинку, активирајте га да бисте променили лозинку за Google налог</translation>
+<translation id="1759776526873274358">Аутоматски попуњавај верификационе кодове које сајтови користе ради побољшања безбедности. Chrome може да добија те кодове из Gmail-а. <ph name="BEGIN_LINK" />Сазнајте више о овој функцији<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Овај сервер не може да докаже да је <ph name="DOMAIN" />; оперативни систем уређаја нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Покушајте да покренете Windows дијагностику мреже<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Слика (архивска)</translation>
@@ -3129,6 +3130,7 @@
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5862579898803147654">8. преграда за слагање</translation>
 <translation id="5863515189965725638">Измените IBAN</translation>
+<translation id="5863517400058880216">Аутоматски попуњавај верификационе кодове из Gmail-а</translation>
 <translation id="5863847714970149516">Следећа страница може да покуша да вам нешто наплати</translation>
 <translation id="5866257070973731571">Додајте број телефона</translation>
 <translation id="5866327164731551901">Из <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
@@ -4518,6 +4520,7 @@
 <translation id="7967973398323409409">Информације које аутоматски попуњавате нико не види</translation>
 <translation id="79682505114836835">Вредност <ph name="VALUE" /> је неважећа хексадецимална боја.</translation>
 <translation id="7968982339740310781">Прикажи детаље</translation>
+<translation id="7971403153351954587">Организација надгледа копирање</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
 <translation id="7976053965094442846">Издаваоци опције Купите одмах, платите касније доступни за плаћање током времена. Тастатура је сакривена.</translation>
 <translation id="7976214039405368314">Превише је захтева</translation>

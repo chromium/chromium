@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1005333234656240382">Engedélyezi az ADB-hibakeresést?</translation>
+<translation id="1053898984916097744">Kezdjen el valami újat, vagy kérjen segítséget, miközben dolgozik valamin.</translation>
+<translation id="1061130374843955397">Üdvözli a(z) <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Fiók automatikus lekérése androidos telefonról</translation>
 <translation id="1076766328672150609">Gyermeke mostantól használhat PIN-kódot az eszköz feloldására.</translation>
 <translation id="1097658378307015415">Kérjük, bejelentkezés előtt a(z) <ph name="NETWORK_ID" /> hálózat aktiválásához lépjen be vendégként.</translation>
 <translation id="1111932478203988717">Gyermeke ezzel a PIN-kóddal jelentkezhet be az eszközére</translation>
 <translation id="1122587596907914265">Egyedi háttérképeket hozhat létre.</translation>
 <translation id="1131201598497838573">Gyermeke PIN-kódja frissítve</translation>
 <translation id="1147322039136785890">Most <ph name="SUPERVISED_USER_NAME" /> jön</translation>
+<translation id="1148669835763563782">Ön megkapja a legújabb szoftverfrissítéseket a nagyobb biztonsági érdekében, valamint a legújabb Chromebook-funkciókhoz is hozzáférhet. Ez a frissítés továbbfejlesztett beállítási élményt kínál, hogy könnyebben megkezdhesse a Chromebook használatát.</translation>
 <translation id="1176864681932214421">Képek létrehozása AI segítségével</translation>
 <translation id="1177073277575830464">Az Android gyors beállítása megtörtént. Folytassa a beállítást a(z) <ph name="DEVICE_TYPE" /> eszközön.</translation>
 <translation id="1179902906564467236">Kövesse a telefonon megjelenő utasításokat, vagy használja a Kamera alkalmazást</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1217114730239853757">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját? Ha igen, nyomja meg a szóköz billentyűt.</translation>
 <translation id="1222835797152767346">PIN-kód beállítása az eszközhöz a bejelentkezés megkönnyítése érdekében</translation>
+<translation id="1231426483209637778">Amikor legközelebb használja a(z) <ph name="DEVICE_TYPE" /> eszközt, emlékezni fogunk a hálózatára</translation>
+<translation id="1243002225871118300">A megjelenítési és a szövegméret módosítása</translation>
+<translation id="1256588359404100567">Az előző eszközről származó beállítás szinkronizálva.</translation>
 <translation id="1272978324304772054">Ez a felhasználói fiók nem ahhoz a domainhez tartozik, amelyhez az eszköz. Ha másik domainen kívánja regisztrálni azt, először vissza kell állítania az eszköz beállításait.</translation>
+<translation id="1293556467332435079">Fájlok</translation>
 <translation id="1307559529304613120">Hoppá! A rendszer nem tudta tárolni az eszköz hosszú távú API hozzáférési tokenjét.</translation>
+<translation id="1335929031622236846">Az eszköz regisztrálása</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Hibakeresési funkciók<ph name="END_H3" />
           <ph name="BR" />
           ChromeOS-eszközén engedélyezheti a hibakeresési funkciókat, melyekkel egyéni kódot telepíthet és tesztelhet az eszközén. Ezzel az alábbiakra nyílik lehetősége:<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Megjegyzés:<ph name="END_BOLD" /> A rendszer újraindul a folyamat során.</translation>
 <translation id="1347625331607114917">Ellenőrizze a kódot androidos telefonon</translation>
 <translation id="1347975661240122359">A frissítés akkor kezdődik, amikor az akkumulátor töltöttsége legalább <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">A szülői felügyelet (mint például az alkamazásjóváhagyás és a képernyő előtt tölthető idő) beállításához a gyermeknek a szülő által felügyelt Google-fiókkal kell rendelkeznie. Iskolai fiók később is hozzáadható olyan eszközök használatára, mint a Google Tanterem.</translation>
 <translation id="1375557162880614858">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját?</translation>
 <translation id="1375938286942050085">A beállítás megtörtént. Most készítse fel eszközét a játékra</translation>
 <translation id="1377600615067678409">Most kihagyom</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Diagnosztikai és használati adatok küldése.</translation>
 <translation id="1418882096915998312">Enterprise-regisztráció folyamatban</translation>
 <translation id="1426410128494586442">Igen</translation>
+<translation id="1427269577154060167">Ország</translation>
 <translation id="1440090277117135316">Az iskolai regisztráció befejeződött</translation>
 <translation id="1473927070149284123">Próbálkozzon újra, vagy csatlakozzon manuálisan egy hálózathoz</translation>
 <translation id="1503556098270577657">Androidos telefonjával bejelentkezett a(z) <ph name="USER_EMAIL" /> fiókba</translation>
+<translation id="1510238584712386396">Indító</translation>
 <translation id="1521442365706402292">Tanúsítványok beállítása</translation>
+<translation id="15373452373711364">Nagy egérmutató</translation>
 <translation id="1540605929960647700">Demó mód engedélyezése</translation>
 <translation id="1572876035008611720">Adja meg e-mail-címét</translation>
+<translation id="1588438908519853928">Normál</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">Rendben</translation>
 <translation id="1642494467033190216">A rootfs védelem eltávolítása és újraindítás szükséges a további hibakeresési funkciók engedélyezése előtt.</translation>
+<translation id="1646045728251578877">Szoftverfrissítés érhető el</translation>
+<translation id="1650801028905250434">A Saját meghajtón lévő fájljai automatikusan szinkronizálódnak a Chromebookkal, így internetkapcsolat nélkül is hozzájuk férhet. Ezt bármikor módosíthatja a Beállítások &gt; Fájlok menüpontban.</translation>
 <translation id="1668435968811469751">Manuális regisztráció</translation>
 <translation id="1678919064276516737">A megadott e-mail-cím és PIN-kód nem egyezik</translation>
 <translation id="1692115862433274081">Másik fiók használata</translation>
 <translation id="1695487653372841667">Beállíthatja, hogy milyen adatokat oszt meg a Google-lal. A Beállításokban ezt bármikor módosíthatja.</translation>
 <translation id="169675691788639886">Az eszközön SSH-szerver van konfigurálva. Ne jelentkezzen be bizalmas fiókkal.</translation>
+<translation id="1700517974991662022">Felkeresett</translation>
 <translation id="1730666151302379551">Elfelejtettem a régi jelszót</translation>
+<translation id="1749645492410897998">Szoftver telepítése…</translation>
 <translation id="177053719077591686">Android-alkalmazások biztonsági mentése a Google Drive szolgáltatásba.</translation>
+<translation id="1798832846931769717">Google Beam a Meethez</translation>
 <translation id="1806335016774576568">Váltás másik megnyitott alkalmazásra</translation>
 <translation id="1826192255355608658">Szinkronizálhatja a Chrome böngésző könyvjelzőit, jelszavait, előzményeit és még sok mást is</translation>
+<translation id="1826657447823925402">Fordított görgetés kikapcsolva</translation>
 <translation id="1831848493690504725">A csatlakoztatott hálózaton keresztül nem sikerült elérni a Google-t. Válasszon másik hálózatot, vagy ellenőrizze a hálózati vagy proxybeállításokat (ha proxyt használ).</translation>
 <translation id="1842766183094193446">Biztosan engedélyezi a demó módot?</translation>
 <translation id="1845060436536902492">A ChromeOS Flex képernyőolvasóját, a ChromeVoxot elsősorban vakok és gyengénlátók használják a képernyőn megjelenő szövegek olvasására beszédszintetizátorral vagy Braille-kijelzővel. A ChromeVox bekapcsolásához tartsa lenyomva a szóköz billentyűt. A ChromeVox aktiválásakor egy rövid bemutatót láthat.</translation>
+<translation id="185766080319917408">Az Indító billentyű a bal oldali Alt billentyű bal oldalán található</translation>
 <translation id="1868617395637139709">Helyadatok használata Android-alkalmazásokhoz és -szolgáltatásokhoz.</translation>
+<translation id="1877377730633446520">Ehhez körülbelül <ph name="REQUIRED_SPACE" /> tárhelyre lesz szükség. Jelenleg <ph name="FREE_SPACE" /> áll rendelkezésére.</translation>
 <translation id="189035593835762169">Általános Szerződési Feltételek</translation>
+<translation id="189358972401248634">Más nyelvek</translation>
+<translation id="1915734383465415025">Üzlet száma</translation>
+<translation id="1919096511823372013">Linkeket, emojikat és még sok mást is beilleszthet. A Google AI használatával az íráshoz és a képek létrehozásához is segítséget kaphat.</translation>
+<translation id="1922496389170590548">Gyermek iskolai fiókja</translation>
+<translation id="1944528062465413897">Bluetooth-párosítókód:</translation>
 <translation id="1987574314042117472">Népszerű alkalmazások kiválasztása és telepítése</translation>
 <translation id="1991829061375381344">Ön nem rendelkezik elegendő licenccel ennek a Google Meet-hardvernek a regisztrálásához. Továbbiak vásárlásáért forduljon a viszonteladójához. Ha úgy gondolja, hogy tévedésből kapta ezt az üzenetet, forduljon a viszonteladójához.</translation>
+<translation id="200928901437634269">Használja gyermeke Google-fiókját vagy iskolai fiókját. Szülői felügyeletet is beállíthat.</translation>
+<translation id="2013550551806600826">Próbálja ki. Kapcsolja be vagy ki a beállítást, majd görgessen két ujjal az érintőpadon a tesztelési területen. Ezt a beállítást később a Beállítások &gt; Eszköz &gt; Egér és érintőpad menüpontban is megtalálja.</translation>
+<translation id="2018189721942291407">Bizonytalan azzal kapcsolatban, hogy kell-e regisztrálnia?</translation>
 <translation id="2040460856718599782">Hoppá! Hiba történt, miközben a rendszer megpróbálta azonosítani. Kérjük, ellenőrizze még egyszer bejelentkezési adatait, majd próbálja meg ismét.</translation>
 <translation id="2052572566310583903">Más eszközökön telepítve</translation>
 <translation id="2088092308059522196">A regisztráció csak a következő rendszer telepítése után támogatott: <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Bármikor visszajuthat a kezdőképernyőre, csak csúsztassa fel ujját a képernyő aljától.</translation>
 <translation id="2090165459409185032">Fiókadatainak helyreállításához lépjen a következő oldalra: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">További funkciók kiválasztása beállításhoz</translation>
+<translation id="2135456203358955318">Dokkolt nagyító</translation>
 <translation id="2157779167749714207"><ph name="DEVICE_TYPE" /> eszközén megtalálható a Gemini</translation>
 <translation id="2163470535490402084">Csatlakozzon az internethez, hogy be tudjon jelentkezni <ph name="DEVICE_TYPE" /> eszközére.</translation>
+<translation id="2173801458090845390">Igénylésazonosító hozzáadása ehhez az eszközhöz</translation>
 <translation id="2178585470774851578">Ön engedélyezi a ChromeOS Flex hibakeresési funkcióit, melyek be fogják állítani az sshd daemon szolgáltatást, és engedélyezni fogják az USB-meghajtókról való indítást.</translation>
+<translation id="2183570493397356669">Folytatás gomb letiltva</translation>
+<translation id="221872881068107022">Fordított görgetés</translation>
 <translation id="2219081237089444028">Állítson be jelszót <ph name="DEVICE_TYPE" /> eszközéhez a bejelentkezés megkönnyítése érdekében</translation>
+<translation id="2229161054156947610">Több mint 1 óra van hátra</translation>
 <translation id="2296022312651137376">A(z) <ph name="DOMAIN_NAME" /> megköveteli, hogy az eszköz online legyen, amikor bejelentkezik a(z) <ph name="EMAIL" /> fiókba.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% kész</translation>
 <translation id="2319072477089403627">Csatlakozás az androidos telefonhoz…</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">Nem tud majd hozzáadni felhasználókat, mert hiányoznak a Google API-kulcsok. Részletekért lásd: <ph name="DETAILS_URL" />.</translation>
 <translation id="24786041351753425">Adat-helyreállítási szolgáltatás engedélyezése.</translation>
 <translation id="2485681265915754872">A Google Play Általános Szerződési Feltételei</translation>
+<translation id="248676429071089168">Az oldal lefelé mozgatásához csúsztasson felfelé</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
+<translation id="2538084450874617176">Ki használja a következő eszközt: <ph name="DEVICE_TYPE" />?</translation>
+<translation id="2553340429761841190">A <ph name="PRODUCT_NAME" /> nem tudott kapcsolódni a következőhöz: <ph name="NETWORK_ID" />. Válasszon másik hálózatot és próbálja újra.</translation>
 <translation id="2565214867520763227">Képernyőolvasó bekapcsolása</translation>
+<translation id="2569972178052279830">Kereskedő neve</translation>
+<translation id="257779572837908839">Beállítás videokonferenciákhoz készült Chromebox eszközként</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> platform) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Nem, a ChromeVox nélkül folytatom</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatásai olyan forrásokat használnak az eszköz helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Az Android-helyadatokat bármikor kikapcsolhatja ezen az eszközön a következő menüpontban: Beállítások &gt; Alkalmazások &gt; Google Play Áruház &gt; Android-beállítások kezelése &gt; Biztonság és hely &gt; Hely. Ha pedig ugyanebben a menüben kikapcsolja a „Google-helymeghatározás pontossága” beállítást, ezzel letilthatja a Wi-Fi- és mobilhálózatoknak, valamint az érzékelőknek az Android-helyadatok meghatározására való felhasználását.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Nyelv</translation>
 <translation id="2687407218262674387">Google Szerződési Feltételek</translation>
 <translation id="2688196195245426394">Hiba az eszköz szerveren való regisztrálásakor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Csomag részét képező eszköz, ezért nem regisztrálható a Kiosk és a Signage Upgrade szolgáltatásra.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Kérjük, várjon...</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalom</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="274318651891194348">Billentyűzet keresése…</translation>
 <translation id="2754825024506485820">A Google Play Áruházban megtalálhatja kívánt alkalmazásokat, legyen szó irodai alkalmazásokról vagy akár szórakozásról. Bármikor telepíthet alkalmazást.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Ha a Helymeghatározás pontossága beállítás be van kapcsolva, a Google a vezeték nélküli jelekkel kapcsolatos információkat (például a Wi-Fi hozzáférési pontokat és a mobilhálózat adótornyait), valamint az eszköz szenzoradatait (például a gyorsulásmérő és a giroszkóp adatait) használja arra, hogy pontosabban határozza meg az eszköz helyét, amelyet az androidos alkalmazások és szolgáltatások arra használnak, hogy helyalapú funkciókat biztosítsanak. Ebből a célból a Google rendszeresen gyűjti az eszköz érzékelőitől és a közeli vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google az eszközről gyűjtött adatokat arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint általánosan javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat. Ezeket az információkat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján dolgozzuk fel. Ezeket az információkat nem használjuk fel személyek azonosítására.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A Helymeghatározás pontossága beállítást bármikor kikapcsolhatja az eszköz helybeállításaiban a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés &gt; Speciális helybeállítások menüpontban. Ha a Helymeghatározás pontossága beállítás ki van kapcsolva, akkor a helymeghatározás pontosságával kapcsolatos adatok gyűjtésére nem kerül sor. Az Android-alkalmazások és -szolgáltatások esetében a rendszer csak IP-címet használ (ha rendelkezésre áll) az eszköz helyének meghatározásához, ami hatással lehet az Android-alkalmazások és -szolgáltatások (például a Google Térkép) helymeghatározási képességére és pontosságára.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Készen is van!</translation>
+<translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
 <translation id="2832124733806557606">A PIN-kóddal bejelentkezhet, és feloldhatja az eszközt a gyermeke.</translation>
 <translation id="283669119850230892">A hálózat (<ph name="NETWORK_ID" />) használatához először fejezze be csatlakozást az internethez alább.</translation>
 <translation id="2849767214114481738">PIN-kód hozzáadva</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, milyen funkciókat használt, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket Chrome-eszköze beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti Konzolban.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">A folyamat 30 percet is igényelhet.</translation>
 <translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Kereső és más Google-szolgáltatások személyre szabására</translation>
 <translation id="2902265136119311513">Böngészés vendégként</translation>
 <translation id="2904210161403910217">Jelszava megváltozott a legutóbbi bejelentkezése óta</translation>
 <translation id="2918484644467055090">Ez az eszköz nem regisztrálható annál a szervezetnél, amelyhez fiókja tartozik, mert az eszköz felügyeletére egy másik szervezet van kijelölve.</translation>
 <translation id="2921081876747860777">Hozzon létre jelszót a helyi adatok védelme érdekében.</translation>
+<translation id="2935654492420446828">Iskolai fiók későbbi hozzáadása</translation>
 <translation id="2950666755714083615">Regisztráció</translation>
 <translation id="2979966855249721010">Érdeklődési körei alapján alkalmazásjavaslatokat, tippeket és egyebeket kaphat.</translation>
 <translation id="3012917896646559015">Kérjük, azonnal vegye fel a kapcsolatot hardvergyártójával, és küldje számítógépét szervizbe.</translation>
+<translation id="3023464535986383522">Felolvasás</translation>
 <translation id="3028371505549235127">Ahelyett, hogy a Google-fiókjához tartozó jelszót használná a bejelentkezéshez, létrehozhat egy <ph name="DEVICE_TYPE" />-jelszót ehhez az eszközhöz.</translation>
 <translation id="3033348223765101500">Határozza meg adatai kezelésének módját</translation>
+<translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” párosítva</translation>
 <translation id="3101924772906986970">Az Ön Chrome böngészőben tárolt könyvjelzőit, jelszavait, előzményeit és egyéb információit a Google-fiókjába menti a rendszer</translation>
 <translation id="313205617302240621">Elfelejtette a jelszavát?</translation>
 <translation id="3162070126914310576">Ezt az eszközt jelenleg nem lehet regisztrálni, mert a szervezeti egység elérte a kezdeti regisztrációs korlátot. Segítségért forduljon az adminisztrátorhoz.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">Ki is hagyhatja a bejelentkezést, és <ph name="LINK_START" />böngészhet vendégként<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">Eszközéhez Chrome Education Upgrade licenc tartozik, de a felhasználóneve nincs Google for Education-fiókhoz társítva. Hozzon létre új Google for Education-fiókot a g.co/workspace/edusignup címen egy másodlagos eszközön.</translation>
 <translation id="3196912927885212665">Az androidos telefonnal történő beállításhoz a Chromebook Bluetooth-jának bekapcsolva kell lennie</translation>
+<translation id="322708765617468434">A beállítás után bármikor hozzáadhat új személyt az eszközhöz. Bárki személyre szabhatja a saját élményét, és gondoskodhat adatainak biztonságáról.</translation>
 <translation id="3238192140106069382">Csatlakozás és ellenőrzés</translation>
+<translation id="3251119461199395237">Fájlszinkronizálás</translation>
+<translation id="325238099842880997">Digitális alapszabályok beállításával segíthet a gyermekeknek a játékban, a felfedezésben és az iskolai feladatok otthoni elvégzésében.</translation>
+<translation id="3255747772218936245">Frissítés telepítése</translation>
 <translation id="3261268979727295785">Idősebb gyermekek esetében a beállítás befejezése után adhat hozzá szülői felügyeletet. A szülői felügyeletről a Felfedezés alkalmazásban tájékozódhat.</translation>
 <translation id="3278001907972365362">Google-fiókjaival kapcsolatban teendői akadtak</translation>
 <translation id="3283148363895519428">A beállítás folytatásához kövesse a telefonján megjelenő utasításokat. Győződjön meg arról, hogy a telefon a közelben van, és be van kapcsolva rajta a Bluetooth.</translation>
 <translation id="3382073616108123819">Hoppá! A rendszer nem tudta megállapítani az eszközazonosítókat ehhez az eszközhöz.</translation>
 <translation id="3382200254148930874">Felügyelet leállítása...</translation>
+<translation id="3384362484379805487">A nyelvi fájlok a helytakarékosság érdekében megosztottak a különböző felhasználók között.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">A ChromeOS Flex képernyőolvasóját, a ChromeVoxot elsősorban vakok és gyengénlátók használják a képernyőn megjelenő szövegek olvasására beszédszintetizátorral vagy Braille-kijelzővel. Tartsa lenyomva öt másodpercig mindkét hangerőszabályzó gombot a ChromeVox bekapcsolásához. A ChromeVox aktiválásakor egy rövid bemutatót láthat.</translation>
+<translation id="3402585168444815892">Regisztráció a demó módra</translation>
 <translation id="3433621910545056227">Hoppá! A rendszer nem tudta létrehozni az eszköz telepítésiidő-attribútumainak zárolását.</translation>
 <translation id="3435896845095436175">Engedélyezés</translation>
 <translation id="3462413494201477527">Kilép a fiókbeállításból?</translation>
 <translation id="3473241910002674503">Táblagép módban gombok segítségével válthat alkalmazásokat, illetve léphet vissza és a kezdőképernyőre.</translation>
+<translation id="3473479545200714844">Képernyőnagyító</translation>
 <translation id="3491669675709357988">Gyermeke fiókjában nincs beállítva a Family Link szülői felügyelet funkciója. A szülői felügyeletet a beállítások befejezése után adhatja hozzá. A szülői felügyeletről a Felfedezés alkalmazásban tájékozódhat.</translation>
+<translation id="350397915809787283">Ha nem rendelkezik fiókkal, válassza az első lehetőséget a fiók létrehozásához.</translation>
 <translation id="3520824492621090923">Megerősíti egy kioszk vagy tájékoztatóeszköz regisztrációját?</translation>
+<translation id="3547954654003013442">Proxybeállítások</translation>
+<translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardveradatainak gyűjtése</translation>
+<translation id="3602290021589620013">Előnézet</translation>
+<translation id="3607671391978830431">Gyermeknek</translation>
+<translation id="3627320433825461852">Kevesebb mint 1 perc van hátra</translation>
 <translation id="3635199270495525546">A rendszer platformmegbízhatósági modult (TPM) észlelt</translation>
 <translation id="3650753875413052677">Regisztrációs hiba</translation>
 <translation id="3661106764436337772">Gyorsabb és magabiztosabb írás</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3712050472459130149">A fiók frissítése szükséges</translation>
 <translation id="3733296813637058299">Telepítjük Önnek ezeket az alkalmazásokat. További alkalmazásokat találhat <ph name="DEVICE_TYPE" /> eszközéhez a Play Áruházban.</translation>
+<translation id="3740945083753997630">Megjelenítés és szövegméret csökkentése</translation>
 <translation id="376841534249795524">Mire fogja használni a következőt: <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Elolvastam és elfogadom a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint a <ph name="BEGIN_LINK2" />Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3800828618615365228">A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="3828953470056652895">Elolvastam és elfogadom a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" /> és a <ph name="BEGIN_LINK3" />Play Általános Szerződési Feltételeit<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Többet is bejelölhet. Ezeket a lehetőségeket is megtalálhatja a Beállításokban a(z) <ph name="DEVICE_TYPE" /> beállításának befejezése után.</translation>
 <translation id="385051799172605136">Vissza</translation>
+<translation id="3856470183388031602">A Google-fiók használata a(z) <ph name="DEVICE_TYPE" /> eszközön</translation>
+<translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
 <translation id="3897746662269329507">A(z) <ph name="DEVICE_TYPE" /> játékra készült. Most megnyílik a Felfedezés alkalmazás, ahol a legújabb játékok százaihoz férhet hozzá, megtekintheti a játékajánlatokat és felfedezheti az eszközén található játékfunkciókat is.</translation>
+<translation id="389901847090970821">Billentyűzet kiválasztása</translation>
 <translation id="3910588685973519483">Létrehozhat háttérképeket AI segítségével</translation>
+<translation id="3924259174674732591">Megjelenítési és szövegméret: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3983400541576569538">Egyes alkalmazások adatai elveszhetnek</translation>
+<translation id="3984159763196946143">Nem sikerült elindítani a demó módot</translation>
 <translation id="3994318741694670028">Sajnos számítógépe nem megfelelő formátumú hardverazonosítóval van konfigurálva. Emiatt a ChromeOS Flex nem tud frissülni a legújabb biztonsági javításokkal, és számítógépe <ph name="BEGIN_BOLD" />sebezhető lehet a rosszindulatú támadásokkal szemben<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">PIN-kód beállítása</translation>
 <translation id="4044883420905480380">Androidos telefonjával Wi-Fi-hálózathoz csatlakozott, és bejelentkezett a következő fiókba: <ph name="USER_EMAIL" /></translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="41365691917097717">A folytatással engedélyezi az ADB-hibakeresés számára az Android-alkalmazások létrehozását és tesztelését. Ne feledje, hogy ez a művelet engedélyezi a Google által nem jóváhagyott Android-alkalmazások telepítését, és az eszköz letiltásához szükség van az eszköz gyári beállításainak visszaállítására.</translation>
 <translation id="4165942112764990069">A(z) <ph name="USER_EMAIL" /> nem tartozik érvényes szervezethez. Forduljon a rendszergazdához. Ha Ön a rendszergazda, beállíthatja a szervezetét a következő oldalon: g.co/ChromeEnterpriseAccount.</translation>
+<translation id="4209092469652827314">Nagy</translation>
+<translation id="4213918571089943508">A gyermek Google-fiókja</translation>
+<translation id="4228071595943929139">Saját szervezete e-mail-címének használata</translation>
 <translation id="4232484478444192782">Androidos telefonja segít Önnek. A Wi-Fi-hálózat és a jelszó átvitele folyamatban van.</translation>
 <translation id="4242145785130247982">Több ügyféltanúsítvány sem támogatott</translation>
 <translation id="4242577469625748426">Az irányelv-beállítások telepítése az eszközre sikertelen: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Kioszk vagy tájékoztatóeszköz frissítését fogja használni, amely csak kioszk- vagy tájékoztatómód futtatását teszi lehetővé az eszköz számára. Ha azt szeretné, hogy a felhasználók be tudjanak jelentkezni az eszközre, lépjen vissza, és regisztráljon a Chrome Enterprise frissítés használatával.</translation>
 <translation id="4287157641315808225">Igen, aktiválom a ChromeVoxot</translation>
 <translation id="4289732974614035569">PIN-kód megadása</translation>
+<translation id="4291265871880246274">Bejelentkezési párbeszédpanel</translation>
+<translation id="4305817255990598646">Váltás</translation>
 <translation id="4309165024397827958">Engedélyezheti a helymeghatározási jogosultsággal rendelkező Android-alkalmazások és -szolgáltatások számára, hogy eszköze helyadatait használják. A Google a pontosság javítása és a helyalapú szolgáltatások továbbfejlesztése érdekében időszakosan gyűjthet és felhasználhat névtelenített helyadatokat.</translation>
 <translation id="4317733381297736564">Alkalmazáson belüli vásárlások</translation>
 <translation id="4341905082470253054">TPM-állapot ellenőrzése…</translation>
 <translation id="4370975561335139969">A megadott e-mail-cím és jelszó nem egyezik</translation>
 <translation id="4373418556073552953">Bejelentkezés androidos telefonnal</translation>
+<translation id="4378556263712303865">Eszközigénylés</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, milyen funkciókat használt, jellemzően mennyi memóriát használ, valamint az Android-alkalmazás diagnosztikai és használati adatait. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket a ChromeOS-eszköz beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti Konzolban.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva Google-fiókjában, akkor a rendszer mentheti az Android-adatokat a Google-fiókjába. Az account.google.com oldalon megtekintheti az adatait, törölheti őket, továbbá módosíthatja a fiókbeállításokat.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Bluetooth- és USB-eszközök keresése</translation>
 <translation id="4403266582403435904">Bármikor könnyedén visszaállíthatja adatait, illetve válthat az eszközei között. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és a gyermeke Google-fiókjához használt jelszóval titkosítja őket.</translation>
 <translation id="4410545552906060960">Szám (PIN-kód) használata jelszó helyett az eszköz feloldására. A PIN-kód később történő beállításához lépjen a Beállítások ponthoz.</translation>
 <translation id="4415213869328311284">Készen áll <ph name="DEVICE_TYPE" /> eszköze használatára.</translation>
+<translation id="443031431654216610">Csak számjegyeket használjon</translation>
+<translation id="4448560527907365660">Mentés és továbbiak megtekintése</translation>
 <translation id="4449948729197510913">Felhasználóneve a szervezet vállalati fiókjához tartozik. Először igazolnia kell a domain tulajdonjogát a Felügyeleti Konzolban, csak ezután regisztrálhat eszközt. Az igazolás végrehajtásához rendszergazdajogokkal kell rendelkeznie a fiókban.</translation>
 <translation id="4450974146388585462">Elemzés</translation>
 <translation id="445099924538929605">A(z) <ph name="DEVICE_OS" /> olyan aktív TPM-et észlelt, amely biztonságosabban tárolhatja az Ön adatait.</translation>
+<translation id="4472298120638043495">Lehetősége van az előnyben részesített Google-fiók nyelvének (<ph name="NEW_LOCALE_FROM_GAIA" />) használatára</translation>
 <translation id="4472575034687746823">Kezdő lépések</translation>
+<translation id="450867954911715010">Kisegítő beállítások</translation>
+<translation id="4519605771716872386">Fájlszinkronizálás bekapcsolva</translation>
+<translation id="4531924570968473143">Kit szeretne hozzáadni ehhez az eszközhöz (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4566170377336116390">Ha váltani szeretne a regisztrálás után, vissza kell állítania a gyári beállításokat (Powerwash) az eszközén.</translation>
 <translation id="4567512141633030272">Másik bejelentkezési lehetőséget szeretne használni?</translation>
+<translation id="4567533462991917415">A beállítás után bármikor felvehet további személyeket. Bárki személyre szabhatja fiókját, és gondoskodhat adatainak biztonságáról.</translation>
 <translation id="4568213207643490790">Sajnáljuk, a Google-fiók jelenleg nem engedélyezett ezen az eszközön.</translation>
 <translation id="4611759022973144129">Ezzel a jelszóval jelentkezhet be <ph name="DEVICE_TYPE" /> eszközére.</translation>
+<translation id="4634575639321169635">Eszköz beállítása munkahelyi vagy személyes használatra</translation>
+<translation id="4689235506267737042">A demóbeállítások kiválasztása</translation>
 <translation id="4727847987444062305">Felügyelt vendég munkamenet</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="473936925429402449">Kiválasztva, <ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalom</translation>
 <translation id="4763757134413542119">A(z) <ph name="USER_EMAIL" /> fiók nem a feltételeknek megfelelő Google for Education-fiók. Forduljon a rendszergazdához. Ha Ön a rendszergazda, beállíthatja a szervezetét a következő oldalon: g.co/workspace/edusignup.</translation>
+<translation id="4780558987886269159">Munkához</translation>
 <translation id="4806457879608775995">Feltételek áttekintése és az adatok felügyelete</translation>
+<translation id="4814327014588285482">Kihagyás és emlékeztető küldése később</translation>
 <translation id="4830502475412647084">Az operációs rendszer frissítésének telepítése folyamatban</translation>
 <translation id="4837926214103741331">Nem jogosult ennek az eszköznek a használatára. Bejelentkezési engedély kéréséhez vegye fel a kapcsolatot az eszköz tulajdonosával.</translation>
+<translation id="4844333629810439236">Egyéb billentyűzetek</translation>
 <translation id="4864369630010738180">Bejelentkezés...</translation>
+<translation id="4867272607148176509">A szülők jóváhagyhatják vagy letilthatják az alkalmazásokat, időkorlátot állíthatnak be, és ellenőrizhetik a webböngészést. Iskolai fiók később is hozzáadható, hogy hozzá lehessen férni a legtöbb iskolai erőforráshoz.</translation>
 <translation id="4877652723592270843">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját? Ha igen, öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
 <translation id="4899696330053002588">Hirdetéseket tartalmaz</translation>
 <translation id="49027928311173603">A szerverről letöltött irányelv érvénytelen: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232">Ezt a hitelesítési szolgáltatást a(z) <ph name="SAML_DOMAIN" /> biztosítja</translation>
 <translation id="4955710816792587366">PIN-kód kiválasztása</translation>
 <translation id="4965808351167763748">Biztosan beállítja ezt az eszközt a Hangouts Meet futtatására?</translation>
+<translation id="4987944280765486504">A Chromebook a letöltés befejezése után újraindul, és Ön folytathatja a beállítást.</translation>
 <translation id="5029287942302939687">Jelszó beállítva</translation>
 <translation id="503155457707535043">Alkalmazások letöltése folyamatban</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="5062930723426326933">A bejelentkezés nem sikerült. Kérjük, kapcsolódjon az internethez, majd próbálja újra.</translation>
+<translation id="5085162214018721575">Frissítések keresése</translation>
 <translation id="5097306410549350357">További információ a helyadatok használatáról.</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />A Geminivel csevegve a Google AI segítségével elkezdhet írni valamit, tervezhet, tanulhat stb.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />A beállítást követően elkezdheti használni a Geminit. Ehhez válassza ki a Gemini alkalmazást a polcon, a képernyő alján.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Csatlakoztassa <ph name="DEVICE_TYPE" /> eszközét áramforráshoz.</translation>
+<translation id="5145876360421795017">Nem regisztrálom az eszközt</translation>
 <translation id="5147516217412920887">A kód megerősítéséhez kövesse a telefonon megjelenő utasításokat.</translation>
 <translation id="5160857336552977725">Jelentkezzen be <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Hibakeresési funkciók<ph name="END_H3" />
@@ -237,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Megjegyzés:<ph name="END_BOLD" /> A rendszer újraindul a folyamat során.</translation>
+<translation id="5215502535566372932">Ország kiválasztása</translation>
 <translation id="5234523649284990414">A ChromeOS képernyőolvasóját, a ChromeVoxot elsősorban vakok és gyengénlátók használják a képernyőn megjelenő szövegek olvasására beszédszintetizátorral vagy Braille-kijelzővel. A ChromeVox bekapcsolásához tartsa lenyomva a szóköz billentyűt. A ChromeVox aktiválásakor egy rövid bemutatót láthat.</translation>
 <translation id="523505283826916779">Kisegítő beállítások</translation>
 <translation id="5240931875940563122">Belépés androidos telefonnal</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Vállalati eszköz regisztrációja</translation>
 <translation id="5372529912055771682">Az operációs rendszer jelen verziója nem támogatja a kínált regisztrációs módot. Kérjük, győződjön meg arról, hogy a legújabb verziót használja, majd próbálkozzon újra.</translation>
 <translation id="5397378439569041789">Kioszk vagy tájékoztatóeszköz regisztrációja</translation>
+<translation id="5397794290049113714">Ön</translation>
 <translation id="5411022484772257615">Nem sikerült befejezni az iskolai regisztrációt</translation>
 <translation id="5413640305322530561">További információ a diagnosztikai és használati adatokról.</translation>
 <translation id="542750953150239272">Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, az Ön szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak.</translation>
 <translation id="542948651837270806">Telepíteni kell a Megbízható platform modul (Trusted Platform Module) firmware-ének frissítését. Tekintse meg a következő webhelyet: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hoppá, hiba történt a bejelentkezés során</translation>
+<translation id="5453829744223920473">Gyermeke ugyanúgy használhatja az összes iskolai alkalmazását, könyvjelzőjét és forrását, mint az osztályban. Az alapvető szabályokat az iskola határozza meg.</translation>
 <translation id="5463450804024056231">Feliratkozás a(z) <ph name="DEVICE_TYPE" /> e-mailjeire</translation>
 <translation id="5473099001878321374">Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, gyermeke szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak.</translation>
+<translation id="5502915260472117187">Gyermek</translation>
 <translation id="5511823366942919280">Biztosan beállítja ezt az eszközt „Shark” eszközként?</translation>
+<translation id="5513807280330619196">Számológép</translation>
 <translation id="5527474464531963247">Másik hálózatot is választhat.</translation>
 <translation id="5539070192556911367">A Google nem áll rendelkezésre</translation>
+<translation id="5549511085333906441">Válassza ki a kívánt beállítást</translation>
 <translation id="557722062034137776">Az eszköz visszaállítása nincs hatással Google-fiókjaira vagy a fiókokkal szinkronizált adatokra. Az eszközön helyileg mentett fájlok azonban törlődni fognak.</translation>
 <translation id="5626172233890210551">Inkább jelszót használok</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />A legjobb felhasználói élmény biztosítása érdekében a <ph name="DEVICE_OS" /> hardveradatokat gyűjt az eszközökről, majd megosztja az adatokat a Google-lal a szükséges frissítések meghatározásához. Önnek arra is lehetősége van, hogy engedélyezze a Google-nak az adatok egyéb célból való felhasználását (pl. a <ph name="DEVICE_OS" /> által nyújtott felhasználói élmény és szolgáltatás támogatása és fejlesztése érdekében).<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bejelentkezhet erre az eszközre, és megtekintheti a chrome://system alatt található chromeosflex_ mezőket, hogy lássa azokat az adatokat, amelyeket a rendszer a frissítés szűrésére küld a Google-nak, valamint minden olyan esetben, amikor Ön úgy dönt, hogy adatokat oszt meg a Google-lal.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ha többet szeretne megtudni arról, hogy milyen adatokat oszthat meg a <ph name="DEVICE_OS" /> a Google-lal, és hogy hogyan használják fel ezeket az adatokat, látogasson el a g.co/flex/HWDataCollection weboldalra.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">A(z) <ph name="NETWORK_ID" /> használatához először <ph name="LINK_START" />fel kell keresnie a hálózat bejelentkezési oldalát<ph name="LINK_END" />, amely automatikusan megnyílik néhány másodpercen belül. Ha ez nem történik meg, akkor a hálózat nem használható.</translation>
 <translation id="5655296450510165335">Eszközregisztráció</translation>
+<translation id="565899488479822148">A legújabb frissítés telepítése…</translation>
 <translation id="5659964844710667266">Jelszó létrehozása ehhez a(z) <ph name="DEVICE_TYPE" /> eszközhöz</translation>
 <translation id="5684661240348539843">Tartalomazonosító</translation>
 <translation id="5684950556880280580">Jelszava frissítése sikerült</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Sajnos egyes fájlok sérültek voltak, és nem sikerült befejezni a frissítést. A szinkronizált fájlok biztonságban vannak.</translation>
 <translation id="5770125698810550803">Navigációs gombok megjelenítése</translation>
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" />-tippeket és -ajánlatokat, valamint friss híreket kaphat, ezenkívül visszajelzést is küldhet.</translation>
+<translation id="5800703268655655701">Világos vagy sötét téma kiválasztása</translation>
 <translation id="5804259315582798390">Nem sikerült a helyi adatok helyreállítása</translation>
 <translation id="5810809306422959727">Ez a fiók nem jogosult arra, hogy szülői felügyeletet állítson be hozzá</translation>
+<translation id="5834581999798853053">Körülbelül <ph name="TIME" /> perc van hátra</translation>
 <translation id="5852112051279473187">Hoppá! Az eszköz rögzítése közben hiba történt. Kérjük, próbálja újra, vagy forduljon a támogatási képviselőhöz.</translation>
 <translation id="5852137567692933493">Újraindítás és Powerwash</translation>
 <translation id="5856721540245522153">Hibakeresési funkciók bekapcsolása</translation>
+<translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
+<translation id="5870086504539785141">A kisegítő lehetőségek menüjének bezárása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5895335062901455404">Mentett beállításai és tevékenységei minden ChromeOS Flex-eszközön rendelkezésre állnak, amikor be van jelentkezve Google-fiókjával. A Beállítások között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
+<translation id="5916664084637901428">Be</translation>
 <translation id="5919305207330938913">Az összes gyűjtött adat felhasználása a <ph name="BEGIN_LINK" />Google Adatvédelmi irányelveinek<ph name="END_LINK" /> megfelelően történik.</translation>
 <translation id="5932441198730183141">Ön nem rendelkezik elegendő licenccel ennek a Google Meet-hardvernek a regisztrálásához. Továbbiak vásárlásáért forduljon az értékesítési csapathoz. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
+<translation id="5948536763493709626">Csatlakoztasson billentyűzetet vagy egeret, vagy használja továbbra is az érintőképernyőt a beállítás során. Ha Bluetooth-eszközöket használ, győződjön meg arról, hogy eszközei készen állnak a párosításra.</translation>
 <translation id="5959471481388474538">A hálózat nem érhető el</translation>
 <translation id="6016178549409952427">Navigálás a(z) <ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalomhoz.</translation>
+<translation id="6016972670657536680">Nyelv- és billentyűzetválasztó gomb. A jelenleg kiválasztott nyelv: <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6051354611314852653">Hoppá! A rendszer nem tudta hitelesíteni az eszköz API-hozzáférését.</translation>
 <translation id="6055544610007596637">Alkalmazások telepítése <ph name="DEVICE_TYPE" /> eszközére a Google Play Áruházból</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Hardveradatok használatának engedélyezése a Google számára a <ph name="DEVICE_OS" /> fejlesztéséhez. Ha nem engedélyezi, a rendszer akkor is elküldi az adatokat a Google-nak, hogy meghatározhatók legyenek a megfelelő frissítések, viszont az adatok tárolására vagy egyéb jellegű felhasználására nem kerül sor. További információ: g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">A bejelentkezést biztosítja: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Sikeresen engedélyezte a hibakeresési szolgáltatásokat ezen a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszközön.</translation>
+<translation id="6343262564968371601">Megtalálhatja, amire szüksége van a Google-on, a fájlok között, az alkalmazások között és egyéb helyeken való kereséssel</translation>
 <translation id="635609604405270300">Az eszköz bekapcsolva tartása</translation>
 <translation id="6367097275976877956">Szeretné aktiválni a ChromeVoxot, a ChromeOS beépített képernyőolvasóját? Ha igen, nyomja meg a szóköz billentyűt.</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6380143666419481200">Elfogadás és folytatás</translation>
 <translation id="640457954117263537">Helyadatok használata a ChromeOS- és Android-alkalmazásokhoz és -szolgáltatásokhoz.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, milyen funkciókat használt, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket Chrome-eszköze beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti Konzolban.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Fontos frissítés telepítése</translation>
+<translation id="6478849105642611893">A Gyors beillesztés billentyű a Tab billentyű alatt található</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Nyelv kiválasztása</translation>
 <translation id="6495266441917713704">Nem sikerült a Wi-Fi átvitele</translation>
 <translation id="6515620015470298987">A bejelentkezés eszközkonfigurációs ellenőrzési probléma miatt nem sikerült. Kérjük, végezzen teljes visszaállítást <ph name="DEVICE_TYPE" /> eszközén, majd próbálkozzon újra.</translation>
 <translation id="6519689855001245063">Jogosultság ellenőrzése…</translation>
 <translation id="6532527800157340614">A bejelentkezés nem sikerült, mert nem lehetett lekérni a hozzáférési tokent. Ellenőrizze a hálózati kapcsolatot, és próbálja újra.</translation>
+<translation id="653920215766444089">Mutatóeszköz keresése…</translation>
 <translation id="65513682072153627">Ezt a Kezelt ikont akkor láthatja, ha egy beállítást vagy funkciót a rendszergazdája kezel.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021">A(z) <ph name="USER_EMAIL" /> fiókot már a(z) <ph name="DOMAIN" /> kezeli. Ha a szülői felügyeletet másik Google-fiókhoz szeretné beállítani, jelentkezzen ki a beállítás után, majd a bejelentkezési képernyőn válassza a „Személy hozzáadása” lehetőséget.</translation>
 <translation id="6642720633335369752">Az összes megnyitott alkalmazásablak megtekintéséhez csúsztassa fel ujját a képernyő aljától, majd tartsa lenyomva.</translation>
 <translation id="6648911618876616409">Egy kritikus frissítés készen áll a telepítésre. Jelentkezzen be az indításához.</translation>
 <translation id="6671497123040790595">Kezelés beállítása a következő által: <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">Mutatóeszköz csatlakoztatva</translation>
 <translation id="667752334740867460">Wi-Fi-adatok fogadása…</translation>
 <translation id="6680442031740878064">Rendelkezésre álló tárhely: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">A(z) <ph name="EMAIL" /> helyreállítható, de a helyi adatok törlődnek.</translation>
 <translation id="6748980958975836188">Elolvastam és elfogadom a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint a<ph name="BEGIN_LINK2" />Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Fotók</translation>
+<translation id="6754918760968695779">Gyors beillesztés</translation>
 <translation id="6789834167207639931">A visszaállítás befejezéséhez adja meg Google-fiókja jelszavát a következő képernyőn</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, milyen funkciókat használt, jellemzően mennyi memóriát használ, valamint tartalmazhatják az Android-alkalmazások diagnosztikai és használati adatait is. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezeket a jelentéseket bármikor engedélyezheti és letilthatja gyermeke ChromeOS-eszközének beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti Konzolban.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva gyermeke Google-fiókjában, akkor a rendszer elmentheti gyermeke adatait az ő Google-fiókjába. Ezekről a funkciókról és beállításuk módjáról a families.google.com oldalon találhat további információt.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">A legnépszerűbb alkalmazások a(z) <ph name="DEVICE_TYPE" /> eszközéhez</translation>
 <translation id="682971198310367122">A Google adatvédelmi irányelvei</translation>
 <translation id="6835762382653651563">A(z) <ph name="DEVICE_TYPE" /> frissítése érdekében csatlakozzon az internethez.</translation>
 <translation id="6839916869147598086">A bejelentkezési mód megváltozott</translation>
+<translation id="6852529053326738838">Kérje meg a szervezetét, vagy regisztráljon a munkahelyi e-mail-címével, hogy megnézze, jogosult-e a fiók a funkció használatára.</translation>
+<translation id="6867671714894555998">Az új billentyűzettel gyorsan elvégezheti a tennivalóit</translation>
 <translation id="6883319974225028188">Hoppá! A rendszer nem tudta menteni az eszközkonfigurációt.</translation>
+<translation id="6888831646723563669">Kapcsolódjon az internethez, hogy kiaknázhassa új <ph name="DEVICE_TYPE" /> eszköze összes funkcióját</translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Alkalmazásadat lehet az alkalmazás által mentett bármilyen adat (a fejlesztő által megadott beállításoktól függően) – például névjegy, üzenet vagy fotó is. A biztonsági másolat adatmennyisége nem számít bele gyermeke Drive-tárhelykvótájába.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Szinkronizálás bekapcsolása</translation>
 <translation id="6918733588290914545">Gyors beállítás androidos telefonnal</translation>
 <translation id="6920473853105515518">Ellenőrizze a(z) <ph name="DEVICE_TYPE" /> internetkapcsolatát, majd próbálkozzon újra. Egy másik eszközön is megnyithatja a play.google/play-terms oldalt.</translation>
+<translation id="6929126689972602640">A szülői felügyelet nem támogatott iskolai fiókok esetén. Ha iskolai fiókot szeretne hozzáadni, hogy hozzáférhessen a Google Tanteremhez és egyéb, iskolai feladatok otthoni elvégzését lehetővé tévő webhelyekhez, először jelentkezzen be a gyermek személyes fiókjával. Az iskolai fiókot a beállítás során később is hozzáadhatja.</translation>
+<translation id="6935031746833428401">További információ az Eszközkezelőről</translation>
+<translation id="6950351336108213154">Eszközperifériák frissítése…</translation>
 <translation id="6955698182324067397">Ön engedélyezi a ChromeOS hibakeresési funkcióit, melyek be fogják állítani az sshd daemon szolgáltatást, és engedélyezni fogják az USB-meghajtókról való indítást.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6969216690072714773">Adjon meg új információkat, vagy frissítse az ezzel az eszközzel társítani kívánt régieket.</translation>
@@ -343,23 +485,37 @@
 működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
         módosítsa a <ph name="LINK_START" />proxybeállításokat<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Kapcsolja be a telefon Bluetooth- és Wi-Fi-kapcsolatát.</translation>
+<translation id="6996438701394974959">Megjelenítés és szövegméret növelése</translation>
+<translation id="6998793565256476099">Eszköz felvétele a videokonferenciába</translation>
 <translation id="7025082428878635038">Bemutatunk egy új módszert, amellyel kézmozdulatok segítségével navigálhat</translation>
 <translation id="7034692021407794547">Egy számlázáskezelési jogosultsággal rendelkező adminisztrátornak előbb el kell fogadnia a Google Meet-hardver Általános Szerződési Feltételeit a Felügyeleti Konzol Google Meet-hardver szakaszában.</translation>
+<translation id="7039951224110875196">Google-fiók létrehozása gyermek számára</translation>
 <translation id="7065223852455347715">Ez az eszköz olyan módban van rögzítve, amely megakadályozza a vállalati regisztrációt. Ha szeretné regisztrálni azt, először vissza kell állítania az eszköz beállításait.</translation>
+<translation id="7066572364168923329">A(z) <ph name="DEVICE_TYPE" /> beállításának kiválasztása</translation>
 <translation id="7077829361966535409">A bejelentkezési oldalt a jelenlegi proxybeállítások mellett nem lehetett betölteni. Kérjük, <ph name="GAIA_RELOAD_LINK_START" />próbáljon újra bejelentkezni<ph name="GAIA_RELOAD_LINK_END" />, vagy használjon más <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításokat<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">Az eszközt a rendszergazda eltávolított állapotba helyezte. Ahhoz, hogy regisztrálhassa az eszközt, helyeztesse azt a rendszergazdával függő állapotba.</translation>
 <translation id="7114054701490058191">A jelszavak nem egyeznek</translation>
 <translation id="7135729336746831607">Bekapcsolja a Bluetooth-t?</translation>
 <translation id="7141105143012495934">A bejelentkezés nem sikerült, mert a fiókadatokat nem sikerült lekérni. Kérjük, forduljon rendszergazdájához, vagy próbálja újra.</translation>
 <translation id="7144878232160441200">Újra</translation>
+<translation id="7171259390164035663">Nem regisztrálok</translation>
 <translation id="7189451821249468368">Ön nem rendelkezik elegendő bővítéssel az eszköz regisztrálásához. Kérjük, vegye fel a kapcsolatot az értékesítéssel továbbiak vásárlásához. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>
 <translation id="7202337678781136582">Olvassa be a QR-kódot androidos telefonjával</translation>
+<translation id="7228854227189381547">Nincs váltás</translation>
+<translation id="7230881857327093958">A módosítások a beállítás után lépnek életbe</translation>
 <translation id="7260186537988033909">A kioszk vagy tájékoztatóeszköz regisztrációja kész</translation>
+<translation id="7284411326658527427">Bárki személyre szabhatja a saját fiókját, és gondoskodhat adatainak biztonságáról.</translation>
 <translation id="7290242001003353852">Ez a bejelentkezési szolgáltatás, amelyet a(z) <ph name="SAML_DOMAIN" /> üzemeltet, hozzáfér a kamerához.</translation>
+<translation id="7311005168897771689">Hozzáférhet Google Drive-fájljaihoz offline állapotban</translation>
 <translation id="7317831949569936035">Iskolai regisztráció</translation>
+<translation id="7326004502692201767">Beállíthatja ezt a(z) <ph name="DEVICE_TYPE" /> eszközt gyermek számára</translation>
+<translation id="732659786514229249">Szeretné regisztrálni az eszközt a szervezeténél?</translation>
 <translation id="7329154610228416156">A bejelentkezés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
 <translation id="7345706641791090287">Erősítse meg a jelszót</translation>
+<translation id="7348093485538360975">Képernyő-billentyűzet</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
+<translation id="7403642243184989645">Erőforrások letöltése…</translation>
+<translation id="7406912950279255498">Színinvertálás mód</translation>
 <translation id="7416263748877373774">Nem sikerült betölteni az Általános Szerződési Feltételeket. Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="7475742997309661417">A ChromeOS képernyőolvasóját, a ChromeVoxot elsősorban vakok és gyengénlátók használják a képernyőn megjelenő szövegek olvasására beszédszintetizátorral vagy Braille-kijelzővel. Tartsa lenyomva öt másodpercig mindkét hangerőszabályzó gombot a ChromeVox bekapcsolásához. A ChromeVox aktiválásakor egy rövid bemutatót láthat.</translation>
 <translation id="7476454130948140105">Az akkumulátor töltöttségi szintje túl alacsony a frissítéshez (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -369,39 +525,61 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> eszközének vállalati kezelés céljából történő rögzítése sikerült.</translation>
 <translation id="7509097596023256288">Kezelés beállítása</translation>
 <translation id="7543104066686362383">Hibakeresési szolgáltatások bekapcsolása ennél a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszköznél</translation>
+<translation id="7544227555407951270">Eszköz regisztrálása</translation>
+<translation id="7549434883223124329">Átállítja az eszköz nyelvét?</translation>
 <translation id="7553242001898162573">Adja meg a jelszavát</translation>
 <translation id="7556242789364317684">Sajnos a(z) <ph name="SHORT_PRODUCT_NAME" /> nem tudja visszaállítani a beállításokat. A hiba kijavításához a(z) <ph name="SHORT_PRODUCT_NAME" /> alkalmazásnak a Powerwash eljárást kell alkalmaznia.</translation>
 <translation id="7560756177962144929">A következő eszköz szinkronizálása: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">A frissítés telepítéséhez nincs elegendő tárhely</translation>
+<translation id="7616214729753637086">Eszköz regisztrálása…</translation>
 <translation id="7622114377921274169">Töltés.</translation>
 <translation id="7630426712700473382">Ezt az eszközt a(z) <ph name="MANAGER" /> kezeli, és minden alkalommal bejelentkezést ír elő.</translation>
 <translation id="7639914187072011620">Nem sikerült lekérni a SAML átirányítási URL-jét a szerverről</translation>
 <translation id="7643117827468520640">A feltételek áttekintése</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Alkalmazásadat lehet az alkalmazás által mentett bármilyen adat (a fejlesztő által megadott beállításoktól függően) – például névjegy, üzenet vagy fotó is. A biztonsági másolat adatait a rendszer nem számítja bele a Drive tárhelykvótájába.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659584679870740384">Nem jogosult ennek az eszköznek a használatára. Bejelentkezési engedély kéréséhez vegye fel a kapcsolatot a rendszergazdával.</translation>
 <translation id="7660116474961254898">Kövesse a telefonon megjelenő utasításokat</translation>
 <translation id="7661451191293163002">Nem sikerült lekérni egy bejegyzési tanúsítványt.</translation>
+<translation id="7666531788977935712">Folytatás gomb engedélyezve</translation>
 <translation id="7671139479636735732">A jobb egérgombra kattintással egyszerűen vizualizálhatja az ötleteit</translation>
 <translation id="770831926727930011">A helyi adatait a régi jelszava védi. A helyi adatok helyreállításához adja meg régi jelszavát.</translation>
 <translation id="7722040605881499779">A frissítéshez szükséges tárhely: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Párosítás a következővel: <ph name="DEVICE_NAME" />…</translation>
+<translation id="7746045113967198252">Nagyíthatja vagy kicsinyítheti a képernyőn megjelenő elemeket (például a szöveget). Ezt később a Beállítások &gt; Eszköz &gt; Megjelenítés menüpontban is megtalálja.</translation>
 <translation id="7760176388948986635">Engedélyezheti a helymeghatározási jogosultsággal rendelkező ChromeOS- és Android-alkalmazások, webhelyek és szolgáltatások számára, hogy használják az eszköz helyadatait. A Helymeghatározás pontossága beállítás pontosabb helyadatokat szolgáltat az androidos alkalmazások és szolgáltatások számára. Ebből a célból a Google rendszeresen feldolgozza az eszköz érzékelőitől és a vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz. A Google ezeket az információkat – anélkül, hogy ezzel bárkit is azonosítana – arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján.</translation>
 <translation id="7784875615510899699">Ön nem rendelkezik elegendő licenccel ennek a Google Beam-eszköznek a regisztrálásához. Továbbiak vásárlásáért forduljon a viszonteladójához. Ha úgy gondolja, hogy tévedésből kapta ezt az üzenetet, forduljon a viszonteladójához.</translation>
+<translation id="7791269138074599214">Beviteli mód</translation>
+<translation id="7791436592012979144">Fordított görgetés bekapcsolva</translation>
 <translation id="7792012425874949788">Hiba történt a bejelentkezés során</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7803657407897251194">Ha folytatni szeretné a beállítást Android-eszközén, csatlakoztassa a(z) <ph name="DEVICE_TYPE" /> eszközt egy hálózathoz</translation>
+<translation id="7842692330619197998">Ha új fiókot kell létrehoznia, keresse fel a következő webhelyet: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="7851457902707056880">A bejelentkezés a tulajdonos fiókjára korlátozódik. Kérjük, indítsa újra az eszközt, majd jelentkezzen be a tulajdonos fiókjával. Az eszköz 30 másodpercen belül automatikusan újraindul.</translation>
 <translation id="7870730066603611552">Szinkronizálási beállítások ellenőrzése a beállítást követően</translation>
 <translation id="7883792253546618164">Bármikor leiratkozhat.</translation>
+<translation id="7887864092952184874">Bluetooth-egér párosítva</translation>
 <translation id="7906440585529721295">A helyi adatok törlődnek</translation>
+<translation id="7910725946105920830">Személyes Google-fiók használata</translation>
+<translation id="7918257978052780342">Feliratkozás</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, milyen funkciókat használt, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Ezeket a jelentéseket bármikor engedélyezheti és letilthatja gyermeke ChromeOS-eszközének beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti Konzolban.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Haladó beállítások</translation>
 <translation id="7943311690198910993">Bejelentkezési mód frissítve</translation>
 <translation id="795240231873601803">Vállalati regisztráció használata munkahelyi és iskolai fiókoknál</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
 <translation id="7975504106303186033">Oktatási fiókot kell felvennie erre a Chrome Education-eszközre. Új fiók regisztrálásához nyissa meg a g.co/workspace/edusignup oldalt.</translation>
+<translation id="7980084013673500153">Tartalomazonosító: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Kérjük, indítsa újra eszközét a hiba elhárításához.</translation>
 <translation id="7990958035181555539">Wi-Fi automatikus átvitele androidos telefonról</translation>
+<translation id="8022466874160067884">Adja meg Google-fiókját és jelszavát</translation>
+<translation id="8049029041626250638">Csatlakoztasson billentyűzetet vagy egeret. Ha Bluetooth-eszközöket használ, győződjön meg arról, hogy eszközei készen állnak a párosításra.</translation>
 <translation id="8054563304616131773">Kérjük, adjon meg egy érvényes e-mail címet</translation>
+<translation id="8054921503121346576">USB-billentyűzet csatlakoztatva</translation>
 <translation id="8065144531309810062">A Google AI használatával kreatívabb és hatékonyabb lehet</translation>
+<translation id="8082106343289440791">Végrehajtja a párosítást a következővel: <ph name="DEVICE_NAME" />?</translation>
 <translation id="8097959162767603171">Rendszergazdájának előbb el kell fogadnia az általános szerződési feltételeket a Felügyeleti Konzol Chrome-eszközeinek listáján.</translation>
 <translation id="8098616321286360457">Hálózati kapcsolat szükséges</translation>
 <translation id="8129265306888404830">Ha a szervezetétől (<ph name="EMAIL_DOMAIN" />) származó e-mail-címét szeretné használni, vállalati regisztrációt kell használnia. Ha ezt az eszközt személyes célra használja, személyes Google-fiókjával jelentkezzen be.</translation>
@@ -409,28 +587,37 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="8146177459103116374">Ha már regisztrálva van ezen az eszközön, akkor <ph name="LINK2_START" />bejelentkezhet meglévő felhasználóként<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Sikertelen bejelentkezés. Kérjük, forduljon rendszergazdájához, vagy próbálja újra.</translation>
 <translation id="8147346945017130012">Segítse a Chrome és a Chromium OS funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a hibajelentéseket, valamint a diagnosztikai és használati adatokat a Google-nak.</translation>
+<translation id="8152760814912191567">Google Beam a Zoomhoz</translation>
 <translation id="815491593104042026">Hoppá! A hitelesítés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
 <translation id="8157704005178149728">A felügyelet beállítása folyamatban van</translation>
 <translation id="8174047975335711832">Eszközadatok</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Az Android-helyadatokat bármikor kikapcsolhatja az eszközén a következő menüpontban: Beállítások &gt; Alkalmazások &gt; Google Play Áruház &gt; Android-beállítások kezelése &gt; Biztonság és hely &gt; Hely. Ha pedig ugyanebben a menüben kikapcsolja a „Google-helymeghatározás pontossága” beállítást, ezzel letilthatja a Wi-Fi- és mobilhálózatoknak, valamint az érzékelőknek az Android-helyadatok meghatározására való felhasználását.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" />-profilja frissítéséhez adja meg újra jelszavát.</translation>
 <translation id="8239032431519548577">A vállalati regisztráció kész</translation>
 <translation id="8241806945692107836">Eszközkonfiguráció meghatározása…</translation>
 <translation id="8242426110754782860">Folytatás</translation>
 <translation id="826905130698769948">Érvénytelen ügyféltanúsítvány</translation>
+<translation id="8271379370373330993">Kedves szülők, a következő néhány lépést Önöknek kell elvégezni. A fiók beállítása után visszaadhatják a(z) <ph name="DEVICE_TYPE" /> eszközt a gyermeknek.</translation>
 <translation id="8274924778568117936">A frissítés befejezéséig ne kapcsolja ki vagy csukja le <ph name="DEVICE_TYPE" /> eszközét. <ph name="DEVICE_TYPE" /> eszköze a telepítést követően újraindul.</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
+<translation id="8291942417224950075">Személyes használatra</translation>
 <translation id="8304383784961451596">Ön nem jogosult az eszköz használatára. Bejelentkezési engedély kéréséhez vegye fel a kapcsolatot a rendszergazdával, vagy jelentkezzen be a Family Linken keresztül felügyelt Google-fiókkal.</translation>
 <translation id="8321837372750396788">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a következő kezeli majd: <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Megjelenítési és szövegméret</translation>
 <translation id="8354034204605718473">Gyermeke PIN-kódja hozzáadva</translation>
 <translation id="8366396658833131068">A hálózati kapcsolat helyreállt. Kérjük, válasszon másik hálózatot, vagy nyomja le az alábbi „Folytatás” gombot a kioszkalkalmazás elindításához.</translation>
 <translation id="8401432541486058167">Adja meg az intelligens kártyájához tartozó PIN-kódot.</translation>
 <translation id="8408270600235826886">Beállíthatja, hogy milyen adatokat oszt meg a Google-lal. A Beállításokban ezt bármikor módosíthatja. Az adatok felhasználása a Google <ph name="BEGIN_LINK" />Adatvédelmi irányelveinek<ph name="END_LINK" /> megfelelően történik.</translation>
 <translation id="8413956290606243087">Szeretné aktiválni a ChromeVoxot, a ChromeOS beépített képernyőolvasóját?</translation>
 <translation id="8425768983279799676">A PIN-kód használatával feloldhatja az eszköz zárolását.</translation>
+<translation id="8428213095426709021">Beállítások</translation>
 <translation id="843173223122814223">Létrehozhat háttereket AI segítségével</translation>
 <translation id="8452105022015742247">Google-fiókadatok átvitele androidos telefonról…</translation>
 <translation id="8464132254133862871">Ez a felhasználói fiók nem jogosult a szolgáltatásra.</translation>
 <translation id="8524841856047224176">Személyre szabhatja a kameraháttereket a videohívásokhoz és egyebekhez.</translation>
+<translation id="8527257351549797148">Előfordulhat, hogy szervezete regisztrációhoz köti az Ön alkalmazásokhoz, bővítményekhez és egyebekhez való hozzáférését. Ez lehetővé teszi a szervezet számára többek között a biztonság és az eszközbeállítások kezelését.</translation>
+<translation id="8558063527625343224">A Google Beam beállítása</translation>
 <translation id="8569673829373920831">További információ erről: <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Engedélyezheti a helymeghatározási jogosultsággal rendelkező ChromeOS- és Android-alkalmazások, webhelyek és szolgáltatások számára, hogy használják az eszköz helyadatait. A Helymeghatározás pontossága beállítás pontosabb helyadatokat szolgáltat az androidos alkalmazások és szolgáltatások számára. Ebből a célból a Google rendszeresen feldolgozza az eszköz érzékelőitől és a vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz. Ezek – az Ön azonosítása nélkül – arra szolgálnak, hogy javítsák a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint javítsák, biztosítsák és fenntartsák a Google szolgáltatásait a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján.</translation>
 <translation id="8627804903623428808">A feltételek áttekintése és a gyermek adatainak felügyelete</translation>
@@ -439,9 +626,13 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
         <ph name="BR" />
         A következőként látható a közeli eszközök számára: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="8655972064210167941">A bejelentkezés nem sikerült, mert a jelszót nem sikerült ellenőrizni. Kérjük, forduljon rendszergazdájához vagy próbálja újra.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Ha a Helymeghatározás pontossága beállítás be van kapcsolva, a Google a vezeték nélküli jelekkel kapcsolatos információkat (például a Wi-Fi hozzáférési pontokat és a mobilhálózat adótornyait), valamint az eszköz szenzoradatait (például a gyorsulásmérő és a giroszkóp adatait) használja arra, hogy pontosabban határozza meg az eszköz helyét, amelyet az androidos alkalmazások és szolgáltatások arra használnak, hogy helyalapú funkciókat biztosítsanak. Ebből a célból a Google rendszeresen gyűjti az eszköz érzékelőitől és a közeli vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google ezeket az információkat – anélkül, hogy ezzel Önt azonosítaná – arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint általánosan javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat. Ezeket az információkat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján dolgozzuk fel.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A Helymeghatározás pontossága beállítást bármikor kikapcsolhatja az eszköz helybeállításaiban a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés &gt; Haladó helybeállítások menüpontban. Ha a Helymeghatározás pontossága beállítás ki van kapcsolva, akkor a helymeghatározás pontosságával kapcsolatos adatok gyűjtésére nem kerül sor. Az Android-alkalmazások és -szolgáltatások esetében a rendszer csak IP-címet használ (ha rendelkezésre áll) az eszköz helyének meghatározásához, ami hatással lehet az Android-alkalmazások és -szolgáltatások (például a Google Térkép) helymeghatározási képességére és pontosságára.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Sajnos számítógépe nem megfelelő formátumú hardverazonosítóval van konfigurálva. Emiatt a ChromeOS nem tud frissülni a legújabb biztonsági javításokkal, és számítógépét <ph name="BEGIN_BOLD" />rosszindulatú támadások érhetik<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Szülői felügyelet hozzáadása beállítás után</translation>
 <translation id="8698269656364382265">Ha vissza szeretne térni az előző képernyőre, csúsztassa ujját befelé a képernyő bal oldalától.</translation>
+<translation id="8718994464069323380">Érintőképernyő észlelve</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8726206820263995930">Hiba a kiszolgálóról származó irányelv-beállítások fogadásakor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Kész</translation>
@@ -449,24 +640,36 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="8740247629089392745">Átadhatja a Chromebookot <ph name="SUPERVISED_USER_NAME" /> számára. A beállítás majdnem kész, eljött a felfedezés ideje.</translation>
 <translation id="8759753423332885148">További információ.</translation>
 <translation id="8777628254805677039">root jelszó</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Írja be a párosítókódot, majd nyomja meg az Enter vagy a Return billentyűt</translation>
 <translation id="8794548468611058947">Ahelyett, hogy a Google-fiókjához tartozó jelszót használná a bejelentkezéshez, létrehozhat egy PIN-kódot ehhez a(z) <ph name="DEVICE_TYPE" /> eszközhöz.</translation>
 <translation id="8830796635868321089">Nem sikerült a frissítés ellenőrzése a jelenlegi proxybeállítások használatával. Kérjük, módosítsa a <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításait<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Ez a vállalati Chromebook-eszköz tartalmazza a Chrome Enterprise Upgrade licencet. A vállalati előnyök kihasználása érdekében regisztrálja az eszközt egy rendszergazdai Google-fiókkal.</translation>
 <translation id="885746075120788020">Mentett beállításai és tevékenységei minden ChromeOS-eszközön rendelkezésre állnak, amikor be van jelentkezve Google-fiókjával. A Beállítások között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
+<translation id="8868333925931032127">Demó mód indítása…</translation>
 <translation id="8875221558267407626">Összefoglalhatja a tartalmat, egyszerűsítheti a bonyolult nyelvezetet, vagy kérdéseket tehet fel</translation>
+<translation id="8907701755790961703">Válasszon országot</translation>
 <translation id="8913163265790894442">Telefonjával könnyedén beállíthatja a <ph name="DEVICE_TYPE" /> eszközt. Jelszavai manuális megadása nélkül is hozzáadhat Wi-Fi-hálózatot és Google-fiókot.
         <ph name="BR" />
         <ph name="BR" />
         A következőként látható: <ph name="DEVICE_TYPE" />…</translation>
+<translation id="8934732568177537184">Tovább</translation>
 <translation id="8946359700442089734">A hibakereső szolgáltatásokat nem kapcsolták be teljes körűen ezen a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszközön.</translation>
 <translation id="8965037249707889821">Adja meg a régi jelszót</translation>
+<translation id="8968906873893164556">Válassza ki a beállításhoz használni kívánt fiókot</translation>
+<translation id="8973596347849323817">Eszközét saját igényeinek megfelelően testre szabhatja. Ezeket a kisegítő lehetőségeket később a Beállítások menüben módosíthatja.</translation>
 <translation id="8975396729541388937">Bármikor leiratkozhat a kapott e-mailekben található linkre kattintva.</translation>
+<translation id="8987305927843254629">Bárki személyre szabhatja a saját élményét, és gondoskodhat adatainak biztonságáról.</translation>
 <translation id="8993059306046735527">Akkor is visszaállíthatja a helyi adatait, ha elfelejtette <ph name="DEVICE_TYPE" /> eszköze jelszavát. Ehhez be kell jelentkeznie Google-fiókjába, vagy fiók-helyreállítást kell végeznie.</translation>
 <translation id="9033765790910064284">Ennek ellenére folytatom</translation>
 <translation id="903480517321259405">Adja meg újra a PIN-kódot</translation>
 <translation id="9040473193163777637">Szeretné aktiválni a ChromeVoxot, a ChromeOS beépített képernyőolvasóját? Ha igen, öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
 <translation id="9068298336633421551">Engedélyezheti a helymeghatározási jogosultsággal rendelkező Android-alkalmazások és -szolgáltatások számára, hogy eszköze helyadatait használják. A Google a pontosság javítása és a helyalapú szolgáltatások továbbfejlesztése érdekében időszakosan gyűjthet és felhasználhat névtelenített helyadatokat.</translation>
+<translation id="9074836595010225693">USB-egér csatlakoztatva</translation>
 <translation id="9076523132036239772">Elnézést kérünk, de e-mail címének vagy jelszavának ellenőrzése sikertelen volt. Próbáljon csatlakozni egy hálózathoz.</translation>
+<translation id="9089959054554410481">Érintőpad görgetési irányának módosítása</translation>
 <translation id="9158715103698450907">Hoppá! Hálózati kommunikációs probléma merült fel a hitelesítés során. Kérjük, ellenőrizze hálózati kapcsolatát, és próbálkozzon újra.</translation>
+<translation id="9186963452600581158">Bejelentkezés gyermek Google-fiókjával</translation>
 <translation id="919686179725692564">További információ az adatok biztonsági mentéséről.</translation>
 <translation id="9214520840402538427">Hoppá! A telepítés alatti attribútumok inicializálásakor időtúllépés történt. Kérjük, lépjen kapcsolatba az ügyfélszolgálattal.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Kizárólag <ph name="DEVICE_TYPE" /> eszközön.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
         <ph name="BR" />
         A következőként látható: <ph name="DEVICE_TYPE" />…</translation>
 <translation id="951991426597076286">Elutasítás</translation>
+<translation id="954749761428814584">Nyelv és beviteli mód</translation>
+<translation id="960987915827980018">Körülbelül 1 óra van hátra</translation>
+<translation id="995420352808264005">Eszközregisztráció típusának kiválasztása</translation>
 </translationbundle>

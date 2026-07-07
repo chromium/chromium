@@ -1573,6 +1573,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="628251768213143684">언제든지 Google 계정에 저장된 항목을 관리할 수 있습니다.</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
+<translation id="6295140892595702619">마이크를 사용하여 Gemini와 채팅하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우). 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="6295751040240588413">잘못된 카드 닉네임</translation>
 <translation id="629730747756840877">계정</translation>
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
@@ -2181,7 +2182,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219"><ph name="URL" />에 정보를 입력합니다</translation>
 <translation id="8274795744553482834">프로필을 전환하려고 합니다</translation>
 <translation id="8275068909952022340">더보기…</translation>
 <translation id="8280797717392145626">링크 수신됨</translation>
@@ -2415,6 +2415,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, 고정된 사이트</translation>
 <translation id="8990960056509724223">조직의 정책으로 인해 파일을 저장할 수 없습니다.</translation>
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
+<translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>
 <translation id="9003677638446136377">다시 확인</translation>
 <translation id="9006453925669499173">메뉴 → 새 시크릿 탭</translation>
 <translation id="9008201768610948239">무시</translation>

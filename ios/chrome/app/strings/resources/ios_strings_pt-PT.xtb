@@ -58,6 +58,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
+<translation id="1196534270480620381">Dá-me um breve resumo desta página</translation>
 <translation id="1199631150313925648">Introduzir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -171,6 +172,7 @@
 <translation id="1539535193627863227">Não foram encontradas palavras-passe nem chaves de acesso para este site</translation>
 <translation id="1540800554400757039">Morada 1</translation>
 <translation id="154312949627292154">Abra os separadores recebidos dos seus outros dispositivos a partir do ecrã de bloqueio.</translation>
+<translation id="1544653821167545205">Resumir página</translation>
 <translation id="1545749641540134597">Ler código QR</translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
 <translation id="1547610699249301703">Partilhe palavras-passe</translation>
@@ -278,6 +280,7 @@
 <translation id="1869050523388525800">O ecrã de pesquisa só está disponível quando o Google está definido como o motor de pesquisa predefinido. Pode alterar o motor de pesquisa predefinido nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1876230899304059090">O que pode o Gemini fazer no Chrome?</translation>
 <translation id="1881621406744213161">Convide membros da família</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menu com ordenação inteligente</translation>
@@ -452,6 +455,7 @@
 <translation id="2466518891828668184">Guarde as suas palavras-passe para iniciar sessão facilmente em sites e apps.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Está tudo bem no seu navegador</translation>
+<translation id="2470654816840674524">O que posso fazer com o Gemini no Chrome?</translation>
 <translation id="2473876017985765807">Já guardou uma palavra-passe para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Pode definir um lembrete para consultar esta página mais tarde</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
@@ -497,6 +501,7 @@
 <translation id="2623536180761008356">Ocultar "verificação de segurança"</translation>
 <translation id="2625189173221582860">Palavra-passe copiada</translation>
 <translation id="2626236249646841566">Verifique a sua ligação e experimente iniciar sessão novamente.</translation>
+<translation id="2629543259235506452">Cria um pequeno conjunto de FAQs para este tópico com informações desta página e de Websites semelhantes</translation>
 <translation id="2635918910848538771">Preencher automaticamente o Código de Segurança/CVC</translation>
 <translation id="2640733327287333451">Sem nome de utilizador ••••••</translation>
 <translation id="264215785133931186">Última verificação agora mesmo</translation>
@@ -1573,6 +1578,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="628251768213143684">Pode sempre gerir o que é guardado na sua Conta Google</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
+<translation id="6295140892595702619">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada). Os seus dados não são usados para melhorar os modelos de IA generativa</translation>
 <translation id="6295751040240588413">Alcunha do cartão inválida</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
@@ -2181,7 +2187,6 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8264966119170358612">Algumas das suas palavras-passe guardadas foram expostas numa violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Como parte da reposição do iPad, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Vai preencher as informações em <ph name="URL" /></translation>
 <translation id="8274795744553482834">Está prestes a mudar de perfil</translation>
 <translation id="8275068909952022340">Mais…</translation>
 <translation id="8280797717392145626">Links recebidos</translation>
@@ -2348,6 +2353,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8766790350274092814">As palavras-passe de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8781834595282316166">Novo separador no grupo</translation>
+<translation id="8783445328207519872">Criar Perguntas frequentes sobre este tópico</translation>
 <translation id="8784653774976848206">Escolher ficheiros</translation>
 <translation id="8786100550345425552">Editar autorizações</translation>
 <translation id="878871978861915380">Ocultar "Acompanhamento de preço"</translation>

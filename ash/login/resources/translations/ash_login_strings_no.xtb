@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1005333234656240382">Vil du slå på ADB-feilsøking?</translation>
+<translation id="1053898984916097744">Start noe nytt, eller få hjelp på veien.</translation>
+<translation id="1061130374843955397">Velkommen til <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Hent konto fra Android-telefon automatisk</translation>
 <translation id="1076766328672150609">Barnet ditt kan bruke en PIN-kode for å låse opp enheten.</translation>
 <translation id="1097658378307015415">Gå inn som gjest for å aktivere nettverket <ph name="NETWORK_ID" /> før du logger deg på.</translation>
 <translation id="1111932478203988717">Barnet kan bruke denne PIN-koden til å logge på enheten sin</translation>
 <translation id="1122587596907914265">Lag bakgrunner med unik stil</translation>
 <translation id="1131201598497838573">Barnets PIN-kode er oppdatert</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">Du får den nyeste programvareoppdateringen, som øker sikkerheten og inneholder de nyeste Chromebook-funksjonene. Med denne oppdateringen får du en enda bedre konfigureringsopplevelse, slik at du får en knirkefri start med Chromebooken.</translation>
 <translation id="1176864681932214421">Lag bilder med AI</translation>
 <translation id="1177073277575830464">Hurtigkonfigureringen for Android er ferdig. Fortsett konfigureringen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1179902906564467236">Følg veiledningen på telefonen, eller bruk kameraappen</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1217114730239853757">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex? Hvis ja, trykk på mellomromstasten.</translation>
 <translation id="1222835797152767346">Angi en PIN-kode for å gjøre det enklere å logge på</translation>
+<translation id="1231426483209637778">Vi husker nettverket ditt neste gang du bruker <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Endre visnings- og tekststørrelsen</translation>
+<translation id="1256588359404100567">Innstillingen er synkronisert fra den forrige enheten din.</translation>
 <translation id="1272978324304772054">Denne brukerkontoen tilhører ikke domenet som enheten er registrert for. Hvis du vil registrere deg for et annet domene, må du først gå gjennom enhetsgjenoppretting.</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
+<translation id="1335929031622236846">Registrer enheten din</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
           <ph name="BR" />
           Du kan slå på feilsøkingsfunksjonene på ChromeOS-enheten for å installere og teste spesialtilpasset kode på enheten. Da kan du<ph name="BR" />
@@ -37,6 +46,7 @@
           <ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Systemet startes på nytt i løpet av prosessen.</translation>
 <translation id="1347625331607114917">Bekreft koden på Android-telefonen</translation>
 <translation id="1347975661240122359">Oppdateringen starter når batteriet når <ph name="BATTERY_LEVEL" /> %.</translation>
+<translation id="1353275871123211385">Hvis du vil bruke foreldrekontroller som appgodkjenning og grenser for skjermtid, må barnet ha en Google-konto som administreres av en forelder. Senere kan det legges til en skolekonto for verktøy som Google Classroom.</translation>
 <translation id="1375557162880614858">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Konfigureringen er fullført. Nå kan du gjøre enheten klar for gaming</translation>
 <translation id="1377600615067678409">Hopp over</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Send diagnostikk og bruksdata.</translation>
 <translation id="1418882096915998312">Enterprise-registrering pågår</translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1427269577154060167">Land</translation>
 <translation id="1440090277117135316">Skoleregistreringen er fullført</translation>
 <translation id="1473927070149284123">Prøv på nytt, eller koble til et nettverk manuelt</translation>
 <translation id="1503556098270577657">Du har logget på <ph name="USER_EMAIL" /> med Android-telefonen din</translation>
+<translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1521442365706402292">Administrer sertifikater</translation>
+<translation id="15373452373711364">Stor markør</translation>
 <translation id="1540605929960647700">Slå på demomodus</translation>
 <translation id="1572876035008611720">Skriv inn e-postadressen din</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1636212173818785548">OK</translation>
 <translation id="1642494467033190216">Fjerning av rootfs-beskyttelse og omstart er nødvendig før du slår på andre feilsøkingsfunksjoner.</translation>
+<translation id="1646045728251578877">En programvareoppdatering er tilgjengelig</translation>
+<translation id="1650801028905250434">Filene dine i Min disk synkroniseres automatisk med Chromebooken, slik at du har tilgang til dem uten internettilkobling. Du kan når som helst endre dette i Innstillinger &gt; Filer.</translation>
 <translation id="1668435968811469751">Registrer manuelt</translation>
 <translation id="1678919064276516737">E-postadressen og PIN-koden du skrev inn, stemmer ikke overens</translation>
 <translation id="1692115862433274081">Bruk en annen konto</translation>
 <translation id="1695487653372841667">Du kan kontrollere hvilke data som deles med Google. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="169675691788639886">Det er konfigurert en SSH-tjener for enheten. Ikke logg på med sensitive kontoer.</translation>
+<translation id="1700517974991662022">Besøkt.</translation>
 <translation id="1730666151302379551">Glemt gammelt passord</translation>
+<translation id="1749645492410897998">Installerer programvaren</translation>
 <translation id="177053719077591686">Sikkerhetskopiér Android-apper til Google Disk.</translation>
+<translation id="1798832846931769717">Google Beam for Meet</translation>
 <translation id="1806335016774576568">Bytt til en annen åpen app</translation>
 <translation id="1826192255355608658">Synkroniser blant annet bokmerkene, passordene og loggen i Chrome-nettleseren</translation>
+<translation id="1826657447823925402">Omvendt rulling er deaktivert</translation>
 <translation id="1831848493690504725">Vi får ikke kontakt med Google via det tilkoblede nettverket. Prøv å velge et annet nettverk, eller sjekk nettverksinnstillingene eller proxy-innstillingene (hvis du bruker en proxy-tjener).</translation>
 <translation id="1842766183094193446">Er du sikker på at du vil slå på demomodus?</translation>
 <translation id="1845060436536902492">Skjermleseren på ChromeOS Flex, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk på mellomromstasten for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
+<translation id="185766080319917408">Appoversikt-tasten er til venstre for venstre Alt-tast</translation>
 <translation id="1868617395637139709">Bruk posisjon i Android-apper og -tjenester.</translation>
+<translation id="1877377730633446520">Dette bruker omtrent <ph name="REQUIRED_SPACE" />. Du har <ph name="FREE_SPACE" /> ledig.</translation>
 <translation id="189035593835762169">Vilkår</translation>
+<translation id="189358972401248634">Andre språk</translation>
+<translation id="1915734383465415025">Butikknummer</translation>
+<translation id="1919096511823372013">Sett inn linker, emojier med mer. Du kan også få hjelp til å skrive og lage bilder med AI-løsninger fra Google.</translation>
+<translation id="1922496389170590548">Barnets skolekonto</translation>
+<translation id="1944528062465413897">Bluetooth-sammenkoblingskode</translation>
 <translation id="1987574314042117472">Velg og installer populære apper</translation>
 <translation id="1991829061375381344">Du har ikke nok ledige lisenser til å registrere denne Google Meet-enheten. Kontakt forhandleren din for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte forhandleren din.</translation>
+<translation id="200928901437634269">Bruk barnets Google-konto eller en skolekonto. Du kan også konfigurere foreldrekontroll.</translation>
+<translation id="2013550551806600826">Prøv det. Slå innstillingen av eller på, og rull med to fingre på styreflaten i testområdet. Du kan også finne dette senere i Innstillinger &gt; Enhet &gt; Mus og styreflate.</translation>
+<translation id="2018189721942291407">Er du ikke sikker på om du skal registrere deg?</translation>
 <translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontroller påloggingslegitimasjonen, og prøv på nytt.</translation>
 <translation id="2052572566310583903">Installert på de andre enhetene dine</translation>
 <translation id="2088092308059522196">Registrering støttes bare etter at du har installert <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">For å gå til startskjermen når som helst, sveip opp fra bunnen.</translation>
 <translation id="2090165459409185032">For å gjenopprette kontoinformasjonen din, gå til: google.com/accounts/recovery</translation>
+<translation id="2133775869826239001">Velg flere funksjoner du vil konfigurere</translation>
+<translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2157779167749714207">Gemini følger med <ph name="DEVICE_TYPE" /></translation>
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2173801458090845390">Legg til en rekvisisjons-ID for denne enheten</translation>
 <translation id="2178585470774851578">Du er i ferd med å slå på ChromeOS Flex-feilsøkingsfunksjoner som kommer til å konfigurere sshd daemon og muliggjøre oppstart fra USB-stasjoner.</translation>
+<translation id="2183570493397356669">Fortsett-knappen er deaktivert</translation>
+<translation id="221872881068107022">Omvendt rulling</translation>
 <translation id="2219081237089444028">Angi et <ph name="DEVICE_TYPE" />-passord for å gjøre det enklere å logge på</translation>
+<translation id="2229161054156947610">Mer enn én time igjen</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> krever at enheten er på nett når du logger på <ph name="EMAIL" /></translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % ferdig</translation>
 <translation id="2319072477089403627">Kobler til Android-telefonen din …</translation>
@@ -91,12 +129,18 @@
 <translation id="2450223707519584812">Du kan ikke legge til brukere fordi Google API-nøkler mangler. Se <ph name="DETAILS_URL" /> for nærmere informasjon.</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
 <translation id="2485681265915754872">Vilkår for bruk av Google Play</translation>
+<translation id="248676429071089168">Sveip opp for å flytte siden ned</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
+<translation id="2538084450874617176">Hvem bruker denne <ph name="DEVICE_TYPE" />-enheten?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> kan ikke koble til <ph name="NETWORK_ID" />. Velg et annet nettverk eller prøv på nytt senere.</translation>
 <translation id="2565214867520763227">Slå på skjermleseren</translation>
+<translation id="2569972178052279830">Forhandlernavn</translation>
+<translation id="257779572837908839">Konfigurer som en Chromebox for møter</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> – <ph name="PRODUCT_VERSION" /> (plattform <ph name="PLATFORM_VERSION" />) – <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer til å estimere enhetens posisjon.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst slå av posisjonen på denne Android-enheten ved å gå til Innstillinger &gt; Apper &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Sikkerhet og posisjon &gt; Posisjon. Du kan også slå av bruken av wifi, mobilnettverk og sensorer for Android-posisjonen ved å slå av «Google Posisjonsnøyaktighet» på den samme menyen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Språk</translation>
 <translation id="2687407218262674387">Googles vilkår for bruk</translation>
 <translation id="2688196195245426394">Feil under registreringen av enheten hos tjeneren: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Dette er en pakkeenhet og kan ikke registreres med Kiosk og skilt-oppgradering.</translation>
@@ -104,26 +148,32 @@
 <translation id="2731700343119398978">Vent litt …</translation>
 <translation id="2732134891301408122">Ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="274318651891194348">Søker etter tastatur</translation>
 <translation id="2754825024506485820">Finn appene du trenger – fra produktivitet til underholdning – i Google Play-butikken. Du kan installere apper når som helst.</translation>
 <translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Når Posisjonsnøyaktighet er på, brukes informasjon om trådløse signaler, for eksempel fra wifi-tilgangspunkter og mobilmaster, sammen med sensordata fra enheten, for eksempel fra akselerometeret og gyroskopet, for å anslå en mer nøyaktig enhetsposisjon. Android-apper og -tjenester bruker denne for å levere posisjonsbaserte funksjoner. For å gjøre dette samler Google jevnlig inn informasjon om enhetssensorer og trådløse signaler i nærheten av denne enheten for å bidra til crowdsourcing av posisjonene til trådløse signaler.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Google bruker denne informasjonen som er samlet inn fra denne enheten, til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og generelt forbedre, levere og vedlikeholde Googles tjenester. Vi behandler denne informasjonen basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov. Denne informasjonen brukes ikke til å identifisere enkeltpersoner.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Du kan når som helst slå av Posisjonsnøyaktighet i posisjonsinnstillingene for denne enheten under Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang &gt; Avanserte posisjonsinnstillinger. Hvis Posisjonsnøyaktighet er slått av, blir det ikke samlet inn data om posisjonsnøyaktighet. For Android-apper og -tjenester brukes bare IP-adressen (hvis den er tilgjengelig) for å fastslå posisjonen til denne enheten, noe som kan påvirke tilgjengeligheten og nøyaktigheten til posisjoner for Android-apper og -tjenester, for eksempel Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">Alt er klart!</translation>
+<translation id="2819519502129272135">Filsynkronisering er slått av</translation>
 <translation id="2832124733806557606">Barnet ditt kan bruke en PIN-kode for å logge på eller låse opp enheten.</translation>
 <translation id="283669119850230892">Fullfør tilkoblingen til Internett nedenfor for å bruke nettverket <ph name="NETWORK_ID" />.</translation>
 <translation id="2849767214114481738">PIN-koden er lagt til</translation>
 <translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, og hvor mye minne som vanligvis var i bruk.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i Chrome-enhetsinnstillingene. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Dette kan ta opptil 30 minutter</translation>
 <translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
 <translation id="2902265136119311513">Gjestesurfing</translation>
 <translation id="2904210161403910217">Passordet ditt er endret siden forrige gang du logget på</translation>
 <translation id="2918484644467055090">Denne enheten kan ikke registreres i organisasjonen som kontoen din tilhører. Enheten er merket for administrering av en annen organisasjon.</translation>
 <translation id="2921081876747860777">Opprett et passord for å beskytte de lokale dataene dine.</translation>
+<translation id="2935654492420446828">Legg til en skolekonto senere</translation>
 <translation id="2950666755714083615">Registrer meg</translation>
 <translation id="2979966855249721010">Basert på interessene dine kan du se appanbefalinger, tips og andre ting</translation>
 <translation id="3012917896646559015">Kontakt maskinvareprodusenten umiddelbart for å sende datamaskinen til et verksted.</translation>
+<translation id="3023464535986383522">Tekstopplesing</translation>
 <translation id="3028371505549235127">I stedet for å skrive inn passordet for Google-kontoen din for å logge på, kan du opprette et <ph name="DEVICE_TYPE" />-passord for denne enheten</translation>
 <translation id="3033348223765101500">Kontroller dataene dine</translation>
+<translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» er tilkoblet</translation>
 <translation id="3101924772906986970">Bokmerker, passord, logg og andre data fra Chrome-nettleseren lagres i Google-kontoen din</translation>
 <translation id="313205617302240621">Glemt passordet?</translation>
 <translation id="3162070126914310576">Denne enheten kan ikke registreres nå fordi organisasjonsenheten din har nådd grensen for initiell registrering. Kontakt administratoren din hvis du trenger hjelp.</translation>
@@ -131,20 +181,34 @@
 <translation id="3170072451822350649">Du kan også hoppe over påloggingen og <ph name="LINK_START" />surfe som gjest<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">En Chrome Education-oppgradering følger med enheten din, men brukernavnet ditt er ikke knyttet til noen Google for Education-konto. Opprett en Google for Education-konto ved å gå til g.co/workspace/edusignup på en annen enhet.</translation>
 <translation id="3196912927885212665">Hvis du vil konfigurere med Android-telefonen din, må Bluetooth være påslått på Chromebooken</translation>
+<translation id="322708765617468434">Du kan når som helst legge til flere personer på enheten etter konfigureringen. Hver person kan få en personlig opplevelse og holde dataene sine private.</translation>
 <translation id="3238192140106069382">Kobler til og verifiserer</translation>
+<translation id="3251119461199395237">Filsynkronisering</translation>
+<translation id="325238099842880997">Angi digitale grunnregler for å hjelpe barn å leke, utforske og gjøre skolearbeid hjemme</translation>
+<translation id="3255747772218936245">Installer oppdateringen</translation>
 <translation id="3261268979727295785">For eldre barn kan du legge til foreldrekontroll når du er ferdig med konfigureringen. Du finner informasjon om foreldrekontroll i Utforsk-appen.</translation>
 <translation id="3278001907972365362">Sjekk Google-kontoen(e) din(e)</translation>
 <translation id="3283148363895519428">Følg veiledningen på telefonen for å fortsette konfigureringen. Sørg for at telefonen er i nærheten og Bluetooth er slått på.</translation>
 <translation id="3382073616108123819">Beklager. Systemet kunne ikke fastslå enhetsidentifikatorer for denne enheten.</translation>
 <translation id="3382200254148930874">Avslutter tilsynet …</translation>
+<translation id="3384362484379805487">Språkfiler deles mellom brukere for å spare diskplass.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3391721320619127327">Skjermleseren på ChromeOS Flex, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk og hold på begge volumtastene i fem sekunder for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
+<translation id="3402585168444815892">Registrerer i demomodus</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
 <translation id="3435896845095436175">Aktivér</translation>
 <translation id="3462413494201477527">Vil du avbryte kontokonfigurasjonen?</translation>
 <translation id="3473241910002674503">Bruk knapper til å navigere hjem og tilbake samt bytte app i nettbrettmodus.</translation>
+<translation id="3473479545200714844">Skjermforstørrer</translation>
 <translation id="3491669675709357988">Kontoen til barnet ditt er ikke konfigurert for foreldrekontroll med Family Link. Du kan legge til foreldrekontroll når du er ferdig med konfigureringen. Du finner informasjon om foreldrekontroll i Utforsk-appen.</translation>
+<translation id="350397915809787283">Hvis du ikke har noen konto, velger du det første alternativet for å opprette en.</translation>
 <translation id="3520824492621090923">Vil du bekrefte registreringen som kiosk- og skiltenhet?</translation>
+<translation id="3547954654003013442">Innstillinger for proxy-tjener</translation>
+<translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3577745545227000795">Innsamling av <ph name="DEVICE_OS" />-maskinvaredata</translation>
+<translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="3607671391978830431">For et barn</translation>
+<translation id="3627320433825461852">Mindre enn ett minutt igjen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) ble funnet</translation>
 <translation id="3650753875413052677">Registreringsfeil</translation>
 <translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
@@ -156,16 +220,23 @@
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3712050472459130149">Kontooppdatering kreves</translation>
 <translation id="3733296813637058299">Vi installerer appene for deg. Du finner flere apper til <ph name="DEVICE_TYPE" /> i Play-butikken.</translation>
+<translation id="3740945083753997630">Senk visnings- og tekststørrelsen</translation>
 <translation id="376841534249795524">Hva skal du bruke <ph name="DEVICE_TYPE" /> til?</translation>
 <translation id="3772046291955677288">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3800828618615365228">Tilleggsvilkår for Google Chrome og ChromeOS</translation>
 <translation id="3828953470056652895">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />vilkårene for bruk av Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Du kan velge alle som passer. Du finner også disse alternativene i innstillingene når du har konfigurert <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="3856470183388031602">Bruk Google-kontoen din på <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> er laget for gaming. Nå åpnes straks Utforsk-appen, hvor du kan få tilgang til hundrevis av de nyeste spillene, se gamingtilbud og oppdage gamingfunksjoner som følger med enheten din.</translation>
+<translation id="389901847090970821">Velg tastatur</translation>
 <translation id="3910588685973519483">Lag bakgrunner med AI</translation>
+<translation id="3924259174674732591">Visnings- og tekststørrelse: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3983400541576569538">Data fra noen apper kan gå tapt</translation>
+<translation id="3984159763196946143">Kan ikke starte demomodus</translation>
 <translation id="3994318741694670028">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS Flex fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Konfigurering av PIN-kode</translation>
 <translation id="4044883420905480380">Du er koblet til wifi og logget på <ph name="USER_EMAIL" /> med Android-telefonen din</translation>
@@ -176,6 +247,9 @@
 <translation id="4135746311382563554">Tilleggsvilkår for bruk av Google Chrome og ChromeOS</translation>
 <translation id="41365691917097717">Hvis du fortsetter, blir ADB-feilsøking slått på for utvikling og testing av Android-apper. Merk at dette gjør det mulig å installere Android-apper som ikke er verifisert av Google, og enheten må tilbakestilles til fabrikkinnstillingene hvis du vil slå av ADB igjen.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> tilhører ikke noen gyldig organisasjon. Kontakt administratoren din. Hvis du er en administrator, kan du konfigurere organisasjonen din ved å gå til g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Stor</translation>
+<translation id="4213918571089943508">Google-kontoen til et barn</translation>
+<translation id="4228071595943929139">Bruk organisasjonens e-postadresse</translation>
 <translation id="4232484478444192782">Android-telefonen din har det du trenger. Wifi-nettverket og passordet ditt overføres.</translation>
 <translation id="4242145785130247982">Flere klientsertifikater støttes ikke</translation>
 <translation id="4242577469625748426">Kunne ikke installere angivelse av innstillinger på enheten: <ph name="VALIDATION_ERROR" />.</translation>
@@ -185,33 +259,50 @@
 <translation id="4278498748067682896">Du kommer til å bruke en Kiosk og skilt-oppgradering, som gjør at enheten kun kan kjøres i kiosk- eller skiltmodus. Hvis du vil at brukere skal logge på enheten, må du gå tilbake og registrere den med Chrome Enterprise-oppgraderingen.</translation>
 <translation id="4287157641315808225">Ja, slå på ChromeVox</translation>
 <translation id="4289732974614035569">Velg en PIN-kode</translation>
+<translation id="4291265871880246274">Dialogboks for pålogging</translation>
+<translation id="4305817255990598646">Bytt</translation>
 <translation id="4309165024397827958">Tillat at Android-apper og -tjenester med posisjonstillatelse bruker enhetens posisjon. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester på en anonym måte.</translation>
 <translation id="4317733381297736564">Kjøp i app</translation>
 <translation id="4341905082470253054">Kontrollerer TPM-status …</translation>
 <translation id="4370975561335139969">E-posten og passordet du skrev inn, stemmer ikke overens.</translation>
 <translation id="4373418556073552953">Logg på med Android-telefonen din</translation>
+<translation id="4378556263712303865">Enhetsrekvisisjon</translation>
 <translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enhetene lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner du bruker, hvor mye minne du vanligvis bruker, og diagnostikk- og bruksdata for Android-apper. Noen samlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i ChromeOS-enhetsinnstillingene. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Hvis innstillingen for Nett- og appaktivitet er påslått for Google-kontoen din, kan Android-data bli lagret i Google-kontoen. Du kan se og slette dataene dine samt endre kontoinnstillingene dine på account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Søker etter Bluetooth- og USB-enheter</translation>
 <translation id="4403266582403435904">Gjenopprett data eller bytt enhet enkelt når som helst. Sikkerhetskopier lastes opp til Google og krypteres med passordet for barnets Google-konto.</translation>
 <translation id="4410545552906060960">Bruk et tall (en PIN-kode) i stedet for et passord for å låse opp enheten din. For å angi PIN-kode senere, gå til Innstillinger.</translation>
 <translation id="4415213869328311284">Du er klar til å begynne å bruke <ph name="DEVICE_TYPE" />.</translation>
+<translation id="443031431654216610">Bruk bare numeriske sifre</translation>
+<translation id="4448560527907365660">Lagre og se mer</translation>
 <translation id="4449948729197510913">Brukernavnet ditt tilhører bedriftskontoen til organisasjonen din. For å registrere enheter på kontoen må du først verifisere at du er domeneeieren, i administrasjonskonsollen. Du trenger administratorrettigheter på kontoen for å verifisere.</translation>
 <translation id="4450974146388585462">Diagnostiser</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> har funnet en aktiv TPM-enhet som kan lagre dataene dine sikrere.</translation>
+<translation id="4472298120638043495">Du kan bruke det foretrukne språket for Google-kontoen din (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
+<translation id="450867954911715010">Innstillinger for tilgjengelighet</translation>
+<translation id="4519605771716872386">Filsynkronisering er slått på</translation>
+<translation id="4531924570968473143">Hvem vil du legge til på denne <ph name="DEVICE_TYPE" />-enheten?</translation>
 <translation id="4566170377336116390">Hvis du vil endre dette etter registreringen, må du tilbakestille enheten til fabrikkstandard (utføre en powerwash).</translation>
 <translation id="4567512141633030272">Feil påloggingsalternativ?</translation>
+<translation id="4567533462991917415">Du kan alltid legge til flere personer etter at konfigureringen er fullført. Hver person kan gi kontoen sin personlig preg og holde dataene sine private.</translation>
 <translation id="4568213207643490790">Beklager, men Google-kontoer er ikke tillatt på denne enheten.</translation>
 <translation id="4611759022973144129">Du kan bruke dette passordet til å logge på <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">Konfigurer denne enheten for arbeid eller personlig bruk</translation>
+<translation id="4689235506267737042">Velg demoinnstillingene dine</translation>
 <translation id="4727847987444062305">Administrert gjesteøkt</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="473936925429402449">Valgt, ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> er ingen gyldig Google for Education-konto. Kontakt administratoren din. Hvis du er en administrator, kan du konfigurere organisasjonen din ved å gå til g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">For jobb</translation>
 <translation id="4806457879608775995">Gjennomgå disse vilkårene, og kontroller dataene dine</translation>
+<translation id="4814327014588285482">Hopp over og minn meg på dette senere</translation>
 <translation id="4830502475412647084">Installerer OS-oppdateringen</translation>
 <translation id="4837926214103741331">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med eieren av enheten for å få tillatelse til å logge på.</translation>
+<translation id="4844333629810439236">Andre tastaturer</translation>
 <translation id="4864369630010738180">Logger på ...</translation>
+<translation id="4867272607148176509">Foreldre kan godkjenne eller blokkere apper, angi tidsgrenser og kontrollere nettsurfing. Du kan legge til en skolekonto senere for å få tilgang til de fleste skoleressurser.</translation>
 <translation id="4877652723592270843">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
 <translation id="4899696330053002588">Inneholder annonser</translation>
 <translation id="49027928311173603">Innstillingene som ble lastet ned fra tjeneren er ugyldige: <ph name="VALIDATION_ERROR" />.</translation>
@@ -219,14 +310,17 @@
 <translation id="4944310289250773232">Verten for denne autentiseringstjenesten er <ph name="SAML_DOMAIN" />.</translation>
 <translation id="4955710816792587366">Velg PIN-koden din</translation>
 <translation id="4965808351167763748">Er du sikker på at du vil konfigurere Hangouts Meet på denne enheten?</translation>
+<translation id="4987944280765486504">Chromebooken startes på nytt når nedlastingen er fullført og du kan fortsette konfigureringen.</translation>
 <translation id="5029287942302939687">Passordet ditt er angitt</translation>
 <translation id="503155457707535043">Apper lastes ned</translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="5062930723426326933">Påloggingen mislyktes. Koble til Internett og prøv på nytt.</translation>
+<translation id="5085162214018721575">Ser etter oppdateringer</translation>
 <translation id="5097306410549350357">Finn ut mer om bruk av posisjon</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Chat med Gemini for å komme i gang med skriving, planlegging, læring med mer ved hjelp av AI fra Google.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Etter konfigureringen kan du begynne å bruke Gemini ved å velge Gemini-appen på hyllen nederst på skjermen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Koble <ph name="DEVICE_TYPE" />-enheten til en strømkilde.</translation>
+<translation id="5145876360421795017">Ikke registrer enheten</translation>
 <translation id="5147516217412920887">Følg veiledningen på telefonen for å bekrefte koden</translation>
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
@@ -247,6 +341,7 @@
           <ph name="BR" />
           <ph name="BR" />
           <ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Systemet startes på nytt i løpet av prosessen.</translation>
+<translation id="5215502535566372932">Velg land</translation>
 <translation id="5234523649284990414">Skjermleseren på ChromeOS, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk på mellomromstasten for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
 <translation id="523505283826916779">Tilgjengelighetsinnstillinger</translation>
 <translation id="5240931875940563122">Logg på med Android-telefon</translation>
@@ -259,16 +354,21 @@
 <translation id="5355501370336370394">Registrer bedriftsenhet</translation>
 <translation id="5372529912055771682">Denne versjonen av operativsystemet støtter ikke registreringsmodusen som ble angitt. Kontroller at du kjører den nyeste versjonen, og prøv på nytt.</translation>
 <translation id="5397378439569041789">Registrer kiosk- eller skiltenhet</translation>
+<translation id="5397794290049113714">Deg</translation>
 <translation id="5411022484772257615">Kunne ikke fullføre skoleregistreringen</translation>
 <translation id="5413640305322530561">Finn ut mer om diagnostikk- og bruksdata</translation>
 <translation id="542750953150239272">Ved å fortsette godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og enhetens produsent. Dette bruker muligens mobildata. Noen av disse appene kan tilby kjøp i appen.</translation>
 <translation id="542948651837270806">En oppdatering for Trusted Platform Module-fastvaren må installeres. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Noe gikk galt under påloggingen</translation>
+<translation id="5453829744223920473">Barnet ditt kan bruke alle skoleappene, bokmerkene og ressursene sine på samme måte som i klasserommet. Skolen fastsetter grunnreglene.</translation>
 <translation id="5463450804024056231">Meld deg på e-poster om <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Hvis du fortsetter, godtar du at apper og oppdateringer fra Google, barnets operatør og enhetsprodusenten også kan lastes ned og installeres på enheten automatisk – muligens via mobildata. Noen av disse appene kan tilby kjøp i appen.</translation>
+<translation id="5502915260472117187">Et barn</translation>
 <translation id="5511823366942919280">Er du sikker på at du ønsker å konfigurere denne enheten som en «hai» («shark»)?</translation>
+<translation id="5513807280330619196">Kalkulator</translation>
 <translation id="5527474464531963247">Du kan også velge et annet nettverk.</translation>
 <translation id="5539070192556911367">Får ikke kontakt med Google</translation>
+<translation id="5549511085333906441">Velg konfigurasjon</translation>
 <translation id="557722062034137776">Tilbakestilling av enheten påvirker ikke Google-kontoene dine eller andre data som er synkronisert til disse kontoene. Derimot slettes alle filer som er lagret lokalt på enheten.</translation>
 <translation id="5626172233890210551">Bruk passord i stedet</translation>
 <translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />For å gi deg den beste opplevelsen samler <ph name="DEVICE_OS" /> inn maskinvaredata om enheter og deler dem med Google for å fastslå hvilke oppdateringer som skal leveres. Du kan velge å la Google bruke disse dataene for tilleggsformål, som brukerstøtte og forbedringer av <ph name="DEVICE_OS" />-opplevelsen og -tjenesten.<ph name="END_PARAGRAPH1" />
@@ -276,6 +376,7 @@
         <ph name="BEGIN_PARAGRAPH3" />For mer informasjon om hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de brukes, se g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Hvis du vil bruke <ph name="NETWORK_ID" />, er det mulig du må <ph name="LINK_START" />gå til nettverkets påloggingsside<ph name="LINK_END" />, som åpnes automatisk om få sekunder. Hvis det ikke skjer, kan ikke nettverket brukes.</translation>
 <translation id="5655296450510165335">Registrering av enhet</translation>
+<translation id="565899488479822148">Installerer den nyeste oppdateringen</translation>
 <translation id="5659964844710667266">Opprett et passord for denne <ph name="DEVICE_TYPE" />-enheten</translation>
 <translation id="5684661240348539843">Ressursidentifikator</translation>
 <translation id="5684950556880280580">Passordet ditt er oppdatert</translation>
@@ -285,19 +386,26 @@
 <translation id="5765425701854290211">Beklager, men noen av filene var skadet, og oppdateringen kunne ikke gjennomføres. De synkroniserte filene dine er trygge.</translation>
 <translation id="5770125698810550803">Vis navigeringsknapper</translation>
 <translation id="5799478978078236781">Få tips om, tilbud på og oppdateringer for <ph name="DEVICE_TYPE" />, og gi tilbakemeldinger.</translation>
+<translation id="5800703268655655701">Velg lyst eller mørkt tema</translation>
 <translation id="5804259315582798390">Kunne ikke slå på lokal datagjenoppretting</translation>
 <translation id="5810809306422959727">Denne kontoen er ikke kvalifisert for foreldrekontroll</translation>
+<translation id="5834581999798853053">Omtrent <ph name="TIME" /> minutter igjen</translation>
 <translation id="5852112051279473187">Beklager!  Det oppsto et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
 <translation id="5852137567692933493">Omstart og Powerwash</translation>
 <translation id="5856721540245522153">Slå på feilsøkingsfunksjoner</translation>
+<translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
+<translation id="5870086504539785141">Lukk tilgjengelighetsmenyen</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5895335062901455404">Du får tilgang til de lagrede preferansene dine og den lagrede aktiviteten din på alle ChromeOS Flex-enheter når du logger på med Google-kontoen din. Du kan velge hva du vil synkronisere, i Innstillinger.</translation>
+<translation id="5916664084637901428">På</translation>
 <translation id="5919305207330938913">Alle data som samles inn, brukes i samsvar med <ph name="BEGIN_LINK" />Googles personvernregler<ph name="END_LINK" />.</translation>
 <translation id="5932441198730183141">Du har ikke nok ledige lisenser til å registrere denne Google Meet-enheten. Kontakt salgsavdelingen for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte brukerstøtten.</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
+<translation id="5948536763493709626">Koble til et tastatur eller en mus, eller fortsett konfigureringen med berøringsskjermen. Hvis du bruker Bluetooth-enheter, sørg for at enhetene er klare til sammenkobling.</translation>
 <translation id="5959471481388474538">Nettverket er utilgjengelig</translation>
 <translation id="6016178549409952427">Gå til ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Velg språk- og tastaturknappen. Det valgte språket er for øyeblikket <ph name="LANGUAGE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6051354611314852653">Beklager. Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="6055544610007596637">Installer apper på <ph name="DEVICE_TYPE" /> fra Google Play-butikken</translation>
@@ -318,6 +426,7 @@
 <translation id="6301300352769835063">La Google bruke maskinvaredataene dine for å gjøre <ph name="DEVICE_OS" /> bedre. Hvis du avviser dette, blir dataene fremdeles sendt til Google for å fastslå hvilke oppdateringer enheten trenger, men de blir ikke lagret eller brukt ellers. Finn ut mer på g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Påloggingen leveres av <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Nå har du slått på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
+<translation id="6343262564968371601">Finn det du leter etter, ved å søke på Google, i filer, apper med mer</translation>
 <translation id="635609604405270300">Hold enheten påslått</translation>
 <translation id="6367097275976877956">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS? Hvis ja, trykk på mellomromstasten.</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
@@ -326,20 +435,27 @@
 <translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enhetene lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner du bruker, og hvor mye minne du vanligvis bruker.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i Chrome-enhetsinnstillingene. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Installer en kritisk oppdatering</translation>
+<translation id="6478849105642611893">Hurtiginnsetting-tasten er under Tab-tasten</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Velg språk</translation>
 <translation id="6495266441917713704">Kan ikke overføre wifi</translation>
 <translation id="6515620015470298987">Påloggingen mislyktes på grunn av et problem med enhetskonfigurasjonssjekken. Utfør en powerwash på <ph name="DEVICE_TYPE" />, og prøv på nytt.</translation>
 <translation id="6519689855001245063">Kontrollerer kvalifikasjoner</translation>
 <translation id="6532527800157340614">Påloggingen mislyktes fordi tilgangstokenet ditt ikke kunne hentes. Sjekk nettverkstilkoblingen din, og prøv på nytt.</translation>
+<translation id="653920215766444089">Søker etter pekeenhet</translation>
 <translation id="65513682072153627">Du ser dette Administrert-ikonet når innstillinger og funksjoner administreres av administratoren din.</translation>
+<translation id="6561726789132298588">enter</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> administreres allerede av <ph name="DOMAIN" />. For å bruke foreldrekontroll med en annen Google-konto, logg ut etter konfigureringen og velg «Legg til person» på påloggingsskjermen.</translation>
 <translation id="6642720633335369752">For å se alle åpne appvinduer, sveip opp fra bunnen og hold inne.</translation>
 <translation id="6648911618876616409">En kritisk oppdatering er klar for installasjon. Logg på for å komme i gang.</translation>
 <translation id="6671497123040790595">Konfigurerer administrering av <ph name="MANAGER" /></translation>
+<translation id="6675665718701918026">En pekeenhet er koblet til</translation>
 <translation id="667752334740867460">Mottar wifi-informasjon …</translation>
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Du kan gjenopprette <ph name="EMAIL" />, men lokale data slettes.</translation>
 <translation id="6748980958975836188">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Bilder</translation>
+<translation id="6754918760968695779">Hurtiginnsetting</translation>
 <translation id="6789834167207639931">Skriv inn passordet for Google-kontoen din på nytt på den neste skjermen for å fullføre gjenopprettingen</translation>
 <translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, hvor mye minne som vanligvis var i bruk, samt Android-appdiagnostikk og -bruksdata. Noen samlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i barnets ChromeOS-enhetsinnstillinger. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
@@ -348,12 +464,18 @@
 <translation id="682971198310367122">Googles personvernregler</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Påloggingen er endret</translation>
+<translation id="6852529053326738838">Spør organisasjonen din, eller registrer deg med jobb-e-postadressen din for å sjekke om kontoen din er kvalifisert.</translation>
+<translation id="6867671714894555998">Få ting gjort raskt med det nye tastaturet</translation>
 <translation id="6883319974225028188">Beklager. Systemet kunne ikke lagre enhetskonfigurasjonen.</translation>
+<translation id="6888831646723563669">Koble til et nettverk for å bruke alle funksjonene på den nye <ph name="DEVICE_TYPE" />-enheten din</translation>
 <translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle slags data som er lagret i en app (basert på utviklerinnstillingene), inkludert data som kontakter, meldinger og bilder. De sikkerhetskopierte dataene teller ikke med i barnets Disk-lagringskvote.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan slå av denne tjenesten i innstillingene.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
 <translation id="6918733588290914545">Rask konfigurering med Android-telefon</translation>
 <translation id="6920473853105515518">Sørg for at <ph name="DEVICE_TYPE" /> er koblet til internett, og prøv på nytt. Du kan også gå til play.google/play-terms på en annen enhet.</translation>
+<translation id="6929126689972602640">Foreldrekontroll støttes ikke for skolekontoer. For å legge til en skolekonto for å få tilgang til Google Classroom og andre nettsteder for skolearbeid hjemme, logg på med barnets personlige konto først. Du kan legge til skolekontoen senere i konfigureringen.</translation>
+<translation id="6935031746833428401">Finn ut mer om administrering av enheter</translation>
+<translation id="6950351336108213154">Oppdaterer eksterne enheter</translation>
 <translation id="6955698182324067397">Du er i ferd med å slå på ChromeOS-feilsøkingsfunksjoner som kommer til å konfigurere sshd daemon og muliggjøre oppstart fra USB-stasjoner.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6969216690072714773">Skriv inn ny eller oppdater eksisterende informasjon som skal knyttes til denne enheten.</translation>
@@ -363,23 +485,37 @@
 -tjeneren fungerer. Hvis du ikke vil bruke en
         proxy-tjener, kan du endre <ph name="LINK_START" />innstillingene for proxy-tjener<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Slå på Bluetooth og wifi på telefonen</translation>
+<translation id="6996438701394974959">Øk visnings- og tekststørrelsen</translation>
+<translation id="6998793565256476099">Registrer enheten for videokonferanser</translation>
 <translation id="7025082428878635038">Vi innfører en ny måte å navigere med bevegelser på</translation>
 <translation id="7034692021407794547">En administrator med rettigheter til faktureringsadministrasjon må først godta vilkårene for bruk av Google Meet-enheter i delen Google Meet-enheter i administrasjonskonsollen.</translation>
+<translation id="7039951224110875196">Opprett en Google-konto for et barn</translation>
 <translation id="7065223852455347715">Denne enheten er låst i en modus som forhindrer bedriftsregistrering. Hvis du vil registrere enheten, må du du gjenopprette enheten først.</translation>
+<translation id="7066572364168923329">Velg konfigurasjonen for <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Påloggingssiden kunne ikke lastes inn med de gjeldende mellomtjenerinnstillingene. <ph name="GAIA_RELOAD_LINK_START" />Forsøk å logge deg på igjen<ph name="GAIA_RELOAD_LINK_END" /> eller endre <ph name="PROXY_SETTINGS_LINK_START" />mellomtjenerinnstillingene<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">Administratoren har gitt denne enheten status som «ikke klargjort». For å aktivere den for registrering, må du be administratoren gi enheten status som «ventende».</translation>
 <translation id="7114054701490058191">Passordene er ikke like</translation>
 <translation id="7135729336746831607">Vil du slå på Bluetooth?</translation>
 <translation id="7141105143012495934">Påloggingen mislyktes fordi kontoopplysningene dine ikke kunne hentes ut. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
+<translation id="7171259390164035663">Ikke registrer</translation>
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7202337678781136582">Skann QR-koden med Android-telefonen</translation>
+<translation id="7228854227189381547">Ikke bytt</translation>
+<translation id="7230881857327093958">Endringene tas i bruk etter konfigureringen</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
+<translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
+<translation id="7311005168897771689">Få tilgang til Google Disk-filene dine når du er uten nett</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
+<translation id="7326004502692201767">Konfigurer <ph name="DEVICE_TYPE" /> for et barn</translation>
+<translation id="732659786514229249">Vil du registrere enheten i organisasjonen din?</translation>
 <translation id="7329154610228416156">Påloggingen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Kontakt administratoren din.</translation>
 <translation id="7345706641791090287">Bekreft passordet</translation>
+<translation id="7348093485538360975">Skjermtastatur</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
+<translation id="7403642243184989645">Laster ned ressurser</translation>
+<translation id="7406912950279255498">Modus for fargeinvertering</translation>
 <translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="7475742997309661417">Skjermleseren på ChromeOS, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk og hold på begge volumtastene i fem sekunder for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
@@ -389,10 +525,13 @@
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" />-enheten din er nå registrert for bedriftsadministrering.</translation>
 <translation id="7509097596023256288">Konfigurerer av administrasjon</translation>
 <translation id="7543104066686362383">Slå på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
+<translation id="7544227555407951270">Registrer enheten</translation>
+<translation id="7549434883223124329">Vil du bytte enhetsspråk?</translation>
 <translation id="7553242001898162573">Skriv inn passordet ditt</translation>
 <translation id="7556242789364317684">Dessverre kan ikke <ph name="SHORT_PRODUCT_NAME" /> gjenopprette innstillingene dine. For å reparere feilen må <ph name="SHORT_PRODUCT_NAME" /> tilbakestille enheten med Powerwash.</translation>
 <translation id="7560756177962144929">Synkroniser <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">For lite lagringsplass til å oppdatere</translation>
+<translation id="7616214729753637086">Registrerer enheten …</translation>
 <translation id="7622114377921274169">Lader.</translation>
 <translation id="7630426712700473382">Denne enheten administreres av <ph name="MANAGER" /> og krever at du logger deg på hver gang.</translation>
 <translation id="7639914187072011620">Kunne ikke hente SAML-viderekoblingsadressen fra tjeneren</translation>
@@ -404,28 +543,43 @@
 <translation id="7659584679870740384">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med administratoren for å få tillatelse til å logge på.</translation>
 <translation id="7660116474961254898">Følg veiledningen på telefonen</translation>
 <translation id="7661451191293163002">Kunne ikke anskaffe noe registreringssertifikat.</translation>
+<translation id="7666531788977935712">Fortsett-knappen er aktivert</translation>
 <translation id="7671139479636735732">Høyreklikk for å visualisere ideene dine enkelt</translation>
 <translation id="770831926727930011">Lokale data er beskyttet av det gamle passordet ditt. Skriv inn det gamle passordet ditt for å gjenopprette lokale data.</translation>
 <translation id="7722040605881499779">Trengs for å oppdatere: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Sammenkobler med «<ph name="DEVICE_NAME" />» …</translation>
+<translation id="7746045113967198252">Gjør elementer på skjermen, inkludert tekst, større eller mindre. Du kan også finne dette senere i Innstillinger &gt; Enhet &gt; Skjermer.</translation>
 <translation id="7760176388948986635">Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til denne enheten. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra denne enheten for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere enkeltpersoner for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov.</translation>
 <translation id="7784875615510899699">Du har ikke nok ledige lisenser til å registrere denne Google Beam-enheten. Kontakt forhandleren din for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte forhandleren din.</translation>
+<translation id="7791269138074599214">Inndatametode</translation>
+<translation id="7791436592012979144">Omvendt rulling er aktivert</translation>
 <translation id="7792012425874949788">Noe gikk galt under påloggingen</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7803657407897251194">For å fortsette konfigureringen med Android-enheten din, koble <ph name="DEVICE_TYPE" /> til et nettverk</translation>
+<translation id="7842692330619197998">Gå til g.co/ChromeEnterpriseAccount hvis du må opprette en ny konto.</translation>
 <translation id="7851457902707056880">Pålogging er begrenset og kan gjøres bare via eierkontoen. Start enheten på nytt og logg på med eierkontoen. Maskinen starter automatisk på nytt om 30 sekunder.</translation>
 <translation id="7870730066603611552">Gå gjennom alternativene for synkronisering etter konfigureringen</translation>
 <translation id="7883792253546618164">Du kan avslutte abonnementet når som helst.</translation>
+<translation id="7887864092952184874">En Bluetooth-mus er tilkoblet</translation>
 <translation id="7906440585529721295">Lokale data blir slettet</translation>
+<translation id="7910725946105920830">Bruk den personlige Google-kontoen din</translation>
+<translation id="7918257978052780342">Registrer deg</translation>
 <translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, og hvor mye minne som vanligvis var i bruk.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i barnets ChromeOS-enhetsinnstillinger. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Avanserte alternativer</translation>
 <translation id="7943311690198910993">Påloggingsmetoden er oppdatert</translation>
 <translation id="795240231873601803">Bruk bedriftsregistrering for jobb- og skolekontoer</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
 <translation id="7975504106303186033">Du må registrere denne Chrome Education-enheten på en utdanningskonto. For å registrere en ny konto, gå til g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">Ressurs-ID: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Start enheten på nytt for å fikse denne feilen.</translation>
 <translation id="7990958035181555539">Overfør wifi automatisk fra Android-telefonen din</translation>
+<translation id="8022466874160067884">Skriv inn Google-kontoen din og passordet ditt</translation>
+<translation id="8049029041626250638">Koble til et tastatur eller en mus. Hvis du bruker Bluetooth-enheter, sørg for at enhetene er klare til sammenkobling.</translation>
 <translation id="8054563304616131773">Skriv inn en gyldig e-postadresse</translation>
+<translation id="8054921503121346576">USB-tastatur tilkoblet</translation>
 <translation id="8065144531309810062">Bruk AI fra Google for å jobbe mer kreativt og produktivt</translation>
+<translation id="8082106343289440791">Vil du sammenkoble med «<ph name="DEVICE_NAME" />»?</translation>
 <translation id="8097959162767603171">Administratoren din må først godta vilkårene for bruk i Chrome-enhetslisten i administrasjonskonsollen.</translation>
 <translation id="8098616321286360457">Nettverkstilkobling kreves</translation>
 <translation id="8129265306888404830">For å bruke e-postadressen fra organisasjonen din (<ph name="EMAIL_DOMAIN" />) må du bruke bedriftsregistrering. Hvis denne enheten er til personlig bruk, logger du på med den personlige Google-kontoen din.</translation>
@@ -433,6 +587,7 @@
 <translation id="8146177459103116374">Hvis du allerede er registrert på denne enheten, kan du <ph name="LINK2_START" />logge deg på som en eksisterende bruker<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Påloggingen mislyktes. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="8147346945017130012">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende programstopprapporter, diagnostikk og bruksdata automatisk til Google.</translation>
+<translation id="8152760814912191567">Google Beam for Zoom</translation>
 <translation id="815491593104042026">Beklager. Autentiseringen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Ta kontakt med administratoren din.</translation>
 <translation id="8157704005178149728">Konfigurerer tilsyn</translation>
 <translation id="8174047975335711832">Enhetsinformasjon</translation>
@@ -443,20 +598,26 @@
 <translation id="8241806945692107836">Fastslår enhetskonfigurasjonen …</translation>
 <translation id="8242426110754782860">Gå videre</translation>
 <translation id="826905130698769948">Ugyldig klientsertifikat</translation>
+<translation id="8271379370373330993">Foreldre, dere må utføre de neste trinnene. Dere kan gi <ph name="DEVICE_TYPE" /> tilbake til barnet etter kontokonfigureringen.</translation>
 <translation id="8274924778568117936">Du må ikke slå av eller lukke <ph name="DEVICE_TYPE" />-enheten din før oppdateringen er ferdig. <ph name="DEVICE_TYPE" />-enheten starter på nytt når installasjonen er ferdig.</translation>
 <translation id="8281886186245836920">Hopp over</translation>
+<translation id="8291942417224950075">For personlig bruk</translation>
 <translation id="8304383784961451596">Du er ikke autorisert til å bruke denne enheten. Kontakt administratoren for å få tillatelse til å logge på, eller logg på med en Google-konto som er under tilsyn av Family Link.</translation>
 <translation id="8321837372750396788">Denne <ph name="DEVICE_TYPE" />-enheten kommer til å bli administrert av <ph name="MANAGER" />.</translation>
+<translation id="8339288417038613756">Visnings- og tekststørrelse</translation>
 <translation id="8354034204605718473">Barnets PIN-kode er lagt til</translation>
 <translation id="8366396658833131068">Nettverkstilkoblingen er gjenopprettet. Velg et annet nettverk eller trykk på «Fortsett»-knappen nedenfor for å starte kioskappen din.</translation>
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
 <translation id="8408270600235826886">Du kan kontrollere hvilke data som deles med Google. Du kan når som helst endre dette i innstillingene. Dataene brukes i henhold til Googles <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS?</translation>
 <translation id="8425768983279799676">Du kan bruke PIN-koden til å låse opp enheten.</translation>
+<translation id="8428213095426709021">Innstillinger</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
 <translation id="8452105022015742247">Overfører Google-kontoinformasjon fra Android-telefonen</translation>
 <translation id="8464132254133862871">Brukerkontoen er ikke kvalifisert for denne tjenesten.</translation>
 <translation id="8524841856047224176">Tilpass kamerabakgrunnene dine for videosamtaler med mer</translation>
+<translation id="8527257351549797148">Det kan hende at organisasjonen din krever registrering, for at du skal få tilgang til apper, utvidelser med mer. Da kan organisasjonen din også administrere ting som sikkerhet og enhetsinnstillinger.</translation>
+<translation id="8558063527625343224">Konfigurer Google Beam</translation>
 <translation id="8569673829373920831">Mer om <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Tillat at ChromeOS- og Android-apper, -nettsteder og -tjenester med posisjonstillatelse bruker posisjonen til enheten din. Med Posisjonsnøyaktighet får Android-apper og tjenester mer nøyaktige posisjoner. For å få til dette behandler Google med jevne mellomrom informasjon om enhetssensorer og trådløse signaler fra enheten din for å bidra til crowdsourcing av posisjonene til trådløse signaler. Disse brukes uten å identifisere deg for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester og for å forbedre, levere og vedlikeholde Googles tjenester basert på Googles og tredjeparters berettigede interesser i å oppfylle brukernes behov.</translation>
 <translation id="8627804903623428808">Gjennomgå disse vilkårene, og kontroller dataene til barnet ditt</translation>
@@ -471,6 +632,7 @@
 <translation id="8674903726754070732">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Slå på foreldrekontroll etter konfigureringen</translation>
 <translation id="8698269656364382265">For å gå tilbake til det forrige skjermbildet, sveip fra venstre side.</translation>
+<translation id="8718994464069323380">Berøringsskjerm oppdaget</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8726206820263995930">Feil under henting av innstillingsangivelser fra tjeneren: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Ferdig</translation>
@@ -478,24 +640,36 @@
 <translation id="8740247629089392745">Du kan gi Chromebooken til <ph name="SUPERVISED_USER_NAME" />. Konfigureringen er nesten ferdig, og så er det tid for å utforske.</translation>
 <translation id="8759753423332885148">Finn ut mer</translation>
 <translation id="8777628254805677039">rotpassord</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Skriv inn Bluetooth-sammenkoblingskoden, og trykk på Retur eller Enter.</translation>
 <translation id="8794548468611058947">I stedet for å skrive inn passordet for Google-kontoen din for å logge på, kan du opprette en PIN-kode for <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830796635868321089">Oppdateringssjekken mislyktes med de gjeldende mellomtjenerinnstillingene. Du må endre <ph name="PROXY_SETTINGS_LINK_START" />mellomtjenerinnstillingene<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Denne Chromebook Enterprise-enheten leveres med Chrome Enterprise-oppgraderingen. For å dra nytte av bedriftsfunksjonene, registrer denne enheten med en Google-administratorkonto.</translation>
 <translation id="885746075120788020">Du får tilgang til de lagrede preferansene dine og den lagrede aktiviteten din på alle ChromeOS-enheter når du logger på med Google-kontoen din. Du kan velge hva du vil synkronisere, i Innstillinger.</translation>
+<translation id="8868333925931032127">Starter demomodus</translation>
 <translation id="8875221558267407626">Oppsummer innhold, forenkle komplisert språk eller still spørsmål</translation>
+<translation id="8907701755790961703">Velg et land</translation>
 <translation id="8913163265790894442">Konfigurer <ph name="DEVICE_TYPE" /> enkelt med telefonen. Du kan legge til wifi-nettverket ditt og Google-kontoen din uten å skrive inn passordene manuelt.
         <ph name="BR" />
         <ph name="BR" />
         Synlig som <ph name="DEVICE_TYPE" /></translation>
+<translation id="8934732568177537184">Fortsett</translation>
 <translation id="8946359700442089734">Feilsøkingsfunksjonene ble ikke påslått på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
 <translation id="8965037249707889821">Skriv inn det gamle passordet</translation>
+<translation id="8968906873893164556">Velg kontoen du vil bruke til konfigureringen</translation>
+<translation id="8973596347849323817">Du kan tilpasse denne enheten etter eget behov. Disse tilgjengelighetsfunksjonene kan endres senere i innstillingene.</translation>
 <translation id="8975396729541388937">Du kan når som helst melde deg av ved å klikke på linken i e-postene du mottar.</translation>
+<translation id="8987305927843254629">Hver person kan få en personlig opplevelse og holde dataene sine private.</translation>
 <translation id="8993059306046735527">Hvis du glemmer passordet ditt for <ph name="DEVICE_TYPE" />, kan du fremdeles gjenopprette de lokale dataene dine. Du må logge på Google-kontoen din eller bruke kontogjenoppretting.</translation>
 <translation id="9033765790910064284">Fortsett likevel</translation>
 <translation id="903480517321259405">Skriv inn PIN-koden på nytt</translation>
 <translation id="9040473193163777637">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
 <translation id="9068298336633421551">Tillat at Android-apper og tjenester med posisjonstillatelse bruker enhetens posisjon. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester på en anonym måte.</translation>
+<translation id="9074836595010225693">USB-mus er tilkoblet</translation>
 <translation id="9076523132036239772">Beklager, men angitt e-postadresse eller passord kunne ikke bekreftes. Prøv å koble deg til et nettverk først.</translation>
+<translation id="9089959054554410481">Endre rulleretning for styreflaten</translation>
 <translation id="9158715103698450907">Beklager. Det oppsto et kommunikasjonsproblem på nettverket under godkjenningen. Sjekk nettverksforbindelsen din, og prøv på nytt.</translation>
+<translation id="9186963452600581158">Logg på med Google-kontoen til et barn</translation>
 <translation id="919686179725692564">Finn ut mer om sikkerhetskopiering av appene dine</translation>
 <translation id="9214520840402538427">Beklager. Oppstarten av attributtene for installasjonstid er tidsavbrutt. Ta kontakt med brukerstøtterepresentanten din.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Bare for <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -505,4 +679,7 @@
         <ph name="BR" />
         Synlig som <ph name="DEVICE_TYPE" /></translation>
 <translation id="951991426597076286">Avvis</translation>
+<translation id="954749761428814584">Språk og inndatametode</translation>
+<translation id="960987915827980018">Omtrent én time igjen</translation>
+<translation id="995420352808264005">Velg type enhetsregistrering</translation>
 </translationbundle>

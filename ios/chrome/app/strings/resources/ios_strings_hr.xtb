@@ -1573,6 +1573,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="628251768213143684">Uvijek možete upravljati time koji će se podaci spremati na vaš Google račun</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Da biste uključili sigurno pregledavanje, otvorite odjeljak <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" /> i dodirnite Sigurno pregledavanje.</translation>
+<translation id="6295140892595702619">Upotrijebite mikrofon da biste razgovarali s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u aktivnost u Gemini aplikacijama (ako je uključena). Vaši se podaci ne upotrebljavaju za poboljšanje generativnih AI modela</translation>
 <translation id="6295751040240588413">Nadimak kartice nije važeći</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Primajte obavijesti o praćenju cijena</translation>
@@ -2181,7 +2182,6 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8264966119170358612">Neke od vaših spremljenih zaporki otkrivene su u neovlaštenom pristupu podacima izvan Googlea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. Da biste se ponovno prijavili, dodirnite Nastavi u nastavku.</translation>
 <translation id="8270320981823560179">Disk</translation>
-<translation id="8273982424131314219">Unijet ćete podatke u <ph name="URL" /></translation>
 <translation id="8274795744553482834">Spremate se promijeniti profil</translation>
 <translation id="8275068909952022340">Više…</translation>
 <translation id="8280797717392145626">Primljene veze</translation>
@@ -2415,6 +2415,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, prikvačena web-lokacija</translation>
 <translation id="8990960056509724223">Spremanje datoteke nije uspjelo zbog pravila vaše organizacije</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
+<translation id="9003263770394939629">Predlaže Gemini. Upravljajte poboljšanim automatskim popunjavanjem u postavkama.</translation>
 <translation id="9003677638446136377">Provjeri ponovo</translation>
 <translation id="9006453925669499173">Izbornik → Nova anonimna kartica</translation>
 <translation id="9008201768610948239">Zanemari</translation>

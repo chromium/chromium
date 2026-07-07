@@ -302,7 +302,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2297822946037605517">Bu sahifani ulashish</translation>
 <translation id="230115972905494466">Mos qurilmalar topilmadi</translation>
 <translation id="2316129865977710310">Kerak emas</translation>
-<translation id="2318045970523081853">Chaqirish uchun bosing</translation>
 <translation id="232137538351753795">Orqaga qaytish uchun chapdan suring</translation>
 <translation id="2323763861024343754">Sayt xotirasi</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> orqali</translation>
@@ -436,7 +435,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 kun oldin tekshirilgan}other{# kun oldin tekshirilgan}}</translation>
 <translation id="2842985007712546952">Ota jild</translation>
 <translation id="2854916915045135148">Inkognito rejimiga kirish uchun bosib, ushalb turing</translation>
-<translation id="2860954141821109167">Bu qurilmada telefon ilovasi yoniqligini tekshiring</translation>
 <translation id="286473047976978798">Mavzu sozlamalari tatbiq etilsinmi?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> va yana 1 ta varaq}other{<ph name="URL" /> va yana <ph name="TAB_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="2869430948265924908">Avtomobildagi maxfiy kontentingizni himoya qilish uchun avtomobil profili qulfini yaratishingiz kerak.  Buning uchun PIN kod, kod yoki parol yaratishingiz kerak.</translation>
@@ -1272,6 +1270,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6315386555979018699">Oʻchirish va davom etish</translation>
 <translation id="6316139424528454185">Android versiyasi bilan mos emas</translation>
 <translation id="631839948975905034">Chrome yopilganda, Inkognito oynalar qulflansin</translation>
+<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" kengaytmasi Chrome hisobiga kirishni soʻramoqda</translation>
 <translation id="6324916366299863871">Yorliqni tahrirlash</translation>
 <translation id="6324977638108296054">Tanlangan matnga havola yaratish imkonsiz</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> orqali ulashish</translation>
@@ -1450,6 +1449,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6910211073230771657">O‘chirib tashlandi</translation>
 <translation id="6916590542764765824">Kengaytmalarni boshqarish</translation>
 <translation id="6918398787259831832">Muammo qayta takrorlansa, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali <ph name="BEGIN_LINK" />batafsil axborot oling<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">Bu sahifa uchun QR kod yaratish</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome bu ruxsatlarni olib tashladi, chunki saytga uzoq vaqt kirmagansiz</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ta varaq}other{<ph name="NUMBER_OF_TABS" /> ta varaq}}</translation>
 <translation id="6929224077895306814">Qurilma va Google hisobingizda saqlangan barcha xavfsizlik kodlari oʻchirib tashlanadi</translation>
@@ -2033,7 +2033,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9204836675896933765">1 fayl qoldi</translation>
 <translation id="9205933215779845960">Bunday sahifa topilmadi. Manzilning xatosiz kiritilganini tekshiring yoki <ph name="SEARCH_ENGINE" /> orqali qaytadan qidiring.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Telefon qilinmaydi</translation>
 <translation id="9212845824145208577">Bundan pasti olinmaydi. Sahifaning quyi qismidan qayta boshlang.</translation>
 <translation id="9218430445555521422">Birlamchi qilish</translation>
 <translation id="9219103736887031265">Rasmlar</translation>

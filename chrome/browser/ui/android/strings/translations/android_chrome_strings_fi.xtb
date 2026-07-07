@@ -302,7 +302,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2297822946037605517">Jaa tämä sivu</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
-<translation id="2318045970523081853">Soita napauttamalla</translation>
 <translation id="232137538351753795">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
 <translation id="2327445548174191329">Lähde: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tarkistettu 1 päivä sitten}other{Tarkistettu # päivää sitten}}</translation>
 <translation id="2842985007712546952">Ylätason kansio</translation>
 <translation id="2854916915045135148">Vaihda incognito-tilaan koskettamalla pitkään</translation>
-<translation id="2860954141821109167">Varmista, että puhelinsovellus on käytössä tällä laitteella</translation>
 <translation id="286473047976978798">Otetaanko asetteluvalinnat käyttöön?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ja 1 muu välilehti}other{<ph name="URL" /> ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä}}</translation>
 <translation id="2869430948265924908">Jos haluat suojata autossa olevan arkaluontoisen sisällön, sinun on luotava profiililukko autoa varten.  Voit tehdä sen PIN-koodilla, koodilla tai salasanalla.</translation>
@@ -1272,6 +1270,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6315386555979018699">Poista ja jatka</translation>
 <translation id="6316139424528454185">Android-versiota ei tueta</translation>
 <translation id="631839948975905034">Lukitse incognito-ikkunat, kun poistut Chromesta</translation>
+<translation id="6321592572353357376">Laajennus "<ph name="EXTENSION_NAME" />" haluaa, että kirjaudut Chromeen</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
 <translation id="6324977638108296054">Korostuksen linkittäminen ei onnistu</translation>
 <translation id="6333140779060797560">Jaa sovelluksella <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6910211073230771657">Poistettu</translation>
 <translation id="6916590542764765824">Hallinnoi laajennuksia</translation>
 <translation id="6918398787259831832">Jos ongelma toistuu, <ph name="BEGIN_LINK" />pyydä lisätietoja<ph name="END_LINK" />: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Luo QR-koodi tälle sivulle</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome on poistanut nämä luvat, koska et ole käynyt niissä viime aikoina</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 välilehti}other{<ph name="NUMBER_OF_TABS" /> välilehteä}}</translation>
 <translation id="6929224077895306814">Kaikki laitteelle ja Google-tilille tallennetut turvakoodit poistetaan</translation>
@@ -1541,6 +1541,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7248671827512403053">Sovellus</translation>
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
 <translation id="7260367682327802201">Android-laitteellasi voi olla vastaava asetus. Jos mainosten mittaus on otettu käyttöön Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
+<translation id="7265857422443387781">Hae välilehteä Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Lähetetäänkö <ph name="ONE_TIME_CODE" /> tänne: <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Estetty sivusto</translation>
 <translation id="7276868533747677875">Jos olet aiemmin vienyt salasanoja, etsi laitteelta CSV-tiedosto ja tuo se haluamaasi salasanojen hallintatyökaluun.</translation>
@@ -1883,6 +1884,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="860282621117673749">Ilmoitukset hinnanalennuksista</translation>
 <translation id="8611922158252451755">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten ne kannattaa jakaa harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
 <translation id="8616006591992756292">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Käännä kielelle <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Avaa Chrome-valikko &gt; Asetukset</translation>
 <translation id="8634050254805484913">Piilotettu kapeilla näytöillä</translation>
 <translation id="8635399646025169806">Säilytetäänkö välilehtiryhmä?</translation>
@@ -2031,7 +2033,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9204836675896933765">1 tiedosto jäljellä</translation>
 <translation id="9205933215779845960">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile hakea tällä: <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Puheluiden soittaminen ei onnistu</translation>
 <translation id="9212845824145208577">Alemmas ei pääse. Kokeile aloittaa alempaa sivulta.</translation>
 <translation id="9218430445555521422">Aseta oletukseksi</translation>
 <translation id="9219103736887031265">Kuvat</translation>

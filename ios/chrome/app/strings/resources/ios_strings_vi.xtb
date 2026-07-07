@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">Bạn luôn có thể quản lý nội dung đã lưu trong Tài khoản Google của mình</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
+<translation id="6295140892595702619">Hãy dùng micrô trên thiết bị để trò chuyện với Gemini. Khi bạn trò chuyện với Gemini, âm thanh sẽ được lưu trữ trong phần Hoạt động trên Các ứng dụng Gemini (nếu bạn bật chế độ này). Dữ liệu của bạn không được dùng để cải thiện các mô hình AI tạo sinh</translation>
 <translation id="6295751040240588413">Biệt hiệu của thẻ không hợp lệ</translation>
 <translation id="629730747756840877">Tài khoản</translation>
 <translation id="6301104306974789820">Nhận thông báo theo dõi giá</translation>
@@ -2181,7 +2182,6 @@
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Bạn đã bị đăng xuất khỏi tài khoản <ph name="USER_NAME" /> trong quá trình đặt lại iPad. Để đăng nhập lại, hãy nhấn vào "Tiếp tục" ở dưới.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Thông tin của bạn sẽ được điền vào <ph name="URL" /></translation>
 <translation id="8274795744553482834">Bạn sắp chuyển đổi hồ sơ</translation>
 <translation id="8275068909952022340">Khác…</translation>
 <translation id="8280797717392145626">Đã nhận được đường liên kết</translation>
@@ -2415,6 +2415,7 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, trang web đã được ghim</translation>
 <translation id="8990960056509724223">Không thể lưu tệp do các chính sách của tổ chức bạn</translation>
 <translation id="8998289560386111590">Tính năng đăng nhập không hoạt động trên thiết bị của bạn</translation>
+<translation id="9003263770394939629">Do Gemini đề xuất. Quản lý tự động điền nâng cao trong phần cài đặt.</translation>
 <translation id="9003677638446136377">Kiểm tra lại</translation>
 <translation id="9006453925669499173">Trình đơn → Thẻ ẩn danh mới</translation>
 <translation id="9008201768610948239">Bỏ qua</translation>

@@ -1578,6 +1578,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="628251768213143684">Anda boleh mengurus data yang disimpan dalam Google Account anda pada bila-bila masa</translation>
 <translation id="6284652193729350524">Tawarkan untuk menterjemah <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Untuk menghidupkan Penyemakan Imbas Selamat, buka <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" /> dan ketik Penyemakan Imbas Selamat.</translation>
+<translation id="6295140892595702619">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif</translation>
 <translation id="6295751040240588413">Nama panggilan kad tidak sah</translation>
 <translation id="629730747756840877">Akaun</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
@@ -2186,7 +2187,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8264966119170358612">Sesetengah kata laluan anda yang disimpan telah terdedah dalam pelanggaran data bukan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Anda akan mengisi maklumat pada <ph name="URL" /></translation>
 <translation id="8274795744553482834">Anda akan menukar profil</translation>
 <translation id="8275068909952022340">Lagi…</translation>
 <translation id="8280797717392145626">Pautan diterima</translation>
@@ -2421,6 +2421,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, laman yang disematkan</translation>
 <translation id="8990960056509724223">Fail tidak dapat disimpan disebabkan oleh dasar organisasi anda</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
+<translation id="9003263770394939629">Dicadangkan oleh Gemini. Urus autolengkap dipertingkatkan dalam tetapan.</translation>
 <translation id="9003677638446136377">Semak sekali lagi</translation>
 <translation id="9006453925669499173">Menu → Tab Inkognito baharu</translation>
 <translation id="9008201768610948239">Abaikan</translation>

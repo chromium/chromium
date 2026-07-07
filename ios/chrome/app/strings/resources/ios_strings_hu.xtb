@@ -1573,6 +1573,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="628251768213143684">Bármikor kezelheti, hogy mit mentsen a rendszer a Google-fiókjába</translation>
 <translation id="6284652193729350524">A(z) <ph name="LANGUAGE" /> nyelvű oldalak lefordításának felajánlása</translation>
 <translation id="6293101329759844770">A Biztonságos Böngészés bekapcsolásához nyissa meg a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> szakaszt, majd koppintson a Biztonságos Böngészés lehetőségre.</translation>
+<translation id="6295140892595702619">A mikrofon használatával cseveghet a Geminivel. Amikor a Geminivel beszél, a hanganyagot elmenti a rendszer a Gemini-appokban végzett tevékenységek közé (ha be van kapcsolva). Az Ön adatait nem használjuk fel a generatív AI-modellek továbbfejlesztéséhez</translation>
 <translation id="6295751040240588413">Érvénytelen egyedi kártyanév</translation>
 <translation id="629730747756840877">Fiók</translation>
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
@@ -2181,7 +2182,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8264966119170358612">Egyes mentett jelszavai nyilvánosságra kerültek egy nem a Google-hoz köthető adatvédelmi incidens során. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="826614135184049678">Az iPad visszaállításakor a rendszer kijelentkeztette a fiókjából (<ph name="USER_NAME" />). Az újbóli bejelentkezéshez koppintson az alábbi „Folytatás” lehetőségre.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Ezzel kitölti az adatait a(z) <ph name="URL" /> webhelyen</translation>
 <translation id="8274795744553482834">Profilváltásra készül</translation>
 <translation id="8275068909952022340">Továbbiak…</translation>
 <translation id="8280797717392145626">Linkek fogadva</translation>
@@ -2415,6 +2415,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kitűzött webhely</translation>
 <translation id="8990960056509724223">Nem sikerült menteni a fájlt a szervezeti házirendek miatt</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
+<translation id="9003263770394939629">A Gemini javaslata. A továbbfejlesztett automatikus kitöltést a beállításokban kezelheti.</translation>
 <translation id="9003677638446136377">Ellenőrzés újra</translation>
 <translation id="9006453925669499173">Menü → Új inkognitó lap</translation>
 <translation id="9008201768610948239">Mellőzés</translation>

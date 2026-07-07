@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">तपाईं आफ्नो Google Account मा सेभ गरिएका कुराहरू जुनसुकै बेला व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>
+<translation id="6295140892595702619">Gemini सँग च्याट गर्न आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्। तपाईंले Gemini सँग कुरा गर्दा उक्त अडियो Gemini एपहरूमा गरिएका गतिविधि (अन छ भने) मा भण्डारण गरिन्छ। तपाईंको डेटा जेनेरेटिभ AI मोडेलहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि प्रयोग गरिँदैन</translation>
 <translation id="6295751040240588413">कार्डको उपनाम अवैध छ</translation>
 <translation id="629730747756840877">खाता</translation>
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
@@ -2181,7 +2182,6 @@
 <translation id="8264966119170358612">तपाईंका सेभ गरिएका केही पासवर्डहरू तेस्रो पक्षले गरेको डेटा चोरीको घटनामा देखिएका थिए। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">तपाईंको iPad रिसेट गर्ने क्रममा तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। फेरि साइन इन गर्न तलको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">तपाईंले <ph name="URL" /> मा जानकारी भर्नु पर्ने हुन्छ</translation>
 <translation id="8274795744553482834">तपाईं प्रोफाइल बदल्न लाग्दै हुनुहुन्छ</translation>
 <translation id="8275068909952022340">थप…</translation>
 <translation id="8280797717392145626">लिंकहरू प्राप्त भएका छन्</translation>
@@ -2415,6 +2415,7 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन गरिएको साइट</translation>
 <translation id="8990960056509724223">तपाईंको सङ्गठनका नीतिहरूका कारण फाइल सेभ गर्न सकिएन</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
+<translation id="9003263770394939629">Gemini ले सिफारिस गरेको। सेटिङमा गई अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>
 <translation id="9006453925669499173">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>

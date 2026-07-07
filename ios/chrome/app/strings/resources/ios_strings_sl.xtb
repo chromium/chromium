@@ -1573,6 +1573,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="628251768213143684">Kadar koli lahko upravljate, kaj se shranjuje v računu Google</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>
+<translation id="6295140892595702619">Uporabite mikrofon za klepet z Geminijem. Ko govorite z Geminijem, se zvok shrani v dejavnost v aplikacijah Gemini (če je vklopljena). Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence</translation>
 <translation id="6295751040240588413">Neveljaven vzdevek za kartico</translation>
 <translation id="629730747756840877">Račun</translation>
 <translation id="6301104306974789820">Prejemanje obvestil o spremljanju cen</translation>
@@ -2181,7 +2182,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8264966119170358612">Nekatera shranjena gesla so bila razkrita v podatkovni kršitvi pri ponudniku, ki ni Google. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Zaradi ponastavitve iPada ste bili odjavljeni iz računa <ph name="USER_NAME" />. Če se želite znova prijaviti, spodaj kliknite »Continue« (Naprej).</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Podatke boste vnesli na spletnem mestu <ph name="URL" /></translation>
 <translation id="8274795744553482834">Preklopili boste med profili</translation>
 <translation id="8275068909952022340">Več …</translation>
 <translation id="8280797717392145626">Prejete povezave</translation>
@@ -2415,6 +2415,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pripeto spletno mesto</translation>
 <translation id="8990960056509724223">Datoteke ni bilo mogoče shraniti zaradi pravilnikov vaše organizacije</translation>
 <translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
+<translation id="9003263770394939629">Predlagal Gemini. Izboljšano samodejno izpolnjevanje lahko upravljate v nastavitvah.</translation>
 <translation id="9003677638446136377">Vnovično preverjanje</translation>
 <translation id="9006453925669499173">Meni → Novi anonimni zavihek</translation>
 <translation id="9008201768610948239">Prezri</translation>

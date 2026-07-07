@@ -28,7 +28,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec ce même compte</translation>
 <translation id="1287534462498555020">Téléchargez Chromium sur votre téléphone</translation>
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Illustration montrant comment utiliser la recherche dans des images pour rechercher un produit</translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="132092532143527429">Essayer avec Gemini dans Chromium</translation>
 <translation id="1324107359134968521">Chromium a besoin d'accéder au Bluetooth pour explorer les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -494,7 +493,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6400112897226594999">Logo Chromium sur un écran d'ordinateur.</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
 <translation id="6414624068245092115">Pour toujours pouvoir utiliser et enregistrer des données Chromium dans votre compte Google, confirmez votre identité</translation>
-<translation id="6417332166651156371">Image simplifiée montrant le point d'entrée du Gestionnaire de mots de passe dans Chromium</translation>
 <translation id="642132557830635295">Chromium s'exécute plus rapidement et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu</translation>
 <translation id="6436260184216827876">La recherche dans des images n'est pas disponible. Réessayez plus tard.</translation>
 <translation id="6442900851116057561">Redémarrer Chromium OS</translation>

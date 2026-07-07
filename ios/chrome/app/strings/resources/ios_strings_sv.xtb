@@ -1573,6 +1573,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="628251768213143684">Du kan när som helst hantera vad som sparas i Google-kontot</translation>
 <translation id="6284652193729350524">Erbjud översättning från <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
+<translation id="6295140892595702619">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="6295751040240588413">Ogiltigt kortnamn</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
@@ -2181,7 +2182,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Uppgifterna fylls i på <ph name="URL" /></translation>
 <translation id="8274795744553482834">Du är på väg att byta profil</translation>
 <translation id="8275068909952022340">Mer …</translation>
 <translation id="8280797717392145626">Mottagna länkar</translation>
@@ -2415,6 +2415,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fäst webbplats</translation>
 <translation id="8990960056509724223">Det gick inte att spara filen på grund av organisationens policyer</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
+<translation id="9003263770394939629">Förslag från Gemini. Hantera förbättrad autofyll i inställningarna.</translation>
 <translation id="9003677638446136377">Kontrollera igen</translation>
 <translation id="9006453925669499173">Meny → Ny inkognitoflik</translation>
 <translation id="9008201768610948239">Ignorera</translation>

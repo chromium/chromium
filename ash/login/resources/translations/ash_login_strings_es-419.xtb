@@ -2,12 +2,16 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1005333234656240382">¿Quieres habilitar la depuración de adb?</translation>
+<translation id="1053898984916097744">Comienza una nueva tarea o recibe ayuda en el flujo.</translation>
+<translation id="1061130374843955397">Te damos la bienvenida a tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="1069778954840159202">Obtener una cuenta automáticamente desde un teléfono Android</translation>
 <translation id="1076766328672150609">Tu hijo puede usar un PIN para desbloquear el dispositivo.</translation>
 <translation id="1097658378307015415">Antes de acceder, ingresa como Invitado para activar la red <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Tu hijo o hija puede usar este PIN para acceder a su dispositivo</translation>
 <translation id="1122587596907914265">Diseña fondos de pantalla únicos</translation>
 <translation id="1131201598497838573">Se actualizó el PIN de tu hijo o hija</translation>
 <translation id="1147322039136785890">Ahora es el turno de <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1148669835763563782">Estás recibiendo la actualización de software más reciente para disfrutar de una mejor seguridad, además de las funciones más recientes de Chromebook. Esta actualización incluye una experiencia de configuración mejorada para ayudarte a comenzar a usar Chromebook sin problemas.</translation>
 <translation id="1176864681932214421">Crea imágenes con IA</translation>
 <translation id="1177073277575830464">Se completó la configuración rápida de Android; continúa con la configuración en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1179902906564467236">Sigue las instrucciones que aparecen en el teléfono o usa la app de la cámara</translation>
@@ -15,8 +19,13 @@
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1217114730239853757">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="1222835797152767346">Establece un PIN para que sea más fácil acceder</translation>
+<translation id="1231426483209637778">Recordaremos la red la próxima vez que uses tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="1243002225871118300">Cambia el tamaño de la pantalla y el texto</translation>
+<translation id="1256588359404100567">Se sincronizó la configuración de tu dispositivo anterior.</translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se inscribió el dispositivo. Si deseas inscribirte en un dominio diferente, primero tendrás que realizar el proceso de recuperación del dispositivo.</translation>
+<translation id="1293556467332435079">Archivos</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
+<translation id="1335929031622236846">Inscribe tu dispositivo</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
       <ph name="BR" />
       Puedes habilitar las funciones de depuración en tu dispositivo ChromeOS a fin de instalar y probar el código personalizado en tu dispositivo. Esta acción te permitirá hacer lo siguiente:<ph name="BR" />
@@ -37,6 +46,7 @@
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
 <translation id="1347625331607114917">Verifica el código en tu teléfono Android</translation>
 <translation id="1347975661240122359">La actualización comenzará cuando el nivel de la batería alcance el <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Para usar los controles parentales, como la aprobación de apps y los límites de tiempo de uso, el niño debe tener una Cuenta de Google que administre el padre o la madre. Para usar herramientas como Google Classroom, se puede agregar una cuenta de institución educativa en otro momento.</translation>
 <translation id="1375557162880614858">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Se completó la configuración; prepara tu dispositivo para jugar</translation>
 <translation id="1377600615067678409">Omitir por ahora</translation>
@@ -45,38 +55,66 @@
 <translation id="1417497355604638350">Envía datos de uso y diagnóstico.</translation>
 <translation id="1418882096915998312">Inscripción en Enterprise en progreso</translation>
 <translation id="1426410128494586442">Sí</translation>
+<translation id="1427269577154060167">País</translation>
 <translation id="1440090277117135316">Se completó la inscripción escolar</translation>
 <translation id="1473927070149284123">Vuelve a intentarlo o conéctate a una red de forma manual</translation>
 <translation id="1503556098270577657">Accediste a <ph name="USER_EMAIL" /> con tu teléfono Android</translation>
+<translation id="1510238584712386396">Selector</translation>
 <translation id="1521442365706402292">Administrar certificados</translation>
+<translation id="15373452373711364">Cursor del mouse grande</translation>
 <translation id="1540605929960647700">Activar el modo de demostración</translation>
 <translation id="1572876035008611720">Ingresa tu correo electrónico.</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Cámara</translation>
+<translation id="1636212173818785548">Aceptar</translation>
 <translation id="1642494467033190216">Se requiere una eliminación de la protección de rootfs y el reinicio antes de habilitar otras funciones de depuración.</translation>
+<translation id="1646045728251578877">Hay una actualización de software disponible</translation>
+<translation id="1650801028905250434">Los archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Puedes cambiar este parámetro en cualquier momento en Configuración &gt; Archivos.</translation>
 <translation id="1668435968811469751">Inscribirse manualmente</translation>
 <translation id="1678919064276516737">El correo electrónico y el PIN que ingresaste no coinciden</translation>
 <translation id="1692115862433274081">Usar otra cuenta</translation>
 <translation id="1695487653372841667">Puedes controlar qué datos se comparten con Google. Puedes cambiar este parámetro cuando lo desees en Configuración.</translation>
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No accedas con cuentas sensibles.</translation>
+<translation id="1700517974991662022">Visitado</translation>
 <translation id="1730666151302379551">Olvidé mi contraseña anterior</translation>
+<translation id="1749645492410897998">Instalando el software</translation>
 <translation id="177053719077591686">Crea copias de seguridad de las apps para Android en Google Drive.</translation>
+<translation id="1798832846931769717">Google Beam para Meet</translation>
 <translation id="1806335016774576568">Pasar a otra app abierta</translation>
 <translation id="1826192255355608658">Sincroniza los favoritos, las contraseñas, el historial y otros elementos de tu navegador Chrome</translation>
+<translation id="1826657447823925402">Se inhabilitó el desplazamiento inverso</translation>
 <translation id="1831848493690504725">No podemos comunicarnos con Google a través de la red conectada. Prueba elegir otra red o revisa tu configuración de red o proxy (si usas un proxy).</translation>
 <translation id="1842766183094193446">¿Realmente quieres habilitar el modo de demostración?</translation>
 <translation id="1845060436536902492">El lector de pantalla de ChromeOS Flex, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Presiona la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
+<translation id="185766080319917408">La tecla del Selector se encuentra a la izquierda de la tecla Alt izquierda</translation>
 <translation id="1868617395637139709">Usa la ubicación para los servicios y las apps para Android.</translation>
+<translation id="1877377730633446520">Espacio aproximado que se usará: <ph name="REQUIRED_SPACE" />. Espacio disponible actual: <ph name="FREE_SPACE" />.</translation>
 <translation id="189035593835762169">Términos y Condiciones</translation>
+<translation id="189358972401248634">Otros idiomas</translation>
+<translation id="1915734383465415025">Número de tienda</translation>
+<translation id="1919096511823372013">Inserta vínculos, emojis y más. También puedes obtener ayuda de la IA de Google para escribir o para crear imágenes.</translation>
+<translation id="1922496389170590548">Cuenta de institución educativa del niño o niña</translation>
+<translation id="1944528062465413897">Código de vinculación Bluetooth:</translation>
 <translation id="1987574314042117472">Seleccionar e instalar apps populares</translation>
 <translation id="1991829061375381344">No tienes suficientes licencias disponibles para inscribir este dispositivo de hardware de Google Meet. Comunícate con tu revendedor para comprar más. Si crees que ves este mensaje por error, comunícate con tu revendedor.</translation>
+<translation id="200928901437634269">Usa la Cuenta de Google de tu hijo o hija o una cuenta de institución educativa. También puedes establecer controles parentales.</translation>
+<translation id="2013550551806600826">Pruébalo. Activa o desactiva el parámetro de configuración y, luego, desplázate con dos dedos sobre el panel táctil en el área de prueba. También puedes encontrarlo más adelante en Configuración &gt; Dispositivo &gt; Mouse y panel táctil.</translation>
+<translation id="2018189721942291407">¿No sabes si debes inscribirte?</translation>
 <translation id="2040460856718599782">Se produjo un error cuando intentábamos autenticarte. Verifica tus credenciales de acceso y vuelve a intentarlo.</translation>
 <translation id="2052572566310583903">Instaladas en tus otros dispositivos</translation>
 <translation id="2088092308059522196">Solo se permite la inscripción después de instalar <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Si quieres acceder a la pantalla principal en cualquier momento, desliza el dedo hacia arriba desde la parte inferior.</translation>
 <translation id="2090165459409185032">Para recuperar la información de la cuenta, accede a google.com/accounts/recovery.</translation>
+<translation id="2133775869826239001">Elige más funciones para configurar</translation>
+<translation id="2135456203358955318">Lupa con vista acoplada</translation>
 <translation id="2157779167749714207">Tu <ph name="DEVICE_TYPE" /> incluye Gemini</translation>
 <translation id="2163470535490402084">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2173801458090845390">Agregar la ID de la solicitud a este dispositivo</translation>
 <translation id="2178585470774851578">Estás habilitando las funciones de depuración de ChromeOS Flex que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
+<translation id="2183570493397356669">Se inhabilitó el botón Continuar</translation>
+<translation id="221872881068107022">Invertir desplazamiento</translation>
 <translation id="2219081237089444028">Establece una contraseña de <ph name="DEVICE_TYPE" /> para acceder más fácilmente</translation>
+<translation id="2229161054156947610">Falta más de una hora.</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> requiere que el dispositivo esté conectado a Internet cuando accedes a <ph name="EMAIL" />.</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% listo</translation>
 <translation id="2319072477089403627">Conectando con tu teléfono Android…</translation>
@@ -91,10 +129,18 @@
 <translation id="2450223707519584812">No podrás agregar usuarios porque faltan las claves de la API de Google. Consulta <ph name="DETAILS_URL" /> para obtener más detalles.</translation>
 <translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
 <translation id="2485681265915754872">Condiciones del Servicio de Google Play</translation>
+<translation id="248676429071089168">Desliza el dedo hacia arriba para bajar la página</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
+<translation id="2538084450874617176">¿Quién está usando este dispositivo <ph name="DEVICE_TYPE" />?</translation>
+<translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> no se pudo conectar a <ph name="NETWORK_ID" />. Selecciona otra red o inténtalo de nuevo.</translation>
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
+<translation id="2569972178052279830">Nombre del minorista</translation>
+<translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2606454609872547359">No, continuar sin ChromeVox</translation>
+<translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para determinar la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de este dispositivo Android en cualquier momento a través de Configuración &gt; Apps &gt; Google Play Store &gt; Administrar las preferencias de Android &gt; Seguridad y ubicación &gt; Ubicación. Además, si quieres desactivar el uso de Wi-Fi, redes móviles y sensores para la ubicación de este dispositivo Android, desactiva "Precisión de la ubicación de Google" en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2663302507110284145">Idioma</translation>
 <translation id="2687407218262674387">Condiciones del Servicio de Google</translation>
 <translation id="2688196195245426394">Se produjo un error al registrar el dispositivo en el servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Este es un dispositivo agrupado y no se puede inscribir en Kiosk &amp; Signage Upgrade.</translation>
@@ -102,21 +148,32 @@
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2732134891301408122">Contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2740531572673183784">Aceptar</translation>
+<translation id="274318651891194348">Buscando teclado</translation>
 <translation id="2754825024506485820">Encuentra las apps que necesites, tanto para la productividad como para el entretenimiento, en Google Play Store. Puedes instalar apps en cualquier momento.</translation>
+<translation id="2758774297008336689"><ph name="BEGIN_PARAGRAPH1" />Cuando la Precisión de la ubicación está activada, la información sobre señales inalámbricas, como los puntos de acceso Wi‑Fi y las torres de redes móviles, junto con los datos de sensores del dispositivo, como el acelerómetro y el giroscopio, se utiliza para calcular una ubicación más precisa del dispositivo, la cual pueden usar las apps y los servicios para Android para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente información sobre los sensores de los dispositivos y las señales inalámbricas cercanas a este dispositivo para contribuir a las ubicaciones de las señales inalámbricas con participación colectiva.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google usa la información recopilada de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, y para mejorar, proporcionar y mantener los servicios de Google en general. Procesamos esta información según los intereses legítimos de Google (y de terceros) de satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a ninguna persona.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la Precisión de la ubicación en cualquier momento en la configuración de ubicación de este dispositivo, en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Configuración avanzada de ubicación. Si la Precisión de la ubicación está desactivada, no se recopilarán datos relacionados con este parámetro de configuración. En el caso de las apps y los servicios para Android, solo se usa la dirección IP, si está disponible, para determinar la ubicación del dispositivo, lo que puede afectar la disponibilidad y la precisión de las ubicaciones de las apps y los servicios para Android, como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2805539617243680210">¡Todo listo!</translation>
+<translation id="2819519502129272135">Se desactivó la sincronización de archivos</translation>
 <translation id="2832124733806557606">Tu hijo puede usar un PIN para acceder al dispositivo o desbloquearlo.</translation>
 <translation id="283669119850230892">Para utilizar la red <ph name="NETWORK_ID" />, primero debes establecer la conexión a Internet que se especifica a continuación.</translation>
 <translation id="2849767214114481738">Se agregó tu PIN</translation>
+<translation id="2851810309108851898"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando y la cantidad de memoria que se empleaba en general.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="2886119409731773154">Este proceso puede tardar hasta 30 minutos</translation>
 <translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="2902265136119311513">Navegación como invitado</translation>
 <translation id="2904210161403910217">Tu contraseña cambió desde la última vez que accediste</translation>
 <translation id="2918484644467055090">No se puede inscribir este dispositivo en la organización al que pertenece tu cuenta porque ya lo administra otra organización.</translation>
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales.</translation>
+<translation id="2935654492420446828">Agrega una cuenta de institución educativa más tarde</translation>
 <translation id="2950666755714083615">Registrarme</translation>
 <translation id="2979966855249721010">Según tus intereses, es posible que veas recomendaciones de apps, sugerencias y mucho más</translation>
 <translation id="3012917896646559015">Comunícate con el fabricante del hardware de inmediato para enviar tu computadora a reparación.</translation>
+<translation id="3023464535986383522">Seleccionar para pronunciar</translation>
 <translation id="3028371505549235127">En lugar de ingresar la contraseña de tu Cuenta de Google para acceder, puedes crear una contraseña de <ph name="DEVICE_TYPE" /> para este dispositivo</translation>
 <translation id="3033348223765101500">Controla tus datos</translation>
+<translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3101924772906986970">Los favoritos, las contraseñas, el historial y otros elementos de tu navegador Chrome se guardan en tu Cuenta de Google</translation>
 <translation id="313205617302240621">¿Olvidaste la contraseña?</translation>
 <translation id="3162070126914310576">No se puede inscribir este dispositivo en este momento porque tu unidad organizativa alcanzó su límite de inscripción inicial. Comunícate con tu administrador para obtener asistencia.</translation>
@@ -124,20 +181,34 @@
 <translation id="3170072451822350649">También puedes omitir el acceso y <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" />.</translation>
 <translation id="3177914167275935955">El dispositivo incluye Chrome Education Upgrade, pero tu nombre de usuario no está asociado a una cuenta de Google for Education. Visita g.co/workspace/edusignup en un dispositivo secundario para crear una cuenta de Google for Education.</translation>
 <translation id="3196912927885212665">Para realizar la configuración con tu teléfono Android, debes activar el Bluetooth de la Chromebook</translation>
+<translation id="322708765617468434">Después de la configuración, podrás agregar otra persona al dispositivo. Cada persona podrá personalizar su experiencia y proteger la privacidad de sus datos.</translation>
 <translation id="3238192140106069382">Conectando y verificando</translation>
+<translation id="3251119461199395237">Sincronización de archivos</translation>
+<translation id="325238099842880997">Establece reglas digitales básicas que permitan que los niños jueguen, exploren y hagan tarea en el hogar</translation>
+<translation id="3255747772218936245">Instalar actualización</translation>
 <translation id="3261268979727295785">En el caso de niños más grandes, puedes agregar los controles parentales una vez que finalices con la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3278001907972365362">Tus Cuentas de Google necesitan atención</translation>
 <translation id="3283148363895519428">Sigue las instrucciones que se muestran en tu teléfono para continuar con la configuración. Asegúrate de que el teléfono esté cerca y tenga la conexión Bluetooth activada.</translation>
 <translation id="3382073616108123819">El sistema no pudo determinar los identificadores de dispositivo para este dispositivo.</translation>
 <translation id="3382200254148930874">Deteniendo la supervisión…</translation>
+<translation id="3384362484379805487">Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco.</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3391721320619127327">El lector de pantalla de ChromeOS Flex, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Mantén presionadas las teclas de volumen durante cinco segundos para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
+<translation id="3402585168444815892">Inscripción al modo de demostración</translation>
 <translation id="3433621910545056227">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="3435896845095436175">Habilitar</translation>
 <translation id="3462413494201477527">¿Cancelar la configuración de la cuenta?</translation>
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
+<translation id="3473479545200714844">Lupa</translation>
 <translation id="3491669675709357988">La cuenta de tu hijo no está configurada para los controles parentales de Family Link; podrás agregarlos cuando completes la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
+<translation id="350397915809787283">Si no tienes una cuenta, selecciona la primera opción para crear una.</translation>
 <translation id="3520824492621090923">¿Confirmas la inscripción del dispositivo en el modo de kiosko y señalización?</translation>
+<translation id="3547954654003013442">Configuración de proxy</translation>
+<translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3577745545227000795">Recopilación de datos de hardware de <ph name="DEVICE_OS" /></translation>
+<translation id="3602290021589620013">Vista previa</translation>
+<translation id="3607671391978830431">Para niños</translation>
+<translation id="3627320433825461852">Falta menos de un minuto.</translation>
 <translation id="3635199270495525546">Se detectó un Módulo de plataforma de confianza (TPM)</translation>
 <translation id="3650753875413052677">Error de inscripción</translation>
 <translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
@@ -149,16 +220,23 @@
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3712050472459130149">Se requiere actualizar la cuenta</translation>
 <translation id="3733296813637058299">Instalaremos esas apps por ti. Puedes encontrar más apps para tu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
+<translation id="3740945083753997630">Disminuir el tamaño de la pantalla y del texto</translation>
 <translation id="376841534249795524">¿Para qué usarás tu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3800828618615365228">Condiciones Adicionales del ChromeOS y Google Chrome</translation>
 <translation id="3828953470056652895">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" />, las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" /> y las <ph name="BEGIN_LINK3" />Condiciones del Servicio de Play<ph name="END_LINK3" />.</translation>
+<translation id="3837569373891539515">Puedes seleccionar todas las opciones que correspondan. También puedes encontrar estas opciones en Configuración cuando termines de configurar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3856470183388031602">Usa tu Cuenta de Google en tu <ph name="DEVICE_TYPE" /></translation>
+<translation id="3893630138897523026">ChromeVox (descripciones por voz)</translation>
 <translation id="3897746662269329507">Tu <ph name="DEVICE_TYPE" /> se diseñó para los videojuegos. A continuación, se abrirá la app de Explorar, donde podrás acceder a cientos de juegos nuevos, ver ofertas y descubrir las funciones dedicadas para videojuegos que incluye tu dispositivo.</translation>
+<translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3910588685973519483">Crea fondos de pantalla con IA</translation>
+<translation id="3924259174674732591">Tamaño de la pantalla y el texto <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3983400541576569538">Es posible que se pierdan datos de algunas apps</translation>
+<translation id="3984159763196946143">No se pudo iniciar el modo de demostración</translation>
 <translation id="3994318741694670028">Lamentablemente, la computadora está configurada con un ID de hardware incorrecto. Esto impide que ChromeOS Flex se actualice con las correcciones de seguridad más recientes, y la computadora <ph name="BEGIN_BOLD" />puede quedar expuesta a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4044883420905480380">Te conectaste a una red Wi-Fi y accediste a <ph name="USER_EMAIL" /> con tu teléfono Android.</translation>
@@ -169,6 +247,9 @@
 <translation id="4135746311382563554">Condiciones del Servicio Adicionales de Google Chrome y ChromeOS</translation>
 <translation id="41365691917097717">Si continúas, se habilitará la depuración de ADB para crear y probar apps para Android. Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertenece a una organización válida. Comunícate con el administrador. Si eres administrador, puedes configurar tu organización en el siguiente sitio: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4209092469652827314">Grande</translation>
+<translation id="4213918571089943508">Cuenta de Google de tu hijo o hija</translation>
+<translation id="4228071595943929139">Usa la dirección de correo electrónico de tu organización</translation>
 <translation id="4232484478444192782">Tu teléfono Android te protege. Se están transfiriendo tu red Wi-Fi y tu contraseña.</translation>
 <translation id="4242145785130247982">No se admiten Certificados de cliente múltiples.</translation>
 <translation id="4242577469625748426">Se produjo un error al instalar la configuración de la política en el dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
@@ -178,30 +259,50 @@
 <translation id="4278498748067682896">Utilizarás una licencia de Kiosk &amp; Signage Upgrade que permite que el dispositivo funcione únicamente en modo kiosco o de señalización. Si quieres que los usuarios accedan al dispositivo, regresa e inscríbete con Chrome Enterprise Upgrade.</translation>
 <translation id="4287157641315808225">Sí, activar ChromeVox</translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
+<translation id="4291265871880246274">Diálogo de acceso</translation>
+<translation id="4305817255990598646">Cambiar</translation>
 <translation id="4309165024397827958">Permite que los servicios y las apps para Android habilitadas usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="4317733381297736564">Compras directas desde la app</translation>
 <translation id="4341905082470253054">Comprobando el estado del TPM…</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
 <translation id="4373418556073552953">Accede con tu teléfono Android</translation>
+<translation id="4378556263712303865">Solicitud del dispositivo</translation>
+<translation id="4383048845287221326"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en el que falló ChromeOS, qué funciones usas, la cantidad de memoria que empleas en general y datos de uso y diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Si habilitaste la configuración Actividad web y de aplicaciones en tu Cuenta de Google, es posible que se guarden tus datos de Android en la cuenta. Para ver tus datos, borrarlos y cambiar la configuración de la cuenta, accede a account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="4385905942116811558">Buscando dispositivos Bluetooth y USB</translation>
 <translation id="4403266582403435904">Cambia de dispositivo o restablece los datos fácilmente en cualquier momento. Las copias de seguridad se encriptan con la contraseña de la Cuenta de Google de tu hijo o hija y se suben a Google.</translation>
 <translation id="4410545552906060960">Usa un número (PIN) en lugar de una contraseña para desbloquear el dispositivo. Puedes configurar el PIN más tarde en la configuración.</translation>
 <translation id="4415213869328311284">Ya puedes comenzar a usar tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="443031431654216610">Usa solo dígitos numéricos</translation>
+<translation id="4448560527907365660">Guardar y ver más</translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta empresarial de tu organización. Si deseas inscribir dispositivos en la cuenta, primero debes revisar la propiedad del dominio en la Consola del administrador. Deberás tener privilegios administrativos de la cuenta que deseas verificar.</translation>
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detectó un TPM activo que puede almacenar tus datos de manera más segura.</translation>
+<translation id="4472298120638043495">Puedes usar el idioma preferido de tu Cuenta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="4472575034687746823">Comenzar</translation>
+<translation id="450867954911715010">Configuración de accesibilidad</translation>
+<translation id="4519605771716872386">Se activó la sincronización de archivos</translation>
+<translation id="4531924570968473143">¿A quién quieres agregar a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4566170377336116390">Si quieres cambiar después de la inscripción, tendrás que restablecer la configuración de fábrica del dispositivo (powerwash).</translation>
 <translation id="4567512141633030272">¿La opción de acceso es incorrecta?</translation>
+<translation id="4567533462991917415">Podrás agregar más personas tras la configuración. Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
 <translation id="4568213207643490790">Este dispositivo no permite cuentas de Google.</translation>
 <translation id="4611759022973144129">Puedes usar esta contraseña para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4634575639321169635">Configura este dispositivo para uso personal o laboral</translation>
+<translation id="4689235506267737042">Elegir las preferencias de la demostración</translation>
 <translation id="4727847987444062305">Sesión de invitado administrada</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="473936925429402449">Seleccionado, contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> no es una cuenta válida de Google for Education. Comunícate con el administrador. Si eres administrador, puedes configurar tu organización en el siguiente sitio: g.co/workspace/edusignup</translation>
+<translation id="4780558987886269159">Para el trabajo</translation>
 <translation id="4806457879608775995">Revisa estas condiciones y controla tus datos</translation>
+<translation id="4814327014588285482">Omitir y recordarme más tarde</translation>
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
 <translation id="4837926214103741331">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el propietario del dispositivo.</translation>
+<translation id="4844333629810439236">Otros teclados</translation>
 <translation id="4864369630010738180">Accediendo</translation>
+<translation id="4867272607148176509">Los padres pueden aprobar o bloquear apps, establecer límites de tiempo y controlar la navegación web. Puedes agregar una cuenta de institución educativa para acceder a la mayoría de los recursos de la institución en otro momento.</translation>
 <translation id="4877652723592270843">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex? En ese caso, mantén presionadas ambas teclas de volumen durante cinco segundos.</translation>
 <translation id="4899696330053002588">Contiene anuncios</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
@@ -209,14 +310,17 @@
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> aloja este servicio de autenticación</translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4965808351167763748">¿Seguro que deseas configurar este dispositivo para ejecutar Meet de Hangouts?</translation>
+<translation id="4987944280765486504">Tu Chromebook se reiniciará una vez que se complete la descarga y puedas continuar con la configuración.</translation>
 <translation id="5029287942302939687">Se estableció la contraseña</translation>
 <translation id="503155457707535043">Se están descargando las apps</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="5062930723426326933">Se produjo un error al acceder. Conéctate a Internet y vuelve a intentarlo.</translation>
+<translation id="5085162214018721575">Buscando actualizaciones...</translation>
 <translation id="5097306410549350357">Obtén más información sobre el uso de la ubicación</translation>
 <translation id="5107486920067578245"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para comenzar a escribir, planificar, aprender y mucho más con la IA de Google.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Después de la configuración, selecciona la app de Gemini en la barra, en la parte inferior de la pantalla, para comenzar a usarla.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="5115309401544567011">Conecta el dispositivo <ph name="DEVICE_TYPE" /> a una fuente de alimentación.</translation>
+<translation id="5145876360421795017">No inscribir el dispositivo</translation>
 <translation id="5147516217412920887">Sigue las instrucciones que se muestran en tu teléfono para verificar el código</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5171185788583376591"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
@@ -237,6 +341,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> El sistema se reiniciará durante el proceso.</translation>
+<translation id="5215502535566372932">Selecciona un país</translation>
 <translation id="5234523649284990414">El lector de pantalla de ChromeOS, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Presiona la barra espaciadora para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
 <translation id="5240931875940563122">Acceder con un teléfono Android</translation>
@@ -249,20 +354,29 @@
 <translation id="5355501370336370394">Inscribir dispositivo empresarial</translation>
 <translation id="5372529912055771682">El modo de inscripción proporcionado no es compatible con esta versión del sistema operativo. Asegúrate de que estás ejecutando la versión más reciente y vuelve a intentarlo.</translation>
 <translation id="5397378439569041789">Inscribir dispositivo de Kiosk &amp; Signage</translation>
+<translation id="5397794290049113714">Tú</translation>
 <translation id="5411022484772257615">No se pudo completar la inscripción escolar</translation>
 <translation id="5413640305322530561">Más información sobre los datos de uso y diagnóstico</translation>
 <translation id="542750953150239272">Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu operador y el fabricante del dispositivo usando datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Se produjo un error al acceder</translation>
+<translation id="5453829744223920473">Tu hijo o hija puede usar todos los recursos, apps y favoritos de su institución educativa tal como lo hace en clase. La institución establece las reglas básicas.</translation>
 <translation id="5463450804024056231">Regístrate para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Si continúas, aceptas que este dispositivo pueda descargar e instalar automáticamente actualizaciones y apps de Google, del operador de tu hijo y del fabricante del dispositivo, y que incluso use datos móviles para ello. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
+<translation id="5502915260472117187">Un niño</translation>
 <translation id="5511823366942919280">¿Confirmas que quieres configurar este dispositivo como "Shark"?</translation>
+<translation id="5513807280330619196">Calculadora</translation>
 <translation id="5527474464531963247">También puedes seleccionar otra red.</translation>
 <translation id="5539070192556911367">No se puede acceder a Google</translation>
+<translation id="5549511085333906441">Elige tu configuración</translation>
 <translation id="557722062034137776">Restablecer el dispositivo no afectará las cuentas de Google ni los datos sincronizados con esas cuentas. Sin embargo, se eliminarán todos los archivos guardados localmente en el dispositivo.</translation>
 <translation id="5626172233890210551">Usar una contraseña</translation>
+<translation id="5631304855083152608"><ph name="BEGIN_PARAGRAPH1" />A fin de proporcionar la mejor experiencia, <ph name="DEVICE_OS" /> recopila datos de hardware de los dispositivos y los comparte con Google para determinar qué actualizaciones hacer. De manera opcional, podrás permitir que Google utilice estos datos con otros fines, como la asistencia y mejoras en la experiencia y el servicio de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes acceder en este dispositivo y consultar los campos que aparecen como chromeosflex_ en chrome://system para ver los datos que se enviaron a Google con el fin de filtrar las actualizaciones, así como cualquier otra instancia en la que decidas compartir datos con Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Para obtener más detalles sobre los datos que <ph name="DEVICE_OS" /> puede compartir con Google y cómo se utilizan, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero debas <ph name="LINK_START" />ingresar a la página de acceso a la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar la red.</translation>
 <translation id="5655296450510165335">Inscripción del dispositivo</translation>
+<translation id="565899488479822148">Se está instalando la actualización más reciente</translation>
 <translation id="5659964844710667266">Crea una contraseña para tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5684661240348539843">Identificador de recursos</translation>
 <translation id="5684950556880280580">Se actualizó tu contraseña</translation>
@@ -272,19 +386,26 @@
 <translation id="5765425701854290211">Algunos archivos estaban dañaron y la actualización no pudo completarse. Tus archivos sincronizados están a salvo.</translation>
 <translation id="5770125698810550803">Mostrar los botones de navegación</translation>
 <translation id="5799478978078236781">Obtén sugerencias, ofertas y actualizaciones relacionadas con <ph name="DEVICE_TYPE" />, y comparte tus comentarios.</translation>
+<translation id="5800703268655655701">Selecciona el tema oscuro o claro</translation>
 <translation id="5804259315582798390">No se pudo habilitar la recuperación de datos locales</translation>
 <translation id="5810809306422959727">Esta cuenta no es apta para los controles parentales</translation>
+<translation id="5834581999798853053">Faltan aproximadamente <ph name="TIME" /> minutos.</translation>
 <translation id="5852112051279473187">¡Vaya! Se produjo un gran error mientras inscribíamos este dispositivo. Inténtalo de nuevo o comunícate con tu representante de asistencia.</translation>
 <translation id="5852137567692933493">Reiniciar y aplicar Powerwash</translation>
 <translation id="5856721540245522153">Habilitar funciones de depuración</translation>
+<translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5870086504539785141">Cerrar menú de accesibilidad</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895335062901455404">Tu actividad y tus preferencias guardadas estarán listas en cualquier dispositivo con ChromeOS Flex cuando accedes con tu Cuenta de Google. En Configuración, podrás elegir los datos que quieras sincronizar.</translation>
+<translation id="5916664084637901428">Activado</translation>
 <translation id="5919305207330938913">Todos los datos recopilados se usarán de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
 <translation id="5932441198730183141">No tienes suficientes licencias disponibles para inscribir este dispositivo de hardware de Google Meet. Comunícate con el departamento de ventas para comprar más. Si crees que ves este mensaje por error, comunícate con el servicio de asistencia.</translation>
 <translation id="5939518447894949180">Restablecer</translation>
+<translation id="5948536763493709626">Conecta un teclado o mouse, o continua la configuración con la pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="6016178549409952427">Navega a contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016972670657536680">Selecciona el botón de idioma y teclado. Actualmente, el idioma seleccionado es <ph name="LANGUAGE" />.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6051354611314852653">El sistema no pudo autorizar el acceso a la API para este dispositivo.</translation>
 <translation id="6055544610007596637">Instala apps en tu <ph name="DEVICE_TYPE" /> desde Google Play Store</translation>
@@ -305,35 +426,56 @@
 <translation id="6301300352769835063">Permite que Google utilice tus datos de hardware para mejorar <ph name="DEVICE_OS" />. Si lo rechazas, se enviarán estos datos a Google para determinar las actualizaciones adecuadas, pero no se almacenarán ni se utilizarán de otra manera. Obtén más información en g.co/flex/HWDataCollection.</translation>
 <translation id="6308493641021088955">Acceso proporcionado por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6314819609899340042">Habilitaste correctamente las funciones de depuración en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
+<translation id="6343262564968371601">Busca en Google, archivos, apps y mucho más para encontrar lo que buscas</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="6367097275976877956">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="636850387210749493">Inscripción empresarial</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="640457954117263537">Usar la ubicación para las apps y los servicios de ChromeOS y apps de Android.</translation>
+<translation id="6418311015934520372"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones usas y la cantidad de memoria que empleas en general.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6418511932144861495">Instalar una actualización crítica</translation>
+<translation id="6478849105642611893">La tecla Insertar rápido se encuentra debajo de la tecla Tab</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
+<translation id="6488384360522318064">Seleccionar idioma</translation>
 <translation id="6495266441917713704">No se puede transferir la conexión Wi-Fi</translation>
 <translation id="6515620015470298987">No se pudo acceder debido a un problema de verificación de la configuración del dispositivo. Usa Powerwash en tu <ph name="DEVICE_TYPE" /> y vuelve a intentarlo.</translation>
 <translation id="6519689855001245063">Comprobando aptitud</translation>
 <translation id="6532527800157340614">No es posible completar el acceso porque no se pudo recuperar tu token de acceso. Comprueba la conexión de red y vuelve a intentarlo.</translation>
+<translation id="653920215766444089">Buscando dispositivos apuntadores</translation>
 <translation id="65513682072153627">Verás este ícono de Administrado cuando un parámetro de configuración o una función esté gestionado por el administrador.</translation>
+<translation id="6561726789132298588">ingresar</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> ya administra <ph name="USER_EMAIL" />. Para usar los controles parentales con otra Cuenta de Google, sal de tu cuenta después de finalizar la configuración y, luego, selecciona "Agregar persona" en la pantalla de acceso.</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las apps abiertas, desliza el dedo hacia arriba desde la parte inferior y mantén presionada la pantalla.</translation>
 <translation id="6648911618876616409">Hay una actualización fundamental lista para instalarse. Accede a tu cuenta para comenzar.</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" /> está configurando la administración</translation>
+<translation id="6675665718701918026">Dispositivo señalador conectado</translation>
 <translation id="667752334740867460">Recibiendo información de Wi-Fi…</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6722744767592605627">Puedes recuperar <ph name="EMAIL" />, pero se borrarán los datos locales.</translation>
 <translation id="6748980958975836188">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="6749473226660745022">Fotos</translation>
+<translation id="6754918760968695779">Insertar rápido</translation>
 <translation id="6789834167207639931">Vuelve a ingresar la contraseña de tu Cuenta de Google en la siguiente pantalla para finalizar la recuperación</translation>
+<translation id="6797022073000660150"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se usaban, la cantidad de memoria que empleabas en general y datos de uso y de diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar el envío de estos informes en cualquier momento en la configuración del dispositivo ChromeOS de tu hijo o hija. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH4" />Si habilitaste la configuración Actividad web y en aplicaciones en la Cuenta de Google de tu hijo o hija, es posible que se guarden sus datos en la cuenta. Para obtener más información sobre estos parámetros de configuración y cómo ajustarlos, consulta families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6800893479155997609">Apps más populares para tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="682971198310367122">Política de Privacidad de Google</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839916869147598086">Se modificó el acceso</translation>
+<translation id="6852529053326738838">Para saber si tu cuenta es apta, consulta con tu organización o inscríbete con tu correo electrónico laboral.</translation>
+<translation id="6867671714894555998">Completa tus tareas rápidamente con el nuevo teclado</translation>
 <translation id="6883319974225028188">El sistema no pudo guardar la configuración del dispositivo.</translation>
+<translation id="6888831646723563669">Conéctate para disfrutar todas las funciones de tu nuevo dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="6890053850723168825"><ph name="BEGIN_PARAGRAPH1" />Los datos de las apps abarcan cualquier información guardada por una app (según la configuración del desarrollador), incluidos contactos, mensajes y fotos. Los datos de la copia de seguridad no inciden en la cuota de almacenamiento en Drive de tu hijo o hija.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6918733588290914545">Configuración rápida con teléfono Android</translation>
 <translation id="6920473853105515518">Comprueba que tu <ph name="DEVICE_TYPE" /> tenga conexión a Internet y vuelve a intentarlo También puedes visitar play.google/play-terms en otro dispositivo.</translation>
+<translation id="6929126689972602640">Las cuentas de instituciones educativas no admiten la función de controles parentales. Si quieres agregar una cuenta de institución educativa para acceder a Google Classroom y otros sitios web a fin de hacer tarea en el hogar, primero accede con la cuenta personal del niño. Puedes agregar la cuenta de institución educativa más tarde en la configuración.</translation>
+<translation id="6935031746833428401">Obtén más información sobre la Administración de dispositivos</translation>
+<translation id="6950351336108213154">Actualizando los periféricos del dispositivo</translation>
 <translation id="6955698182324067397">Estás habilitando las funciones de depuración del ChromeOS que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6969216690072714773">Ingresa información nueva o actualiza la existente para asociarla con este dispositivo.</translation>
@@ -343,23 +485,37 @@
         proxy funcione. Si no crees estar utilizando
         uno, modifica tu <ph name="LINK_START" />configuración de proxy<ph name="LINK_END" />.</translation>
 <translation id="6996245928508281884">Activa el Bluetooth y el Wi-Fi del teléfono</translation>
+<translation id="6996438701394974959">Aumentar el tamaño de la pantalla y del texto</translation>
+<translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
 <translation id="7025082428878635038">Presentamos una nueva forma de navegar con gestos</translation>
 <translation id="7034692021407794547">Un administrador con privilegios de administración de facturación primero debe aceptar las Condiciones del Servicio del hardware de Google Meet en la sección Hardware de Google Meet de la Consola del administrador.</translation>
+<translation id="7039951224110875196">Crear una Cuenta de Google para un niño o una niña</translation>
 <translation id="7065223852455347715">Este dispositivo está bloqueado en un modo que evita el registro empresarial. Si deseas registrar este dispositivo, primero debes llevar a cabo su recuperación.</translation>
+<translation id="7066572364168923329">Elige la configuración de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">No se pudo cargar la página de acceso a la cuenta con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta volver a acceder<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7088674813905715446">El administrador estableció el estado de desaprovisionamiento para este dispositivo. Para poder utilizarlo en el registro, el administrador debe actualizar el estado del dispositivo a pendiente.</translation>
 <translation id="7114054701490058191">Las contraseñas no coinciden</translation>
 <translation id="7135729336746831607">¿Quieres activar la conexión Bluetooth?</translation>
 <translation id="7141105143012495934">Se produjo un error de acceso porque no se pudieron recuperar los datos de tu cuenta. Comunícate con el administrador o vuelve a intentarlo.</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
+<translation id="7171259390164035663">No inscribir</translation>
 <translation id="7189451821249468368">No tienes suficientes actualizaciones para inscribir este dispositivo; comunícate con el vendedor para adquirir más. Si crees que recibiste este mensaje por error, comunícate con el servicio de asistencia.</translation>
 <translation id="7202337678781136582">Escanea el código QR con tu teléfono Android</translation>
+<translation id="7228854227189381547">No cambiar</translation>
+<translation id="7230881857327093958">Los cambios se aplicarán después de la configuración</translation>
 <translation id="7260186537988033909">Se completó la inscripción del dispositivo en el modo de kiosko y señalización</translation>
+<translation id="7284411326658527427">Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
 <translation id="7290242001003353852">Este servicio de acceso, alojado por <ph name="SAML_DOMAIN" />, está accediendo a tu cámara.</translation>
+<translation id="7311005168897771689">Accede a tus archivos de Google Drive cuando estés sin conexión</translation>
 <translation id="7317831949569936035">Inscripción en una institución educativa</translation>
+<translation id="7326004502692201767">Configura este dispositivo <ph name="DEVICE_TYPE" /> para un niño</translation>
+<translation id="732659786514229249">¿Quieres inscribir el dispositivo en tu organización?</translation>
 <translation id="7329154610228416156">Se produjo un error de acceso porque está configurado para usar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
 <translation id="7345706641791090287">Confirma tu contraseña</translation>
+<translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
+<translation id="7403642243184989645">Descarga de recursos</translation>
+<translation id="7406912950279255498">Modo de inversión de colores</translation>
 <translation id="7416263748877373774">No se pueden cargar las Condiciones del Servicio. Verifica tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="7475742997309661417">El lector de pantalla de ChromeOS, ChromeVox, es utilizado principalmente por personas con ceguera o visión reducida para leer el texto que se muestra en pantalla con un sintetizador de voz o una pantalla braille. Mantén presionadas las teclas de volumen durante cinco segundos para activar ChromeVox. Cuando ChromeVox esté activado, podrás realizar un recorrido rápido.</translation>
 <translation id="7476454130948140105">El nivel de la batería es demasiado bajo para la actualización (<ph name="BATTERY_PERCENT" />%)</translation>
@@ -369,39 +525,61 @@
 <translation id="7506541170099744506">Tu dispositivo <ph name="DEVICE_TYPE" /> se inscribió correctamente para la administración empresarial.</translation>
 <translation id="7509097596023256288">Se está configurando la administración</translation>
 <translation id="7543104066686362383">Habilitar funciones de depuración en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544227555407951270">Inscribir el dispositivo</translation>
+<translation id="7549434883223124329">¿Quieres cambiar el idioma del dispositivo?</translation>
 <translation id="7553242001898162573">Ingresar contraseña</translation>
 <translation id="7556242789364317684">Lamentablemente, <ph name="SHORT_PRODUCT_NAME" /> no puede recuperar la configuración. Para solucionar el error, <ph name="SHORT_PRODUCT_NAME" /> debe restablecer el dispositivo con Powerwash.</translation>
 <translation id="7560756177962144929">Sincroniza tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7571643774869182231">No hay suficiente espacio para la actualización</translation>
+<translation id="7616214729753637086">Registrando dispositivo…</translation>
 <translation id="7622114377921274169">Cargando</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> administra este dispositivo y requiere que accedas a tu cuenta en todas las instancias.</translation>
 <translation id="7639914187072011620">No se pudo obtener la URL de redireccionamiento para SAML del servidor.</translation>
 <translation id="7643117827468520640">Revisa estas condiciones</translation>
+<translation id="7647504534168186939"><ph name="BEGIN_PARAGRAPH1" />Los datos de las apps abarcan cualquier información guardada por una app (según la configuración del desarrollador), incluidos contactos, mensajes y fotos. La copia de seguridad de los datos no incide en la cuota de almacenamiento de Drive.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el administrador.</translation>
 <translation id="7660116474961254898">Sigue las instrucciones en el teléfono</translation>
 <translation id="7661451191293163002">No se pudo obtener un certificado de registro.</translation>
+<translation id="7666531788977935712">Se habilitó el botón Continuar</translation>
 <translation id="7671139479636735732">Haz clic con el botón derecho para visualizar tus ideas fácilmente</translation>
 <translation id="770831926727930011">Los datos locales están protegidos por tu contraseña anterior. Ingresa tu contraseña anterior para recuperar los datos locales.</translation>
 <translation id="7722040605881499779">Espacio necesario para la actualización: <ph name="NECESSARY_SPACE" /></translation>
+<translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7746045113967198252">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto. También puedes encontrar esta opción más tarde en Configuración &gt; Dispositivo &gt; Pantallas.</translation>
 <translation id="7760176388948986635">Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de este dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificar a ninguna persona para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
 <translation id="7784875615510899699">No tienes suficientes licencias disponibles para inscribir este dispositivo de Google Beam. Comunícate con tu revendedor para comprar más. Si crees que ves este mensaje por error, comunícate con tu revendedor.</translation>
+<translation id="7791269138074599214">Método de entrada</translation>
+<translation id="7791436592012979144">Se habilitó el desplazamiento inverso</translation>
 <translation id="7792012425874949788">Se produjo un error al acceder</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7803657407897251194">Para continuar la configuración con tu dispositivo Android, conecta tu <ph name="DEVICE_TYPE" /> a una red</translation>
+<translation id="7842692330619197998">Visita g.co/ChromeEnterpriseAccount si necesitas crear una cuenta nueva.</translation>
 <translation id="7851457902707056880">El acceso se restringió únicamente a la cuenta del propietario. Reinicia el sistema y accede con la cuenta del propietario. El equipo se reiniciará automáticamente en 30 segundos.</translation>
 <translation id="7870730066603611552">Revisar las opciones de sincronización después de la configuración</translation>
 <translation id="7883792253546618164">Puedes anular la suscripción en cualquier momento.</translation>
+<translation id="7887864092952184874">Mouse Bluetooth sincronizado</translation>
 <translation id="7906440585529721295">Se borrarán los datos locales</translation>
+<translation id="7910725946105920830">Usa tu Cuenta de Google personal</translation>
+<translation id="7918257978052780342">Inscribir</translation>
+<translation id="7923516590127538256"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando y la cantidad de memoria que se empleaba en general.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar el envío de estos informes en cualquier momento en la configuración del dispositivo ChromeOS de tu hijo o hija. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="7943311690198910993">Se actualizó el método de acceso</translation>
 <translation id="795240231873601803">Usa la inscripción empresarial para las cuentas de trabajo o instituciones educativas</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>
 <translation id="7975504106303186033">Debes inscribir este dispositivo de Chrome Education en una cuenta de institución educativa. Para registrarte con una nueva cuenta, visita g.co/workspace/edusignup.</translation>
+<translation id="7980084013673500153">ID de activo: <ph name="ASSET_ID" /></translation>
 <translation id="7982083145464587921">Reinicia el dispositivo para corregir el error.</translation>
 <translation id="7990958035181555539">Transferir automáticamente la red Wi-Fi desde tu teléfono Android</translation>
+<translation id="8022466874160067884">Ingresar tu Cuenta de Google y tu contraseña</translation>
+<translation id="8049029041626250638">Conecta un teclado o mouse. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="8054563304616131773">Ingresa una dirección de correo electrónico válida.</translation>
+<translation id="8054921503121346576">Teclado USB conectado</translation>
 <translation id="8065144531309810062">Usa la IA de Google para aumentar tu creatividad y productividad</translation>
+<translation id="8082106343289440791">¿Deseas vincular "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8097959162767603171">Tu administrador primero debe aceptar las condiciones del servicio de la lista de dispositivos de Chrome que se muestran en la Consola del administrador.</translation>
 <translation id="8098616321286360457">Se requiere una conexión de red</translation>
 <translation id="8129265306888404830">Para usar la dirección de correo electrónico de tu organización (<ph name="EMAIL_DOMAIN" />), debes usar la inscripción empresarial. Si este dispositivo es para uso personal, accede con tu Cuenta de Google personal.</translation>
@@ -409,28 +587,37 @@
 <translation id="8146177459103116374">Si ya estás registrado en este dispositivo, puedes <ph name="LINK2_START" />acceder como un usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Se produjo un error en el acceso. Comunícate con el administrador o vuelve a intentarlo.</translation>
 <translation id="8147346945017130012">Para ayudar a mejorar las funciones y el rendimiento de Chrome y ChromeOS, envía automáticamente informes de fallas y datos de uso y de diagnóstico a Google.</translation>
+<translation id="8152760814912191567">Google Beam para Zoom</translation>
 <translation id="815491593104042026">Se produjo un error y no se pudo completar la autenticación porque está configurada para utilizar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
 <translation id="8157704005178149728">Configurando la supervisión</translation>
 <translation id="8174047975335711832">Información del dispositivo</translation>
+<translation id="818985507198861625"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para ayudar a determinar la ubicación de tu dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de tu dispositivo Android en cualquier momento a través de Configuración &gt; Apps &gt; Google Play Store &gt; Administrar las preferencias de Android &gt; Seguridad y ubicación &gt; Ubicación. Además, si quieres desactivar el uso de Wi-Fi, redes móviles y sensores para la ubicación de este dispositivo Android, desactiva "Precisión de la ubicación de Google" en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8202160505685531999">Vuelve a ingresar la contraseña para actualizar tu perfil de <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8239032431519548577">Se completó la inscripción empresarial</translation>
 <translation id="8241806945692107836">Determinando configuración del dispositivo…</translation>
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="826905130698769948">El Certificado de cliente no es válido</translation>
+<translation id="8271379370373330993">Los siguientes pasos son para los padres. Después de configurar la cuenta, puedes devolverle el dispositivo <ph name="DEVICE_TYPE" /> a tu hijo.</translation>
 <translation id="8274924778568117936">No apagues ni cierres el dispositivo <ph name="DEVICE_TYPE" /> hasta que finalice la actualización. Cuando el proceso termine, el dispositivo <ph name="DEVICE_TYPE" /> se reiniciará.</translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8291942417224950075">Para uso personal</translation>
 <translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Comunícate con el administrador para solicitar permiso de acceso o bien accede con una Cuenta de Google supervisada por Family Link.</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> administrará este dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8339288417038613756">Tamaño de la pantalla y el texto</translation>
 <translation id="8354034204605718473">Se agregó el PIN de tu hijo</translation>
 <translation id="8366396658833131068">Se restauró la conexión de red. Selecciona una red distinta o presiona el botón "Continuar" para iniciar la aplicación de kiosco.</translation>
 <translation id="8401432541486058167">Proporciona el PIN asociado a tu tarjeta inteligente.</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar este parámetro cuando lo desees en Configuración. Se usarán los datos según la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
 <translation id="8413956290606243087">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS?</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
+<translation id="8428213095426709021">Configuración</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
 <translation id="8452105022015742247">Transfiriendo la información de la Cuenta de Google desde tu teléfono Android</translation>
 <translation id="8464132254133862871">Esta cuenta de usuario no es elegible para el servicio.</translation>
 <translation id="8524841856047224176">Personaliza los fondos de tu cámara para videollamadas y mucho más</translation>
+<translation id="8527257351549797148">Es posible que tu organización requiera que te inscribas para acceder a apps, extensiones y mucho más. Esto también permite que tu organización administre, por ejemplo, la seguridad y la configuración del dispositivo.</translation>
+<translation id="8558063527625343224">Configura Google Beam</translation>
 <translation id="8569673829373920831">Más información sobre <ph name="APP_NAME" /></translation>
 <translation id="8586421813321819377">Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
 <translation id="8627804903623428808">Revisa estas condiciones y controla los datos de tu hijo</translation>
@@ -439,9 +626,13 @@
         <ph name="BR" />
         Visible para dispositivos cercanos como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="8655972064210167941">Se produjo un error de acceso porque no se pudo verificar la contraseña. Comunícate con el administrador o vuelve a intentarlo.</translation>
+<translation id="8661876674803386786"><ph name="BEGIN_PARAGRAPH1" />Cuando la Precisión de la ubicación está activada, la información sobre señales inalámbricas, como los puntos de acceso Wi‑Fi y las torres de redes móviles, junto con los datos de sensores del dispositivo, como el acelerómetro y el giroscopio, se utiliza para calcular una ubicación más precisa del dispositivo, la cual pueden usar las apps y los servicios para Android para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente información sobre los sensores de los dispositivos y las señales inalámbricas cercanas a ti para contribuir a las ubicaciones de las señales inalámbricas con participación colectiva.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google usa esta información sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, así como mejorar, proporcionar y brindar sus propios servicios en general. Procesamos esta información según los intereses legítimos de Google (y de terceros) de satisfacer las necesidades de los usuarios.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la Precisión de la ubicación en cualquier momento en la configuración de ubicación de tu dispositivo, en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Configuración avanzada de ubicación. Si la Precisión de la ubicación está desactivada, no se recopilarán datos relacionados con este parámetro de configuración. En el caso de las apps y los servicios para Android, solo se usa la dirección IP, si está disponible, para determinar la ubicación de tu dispositivo, lo que puede afectar la disponibilidad y la precisión de las ubicaciones de las apps y los servicios para Android, como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8674903726754070732">Desafortunadamente, la computadora está configurada con un identificador de hardware incorrecto. Esto impide que ChromeOS se actualice con las últimas correcciones de seguridad, y la computadora <ph name="BEGIN_BOLD" />puede quedar vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="8695139659682234808">Agrega los controles parentales cuando finalices la configuración</translation>
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
+<translation id="8718994464069323380">Se detectó una pantalla táctil</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8726206820263995930">Se produjo un error al recuperar la configuración de la política del servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8730621377337864115">Listo</translation>
@@ -449,24 +640,36 @@
 <translation id="8740247629089392745">Puedes pasarle esta Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración está casi lista. Luego, podrán comenzar a explorar.</translation>
 <translation id="8759753423332885148">Más información</translation>
 <translation id="8777628254805677039">contraseña de raíz</translation>
+<translation id="877985182522063539">A4</translation>
+<translation id="8783834180813871000">Ingresa el código de vinculación por Bluetooth y, luego, presiona Intro o la tecla de retorno.</translation>
 <translation id="8794548468611058947">En lugar de ingresar la contraseña de tu Cuenta de Google para acceder, puedes crear un PIN para este dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830796635868321089">La búsqueda de actualizaciones no pudo usar la configuración del servidor proxy actual. Ajusta tu <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8855977033756560989">Este dispositivo Chromebook Enterprise incluye Chrome Enterprise Upgrade. Para aprovechar las funciones empresariales, inscribe este dispositivo con una cuenta de administrador de Google.</translation>
 <translation id="885746075120788020">Tu actividad y tus preferencias guardadas estarán listas en cualquier dispositivo con ChromeOS cuando accedes con tu Cuenta de Google. En Configuración, podrás elegir los datos que quieras sincronizar.</translation>
+<translation id="8868333925931032127">Inicio del modo de demostración</translation>
 <translation id="8875221558267407626">Resume el contenido, simplifica el lenguaje complejo o haz preguntas</translation>
+<translation id="8907701755790961703">Selecciona un país.</translation>
 <translation id="8913163265790894442">Configura fácilmente tu <ph name="DEVICE_TYPE" /> con tu teléfono. Puedes agregar tu red Wi-Fi y tu Cuenta de Google sin tener que ingresar las contraseñas manualmente.
         <ph name="BR" />
         <ph name="BR" />
         Visible como <ph name="DEVICE_TYPE" />…</translation>
+<translation id="8934732568177537184">Continuar</translation>
 <translation id="8946359700442089734">Las funciones de depuración no se habilitaron completamente en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8965037249707889821">Ingresa la contraseña anterior.</translation>
+<translation id="8968906873893164556">Elige la cuenta que usarás para la configuración</translation>
+<translation id="8973596347849323817">Puedes personalizar este dispositivo para que se adapte a tus necesidades. Estas funciones de accesibilidad pueden cambiarse más tarde en Configuración.</translation>
 <translation id="8975396729541388937">Puedes anular la suscripción en cualquier momento haciendo clic en el vínculo que se incluye en los correos electrónicos que recibes.</translation>
+<translation id="8987305927843254629">Cada persona podrá personalizar su experiencia y proteger la privacidad de sus datos.</translation>
 <translation id="8993059306046735527">Si olvidas tu contraseña de <ph name="DEVICE_TYPE" />, puedes restablecer los datos locales. Tendrás que acceder a tu Cuenta de Google o usar la recuperación de la cuenta.</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="903480517321259405">Vuelve a introducir el PIN</translation>
 <translation id="9040473193163777637">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS? En ese caso, mantén presionadas ambas teclas de volumen durante cinco segundos.</translation>
 <translation id="9068298336633421551">Permite que los servicios y las apps para Android con permiso de ubicación usen la ubicación de este dispositivo. Es posible que Google recopile datos anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
+<translation id="9074836595010225693">Mouse USB conectado</translation>
 <translation id="9076523132036239772">Lo sentimos, no pudimos verificar tu correo electrónico o contraseña. Intenta conectándote a una red.</translation>
+<translation id="9089959054554410481">Cambia la dirección de desplazamiento del panel táctil</translation>
 <translation id="9158715103698450907">Se produjo un problema de comunicación de red durante la autenticación. Verifica tu conexión de red y vuelve a intentarlo.</translation>
+<translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="919686179725692564">Más información sobre cómo realizar una copia de seguridad de las apps</translation>
 <translation id="9214520840402538427">¡Vaya! Se ha agotado el tiempo de la inicialización de los atributos de tiempo de instalación. Comunícate con el representante de asistencia.</translation>
 <translation id="9217002308921247002"><ph name="BEGIN_PARAGRAPH1" />Función exclusiva para <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
@@ -476,4 +679,7 @@
         <ph name="BR" />
         Visible como <ph name="DEVICE_TYPE" />…</translation>
 <translation id="951991426597076286">Rechazar</translation>
+<translation id="954749761428814584">Idioma y método de entrada</translation>
+<translation id="960987915827980018">Falta aproximadamente una hora.</translation>
+<translation id="995420352808264005">Elige el tipo de inscripción de dispositivos</translation>
 </translationbundle>

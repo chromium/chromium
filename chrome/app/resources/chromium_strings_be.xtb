@@ -29,7 +29,6 @@
 <translation id="126567311906253476">Калі вы ўваходзіце ў сэрвісы Google (напрыклад, Gmail ці YouTube) праз уліковы запіс <ph name="USER_EMAIL" />, то можаце аўтаматычна ўвайсці ў Chromium пад тым жа ўліковым запісам</translation>
 <translation id="1287534462498555020">Усталюйце Chromium на тэлефон</translation>
 <translation id="1290883685122687410">Памылка наладжвання: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Ілюстрацыя, якая паказвае, як выкарыстоўваць пошук відарысаў для пошуку тавару</translation>
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
 <translation id="132092532143527429">Паспрабаваць з Gemini ў Chromium</translation>
 <translation id="1324107359134968521">Браўзеру Chromium неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -495,7 +494,6 @@
 <translation id="6400112897226594999">Лагатып Chromium на экране камп’ютара.</translation>
 <translation id="6403826409255603130">Chromium – гэта вэб-браўзер, які апрацоўвае вэб-старонкі і запускае праграмы з неймавернай хуткасцю: хуткі, стабільны і просты ў выкарыстанні. Павышаная бяспека прагляду вэб-старонак забяспечваецца ўбудаванай у Chromium аховай ад шкодных праграм і фішынгу.</translation>
 <translation id="6414624068245092115">Каб заўсёды мець магчымасць выкарыстоўваць і захоўваць даныя Chromium ва Уліковым запісе Google, пацвердзіце сваю асобу</translation>
-<translation id="6417332166651156371">Спрошчаны відарыс, які паказвае кропку ўваходу ў Менеджар пароляў у Chromium</translation>
 <translation id="642132557830635295">Павышаецца хуткасць Chromium, і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript</translation>
 <translation id="6436260184216827876">Пошук відарысаў недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="6442900851116057561">Перазапусціце Chromium OS</translation>

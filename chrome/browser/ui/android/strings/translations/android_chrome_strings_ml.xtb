@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2316129865977710310">വേണ്ട, നന്ദി</translation>
-<translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="232137538351753795">തിരികെ പോകാൻ ഇടത്തേയറ്റത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന്</translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് പരിശോധിച്ചു}other{# ദിവസം മുമ്പ് പരിശോധിച്ചു}}</translation>
 <translation id="2842985007712546952">പാരന്റ് ഫോൾഡർ</translation>
 <translation id="2854916915045135148">അദൃശ്യ മോഡിലേക്ക് മാറാൻ സ്‌പർശിച്ചുപിടിക്കുക</translation>
-<translation id="2860954141821109167">ഈ ഉപകരണത്തിൽ Phone ആപ്പ് പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="286473047976978798">നിങ്ങളുടെ ദൃശ്യപരതാ മുൻഗണനകൾ ബാധകമാക്കണോ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> എന്നതും മറ്റൊരു ടാബും}other{<ph name="URL" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും}}</translation>
 <translation id="2869430948265924908">കാറിലെ നിങ്ങളുടെ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം പരിരക്ഷിക്കാൻ, നിങ്ങളൊരു കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്‌ടിക്കണം.  ഒരു പിന്നോ കോഡോ പാസ്‌വേഡോ ഉപയോഗിച്ച് നിങ്ങൾക്ക് ഇത് ചെയ്യാനാകും.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">ഇല്ലാതാക്കുക, തുടരുക</translation>
 <translation id="6316139424528454185">Android പതിപ്പ് പിന്തുണയ്‌ക്കുന്നതല്ല</translation>
 <translation id="631839948975905034">Chrome-ൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ അദൃശ്യ വിൻഡോകൾ ലോക്ക് ചെയ്യുക</translation>
+<translation id="6321592572353357376">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ "<ph name="EXTENSION_NAME" />" എന്ന വിപുലീകരണം നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
 <translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">ഇല്ലാതാക്കി</translation>
 <translation id="6916590542764765824">വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക</translation>
 <translation id="6918398787259831832">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് <ph name="BEGIN_LINK" />കൂടുതൽ വിവരങ്ങൾ നേടുക<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">ഈ പേജിന് QR കോഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{ഒരു ടാബ്}other{<ph name="NUMBER_OF_TABS" /> ടാബുകൾ}}</translation>
 <translation id="6929224077895306814">നിങ്ങളുടെ ഉപകരണത്തിലും Google Account-ലും സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ സുരക്ഷാ കോഡുകളും ഇല്ലാതാക്കും</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">ആപ്പ്</translation>
 <translation id="7253951228444156601">പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു…</translation>
 <translation id="7260367682327802201">നിങ്ങളുടെ Android ഉപകരണത്തിൽ സമാനമായ ക്രമീകരണം ഉണ്ടായിരിക്കാം. Chrome-ലും നിങ്ങളുടെ Android ഉപകരണത്തിലും ആഡ് മെഷർമെന്റ് ഓണാക്കിയിട്ടുണ്ടെങ്കിൽ, നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്സൈറ്റുകളിലും ഉപയോഗിക്കുന്ന ആപ്പുകളിലും ഉടനീളമുള്ള പരസ്യങ്ങൾ ഫലപ്രദമാണോ എന്ന് അളക്കാൻ ഒരു കമ്പനിക്ക് സാധിച്ചേക്കാം.</translation>
+<translation id="7265857422443387781">Google Lens ഉപയോഗിച്ച് ടാബ് തിരയുക <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />-ലേക്ക് <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7276868533747677875">നിങ്ങൾ മുമ്പ് പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്തിട്ടുണ്ടെങ്കിൽ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഒരു CSV ഫയൽ ഉണ്ടോ എന്ന് നോക്കി നിങ്ങൾക്ക് ഇഷ്ടമുള്ള പാസ്‌വേഡ് മാനേജരിലേക്ക് അത് ഇമ്പോർട്ട് ചെയ്യുക.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">വിലയിടിവ് മുന്നറിയിപ്പുകൾ</translation>
 <translation id="8611922158252451755">ലിങ്ക് കൈവശമുള്ള ആർക്കും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാനാകും, അതിനാൽ വിവേകത്തോടെ പങ്കിടുക. ലിങ്ക് 48 മണിക്കൂറിനുള്ളിൽ കാലഹരണപ്പെടും.</translation>
 <translation id="8616006591992756292">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="8629093325209491835">Chrome മെനു &gt; ക്രമീകരണം എന്നിങ്ങനെ തുറക്കുക</translation>
 <translation id="8634050254805484913">ഇടുങ്ങിയ സ്ക്രീനുകളിൽ മറച്ചിരിക്കുന്നു</translation>
 <translation id="8635399646025169806">ടാബ് ഗ്രൂപ്പ് നിലനിർത്തണോ?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">ഒരു ഫയൽ ശേഷിക്കുന്നു</translation>
 <translation id="9205933215779845960">ആ പേജ് കണ്ടെത്താനാകുന്നില്ല. നിങ്ങളുടെ സ്പെല്ലിംഗ് പരിശോധിക്കുകയോ <ph name="SEARCH_ENGINE" /> എന്നതിൽ തിരയുകയോ ചെയ്യുക.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">കോളുകൾ ചെയ്യാനാവില്ല</translation>
 <translation id="9212845824145208577">താഴേക്ക് പോകാനാകില്ല. പേജിന്റെ കുറച്ച് കൂടെ താഴെ നിന്ന് ആരംഭിക്കാൻ ശ്രമിക്കൂ.</translation>
 <translation id="9218430445555521422">ഡിഫോൾട്ടായി സജ്ജീകരിക്കുക</translation>
 <translation id="9219103736887031265">Images</translation>

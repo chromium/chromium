@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
 <translation id="2316129865977710310">Не, благодаря</translation>
-<translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="232137538351753795">Прекарайте пръст от левия край, за да се върнете назад</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
 <translation id="2327445548174191329">От <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено преди 1 ден}other{Проверено преди # дни}}</translation>
 <translation id="2842985007712546952">Основна папка</translation>
 <translation id="2854916915045135148">Докоснете и задръжте, за да превключите към режим „инкогнито“</translation>
-<translation id="2860954141821109167">Трябва да има активирано приложение за телефон на устройството</translation>
 <translation id="286473047976978798">Да се приложат ли предпочитанията ви за облика?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и още 1 раздел}other{<ph name="URL" /> и още <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="2869430948265924908">За да защитите деликатното си съдържание в автомобила, трябва да зададете опция за заключване на потребителския профил в него.  Можете да използвате ПИН, код или парола.</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">Изтриване и продължаване</translation>
 <translation id="6316139424528454185">Неподдържана версия на Android</translation>
 <translation id="631839948975905034">Заключване на прозорците в режим „инкогнито“ при излизане от Chrome</translation>
+<translation id="6321592572353357376">Разширението <ph name="EXTENSION_NAME" /> иска да влезете в профила си в Chrome</translation>
 <translation id="6324916366299863871">Редактиране на прекия път</translation>
 <translation id="6324977638108296054">Не може да се създаде връзка към откроения текст</translation>
 <translation id="6333140779060797560">Споделяне чрез <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6916590542764765824">Управление на разширенията</translation>
 <translation id="6918398787259831832">Ако този проблем не се отстрани, <ph name="BEGIN_LINK" />получете повече информация<ph name="END_LINK" /> от <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Създаване на код за бърза реакция за тази страница</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome премахна това разрешение, защото не сте посещавали този сайт наскоро</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 раздел}other{<ph name="NUMBER_OF_TABS" /> раздела}}</translation>
 <translation id="6929224077895306814">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">Приложение</translation>
 <translation id="7253951228444156601">Паролите се проверяват…</translation>
 <translation id="7260367682327802201">Възможно е устройството ви с Android да има подобна настройка. Ако функцията за измерване на рекламите е включена в Chrome и на устройството ви с Android, дадена компания може да измерва ефективността на рекламите в посещаваните от вас уебсайтове и използваните от вас приложения.</translation>
+<translation id="7265857422443387781">Търсене в раздела с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Да се изпрати ли <ph name="ONE_TIME_CODE" /> до <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
 <translation id="7276868533747677875">Ако по-рано сте експортирали пароли, потърсете CSV файл на устройството си и го импортирайте в предпочитания от вас мениджър на пароли.</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">Сигнали за понижение на цените</translation>
 <translation id="8611922158252451755">Всеки, който разполага с връзката, може да редактира всички раздели, затова споделяйте разумно. Връзката изтича след 48 часа.</translation>
 <translation id="8616006591992756292">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Превод на <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Отворете менюто на Chrome &gt; „Настройки“.</translation>
 <translation id="8634050254805484913">Скриване на тесни екрани</translation>
 <translation id="8635399646025169806">Искате ли да запазите групата раздели?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9205933215779845960">Страницата не е намерена. Проверете изписването или потърсете с <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>
-<translation id="9209888181064652401">Не могат да се извършват обаждания</translation>
 <translation id="9212845824145208577">Придвижването по-надолу не е възможно. Започнете от по-долна част на страницата.</translation>
 <translation id="9218430445555521422">Задаване като основен избор</translation>
 <translation id="9219103736887031265">Изображения</translation>

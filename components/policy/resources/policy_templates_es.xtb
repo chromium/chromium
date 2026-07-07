@@ -3146,6 +3146,11 @@ Esta política no afecta a la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POL
         Esta política no tiene ningún efecto en las políticas ya publicadas.</translation>
 <translation id="3002067315837777719">Impedir que se habiliten las notificaciones de Mi teléfono</translation>
 <translation id="3003490107503207900">Forzar la descarga de los documentos de Office (por ejemplo, .docx) en lugar de abrirlos en <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Controla cómo gestiona <ph name="PRODUCT_OS_NAME" /> una contraseña que no coincide detectada durante un inicio de sesión online. Esta política determina qué ocurre cuando la contraseña del usuario, autenticada a través de un proveedor de identidades online (por ejemplo, un proveedor de identidades de terceros o Gaia), no coincide con la contraseña utilizada para cifrar sus datos locales. Esto suele ocurrir después de que un usuario cambie su contraseña externamente.
+
+Si se le asigna el valor 0 (flujo de cambio de contraseña estándar) a esta política o no se define, se iniciará el flujo de cambio de contraseña estándar. Se le pedirá al usuario que introduzca su antigua contraseña para actualizar el cifrado de sus datos locales, o bien podrá usar otros mecanismos de recuperación de datos locales si están disponibles.
+
+Si se le asigna el valor 1 a esta política (borrado automático de datos locales), se omitirá el flujo de cambio de contraseña estándar. Si se detecta que las contraseñas no coinciden, los datos locales del usuario se borrarán automáticamente. Esto permite que el usuario inicie sesión sin problemas con su nueva contraseña, pero provoca la pérdida de todos los datos almacenados localmente en su perfil (por ejemplo, las descargas y los ajustes no sincronizados). Esta opción está pensada para entornos en los que los usuarios almacenan principalmente datos en la nube o se espera que la contraseña se actualice con frecuencia.</translation>
 <translation id="300673820739371513">Esta política determina si se detectan entidades de texto sin formato en las páginas web, por lo que los usuarios podrán activar acciones contextuales interactuando con ellas.
 La política tiene varias propiedades, una por cada tipo de entidad.
 Los tipos de entidades son: <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />, etc.
@@ -8905,6 +8910,7 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 
       Nota: Usa la política junto a <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de corrector ortográfico.</translation>
+<translation id="6625424971640741579">Flujo de cambio de contraseña estándar</translation>
 <translation id="6625716212597516929">Volver al comportamiento anterior de alcance de las cookies</translation>
 <translation id="6626319579493977784">Configuración de código dinámico</translation>
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
@@ -9110,6 +9116,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="6763023079133439068">Permitir certificados que no tengan una extensión subjectAlternativeName cuando los emitan anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
+<translation id="6770703270685871935">Borrado automático de datos locales</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
 <translation id="6782331708811245959">Habilitar los informes sobre el modo Inicio del dispositivo</translation>
 <translation id="6783578496154221347">Usa WeeklyTimeIntervalChecked en código nuevo.</translation>
@@ -9404,6 +9411,7 @@ Esta política se eliminará en el futuro, cuando se haya lanzado por completo l
       Si no se establece, no habrá impresoras de dispositivo y se ignorarán las otras políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />.</translation>
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imágenes para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilitar de manera predeterminada la impresión con PIN</translation>
+<translation id="6953246833109449226">Configurar el comportamiento en caso de que las contraseñas online no coincidan</translation>
 <translation id="695532899547292238">Habilitar la recogida de registros de la aplicación de kiosco</translation>
 <translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
 <translation id="6960996423652450945">Inhabilitar el resaltado del cursor de texto en la pantalla de inicio de sesión</translation>

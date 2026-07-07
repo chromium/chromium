@@ -1573,6 +1573,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
+<translation id="6295140892595702619">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Saat Anda berbicara dengan Gemini, audio disimpan di Aktivitas Aplikasi Gemini (jika diaktifkan). Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif</translation>
 <translation id="6295751040240588413">Nama kartu tidak valid</translation>
 <translation id="629730747756840877">Akun</translation>
 <translation id="6301104306974789820">Dapatkan notifikasi pemantauan harga</translation>
@@ -2181,7 +2182,6 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8264966119170358612">Beberapa sandi tersimpan Anda terekspos dalam pelanggaran data non-Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPad. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Anda akan mengisi info ke <ph name="URL" /></translation>
 <translation id="8274795744553482834">Anda akan berganti profil</translation>
 <translation id="8275068909952022340">Lainnya…</translation>
 <translation id="8280797717392145626">Link diterima</translation>
@@ -2415,6 +2415,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, situs yang disematkan</translation>
 <translation id="8990960056509724223">File tidak dapat disimpan karena kebijakan organisasi Anda</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
+<translation id="9003263770394939629">Disarankan oleh Gemini. Kelola isi otomatis yang ditingkatkan di setelan.</translation>
 <translation id="9003677638446136377">Periksa lagi</translation>
 <translation id="9006453925669499173">Menu → Tab Samaran baru</translation>
 <translation id="9008201768610948239">Abaikan</translation>

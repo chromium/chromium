@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">Дели ову страницу</translation>
 <translation id="230115972905494466">Није пронађен ниједан компатибилан уређај</translation>
 <translation id="2316129865977710310">Не, хвала</translation>
-<translation id="2318045970523081853">Додирните да бисте упутили позив</translation>
 <translation id="232137538351753795">Превуците од леве ивице да бисте се вратили</translation>
 <translation id="2323763861024343754">Меморијски простор за сајт</translation>
 <translation id="2327445548174191329">Извор: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено пре 1 дан}one{Проверено пре # дан}few{Проверено пре # дана}other{Проверено пре # дана}}</translation>
 <translation id="2842985007712546952">Надређени фолдер</translation>
 <translation id="2854916915045135148">Додирните и задржите да бисте прешли у режим без архивирања</translation>
-<translation id="2860954141821109167">Уверите се да је нека апликација за телефон омогућена на овом уређају</translation>
 <translation id="286473047976978798">Желите да примените подешавања изгледа?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> и још 1 картица}one{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картица}few{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картице}other{<ph name="URL" /> и још <ph name="TAB_COUNT_MANY" /> картица}}</translation>
 <translation id="2869430948265924908">Да бисте заштитили осетљив садржај у аутомобилу, морате да примените закључавање профила аутомобила.  То можете да урадите помоћу PIN-а, кода или лозинке.</translation>
@@ -1272,6 +1270,7 @@ Google налог можда има друге облике историје п�
 <translation id="6315386555979018699">Избриши и настави</translation>
 <translation id="6316139424528454185">Неподржана верзија Android-а</translation>
 <translation id="631839948975905034">Закључајте прозоре без архивирања после затварања Chrome-а</translation>
+<translation id="6321592572353357376">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chrome</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6324977638108296054">Прављење линка до истакнутог текста није успело</translation>
 <translation id="6333140779060797560">Дељење преко <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Google налог можда има друге облике историје п�
 <translation id="6910211073230771657">Избрисано</translation>
 <translation id="6916590542764765824">Управљајте додацима</translation>
 <translation id="6918398787259831832">Ако се овај проблем настави, <ph name="BEGIN_LINK" />сазнајте више<ph name="END_LINK" /> од: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Направи QR кôд за ову страницу</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome је уклонио дозволе за ове сајтове јер их нисте недавно посећивали</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картица}one{<ph name="NUMBER_OF_TABS" /> картица}few{<ph name="NUMBER_OF_TABS" /> картице}other{<ph name="NUMBER_OF_TABS" /> картица}}</translation>
 <translation id="6929224077895306814">Сви безбедносни кодови сачувани на уређају и Google налогу ће бити избрисани</translation>
@@ -2033,7 +2033,6 @@ Google налог можда има друге облике историје п�
 <translation id="9204836675896933765">Преостала је 1 датотека</translation>
 <translation id="9205933215779845960">Нисмо успели да пронађемо ту страницу. Проверите правопис или пробајте да претражите на <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>
-<translation id="9209888181064652401">Упућивање позива није успело</translation>
 <translation id="9212845824145208577">Не можете да одете ниже. Пробајте да почнете са мање висине на страници.</translation>
 <translation id="9218430445555521422">Подеси као подразумевано</translation>
 <translation id="9219103736887031265">Слике</translation>

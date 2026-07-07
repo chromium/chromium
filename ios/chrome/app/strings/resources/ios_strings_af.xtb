@@ -1573,6 +1573,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="628251768213143684">Jy kan altyd bestuur wat in jou Google-rekening gestoor is</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>
 <translation id="6293101329759844770">Maak <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> oop en tik op Veiligblaai om Veiligblaai aan te skakel.</translation>
+<translation id="6295140892595702619">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is). Jou data word nie gebruik om generatiewe KI-modelle te verbeter</translation>
 <translation id="6295751040240588413">Ongeldige kaartbynaam</translation>
 <translation id="629730747756840877">Rekening</translation>
 <translation id="6301104306974789820">Kry prysnasporingkennisgewings</translation>
@@ -2181,7 +2182,6 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8264966119170358612">Sommige van jou gestoorde wagwoorde is blootgestel in ’n nie-Google-dataskending. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Jy is as deel van jou iPad-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219">Jy sal inligting in <ph name="URL" /> invul</translation>
 <translation id="8274795744553482834">Jy staan op die punt om profiele te wissel</translation>
 <translation id="8275068909952022340">Meer …</translation>
 <translation id="8280797717392145626">Skakels ontvang</translation>
@@ -2415,6 +2415,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vasgespelde werf</translation>
 <translation id="8990960056509724223">Lêer kon weens jou organisasie se beleide nie gestoor word nie</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
+<translation id="9003263770394939629">Voorgestel deur Gemini. Bestuur verbeterde outovul in instellings.</translation>
 <translation id="9003677638446136377">Kyk weer</translation>
 <translation id="9006453925669499173">Kieslys → Nuwe Incognito-oortjie</translation>
 <translation id="9008201768610948239">Ignoreer</translation>

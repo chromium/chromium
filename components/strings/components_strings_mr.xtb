@@ -504,6 +504,7 @@
 <translation id="175656076281618225">जादू</translation>
 <translation id="1757773103848038814">Monospace फॉंट</translation>
 <translation id="1757935267918149452">Google पासवर्ड बदला बटण, तुमचा Google खाते पासवर्ड बदलण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
+<translation id="1759776526873274358">तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी साइट वापरत असलेले पडताळणी कोड ऑटोफिल करा. Chrome हे कोड तुमच्या Gmail मधून मिळवू शकते. <ph name="BEGIN_LINK" />या वैशिष्ट्याबद्दल अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट तुम्हाला डिव्हाइसच्या ऑपरेटिंग सिस्टमद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
@@ -3128,6 +3129,7 @@
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5862579898803147654">स्टॅकर ८</translation>
 <translation id="5863515189965725638">IBAN संपादित करा</translation>
+<translation id="5863517400058880216">Gmail मधील पडताळणी कोड ऑटोफिल करा</translation>
 <translation id="5863847714970149516">पुढील पेजवर तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
 <translation id="5866257070973731571">फोन नंबर जोडा</translation>
 <translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> वरील</translation>
@@ -4519,6 +4521,7 @@
 <translation id="7967973398323409409">तुम्ही ऑटोफिल केलेली माहिती कधीही इतर कोणालाही दिसत नाही</translation>
 <translation id="79682505114836835">मूल्य "<ph name="VALUE" />" हा चुकीचा हेक्स रंग आहे.</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
+<translation id="7971403153351954587">तुमची संस्था कॉपी करण्यावर लक्ष ठेवते</translation>
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
 <translation id="7976053965094442846">कालांतराने पेमेंट करण्यासाठी उपलब्ध असलेले, आता विकत घेऊन, नंतर पैसे देण्याची सुविधा देणारे जारीकर्ते. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="7976214039405368314">खूप जास्त विनंत्या</translation>

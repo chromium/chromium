@@ -3175,6 +3175,11 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
         이 정책은 이미 출시된 정책에는 영향을 미치지 않습니다.</translation>
 <translation id="3002067315837777719">'휴대전화 허브 알림' 사용 설정을 불허</translation>
 <translation id="3003490107503207900">Office 문서(예: .docx)를 <ph name="BASIC_EDITOR_NAME" />에서 여는 대신 강제 다운로드</translation>
+<translation id="3003832749381802588">온라인 로그인 시 비밀번호 불일치가 감지되었을 때 <ph name="PRODUCT_OS_NAME" />에서 이를 처리하는 방식을 설정합니다. 이 정책은 온라인 IdP(예: 서드 파티 IdP, GAIA)를 통해 인증된 사용자의 비밀번호가 로컬 데이터 암호화에 사용된 비밀번호와 일치하지 않을 때의 처리 방식을 결정합니다. 이 현상은 대개 사용자가 외부에서 비밀번호를 변경했을 때 발생합니다.
+
+정책을 0(표준 비밀번호 변경 흐름)으로 설정하거나 따로 설정하지 않으면 표준 비밀번호 변경 절차가 시작됩니다. 로컬 데이터 암호화를 업데이트하기 위해 사용자에게 이전 비밀번호를 입력하라는 프롬프트가 표시됩니다. 또는 사용 가능한 경우 다른 로컬 데이터 복구 메커니즘을 사용할 수도 있습니다.
+
+정책을 1(로컬 데이터 자동 삭제)로 설정하면 표준 비밀번호 변경 절차를 우회합니다. 비밀번호 불일치가 감지되면 사용자의 로컬 데이터가 자동으로 삭제됩니다. 이렇게 하면 사용자가 새 비밀번호로 원활하게 로그인할 수 있지만, 사용자 프로필 내에 로컬로 저장된 모든 데이터(예: 다운로드, 동기화되지 않은 설정)가 삭제됩니다. 이 옵션은 사용자가 주로 데이터를 클라우드에 저장하거나 비밀번호를 자주 변경해야 하는 환경에 적합합니다.</translation>
 <translation id="300673820739371513">이 정책에 따라 웹페이지의 일반 텍스트 항목 감지 여부가 결정되며, 이를 통해 사용자는 이 항목과 상호작용하여 컨텍스트 작업을 트리거할 수 있습니다.
 정책에는 항목 유형별로 하나씩 여러 개의 속성이 있습니다.
 항목 유형에는 <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" /> 등이 있습니다.
@@ -8992,6 +8997,7 @@ false로 설정하면 P2P가 사용되지 않습니다.
 
       참고: 정책을 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />과 함께 사용하세요.</translation>
 <translation id="6625136649067113817">터치 키보드가 맞춤법 검사를 지원할 수 있는지 나타내는 부울 플래그입니다.</translation>
+<translation id="6625424971640741579">기본 비밀번호 변경 절차</translation>
 <translation id="6625716212597516929">기존 쿠키 범위 동작으로 되돌리기</translation>
 <translation id="6626319579493977784">동적 코드 설정</translation>
 <translation id="66265932317331474">CPU 정보 보고</translation>
@@ -9202,6 +9208,7 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 <translation id="6763023079133439068">로컬 신뢰 앵커에서 발급할 때 subjectAlternativeName 확장이 없는 인증서 허용</translation>
 <translation id="6766216162565713893">사이트에서 사용자에게 근처 블루투스 기기에 대한 액세스 권한을 부여할 것인지 묻도록 허용합니다.</translation>
 <translation id="6770454900105963262">활성 키오스크 세션에 관한 정보 보고</translation>
+<translation id="6770703270685871935">로컬 데이터 자동 삭제</translation>
 <translation id="6774132787348495175">사용자가 Linux 앱을 지원하는 데 필요한 가상 머신을 사용하도록 허용 안함</translation>
 <translation id="6782331708811245959">기기 부팅 모드 보고 사용 설정</translation>
 <translation id="6783578496154221347">새 코드에 WeeklyTimeIntervalChecked를 사용합니다.</translation>
@@ -9506,6 +9513,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
       정책을 설정하지 않는 경우 기기 프린터가 사용되지 않으면 다른 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 정책이 무시됩니다.</translation>
 <translation id="69525503251220566">기본 검색엔진에 이미지로 검색 기능을 제공하는 매개변수</translation>
 <translation id="6953102253399571439">기본적으로 PIN 인쇄 사용</translation>
+<translation id="6953246833109449226">온라인 비밀번호 불일치 시 동작 설정</translation>
 <translation id="695532899547292238">키오스크 애플리케이션 로그 수집 사용 설정</translation>
 <translation id="6956272732789158625">모든 사이트에서 키 생성 사용 허용 안함</translation>
 <translation id="6960996423652450945">로그인 화면에서 캐럿 강조표시 사용 안함</translation>

@@ -3128,6 +3128,11 @@ PAC 样式的字符串：
         此政策不会影响已发布的政策。</translation>
 <translation id="3002067315837777719">不允许启用 Phone Hub 通知</translation>
 <translation id="3003490107503207900">强制下载 Office 文档（例如 .docx），而不是在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
+<translation id="3003832749381802588">控制 <ph name="PRODUCT_OS_NAME" /> 如何处理在线登录时检测到的密码不匹配。此政策决定了当用户通过在线 IdP（例如第三方 IdP、Gaia）验证身份时所用的密码，与用于加密其本地数据的密码不匹配时，系统应如何处理。通常，用户在外部更改密码后会发生这种情况。
+
+如果此政策设为 0（标准密码更改流程）或未设置，系统将启动标准密码更改流程。系统会提示用户输入旧密码以更新本地数据加密，或者用户可以使用其他本地数据恢复机制（如果有）。
+
+如果此政策设为 1（自动擦除本地数据），系统会绕过标准密码更改流程。检测到密码不匹配后，系统会自动擦除用户的本地数据。这样，用户便可使用新密码顺畅登录，但会导致用户个人资料中本地存储的所有数据（例如，下载内容、未同步的设置）丢失。此选项适用于用户主要在云端存储数据的环境，或者需要经常更新密码的环境。</translation>
 <translation id="300673820739371513">此政策可决定能否在网页上检测到纯文本实体，以便让用户通过与这些实体互动来触发关联操作。
 此政策具有多个属性，每个实体类型对应一个。
 实体类型包括 <ph name="DEFAULT_ENUM_VALUE" />、<ph name="ADDRESS_ENUM_VALUE" />…。
@@ -8788,6 +8793,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 
       注意：请将此政策与 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="6625136649067113817">一个布尔值标记，用于表明屏幕键盘能否提供拼写检查功能。</translation>
+<translation id="6625424971640741579">标准密码更改流程</translation>
 <translation id="6625716212597516929">还原为旧版 Cookie 范围行为</translation>
 <translation id="6626319579493977784">动态代码设置</translation>
 <translation id="66265932317331474">报告 CPU 信息</translation>
@@ -8993,6 +8999,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="6763023079133439068">允许使用由本地信任锚颁发的缺少 subjectAlternativeName 扩展项的证书</translation>
 <translation id="6766216162565713893">允许网站请求用户授予对附近蓝牙设备的访问权限</translation>
 <translation id="6770454900105963262">报告自助服务终端的相关信息</translation>
+<translation id="6770703270685871935">自动擦除本地数据</translation>
 <translation id="6774132787348495175">不允许用户使用所需的虚拟机来支持 Linux 应用</translation>
 <translation id="6782331708811245959">启用设备启动模式报告功能</translation>
 <translation id="6783578496154221347">在新代码中使用 WeeklyTimeIntervalChecked。</translation>
@@ -9283,6 +9290,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
       若未设置，便不存在任何设备打印机，同时其他 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。</translation>
 <translation id="69525503251220566">用来为默认搜索服务提供商提供图片搜索功能的参数</translation>
 <translation id="6953102253399571439">默认启用 PIN 码打印</translation>
+<translation id="6953246833109449226">配置在线密码不匹配时的行为</translation>
 <translation id="695532899547292238">启用自助服务终端应用日志收集功能</translation>
 <translation id="6956272732789158625">不允许任何网站使用密钥生成功能</translation>
 <translation id="6960996423652450945">禁止在登录屏幕上使用插入符号突出显示</translation>

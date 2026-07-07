@@ -302,7 +302,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
-<translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="232137538351753795">왼쪽 끝에서부터 스와이프하여 뒤로 돌아가기</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2854916915045135148">시크릿 모드로 전환하려면 길게 터치하세요.</translation>
-<translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="286473047976978798">모양 환경설정을 적용하시겠습니까?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 외 탭 1개}other{<ph name="URL" /> 외 탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="2869430948265924908">자동차에서 민감한 콘텐츠를 보호하려면 자동차 프로필 잠금을 만들어야 합니다.  PIN, 코드 또는 비밀번호를 사용하면 됩니다.</translation>
@@ -1272,6 +1270,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6315386555979018699">삭제 후 계속</translation>
 <translation id="6316139424528454185">지원되지 않는 Android 버전입니다.</translation>
 <translation id="631839948975905034">Chrome 종료 시 시크릿 창 잠금</translation>
+<translation id="6321592572353357376">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 Chrome 로그인을 요청합니다</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6324977638108296054">하이라이트 링크를 만들 수 없음</translation>
 <translation id="6333140779060797560">공유 방법: <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6910211073230771657">삭제됨</translation>
 <translation id="6916590542764765824">확장 프로그램 관리</translation>
 <translation id="6918398787259831832">이 문제가 계속 발생하면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
+<translation id="6920262510368602827">이 페이지의 QR 코드 생성</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{탭 1개}other{탭 <ph name="NUMBER_OF_TABS" />개}}</translation>
 <translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
@@ -1541,6 +1541,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7253951228444156601">비밀번호 확인 중…</translation>
 <translation id="7260367682327802201">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 광고 측정이 사용 설정되어 있으면 회사에서 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
+<translation id="7265857422443387781">Google 렌즈로 탭 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7276868533747677875">이전에 비밀번호를 내보낸 경우 기기에서 CSV 파일을 찾아 원하는 비밀번호 관리자로 가져오세요.</translation>
@@ -1883,6 +1884,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="860282621117673749">가격 인하 알림</translation>
 <translation id="8611922158252451755">링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 공유하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="8616006591992756292">Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" />로 번역</translation>
 <translation id="8629093325209491835">Chrome 메뉴 &gt; 설정을 엽니다.</translation>
 <translation id="8634050254805484913">좁은 화면에서 숨기기</translation>
 <translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
@@ -2031,7 +2033,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
 <translation id="9205933215779845960">페이지를 찾을 수 없습니다. 철자를 확인하거나 <ph name="SEARCH_ENGINE" />에서 검색해 보세요.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">전화를 걸 수 없음</translation>
 <translation id="9212845824145208577">더 이상 아래로 내려갈 수 없습니다. 페이지 더 아래쪽에서 시작해 보세요.</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>

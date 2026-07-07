@@ -27,7 +27,6 @@
 <translation id="126567311906253476">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chromium bằng cùng một tài khoản</translation>
 <translation id="1287534462498555020">Tải Chromium về điện thoại</translation>
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1312200348844120300">Hình minh hoạ cho thấy cách bạn có thể dùng tính năng Tìm kiếm hình ảnh để tìm thông tin về một sản phẩm</translation>
 <translation id="1315551408014407711">Thiết lập hồ sơ Chromium mới</translation>
 <translation id="132092532143527429">Dùng thử với Gemini trong Chromium</translation>
 <translation id="1324107359134968521">Chromium cần có quyền truy cập Bluetooth để tìm 
@@ -494,7 +493,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6400112897226594999">Biểu trưng Chromium trên màn hình máy tính.</translation>
 <translation id="6403826409255603130">Chromium là trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Đây là một trình duyệt web nhanh, ổn định và dễ sử dụng. Duyệt web trở nên an toàn hơn với tính năng bảo vệ chống lại phần mềm độc hại và lừa đảo được tích hợp sẵn vào Chromium.</translation>
 <translation id="6414624068245092115">Xác minh danh tính của bạn để đảm bảo bạn luôn sử dụng và lưu dữ liệu Chromium trong Tài khoản Google</translation>
-<translation id="6417332166651156371">Hình ảnh đơn giản hoá cho thấy điểm truy cập vào Trình quản lý mật khẩu trong Chromium</translation>
 <translation id="642132557830635295">Chromium sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến</translation>
 <translation id="6436260184216827876">Không dùng được tính năng Tìm kiếm hình ảnh. Hãy thử lại sau.</translation>
 <translation id="6442900851116057561">Khởi động lại ChromiumOS</translation>

@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="2316129865977710310">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
-<translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="232137538351753795">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ਤੋਂ</translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="2842985007712546952">ਪੇਰੈਂਟ ਫੋਲਡਰ</translation>
 <translation id="2854916915045135148">ਇਨਕੋਗਨਿਟੋ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
-<translation id="2860954141821109167">ਪੱਕਾ ਕਰੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ੋਨ ਐਪ ਚਾਲੂ ਹੋਵੇ</translation>
 <translation id="286473047976978798">ਕੀ ਆਪਣੀਆਂ ਦਿੱਖ ਸੰਬੰਧੀ ਤਰਜੀਹਾਂ ਨੂੰ ਲਾਗੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ਅਤੇ 1 ਹੋਰ ਟੈਬ}one{<ph name="URL" /> ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬ}other{<ph name="URL" /> ਅਤੇ <ph name="TAB_COUNT_MANY" /> ਹੋਰ ਟੈਬਾਂ}}</translation>
 <translation id="2869430948265924908">ਕਾਰ ਵਿੱਚ ਆਪਣੀ ਸੰਵੇਦਨਸ਼ੀਲ ਸਮੱਗਰੀ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਲਈ ਕਾਰ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।  ਤੁਸੀਂ ਅਜਿਹਾ ਪਿੰਨ, ਕੋਡ ਜਾਂ ਪਾਸਵਰਡ ਨਾਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">ਮਿਟਾਓ ਅਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6316139424528454185">Android ਵਰਜਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="631839948975905034">ਤੁਹਾਡੇ Chrome ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
+<translation id="6321592572353357376">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6324916366299863871">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6324977638108296054">ਉਜਾਗਰ ਕੀਤੀ ਲਿਖਤ ਲਈ ਲਿੰਕ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="6916590542764765824">ਐਕਸਟੈਂਸ਼ਨ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6918398787259831832">ਜੇ ਇਹ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੋਂ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" />।</translation>
+<translation id="6920262510368602827">ਇਸ ਪੰਨੇ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਇਨ੍ਹਾਂ 'ਤੇ ਨਹੀਂ ਗਏ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ਟੈਬ}one{<ph name="NUMBER_OF_TABS" /> ਟੈਬ}other{<ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ}}</translation>
 <translation id="6929224077895306814">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਅਤੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਸਾਰੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="7253951228444156601">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="7260367682327802201">ਤੁਹਾਡੇ Android ਡੀਵਾਈਸ ਵਿੱਚ ਮਿਲਦੀ-ਜੁਲਦੀ ਸੈਟਿੰਗ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ। ਜੇ ਵਿਗਿਆਪਨ ਮਾਪ Chrome ਅਤੇ ਤੁਹਾਡੇ Android ਡੀਵਾਈਸ 'ਤੇ ਚਾਲੂ ਹੈ, ਤਾਂ ਕੋਈ ਕੰਪਨੀ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਐਪਾਂ 'ਤੇ ਕਿਸੇ ਵਿਗਿਆਪਨ ਦੀ ਪ੍ਰਭਾਵਕਤਾ ਨੂੰ ਮਾਪ ਸਕੇਗੀ।</translation>
+<translation id="7265857422443387781">Google Lens ਨਾਲ ਟੈਬ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">ਕੀ <ph name="ORIGIN" /> ਵਿੱਚ <ph name="ONE_TIME_CODE" /> ਨੂੰ ਸਪੁਰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7274013316676448362">ਬਲਾਕ ਕੀਤੀ ਸਾਈਟ</translation>
 <translation id="7276868533747677875">ਜੇ ਤੁਸੀਂ ਪਹਿਲਾਂ ਕਦੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕੀਤੇ ਹਨ, ਤਾਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ CSV ਫ਼ਾਈਲ ਲੱਭੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਤਰਜੀਹੀ Password Manager ਵਿੱਚ ਆਯਾਤ ਕਰੋ।</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">ਕੀਮਤ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ</translation>
 <translation id="8611922158252451755">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਇਸ ਲਈ ਸਮਝਦਾਰੀ ਨਾਲ ਸਾਂਝਾ ਕਰੋ। ਲਿੰਕ ਦੀ ਮਿਆਦ 48 ਘੰਟਿਆਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="8616006591992756292">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="8629093325209491835">Chrome ਮੀਨੂ &gt; ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8634050254805484913">ਛੋਟੀਆਂ ਸਕ੍ਰੀਨਾਂ 'ਤੇ ਅਦਿੱਖ</translation>
 <translation id="8635399646025169806">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖਣਾ ਹੈ?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">1 ਫ਼ਾਈਲ ਬਾਕੀ</translation>
 <translation id="9205933215779845960">ਉਹ ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ <ph name="SEARCH_ENGINE" /> 'ਤੇ ਖੋਜ ਕੇ ਦੇਖੋ।</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">ਕਾਲਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>
 <translation id="9212845824145208577">ਹੋਰ ਹੇਠਾਂ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਪੰਨੇ 'ਤੇ ਥੋੜ੍ਹਾ ਹੇਠਾਂ ਤੋਂ ਸ਼ੁਰੂਆਤ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="9218430445555521422">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>

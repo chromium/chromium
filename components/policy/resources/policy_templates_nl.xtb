@@ -3140,6 +3140,11 @@ Dit beleid heeft geen invloed op het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST
         Dit beleid heeft geen invloed op al uitgebrachte beleidsregels.</translation>
 <translation id="3002067315837777719">Niet toestaan dat Telefoonhub-meldingen worden aangezet</translation>
 <translation id="3003490107503207900">Office-documenten (bijvoorbeeld .docx) afgedwongen downloaden in plaats van ze openen in de <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="3003832749381802588">Bepaalt hoe <ph name="PRODUCT_OS_NAME" /> omgaat met een wachtwoord dat niet overeenkomt en dat wordt gedetecteerd tijdens een online inlogpoging. Dit beleid bepaalt wat er gebeurt als het wachtwoord van de gebruiker, dat is geverifieerd via een online IdP (bijv. IdP van derden, Gaia), niet overeenkomt met het wachtwoord dat is gebruikt om de lokale gegevens te versleutelen. Dit gebeurt meestal nadat een gebruiker het wachtwoord extern heeft gewijzigd.
+
+Als je het beleid instelt op 0 (standaardproces voor wachtwoordwijziging) of het beleid niet instelt, wordt het standaardproces voor wachtwoordwijziging gestart. De gebruiker wordt gevraagd het oude wachtwoord in te voeren om de versleuteling van lokale gegevens te updaten. De gebruiker kan ook andere mechanismen voor herstel van lokale gegevens gebruiken, als die beschikbaar zijn.
+
+Als je het beleid instelt op 1 (Automatisch lokale gegevens wissen), wordt de standaardprocedure voor wachtwoordwijziging omzeild. Als het wachtwoord niet overeenkomt, worden de lokale gegevens van de gebruiker automatisch gewist. Hierdoor kan de gebruiker naadloos inloggen met het nieuwe wachtwoord, maar gaan alle gegevens verloren die lokaal zijn opgeslagen in het profiel van de gebruiker (bijv. downloads, niet-gesynchroniseerde instellingen). Deze optie is bedoeld voor omgevingen waarin gebruikers voornamelijk gegevens opslaan in de cloud of waarin het wachtwoord vaak moet worden gewijzigd.</translation>
 <translation id="300673820739371513">Dit beleid bepaalt of entiteiten in platte tekst worden gevonden op webpagina's, zodat gebruikers contextuele acties kunnen activeren door middel van interactie met de entiteiten.
 Het beleid heeft meerdere property's, één voor elk entiteitstype.
 De entiteitstypen zijn <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" /> ... .
@@ -8817,6 +8822,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 
       Opmerking: Gebruik dit beleid met <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spellingcontrole heeft.</translation>
+<translation id="6625424971640741579">Standaardprocedure voor wachtwoordwijziging</translation>
 <translation id="6625716212597516929">Verouderd gedrag voor cookiebereik herstellen</translation>
 <translation id="6626319579493977784">Instellingen voor dynamische code</translation>
 <translation id="66265932317331474">CPU-info melden</translation>
@@ -9021,6 +9027,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="6763023079133439068">Certificaten zonder de extensie subjectAlternativeName toestaan als deze worden uitgegeven door lokale vertrouwensankers</translation>
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
+<translation id="6770703270685871935">Automatisch lokale gegevens wissen</translation>
 <translation id="6774132787348495175">Gebruikers niet toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
 <translation id="6782331708811245959">Rapportage voor opstartmodus van apparaat aanzetten</translation>
 <translation id="6783578496154221347">Gebruik WeeklyTimeIntervalChecked in nieuwe code.</translation>
@@ -9312,6 +9319,7 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
       Als je dit beleid niet instelt, zijn er geen apparaatprinters en wordt het andere beleid met betrekking tot <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> genegeerd.</translation>
 <translation id="69525503251220566">Parameter die een functie voor zoeken op afbeelding levert voor de standaardzoekprovider</translation>
 <translation id="6953102253399571439">Afdrukken met pincode standaard aanzetten</translation>
+<translation id="6953246833109449226">Gedrag instellen voor online wachtwoordfouten</translation>
 <translation id="695532899547292238">Logboekverzameling voor kiosk-apps aanzetten</translation>
 <translation id="6956272732789158625">Sites niet toestaan sleutels te genereren</translation>
 <translation id="6960996423652450945">Inlastekenmarkering op het inlogscherm uitzetten</translation>

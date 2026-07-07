@@ -302,7 +302,6 @@
 <translation id="2297822946037605517">ଏହି ପୃଷ୍ଠାକୁ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="230115972905494466">କୌଣସି ସୁସଙ୍ଗତ ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2316129865977710310">ନା, କରିବି ନାହିଁ</translation>
-<translation id="2318045970523081853">କଲ୍ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="232137538351753795">ପଛକୁ ଫେରିବା ପାଇଁ ବାମ ଧାରରୁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="2323763861024343754">ସାଇଟ୍ ଷ୍ଟୋରେଜ୍</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />ରୁ</translation>
@@ -436,7 +435,6 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ଦିନ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ଦିନ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
 <translation id="2842985007712546952">ମୁଖ୍ୟ ଫୋଲ୍ଡର୍‌</translation>
 <translation id="2854916915045135148">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
-<translation id="2860954141821109167">ଏହି ଡିଭାଇସ୍‍‍ରେ ଫୋନ୍ ଆପ୍ ସକ୍ଷମ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="286473047976978798">ଆପଣଙ୍କ ଆପିଅରେନ୍ସ ପସନ୍ଦଗୁଡ଼ିକୁ ଲାଗୁ କରିବେ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ଏବଂ ଅନ୍ୟ 1 ଟାବ}other{<ph name="URL" /> ଏବଂ ଅନ୍ୟ <ph name="TAB_COUNT_MANY" /> ଟାବ}}</translation>
 <translation id="2869430948265924908">କାରରେ ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣ ଏକ କାର ପ୍ରୋଫାଇଲ ଲକ ତିଆରି କରିବା ଆବଶ୍ୟକ।  ଆପଣ ଏକ PIN, କୋଡ କିମ୍ବା ପାସୱାର୍ଡ ସହ ଏହା ତିଆରି କରିପାରିବେ।</translation>
@@ -1272,6 +1270,7 @@
 <translation id="6315386555979018699">ଡିଲିଟ କରି ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6316139424528454185">Android ସଂସ୍କରଣ ଅସମର୍ଥିତ ଅଟେ</translation>
 <translation id="631839948975905034">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ</translation>
+<translation id="6321592572353357376">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
 <translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="6324977638108296054">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
 <translation id="6916590542764765824">ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6918398787259831832">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ <ph name="BEGIN_LINK" />ଅଧିକ ସୂଚନା ପାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="6920262510368602827">ଏହି ପୃଷ୍ଠା ପାଇଁ QR କୋଡ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ଟାବ}other{<ph name="NUMBER_OF_TABS" /> ଟାବ}}</translation>
 <translation id="6929224077895306814">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସୁରକ୍ଷା କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
@@ -1541,6 +1541,7 @@
 <translation id="7248671827512403053">ଆପ୍ଲିକେସନ୍</translation>
 <translation id="7253951228444156601">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
 <translation id="7260367682327802201">ଆପଣଙ୍କ Android ଡିଭାଇସ ଏକ ସମାନ ସେଟିଂ ଅନ୍ତର୍ଭୁକ୍ତ କରିପାରେ। ଯଦି ବିଜ୍ଞାପନ ପରିମାପକୁ Chromeରେ ଓ ଆପଣଙ୍କ Android ଡିଭାଇସରେ ଚାଲୁ କରାଯାଏ, ତେବେ ଗୋଟିଏ କମ୍ପାନୀ ଆପଣ ଭିଜିଟ କରୁଥିବା ସମସ୍ତ ୱେବସାଇଟ ଏବଂ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଆପ୍ସରେ ଏକ ବିଜ୍ଞାପନର ପ୍ରଭାବ ମାପିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
+<translation id="7265857422443387781">Google Lens <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ମାଧ୍ୟମରେ ଟାବ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />ରେ <ph name="ONE_TIME_CODE" /> ଦାଖଲ କରିବେ?</translation>
 <translation id="7274013316676448362">ବ୍ଲକ୍ କରାଯାଇଥିବା ସାଇଟ୍</translation>
 <translation id="7276868533747677875">ଯଦି ଆପଣ ପୂର୍ବରୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏକ୍ସପୋର୍ଟ କରିଛନ୍ତି, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ CSV ଫାଇଲ ଖୋଜନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ଆପଣଙ୍କର ପସନ୍ଦର password managerକୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ।</translation>
@@ -1883,6 +1884,7 @@
 <translation id="860282621117673749">ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ଆଲର୍ଟ</translation>
 <translation id="8611922158252451755">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ, ତେଣୁ ବୁଦ୍ଧିମତ୍ତାର ସହ ସେୟାର କରନ୍ତୁ। ଲିଙ୍କର ମିଆଦ 48 ଘଣ୍ଟାରେ ଶେଷ ହୁଏ।</translation>
 <translation id="8616006591992756292">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ରେ ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଥାଇପାରେ।</translation>
+<translation id="8626572875733549102"><ph name="LANGUAGE" />ରେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="8629093325209491835">Chrome ମେନୁ &gt; ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="8634050254805484913">ସୀମିତ ସ୍କ୍ରିନରେ ଲୁଚାଯାଇଛି</translation>
 <translation id="8635399646025169806">ଟାବ ଗ୍ରୁପ ରଖିବେ?</translation>
@@ -2031,7 +2033,6 @@
 <translation id="9204836675896933765">1 ଫାଇଲ୍‌ ବାକି ଅଛି</translation>
 <translation id="9205933215779845960">ସେହି ପୃଷ୍ଠାଟି ମିଳୁନାହିଁ। ଆପଣଙ୍କର ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା <ph name="SEARCH_ENGINE" />ରେ ଏକ ସର୍ଚ୍ଚ ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9206873250291191720">ଅ</translation>
-<translation id="9209888181064652401">କଲ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9212845824145208577">ଏହାଠାରୁ ତଳକୁ ଯାଇପାରିବ ନାହିଁ। ପୃଷ୍ଠାର ଆହୁରି ତଳୁ ଆରମ୍ଭ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="9219103736887031265">Images</translation>

@@ -302,7 +302,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2297822946037605517">Condividi questa pagina</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="2316129865977710310">No, grazie</translation>
-<translation id="2318045970523081853">Tocca per chiamare</translation>
 <translation id="232137538351753795">Scorri dal bordo sinistro per tornare indietro</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Eseguito 1 giorno fa}other{Eseguito # giorni fa}}</translation>
 <translation id="2842985007712546952">Cartella principale</translation>
 <translation id="2854916915045135148">Tocca e tieni premuto per passare alla modalità Incognito</translation>
-<translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="286473047976978798">Vuoi applicare le tue preferenze per l'aspetto?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> e 1 altra scheda}other{<ph name="URL" /> e <ph name="TAB_COUNT_MANY" /> altre schede}}</translation>
 <translation id="2869430948265924908">Per proteggere i tuoi contenuti sensibili in auto, devi creare un blocco del profilo dell'auto.  Puoi farlo con un PIN, un codice o una password.</translation>
@@ -1272,6 +1270,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6315386555979018699">Elimina e continua</translation>
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
 <translation id="631839948975905034">Blocca le finestre Incognito quando esci da Chrome</translation>
+<translation id="6321592572353357376">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chrome</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6324977638108296054">Impossibile creare un link al testo evidenziato</translation>
 <translation id="6333140779060797560">Condividi tramite <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6916590542764765824">Gestisci estensioni</translation>
 <translation id="6918398787259831832">Se il problema persiste, <ph name="BEGIN_LINK" />richiedi ulteriori informazioni<ph name="END_LINK" /> a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Crea codice QR per questa pagina</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni perché non hai visitato il sito di recente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 scheda}other{<ph name="NUMBER_OF_TABS" /> schede}}</translation>
 <translation id="6929224077895306814">Tutti i codici di sicurezza salvati sul dispositivo e nell'Account Google verranno eliminati</translation>
@@ -1541,6 +1541,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7248671827512403053">Applicazione</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7260367682327802201">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se la misurazione degli annunci è attiva in Chrome e sul tuo dispositivo Android, una società potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e sulle app che utilizzi.</translation>
+<translation id="7265857422443387781">Cerca nella scheda con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>
 <translation id="7276868533747677875">Se in precedenza hai esportato le password, cerca un file CSV sul tuo dispositivo e importa le password nel gestore delle password che preferisci.</translation>
@@ -1883,6 +1884,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="860282621117673749">Avvisi su cali di prezzo</translation>
 <translation id="8611922158252451755">Chiunque abbia il link può modificare tutte le schede, quindi condividilo con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="8616006591992756292">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8626572875733549102">Traduci in <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Apri il menu Chrome &gt; Impostazioni</translation>
 <translation id="8634050254805484913">Nascosto su schermi stretti</translation>
 <translation id="8635399646025169806">Mantenere il gruppo di schede?</translation>
@@ -2031,7 +2033,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9204836675896933765">1 file rimanente</translation>
 <translation id="9205933215779845960">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca su <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Impossibile effettuare chiamate</translation>
 <translation id="9212845824145208577">Non puoi scorrere più in basso di così. Prova a partire da un punto più in basso nella pagina.</translation>
 <translation id="9218430445555521422">Imposta come predefinito</translation>
 <translation id="9219103736887031265">Immagini</translation>

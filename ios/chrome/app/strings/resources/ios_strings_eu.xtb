@@ -1573,6 +1573,7 @@
 <translation id="628251768213143684">Beti kudea dezakezu Google-ko kontuan gordeta daukazun guztia</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
+<translation id="6295140892595702619">Erabili mikrofonoa Gemini-rekin txateatzeko. Gemini-rekin hitz egiten duzunean, audioa "Gemini-ren aplikazioetako jarduerak" erregistroan gordetzen da (aktibatuta badago). Zure datuak ez dira erabiltzen AA generatiboko ereduak hobetzeko.</translation>
 <translation id="6295751040240588413">Txartelaren goitizenak ez du balio</translation>
 <translation id="629730747756840877">Kontua</translation>
 <translation id="6301104306974789820">Jaso prezio-jaitsieren jakinarazpenak</translation>
@@ -2181,7 +2182,6 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8264966119170358612">Gordeta zeneuzkan pasahitzetako batzuk ikusgai jarri dira, datuen isilpekotasuna urratu delako Google-tik kanpo. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="8273982424131314219"><ph name="URL" /> helbideari emango diozu informazioa</translation>
 <translation id="8274795744553482834">Profila aldatzera zoaz</translation>
 <translation id="8275068909952022340">Gehiago…</translation>
 <translation id="8280797717392145626">Jasotako estekak</translation>
@@ -2415,6 +2415,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ainguratutako webgunea</translation>
 <translation id="8990960056509724223">Ezin izan da gorde fitxategia, erakundearen gidalerroak direla eta</translation>
 <translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>
+<translation id="9003263770394939629">Gemini-k iradokita. Kudeatu betetze automatiko hobetua ezarpenetan.</translation>
 <translation id="9003677638446136377">Egiaztatu berriro</translation>
 <translation id="9006453925669499173">Menua → Ezkutuko moduko fitxa berria</translation>
 <translation id="9008201768610948239">Egin ez ikusi</translation>

@@ -302,7 +302,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2297822946037605517">Sdílet tuto stránku</translation>
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
-<translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="232137538351753795">Přejetím prstem z levého okraje se vrátíte</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -436,7 +435,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zkontrolováno před 1 dnem}few{Zkontrolováno před # dny}many{Zkontrolováno před # dne}other{Zkontrolováno před # dny}}</translation>
 <translation id="2842985007712546952">Nadřazená složka</translation>
 <translation id="2854916915045135148">Podržením přejdete do anonymního režimu</translation>
-<translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="286473047976978798">Použít vaše nastavení vzhledu?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> a 1 další karta}few{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> další karty}many{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> další karty}other{<ph name="URL" /> a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="2869430948265924908">K ochránění vašeho citlivého obsahu v autě je potřeba vytvořit zámek profilu auta.  Můžete to provést pomocí kódu PIN, kódu nebo hesla.</translation>
@@ -1272,6 +1270,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6315386555979018699">Vymazat a pokračovat</translation>
 <translation id="6316139424528454185">Nepodporovaná verze Androidu</translation>
 <translation id="631839948975905034">Při zavření Chromu zamknout anonymní okna</translation>
+<translation id="6321592572353357376">Rozšíření <ph name="EXTENSION_NAME" /> chce, abyste se do Chromu přihlásili</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>
 <translation id="6324977638108296054">Odkaz na zvýraznění nelze vytvořit</translation>
 <translation id="6333140779060797560">Sdílet prostřednictvím aplikace <ph name="APPLICATION" /></translation>
@@ -1450,6 +1449,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6910211073230771657">Smazáno</translation>
 <translation id="6916590542764765824">Spravovat rozšíření</translation>
 <translation id="6918398787259831832">Pokud tento problém přetrvává, <ph name="BEGIN_LINK" />požádejte o další informace<ph name="END_LINK" /> od poskytovatele <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6920262510368602827">Vytvořit QR kód pro tuto stránku</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> karty}other{<ph name="NUMBER_OF_TABS" /> karet}}</translation>
 <translation id="6929224077895306814">Všechny bezpečnostní kódy uložené v zařízení a v účtu Google budou smazány</translation>
@@ -1541,6 +1541,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7248671827512403053">Aplikace</translation>
 <translation id="7253951228444156601">Kontrola hesel…</translation>
 <translation id="7260367682327802201">Zařízení Android může obsahovat podobné nastavení. Pokud máte v Chromu a v zařízení Android zapnuté měření reklam, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
+<translation id="7265857422443387781">Vyhledat kartu pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="727288900855680735">Odeslat <ph name="ONE_TIME_CODE" /> webu <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>
 <translation id="7276868533747677875">Pokud jste dříve exportovali hesla, vyhledejte na svém zařízení soubor CSV a importujte je do preferovaného správce hesel.</translation>
@@ -1883,6 +1884,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="860282621117673749">Upozornění na pokles ceny</translation>
 <translation id="8611922158252451755">Kdokoli s odkazem může upravovat všechny karty, proto sdílejte s rozmyslem. Platnost odkazu vyprší za 48 hodin.</translation>
 <translation id="8616006591992756292">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
+<translation id="8626572875733549102">Přeložit do jazyka <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Otevřete nabídku Chrome &gt; Nastavení</translation>
 <translation id="8634050254805484913">Na úzkých obrazovkách skryto</translation>
 <translation id="8635399646025169806">Zachovat skupinu karet?</translation>
@@ -2031,7 +2033,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>
 <translation id="9205933215779845960">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste najít vyhledávačem <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
-<translation id="9209888181064652401">Nelze uskutečňovat hovory</translation>
 <translation id="9212845824145208577">Níže už přejít nelze. Zkuste začít níže na stránce.</translation>
 <translation id="9218430445555521422">Nastavit jako výchozí</translation>
 <translation id="9219103736887031265">Obrázky</translation>
