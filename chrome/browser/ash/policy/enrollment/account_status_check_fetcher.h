@@ -56,13 +56,17 @@ struct AccountStatus {
 // Provided email should be canonicalized.
 class AccountStatusCheckFetcher {
  public:
-  // Provided email should be canonicalized.
-  explicit AccountStatusCheckFetcher(const std::string& canonicalized_email);
+  // `url_loader_factory` must be non-null.
   // Provided email should be canonicalized.
   AccountStatusCheckFetcher(
-      const std::string& canonicalized_email,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& canonicalized_email);
+  // `url_loader_factory` must be non-null.
+  // Provided email should be canonicalized.
+  AccountStatusCheckFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceManagementService* service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      const std::string& canonicalized_email);
   AccountStatusCheckFetcher(const AccountStatusCheckFetcher&) = delete;
   AccountStatusCheckFetcher& operator=(const AccountStatusCheckFetcher&) =
       delete;
@@ -79,6 +83,8 @@ class AccountStatusCheckFetcher {
   // Response from DM server.
   void OnAccountStatusCheckReceived(DMServerJobResult result);
 
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
   // Account ID, added to the DM server request.
   std::string email_;
 
@@ -86,7 +92,6 @@ class AccountStatusCheckFetcher {
   std::unique_ptr<DeviceManagementService::Job> fetch_request_job_;
 
   raw_ptr<DeviceManagementService, DanglingUntriaged> service_ = nullptr;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Randomly generated device id for the request to make sure request won't
   // send private device information. It's important because request could be

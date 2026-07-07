@@ -310,7 +310,8 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
     view_->ToggleLoadingUI(true);
     account_status_fetcher_.reset();
     account_status_fetcher_ =
-        std::make_unique<policy::AccountStatusCheckFetcher>(user_email);
+        std::make_unique<policy::AccountStatusCheckFetcher>(
+            shared_url_loader_factory_, user_email);
     account_status_fetcher_->Fetch(
         base::BindOnce(&GaiaScreen::OnAccountStatusFetched,
                        base::Unretained(this), user_email),

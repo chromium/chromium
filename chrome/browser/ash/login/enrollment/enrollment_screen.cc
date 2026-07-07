@@ -688,7 +688,8 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   auto callback = base::BindOnce(&EnrollmentScreen::OnAccountStatusFetched,
                                  base::Unretained(this), email);
   status_checker_.reset();
-  status_checker_ = std::make_unique<AccountStatusCheckFetcher>(email);
+  status_checker_ = std::make_unique<AccountStatusCheckFetcher>(
+      shared_url_loader_factory_, email);
   status_checker_->Fetch(std::move(callback),
                          /*fetch_enrollment_nudge_policy=*/false);
 }

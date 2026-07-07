@@ -46,7 +46,7 @@ class AccountStatusCheckFetcherUnitTest : public testing::TestWithParam<bool> {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
     fetcher_ = std::make_unique<AccountStatusCheckFetcher>(
-        email, service_.get(), shared_url_loader_factory_);
+        shared_url_loader_factory_, service_.get(), email);
   }
 
   void SetReply(const em::DeviceManagementResponse& response) {

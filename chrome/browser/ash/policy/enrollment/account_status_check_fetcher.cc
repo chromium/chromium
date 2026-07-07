@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -93,23 +93,24 @@ void RecordEnrollmentNudgePolicyFetchResult(
 }  // namespace
 
 AccountStatusCheckFetcher::AccountStatusCheckFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& canonicalized_email)
-    : AccountStatusCheckFetcher(
-          canonicalized_email,
-          g_browser_process->platform_part()
-              ->browser_policy_connector_ash()
-              ->device_management_service(),
-          g_browser_process->system_network_context_manager()
-              ->GetSharedURLLoaderFactory()) {}
+    : AccountStatusCheckFetcher(std::move(url_loader_factory),
+                                g_browser_process->platform_part()
+                                    ->browser_policy_connector_ash()
+                                    ->device_management_service(),
+                                canonicalized_email) {}
 
 AccountStatusCheckFetcher::AccountStatusCheckFetcher(
-    const std::string& canonicalized_email,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     DeviceManagementService* service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : email_(canonicalized_email),
+    const std::string& canonicalized_email)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      email_(canonicalized_email),
       service_(service),
-      url_loader_factory_(url_loader_factory),
-      random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
+      random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+  CHECK(url_loader_factory_);
+}
 
 AccountStatusCheckFetcher::~AccountStatusCheckFetcher() = default;
 
