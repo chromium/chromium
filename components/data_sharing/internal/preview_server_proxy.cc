@@ -26,6 +26,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "google_apis/common/base_requests.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -310,20 +311,10 @@ void PreviewServerProxy::GetSharedDataPreview(
   std::string url_str = GetPreviewServerURLString();
   url_str.append("/").append(shared_entities_preview_path);
   GURL url = GURL(url_str);
-
-  // Query string in the URL to get shared entnties preview. {token} needs to
-  // be replaced by the caller. {pageSize} can be configured through finch.
-  const std::string kQueryString =
-      "accessToken={token}&pageToken=&pageSize={pageSize}";
-  std::string query_str = kQueryString;
-  base::ReplaceFirstSubstringAfterOffset(&query_str, 0, "{token}",
-                                         group_token.access_token);
-  base::ReplaceFirstSubstringAfterOffset(
-      &query_str, 0, "{pageSize}",
-      base::NumberToString(kPreviewDataSize.Get()));
-  GURL::Replacements replacements;
-  replacements.SetQueryStr(query_str);
-  url = url.ReplaceComponents(replacements);
+  url = net::AppendQueryParameter(url, "accessToken", group_token.access_token);
+  url = net::AppendQueryParameter(url, "pageToken", "");
+  url = net::AppendQueryParameter(url, "pageSize",
+                                  base::NumberToString(kPreviewDataSize.Get()));
   auto fetcher = CreateEndpointFetcher(url);
   auto* const fetcher_ptr = fetcher.get();
 

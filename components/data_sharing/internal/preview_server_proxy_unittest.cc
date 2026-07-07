@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -60,6 +61,7 @@ const char kExpectedUrlAutopush[] =
     "collaborations/"
     "cmVzb3VyY2VzLzEyMzQ1NjcvZS8xMTExMTExMTExMTExMTE/dataTypes/-/"
     "sharedEntities:preview?accessToken=abcdefg&pageToken=&pageSize=550";
+const char kFieldTrialServiceBaseUrl[] = "https://test.com";
 const char kExpectedUrlFieldTrial[] =
     "https://test.com/"
     "collaborations/"
@@ -301,6 +303,40 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabGroupsOnly) {
   QueryAndWaitForResponse(syncer::DataType::SHARED_TAB_GROUP_DATA);
 }
 
+TEST_F(PreviewServerProxyTest,
+       TestGetSharedDataPreview_AccessTokenWithReservedChars) {
+  // The access token is opaque to the client and may contain characters that
+  // are reserved in a URL query component. Ensure it is sent as a single
+  // `accessToken` query parameter rather than spilling into additional
+  // parameters.
+  const std::string kToken = "abc&pageSize=1&extra=1";
+  fetcher_->SetFetchResponse(kTabGroupResponse);
+
+  GURL request_url;
+  EXPECT_CALL(*server_proxy_, CreateEndpointFetcher(_))
+      .WillOnce([&](const GURL& url) {
+        request_url = url;
+        return std::move(fetcher_);
+      });
+
+  base::RunLoop run_loop;
+  server_proxy_->GetSharedDataPreview(
+      GroupToken(GroupId(kCollaborationId), kToken),
+      /*data_type=*/std::nullopt,
+      base::BindOnce(
+          [](const DataSharingService::SharedDataPreviewOrFailureOutcome&
+                 result) { ASSERT_TRUE(result.has_value()); })
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  std::string value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(request_url, "accessToken", &value));
+  EXPECT_EQ(value, kToken);
+  EXPECT_FALSE(net::GetValueForKeyInQuery(request_url, "extra", &value));
+  ASSERT_TRUE(net::GetValueForKeyInQuery(request_url, "pageSize", &value));
+  EXPECT_EQ(value, "550");
+}
+
 TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabWithoutGroup) {
   fetcher_->SetFetchResponse(kTabResponse);
   EXPECT_CALL(*server_proxy_, CreateEndpointFetcher(GURL(kExpectedUrl)))
@@ -493,7 +529,7 @@ class FieldTrialPreviewServerProxyTest : public PreviewServerProxyTest {
  public:
   base::FieldTrialParams GetFieldTrialParams() override {
     base::FieldTrialParams params;
-    params["preview_service_base_url"] = kExpectedUrlFieldTrial;
+    params["preview_service_base_url"] = kFieldTrialServiceBaseUrl;
     return params;
   }
 };
