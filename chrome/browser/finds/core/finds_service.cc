@@ -547,7 +547,7 @@ void FindsService::OnGetClientOverview(notifications::ClientOverview overview) {
 
   // There should only ever be 1 notification scheduled at a time for finds.
   DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
-  const auto* entry = overview.scheduled_notifications[0];
+  const auto* entry = overview.scheduled_notifications[0].get();
   notifications::NotificationData data = entry->notification_data;
   notifications::ScheduleParams params = GetCurrentScheduleParams();
 

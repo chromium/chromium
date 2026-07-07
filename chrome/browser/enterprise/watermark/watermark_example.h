@@ -56,15 +56,15 @@ class VIEWS_EXAMPLES_EXPORT WatermarkExample
   std::unique_ptr<views::BoxLayoutView> AddSliderGroup(
       const std::string& name,
       const std::vector<SliderInfo>& slider_info,
-      std::vector<views::Slider*>& sliders,
-      std::vector<views::Label*>& labels);
+      std::vector<raw_ptr<views::Slider>>& sliders,
+      std::vector<raw_ptr<views::Label>>& labels);
 
   raw_ptr<enterprise_data_protection::DataProtectionOverlayView>
       watermark_view_;
-  std::vector<views::Slider*> rotation_sliders_;
-  std::vector<views::Label*> rotation_slider_labels_;
-  std::vector<views::Slider*> translate_sliders_;
-  std::vector<views::Label*> translate_slider_labels_;
+  std::vector<raw_ptr<views::Slider>> rotation_sliders_;
+  std::vector<raw_ptr<views::Label>> rotation_slider_labels_;
+  std::vector<raw_ptr<views::Slider>> translate_sliders_;
+  std::vector<raw_ptr<views::Label>> translate_slider_labels_;
   raw_ptr<views::Checkbox> background_checkbox_;
 };
 

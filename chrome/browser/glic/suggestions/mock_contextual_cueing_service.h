@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -40,7 +41,7 @@ class MockContextualCueingService : public ContextualCueingService {
                GlicSuggestionsCallback));
   MOCK_METHOD(bool,
               GetContextualGlicZeroStateSuggestionsForPinnedTabs,
-              (std::vector<content::WebContents*>,
+              (std::vector<raw_ptr<content::WebContents>>,
                bool,
                std::optional<std::vector<std::string>>,
                const content::WebContents*,

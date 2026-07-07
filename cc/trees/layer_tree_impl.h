@@ -870,7 +870,7 @@ class CC_EXPORT LayerTreeImpl {
 
    private:
     LayerTreeImpl* const layer_tree_impl_;
-    std::vector<PictureLayerImpl*> layers_needing_update_;
+    std::vector<raw_ptr<PictureLayerImpl>> layers_needing_update_;
   };
 
  protected:

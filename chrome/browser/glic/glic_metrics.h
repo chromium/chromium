@@ -183,7 +183,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     virtual bool IsWindowAttached() const = 0;
     virtual content::WebContents* GetFocusedWebContents() = 0;
     virtual int32_t GetNumPinnedTabs() const = 0;
-    virtual std::vector<content::WebContents*>
+    virtual std::vector<raw_ptr<content::WebContents>>
     GetPinnedAndSharedWebContents() = 0;
   };
 

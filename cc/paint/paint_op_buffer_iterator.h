@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -238,7 +239,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
   PaintOpBuffer::CompositeIterator iter_;
 
   // FIFO queue of paint ops that have been peeked at.
-  absl::InlinedVector<const PaintOp*, 3> stack_;
+  absl::InlinedVector<raw_ptr<const PaintOp>, 3> stack_;
   DrawColorOp folded_draw_color_;
 
   // `current_op_` is not a raw_ptr<...> for performance reasons (based on

@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -64,8 +65,9 @@ class DummyDelegateImpl : public GlicMetrics::Delegate {
   bool IsWindowAttached() const override { return false; }
   content::WebContents* GetFocusedWebContents() override { return nullptr; }
   int32_t GetNumPinnedTabs() const override { return 0; }
-  std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
-    return std::vector<content::WebContents*>();
+  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
+      override {
+    return std::vector<raw_ptr<content::WebContents>>();
   }
 };
 
@@ -81,8 +83,9 @@ class BaseDelegate : public GlicMetrics::Delegate {
   int32_t GetNumPinnedTabs() const override {
     return sharing_manager_->GetNumPinnedTabs();
   }
-  std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
-    std::vector<content::WebContents*> pinned_and_shared;
+  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
+      override {
+    std::vector<raw_ptr<content::WebContents>> pinned_and_shared;
     for (tabs::TabInterface* tab : sharing_manager_->GetPinnedTabs()) {
       content::WebContents* web_contents = tab->GetContents();
       if (web_contents && IsTabValidForSharing(web_contents)) {

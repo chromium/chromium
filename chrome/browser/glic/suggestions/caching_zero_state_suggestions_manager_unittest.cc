@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -39,7 +40,7 @@ class TestContextualCueingService : public MockContextualCueingService {
   }
 
   bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-      std::vector<content::WebContents*> pinned_web_contents,
+      std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,

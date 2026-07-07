@@ -476,7 +476,7 @@ TEST_F(ScheduledNotificationManagerTest, GetAllNotifications) {
 TEST_F(ScheduledNotificationManagerTest, GetNotifications) {
   auto entry = CreateNotificationEntry(SchedulerClientType::kTest1);
   InitWithData(std::vector<NotificationEntry>({entry}));
-  std::vector<const NotificationEntry*> entries;
+  std::vector<raw_ptr<const NotificationEntry>> entries;
   manager()->GetNotifications(SchedulerClientType::kTest2, &entries);
   EXPECT_TRUE(entries.empty());
 

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/host.h"
@@ -58,9 +59,9 @@ mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr(
   return pending_suggestions;
 }
 
-std::vector<content::WebContents*> GetWebContentsFromTabs(
+std::vector<raw_ptr<content::WebContents>> GetWebContentsFromTabs(
     const std::vector<tabs::TabInterface*>& tabs) {
-  std::vector<content::WebContents*> web_contents;
+  std::vector<raw_ptr<content::WebContents>> web_contents;
   web_contents.reserve(tabs.size());
   for (tabs::TabInterface* tab : tabs) {
     if (tab->GetContents()) {
@@ -185,7 +186,7 @@ void GlicZeroStateSuggestionsManager::
   content::WebContents* active_web_contents =
       focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
                                : nullptr;
-  std::vector<content::WebContents*> contents_for_request =
+  std::vector<raw_ptr<content::WebContents>> contents_for_request =
       GetWebContentsFromTabs(pinned_tabs);
   if (active_web_contents &&
       !std::ranges::contains(contents_for_request, active_web_contents)) {
@@ -196,7 +197,7 @@ void GlicZeroStateSuggestionsManager::
   if (contextual_cueing_service_) {
     if (!caching_zero_state_manager_) {
       // Debounce if we already have an outstanding request for the same set.
-      std::optional<std::vector<content::WebContents*>>
+      std::optional<std::vector<raw_ptr<content::WebContents>>>
           outstanding_pinned_tabs_contents =
               contextual_cueing_service_->GetOutstandingPinnedTabsContents();
       if (outstanding_pinned_tabs_contents &&
@@ -311,7 +312,7 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
       // Do nothing
     } else if (auto pinned_tabs = sharing_manager_->GetPinnedTabs();
                !pinned_tabs.empty()) {
-      std::vector<content::WebContents*> pinned_contents =
+      std::vector<raw_ptr<content::WebContents>> pinned_contents =
           GetWebContentsFromTabs(pinned_tabs);
       FilterTabs(pinned_contents);
       if (pinned_contents.empty()) {
@@ -425,7 +426,7 @@ GlicZeroStateSuggestionsManager::GetWeakPtr() {
 }
 
 void GlicZeroStateSuggestionsManager::FilterTabs(
-    std::vector<content::WebContents*>& tabs) {
+    std::vector<raw_ptr<content::WebContents>>& tabs) {
   if (!base::FeatureList::IsEnabled(kDisableNewTabZeroStateSuggestions)) {
     return;
   }

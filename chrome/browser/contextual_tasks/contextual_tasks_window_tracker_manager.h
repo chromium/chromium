@@ -110,7 +110,7 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver,
   // on the first tracker that matches the navigation.
   std::vector<std::unique_ptr<ContextualTasksWindowTracker>> window_trackers_;
 
-  std::set<TabListInterface*> observed_tab_lists_;
+  std::set<raw_ptr<TabListInterface>> observed_tab_lists_;
 
   raw_ptr<Profile> profile_;
 

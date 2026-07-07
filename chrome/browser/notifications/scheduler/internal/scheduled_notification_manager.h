@@ -66,7 +66,7 @@ class ScheduledNotificationManager {
   // Gets all notifications for a particular type, notifications are not sorted.
   virtual void GetNotifications(
       SchedulerClientType type,
-      std::vector<const NotificationEntry*>* notifications) const = 0;
+      std::vector<raw_ptr<const NotificationEntry>>* notifications) const = 0;
 
   // Deletes all notifications of given SchedulerClientType.
   virtual void DeleteNotifications(SchedulerClientType type) = 0;

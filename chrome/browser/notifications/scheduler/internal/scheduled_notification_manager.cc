@@ -12,6 +12,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_store.h"
@@ -161,9 +162,9 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     }
   }
 
-  void GetNotifications(
-      SchedulerClientType type,
-      std::vector<const NotificationEntry*>* notifications) const override {
+  void GetNotifications(SchedulerClientType type,
+                        std::vector<raw_ptr<const NotificationEntry>>*
+                            notifications) const override {
     DCHECK(notifications);
     notifications->clear();
     const auto it = notifications_.find(type);

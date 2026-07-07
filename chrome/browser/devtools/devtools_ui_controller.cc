@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,7 +17,7 @@ DEFINE_USER_DATA(DevtoolsUIController);
 
 DevtoolsUIController::DevtoolsUIController(
     BrowserWindowInterface* browser,
-    std::vector<ContentsContainerView*> contents_container_views)
+    std::vector<raw_ptr<ContentsContainerView>> contents_container_views)
     : can_dock_devtools_(browser->GetType() ==
                          BrowserWindowInterface::Type::TYPE_NORMAL),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {

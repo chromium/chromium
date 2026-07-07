@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/gpu_gles2_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
@@ -38,7 +39,11 @@ class GPU_GLES2_EXPORT MultiDrawManager {
     std::vector<GLint> firsts;
     std::vector<GLsizei> counts;
     std::vector<GLsizei> offsets;
-    std::vector<const void*> indices;
+    // RAW_PTR_EXCLUSION is used here because the `.data()` of this vector is
+    // passed directly to the C API `glMultiDrawElementsANGLEFn`, which expects
+    // a `const void* const*`. Using `raw_ptr` changes the type signature and
+    // breaks compilation.
+    RAW_PTR_EXCLUSION std::vector<const void*> indices;
     std::vector<GLsizei> instance_counts;
     std::vector<GLint> basevertices;
     std::vector<GLuint> baseinstances;

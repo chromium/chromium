@@ -236,7 +236,7 @@ void TipsAgentAndroid::OnGetClientOverview(
   if (!overview.scheduled_notifications.empty()) {
     // There will only ever be 1 notification scheduled at a time for tips.
     DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
-    const auto* entry = overview.scheduled_notifications[0];
+    const auto& entry = overview.scheduled_notifications[0];
     notifications::NotificationData data = entry->notification_data;
 
     // Use new ScheduleParams to reschedule based on the current time.

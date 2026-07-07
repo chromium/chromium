@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 
 namespace glic {
@@ -61,7 +62,7 @@ class GlicZeroStateSuggestionsManager {
 
  private:
   bool WasAutoOpenedForPdf();
-  void FilterTabs(std::vector<content::WebContents*>& tabs);
+  void FilterTabs(std::vector<raw_ptr<content::WebContents>>& tabs);
 
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.

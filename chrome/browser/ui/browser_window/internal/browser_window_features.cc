@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -736,7 +737,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   if (browser_view) {
     devtools_ui_controller_ = std::make_unique<DevtoolsUIController>(
-        browser_, browser_view->GetContentsContainerViews());
+        browser_, base::ToVector(browser_view->GetContentsContainerViews(),
+                                 [](ContentsContainerView* view) {
+                                   return raw_ptr<ContentsContainerView>(view);
+                                 }));
   }
 
   // Must be before exclusive_access_manager_ (whose construction calls

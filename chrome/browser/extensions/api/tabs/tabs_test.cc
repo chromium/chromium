@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -177,7 +178,7 @@ tabs::TabInterface* OpenTabWithHistory(TabListInterface* tab_list,
 
 struct TabListData {
   std::vector<int> tab_ids;
-  std::vector<content::WebContents*> web_contentses;
+  std::vector<raw_ptr<content::WebContents, DanglingUntriaged>> web_contentses;
 };
 
 // Opens tabs in `tab_list` until there are `count` tabs, then returns the tab

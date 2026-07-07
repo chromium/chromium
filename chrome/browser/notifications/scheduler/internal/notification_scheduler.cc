@@ -251,7 +251,7 @@ class NotificationSchedulerImpl : public NotificationScheduler,
       SchedulerClientType type,
       ClientOverview::ClientOverviewCallback callback,
       ImpressionDetail impression_detail) {
-    std::vector<const NotificationEntry*> notifications;
+    std::vector<raw_ptr<const NotificationEntry>> notifications;
     context_->notification_manager()->GetNotifications(type, &notifications);
     ClientOverview result(std::move(impression_detail),
                           std::move(notifications));
@@ -277,10 +277,10 @@ class NotificationSchedulerImpl : public NotificationScheduler,
   }
 
   void NotifyClientAfterInit(SchedulerClientType type, bool success) {
-    std::vector<const NotificationEntry*> notifications;
+    std::vector<raw_ptr<const NotificationEntry>> notifications;
     context_->notification_manager()->GetNotifications(type, &notifications);
     std::set<std::string> guids;
-    for (const auto* notification : notifications) {
+    for (const notifications::NotificationEntry* notification : notifications) {
       DCHECK(notification);
       guids.emplace(notification->guid);
     }

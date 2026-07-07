@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 
 namespace glic {
@@ -26,7 +27,7 @@ class FakeContextualCueingService : public ContextualCueingService {
       GlicSuggestionsCallback callback) override;
 
   bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-      std::vector<content::WebContents*> pinned_web_contents,
+      std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,

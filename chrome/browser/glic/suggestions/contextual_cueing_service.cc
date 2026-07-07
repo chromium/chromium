@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -362,7 +363,7 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
 
 std::unique_ptr<ZeroStateSuggestionsRequest>
 ContextualCueingService::MakeZeroStateSuggestionsRequest(
-    const std::vector<content::WebContents*>& web_contents_list,
+    const std::vector<raw_ptr<content::WebContents>>& web_contents_list,
     bool is_fre,
     std::optional<std::vector<std::string>> supported_tools,
     const content::WebContents* focused_tab) {
@@ -431,7 +432,7 @@ void ContextualCueingService::
                                               std::move(callback)));
 }
 
-std::optional<std::vector<content::WebContents*>>
+std::optional<std::vector<raw_ptr<content::WebContents>>>
 ContextualCueingService::GetOutstandingPinnedTabsContents() {
   if (!pinned_tabs_zero_state_suggestions_request_) {
     return std::nullopt;
@@ -441,7 +442,7 @@ ContextualCueingService::GetOutstandingPinnedTabsContents() {
 
 bool ContextualCueingService::
     GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-        std::vector<content::WebContents*> pinned_web_contents,
+        std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
         bool is_fre,
         std::optional<std::vector<std::string>> supported_tools,
         const content::WebContents* focused_tab,
@@ -453,7 +454,7 @@ bool ContextualCueingService::
   }
 
   // Remove all ineligible pages from list.
-  std::erase_if(pinned_web_contents, [&](const auto* web_contents) {
+  std::erase_if(pinned_web_contents, [&](content::WebContents* web_contents) {
     return !IsPageTypeEligibleForContextualSuggestions(
         web_contents->GetLastCommittedURL());
   });

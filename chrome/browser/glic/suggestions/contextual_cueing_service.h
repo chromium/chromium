@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -108,14 +109,14 @@ class ContextualCueingService
   // with zero state suggestions for pinned tabs as represented by
   // `pinned_web_contents`. Virtual for testing.
   virtual bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-      std::vector<content::WebContents*> pinned_web_contents,
+      std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,
       GlicSuggestionsCallback callback);
 
   // Returns the pinned tabs that are in an outstanding request if there is one.
-  std::optional<std::vector<content::WebContents*>>
+  std::optional<std::vector<raw_ptr<content::WebContents>>>
   GetOutstandingPinnedTabsContents();
 
  private:
@@ -133,7 +134,7 @@ class ContextualCueingService
 
   // Utility method to create the initial zero state suggestions request.
   std::unique_ptr<ZeroStateSuggestionsRequest> MakeZeroStateSuggestionsRequest(
-      const std::vector<content::WebContents*>& web_contents_list,
+      const std::vector<raw_ptr<content::WebContents>>& web_contents_list,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab);

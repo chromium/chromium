@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
@@ -48,7 +49,7 @@ class CC_EXPORT ScrollJankV4FrameStageCalculator {
       EventMetrics::List& events_metrics,
       uint64_t result_id) = 0;
   virtual ScrollJankV4Frame::StageList CalculateStages(
-      std::vector<ScrollEventMetrics*>& events_metrics,
+      std::vector<raw_ptr<ScrollEventMetrics>>& events_metrics,
       uint64_t result_id) = 0;
 
  protected:

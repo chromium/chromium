@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -288,7 +289,7 @@ class DefaultCalculator final : public ScrollJankV4FrameStageCalculator {
   }
 
   ScrollJankV4Frame::StageList CalculateStages(
-      std::vector<ScrollEventMetrics*>& events_metrics,
+      std::vector<raw_ptr<ScrollEventMetrics>>& events_metrics,
       uint64_t result_id) override {
     return CalculateStagesDefaultImpl(events_metrics, result_id);
   }
@@ -333,7 +334,7 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
   }
 
   ScrollJankV4Frame::StageList CalculateStages(
-      std::vector<ScrollEventMetrics*>& events_metrics,
+      std::vector<raw_ptr<ScrollEventMetrics>>& events_metrics,
       uint64_t result_id) override {
     return CalculateStagesBasedOnScrollId(events_metrics, result_id);
   }

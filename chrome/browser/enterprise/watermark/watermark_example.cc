@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_canvas.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
@@ -139,8 +140,8 @@ void WatermarkExample::CreateExampleView(views::View* container) {
 std::unique_ptr<views::BoxLayoutView> WatermarkExample::AddSliderGroup(
     const std::string& name,
     const std::vector<SliderInfo>& slider_infos,
-    std::vector<views::Slider*>& sliders,
-    std::vector<views::Label*>& labels) {
+    std::vector<raw_ptr<views::Slider>>& sliders,
+    std::vector<raw_ptr<views::Label>>& labels) {
   assert(slider_infos.size() == sliders.size());
   assert(slider_infos.size() == labels.size());
 

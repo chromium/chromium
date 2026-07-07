@@ -41,7 +41,7 @@ ContextualTasksWindowTrackerManager::ContextualTasksWindowTrackerManager(
 }
 
 ContextualTasksWindowTrackerManager::~ContextualTasksWindowTrackerManager() {
-  for (auto* tab_list : observed_tab_lists_) {
+  for (TabListInterface* tab_list : observed_tab_lists_) {
     tab_list->RemoveTabListInterfaceObserver(this);
   }
 }

@@ -423,7 +423,7 @@ void MessagePumpEpoll::UnregisterInterest(
 
   EpollEventEntry& entry = entry_it->second;
   auto& interests = entry.interests;
-  auto* it = std::ranges::find(interests, interest);
+  auto it = std::ranges::find(interests, interest);
   CHECK(it != interests.end());
   interests.erase(it);
 

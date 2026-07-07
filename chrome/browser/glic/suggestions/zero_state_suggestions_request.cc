@@ -9,6 +9,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,7 +30,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     signin::IdentityManager* identity_manager,
     const optimization_guide::proto::ZeroStateSuggestionsRequest&
         pending_base_request,
-    const std::vector<content::WebContents*>& requested_tabs,
+    const std::vector<raw_ptr<content::WebContents>>& requested_tabs,
     const content::WebContents* focused_tab)
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
@@ -47,7 +48,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       base::BindOnce(&ZeroStateSuggestionsRequest::OnAllPageContextExtracted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  for (auto* tab : requested_tabs) {
+  for (content::WebContents* tab : requested_tabs) {
     auto* zss_data =
         ZeroStateSuggestionsPageData::GetOrCreateForPage(tab->GetPrimaryPage());
 
@@ -104,7 +105,7 @@ void ZeroStateSuggestionsRequest::AddCallback(
   pending_callbacks_.AddUnsafe(std::move(callback));
 }
 
-std::vector<content::WebContents*>
+std::vector<raw_ptr<content::WebContents>>
 ZeroStateSuggestionsRequest::GetRequestedTabs() const {
   return requested_tabs_;
 }

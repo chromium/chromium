@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -76,7 +77,8 @@ class MockDelegate : public GlicMetrics::Delegate {
     return contents_.get();
   }
   int32_t GetNumPinnedTabs() const override { return num_pinned_tabs; }
-  std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
+  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
+      override {
     return pinned_shared_tabs;
   }
 
@@ -90,7 +92,7 @@ class MockDelegate : public GlicMetrics::Delegate {
   bool showing = false;
   bool attached = false;
   int32_t num_pinned_tabs = 0;
-  std::vector<content::WebContents*> pinned_shared_tabs;
+  std::vector<raw_ptr<content::WebContents>> pinned_shared_tabs;
 
  private:
   raw_ptr<content::WebContents> contents_;

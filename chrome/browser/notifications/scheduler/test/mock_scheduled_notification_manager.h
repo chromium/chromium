@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TEST_MOCK_SCHEDULED_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TEST_MOCK_SCHEDULED_NOTIFICATION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduled_notification_manager.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +26,7 @@ class MockScheduledNotificationManager : public ScheduledNotificationManager {
   MOCK_CONST_METHOD1(GetAllNotifications, void(Notifications*));
   MOCK_CONST_METHOD2(GetNotifications,
                      void(SchedulerClientType,
-                          std::vector<const NotificationEntry*>*));
+                          std::vector<raw_ptr<const NotificationEntry>>*));
   MOCK_METHOD1(DeleteNotifications, void(SchedulerClientType));
 };
 

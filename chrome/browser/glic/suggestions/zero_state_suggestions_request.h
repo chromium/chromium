@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -42,7 +43,7 @@ class ZeroStateSuggestionsRequest {
       signin::IdentityManager* identity_manager,
       const optimization_guide::proto::ZeroStateSuggestionsRequest&
           pending_base_request,
-      const std::vector<content::WebContents*>& requested_tabs,
+      const std::vector<raw_ptr<content::WebContents>>& requested_tabs,
       const content::WebContents* focused_tab);
 
   ~ZeroStateSuggestionsRequest();
@@ -54,7 +55,7 @@ class ZeroStateSuggestionsRequest {
   void AddCallback(base::OnceCallback<void(std::vector<std::string>)>);
 
   // Returns the tabs that were requested to get suggestions for.
-  std::vector<content::WebContents*> GetRequestedTabs() const;
+  std::vector<raw_ptr<content::WebContents>> GetRequestedTabs() const;
 
   base::WeakPtr<ZeroStateSuggestionsRequest> AsWeakPtr();
 
@@ -93,7 +94,7 @@ class ZeroStateSuggestionsRequest {
   base::WeakPtr<ZeroStateSuggestionsPageData> focused_tab_page_data_;
 
   // The tabs requested to get suggestions for.
-  std::vector<content::WebContents*> requested_tabs_;
+  std::vector<raw_ptr<content::WebContents>> requested_tabs_;
 
   // Not owned. Guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;

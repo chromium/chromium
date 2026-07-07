@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/test_support/fake_contextual_cueing_service.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -63,7 +64,7 @@ void FakeContextualCueingService::
 
 bool FakeContextualCueingService::
     GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-        std::vector<content::WebContents*> pinned_web_contents,
+        std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
         bool is_fre,
         std::optional<std::vector<std::string>> supported_tools,
         const content::WebContents* focused_tab,

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/event_metrics.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -166,7 +167,7 @@ ScrollJankV4FrameTimelineCalculator::CalculateTimeline(
   struct ArgsAndEvents {
     ScrollJankV4Frame::BeginFrameArgsForScrollJank args;
     bool is_damaging;
-    std::vector<ScrollEventMetrics*> events;
+    std::vector<raw_ptr<ScrollEventMetrics>> events;
   };
   std::map<viz::BeginFrameId, ArgsAndEvents> frame_id_to_args_and_events;
   for (const auto& event : events_metrics) {

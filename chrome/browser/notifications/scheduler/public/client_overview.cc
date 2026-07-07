@@ -6,13 +6,15 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
+
 namespace notifications {
 
 ClientOverview::ClientOverview() = default;
 
 ClientOverview::ClientOverview(
     ImpressionDetail impression_detail,
-    std::vector<const NotificationEntry*> scheduled_notifications)
+    std::vector<raw_ptr<const NotificationEntry>> scheduled_notifications)
     : impression_detail(impression_detail),
       scheduled_notifications(std::move(scheduled_notifications)) {}
 

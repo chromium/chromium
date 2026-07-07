@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 class WebContents;
@@ -37,7 +38,7 @@ class CachingZeroStateSuggestionsManager {
   // Returns whether a new request for contextual suggestions are pending for
   // pinned tabs.
   virtual bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-      std::vector<content::WebContents*> pinned_web_contents,
+      std::vector<raw_ptr<content::WebContents>> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       content::WebContents* focused_tab,
