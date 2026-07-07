@@ -234,48 +234,60 @@ std::string Nigori::GetKeyName() const {
 
 // Enc[Kenc,Kmac](value)
 std::string Nigori::Encrypt(const std::string& value) const {
+  std::vector<uint8_t> output = EncryptToBytes(base::as_byte_span(value));
+  return base::Base64Encode(output);
+}
+
+std::vector<uint8_t> Nigori::EncryptToBytes(
+    base::span<const uint8_t> plaintext) const {
   std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv;
   crypto::RandBytes(iv);
 
-  auto ciphertext = crypto::aes_cbc::Encrypt(keys_.encryption_key, iv,
-                                             base::as_byte_span(value));
+  auto ciphertext =
+      crypto::aes_cbc::Encrypt(keys_.encryption_key, iv, plaintext);
   auto mac = crypto::hmac::SignSha256(keys_.mac_key, ciphertext);
 
   std::vector<uint8_t> output;
+  output.reserve(iv.size() + ciphertext.size() + mac.size());
   std::copy(iv.begin(), iv.end(), std::back_inserter(output));
   std::copy(ciphertext.begin(), ciphertext.end(), std::back_inserter(output));
   std::copy(mac.begin(), mac.end(), std::back_inserter(output));
-  return base::Base64Encode(output);
+  return output;
 }
 
 bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   auto input_buf = base::Base64Decode(encrypted);
-  if (!input_buf || input_buf->size() < kIvSize * 2 + kHashSize) {
+  if (!input_buf) {
     return false;
+  }
+  auto decrypted = DecryptFromBytes(*input_buf);
+  if (decrypted) {
+    value->assign(base::as_string_view(*decrypted));
+    return true;
+  }
+  return false;
+}
+
+std::optional<std::vector<uint8_t>> Nigori::DecryptFromBytes(
+    base::span<const uint8_t> encrypted) const {
+  if (encrypted.size() < kIvSize * 2 + kHashSize) {
+    return std::nullopt;
   }
 
   // The input is:
   // * iv (16 bytes)
   // * ciphertext (multiple of 16 bytes)
   // * hash (32 bytes)
-  const auto input = base::span(*input_buf);
-  const auto iv = input.first<kIvSize>();
+  const auto iv = encrypted.first<kIvSize>();
   const base::span<const uint8_t> ciphertext =
-      input.subspan(kIvSize, input.size() - (kIvSize + kHashSize));
-  const auto mac = input.last<kHashSize>();
+      encrypted.subspan(kIvSize, encrypted.size() - (kIvSize + kHashSize));
+  const auto mac = encrypted.last<kHashSize>();
 
   if (!crypto::hmac::VerifySha256(keys_.mac_key, ciphertext, mac)) {
-    return false;
+    return std::nullopt;
   }
 
-  auto decrypted =
-      crypto::aes_cbc::Decrypt(keys_.encryption_key, iv, ciphertext);
-  if (decrypted.has_value()) {
-    value->assign(base::as_string_view(*decrypted));
-    return true;
-  } else {
-    return false;
-  }
+  return crypto::aes_cbc::Decrypt(keys_.encryption_key, iv, ciphertext);
 }
 
 void Nigori::ExportKeys(std::string* user_key,

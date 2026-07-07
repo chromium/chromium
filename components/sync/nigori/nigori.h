@@ -11,7 +11,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/tick_clock.h"
 #include "crypto/subtle_passkey.h"
 
@@ -30,6 +32,7 @@ class NigoriPassKey {
  private:
   friend class NigoriKeyBag;
   friend class RequiredPassphraseVerifierImpl;
+  friend class AgileSymmetricKey;
 
   NigoriPassKey() = default;
 };
@@ -78,6 +81,15 @@ class Nigori {
   // Decrypts `value` into `decrypted`. It is assumed that `value` is Base64
   // encoded.
   bool Decrypt(const std::string& value, std::string* decrypted) const;
+
+  // Encrypts `plaintext` into raw bytes.
+  std::vector<uint8_t> EncryptToBytes(
+      base::span<const uint8_t> plaintext) const;
+
+  // Decrypts `encrypted` raw bytes. Returns decrypted bytes on success, or
+  // nullopt.
+  std::optional<std::vector<uint8_t>> DecryptFromBytes(
+      base::span<const uint8_t> encrypted) const;
 
   // Exports the raw derived keys.
   void ExportKeys(std::string* user_key,

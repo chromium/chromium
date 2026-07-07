@@ -1,0 +1,30 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/nigori_specifics.proto";
+
+message AgileSymmetricKey {
+  message Aes256GcmKey {
+    optional bytes key = 1;
+  }
+
+  message Chacha20Poly1305Key {
+    optional bytes key = 1;
+  }
+
+  oneof key_type {
+    NigoriKey legacy_nigori = 1;
+    Aes256GcmKey aes_256_gcm = 2;
+    Chacha20Poly1305Key chacha20_poly1305 = 3;
+  }
+}

@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/agile_encryption_keys.pb.h"
 #include "components/sync/protocol/ai_thread_specifics.pb.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
@@ -131,6 +132,21 @@
   void VisitProtoFields(V& visitor, proto)
 
 namespace syncer {
+
+VISIT_PROTO_FIELDS(const sync_pb::AgileSymmetricKey& proto) {
+  VISIT(legacy_nigori);
+  VISIT(aes_256_gcm);
+  VISIT(chacha20_poly1305);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AgileSymmetricKey::Aes256GcmKey& proto) {
+  VISIT_SECRET(key);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AgileSymmetricKey::Chacha20Poly1305Key& proto) {
+  VISIT_SECRET(key);
+}
 
 VISIT_PROTO_FIELDS(const sync_pb::AppListSpecifics& proto) {
   VISIT(item_id);
@@ -980,6 +996,13 @@ VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPublicKey& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPrivateKey& proto) {
   VISIT(version);
   VISIT(x25519_private_key);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::NigoriKey& proto) {
+  VISIT(deprecated_name);
+  VISIT_SECRET(deprecated_user_key);
+  VISIT_SECRET(encryption_key);
+  VISIT_SECRET(mac_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriSpecifics& proto) {
