@@ -1236,6 +1236,35 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorHibernationTest,
   EXPECT_FALSE(instance5->IsHibernated());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorHibernationTest,
+                       AwakeningEnforcesAwakeLimit) {
+  // TODO(crbug.com/498990943): Flaky on Android x64 emulator due to a race
+  // condition between switching tabs and Android's asynchronous bottom sheet
+  // dismissal animation.
+  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
+  // Create 3 instances when limit is 2.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+
+  // Switch back to tab 1 and re-open Glic.
+  GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  // instance1 should awaken, and instance2 (the oldest awake candidate)
+  // must be hibernated to keep the total awake count at 2!
+  EXPECT_FALSE(instance1->IsHibernated());
+  EXPECT_TRUE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ShowingInstancesAreNotHibernatedOnMemoryPressure) {
   ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());

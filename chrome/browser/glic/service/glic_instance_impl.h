@@ -108,6 +108,10 @@ class GlicInstanceImpl : public GlicInstance,
     // Called to create a new web contents for the glic instance.
     virtual std::unique_ptr<WebUIContentsContainer>
     CreateWebUIContentsContainer() = 0;
+
+    // Called by an instance just before its WebUI container is created from a
+    // hibernated state.
+    virtual void OnInstanceWillAwaken() = 0;
   };
 
   GlicInstanceImpl(
@@ -348,6 +352,12 @@ class GlicInstanceImpl : public GlicInstance,
   bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) const;
 
   bool ShouldPinOnBind() const;
+
+  // Idempotency helper: if the instance is hibernated
+  // (!host_.webui_contents()), notifies the coordinator via
+  // OnInstanceWillAwaken() and creates the WebUI container. No-op if
+  // contents already exist.
+  void EnsureHostContentsCreated();
 
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();

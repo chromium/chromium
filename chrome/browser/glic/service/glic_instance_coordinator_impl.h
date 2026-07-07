@@ -84,6 +84,7 @@ class GlicInstanceCoordinatorImpl
   GlicKeyedService* service() { return service_; }
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
+  void OnInstanceWillAwaken() override;
   void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                    bool is_showing) override;
   void OnInstanceActivationChanged(GlicInstanceImpl* instance,
@@ -255,6 +256,13 @@ class GlicInstanceCoordinatorImpl
   void CloseFloaty(const CloseOptions& options = {});
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
+
+  // Enforces the maximum awake instances limit (`kGlicMaxAwakeInstances`).
+  // If the current count of awake (non-hibernated) instances is at or above the
+  // limit, hibernates the oldest eligible candidate(s) to make room before an
+  // instance awakens. Note: If all awake instances are currently showing
+  // or actuating, they are ineligible for hibernation and the limit may be
+  // temporarily exceeded.
   void ApplyMaxAwakeInstancesLimit();
 
   void NotifyActiveInstanceChanged();

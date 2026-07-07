@@ -311,9 +311,11 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsHibernationTest,
   // Wait for the instance to become awakened.
   ASSERT_OK(WaitForInstanceAwakened(instance1));
 
-  // Upon wakeup, it records AwakeCount.OnContentsCreated again.
+  // Upon wakeup, it records AwakeCount.OnContentsCreated again. Since limit=2,
+  // instance 2 is hibernated before instance 1 awakens, keeping awake
+  // count at 2.
   histogram_tester.ExpectBucketCount(
-      "Glic.Instances.CountAwake.OnContentsCreated", 3, 1);
+      "Glic.Instances.CountAwake.OnContentsCreated", 2, 3);
 }
 
 }  // namespace
