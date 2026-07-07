@@ -532,10 +532,19 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       // MenuItemView can re-color it on hover in forced-colors mode.
       if (!avatar_image.IsEmpty() &&
           icon_type != AvatarIconType::kPlaceholder) {
-        avatar_image_model_ =
+        ui::ImageModel avatar_model =
             ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
                 avatar_image, avatar_icon_size, avatar_icon_size,
                 profiles::SHAPE_CIRCLE));
+        // TODO(crbug.com/530147081): Clarify the AI ring may show up for users
+        // with a placeholder icon. Signed in users should have always an
+        // account_info and thus they will never have a placeholder icon.
+        if (IsAiSubscriptionRingEnabled(profile)) {
+          avatar_image_model_ = ui::ImageModel::FromImageSkia(AddAiRingToAvatar(
+              avatar_model, *color_provider, avatar_icon_size));
+        } else {
+          avatar_image_model_ = avatar_model;
+        }
       }
       profile_name_ = GetProfileMenuDisplayName(profile_attributes);
     }
