@@ -178,7 +178,6 @@ struct ChromeMLGenerateOutput {
 };
 using ChromeMLExecutionOutput = ChromeMLGenerateOutput;
 
-
 // Status value indicating the result of ad hoc safety classification.
 enum class ChromeMLSafetyResult {
   // Safety classification succeeded and the caller's output buffer has been
@@ -387,12 +386,40 @@ struct ChromeMLTokenizerParams {
   const void* tokenize_user_data;
 };
 
+struct ChromeMLTokenizerParamsV3 {
+  // The size of the token vocabulary from the LLM.
+  uint32_t vocab_size;
+
+  // The number of tokens in eos_token_ids.
+  uint32_t eos_token_ids_size;
+
+  // An array of End of Sequence (EOS) token IDs from the LLM.
+  const uint32_t* eos_token_ids;
+
+  // An array of the lengths of the token strings (vocab_size elements).
+  const uint32_t* token_lens;
+
+  // A pointer to the token strings. The length of this is the sum of all
+  // lengths from elements of token_lens.
+  const uint8_t* token_bytes;
+
+  // Instead of passing token_lens and token_bytes, this can be set to model's
+  // tokenizer.json file content.
+  const char* tokenizer_json_file_content;
+
+  // Function for tokenizing a string. Will be passed `tokenize_user_data`.
+  ChromeMLTokenizeFn tokenize_fn;
+  const void* tokenize_user_data;
+};
+
 using ChromeMLGetTokenizerParamsFn =
     std::function<void(const ChromeMLTokenizerParams&)>;
 
+using ChromeMLGetTokenizerParamsV3Fn =
+    std::function<void(const ChromeMLTokenizerParamsV3&)>;
+
 // Precision used by the gpu delegate during inference.
 enum class GpuDelegatePrecision { kFp16, kFp32 };
-
 
 struct ChromeMLASRStreamOutputTranscript {
   const char* transcript;
@@ -536,16 +563,29 @@ struct ChromeMLAPI {
   // Sets constraint functions to be used in the shared library.
   void (*SetConstraintFns)(const ChromeMLConstraintFns* fns);
 
+  // TODO(crbug.com/500473306): Remove this once we've switched over to
+  // `GetTokenizerParamsV3`.
+  //
   // Gets parameters needed to construct a tokenizer.
   bool (*GetTokenizerParams)(ChromeMLModel model,
                              ChromeMLSession session,
                              const ChromeMLGetTokenizerParamsFn& fn,
                              bool use_optimization);
 
+  // TODO(crbug.com/500473306): Remove this once we've switched over to
+  // `GetTokenizerParamsV3`.
+  //
   // Gets parameters needed to construct a tokenizer.
   bool (*GetTokenizerParamsV2)(ChromeMLModel model,
                                ChromeMLSession session,
                                const ChromeMLGetTokenizerParamsFn& fn);
+
+  // TODO(crbug.com/500473306): Rename to `GetTokenizerParams`.
+  //
+  // Gets parameters needed to construct a tokenizer.
+  bool (*GetTokenizerParamsV3)(ChromeMLModel model,
+                               ChromeMLSession session,
+                               const ChromeMLGetTokenizerParamsV3Fn& fn);
 
   // Creates a new TFLite delegate using the GPU inference engine.
   TfLiteDelegate* (*CreateGpuDelegate)();
