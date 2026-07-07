@@ -58,6 +58,19 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
       public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host {
  public:
+  // The returned instance will have been cleared at creation.
+  static std::unique_ptr<Canvas2DBitmapProvider> CreateWithClear(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
+      CanvasResourceProviderDelegate* delegate = nullptr);
+
+  static std::unique_ptr<Canvas2DBitmapProvider> CreateForTesting(
+      gfx::Size size,
+      const Canvas2DColorParams& color_params);
+
   ~Canvas2DBitmapProvider();
 
   bool IsValid() const { return GetSkSurface(); }
@@ -81,16 +94,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
                    int x,
                    int y);
 
-  void RasterRecord(base::FunctionRef<void(cc::PaintCanvas&)>);
-
-  // CanvasMemoryDumpClient implementation.
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
-  size_t GetSize() const override;
-
-  static std::unique_ptr<Canvas2DBitmapProvider> CreateForTesting(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params);
-
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
   const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
@@ -108,29 +111,12 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
   void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
-  // MemoryManagedPaintRecorder::Client implementation.
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-  ScopedRasterTimer CreateScopedRasterTimer();
   void RestoreBackBuffer(const cc::PaintImage&);
-  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
 
  private:
   friend class CanvasRenderingContext2D;
   friend class OffscreenCanvasRenderingContext2D;
 
-  // Should only be called from static Create*() methods.
-  // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
-  // callsites.
-  void ClearAtCreation();
-
-  // The returned instance will have been cleared at creation.
-  static std::unique_ptr<Canvas2DBitmapProvider> CreateWithClear(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      CanvasResourceProviderDelegate* delegate = nullptr);
   Canvas2DBitmapProvider(gfx::Size size,
                          viz::SharedImageFormat format,
                          SkAlphaType alpha_type,
@@ -138,12 +124,28 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
                          const gfx::HDRMetadata& hdr_metadata,
                          CanvasResourceProviderDelegate* delegate);
 
+  // Should only be called from static Create*() methods.
+  // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
+  // callsites.
+  void ClearAtCreation();
+
+  void RasterRecord(base::FunctionRef<void(cc::PaintCanvas&)>);
+
+  // CanvasMemoryDumpClient implementation.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
+  size_t GetSize() const override;
+
+  // MemoryManagedPaintRecorder::Client implementation.
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
+  void RecordingCleared() override;
+
+  ScopedRasterTimer CreateScopedRasterTimer();
+  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
+
   SkSurfaceProps GetSkSurfaceProps() const;
   SkSurface* GetSkSurface() const;
   sk_sp<SkSurface> CreateSkSurface() const;
 
-  // MemoryManagedPaintRecorder::Client implementation.
-  void RecordingCleared() override;
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
