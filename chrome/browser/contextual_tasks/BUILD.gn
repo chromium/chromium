@@ -220,7 +220,7 @@ source_set("ui") {
     ":mojom_traits",
     "//base",
     "//chrome/browser/tab_list",
-    "//chrome/common:url_constants",
+    "//chrome/common",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public:query_contextualizer",
     "//components/prefs",

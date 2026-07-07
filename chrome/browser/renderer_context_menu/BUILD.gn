@@ -85,7 +85,7 @@ source_set("impl") {
     ":renderer_context_menu",
     "//base",
     "//chrome/browser/app_mode",
-    "//chrome/common:url_constants",
+    "//chrome/common",
     "//components/renderer_context_menu",
     "//content/public/browser",
     "//extensions/buildflags",

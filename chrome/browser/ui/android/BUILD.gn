@@ -39,7 +39,7 @@ if (is_android) {
       "//chrome/browser/ui/javascript_dialogs",
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/navigator",
-      "//chrome/common:url_constants",
+      "//chrome/common",
       "//components/browser_ui/client_certificate/android",
       "//components/embedder_support:user_agent",
       "//components/javascript_dialogs",
