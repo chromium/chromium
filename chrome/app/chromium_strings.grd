@@ -2649,7 +2649,7 @@ Chromium is unable to recover your settings.
           Stay safe with Password Manager
         </message>
         <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_SUBTITLE" desc="Description for the Password Manager page in the Feature Showcase.">
-          Built into Chromium to help you create, save, and autofill strong passwords. Add the shortcut for easy access
+          Built into Chromium to help you create, save, and autofill strong passwords. Add the shortcut for easy access.
         </message>
 
         <!-- Feature Showcase - Lens -->
