@@ -639,6 +639,26 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFiltersJavascriptURLs) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  const BookmarkNode* const folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Folder");
+
+  // Add a normal URL and a javascript: URL.
+  bookmark_model->AddURL(folder, 0, u"Normal URL",
+                         GURL("https://www.example.com"));
+  bookmark_model->AddURL(folder, 1, u"Script URL", GURL("javascript:alert()"));
+
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  bookmarks::OpenAllIfAllowed(browser(), {folder},
+                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                              bookmarks::OpenAllBookmarksContext::kNone);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL("https://www.example.com"),
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibleURL());
+}
+
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
                        HideStarOnNonbookmarkedInterstitial) {
   // Start an HTTPS server with a certificate error.

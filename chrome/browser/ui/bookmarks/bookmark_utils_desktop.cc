@@ -141,6 +141,12 @@ OpenedWebContentsSet OpenAllHelper(
   }
 
   for (const auto& bookmark_url : bookmark_urls) {
+    // Javascript URLs should not open in a new tab. See crbug.com/528757894.
+    if (disposition != WindowOpenDisposition::CURRENT_TAB &&
+        bookmark_url.url.SchemeIs(url::kJavaScriptScheme)) {
+      continue;
+    }
+
     const bool url_allowed_in_incognito =
         IsURLAllowedInIncognito(bookmark_url.url);
 
