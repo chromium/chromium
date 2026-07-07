@@ -1247,16 +1247,17 @@ void Performance::ActivateObserver(PerformanceObserver& observer) {
   if (active_observers_.empty())
     deliver_observations_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
-  if (suspended_observers_.Contains(&observer))
-    suspended_observers_.erase(&observer);
+  // erase() is a no-op when the observer isn't present, so no guard is needed.
+  suspended_observers_.erase(&observer);
   active_observers_.insert(&observer);
 }
 
 void Performance::SuspendObserver(PerformanceObserver& observer) {
   DCHECK(!suspended_observers_.Contains(&observer));
-  if (!active_observers_.Contains(&observer))
+  auto it = active_observers_.find(&observer);
+  if (it == active_observers_.end())
     return;
-  active_observers_.erase(&observer);
+  active_observers_.erase(it);
   suspended_observers_.insert(&observer);
 }
 

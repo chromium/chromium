@@ -1042,13 +1042,11 @@ void WindowPerformance::TryFlushEventTimingQueue() {
       int64_t creation_time_us = entry->GetEventTimingReportingInfo()
                                      ->creation_time.since_origin()
                                      .InMicroseconds();
-      auto it = primary_entries.find(creation_time_us);
-      PerformanceEventTiming* primary_entry = entry.Get();
-      if (it == primary_entries.end()) {
-        primary_entries.insert(creation_time_us, entry);
-      } else {
-        primary_entry = it->value.Get();
-      }
+      // insert() keeps the existing entry when the key is present, so the
+      // first entry for a given creation time stays the primary one.
+      auto add_result = primary_entries.insert(creation_time_us, entry);
+      PerformanceEventTiming* primary_entry =
+          add_result.stored_value->value.Get();
 
       FlushEventTiming(interactive_detector, entry, primary_entry);
 

@@ -140,8 +140,9 @@ ThirdPartyScriptDetector::Technology ThirdPartyScriptDetector::Detect(
     return Technology::kNone;
   }
 
-  if (url_to_technology_cache_.Contains(url)) {
-    return url_to_technology_cache_.at(url);
+  if (auto it = url_to_technology_cache_.find(url);
+      it != url_to_technology_cache_.end()) {
+    return it->value;
   }
 
   // Create result vectors to get the matches for the capturing groups.
