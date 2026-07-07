@@ -112,7 +112,6 @@ def _DumpCsvAndClear(metrics):
 
 
 def _DownloadAndAnalyze(signed_prefix,
-                        unsigned_prefix,
                         staging_dir,
                         android_go_system_gz=False):
   artifacts = []
@@ -121,52 +120,30 @@ def _DownloadAndAnalyze(signed_prefix,
     artifacts.append(_Artifact(prefix, name, staging_dir))
     return artifacts[-1]
 
-  trichrome_system_apks = [
-      make_artifact('arm/TrichromeWebViewGoogleSystemStable.apk'),
-      make_artifact('arm/TrichromeLibraryGoogleSystemStable.apk'),
-      make_artifact(
-          'arm/for-signing-only/TrichromeChromeGoogleSystemStable.apk',
-          prefix=unsigned_prefix),
+  system_apks = [
+      make_artifact('arm/AndroidWebviewSystemStable.apk'),
+      make_artifact('arm/ChromeSystemStable.apk'),
   ]
-  trichrome_system_stubs = [
-      make_artifact('arm/TrichromeWebViewGoogleSystemStable-Stub.apk'),
-      make_artifact('arm/TrichromeLibraryGoogleSystemStable-Stub.apk'),
-      make_artifact(
-          'arm/for-signing-only/TrichromeChromeGoogleSystemStable-Stub.apk',
-          prefix=unsigned_prefix),
+  system_stubs = [
+      make_artifact('arm/AndroidWebviewSystemStable-Stub.apk'),
+      make_artifact('arm/ChromeSystemStable-Stub.apk'),
   ]
 
   if not android_go_system_gz:
     webview = make_artifact('arm/AndroidWebviewStable.aab')
     webview64 = make_artifact('arm_64/AndroidWebviewStable.aab')
-    trichrome_chrome = make_artifact('arm/TrichromeChromeGoogleStable.aab')
-    trichrome_webview = make_artifact('arm/TrichromeWebViewGoogleStable.aab')
-    trichrome_library = make_artifact('arm/TrichromeLibraryGoogleStable.apk')
-    trichrome64_chrome = make_artifact('arm_64/TrichromeChromeGoogleStable.aab')
-    trichrome64_webview = make_artifact(
-        'arm_64/TrichromeWebViewGoogleStable.aab')
-    trichrome64_library = make_artifact(
-        'arm_64/TrichromeLibraryGoogleStable.apk')
-    trichrome64_high_chrome = make_artifact(
-        'high-arm_64/TrichromeChromeGoogle6432Stable.aab')
-    trichrome64_high_webview = make_artifact(
-        'high-arm_64/TrichromeWebViewGoogle6432Stable.aab')
-    trichrome64_high_library = make_artifact(
-        'high-arm_64/TrichromeLibraryGoogle6432Stable.apk')
+    webview64_high = make_artifact('high-arm_64/AndroidWebview6432Stable.aab')
+    chrome = make_artifact('arm/ChromeStable.aab')
+    chrome64 = make_artifact('arm_64/ChromeStable.aab')
+    chrome64_high = make_artifact('high-arm_64/ChromeStable.aab')
 
-    trichrome64_system_apks = [
-        make_artifact('arm_64/TrichromeWebViewGoogleSystemStable.apk'),
-        make_artifact('arm_64/TrichromeLibraryGoogleSystemStable.apk'),
-        make_artifact(
-            'arm_64/for-signing-only/TrichromeChromeGoogleSystemStable.apk',
-            prefix=unsigned_prefix),
+    system_apks_64 = [
+        make_artifact('arm_64/AndroidWebviewSystemStable.apk'),
+        make_artifact('arm_64/ChromeSystemStable.apk'),
     ]
-    trichrome64_system_apks_high = [
-        make_artifact('high-arm_64/TrichromeWebViewGoogle6432SystemStable.apk'),
-        make_artifact('high-arm_64/TrichromeLibraryGoogle6432SystemStable.apk'),
-        make_artifact(('high-arm_64/for-signing-only/'
-                       'TrichromeChromeGoogle6432SystemStable.apk'),
-                      prefix=unsigned_prefix),
+    system_apks_64_high = [
+        make_artifact('high-arm_64/AndroidWebview64SystemStable.apk'),
+        make_artifact('high-arm_64/ChromeSystemStable.apk'),
     ]
 
   # Download and run resource_sizes.py concurrently.
@@ -174,9 +151,8 @@ def _DownloadAndAnalyze(signed_prefix,
   pool.map(_Artifact.FetchAndMeasure, artifacts)
   pool.close()
 
-  compressed_system_apks_size = sum(x.GetCompressedSize()
-                                    for x in trichrome_system_apks)
-  stubs_sizes = sum(x.GetApkSize() for x in trichrome_system_stubs)
+  compressed_system_apks_size = sum(x.GetCompressedSize() for x in system_apks)
+  stubs_sizes = sum(x.GetApkSize() for x in system_stubs)
   android_go_system_gz_size = compressed_system_apks_size + stubs_sizes
   android_go_system_gz_title = 'Android Go (Trichrome) Compressed System Image'
 
@@ -186,45 +162,34 @@ def _DownloadAndAnalyze(signed_prefix,
 
   # Add metrics in the order that we want them in the .csv output.
   metrics = {}
+  chrome.AddSize(metrics)
+  chrome64.AddSize(metrics)
+  chrome64_high.AddSize(metrics)
   webview.AddSize(metrics)
   webview64.AddSize(metrics)
-  trichrome_chrome.AddSize(metrics)
-  trichrome_webview.AddSize(metrics)
-  trichrome_library.AddSize(metrics)
+  webview64_high.AddSize(metrics)
 
   # Separate where spreadsheet has computed columns for easier copy/paste.
   _DumpCsvAndClear(metrics)
-  trichrome64_chrome.AddSize(metrics)
-  trichrome64_webview.AddSize(metrics)
-  trichrome64_library.AddSize(metrics)
-  _DumpCsvAndClear(metrics)
-
-  trichrome64_high_chrome.AddSize(metrics)
-  trichrome64_high_webview.AddSize(metrics)
-  trichrome64_high_library.AddSize(metrics)
-
-  _DumpCsvAndClear(metrics)
-
   metrics['System Image Size (arm32)'] = sum(x.GetApkSize()
-                                             for x in trichrome_system_apks)
+                                             for x in system_apks)
   metrics['System Image Size (arm64)'] = sum(x.GetApkSize()
-                                             for x in trichrome64_system_apks)
-  metrics['System Image Size (arm64-high)'] = sum(
-      x.GetApkSize() for x in trichrome64_system_apks_high)
+                                             for x in system_apks_64)
+  metrics['System Image Size (arm64-high)'] = sum(x.GetApkSize()
+                                                  for x in system_apks_64_high)
 
-  go_install_size = (trichrome_chrome.GetAndroidGoSize() +
-                     trichrome_webview.GetAndroidGoSize() +
-                     trichrome_library.GetAndroidGoSize())
-  metrics['Android Go (TriChrome) Install Size'] = go_install_size
+  go_install_size = chrome.GetAndroidGoSize() + webview.GetAndroidGoSize()
+  metrics['Android Go Install Size'] = go_install_size
   metrics[android_go_system_gz_title] = android_go_system_gz_size
 
-  trichrome_chrome.AddMethodCount(metrics)
+  chrome.AddMethodCount(metrics)
+  webview.AddMethodCount(metrics)
 
   # Separate where spreadsheet has computed columns for easier copy/paste.
   _DumpCsvAndClear(metrics)
 
-  trichrome_chrome.AddDfmSizes(metrics, 'Chrome')
-  trichrome_webview.AddDfmSizes(metrics, 'WebView')
+  chrome64_high.AddDfmSizes(metrics, 'Chrome')
+  webview64_high.AddDfmSizes(metrics, 'WebView')
   _DumpCsvAndClear(metrics)
 
 
@@ -264,8 +229,7 @@ def main():
   signed_prefix = posixpath.join(options.signed_bucket, options.version)
   unsigned_prefix = signed_prefix.replace('signed', 'unsigned')
 
-  # Ensure the binary size isn't inflated by v8_is_on_release_branch=true
-  # not being set yet.
+  # Ensure the binary size isn't inflated by v8_enable_runtime_call_stats=true.
   if not _CheckGnArgs(unsigned_prefix):
     if not options.android_go_system_gz:
       sys.exit(1)
@@ -276,7 +240,6 @@ def main():
       os.makedirs(staging_dir, exist_ok=True)
 
     _DownloadAndAnalyze(signed_prefix,
-                        unsigned_prefix,
                         staging_dir,
                         android_go_system_gz=options.android_go_system_gz)
 

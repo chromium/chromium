@@ -40,7 +40,9 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
 _PUSH_URL = 'gs://chrome-supersize/milestones/'
 
 _DESIRED_CPUS = ['arm', 'arm_64', 'high-arm_64']
-_DESIRED_APKS = ['Monochrome.apk', 'AndroidWebview.apk', 'TrichromeGoogle']
+_DESIRED_APKS = [
+    'Chrome.apk', 'Monochrome.apk', 'AndroidWebview.apk', 'TrichromeGoogle'
+]
 
 # Versions are manually gathered from
 # https://omahaproxy.appspot.com/history?os=android&channel=stable
@@ -135,6 +137,7 @@ _DESIRED_VERSIONS = [
     '147.0.7727.50',
     '148.0.7778.94',
     '149.0.7827.44',
+    '150.0.7871.96',
 ]
 
 
@@ -148,6 +151,8 @@ def _IsBundle(apk, version):
     return True
   if apk == 'AndroidWebview.apk' and version >= 89:
     return True
+  if apk == 'Chrome.apk':
+    return True
   return False
 
 
@@ -155,20 +160,28 @@ def _EnumerateReports():
   for cpu, apk in itertools.product(_DESIRED_CPUS, _DESIRED_APKS):
     versions = _DESIRED_VERSIONS
     if cpu == 'high-arm_64':
-      if apk != 'TrichromeGoogle':
+      if apk == 'TrichromeGoogle':
+        versions = [v for v in versions if _VersionMajor(v) >= 126]
+      elif apk in ('AndroidWebview.apk', 'Chrome.apk'):
+        versions = [v for v in versions if _VersionMajor(v) >= 150]
+      else:
         continue
-      versions = [v for v in versions if _VersionMajor(v) >= 126]
+    if apk == 'Chrome.apk':
+      versions = [v for v in versions if _VersionMajor(v) >= 150]
     elif apk == 'AndroidWebview.apk':
       # Webview .size files do not exist before M71.
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
-      versions = [v for v in versions if _VersionMajor(v) >= 88]
+      versions = [v for v in versions if 88 <= _VersionMajor(v) < 150]
     elif apk == 'Monochrome.apk':
       versions = [v for v in versions if _VersionMajor(v) < 140]
 
     # Switched to high-end only.
     if cpu == 'arm_64':
       versions = [v for v in versions if _VersionMajor(v) < 127]
+    elif cpu == 'high-arm_64':
+      # crbug.com/531774881
+      versions = [v for v in versions if _VersionMajor(v) < 149]
 
     for version in versions:
       yield Report(cpu, apk, version)
@@ -181,7 +194,8 @@ class Report(collections.namedtuple('Report', 'cpu,apk,version')):
     if not local and self.apk == 'TrichromeGoogle' and _VersionMajor(
         self.version) < 91:
       template = '{version}/{cpu}/for-signing-only/{apk}.size'
-    elif self.cpu == 'high-arm_64':
+    elif self.cpu == 'high-arm_64' and self.apk in ('AndroidWebview.apk',
+                                                    'TrichromeGoogle'):
       template = '{version}/{cpu}/{apk}6432.size'
     else:
       template = '{version}/{cpu}/{apk}.size'
