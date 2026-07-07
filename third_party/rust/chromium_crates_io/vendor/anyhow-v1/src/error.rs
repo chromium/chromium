@@ -819,12 +819,12 @@ where
 {
     if TypeId::of::<C>() == target {
         let unerased_ref = e.cast::<ErrorImpl<ContextError<C, E>>>();
-        let unerased = unsafe { unerased_ref.deref() };
-        Some(Ref::new(&unerased._object.context).cast::<()>())
+        let inner = unsafe { ptr::addr_of!((*unerased_ref.as_ptr())._object.context) };
+        Some(Ref::from_raw(unsafe { NonNull::new_unchecked(inner.cast_mut()) }).cast::<()>())
     } else if TypeId::of::<E>() == target {
         let unerased_ref = e.cast::<ErrorImpl<ContextError<C, E>>>();
-        let unerased = unsafe { unerased_ref.deref() };
-        Some(Ref::new(&unerased._object.error).cast::<()>())
+        let inner = unsafe { ptr::addr_of!((*unerased_ref.as_ptr())._object.error) };
+        Some(Ref::from_raw(unsafe { NonNull::new_unchecked(inner.cast_mut()) }).cast::<()>())
     } else {
         None
     }
@@ -854,11 +854,12 @@ where
     C: 'static,
 {
     let unerased_ref = e.cast::<ErrorImpl<ContextError<C, Error>>>();
-    let unerased = unsafe { unerased_ref.deref() };
     if TypeId::of::<C>() == target {
-        Some(Ref::new(&unerased._object.context).cast::<()>())
+        let inner = unsafe { ptr::addr_of!((*unerased_ref.as_ptr())._object.context) };
+        Some(Ref::from_raw(unsafe { NonNull::new_unchecked(inner.cast_mut()) }).cast::<()>())
     } else {
         // Recurse down the context chain per the inner error's vtable.
+        let unerased = unsafe { unerased_ref.deref() };
         let source = &unerased._object.error;
         unsafe { (vtable(source.inner.ptr).object_downcast)(source.inner.by_ref(), target) }
     }

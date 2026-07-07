@@ -165,6 +165,29 @@ fn test_unsuccessful_downcast() {
 }
 
 #[test]
+fn test_downcast_mut() {
+    let (mut err, dropped) = make_chain();
+
+    err.downcast_mut::<HighLevel>().unwrap().message = "high context";
+    err.downcast_mut::<MidLevel>().unwrap().message = "mid context";
+    err.downcast_mut::<LowLevel>().unwrap().message = "low error";
+
+    assert_eq!(
+        err.downcast_ref::<HighLevel>().unwrap().message,
+        "high context",
+    );
+    assert_eq!(
+        err.downcast_ref::<MidLevel>().unwrap().message,
+        "mid context",
+    );
+    assert_eq!(err.downcast_ref::<LowLevel>().unwrap().message, "low error");
+
+    assert!(dropped.none());
+    drop(err);
+    assert!(dropped.all());
+}
+
+#[test]
 fn test_root_cause() {
     let (err, _) = make_chain();
 
