@@ -30,6 +30,10 @@ export function getHtml(this: ContextHubAppElement) {
                     <cr-icon icon="cr:history"></cr-icon>
                     Memory banks
                 </a>
+                <a role="menuitem" href="#" data-route="tab-groups" class="cr-nav-menu-item">
+                    <cr-icon icon="cr:domain"></cr-icon>
+                    Tab groups
+                </a>
             </cr-menu-selector>
         </div>
     </aside>
@@ -46,6 +50,11 @@ export function getHtml(this: ContextHubAppElement) {
           <memory-banks></memory-banks>
         ` :
                                              ''}
+        ${
+      this.currentView_ === 'tab-groups' ? html`
+          <tab-groups></tab-groups>
+        ` :
+                                           ''}
     </div>
   `;
 }

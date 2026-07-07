@@ -1,0 +1,165 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  max-width: 1000px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-section h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.tab-card {
+  height: 120px;
+  border: 1px solid var(--google-grey-300);
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--cr-card-background-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tab-title {
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+/* Groups Styles */
+.groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group-card {
+  border: 1px solid var(--google-grey-300);
+  border-radius: 8px;
+  background-color: var(--cr-card-background-color);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+cr-expand-button {
+  padding: 16px 20px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.group-label {
+  font-size: 16px;
+  color: var(--cr-primary-text-color);
+}
+
+.group-count {
+  font-size: 14px;
+  color: var(--cr-secondary-text-color);
+}
+
+.group-tabs-list {
+  padding: 8px 16px 16px 16px;
+  border-top: 1px solid var(--google-grey-300);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: var(--google-grey-50);
+}
+
+.group-tab-item {
+  padding: 8px;
+  border-radius: 4px;
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--google-grey-300);
+}
+
+.group-tab-item .tab-title {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--cr-primary-text-color);
+  margin-bottom: 4px;
+}
+
+.group-tab-item .tab-url {
+  font-size: 12px;
+  color: var(--cr-secondary-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ungrouped-section {
+  margin-top: 32px;
+}
+
+.ungrouped-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+  font-size: 16px;
+  color: var(--cr-secondary-text-color);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--google-grey-200);
+  border-top: 4px solid var(--google-blue-600);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

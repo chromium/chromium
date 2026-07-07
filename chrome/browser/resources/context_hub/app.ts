@@ -4,6 +4,7 @@
 
 import './taskbox/ai_taskbox.js';
 import './memory_banks/memory_banks.js';
+import './tab_groups/tab_groups.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
@@ -15,7 +16,7 @@ import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {AutoTodoItem} from './context_hub.mojom-webui.js';
 
-export type ViewType = 'ai-taskbox'|'memory-banks';
+export type ViewType = 'ai-taskbox'|'memory-banks'|'tab-groups';
 
 export class ContextHubAppElement extends CrLitElement {
   static get is() {
