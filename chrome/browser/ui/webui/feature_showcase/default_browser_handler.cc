@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -73,6 +74,10 @@ DefaultBrowserHandler::DefaultBrowserHandler(
 DefaultBrowserHandler::~DefaultBrowserHandler() = default;
 
 void DefaultBrowserHandler::SetAsDefaultBrowser() {
+  RecordStepUserAction(FeatureShowcaseStep::kDefaultBrowser,
+                       FeatureShowcaseStepUserAction::kAccepted);
+  // TODO(crbug.com/486819807): Remove old metrics once we completely switch to
+  // the new flow.
   base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
                                 DefaultBrowserChoice::kClickSetAsDefault);
 
@@ -103,6 +108,10 @@ void DefaultBrowserHandler::SetAsDefaultBrowser() {
 }
 
 void DefaultBrowserHandler::SkipSetAsDefaultBrowser() {
+  RecordStepUserAction(FeatureShowcaseStep::kDefaultBrowser,
+                       FeatureShowcaseStepUserAction::kDeclined);
+  // TODO(crbug.com/486819807): Remove old metrics once we completely switch to
+  // the new flow.
   base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
                                 DefaultBrowserChoice::kSkip);
 }

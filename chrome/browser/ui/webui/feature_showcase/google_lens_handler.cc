@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
-#include "components/lens/lens_overlay_metrics.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 
-// TODO(crbug.com/506864805): Add recording "No thanks" button click.
 GoogleLensHandler::GoogleLensHandler(
     mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
         receiver,
@@ -20,5 +20,13 @@ GoogleLensHandler::GoogleLensHandler(
 GoogleLensHandler::~GoogleLensHandler() = default;
 
 void GoogleLensHandler::EnableGoogleLens() {
+  RecordStepUserAction(FeatureShowcaseStep::kGoogleLens,
+                       FeatureShowcaseStepUserAction::kAccepted);
+
   lens::GrantLensOverlayNeededPermissions(profile_);
+}
+
+void GoogleLensHandler::SkipGoogleLens() {
+  RecordStepUserAction(FeatureShowcaseStep::kGoogleLens,
+                       FeatureShowcaseStepUserAction::kDeclined);
 }

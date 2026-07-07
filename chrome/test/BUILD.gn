@@ -6814,6 +6814,7 @@ test("unit_tests") {
       "../browser/ui/webui/feature_showcase/themes_and_customization_handler_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/ui:feature_showcase_metrics",
       "//chrome/browser/ui/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
       "//chrome/browser/ui/webui/intro",

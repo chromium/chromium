@@ -8,10 +8,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_constants.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
-
-inline constexpr char kFeatureShowcaseDefaultBrowserStepIdentifier[] =
-    "default-browser";
 
 class DefaultBrowserStepEligibilityChecker
     : public FeatureShowcaseStepEligibilityChecker {

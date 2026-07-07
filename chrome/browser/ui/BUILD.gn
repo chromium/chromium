@@ -3385,6 +3385,7 @@ static_library("ui") {
       ]
 
       deps += [
+        ":feature_showcase_metrics",
         "webui/signin/batch_upload:mojo_bindings",
         "//chrome/browser/ui/webui/feature_showcase",
         "//chrome/browser/ui/webui/signin:batch_upload",
@@ -5911,5 +5912,16 @@ if (use_aura) {
       "//components/prefs",
       "//content/public/browser",
     ]
+  }
+}
+
+if (enable_dice_support) {
+  source_set("feature_showcase_metrics") {
+    sources = [
+      "views/profiles/feature_showcase/feature_showcase_constants.h",
+      "views/profiles/feature_showcase/feature_showcase_metrics.cc",
+      "views/profiles/feature_showcase/feature_showcase_metrics.h",
+    ]
+    deps = [ "//base" ]
   }
 }

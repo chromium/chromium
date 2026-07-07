@@ -24,6 +24,7 @@ class PasswordManagerHandler
 
   // feature_showcase::mojom::PasswordManagerPageHandler:
   void PinPasswordManager() override;
+  void SkipPasswordManager() override;
 
  private:
   mojo::Receiver<feature_showcase::mojom::PasswordManagerPageHandler> receiver_;

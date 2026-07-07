@@ -958,6 +958,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StartBrowsing"
     enum="FeatureShowcaseStep" expires_after="2026-12-31">
   <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the Feature Showcase step the user was looking at when they clicked
@@ -968,6 +969,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StepEligible"
     enum="FeatureShowcaseStep" expires_after="2026-12-31">
   <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the Feature Showcase step when it is eligible to be shown to the
@@ -979,6 +981,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StepShown"
     enum="FeatureShowcaseStep" expires_after="2026-12-31">
   <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the Feature Showcase step when it is shown to the user during the
@@ -986,9 +989,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.{FeatureShowcaseStep}"
+    enum="FeatureShowcaseStepUserAction" expires_after="2026-12-31">
+  <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the action taken by the user on the {FeatureShowcaseStep} step in
+    the First Run Experience Feature Showcase. Recorded when the step is
+    completed.
+  </summary>
+<!-- LINT.IfChange(FeatureShowcaseStepSuffix) -->
+
+  <token key="FeatureShowcaseStep">
+    <variant name="DefaultBrowser" summary="Default Browser"/>
+    <variant name="GoogleLens" summary="Google Lens"/>
+    <variant name="PasswordManager" summary="Password Manager"/>
+    <variant name="ThemesAndCustomization" summary="Themes and Customization"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.cc:FeatureShowcaseStepSuffix) -->
+
+</histogram>
+
+<histogram
+    name="ProfilePicker.FREFlow.FeatureShowcase.ThemesAndCustomization.ThemeChanged"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records when the user changes the theme or color scheme mode on the Themes
+    and Customization step of the First Run Experience Feature Showcase.
+    Recorded the first (and only) time a user interacts with the color picker on
+    the Themes and Customization step.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FREFlow.MediaEffects.{Action}"
     enum="ProfileManagementFlowStep" expires_after="2026-12-31">
   <owner>ernn@google.com</owner>
+  <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the step every time the user clicks on the media effects action

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -28,19 +29,6 @@ struct CoreAccountInfo;
 enum class IntroChoice;
 class FeatureShowcaseStepController;
 class Profile;
-
-// Exposed for testing purposes only.
-// These values are persisted to UMA logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(FeatureShowcaseStep)
-enum class FeatureShowcaseStep {
-  kDefaultBrowser = 0,
-  kGoogleLens = 1,
-  kPasswordManager = 2,
-  kThemesAndCustomization = 3,
-  kMaxValue = kThemesAndCustomization,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:FeatureShowcaseStep)
 
 // Creates a step to represent the intro. Exposed for testing.
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(

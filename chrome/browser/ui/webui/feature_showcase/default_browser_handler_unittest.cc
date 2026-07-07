@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
@@ -67,6 +68,9 @@ TEST_F(FeatureShowcaseDefaultBrowserHandlerTest,
   histogram_tester.ExpectBucketCount("ProfilePicker.FirstRun.DefaultBrowser",
                                      DefaultBrowserChoice::kClickSetAsDefault,
                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.DefaultBrowser",
+      FeatureShowcaseStepUserAction::kAccepted, 1);
 }
 
 TEST_F(FeatureShowcaseDefaultBrowserHandlerTest,
@@ -79,6 +83,9 @@ TEST_F(FeatureShowcaseDefaultBrowserHandlerTest,
 
   histogram_tester.ExpectBucketCount("ProfilePicker.FirstRun.DefaultBrowser",
                                      DefaultBrowserChoice::kSkip, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.DefaultBrowser",
+      FeatureShowcaseStepUserAction::kDeclined, 1);
 }
 
 TEST_F(FeatureShowcaseDefaultBrowserHandlerTest,

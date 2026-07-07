@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/default_browser_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/google_lens_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h"
@@ -147,25 +148,6 @@ std::optional<std::vector<std::string>> GetForcedStepsFromCommandLine() {
                              base::SPLIT_WANT_NONEMPTY);
   }
   return std::nullopt;
-}
-
-FeatureShowcaseStep GetFeatureShowcaseStep(std::string_view step_id) {
-  static const base::NoDestructor<
-      base::flat_map<std::string_view, FeatureShowcaseStep>>
-      kStepMap({
-          {kFeatureShowcaseDefaultBrowserStepIdentifier,
-           FeatureShowcaseStep::kDefaultBrowser},
-          {kFeatureShowcaseGoogleLensStepIdentifier,
-           FeatureShowcaseStep::kGoogleLens},
-          {kFeatureShowcasePasswordManagerStepIdentifier,
-           FeatureShowcaseStep::kPasswordManager},
-          {kFeatureShowcaseThemesAndCustomizationStepIdentifier,
-           FeatureShowcaseStep::kThemesAndCustomization},
-      });
-  if (const auto it = kStepMap->find(step_id); it != kStepMap->end()) {
-    return it->second;
-  }
-  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_WIN)
