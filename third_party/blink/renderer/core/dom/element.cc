@@ -2660,15 +2660,16 @@ int Element::clientWidth() {
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
-
-  int result = 0;
-  if (const auto* layout_object = GetLayoutBox()) {
-    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                 layout_object->ClientWidthWithTableSpecialBehavior(),
-                 layout_object->StyleRef())
-                 .Round();
+  if (const auto* box = GetLayoutBox()) {
+    // We don't have a table-wrapper box which is what clientWidth should be
+    // using, just use the border-box size.
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               box->IsTable() ? box->StitchedSize().width
+                              : box->PhysicalPaddingBoxRect().Width(),
+               box->StyleRef())
+        .Round();
   }
-  return result;
+  return 0;
 }
 
 int Element::clientHeight() {
@@ -2703,14 +2704,16 @@ int Element::clientHeight() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  int result = 0;
-  if (const auto* layout_object = GetLayoutBox()) {
-    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                 layout_object->ClientHeightWithTableSpecialBehavior(),
-                 layout_object->StyleRef())
-                 .Round();
+  if (const auto* box = GetLayoutBox()) {
+    // We don't have a table-wrapper box which is what clientHeight should be
+    // using, just use the border-box size.
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               box->IsTable() ? box->StitchedSize().height
+                              : box->PhysicalPaddingBoxRect().Height(),
+               box->StyleRef())
+        .Round();
   }
-  return result;
+  return 0;
 }
 
 double Element::currentCSSZoom() {

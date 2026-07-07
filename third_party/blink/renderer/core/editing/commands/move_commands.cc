@@ -68,8 +68,9 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
         IsEditable(*focused_element) || frame.IsCaretBrowsingEnabled()))
     return 0;
   const ScrollableArea& scrollable_area = *frame.View()->LayoutViewport();
-  const int height = std::min<int>(layout_box.ClientHeight().ToInt(),
-                                   scrollable_area.VisibleHeight());
+  const int height =
+      std::min<int>(layout_box.PhysicalPaddingBoxRect().Height().ToInt(),
+                    scrollable_area.VisibleHeight());
   return cc::ScrollUtils::CalculatePageStep(height);
 }
 

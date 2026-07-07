@@ -312,26 +312,12 @@ bool ScrollInDirection(Node* container, SpatialNavigationDirection direction) {
       dx = -pixels_per_line_step;
       break;
     case SpatialNavigationDirection::kRight:
-      // TODO(bokan, https://crbug.com/952326): Fix this DCHECK.
-      //  DCHECK_GT(container->GetLayoutBox()->ScrollWidth(),
-      //            container->GetLayoutBoxForScrolling()
-      //                    ->GetScrollableArea()
-      //                    ->ScrollPosition()
-      //                    .X() +
-      //                container->GetLayoutBox()->ClientWidth());
       dx = pixels_per_line_step;
       break;
     case SpatialNavigationDirection::kUp:
       dy = -pixels_per_line_step;
       break;
     case SpatialNavigationDirection::kDown:
-      // TODO(bokan, https://crbug.com/952326): Fix this DCHECK.
-      //  DCHECK_GT(container->GetLayoutBox()->ScrollHeight(),
-      //            container->GetLayoutBoxForScrolling()
-      //                    ->GetScrollableArea()
-      //                    ->ScrollPosition()
-      //                    .Y() +
-      //                container->GetLayoutBox()->ClientHeight());
       dy = pixels_per_line_step;
       break;
     default:

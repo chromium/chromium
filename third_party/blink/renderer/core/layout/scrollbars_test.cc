@@ -5022,8 +5022,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
   auto* box_auto = auto_->GetLayoutBox();
-  EXPECT_EQ(box_auto->OffsetWidth(), 100);
-  EXPECT_EQ(box_auto->ClientWidth(), 100);
+  EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Width(), 100);
   PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
@@ -5032,8 +5032,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
 
   auto* stable = GetDocument().getElementById(AtomicString("stable"));
   auto* box_stable = stable->GetLayoutBox();
-  EXPECT_EQ(box_stable->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable->ClientWidth(), 85);
+  EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Width(), 85);
   PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
@@ -5043,8 +5043,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   auto* stable_both_edges =
       GetDocument().getElementById(AtomicString("stable_both_edges"));
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
-  EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable_both_edges->ClientWidth(), 70);
+  EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Width(), 70);
   PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
@@ -5087,8 +5087,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
   auto* box_auto = auto_->GetLayoutBox();
-  EXPECT_EQ(box_auto->OffsetHeight(), 100);
-  EXPECT_EQ(box_auto->ClientHeight(), 100);
+  EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Height(), 100);
   PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
@@ -5097,8 +5097,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
 
   auto* stable = GetDocument().getElementById(AtomicString("stable"));
   auto* box_stable = stable->GetLayoutBox();
-  EXPECT_EQ(box_stable->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable->ClientHeight(), 85);
+  EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Height(), 85);
   PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 15);
@@ -5108,8 +5108,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   auto* stable_both_edges =
       GetDocument().getElementById(AtomicString("stable_both_edges"));
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
-  EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable_both_edges->ClientHeight(), 70);
+  EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Height(), 70);
   PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 15);
@@ -5153,8 +5153,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
   auto* box_auto = auto_->GetLayoutBox();
-  EXPECT_EQ(box_auto->OffsetWidth(), 100);
-  EXPECT_EQ(box_auto->ClientWidth(), 100);
+  EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Width(), 100);
   PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
@@ -5163,8 +5163,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
 
   auto* stable = GetDocument().getElementById(AtomicString("stable"));
   auto* box_stable = stable->GetLayoutBox();
-  EXPECT_EQ(box_stable->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable->ClientWidth(), 100);
+  EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Width(), 100);
   PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
@@ -5174,8 +5174,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   auto* stable_both_edges =
       GetDocument().getElementById(AtomicString("stable_both_edges"));
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
-  EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable_both_edges->ClientWidth(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Width(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Width(), 100);
   PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
@@ -5219,8 +5219,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById(AtomicString("auto"));
   auto* box_auto = auto_->GetLayoutBox();
-  EXPECT_EQ(box_auto->OffsetHeight(), 100);
-  EXPECT_EQ(box_auto->ClientHeight(), 100);
+  EXPECT_EQ(box_auto->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_auto->PhysicalPaddingBoxRect().Height(), 100);
   PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
@@ -5229,8 +5229,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
 
   auto* stable = GetDocument().getElementById(AtomicString("stable"));
   auto* box_stable = stable->GetLayoutBox();
-  EXPECT_EQ(box_stable->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable->ClientHeight(), 100);
+  EXPECT_EQ(box_stable->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_stable->PhysicalPaddingBoxRect().Height(), 100);
   PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
@@ -5240,8 +5240,8 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   auto* stable_both_edges =
       GetDocument().getElementById(AtomicString("stable_both_edges"));
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
-  EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable_both_edges->ClientHeight(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalBorderBoxRect().Height(), 100);
+  EXPECT_EQ(box_stable_both_edges->PhysicalPaddingBoxRect().Height(), 100);
   PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);

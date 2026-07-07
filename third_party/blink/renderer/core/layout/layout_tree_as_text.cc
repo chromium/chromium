@@ -492,13 +492,13 @@ static void Write(StringBuilder& ts,
       ts << " scrollX " << scroll_position.x();
     if (scroll_position.y())
       ts << " scrollY " << scroll_position.y();
-    if (layer.GetLayoutBox() && layer.GetLayoutBox()->ClientWidth() !=
-                                    layer.GetLayoutBox()->ScrollWidth()) {
-      ts << " scrollWidth " << layer.GetLayoutBox()->ScrollWidth();
-    }
-    if (layer.GetLayoutBox() && layer.GetLayoutBox()->ClientHeight() !=
-                                    layer.GetLayoutBox()->ScrollHeight()) {
-      ts << " scrollHeight " << layer.GetLayoutBox()->ScrollHeight();
+    if (const auto* box = layer.GetLayoutBox()) {
+      if (box->HasScrollableOverflowX()) {
+        ts << " scrollWidth " << box->ScrollWidth();
+      }
+      if (box->HasScrollableOverflowY()) {
+        ts << " scrollHeight " << box->ScrollHeight();
+      }
     }
   }
 
@@ -696,7 +696,7 @@ String ExternalRepresentation(LocalFrame* frame,
   PrintContext* print_context = MakeGarbageCollected<PrintContext>(frame);
   bool is_text_printing_mode = !!(behavior & kLayoutAsTextPrintingMode);
   if (is_text_printing_mode) {
-    gfx::SizeF page_size(layout_box->ClientWidth(), layout_box->ClientHeight());
+    const gfx::SizeF page_size(layout_box->PhysicalPaddingBoxRect().size);
     print_context->BeginPrintMode(WebPrintParams(page_size));
 
     // The lifecycle needs to be run again after changing printing mode,
