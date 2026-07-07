@@ -1386,6 +1386,10 @@ public class AwContents implements SmartClipProvider {
         onContainerViewChanged();
     }
 
+    public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
+        return mDrawFnAccess;
+    }
+
     /**
      * Updates the context for the AwContents. This effectively reparents the AwContents to this new
      * context.

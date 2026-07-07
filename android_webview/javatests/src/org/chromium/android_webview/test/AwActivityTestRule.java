@@ -558,7 +558,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getDrawFnAccess(),
+                        new AwTestContainerView.RoutingDrawFnAccess(),
                         awContentsClient,
                         awSettings,
                         testDependencyFactory);

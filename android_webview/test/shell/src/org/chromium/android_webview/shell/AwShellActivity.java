@@ -266,7 +266,7 @@ public class AwShellActivity extends Activity {
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getDrawFnAccess(),
+                        new AwTestContainerView.RoutingDrawFnAccess(),
                         awContentsClient,
                         awSettings));
         testContainerView.getAwContents().getSettings().setJavaScriptEnabled(true);

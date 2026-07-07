@@ -207,18 +207,14 @@ public class AwTestContainerView extends FrameLayout {
         }
     }
 
-    private static boolean sCreatedOnce;
-
-    private HardwareView createHardwareViewOnlyOnce(Context context) {
-        if (sCreatedOnce) return null;
-        sCreatedOnce = true;
+    private HardwareView createHardwareView(Context context) {
         return new HardwareView(context);
     }
 
     public AwTestContainerView(Context context, boolean allowHardwareAcceleration) {
         super(context);
         if (allowHardwareAcceleration) {
-            mHardwareView = createHardwareViewOnlyOnce(context);
+            mHardwareView = createHardwareView(context);
         }
         if (isBackedByHardwareView()) {
             addView(
@@ -275,8 +271,19 @@ public class AwTestContainerView extends FrameLayout {
         return mAwContents;
     }
 
-    public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
-        return new DrawFnAccess();
+    public static class RoutingDrawFnAccess implements AwDrawFnImpl.DrawFnAccess {
+        private HardwareView mHardwareView;
+
+        public void setHardwareView(HardwareView hardwareView) {
+            mHardwareView = hardwareView;
+        }
+
+        @Override
+        public void drawWebViewFunctor(Canvas canvas, int functor) {
+            if (mHardwareView != null) {
+                mHardwareView.drawWebViewFunctor(functor);
+            }
+        }
     }
 
     public AwContents.InternalAccessDelegate getInternalAccessDelegate() {
@@ -404,10 +411,23 @@ public class AwTestContainerView extends FrameLayout {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (isBackedByHardwareView()) {
-            mHardwareView.updateScroll(getScrollX(), getScrollY());
+        RoutingDrawFnAccess routingAccess = null;
+        if (mAwContents != null) {
+            routingAccess = (RoutingDrawFnAccess) mAwContents.getDrawFnAccess();
+            routingAccess.setHardwareView(mHardwareView);
         }
-        mAwContents.getViewMethods().onDraw(canvas);
+        try {
+            if (isBackedByHardwareView()) {
+                mHardwareView.updateScroll(getScrollX(), getScrollY());
+            }
+            if (mAwContents != null) {
+                mAwContents.getViewMethods().onDraw(canvas);
+            }
+        } finally {
+            if (routingAccess != null) {
+                routingAccess.setHardwareView(null);
+            }
+        }
         super.onDraw(canvas);
     }
 
@@ -426,14 +446,6 @@ public class AwTestContainerView extends FrameLayout {
     @Override
     public boolean onDragEvent(DragEvent event) {
         return mAwContents.getViewMethods().onDragEvent(event);
-    }
-
-    private class DrawFnAccess implements AwDrawFnImpl.DrawFnAccess {
-        @Override
-        public void drawWebViewFunctor(Canvas canvas, int functor) {
-            assert isBackedByHardwareView();
-            mHardwareView.drawWebViewFunctor(functor);
-        }
     }
 
     // TODO: AwContents could define a generic class that holds an implementation similar to
