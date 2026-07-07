@@ -397,8 +397,10 @@ class NewTabPageUI
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
-  // performance.
+  // performance. `navigation_start_time_ticks_` is the matching monotonic-
+  // clock instant, stamped together with `navigation_start_time_`.
   base::Time navigation_start_time_;
+  base::TimeTicks navigation_start_time_ticks_;
   const std::vector<ntp::ModuleIdDetail> module_id_details_;
 
   // Mojo implementations for modules:

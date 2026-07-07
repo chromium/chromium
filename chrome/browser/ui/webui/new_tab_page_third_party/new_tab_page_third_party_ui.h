@@ -96,6 +96,7 @@ class NewTabPageThirdPartyUI
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;
+  base::TimeTicks navigation_start_time_ticks_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

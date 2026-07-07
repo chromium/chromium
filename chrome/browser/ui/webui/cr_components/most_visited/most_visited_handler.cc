@@ -78,12 +78,13 @@ MostVisitedHandler::MostVisitedHandler(
     Profile* profile,
     content::WebContents* web_contents,
     const GURL& ntp_url,
-    const base::Time& ntp_navigation_start_time)
+    const base::Time& ntp_navigation_start_time,
+    base::TimeTicks ntp_navigation_start_time_ticks)
     : profile_(profile),
       most_visited_sites_(
           ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       web_contents_(web_contents),
-      logger_(profile, ntp_url, ntp_navigation_start_time),
+      logger_(profile, ntp_url, ntp_navigation_start_time_ticks),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {

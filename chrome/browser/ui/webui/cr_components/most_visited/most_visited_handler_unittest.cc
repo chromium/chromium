@@ -64,7 +64,7 @@ class MostVisitedAutoRemovalTest
     handler_ = std::make_unique<MostVisitedHandler>(
         mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>(),
         page_.BindAndGetRemote(), &profile_, web_contents_.get(), GURL(),
-        base::Time());
+        base::Time(), base::TimeTicks());
     handler_->EnableTileTypes(
         ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
             GetParam().custom_links_enabled));

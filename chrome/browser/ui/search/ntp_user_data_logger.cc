@@ -234,17 +234,14 @@ const char* LoggingEventToShortcutUserActionName(NTPLoggingEventType event) {
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(60), 100)
 
-NTPUserDataLogger::NTPUserDataLogger(Profile* profile,
-                                     const GURL& ntp_url,
-                                     base::Time ntp_navigation_start_time)
+NTPUserDataLogger::NTPUserDataLogger(
+    Profile* profile,
+    const GURL& ntp_url,
+    base::TimeTicks ntp_navigation_start_time_ticks)
     : during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
       ntp_url_(ntp_url),
       profile_(profile),
-      // TODO(crbug.com/40811386): Migrate NTP navigation startup time
-      // from base::Time to base::TimeTicks to avoid time glitches.
-      ntp_navigation_start_time_(
-          base::TimeTicks::UnixEpoch() +
-          (ntp_navigation_start_time - base::Time::UnixEpoch())) {}
+      ntp_navigation_start_time_(ntp_navigation_start_time_ticks) {}
 
 NTPUserDataLogger::~NTPUserDataLogger() = default;
 

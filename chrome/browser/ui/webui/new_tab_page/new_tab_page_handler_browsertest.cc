@@ -119,6 +119,7 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
         /*sync_service=*/nullptr,
         /*segmentation_platform_service=*/nullptr, web_contents(),
         /*ntp_navigation_start_time=*/base::Time::Now(),
+        /*ntp_navigation_start_time_ticks=*/base::TimeTicks::Now(),
         /*module_id_details=*/nullptr);
     testing::Mock::VerifyAndClearExpectations(mock_page());
   }

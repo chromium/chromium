@@ -54,9 +54,11 @@ enum LogoClickType {
 class NTPUserDataLogger {
  public:
   // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
+  // `ntp_navigation_start_time_ticks` is the monotonic-clock timestamp of the
+  // NTP navigation start; it is used directly as the anchor for trace events.
   NTPUserDataLogger(Profile* profile,
                     const GURL& ntp_url,
-                    base::Time ntp_navigation_start_time);
+                    base::TimeTicks ntp_navigation_start_time_ticks);
 
   NTPUserDataLogger(const NTPUserDataLogger&) = delete;
   NTPUserDataLogger& operator=(const NTPUserDataLogger&) = delete;

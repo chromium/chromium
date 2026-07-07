@@ -60,7 +60,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
       Profile* profile,
       content::WebContents* web_contents,
       const GURL& ntp_url,
-      const base::Time& ntp_navigation_start_time);
+      const base::Time& ntp_navigation_start_time,
+      base::TimeTicks ntp_navigation_start_time_ticks);
   MostVisitedHandler(const MostVisitedHandler&) = delete;
   MostVisitedHandler& operator=(const MostVisitedHandler&) = delete;
   ~MostVisitedHandler() override;
