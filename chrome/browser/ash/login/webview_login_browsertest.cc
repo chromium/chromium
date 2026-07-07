@@ -283,6 +283,19 @@ class WebviewLoginTest : public OobeBaseTest {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
+
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    // Configure FakeGaia with default OAuth access tokens and Gaia ID mappings.
+    //
+    // Previously, asynchronous Mojo delays in AccountManagerFacade masked the
+    // missing FakeGaia configuration by deferring token availability until
+    // after session startup. Without those delays, token availability fires
+    // immediately during startup, requiring FakeGaia to be configured to avoid
+    // token fetch hangs/timeouts.
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
+  }
+
   base::HistogramTester histogram_tester_;
 
  protected:

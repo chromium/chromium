@@ -131,7 +131,14 @@ class DeviceIDTest : public OobeBaseTest,
     params.emails = {user_id};
     params.refresh_token = refresh_token;
     fake_gaia_.fake_gaia()->UpdateConfiguration(params);
-    fake_gaia_.fake_gaia()->MapEmailToGaiaId(user_id, gaia_id);
+    // Configure FakeGaia to issue OAuth access tokens for this refresh token.
+    //
+    // Previously, asynchronous Mojo delays in AccountManagerFacade masked the
+    // missing FakeGaia configuration by deferring token availability until
+    // after session startup. Without those delays, token availability fires
+    // immediately during startup, requiring FakeGaia to be configured to avoid
+    // token fetch hangs/timeouts.
+    fake_gaia_.SetupFakeGaiaForLogin(user_id, gaia_id, refresh_token);
 
     LoginDisplayHost::default_host()
         ->GetOobeUI()
@@ -141,10 +148,23 @@ class DeviceIDTest : public OobeBaseTest,
     test::WaitForPrimaryUserSessionStart();
   }
 
-  void SignInOffline(const std::string& user_id, const std::string& password) {
+  void SignInOffline(const std::string& user_id,
+                     const std::string& password,
+                     const std::string& refresh_token = kRefreshToken1,
+                     const GaiaId& gaia_id = FakeGaiaMixin::kFakeUserGaiaId) {
     cryptohome_mixin_.ApplyAuthConfigIfUserExists(
         AccountId::FromUserEmail(user_id),
         test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
+    // Configure FakeGaia to issue OAuth access tokens for this refresh token.
+    //
+    // Previously, asynchronous Mojo delays in AccountManagerFacade masked the
+    // missing FakeGaia configuration by deferring token availability until
+    // after session startup. Without those delays, token availability fires
+    // immediately during startup, and token refresh requests will hit FakeGaia;
+    // this setup ensures they succeed rather than failing with
+    // HTTP_BAD_REQUEST.
+    fake_gaia_.SetupFakeGaiaForLogin(user_id, gaia_id, refresh_token);
 
     LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(user_id),
                                        FakeGaiaMixin::kFakeUserPassword,
@@ -252,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_NewUsers) {
       GetDeviceId(AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail));
   EXPECT_FALSE(device_id.empty());
 
-  SignInOffline(FakeGaiaMixin::kFakeUserEmail,
-                FakeGaiaMixin::kFakeUserPassword);
+  SignInOffline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
+                kRefreshToken2);
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken2);
 

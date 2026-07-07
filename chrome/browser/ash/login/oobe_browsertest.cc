@@ -68,6 +68,19 @@ class OobeTest : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    // Configure FakeGaia with default OAuth access tokens and Gaia ID mappings.
+    //
+    // Previously, asynchronous Mojo delays in AccountManagerFacade deferred
+    // token availability notifications until after session startup completed,
+    // masking the fact that FakeGaia was unconfigured for token fetching.
+    // Without those delays, token availability fires immediately during active
+    // session startup; when KeyedServices react by fetching access tokens,
+    // this setup ensures those requests succeed rather than timing out.
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
+  }
+
   void TearDownOnMainThread() override {
     // If the login display is still showing, exit gracefully.
     if (LoginDisplayHost::default_host()) {
