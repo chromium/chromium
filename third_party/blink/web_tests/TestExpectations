@@ -9500,3 +9500,6 @@ crbug.com/523483431 [ Linux ] external/wpt/webdriver/tests/classic/new_session/i
 
 # Gardener 2026-07-03
 crbug.com/530928983 [ Release Mac15-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?npu [ Failure Pass ]
+
+# TODO(crbug.com/531851750): Flaky. Reenable it.
+crbug.com/531851750 http/tests/inspector-protocol/fetch-later/activate-post-when-document-alive.https.js [ Failure Pass ]
