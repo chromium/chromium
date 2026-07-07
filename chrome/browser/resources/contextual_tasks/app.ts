@@ -619,17 +619,23 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // Fetch the initial common search params.
     this.updateCommonSearchParams();
 
-    // Listeners for ghost loader
-    this.$.threadFrame.addEventListener(
-        'loadstart', this.onThreadFrameLoadStart.bind(this));
-    this.$.threadFrame.addEventListener(
-        'loadredirect', this.onThreadFrameLoadRedirect.bind(this));
-    this.$.threadFrame.addEventListener(
-        'loadabort', this.onThreadFrameLoadAbort.bind(this));
-    this.$.threadFrame.addEventListener(
-        'loadcommit', this.onThreadFrameLoadCommit.bind(this));
-    this.$.threadFrame.addEventListener(
-        'contentload', this.onThreadFrameContentLoad.bind(this));
+    // Listeners for ghost loader. Registered via eventTracker_ so that
+    // removeThreadFrameListenersForTesting() can detach them.
+    this.eventTracker_.add(
+        this.$.threadFrame, 'loadstart',
+        this.onThreadFrameLoadStart.bind(this));
+    this.eventTracker_.add(
+        this.$.threadFrame, 'loadredirect',
+        this.onThreadFrameLoadRedirect.bind(this));
+    this.eventTracker_.add(
+        this.$.threadFrame, 'loadabort',
+        this.onThreadFrameLoadAbort.bind(this));
+    this.eventTracker_.add(
+        this.$.threadFrame, 'loadcommit',
+        this.onThreadFrameLoadCommit.bind(this));
+    this.eventTracker_.add(
+        this.$.threadFrame, 'contentload',
+        this.onThreadFrameContentLoad.bind(this));
     this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
       if (event.data === 'domContentLoaded') {
         this.isDomContentLoaded_ = true;
@@ -1650,6 +1656,16 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // The rest should be changed through testProxy routerRemote.
   setIsNavigatingFromAiPageForTesting(isNavigatingForTesting: boolean) {
     this.isNavigatingFromAiPage_ = isNavigatingForTesting;
+  }
+
+  // Detaches the threadFrame load listeners so real <webview> events cannot
+  // run the handlers while a test drives them manually.
+  removeThreadFrameListenersForTesting() {
+    this.eventTracker_.remove(this.$.threadFrame, 'loadstart');
+    this.eventTracker_.remove(this.$.threadFrame, 'loadredirect');
+    this.eventTracker_.remove(this.$.threadFrame, 'loadabort');
+    this.eventTracker_.remove(this.$.threadFrame, 'loadcommit');
+    this.eventTracker_.remove(this.$.threadFrame, 'contentload');
   }
 
   isNavigatingForTesting() {
