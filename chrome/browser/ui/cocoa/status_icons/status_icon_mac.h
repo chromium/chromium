@@ -38,6 +38,7 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   void SetOpenMenuWithSecondaryClick(
       bool open_menu_with_secondary_click) override;
   void SetImageTemplate(bool is_template) override;
+  void SetVisible(bool visible);
 
   // StatusIconMenuModel::Observer overrides:
   void OnMenuStateChanged() override;
@@ -62,6 +63,8 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, CreateMenu);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, SecondaryClickMenuNoToolTip);
+  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest,
+                           Os26_StatusIconHiddenInFullscreen);
 
   void CreateMenu(ui::MenuModel* model);
 

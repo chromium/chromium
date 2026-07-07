@@ -10,10 +10,12 @@
 #include <objc/runtime.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/cocoa/status_icons/status_icons_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #import "ui/menus/cocoa/menu_controller.h"
@@ -88,6 +90,31 @@ static const char kStatusItemControllerKey = 0;
                            OBJC_ASSOCIATION_RETAIN);
 
   _statusIcon = icon;
+
+  // Hide the status bar icon when transitioning into fullscreen and show it
+  // after leaving fullscreen. This is a workaround for a macOS 26.x-only bug
+  // where entering fullscreen with a visible status bar icon can cause an
+  // _NSFullScreenTransitionOverlayWindow to remain visible after exiting from
+  // fullscreen (crbug.com/494614152).
+  //
+  // Displaying the icon any earlier (e.g., on NSWindowWillExitFullScreen) may
+  // also trigger this bug, so the icon isn't shown until fullscreen is exited.
+  if (base::FeatureList::IsEnabled(features::kHideStatusIconMacInFullscreen)) {
+    if (@available(macOS 26, *)) {
+      if (!@available(macOS 27, *)) {
+        [NSNotificationCenter.defaultCenter
+            addObserver:self
+               selector:@selector(windowWillEnterFullScreen:)
+                   name:NSWindowWillEnterFullScreenNotification
+                 object:nil];
+        [NSNotificationCenter.defaultCenter
+            addObserver:self
+               selector:@selector(windowDidExitFullScreen:)
+                   name:NSWindowDidExitFullScreenNotification
+                 object:nil];
+      }
+    }
+  }
   return self;
 }
 
@@ -96,7 +123,12 @@ static const char kStatusItemControllerKey = 0;
 }
 
 - (void)reset {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
   _statusIcon = nullptr;
+}
+
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)handleClick:(id)sender {
@@ -125,6 +157,18 @@ static const char kStatusItemControllerKey = 0;
   // There is no "else" here. If there is a menu, but it's not opened with a
   // secondary click, it is set as the menu property on the item and code flow
   // never gets here.
+}
+
+- (void)windowWillEnterFullScreen:(NSNotification*)notification {
+  if (_statusIcon) {
+    _statusIcon->SetVisible(false);
+  }
+}
+
+- (void)windowDidExitFullScreen:(NSNotification*)notification {
+  if (_statusIcon) {
+    _statusIcon->SetVisible(true);
+  }
 }
 
 @end
@@ -194,6 +238,12 @@ void StatusIconMac::SetOpenMenuWithSecondaryClick(
 
 void StatusIconMac::SetImageTemplate(bool is_template) {
   [item().button.image setTemplate:is_template];
+}
+
+void StatusIconMac::SetVisible(bool visible) {
+  if (item_) {
+    item_.visible = visible;
+  }
 }
 
 void StatusIconMac::OnMenuStateChanged() {
