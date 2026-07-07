@@ -619,8 +619,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
             // tab model won't have a valid index and the UI will break. http://crbug.com/41026812
             while (!mTabsToRestore.isEmpty()
-                    && assumeNonNull(mNormalTabsRestored).size() == 0
-                    && assumeNonNull(mIncognitoTabsRestored).size() == 0) {
+                    && mNormalTabsRestored != null
+                    && mIncognitoTabsRestored != null
+                    && mNormalTabsRestored.size() == 0
+                    && mIncognitoTabsRestored.size() == 0) {
                 try (TraceEvent e = TraceEvent.scoped("LoadFirstTabState")) {
                     TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
                     restoreTab(tabToRestore, true);
@@ -753,18 +755,17 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             + model.isIncognito());
         }
         SparseIntArray restoredTabs = isIncognito ? mIncognitoTabsRestored : mNormalTabsRestored;
-        assumeNonNull(restoredTabs);
         int restoredIndex = 0;
         if (tabToRestore.fromMerge) {
             // Put any tabs being merged into this list at the end.
             // TODO(ltian): need to figure out a way to add merged tabs before Browser Actions tabs
             // when tab restore and Browser Actions tab merging happen at the same time.
             restoredIndex = model.getCount();
-        } else if (restoredTabs.size() > 0
+        } else if (restoredTabs != null && restoredTabs.size() > 0
                 && tabToRestore.originalIndex > restoredTabs.keyAt(restoredTabs.size() - 1)) {
             // If the tab's index is too large, restore it at the end of the list.
             restoredIndex = Math.min(model.getCount(), restoredTabs.size());
-        } else {
+        } else if (restoredTabs != null) {
             // Otherwise try to find the tab we should restore before, if any.
             for (int i = 0; i < restoredTabs.size(); i++) {
                 if (restoredTabs.keyAt(i) > tabToRestore.originalIndex) {
@@ -882,7 +883,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 mTabModelSelector.selectModel(wasIncognitoTabModelSelected);
             }
         }
-        restoredTabs.put(tabToRestore.originalIndex, tabId);
+        if (restoredTabs != null) {
+            restoredTabs.put(tabToRestore.originalIndex, tabId);
+        }
     }
 
     @Override
