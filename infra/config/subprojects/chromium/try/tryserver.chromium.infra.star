@@ -169,7 +169,6 @@ try_.builder(
                 "test_names": [
                     "url_unittests",
                 ],
-                "build_dir": "out/linux-rel",
             },
             {
                 "bucket": "ci",
@@ -177,7 +176,6 @@ try_.builder(
                 "test_names": [
                     "telemetry_gpu_unittests",
                 ],
-                "build_dir": "out/linux-rel",
             },
         ],
     },
@@ -233,7 +231,6 @@ try_.builder(
                 "test_names": [
                     "url_unittests",
                 ],
-                "build_dir": "out/win-rel",
             },
             {
                 "bucket": "ci",
@@ -241,7 +238,6 @@ try_.builder(
                 "test_names": [
                     "telemetry_gpu_unittests",
                 ],
-                "build_dir": "out/win-rel",
             },
         ],
     },
