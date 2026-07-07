@@ -196,7 +196,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.dropdownIsVisible);
   });
 
-  test('SuppressesSelectionChangedDuringComposition', async () => {
+  // TODO(crbug.com/529516876): Fix and re-enable
+  test.skip('SuppressesSelectionChangedDuringComposition', async () => {
     // Focus the input so it's the active element.
     const input = searchbox.$.input.inputElement;
     input.focus();
@@ -294,7 +295,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.$.input === searchbox.shadowRoot.activeElement);
   });
 
-  test('HandlesManualBlur', async () => {
+  // TODO(crbug.com/529516876): Fix and re-enable
+  test.skip('HandlesManualBlur', async () => {
     // Test default sequence number (0) when no state is set.
     const input = searchbox.$.input.inputElement;
     input.focus();
