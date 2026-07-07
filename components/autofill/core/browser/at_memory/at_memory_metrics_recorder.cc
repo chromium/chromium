@@ -69,9 +69,7 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
     base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
                               query_submitted_);
     MaybeLogSuggestionAccepted();
-    if (suggestion_accepted_.value_or(false)) {
-      base::UmaHistogramCounts100(
-          "Autofill.AtMemory.QueryCountBeforeAcceptance", query_count_);
+    if (suggestion_acceptance_.accepted_data_type.has_value()) {
       // TODO(crbug.com/530438524): Fix and rename.
       base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
                                 was_filled_);
@@ -124,8 +122,6 @@ void AtMemoryMetricsRecorder::OnPopupShown(
 }
 
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
-  MaybeLogSuggestionAccepted();
-  suggestion_accepted_ = false;
   ++query_count_;
 
   query_to_suggestions_shown_timer_.emplace();
@@ -152,9 +148,11 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
 }
 
 void AtMemoryMetricsRecorder::OnSuggestionAccepted(
+    accessibility_annotator::MemoryDataType memory_data_type,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         metadata) {
-  suggestion_accepted_ = true;
+  suggestion_acceptance_.accepted_data_type = memory_data_type;
+
   if (metadata.has_value() && !metadata->multi_index.empty()) {
     base::UmaHistogramSparse("Autofill.AtMemory.AcceptedSuggestionIndex",
                              static_cast<int>(metadata->multi_index[0]));
@@ -172,6 +170,9 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
           GetQueryCompletedStatus(result)) {
     base::UmaHistogramEnumeration("Autofill.AtMemory.QueryCompleted", *status);
   }
+
+  MaybeLogSuggestionAccepted();
+  suggestion_acceptance_ = {.suggestions_received = !result.entries.empty()};
 
   if (!query_to_suggestions_shown_timer_) {
     return;
@@ -223,9 +224,14 @@ void AtMemoryMetricsRecorder::MarkFilled() {
 }
 
 void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
-  if (suggestion_accepted_) {
-    base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionAccepted",
-                              *suggestion_accepted_);
+  if (suggestion_acceptance_.suggestions_received) {
+    base::UmaHistogramBoolean(
+        "Autofill.AtMemory.SuggestionAccepted",
+        suggestion_acceptance_.accepted_data_type.has_value());
+  }
+  if (suggestion_acceptance_.accepted_data_type.has_value()) {
+    base::UmaHistogramCounts100("Autofill.AtMemory.QueryCountBeforeAcceptance",
+                                query_count_);
   }
 }
 

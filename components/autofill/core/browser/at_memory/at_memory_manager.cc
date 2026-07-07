@@ -562,7 +562,8 @@ void AtMemoryManager::FillSearchResult(
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
   if (at_memory_metrics_recorder_) {
-    at_memory_metrics_recorder_->OnSuggestionAccepted(metadata);
+    at_memory_metrics_recorder_->OnSuggestionAccepted(payload.memory_data_type,
+                                                      metadata);
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion

@@ -342,6 +342,18 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"some text");
+    entry.identifier = passport.guid().value();
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
   // Configure the mock access manager.
   auto mock_ai_access_manager =
       std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
@@ -355,12 +367,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
   autofill_manager().AddSeenForm(form, field_types);
   FormFieldData field = form.fields()[0];
-  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-
-  Suggestion::AtMemoryPayload at_memory_payload(
-      u"some text", MemoryDataType::kPassportNumber);
-  at_memory_payload.identifier = passport.guid();
-  suggestion.payload = std::move(at_memory_payload);
 
   base::optional_ref<const AttributeInstance> passport_attribute =
       passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
@@ -384,7 +390,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       form.global_id(), field.global_id(),
-                                      suggestion);
+                                      final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -404,6 +410,18 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportFull, u"Passport",
+                             u"some text");
+    entry.identifier = passport.guid().value();
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
   auto mock_ai_access_manager =
       std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
           &autofill_manager());
@@ -416,12 +434,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
   std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
   autofill_manager().AddSeenForm(form, field_types);
   FormFieldData field = form.fields()[0];
-  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-
-  Suggestion::AtMemoryPayload at_memory_payload(u"some text",
-                                                MemoryDataType::kPassportFull);
-  at_memory_payload.identifier = passport.guid();
-  suggestion.payload = std::move(at_memory_payload);
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
               FetchEntityInstance(Eq(passport), true, _))
@@ -451,7 +463,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       form.global_id(), field.global_id(),
-                                      suggestion);
+                                      final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -472,6 +484,18 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"some text");
+    entry.identifier = passport.guid().value();
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
   auto mock_ai_access_manager =
       std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
           &autofill_manager());
@@ -484,12 +508,6 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
   autofill_manager().AddSeenForm(form, field_types);
   FormFieldData field = form.fields()[0];
-  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-
-  Suggestion::AtMemoryPayload at_memory_payload(
-      u"some text", MemoryDataType::kPassportNumber);
-  at_memory_payload.identifier = passport.guid();
-  suggestion.payload = std::move(at_memory_payload);
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
               FetchEntityInstance(Eq(passport), true, _))
@@ -509,7 +527,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       form.global_id(), field.global_id(),
-                                      suggestion);
+                                      final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -671,15 +689,20 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
   FormData form = test::CreateTestAddressFormData();
   std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
   autofill_manager().AddSeenForm(form, field_types);
   FormFieldData field = form.fields()[0];
-  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-
-  Suggestion::AtMemoryPayload at_memory_payload(u"John Doe",
-                                                MemoryDataType::kNameFull);
-  suggestion.payload = std::move(at_memory_payload);
 
   std::u16string expected_value = u"John Doe";
   EXPECT_CALL(
@@ -690,7 +713,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       form.global_id(), field.global_id(),
-                                      suggestion);
+                                      final_suggestions[0]);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -707,17 +730,21 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kIban, u"IBAN", u"some text");
+    entry.identifier = "12345678-1234-1234-1234-123456789012";
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
   FormData form = test::CreateTestAddressFormData();
   std::vector<FieldType> field_types(form.fields().size(), UNKNOWN_TYPE);
   autofill_manager().AddSeenForm(form, field_types);
   FormFieldData field = form.fields()[0];
-  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-
-  Suggestion::AtMemoryPayload at_memory_payload(u"some text",
-                                                MemoryDataType::kIban);
-  at_memory_payload.identifier =
-      Iban::Guid("12345678-1234-1234-1234-123456789012");
-  suggestion.payload = std::move(at_memory_payload);
 
   MockIbanAccessManager* mock_iban_access_manager =
       autofill_client().GetPaymentsAutofillClient()->GetIbanAccessManager();
@@ -733,7 +760,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // 2. Accept async suggestion on Popup 1.
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       form.global_id(), field.global_id(),
-                                      suggestion);
+                                      final_suggestions[0]);
 
   // 3. Hide Popup 1.
   manager().OnPopupHidden();
@@ -783,10 +810,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   std::move(fetch_callback).Run(unmasked_iban);
 
   // Now, Popup 1's metrics should also be logged:
-  // - QuerySubmitted should have two samples (both false).
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AtMemory.QuerySubmitted"),
-      BucketsAre(Bucket(false, 2)));
+      BucketsAre(Bucket(false, 1), Bucket(true, 1)));
   // - SuggestionAccepted should have one true (from Popup 1).
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AtMemory.SuggestionAccepted"),

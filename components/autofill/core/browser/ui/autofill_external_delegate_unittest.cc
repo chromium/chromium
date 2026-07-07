@@ -821,6 +821,13 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryMetricsRecorder_QuerySubmitted) {
   base::HistogramTester histogram_tester;
   StartAtMemorySession();
 
+  accessibility_annotator::MemorySearchResults search_results(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {accessibility_annotator::MemorySearchResult(
+          accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+          u"123 Main St")});
+  SetupMockAtMemoryQueryService(u"some query", std::move(search_results));
+
   external_delegate().OnSearchSubmitted(u"some query");
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
 
@@ -846,11 +853,18 @@ TEST_F(AutofillExternalDelegateTest,
   base::HistogramTester histogram_tester;
   StartAtMemorySession();
 
+  accessibility_annotator::MemorySearchResults search_results(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {accessibility_annotator::MemorySearchResult(
+          accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+          u"123 Main St")});
+  SetupMockAtMemoryQueryService(u"some query", std::move(search_results));
+
   external_delegate().OnSearchSubmitted(u"some query");
 
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
   suggestion.payload = Suggestion::AtMemoryPayload(
-      u"pasted text", accessibility_annotator::MemoryDataType::kUnknown);
+      u"pasted text", accessibility_annotator::MemoryDataType::kAddressFull);
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});

@@ -2246,8 +2246,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the number of search queries submitted in the AtMemory search bar
-    before a suggestion was accepted. Emitted when the search bar is hidden,
-    provided a suggestion was accepted during the session.
+    before a suggestion was accepted. Emitted every time a user accepts a
+    suggestion.
   </summary>
 </histogram>
 
