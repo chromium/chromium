@@ -1829,6 +1829,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
+        'CComBSTR',
+        ('New code should use base::ScopedBstr from base/win/scoped_bstr.h as ',
+         'a replacement for CComBSTR from ATL. See http://crbug.com/5027 for ',
+         'more details.'),
+        False,
+        (),
+    ),
+    BanRule(
         'CComPtr',
         ('New code should use Microsoft::WRL::ComPtr from wrl/client.h as a ',
          'replacement for CComPtr from ATL. See http://crbug.com/5027 for more ',
