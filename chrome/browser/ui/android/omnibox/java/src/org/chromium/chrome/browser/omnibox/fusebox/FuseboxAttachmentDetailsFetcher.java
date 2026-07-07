@@ -211,24 +211,32 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         byte[] data = null;
 
         @Nullable CompressFormat outputFormat = getCompressionFormat(mimeType);
+        boolean oomOccurred = false;
 
         if (outputFormat != null && OmniboxFeatures.sOmniboxAimImageDownscaling.isEnabled()) {
             try {
                 data = loadDownscaledImage(outputFormat);
             } catch (OutOfMemoryError e) {
                 Log.w(TAG, "Failed to read attachment data", e);
+                oomOccurred = true;
             }
         }
 
         if (data == null) {
             try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
-                if (inputStream == null) return null;
-                data = sFileStreamReader.readStream(inputStream);
-            } catch (IOException | OutOfMemoryError e) {
+                if (inputStream != null) {
+                    data = sFileStreamReader.readStream(inputStream);
+                }
+            } catch (IOException e) {
                 Log.w(TAG, "Failed to read attachment data", e);
-                return null;
+            } catch (OutOfMemoryError e) {
+                Log.w(TAG, "Failed to read attachment data", e);
+                oomOccurred = true;
             }
         }
+
+        FuseboxMetrics.recordAttachmentLoadOom(
+                oomOccurred, MimeTypeUtils.getTypeFromMimeType(mimeType));
 
         return data;
     }

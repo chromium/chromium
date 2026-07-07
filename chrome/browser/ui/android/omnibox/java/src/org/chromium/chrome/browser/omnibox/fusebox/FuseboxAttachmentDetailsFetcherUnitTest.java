@@ -45,6 +45,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -78,6 +79,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
 
     private Context mContext;
     private FuseboxAttachmentDetailsFetcher mFetcher;
+    private HistogramWatcher mOomHistogramWatcher;
 
     @Before
     public void setUp() {
@@ -94,6 +96,29 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                         /* powerSaveOn= */ false,
                         isMetered,
                         /* screenOnAndUnlocked= */ true));
+    }
+
+    private void setupOomHistogramWatcher(
+            @Nullable Boolean oomExpected, @MimeTypeUtils.Type int fileType) {
+        if (oomExpected == null) {
+            mOomHistogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectNoRecords(FuseboxMetrics.ATTACHMENT_LOAD_OOM_HISTOGRAM)
+                            .expectNoRecords(FuseboxMetrics.getAttachmentLoadOomHistogram(fileType))
+                            .build();
+            return;
+        }
+        mOomHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                FuseboxMetrics.ATTACHMENT_LOAD_OOM_HISTOGRAM, oomExpected)
+                        .expectBooleanRecord(
+                                FuseboxMetrics.getAttachmentLoadOomHistogram(fileType), oomExpected)
+                        .build();
+    }
+
+    private void verifyOomHistogram() {
+        mOomHistogramWatcher.assertExpected();
     }
 
     /**
@@ -309,6 +334,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         byte[] data = SAMPLE_DATA;
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
         setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
+        setupOomHistogramWatcher(/* oomExpected= */ false, MimeTypeUtils.Type.IMAGE);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -320,6 +346,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 SAMPLE_SMALL_BITMAP,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+        verifyOomHistogram();
     }
 
     @Test
@@ -543,12 +570,14 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     public void testFetchAttachmentDetails_oomOnReadStream_fails() {
         setupFetcherWithTxtFileAttachment(FILE_SIZE_SMALL);
         setupMockFileStreamReader(/* throwOom= */ true, /* throwIoException= */ false);
+        setupOomHistogramWatcher(/* oomExpected= */ true, MimeTypeUtils.Type.TEXT);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mCallback).onResult(null);
         verifyNoMoreInteractions(mCallback);
+        verifyOomHistogram();
     }
 
     @Test
@@ -572,6 +601,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
         setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
         setupMockImageDecoder(/* throwOom= */ true, /* throwIoException= */ false);
+        setupOomHistogramWatcher(/* oomExpected= */ true, MimeTypeUtils.Type.IMAGE);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -583,6 +613,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 SAMPLE_SMALL_BITMAP,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+        verifyOomHistogram();
     }
 
     @Test
@@ -595,6 +626,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
         setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
         setupMockImageDecoder(/* throwOom= */ false, /* throwIoException= */ true);
+        setupOomHistogramWatcher(/* oomExpected= */ false, MimeTypeUtils.Type.IMAGE);
 
         mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -606,6 +638,43 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 buttonType);
+        verifyOomHistogram();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_imageOomOnReadStream_fails() {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
+        setupMockFileStreamReader(/* throwOom= */ true, /* throwIoException= */ false);
+        setupOomHistogramWatcher(/* oomExpected= */ true, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+        verifyOomHistogram();
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_imageIoExceptionOnReadStream_fails() {
+        String title = SAMPLE_PNG_TITLE;
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, SAMPLE_SMALL_BITMAP, buttonType);
+        setupMockFileStreamReader(/* throwOom= */ false, /* throwIoException= */ true);
+        setupOomHistogramWatcher(/* oomExpected= */ false, MimeTypeUtils.Type.IMAGE);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+        verifyOomHistogram();
     }
 
     @Test

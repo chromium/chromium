@@ -512,4 +512,27 @@ public class FuseboxMetricsTest {
 
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordAttachmentLoadOom() {
+        var baseHistogram = FuseboxMetrics.ATTACHMENT_LOAD_OOM_HISTOGRAM;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(baseHistogram, true)
+                        .expectBooleanRecord(
+                                FuseboxMetrics.getAttachmentLoadOomHistogram(
+                                        MimeTypeUtils.Type.IMAGE),
+                                true)
+                        .expectBooleanRecord(baseHistogram, false)
+                        .expectBooleanRecord(
+                                FuseboxMetrics.getAttachmentLoadOomHistogram(
+                                        MimeTypeUtils.Type.TEXT),
+                                false)
+                        .build();
+
+        FuseboxMetrics.recordAttachmentLoadOom(true, MimeTypeUtils.Type.IMAGE);
+        FuseboxMetrics.recordAttachmentLoadOom(false, MimeTypeUtils.Type.TEXT);
+
+        histogramWatcher.assertExpected();
+    }
 }

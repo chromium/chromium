@@ -2861,6 +2861,31 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentLoadOOM{FuseboxAttachmentFileType}"
+    enum="Boolean" expires_after="2027-03-30">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether an OutOfMemoryError was encountered while trying to read and
+    prepare a {FuseboxAttachmentFileType} attachment for upload.
+
+    There is a unique histogram for each file type (Audio, Image, PDF, ...), and
+    a general aggregate total histogram for all file types.
+
+    A value is emitted when we attempt to fetch the data of an attachment. This
+    attempt occurs immediately after the Android file/gallery picker is closed
+    via selection, and before the attachment is added to the Omnibox toolbar or
+    uploaded to the server.
+
+    It records true once if at least one OutOfMemoryError is thrown. It records
+    false if no OutOfMemoryError is thrown, even if the fetch fails for another
+    reason (e.g. IOException). At most one emission occurs per upload attempt.
+    Note that duplicate files will result in separate emissions.
+  </summary>
+  <token key="FuseboxAttachmentFileType" variants="FuseboxAttachmentFileType"/>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentSizeLimitCheck"
     enum="FuseboxAttachmentSizeLimitCheck" expires_after="2026-11-11">
   <owner>jkoblinsky@google.com</owner>
