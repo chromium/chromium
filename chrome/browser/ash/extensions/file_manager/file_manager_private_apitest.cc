@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
       base::FilePath(), true /* configurable */, false /* watchable */,
       extensions::SOURCE_NETWORK, icon_set);
 
-  file_manager::VolumeManager::Get(browser()->profile())
+  file_manager::VolumeManager::Get(browser()->GetProfile())
       ->AddVolumeForTesting(file_manager::Volume::CreateForProvidedFileSystem(
           info, file_manager::MOUNT_CONTEXT_AUTO));
 
@@ -490,11 +490,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Permissions) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, AddFileWatch) {
   // Add a filesystem and Volume that is not watchable.
-  AddLocalFileSystem(browser()->profile(), non_watchable_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), non_watchable_dir_.GetPath());
 
   // Add a filesystem and Volume that is watchable.
   const base::FilePath downloads_dir = temp_dir_.GetPath();
-  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->profile())
+  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->GetProfile())
                   ->RegisterDownloadsDirectoryForTesting(downloads_dir));
 
   ASSERT_TRUE(RunExtensionTest("file_browser/add_file_watch", {},
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, AddFileWatch) {
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
   const base::FilePath downloads_dir = temp_dir_.GetPath();
 
-  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->profile())
+  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->GetProfile())
                   ->RegisterDownloadsDirectoryForTesting(downloads_dir));
 
   // Create test files.
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
   const base::FilePath test_dir = temp_dir_.GetPath();
-  AddLocalFileSystem(browser()->profile(), test_dir);
+  AddLocalFileSystem(browser()->GetProfile(), test_dir);
 
   // Get source media/test/data directory path.
   base::FilePath root_dir;
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
 
   // Setup CrostiniManager for testing.
   crostini::CrostiniManager* crostini_manager =
-      crostini::CrostiniManager::GetForProfile(browser()->profile());
+      crostini::CrostiniManager::GetForProfile(browser()->GetProfile());
   crostini_manager->set_skip_restart_for_testing();
   crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName, 3);
   crostini_manager->AddRunningContainerForTesting(
@@ -605,11 +605,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
   ExpectCrostiniMount();
 
   // Add 'testing' volume with 'test_dir', create 'share_dir' in Downloads.
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), temp_dir_.GetPath());
   base::FilePath downloads;
   ASSERT_TRUE(
       storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          file_manager::util::GetDownloadsMountPointName(browser()->profile()),
+          file_manager::util::GetDownloadsMountPointName(browser()->GetProfile()),
           &downloads));
   // Setup prefs guest_os.paths_shared_to_vms.
   base::FilePath shared1 = downloads.AppendASCII("shared1");
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
     ASSERT_TRUE(base::CreateDirectory(shared2));
   }
   guest_os::GuestOsSharePath* guest_os_share_path =
-      guest_os::GuestOsSharePathFactory::GetForProfile(browser()->profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(browser()->GetProfile());
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,
                                               {shared1});
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
 
   // Setup CrostiniManager for testing.
   crostini::CrostiniManager* crostini_manager =
-      crostini::CrostiniManager::GetForProfile(browser()->profile());
+      crostini::CrostiniManager::GetForProfile(browser()->GetProfile());
   crostini_manager->set_skip_restart_for_testing();
   crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName, 3);
   crostini_manager->AddRunningContainerForTesting(
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
       new extensions::FileManagerPrivateMountCrostiniFunction());
   // Use incognito profile.
   function->SetBrowserContextForTesting(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   extensions::api_test_utils::SendResponseHelper response_helper(
       function.get());
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, HoldingSpace) {
   const base::FilePath test_dir = temp_dir_.GetPath();
-  AddLocalFileSystem(browser()->profile(), test_dir);
+  AddLocalFileSystem(browser()->GetProfile(), test_dir);
 
   {
     base::ScopedAllowBlockingForTesting allow_io;
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, HoldingSpace) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), temp_dir_.GetPath());
 
   ASSERT_TRUE(RunExtensionTest("file_browser/get_volume_root", {},
                                {.load_as_component = true}));
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
   const base::FilePath downloads_dir = temp_dir_.GetPath();
-  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->profile())
+  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->GetProfile())
                   ->RegisterDownloadsDirectoryForTesting(downloads_dir));
 
   {
@@ -740,11 +740,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetPdfThumbnail) {
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), temp_dir_.GetPath());
   base::FilePath downloads;
   ASSERT_TRUE(
       storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          file_manager::util::GetDownloadsMountPointName(browser()->profile()),
+          file_manager::util::GetDownloadsMountPointName(browser()->GetProfile()),
           &downloads));
 
   {
@@ -806,7 +806,7 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
 
   std::unique_ptr<KeyedService> SetFPNM(content::BrowserContext* context) {
     auto fpnm = std::make_unique<policy::MockFilesPolicyNotificationManager>(
-        browser()->profile());
+        browser()->GetProfile());
     fpnm_ = fpnm.get();
     return fpnm;
   }
@@ -839,19 +839,19 @@ class FileManagerPrivateApiDlpOldUXTest : public FileManagerPrivateApiDlpTest {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpOldUXTest, DlpBlockCopy) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
 
   base::FilePath my_files_dir_ =
-      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+      file_manager::util::GetMyFilesFolderForProfile(browser()->GetProfile());
   {
     base::ScopedAllowBlockingForTesting allow_io;
 
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
   }
-  AddLocalFileSystem(browser()->profile(), my_files_dir_);
+  AddLocalFileSystem(browser()->GetProfile(), my_files_dir_);
 
   const char kTestFileName[] = "dlp_test_file.txt";
   const base::FilePath test_file_path = my_files_dir_.Append(kTestFileName);
@@ -866,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpOldUXTest, DlpBlockCopy) {
   }
 
   auto* file_system_context =
-      file_manager::util::GetFileManagerFileSystemContext(browser()->profile());
+      file_manager::util::GetFileManagerFileSystemContext(browser()->GetProfile());
   ash::FileSystemBackend::Get(*file_system_context)
       ->GrantFileAccessToOrigin(
           url::Origin::Create(
@@ -879,7 +879,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpOldUXTest, DlpBlockCopy) {
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       "drivefs-delayed_mount_2", storage::kFileSystemTypeDriveFs,
       storage::FileSystemMountOption(), drive_path_.GetPath());
-  file_manager::VolumeManager::Get(browser()->profile())
+  file_manager::VolumeManager::Get(browser()->GetProfile())
       ->AddVolumeForTesting(  // IN-TEST
           drive_path_.GetPath(), file_manager::VOLUME_TYPE_GOOGLE_DRIVE,
           ash::DeviceType::kUnknown,
@@ -901,20 +901,20 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpOldUXTest, DlpBlockCopy) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
 
   base::FilePath my_files_dir_ =
-      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+      file_manager::util::GetMyFilesFolderForProfile(browser()->GetProfile());
   {
     base::ScopedAllowBlockingForTesting allow_io;
 
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
   }
-  AddLocalFileSystem(browser()->profile(), my_files_dir_);
+  AddLocalFileSystem(browser()->GetProfile(), my_files_dir_);
 
   const base::FilePath blocked_file_path =
       my_files_dir_.Append("blocked_file.txt");
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpRestrictionDetails) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpRestrictionDetails) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockedComponents) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockedComponents) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents).Times(0);
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedDestinations).Times(0);
 
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), temp_dir_.GetPath());
 
   const base::FilePath blocked_file_path =
       temp_dir_.GetPath().Append("blocked_file.txt");
@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
   // We should not get to the point of checking DLP.
   EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
 
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  AddLocalFileSystem(browser()->GetProfile(), temp_dir_.GetPath());
 
   const base::FilePath blocked_file_path =
       temp_dir_.GetPath().Append("blocked_file.txt");
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
                        DlpMetadata_DismissIOTask) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1108,13 +1108,13 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 
   policy::FilesPolicyNotificationManagerFactory::GetInstance()
       ->SetTestingFactory(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
                               base::Unretained(this)));
   // FPNM is created lazily so initialize it before running the test.
   ASSERT_TRUE(
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-          browser()->profile()));
+          browser()->GetProfile()));
   // Expect only the valid task id.
   EXPECT_CALL(*fpnm_, OnErrorItemDismissed(1u));
 
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
                        DlpMetadata_ProgressPausedTasks) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
       GURL("filesystem:chrome-extension://abc/external/foo/dest"));
 
   file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(browser()->profile());
+      file_manager::VolumeManager::Get(browser()->GetProfile());
   ASSERT_TRUE(volume_manager);
   file_manager::io_task::IOTaskController* io_task_controller =
       volume_manager->io_task_controller();
@@ -1162,13 +1162,13 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
   // only get notified by the API call.
   policy::FilesPolicyNotificationManagerFactory::GetInstance()
       ->SetTestingFactory(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
                               base::Unretained(this)));
   // FPNM is created lazily so initialize it before running the test.
   ASSERT_TRUE(
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-          browser()->profile()));
+          browser()->GetProfile()));
   // Expect the pause status from ProgressPausedTasks.
   EXPECT_CALL(
       *fpnm_,
@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
                        DlpMetadata_ShowPolicyDialog) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -1211,13 +1211,13 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
   // Set up FPNM.
   policy::FilesPolicyNotificationManagerFactory::GetInstance()
       ->SetTestingFactory(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
                               base::Unretained(this)));
   // FPNM is created lazily so initialize it before running the test.
   ASSERT_TRUE(
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-          browser()->profile()));
+          browser()->GetProfile()));
 
   // Expect only the calls with valid parameters.
   testing::InSequence s;
@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
                        DlpMetadata_GetDialogCaller) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());

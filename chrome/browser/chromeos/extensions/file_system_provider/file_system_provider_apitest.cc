@@ -146,7 +146,7 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
+        browser()->GetProfile());
 
     user_manager_.AddUser(
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
@@ -330,14 +330,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ExecuteAction) {
 // TODO(b/255698656): Flaky test.
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest,
                        DISABLED_Unresponsive_Extension) {
-  AbortOnUnresponsivePerformer performer(browser()->profile());
+  AbortOnUnresponsivePerformer performer(browser()->GetProfile());
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_extension",
                                {}, {.load_as_component = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_App) {
-  AbortOnUnresponsivePerformer performer(browser()->profile());
+  AbortOnUnresponsivePerformer performer(browser()->GetProfile());
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_app",
                                {.launch_as_platform_app = true},
                                {.load_as_component = true}))
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest,
                        DISABLED_Unresponsive_Extension) {
-  AbortOnUnresponsivePerformer performer(browser()->profile());
+  AbortOnUnresponsivePerformer performer(browser()->GetProfile());
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "file_system_provider/service_worker/unresponsive_extension/provider")));
   ASSERT_TRUE(RunExtensionTest(
