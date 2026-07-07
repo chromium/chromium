@@ -376,13 +376,10 @@ bool WebViewInternalCaptureVisibleRegionFunction::ShouldSkipQuotaLimiting()
   return user_gesture();
 }
 
-WebContentsCaptureClient::ScreenshotAccess
+base::expected<void, ScreenshotAccessError>
 WebViewInternalCaptureVisibleRegionFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {
-  if (ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents))
-    return ScreenshotAccess::kDisabledByDlp;
-
-  return ScreenshotAccess::kEnabled;
+  return ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents);
 }
 
 bool WebViewInternalCaptureVisibleRegionFunction::ClientAllowsTransparency() {

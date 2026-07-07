@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -222,8 +223,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                            const base::FilePath& path) override;
   bool HasIsolatedStorage(const ExtensionId& extension_id,
                           content::BrowserContext* context) override;
-  bool IsScreenshotRestricted(
-      content::WebContents* web_contents) const override;
+  base::expected<void, extensions::ScreenshotAccessError>
+  IsScreenshotRestricted(content::WebContents* web_contents) const override;
   bool IsValidTabId(content::BrowserContext* context,
                     int tab_id,
                     bool include_incognito,

@@ -3593,20 +3593,10 @@ bool TabsCaptureVisibleTabFunction::disable_throttling_for_test_ = false;
 TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction()
     : chrome_details_(this) {}
 
-WebContentsCaptureClient::ScreenshotAccess
+base::expected<void, extensions::ScreenshotAccessError>
 TabsCaptureVisibleTabFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {
-  PrefService* service =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  if (service->GetBoolean(prefs::kDisableScreenshots)) {
-    return ScreenshotAccess::kDisabledByPreferences;
-  }
-
-  if (ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents)) {
-    return ScreenshotAccess::kDisabledByDlp;
-  }
-
-  return ScreenshotAccess::kEnabled;
+  return ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents);
 }
 
 bool TabsCaptureVisibleTabFunction::ClientAllowsTransparency() {

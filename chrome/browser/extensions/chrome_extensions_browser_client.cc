@@ -93,6 +93,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/search_engines/template_url_service.h"
@@ -122,6 +123,7 @@
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/scoped_extension_keep_alive.h"
+#include "extensions/browser/screenshot_access.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
@@ -814,14 +816,22 @@ bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
   return util::HasIsolatedStorage(extension_id, context);
 }
 
-bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
+base::expected<void, extensions::ScreenshotAccessError>
+ChromeExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
-#if !BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return policy::DlpContentManager::Get()->IsScreenshotApiRestricted(
-      web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
+    return base::unexpected(
+        extensions::ScreenshotAccessError::kDisabledByPreferences);
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (policy::DlpContentManager::Get()->IsScreenshotApiRestricted(
+          web_contents)) {
+    return base::unexpected(extensions::ScreenshotAccessError::kDisabledByDlp);
+  }
 #endif
+  return base::ok();
 }
 
 bool ChromeExtensionsBrowserClient::IsValidTabId(

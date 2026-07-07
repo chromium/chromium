@@ -489,7 +489,7 @@ class TabsCaptureVisibleTabFunction :
   content::WebContents* GetWebContentsForID(int window_id, std::string* error);
 
   // extensions::WebContentsCaptureClient:
-  ScreenshotAccess GetScreenshotAccess(
+  base::expected<void, extensions::ScreenshotAccessError> GetScreenshotAccess(
       content::WebContents* web_contents) const override;
   bool ClientAllowsTransparency() override;
   void OnCaptureSuccess(const SkBitmap& bitmap) override;

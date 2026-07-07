@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/syslog_logging.h"
+#include "base/types/expected_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host.h"
@@ -39,13 +40,15 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
   }
 
   // Check for screenshot capture restrictions.
-  ScreenshotAccess screenshot_access = GetScreenshotAccess(web_contents);
-  if (screenshot_access == ScreenshotAccess::kDisabledByPreferences) {
-    return FAILURE_REASON_SCREEN_SHOTS_DISABLED;
-  }
-  if (screenshot_access == ScreenshotAccess::kDisabledByDlp) {
-    return FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP;
-  }
+  RETURN_IF_ERROR(GetScreenshotAccess(web_contents),
+                  [](ScreenshotAccessError error) {
+                    switch (error) {
+                      case ScreenshotAccessError::kDisabledByPreferences:
+                        return FAILURE_REASON_SCREEN_SHOTS_DISABLED;
+                      case ScreenshotAccessError::kDisabledByDlp:
+                        return FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP;
+                    }
+                  });
 
   // The default format and quality setting used when encoding jpegs.
   const api::extension_types::ImageFormat kDefaultFormat =

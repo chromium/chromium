@@ -25,9 +25,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_running_info.h"
@@ -477,6 +479,44 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
   EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_frame));
   EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest,
+                       CaptureVisibleRegionDisabledByPolicy) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kControlledFrame,
+              /*self=*/true,
+              /*origins=*/{}))
+          .BuildBundle();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  const std::string script = R"(
+    (async function() {
+      const frame = document.getElementsByTagName('controlledframe')[0];
+      if (!frame || !frame.request) {
+        return 'NO_FRAME';
+      }
+      try {
+        await frame.captureVisibleRegion();
+        return 'UNEXPECTED_SUCCESS';
+      } catch (err) {
+        return err.message ? err.message : String(err);
+      }
+    })();
+  )";
+
+  EXPECT_EQ("Failed to capture webview: screenshot has been disabled",
+            content::EvalJs(app_frame, script));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, EnterFullScreenControlledFrame) {

@@ -161,9 +161,10 @@ bool ExtensionsBrowserClient::HasIsolatedStorage(
   return false;
 }
 
-bool ExtensionsBrowserClient::IsScreenshotRestricted(
+base::expected<void, ScreenshotAccessError>
+ExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
-  return false;
+  return base::ok();
 }
 
 bool ExtensionsBrowserClient::IsValidTabId(

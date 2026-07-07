@@ -69,7 +69,7 @@ class WebViewInternalCaptureVisibleRegionFunction
 
  private:
   // extensions::WebContentsCaptureClient:
-  ScreenshotAccess GetScreenshotAccess(
+  base::expected<void, ScreenshotAccessError> GetScreenshotAccess(
       content::WebContents* web_contents) const override;
   bool ClientAllowsTransparency() override;
   void OnCaptureSuccess(const SkBitmap& bitmap) override;

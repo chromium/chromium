@@ -529,6 +529,7 @@ source_set("browser_sources") {
     "sandboxed_unpacker.h",
     "scoped_active_install.cc",
     "scoped_active_install.h",
+    "screenshot_access.h",
     "script_executor.cc",
     "script_executor.h",
     "script_injection_tracker.cc",

@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,6 +24,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
+#include "extensions/browser/screenshot_access.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/url_pattern_set.h"
@@ -511,9 +513,10 @@ class ExtensionsBrowserClient {
   virtual bool HasIsolatedStorage(const ExtensionId& extension_id,
                                   content::BrowserContext* context);
 
-  // Returns whether screenshot of `web_contents` is restricted due to Data Leak
-  // Protection policy.
-  virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
+  // Returns whether screenshot of `web_contents` is restricted due to
+  // preference or Data Leak Protection policy.
+  virtual base::expected<void, ScreenshotAccessError> IsScreenshotRestricted(
+      content::WebContents* web_contents) const;
 
   // Returns true if `tab_id` exists on `browser_context`.
   virtual bool IsValidTabId(content::BrowserContext* browser_context,
