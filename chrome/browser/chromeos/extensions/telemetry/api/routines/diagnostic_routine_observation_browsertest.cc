@@ -20,7 +20,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
@@ -28,8 +27,6 @@
 
 namespace chromeos {
 namespace {
-
-namespace crosapi = ::crosapi::mojom;
 
 // An `EventRouterObserver` that runs a callback once a callback is registered
 // for the provided `event_name`. This class is used in tests to execute code

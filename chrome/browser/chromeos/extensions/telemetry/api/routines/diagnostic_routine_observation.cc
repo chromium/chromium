@@ -12,8 +12,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_info.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/ash/components/telemetry_extension/routines/routine_converters.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -23,7 +21,6 @@ namespace chromeos {
 
 namespace {
 
-namespace crosapi = ::crosapi::mojom;
 namespace cx_diag = api::os_diagnostics;
 
 std::unique_ptr<extensions::Event>
@@ -41,7 +38,7 @@ CreateEventForLegacyFinishedVolumeButtonRoutine(
 }
 
 std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
-    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
+    ash::cros_healthd::mojom::RoutineStateFinishedPtr finished,
     base::Uuid uuid,
     content::BrowserContext* browser_context,
     ash::cros_healthd::mojom::RoutineArgument::Tag
@@ -58,10 +55,10 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
   }
 
   switch (finished->detail->which()) {
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine detail";
       return nullptr;
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kMemory: {
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kMemory: {
       auto finished_info = converters::routines::ConvertPtr(
           std::move(finished->detail->get_memory()), uuid,
           finished->has_passed);
@@ -70,7 +67,7 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
           cx_diag::OnMemoryRoutineFinished::kEventName,
           base::ListValue().Append(finished_info.ToValue()), browser_context);
     }
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan: {
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kFan: {
       auto finished_info = converters::routines::ConvertPtr(
           std::move(finished->detail->get_fan()), uuid, finished->has_passed);
       return std::make_unique<extensions::Event>(
@@ -78,16 +75,28 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
           cx_diag::OnFanRoutineFinished::kEventName,
           base::ListValue().Append(finished_info.ToValue()), browser_context);
     }
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kNetworkBandwidth:
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kCameraFrameAnalysis:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kNetworkBandwidth:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kCameraFrameAnalysis:
       // No need to support legacy finished events for newer routines.
+      return nullptr;
+
+    // Unsupported enums
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kAudioDriver:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kUfsLifetime:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothPower:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothDiscovery:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothScanning:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothPairing:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kCameraAvailability:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kSensitiveSensor:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBatteryDischarge:
       return nullptr;
   }
   NOTREACHED();
 }
 
 std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
-    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
+    ash::cros_healthd::mojom::RoutineStateFinishedPtr finished,
     base::Uuid uuid,
     content::BrowserContext* browser_context) {
   bool has_passed = finished->has_passed;
@@ -113,18 +122,15 @@ DiagnosticRoutineObservation::DiagnosticRoutineObservation(
 DiagnosticRoutineObservation::~DiagnosticRoutineObservation() = default;
 
 void DiagnosticRoutineObservation::OnRoutineStateChange(
-    ash::cros_healthd::mojom::RoutineStatePtr healthd_state) {
-  // TODO(crbug.com/510951937): Remove the crosapi struct use.
-  auto state = ash::converters::ConvertRoutinePtr(std::move(healthd_state));
-
+    ash::cros_healthd::mojom::RoutineStatePtr state) {
   std::unique_ptr<extensions::Event> event;
   std::unique_ptr<extensions::Event> legacy_finished_event;
   switch (state->state_union->which()) {
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::
+    case ash::cros_healthd::mojom::RoutineStateUnion::Tag::
         kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine state";
       return;
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kInitialized: {
+    case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kInitialized: {
       auto init_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_initialized()), info_.uuid);
       event = std::make_unique<extensions::Event>(
@@ -133,7 +139,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
           base::ListValue().Append(init_info.ToValue()), info_.browser_context);
       break;
     }
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kRunning: {
+    case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kRunning: {
       auto running_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_running()), info_.uuid,
           state->percentage);
@@ -144,7 +150,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
           info_.browser_context);
       break;
     }
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kWaiting: {
+    case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kWaiting: {
       auto running_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_waiting()), info_.uuid,
           state->percentage);
@@ -155,7 +161,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
           info_.browser_context);
       break;
     }
-    case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished: {
+    case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kFinished: {
       legacy_finished_event = GetEventForLegacyFinishedRoutine(
           state->state_union->get_finished().Clone(), info_.uuid,
           info_.browser_context, info_.argument_tag_for_legacy_finished_events);

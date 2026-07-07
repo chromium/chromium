@@ -8,7 +8,6 @@
 
 #include "base/uuid.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,14 +15,13 @@ namespace chromeos::converters::routines {
 
 namespace {
 namespace cx_diag = api::os_diagnostics;
-namespace crosapi = ::crosapi::mojom;
 }  // namespace
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
      RoutineInitializedInfo) {
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateInitialized::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateInitialized::New();
 
   auto result = ConvertPtr(std::move(input), kUuid);
 
@@ -35,7 +33,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineRunningInfo) {
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
   constexpr uint32_t kPercentage = 50;
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateRunning::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateRunning::New();
 
   auto result = ConvertPtr(std::move(input), kUuid, kPercentage);
 
@@ -54,14 +52,14 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr uint32_t kPercentage = 50;
 
   auto running_info =
-      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::New();
-  running_info->type = crosapi::
-      TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::kDownload;
+      ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::New();
+  running_info->type = ash::cros_healthd::mojom::
+      NetworkBandwidthRoutineRunningInfo::Type::kDownload;
   running_info->speed_kbps = 100.0;
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateRunning::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateRunning::New();
   input->info =
-      crosapi::TelemetryDiagnosticRoutineRunningInfo::NewNetworkBandwidth(
+      ash::cros_healthd::mojom::RoutineRunningInfo::NewNetworkBandwidth(
           std::move(running_info));
 
   auto result = ConvertPtr(std::move(input), kUuid, kPercentage);
@@ -83,8 +81,8 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
      RoutineInquiryCheckLedLitUpState) {
   auto result = ConvertPtr(
-      crosapi::TelemetryDiagnosticRoutineInquiry::NewCheckLedLitUpState(
-          crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiry::New()));
+      ash::cros_healthd::mojom::RoutineInquiry::NewCheckLedLitUpState(
+          ash::cros_healthd::mojom::CheckLedLitUpStateInquiry::New()));
 
   EXPECT_TRUE(result.check_led_lit_up_state.has_value());
 }
@@ -92,10 +90,8 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
      RoutineInquiryCheckKeyboardBacklightState) {
   auto result = ConvertPtr(
-      crosapi::TelemetryDiagnosticRoutineInquiry::
-          NewCheckKeyboardBacklightState(
-              crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateInquiry::
-                  New()));
+      ash::cros_healthd::mojom::RoutineInquiry::NewCheckKeyboardBacklightState(
+          ash::cros_healthd::mojom::CheckKeyboardBacklightStateInquiry::New()));
 
   EXPECT_TRUE(result.check_keyboard_backlight_state.has_value());
 }
@@ -105,14 +101,12 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
   constexpr uint32_t kPercentage = 50;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateWaiting::New();
-  input->reason = crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+  auto input = ash::cros_healthd::mojom::RoutineStateWaiting::New();
+  input->reason = ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
       kWaitingToBeScheduled;
   input->message = kMsg;
-  input->interaction =
-      crosapi::TelemetryDiagnosticRoutineInteraction::NewInquiry(
-          crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
-              false));
+  input->interaction = ash::cros_healthd::mojom::RoutineInteraction::NewInquiry(
+      ash::cros_healthd::mojom::RoutineInquiry::NewUnrecognizedInquiry(false));
 
   auto result = ConvertPtr(std::move(input), kUuid, kPercentage);
 
@@ -137,16 +131,16 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr uint32_t kBytesTested = 42;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto input = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+  auto input = ash::cros_healthd::mojom::MemoryRoutineDetail::New();
   input->bytes_tested = kBytesTested;
 
-  auto memtester_result = crosapi::TelemetryDiagnosticMemtesterResult::New();
+  auto memtester_result = ash::cros_healthd::mojom::MemtesterResult::New();
   memtester_result->passed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareDIV,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareMUL};
   memtester_result->failed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareAND,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareSUB};
   input->result = std::move(memtester_result);
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
@@ -170,11 +164,11 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
      LegacyFanRoutineFinishedInfo) {
-  auto input = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+  auto input = ash::cros_healthd::mojom::FanRoutineDetail::New();
   input->passed_fan_ids = {0};
   input->failed_fan_ids = {1};
   input->fan_count_status =
-      crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+      ash::cros_healthd::mojom::HardwarePresenceStatus::kMatched;
 
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
@@ -189,13 +183,13 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
-  auto input = crosapi::TelemetryDiagnosticMemtesterResult::New();
+  auto input = ash::cros_healthd::mojom::MemtesterResult::New();
   input->passed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareDIV,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareMUL};
   input->failed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareAND,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareSUB};
 
   auto result = ConvertPtr(std::move(input));
 
@@ -214,7 +208,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
   input->detail = nullptr;
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
@@ -233,9 +227,9 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
   input->detail =
-      crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(false);
+      ash::cros_healthd::mojom::RoutineDetail::NewUnrecognizedArgument(false);
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
 
@@ -254,21 +248,21 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr uint32_t kBytesTested = 42;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto detail = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+  auto detail = ash::cros_healthd::mojom::MemoryRoutineDetail::New();
   detail->bytes_tested = kBytesTested;
 
-  auto memtester_result = crosapi::TelemetryDiagnosticMemtesterResult::New();
+  auto memtester_result = ash::cros_healthd::mojom::MemtesterResult::New();
   memtester_result->passed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareDIV,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareMUL};
   memtester_result->failed_items = {
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND,
-      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB};
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareAND,
+      ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareSUB};
   detail->result = std::move(memtester_result);
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
   input->detail =
-      crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(std::move(detail));
+      ash::cros_healthd::mojom::RoutineDetail::NewMemory(std::move(detail));
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
 
@@ -300,15 +294,15 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto detail = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+  auto detail = ash::cros_healthd::mojom::FanRoutineDetail::New();
   detail->passed_fan_ids = {0};
   detail->failed_fan_ids = {1};
   detail->fan_count_status =
-      crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+      ash::cros_healthd::mojom::HardwarePresenceStatus::kMatched;
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
   input->detail =
-      crosapi::TelemetryDiagnosticRoutineDetail::NewFan(std::move(detail));
+      ash::cros_healthd::mojom::RoutineDetail::NewFan(std::move(detail));
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
 
@@ -336,15 +330,13 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
-  auto detail =
-      crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New();
+  auto detail = ash::cros_healthd::mojom::NetworkBandwidthRoutineDetail::New();
   detail->download_speed_kbps = 123.0;
   detail->upload_speed_kbps = 456.0;
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
-  input->detail =
-      crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
-          std::move(detail));
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
+  input->detail = ash::cros_healthd::mojom::RoutineDetail::NewNetworkBandwidth(
+      std::move(detail));
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
 
@@ -367,17 +359,17 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
   auto detail =
-      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::New();
-  detail->issue = crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-      Issue::kNone;
+      ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::New();
+  detail->issue =
+      ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::kNone;
   detail->privacy_shutter_open_test =
-      crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed;
+      ash::cros_healthd::mojom::CameraSubtestResult::kPassed;
   detail->lens_not_dirty_test =
-      crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed;
+      ash::cros_healthd::mojom::CameraSubtestResult::kFailed;
 
-  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  auto input = ash::cros_healthd::mojom::RoutineStateFinished::New();
   input->detail =
-      crosapi::TelemetryDiagnosticRoutineDetail::NewCameraFrameAnalysis(
+      ash::cros_healthd::mojom::RoutineDetail::NewCameraFrameAnalysis(
           std::move(detail));
 
   auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
@@ -416,120 +408,111 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, ExceptionReason) {
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
                         kUnmappedEnumField),
             cx_diag::RoutineWaitingReason::kNone);
 
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
                         kWaitingToBeScheduled),
             cx_diag::RoutineWaitingReason::kWaitingToBeScheduled);
 
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
-                        kWaitingForInteraction),
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
+                        kWaitingInteraction),
             cx_diag::RoutineWaitingReason::kWaitingForInteraction);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
-                        kUnmappedEnumField),
+  EXPECT_EQ(
+      Convert(
+          ash::cros_healthd::mojom::MemtesterTestItemEnum::kUnmappedEnumField),
+      cx_diag::MemtesterTestItemEnum::kUnknown);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kUnknown),
             cx_diag::MemtesterTestItemEnum::kUnknown);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown),
-      cx_diag::MemtesterTestItemEnum::kUnknown);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kStuckAddress),
       cx_diag::MemtesterTestItemEnum::kStuckAddress);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareAND),
       cx_diag::MemtesterTestItemEnum::kCompareAnd);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareDIV),
       cx_diag::MemtesterTestItemEnum::kCompareDiv);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareMUL),
       cx_diag::MemtesterTestItemEnum::kCompareMul);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareOR),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareOR),
       cx_diag::MemtesterTestItemEnum::kCompareOr);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareSUB),
       cx_diag::MemtesterTestItemEnum::kCompareSub);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareXOR),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareXOR),
       cx_diag::MemtesterTestItemEnum::kCompareXor);
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::
                         kSequentialIncrement),
             cx_diag::MemtesterTestItemEnum::kSequentialIncrement);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kBitFlip),
+            cx_diag::MemtesterTestItemEnum::kBitFlip);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip),
-      cx_diag::MemtesterTestItemEnum::kBitFlip);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kBitSpread),
       cx_diag::MemtesterTestItemEnum::kBitSpread);
   EXPECT_EQ(
       Convert(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBlockSequential),
+          ash::cros_healthd::mojom::MemtesterTestItemEnum::kBlockSequential),
       cx_diag::MemtesterTestItemEnum::kBlockSequential);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCheckerboard),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kCheckerboard),
       cx_diag::MemtesterTestItemEnum::kCheckerboard);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kRandomValue),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kRandomValue),
       cx_diag::MemtesterTestItemEnum::kRandomValue);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSolidBits),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kSolidBits),
       cx_diag::MemtesterTestItemEnum::kSolidBits);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingOnes),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kWalkingOnes),
       cx_diag::MemtesterTestItemEnum::kWalkingOnes);
   EXPECT_EQ(
-      Convert(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::kWalkingZeroes),
       cx_diag::MemtesterTestItemEnum::kWalkingZeroes);
   EXPECT_EQ(
-      Convert(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::k8BitWrites),
       cx_diag::MemtesterTestItemEnum::kEightBitWrites);
   EXPECT_EQ(
-      Convert(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites),
+      Convert(ash::cros_healthd::mojom::MemtesterTestItemEnum::k16BitWrites),
       cx_diag::MemtesterTestItemEnum::kSixteenBitWrites);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
      CameraFrameAnalysisRoutineDetailIssue) {
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-                  Issue::kUnmappedEnumField),
-      cx_diag::CameraFrameAnalysisIssue::kNone);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-                  Issue::kNone),
-      cx_diag::CameraFrameAnalysisIssue::kNoIssue);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-                  Issue::kCameraServiceNotAvailable),
-      cx_diag::CameraFrameAnalysisIssue::kCameraServiceNotAvailable);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-                  Issue::kBlockedByPrivacyShutter),
-      cx_diag::CameraFrameAnalysisIssue::kBlockedByPrivacyShutter);
-  EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
-                  Issue::kLensAreDirty),
-      cx_diag::CameraFrameAnalysisIssue::kLensAreDirty);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::
+                        Issue::kUnmappedEnumField),
+            cx_diag::CameraFrameAnalysisIssue::kNone);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::
+                        Issue::kNone),
+            cx_diag::CameraFrameAnalysisIssue::kNoIssue);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::
+                        Issue::kCameraServiceNotAvailable),
+            cx_diag::CameraFrameAnalysisIssue::kCameraServiceNotAvailable);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::
+                        Issue::kBlockedByPrivacyShutter),
+            cx_diag::CameraFrameAnalysisIssue::kBlockedByPrivacyShutter);
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::
+                        Issue::kLensAreDirty),
+            cx_diag::CameraFrameAnalysisIssue::kLensAreDirty);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, CameraSubtestResult) {
   EXPECT_EQ(
       Convert(
-          crosapi::TelemetryDiagnosticCameraSubtestResult::kUnmappedEnumField),
+          ash::cros_healthd::mojom::CameraSubtestResult::kUnmappedEnumField),
       cx_diag::CameraSubtestResult::kNone);
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticCameraSubtestResult::kNotRun),
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraSubtestResult::kNotRun),
             cx_diag::CameraSubtestResult::kNotRun);
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed),
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraSubtestResult::kPassed),
             cx_diag::CameraSubtestResult::kPassed);
-  EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed),
+  EXPECT_EQ(Convert(ash::cros_healthd::mojom::CameraSubtestResult::kFailed),
             cx_diag::CameraSubtestResult::kFailed);
 }
 

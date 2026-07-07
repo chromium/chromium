@@ -11,54 +11,65 @@
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::routines {
 
 namespace {
 namespace cx_diag = api::os_diagnostics;
-namespace crosapi = ::crosapi::mojom;
 
 std::optional<cx_diag::RoutineFinishedDetailUnion> ConvertRoutineDetailUnionPtr(
-    crosapi::TelemetryDiagnosticRoutineDetailPtr input) {
+    ash::cros_healthd::mojom::RoutineDetailPtr input) {
   if (input.is_null()) {
     return std::nullopt;
   }
   cx_diag::RoutineFinishedDetailUnion detail;
-  switch (input->which()) {
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
+  switch (auto tag = input->which(); tag) {
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine detail";
       return std::nullopt;
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kMemory:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kMemory:
       detail.memory = ConvertPtr(std::move(input->get_memory()));
       return detail;
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kFan:
       detail.fan = ConvertPtr(std::move(input->get_fan()));
       return detail;
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kNetworkBandwidth:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kNetworkBandwidth:
       detail.network_bandwidth =
           ConvertPtr(std::move(input->get_network_bandwidth()));
       return detail;
-    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kCameraFrameAnalysis:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kCameraFrameAnalysis:
       detail.camera_frame_analysis =
           ConvertPtr(std::move(input->get_camera_frame_analysis()));
       return detail;
+
+    // Unsupported enums
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kAudioDriver:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kUfsLifetime:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothPower:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothDiscovery:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothScanning:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBluetoothPairing:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kCameraAvailability:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kSensitiveSensor:
+    case ash::cros_healthd::mojom::RoutineDetail::Tag::kBatteryDischarge:
+      LOG(WARNING) << "Got unknown routine detail: " << static_cast<int>(tag);
+      return std::nullopt;
   }
 }
 
 std::optional<cx_diag::RoutineRunningInfoUnion>
 ConvertRoutineRunningInfoUnionPtr(
-    crosapi::TelemetryDiagnosticRoutineRunningInfoPtr input) {
+    ash::cros_healthd::mojom::RoutineRunningInfoPtr input) {
   if (input.is_null()) {
     return std::nullopt;
   }
   cx_diag::RoutineRunningInfoUnion info;
   switch (input->which()) {
-    case crosapi::TelemetryDiagnosticRoutineRunningInfo::Tag::
+    case ash::cros_healthd::mojom::RoutineRunningInfo::Tag::
         kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine running info";
       return std::nullopt;
-    case crosapi::TelemetryDiagnosticRoutineRunningInfo::Tag::kNetworkBandwidth:
+    case ash::cros_healthd::mojom::RoutineRunningInfo::Tag::kNetworkBandwidth:
       info.network_bandwidth =
           ConvertPtr(std::move(input->get_network_bandwidth()));
       return info;
@@ -70,7 +81,7 @@ ConvertRoutineRunningInfoUnionPtr(
 namespace unchecked {
 
 cx_diag::RoutineInitializedInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineStateInitializedPtr input,
+    ash::cros_healthd::mojom::RoutineStateInitializedPtr input,
     base::Uuid uuid) {
   cx_diag::RoutineInitializedInfo result;
   result.uuid = uuid.AsLowercaseString();
@@ -78,7 +89,7 @@ cx_diag::RoutineInitializedInfo UncheckedConvertPtr(
 }
 
 cx_diag::RoutineRunningInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineStateRunningPtr input,
+    ash::cros_healthd::mojom::RoutineStateRunningPtr input,
     base::Uuid uuid,
     uint32_t percentage) {
   cx_diag::RoutineRunningInfo result;
@@ -89,7 +100,7 @@ cx_diag::RoutineRunningInfo UncheckedConvertPtr(
 }
 
 cx_diag::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr input) {
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfoPtr input) {
   cx_diag::NetworkBandwidthRoutineRunningInfo info;
   info.type = Convert(input->type);
   info.speed_kbps = input->speed_kbps;
@@ -97,35 +108,39 @@ cx_diag::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
 }
 
 cx_diag::RoutineInquiryUnion UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineInquiryPtr input) {
+    ash::cros_healthd::mojom::RoutineInquiryPtr input) {
   cx_diag::RoutineInquiryUnion inquiry;
   switch (input->which()) {
-    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kUnrecognizedInquiry:
+    case ash::cros_healthd::mojom::RoutineInquiry::Tag::kUnrecognizedInquiry:
       // This indicates version skew on Mojo interfaces, which is unexpected.
       // Return an empty union as a safeguard.
       break;
-    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kCheckLedLitUpState:
+    case ash::cros_healthd::mojom::RoutineInquiry::Tag::kCheckLedLitUpState:
       inquiry.check_led_lit_up_state = cx_diag::CheckLedLitUpStateInquiry();
       break;
-    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::
+    case ash::cros_healthd::mojom::RoutineInquiry::Tag::
         kCheckKeyboardBacklightState:
       inquiry.check_keyboard_backlight_state =
           cx_diag::CheckKeyboardBacklightStateInquiry();
+      break;
+
+    // Unsupported.
+    case ash::cros_healthd::mojom::RoutineInquiry::Tag::kUnplugAcAdapterInquiry:
       break;
   }
   return inquiry;
 }
 
 cx_diag::RoutineInteractionUnion UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineInteractionPtr input) {
+    ash::cros_healthd::mojom::RoutineInteractionPtr input) {
   cx_diag::RoutineInteractionUnion interaction;
   switch (input->which()) {
-    case crosapi::TelemetryDiagnosticRoutineInteraction::Tag::
+    case ash::cros_healthd::mojom::RoutineInteraction::Tag::
         kUnrecognizedInteraction:
       // This indicates version skew on Mojo interfaces, which is unexpected.
       // Return an empty union as a safeguard.
       break;
-    case crosapi::TelemetryDiagnosticRoutineInteraction::Tag::kInquiry:
+    case ash::cros_healthd::mojom::RoutineInteraction::Tag::kInquiry:
       interaction.inquiry = ConvertPtr(std::move(input->get_inquiry()));
       break;
   }
@@ -133,7 +148,7 @@ cx_diag::RoutineInteractionUnion UncheckedConvertPtr(
 }
 
 cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineStateWaitingPtr input,
+    ash::cros_healthd::mojom::RoutineStateWaitingPtr input,
     base::Uuid uuid,
     uint32_t percentage) {
   cx_diag::RoutineWaitingInfo result;
@@ -148,7 +163,7 @@ cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
 }
 
 cx_diag::MemtesterResult UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticMemtesterResultPtr input) {
+    ash::cros_healthd::mojom::MemtesterResultPtr input) {
   cx_diag::MemtesterResult result;
   result.passed_items = ConvertVector(input->passed_items);
   result.failed_items = ConvertVector(input->failed_items);
@@ -157,7 +172,7 @@ cx_diag::MemtesterResult UncheckedConvertPtr(
 }
 
 cx_diag::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr input,
+    ash::cros_healthd::mojom::MemoryRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed) {
   cx_diag::LegacyMemoryRoutineFinishedInfo result;
@@ -177,7 +192,7 @@ cx_diag::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
 }
 
 cx_diag::LegacyFanRoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticFanRoutineDetailPtr input,
+    ash::cros_healthd::mojom::FanRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed) {
   cx_diag::LegacyFanRoutineFinishedInfo result;
@@ -194,7 +209,7 @@ cx_diag::LegacyFanRoutineFinishedInfo UncheckedConvertPtr(
 }
 
 cx_diag::MemoryRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr input) {
+    ash::cros_healthd::mojom::MemoryRoutineDetailPtr input) {
   cx_diag::MemoryRoutineFinishedDetail result;
   result.bytes_tested = input->bytes_tested;
   result.result = ConvertPtr(std::move(input->result));
@@ -202,7 +217,7 @@ cx_diag::MemoryRoutineFinishedDetail UncheckedConvertPtr(
 }
 
 cx_diag::FanRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticFanRoutineDetailPtr input) {
+    ash::cros_healthd::mojom::FanRoutineDetailPtr input) {
   cx_diag::FanRoutineFinishedDetail result;
 
   std::vector<int> passed_fan_ids = {};
@@ -222,7 +237,7 @@ cx_diag::FanRoutineFinishedDetail UncheckedConvertPtr(
 }
 
 cx_diag::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr input) {
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineDetailPtr input) {
   cx_diag::NetworkBandwidthRoutineFinishedDetail result;
   result.download_speed_kbps = input->download_speed_kbps;
   result.upload_speed_kbps = input->upload_speed_kbps;
@@ -230,7 +245,7 @@ cx_diag::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
 }
 
 cx_diag::CameraFrameAnalysisRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr input) {
+    ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetailPtr input) {
   cx_diag::CameraFrameAnalysisRoutineFinishedDetail result;
   result.issue = Convert(input->issue);
   result.privacy_shutter_open_test = Convert(input->privacy_shutter_open_test);
@@ -239,7 +254,7 @@ cx_diag::CameraFrameAnalysisRoutineFinishedDetail UncheckedConvertPtr(
 }
 
 cx_diag::RoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr input,
+    ash::cros_healthd::mojom::RoutineStateFinishedPtr input,
     base::Uuid uuid,
     bool has_passed) {
   cx_diag::RoutineFinishedInfo result;
@@ -270,95 +285,93 @@ cx_diag::ExceptionReason Convert(
 }
 
 cx_diag::RoutineWaitingReason Convert(
-    crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason input) {
+    ash::cros_healthd::mojom::RoutineStateWaiting::Reason input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+    case ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
         kUnmappedEnumField:
       return cx_diag::RoutineWaitingReason::kNone;
-    case crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
+    case ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
         kWaitingToBeScheduled:
       return cx_diag::RoutineWaitingReason::kWaitingToBeScheduled;
-    case crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
-        kWaitingForInteraction:
+    case ash::cros_healthd::mojom::RoutineStateWaiting::Reason::
+        kWaitingInteraction:
       return cx_diag::RoutineWaitingReason::kWaitingForInteraction;
   }
   NOTREACHED();
 }
 
 cx_diag::MemtesterTestItemEnum Convert(
-    crosapi::TelemetryDiagnosticMemtesterTestItemEnum input) {
+    ash::cros_healthd::mojom::MemtesterTestItemEnum input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kUnmappedEnumField:
       return cx_diag::MemtesterTestItemEnum::kUnknown;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kUnknown:
       return cx_diag::MemtesterTestItemEnum::kUnknown;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kStuckAddress:
       return cx_diag::MemtesterTestItemEnum::kStuckAddress;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareAND:
       return cx_diag::MemtesterTestItemEnum::kCompareAnd;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareDIV:
       return cx_diag::MemtesterTestItemEnum::kCompareDiv;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareMUL:
       return cx_diag::MemtesterTestItemEnum::kCompareMul;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareOR:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareOR:
       return cx_diag::MemtesterTestItemEnum::kCompareOr;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareSUB:
       return cx_diag::MemtesterTestItemEnum::kCompareSub;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareXOR:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCompareXOR:
       return cx_diag::MemtesterTestItemEnum::kCompareXor;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
-        kSequentialIncrement:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kSequentialIncrement:
       return cx_diag::MemtesterTestItemEnum::kSequentialIncrement;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kBitFlip:
       return cx_diag::MemtesterTestItemEnum::kBitFlip;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kBitSpread:
       return cx_diag::MemtesterTestItemEnum::kBitSpread;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBlockSequential:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kBlockSequential:
       return cx_diag::MemtesterTestItemEnum::kBlockSequential;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCheckerboard:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kCheckerboard:
       return cx_diag::MemtesterTestItemEnum::kCheckerboard;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kRandomValue:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kRandomValue:
       return cx_diag::MemtesterTestItemEnum::kRandomValue;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSolidBits:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kSolidBits:
       return cx_diag::MemtesterTestItemEnum::kSolidBits;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingOnes:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kWalkingOnes:
       return cx_diag::MemtesterTestItemEnum::kWalkingOnes;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::kWalkingZeroes:
       return cx_diag::MemtesterTestItemEnum::kWalkingZeroes;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::k8BitWrites:
       return cx_diag::MemtesterTestItemEnum::kEightBitWrites;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites:
+    case ash::cros_healthd::mojom::MemtesterTestItemEnum::k16BitWrites:
       return cx_diag::MemtesterTestItemEnum::kSixteenBitWrites;
   }
   NOTREACHED();
 }
 
 cx_diag::HardwarePresenceStatus Convert(
-    crosapi::TelemetryDiagnosticHardwarePresenceStatus input) {
+    ash::cros_healthd::mojom::HardwarePresenceStatus input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::HardwarePresenceStatus::kUnmappedEnumField:
       return cx_diag::HardwarePresenceStatus::kNone;
-    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched:
+    case ash::cros_healthd::mojom::HardwarePresenceStatus::kMatched:
       return cx_diag::HardwarePresenceStatus::kMatched;
-    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotMatched:
+    case ash::cros_healthd::mojom::HardwarePresenceStatus::kNotMatched:
       return cx_diag::HardwarePresenceStatus::kNotMatched;
-    case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured:
+    case ash::cros_healthd::mojom::HardwarePresenceStatus::kNotConfigured:
       return cx_diag::HardwarePresenceStatus::kNotConfigured;
   }
   NOTREACHED();
 }
 
 cx_diag::NetworkBandwidthRoutineRunningType Convert(
-    crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
-        input) {
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+    case ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type::
         kUnmappedEnumField:
       return cx_diag::NetworkBandwidthRoutineRunningType::kNone;
-    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+    case ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type::
         kDownload:
       return cx_diag::NetworkBandwidthRoutineRunningType::kDownload;
-    case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
+    case ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type::
         kUpload:
       return cx_diag::NetworkBandwidthRoutineRunningType::kUpload;
   }
@@ -366,21 +379,21 @@ cx_diag::NetworkBandwidthRoutineRunningType Convert(
 }
 
 cx_diag::CameraFrameAnalysisIssue Convert(
-    crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue input) {
+    ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+    case ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::
         kUnmappedEnumField:
       return cx_diag::CameraFrameAnalysisIssue::kNone;
-    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+    case ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::
         kNone:
       return cx_diag::CameraFrameAnalysisIssue::kNoIssue;
-    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+    case ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::
         kCameraServiceNotAvailable:
       return cx_diag::CameraFrameAnalysisIssue::kCameraServiceNotAvailable;
-    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+    case ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::
         kBlockedByPrivacyShutter:
       return cx_diag::CameraFrameAnalysisIssue::kBlockedByPrivacyShutter;
-    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+    case ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue::
         kLensAreDirty:
       return cx_diag::CameraFrameAnalysisIssue::kLensAreDirty;
   }
@@ -388,15 +401,15 @@ cx_diag::CameraFrameAnalysisIssue Convert(
 }
 
 cx_diag::CameraSubtestResult Convert(
-    crosapi::TelemetryDiagnosticCameraSubtestResult input) {
+    ash::cros_healthd::mojom::CameraSubtestResult input) {
   switch (input) {
-    case crosapi::TelemetryDiagnosticCameraSubtestResult::kUnmappedEnumField:
+    case ash::cros_healthd::mojom::CameraSubtestResult::kUnmappedEnumField:
       return cx_diag::CameraSubtestResult::kNone;
-    case crosapi::TelemetryDiagnosticCameraSubtestResult::kNotRun:
+    case ash::cros_healthd::mojom::CameraSubtestResult::kNotRun:
       return cx_diag::CameraSubtestResult::kNotRun;
-    case crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed:
+    case ash::cros_healthd::mojom::CameraSubtestResult::kPassed:
       return cx_diag::CameraSubtestResult::kPassed;
-    case crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed:
+    case ash::cros_healthd::mojom::CameraSubtestResult::kFailed:
       return cx_diag::CameraSubtestResult::kFailed;
   }
   NOTREACHED();

@@ -12,7 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 
 // This file contains helper functions used by the routine API to convert its
 // types to/from telemetry service types.
@@ -24,62 +24,60 @@ namespace chromeos::converters::routines {
 namespace unchecked {
 
 api::os_diagnostics::RoutineInitializedInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr input,
+    ash::cros_healthd::mojom::RoutineStateInitializedPtr input,
     base::Uuid uuid);
 
 api::os_diagnostics::RoutineRunningInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr input,
+    ash::cros_healthd::mojom::RoutineStateRunningPtr input,
     base::Uuid uuid,
     uint32_t percentage);
 
 api::os_diagnostics::NetworkBandwidthRoutineRunningInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr
-        input);
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfoPtr input);
 
 api::os_diagnostics::RoutineInquiryUnion UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineInquiryPtr input);
+    ash::cros_healthd::mojom::RoutineInquiryPtr input);
 
 api::os_diagnostics::RoutineInteractionUnion UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineInteractionPtr input);
+    ash::cros_healthd::mojom::RoutineInteractionPtr input);
 
 api::os_diagnostics::RoutineWaitingInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineStateWaitingPtr input,
+    ash::cros_healthd::mojom::RoutineStateWaitingPtr input,
     base::Uuid uuid,
     uint32_t percentage);
 
 api::os_diagnostics::MemtesterResult UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr input);
+    ash::cros_healthd::mojom::MemtesterResultPtr input);
 
 // For legacy finished events.
 // TODO(b/331540565): Remove this function after the legacy event is removed.
 api::os_diagnostics::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr input,
+    ash::cros_healthd::mojom::MemoryRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed);
 
 // For legacy finished events.
 // TODO(b/331540565): Remove this function after the legacy event is removed.
 api::os_diagnostics::LegacyFanRoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input,
+    ash::cros_healthd::mojom::FanRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed);
 
 api::os_diagnostics::MemoryRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr input);
+    ash::cros_healthd::mojom::MemoryRoutineDetailPtr input);
 
 api::os_diagnostics::FanRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input);
+    ash::cros_healthd::mojom::FanRoutineDetailPtr input);
 
 api::os_diagnostics::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr input);
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineDetailPtr input);
 
 api::os_diagnostics::CameraFrameAnalysisRoutineFinishedDetail
 UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr
-        input);
+    ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetailPtr input);
 
 api::os_diagnostics::RoutineFinishedInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryDiagnosticRoutineStateFinishedPtr input,
+    ash::cros_healthd::mojom::RoutineStateFinishedPtr input,
     base::Uuid uuid,
     bool has_passed);
 
@@ -89,24 +87,22 @@ api::os_diagnostics::ExceptionReason Convert(
     ash::cros_healthd::mojom::Exception::Reason input);
 
 api::os_diagnostics::RoutineWaitingReason Convert(
-    crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason input);
+    ash::cros_healthd::mojom::RoutineStateWaiting::Reason input);
 
 api::os_diagnostics::MemtesterTestItemEnum Convert(
-    crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum input);
+    ash::cros_healthd::mojom::MemtesterTestItemEnum input);
 
 api::os_diagnostics::HardwarePresenceStatus Convert(
-    crosapi::mojom::TelemetryDiagnosticHardwarePresenceStatus input);
+    ash::cros_healthd::mojom::HardwarePresenceStatus input);
 
 api::os_diagnostics::NetworkBandwidthRoutineRunningType Convert(
-    crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
-        input);
+    ash::cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type input);
 
 api::os_diagnostics::CameraFrameAnalysisIssue Convert(
-    crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue
-        input);
+    ash::cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue input);
 
 api::os_diagnostics::CameraSubtestResult Convert(
-    crosapi::mojom::TelemetryDiagnosticCameraSubtestResult input);
+    ash::cros_healthd::mojom::CameraSubtestResult input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>()))>

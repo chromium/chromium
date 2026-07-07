@@ -20,7 +20,6 @@ source_set("routines") {
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
@@ -44,7 +43,6 @@ source_set("routine_manager") {
     "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
 
@@ -72,7 +70,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/components/telemetry_extension/routines",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
-    "//chromeos/crosapi/mojom",
     "//extensions:test_support",
     "//extensions/common",
     "//net:test_support",
@@ -93,7 +90,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support_ui",
-    "//chromeos/crosapi/mojom",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
