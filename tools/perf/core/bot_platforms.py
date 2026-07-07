@@ -950,9 +950,10 @@ PLATFORM_INFO = {
         'platform_os': 'win',
         'is_fyi': False
     },
+    # TODO(crbug.com/525430279): Use all 8 bots to test the Canary image.
     'android-brya-kano-i5-8gb-perf': {
         'description': 'Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
-        'num_shards': 2,
+        'num_shards': 8,
         'platform_os': 'android',
         'is_fyi': False
     },
