@@ -13,7 +13,21 @@ struct WebPage {
   array<schema_org.mojom.Entity> entities;
 };
 
+// Derived information about a ProductGroup or Product entity, based on the
+// parameters provided to ClassifyProductDetails.
+struct ProductClassificationResult {
+  bool allowed_keyword_found;
+  bool blocked_keyword_found;
+};
+
 // Null page denotes no results.
 interface DocumentMetadata {
   GetEntities() => (WebPage? page);
+
+  // Checks the document's ProductGroup or Product entities for allowed and
+  // blocked keywords in their name and description.
+  //
+  // Returns null if no Product or ProductGroup entities are found in the document.
+  ClassifyProductDetails(array<string> allowed_keywords, array<string> blocked_keywords)
+      => (ProductClassificationResult? result);
 };

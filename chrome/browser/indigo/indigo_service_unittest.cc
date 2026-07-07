@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -449,6 +452,86 @@ TEST_F(IndigoServiceTest, LoadPromptsComponentAlreadyReady) {
   }
 
   EXPECT_EQ(service_->GetPrompt("v5"), "Test prompt v5");
+}
+
+TEST_F(IndigoServiceTest, LoadConfig) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create a test config.
+  chrome::aix::indigo::IndigoConfig proto;
+  auto* heuristic_config = proto.mutable_heuristic_config();
+  heuristic_config->add_allowed_origins("https://allowed1.com");
+  heuristic_config->add_allowed_origins("https://allowed2.com");
+  heuristic_config->add_allowed_keywords("keyword1");
+  heuristic_config->add_allowed_keywords("keyword2");
+  heuristic_config->add_blocked_keywords("blocked1");
+  heuristic_config->add_blocked_keywords("blocked2");
+
+  // Serialize to file.
+  base::FilePath config_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("indigo_config.bin"));
+  std::string serialized;
+  ASSERT_TRUE(proto.SerializeToString(&serialized));
+  ASSERT_TRUE(base::WriteFile(config_path, serialized));
+
+  CreateService();
+
+  // Initially config should not be loaded.
+  EXPECT_FALSE(service_->IsConfigLoaded());
+
+  // Simulate component ready.
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"), temp_dir.GetPath(),
+                        base::DictValue());
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsConfigLoaded(); }));
+
+  // Verify config is loaded.
+  EXPECT_TRUE(service_->IsConfigLoaded());
+  EXPECT_TRUE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://allowed1.com"))));
+  EXPECT_TRUE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://allowed2.com"))));
+  EXPECT_FALSE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://disallowed.com"))));
+
+  EXPECT_THAT(service_->GetAllowedKeywords(),
+              testing::ElementsAre("keyword1", "keyword2"));
+  EXPECT_THAT(service_->GetBlockedKeywords(),
+              testing::ElementsAre("blocked1", "blocked2"));
+}
+
+TEST_F(IndigoServiceTest, LoadConfigFromCommandLine) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create a test config.
+  chrome::aix::indigo::IndigoConfig proto;
+  auto* heuristic_config = proto.mutable_heuristic_config();
+  heuristic_config->add_allowed_origins("https://allowed1.com");
+
+  // Serialize to file.
+  base::FilePath config_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("indigo_config.bin"));
+  std::string serialized;
+  ASSERT_TRUE(proto.SerializeToString(&serialized));
+  ASSERT_TRUE(base::WriteFile(config_path, serialized));
+
+  // Set the command line switch.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchPath(
+      "indigo-config-proto", config_path);
+
+  CreateService();
+
+  // The service should start loading immediately because of the switch.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsConfigLoaded(); }));
+
+  // Verify config is loaded.
+  EXPECT_TRUE(service_->IsOriginAllowed(
+      url::Origin::Create(GURL("https://allowed1.com"))));
 }
 
 }  // namespace indigo

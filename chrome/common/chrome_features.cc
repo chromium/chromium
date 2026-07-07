@@ -1266,6 +1266,13 @@ const base::FeatureParam<std::string> kIndigoScopes{
     &kIndigo, "indigo_scopes",
     "https://www.googleapis.com/auth/userinfo.email"};
 
+BASE_FEATURE(kIndigoMetadataKeywordHeuristic,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kIndigoMetadataKeywordHeuristicSameDocumentNavigationDelay{
+        &kIndigoMetadataKeywordHeuristic,
+        "same_document_navigation_metadata_delay", base::Seconds(4)};
+
 // Experimental image replacement feature opens glic.
 BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kIndigoGlicPrompt{

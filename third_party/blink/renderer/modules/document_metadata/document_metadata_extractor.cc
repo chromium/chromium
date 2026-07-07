@@ -62,8 +62,8 @@ bool IsSupportedType(AtomicString type) {
         AtomicString("LocalBusiness"), AtomicString("Organization"),
         AtomicString("Person"), AtomicString("Place"),
         AtomicString("PostalAddress"), AtomicString("Product"),
-        AtomicString("Residence"), AtomicString("Restaurant"),
-        AtomicString("SingleFamilyResidence"),
+        AtomicString("ProductGroup"), AtomicString("Residence"),
+        AtomicString("Restaurant"), AtomicString("SingleFamilyResidence"),
         // Common types including phone numbers
         AtomicString("Store"), AtomicString("ContactPoint"),
         AtomicString("LodgingBusiness"), AtomicString("LoginAction")}));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/indigo/indigo_service.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -28,6 +31,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace indigo {
 
@@ -53,6 +57,49 @@ base::flat_map<std::string, std::string> LoadPromptsFromDisk(
   }
   return prompts;
 }
+
+IndigoService::ConfigData LoadConfigFromDisk(const base::FilePath& file_path) {
+  IndigoService::ConfigData config;
+  std::string binary_data;
+  if (!base::ReadFileToString(file_path, &binary_data)) {
+    VLOG(1) << "Failed to read config file: " << file_path;
+    return config;
+  }
+
+  chrome::aix::indigo::IndigoConfig proto;
+  if (!proto.ParseFromString(binary_data)) {
+    VLOG(1) << "Failed to parse config proto";
+    return config;
+  }
+
+  if (proto.has_heuristic_config()) {
+    const auto& heuristic_config = proto.heuristic_config();
+    for (const auto& origin_str : heuristic_config.allowed_origins()) {
+      GURL url(origin_str);
+      if (url.is_valid()) {
+        config.allowed_origins.push_back(url::Origin::Create(url));
+      } else {
+        VLOG(1) << "Invalid origin in config: " << origin_str;
+      }
+    }
+
+    for (const auto& kw : heuristic_config.allowed_keywords()) {
+      config.allowed_keywords.push_back(kw);
+    }
+
+    for (const auto& kw : heuristic_config.blocked_keywords()) {
+      config.blocked_keywords.push_back(kw);
+      if (std::ranges::contains(config.allowed_keywords, kw)) {
+        LOG(WARNING) << "Keyword '" << kw
+                     << "' is in both allowed and blocked lists.";
+      }
+    }
+  }
+
+  return config;
+}
+
+constexpr char kIndigoConfigProtoSwitch[] = "indigo-config-proto";
 
 }  // namespace
 
@@ -117,6 +164,17 @@ IndigoService::IndigoService(Profile* profile,
   api_client_ = std::make_unique<ApiClient>(
       identity_manager, profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess());
+
+  base::FilePath config_override_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kIndigoConfigProtoSwitch);
+  if (!config_override_path.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&LoadConfigFromDisk, config_override_path),
+        base::BindOnce(&IndigoService::OnConfigLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Register component extension for Indigo.
   extensions::ComponentLoader::Get(profile_)->Add(
@@ -239,17 +297,34 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
 void IndigoService::OnIndigoComponentReady() {
   UpdateLocalEligibilityAndNotify();
 
-  if (!prompts_loaded_) {
+  const base::FilePath config_override_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kIndigoConfigProtoSwitch);
+  const bool load_config_from_component_dir =
+      config_override_path.empty() && !config_loaded_;
+
+  if (!prompts_loaded_ || load_config_from_component_dir) {
     std::optional<base::FilePath> install_dir =
         component_updater::GetIndigoComponentInstallDir();
     if (install_dir.has_value()) {
-      base::FilePath prompts_path =
-          install_dir->Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(&LoadPromptsFromDisk, prompts_path),
-          base::BindOnce(&IndigoService::OnPromptsLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
+      if (!prompts_loaded_) {
+        base::FilePath prompts_path =
+            install_dir->Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+            base::BindOnce(&LoadPromptsFromDisk, prompts_path),
+            base::BindOnce(&IndigoService::OnPromptsLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+      if (load_config_from_component_dir) {
+        base::FilePath config_path =
+            install_dir->Append(FILE_PATH_LITERAL("indigo_config.bin"));
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+            base::BindOnce(&LoadConfigFromDisk, config_path),
+            base::BindOnce(&IndigoService::OnConfigLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
     }
   }
 }
@@ -350,6 +425,40 @@ std::optional<std::string> IndigoService::GetPrompt(
     return std::nullopt;
   }
   return it->second;
+}
+
+IndigoService::ConfigData::ConfigData() = default;
+IndigoService::ConfigData::ConfigData(const ConfigData&) = default;
+IndigoService::ConfigData::ConfigData(ConfigData&&) = default;
+IndigoService::ConfigData& IndigoService::ConfigData::operator=(
+    const ConfigData&) = default;
+IndigoService::ConfigData& IndigoService::ConfigData::operator=(ConfigData&&) =
+    default;
+IndigoService::ConfigData::~ConfigData() = default;
+
+void IndigoService::OnConfigLoaded(ConfigData config) {
+  config_ = std::move(config);
+  config_loaded_ = true;
+}
+
+const std::vector<std::string>& IndigoService::GetAllowedKeywords() const {
+  return config_.allowed_keywords;
+}
+
+const std::vector<std::string>& IndigoService::GetBlockedKeywords() const {
+  return config_.blocked_keywords;
+}
+
+bool IndigoService::IsOriginAllowed(const url::Origin& origin) const {
+  if (!config_loaded_) {
+    return false;
+  }
+  return std::ranges::contains(config_.allowed_origins, origin);
+}
+
+void IndigoService::SetConfigForTesting(ConfigData config) {
+  config_ = std::move(config);
+  config_loaded_ = true;
 }
 
 }  // namespace indigo

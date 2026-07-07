@@ -10,6 +10,10 @@ proto_library("indigo_prompts_proto") {
   sources = [ "proto/indigo_prompts.proto" ]
 }
 
+proto_library("indigo_config_proto") {
+  sources = [ "proto/indigo_config.proto" ]
+}
+
 source_set("indigo") {
   sources = [
     "api_client.h",
@@ -61,6 +65,7 @@ source_set("impl") {
 
   deps = [
     ":indigo",
+    ":indigo_config_proto",
     ":indigo_prompts_proto",
     "//base",
     "//chrome/browser:global_features",
@@ -124,6 +129,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":indigo",
+    ":indigo_config_proto",
     ":indigo_prompts_proto",
     ":test_support",
     "//base/test:test_support",
