@@ -2892,6 +2892,38 @@ suite('NewTabPageAppTest', () => {
         });
 
     test(
+        'scrim is shown when voice search coherence dialog is open and ' +
+            'closes dialog on click',
+        async () => {
+          loadTimeData.overrideValues({
+            ntpRealboxNextEnabled: true,
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: true,
+          });
+          await recreateApp();
+
+          // Open voice search dialog.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+              '#voiceSearchDialog');
+          assertTrue(!!dialog);
+          assertTrue(dialog.open);
+
+          const scrim = app.shadowRoot.querySelector<HTMLElement>('#scrim');
+          assertTrue(!!scrim);
+          assertFalse(scrim.hidden);
+
+          // Click scrim to close voice search.
+          scrim.click();
+          await microtasksFinished();
+
+          assertFalse(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
+          assertTrue(scrim.hidden);
+        });
+
+    test(
         'renders TicTac animation and stop/submit buttons when NTP searchbox ' +
             '(realbox) voice search coherence with live transcription is disabled',
         async () => {

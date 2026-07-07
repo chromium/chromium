@@ -175,7 +175,8 @@ cr-most-visited {
   }
 }
 
-:host([show-composebox_]) #content {
+:host([show-composebox_]) #content,
+:host([show-voice-search-scrim_]) #content {
   z-index: unset;
 }
 
@@ -184,6 +185,7 @@ cr-most-visited {
 }
 
 :host([show-composebox_]) #logo,
+:host([show-voice-search-scrim_]) #logo,
 :host([ntp-realbox-next-enabled_][show-scrim_]) #logo {
   z-index: 2;
 }
@@ -434,8 +436,9 @@ ntp-lens-upload-dialog {
   width: var(--ntp-search-box-width);
 }
 
+/* Disable default scrim and use custom scrim instead. */
 #voiceSearchDialog::backdrop {
-  background: transparent;
+  display: none;
 }
 
 #voiceSearchCardContainer {

@@ -259,9 +259,10 @@ ${this.showVoiceSearchOverlay_ &&
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose}">
   </ntp-voice-search-overlay>
 ` : ''}
-${!this.ntpRealboxNextEnabled_ && this.showComposebox_ ? html`
+${!this.ntpRealboxNextEnabled_ &&
+    (this.showComposebox_ || this.showVoiceSearchScrim_) ? html`
   <div id="scrim"
-      @click="${this.onComposeboxOutsideClick_}"></div>
+      @click="${this.onScrimClick_}"></div>
 ` : ''}
 <svg>
   <defs>
