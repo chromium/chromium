@@ -1690,6 +1690,10 @@ source_set("views_interactive_ui_tests") {
 
   public_deps = [ "//ui/base/mojom" ]
 
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
   if (is_win) {
     sources += [
       "accessibility/ax_system_caret_win_interactive_uitest.cc",

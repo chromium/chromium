@@ -386,7 +386,11 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragDropCompleted(
 
 // TODO(crbug.com/375959961): For X11, the menu is always closed on drag
 // completion because the native widget's state is not properly updated.
-#if !BUILDFLAG(SUPPORTS_OZONE_X11)
+#if BUILDFLAG(IS_OZONE)
+  if (!::ui::OzonePlatform::RunningOnX11ForTest()) {
+    EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
+  }
+#else
   EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
 #endif
 
@@ -421,7 +425,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
 // Test that an in-menu drag asks the delegate to stay open.
 // TODO(pkasting): https://crbug.com/41445629 Fails on Mac.
 // TODO(crbug.com/40911016): Re-enable this test for linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TestInMenuDrag DISABLED_TestInMenuDrag
 #else
 #define MAYBE_TestInMenuDrag TestInMenuDrag
@@ -481,6 +485,13 @@ void MenuViewDragAndDropTestTestInMenuDragNoDrop::OnWidgetDragDropCompleted(
 }
 
 void MenuViewDragAndDropTestTestInMenuDragNoDrop::DoTestWithMenuOpen() {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnX11ForTest()) {
+    Done();
+    GTEST_SKIP() << "For X11, the menu is closed on drag completion because "
+                    "the native widget's state is not properly updated.";
+  }
+#endif
   MenuViewDragAndDropTest::DoTestWithMenuOpen();
 
   // We're going to drag the second menu element.
@@ -505,16 +516,9 @@ void MenuViewDragAndDropTestTestInMenuDragNoDrop::StartDrag() {
 
 // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
 // because the native widget's state is not properly updated.
-#if BUILDFLAG(SUPPORTS_OZONE_X11)
-#define MAYBE_TestInMenuDragNoDrop DISABLED_TestInMenuDragNoDrop
-#else
-#define MAYBE_TestInMenuDragNoDrop TestInMenuDragNoDrop
-#endif
-
 // Test that an in-menu (i.e., entirely implemented in the menu code) does not
 // close the menu when the drag is complete but there is no drop.
-VIEW_TEST(MenuViewDragAndDropTestTestInMenuDragNoDrop,
-          MAYBE_TestInMenuDragNoDrop)
+VIEW_TEST(MenuViewDragAndDropTestTestInMenuDragNoDrop, TestInMenuDragNoDrop)
 
 class MenuViewDragAndDropTestNestedDrag : public MenuViewDragAndDropTest {
  public:
@@ -563,7 +567,13 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragDropCompleted(
   // all subsequent mouse movements will be delivered as "MouseDragged" events
   // to MenuController.
   // Until this is fixed, the menu closes at the end of drags.
-  EXPECT_NE(submenu->IsShowing(), BUILDFLAG(SUPPORTS_OZONE_X11));
+  bool expected_showing = true;
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnX11ForTest()) {
+    expected_showing = false;
+  }
+#endif
+  EXPECT_EQ(submenu->IsShowing(), expected_showing);
 
   // Clean up.
   submenu->Close();
@@ -572,6 +582,14 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragDropCompleted(
 }
 
 void MenuViewDragAndDropTestNestedDrag::DoTestWithMenuOpen() {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    Done();
+    // TODO(crbug.com/41496561): Test is failing under ChromeRefresh2023 on
+    // wayland.
+    GTEST_SKIP() << "Skipping for Wayland";
+  }
+#endif
   MenuViewDragAndDropTest::DoTestWithMenuOpen();
 
   // Cause the target's second child to trigger a mouse up when dragged over.
