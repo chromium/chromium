@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +34,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.EmptyFragment;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
@@ -100,6 +104,25 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     private final FragmentTracker mFragmentTracker = new FragmentTracker(mObservers);
 
     private @Nullable Profile mProfile;
+
+    private @Nullable Context mThemedContext;
+
+    @Override
+    public void onAttach(Context context) {
+        // Traditional settings has the theme applied at the activity level.
+        if (!ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            super.onAttach(context);
+            return;
+        }
+        // Settings in a tab must apply the theme at a fragment level.
+        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        super.onAttach(mThemedContext);
+    }
+
+    @Override
+    public Context getContext() {
+        return mThemedContext != null ? mThemedContext : assumeNonNull(super.getContext());
+    }
 
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {

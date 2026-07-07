@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -35,6 +40,25 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     private Profile mProfile;
     private SettingsCustomTabLauncher mCustomTabLauncher;
     private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
+    private @Nullable Context mThemedContext;
+
+    @Override
+    public void onAttach(Context context) {
+        if (!ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            super.onAttach(context);
+            return;
+        }
+
+        // Ensure settings fragments inherit the same Chromium Settings theme used by
+        // SettingsActivity, even though they are hosted in ChromeTabbedActivity.
+        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        super.onAttach(mThemedContext);
+    }
+
+    @Override
+    public Context getContext() {
+        return mThemedContext != null ? mThemedContext : assumeNonNull(super.getContext());
+    }
 
     /**
      * @return The profile associated with the current Settings screen.

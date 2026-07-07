@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Hosts settings preference fragments inside a native page. See {@link SettingsPage}. */
@@ -25,9 +30,24 @@ public class SettingsHostFragment extends Fragment
 
     private static final int CONTAINER_ID = View.generateViewId();
 
+    private @Nullable Context mThemedContext;
+
     SettingsHostFragment() {
         assert ChromeFeatureList.sSettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use SettingsHostFragment.";
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        // Ensure child fragments inherit the same Chromium Settings theme used by SettingsActivity.
+        // For example, this ensures the left column category labels are styled correctly.
+        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        super.onAttach(mThemedContext);
+    }
+
+    @Override
+    public Context getContext() {
+        return mThemedContext != null ? mThemedContext : assumeNonNull(super.getContext());
     }
 
     @Override

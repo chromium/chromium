@@ -457,7 +457,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         intent.putExtra(
                 Settings.EXTRA_APP_PACKAGE, ContextUtils.getApplicationContext().getPackageName());
-        PackageManager pm = ((Activity) context).getPackageManager();
+        PackageManager pm = context.getPackageManager();
         return intent.resolveActivity(pm) != null;
     }
 
@@ -756,7 +756,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
             if (shouldShowNotificationPref(context, intent)) context.startActivity(intent);
             return false;
         } else if (key.equals(PREF_DEFAULT_BROWSER)) {
-            showDefaultBrowserSettings((Activity) context);
+            Activity activity = ActivityUtil.getActivityFromContext(context);
+            assumeNonNull(activity);
+            showDefaultBrowserSettings(activity);
             return false;
         }
         // TODO(crbug.com/469676538): Handle the rest of preferences.

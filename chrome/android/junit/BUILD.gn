@@ -1502,6 +1502,7 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.settings") {
     data = [ "//tools/metrics/histograms/metadata/settings/enums.xml" ]
     sources = [
+      "src/org/chromium/chrome/browser/settings/ActivityUtilUnitTest.java",
       "src/org/chromium/chrome/browser/settings/ContainmentHelperTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsEnumsTest.java",
@@ -1516,6 +1517,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/actor/android:java",
       "//chrome/browser/settings:java",
       "//third_party/androidx:androidx_preference_preference_java",

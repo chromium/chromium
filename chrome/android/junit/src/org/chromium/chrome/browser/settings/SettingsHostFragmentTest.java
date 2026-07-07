@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 
@@ -81,6 +83,14 @@ public class SettingsHostFragmentTest {
         assertTrue(
                 "Initial fragment should be FakeSettingsFragment",
                 current instanceof FakeSettingsFragment);
+    }
+
+    @Test
+    public void testContextProvidesTheme() {
+        attachHostFragment();
+        Context context = mSettingsHostFragment.getContext();
+        assertNotNull(context);
+        assertEquals(R.style.Theme_Chromium_Settings, context.getThemeResId());
     }
 
     @Test
