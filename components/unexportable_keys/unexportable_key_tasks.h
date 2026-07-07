@@ -24,7 +24,6 @@ class UnexportableKeyProvider;
 
 namespace unexportable_keys {
 
-class RefCountedUnexportableKey;
 class RefCountedUnexportableSigningKey;
 class RefCountedUnexportableAttestationKey;
 
@@ -32,7 +31,7 @@ class RefCountedUnexportableAttestationKey;
 // key provider.
 class GetAllKeysTask
     : public internal::BackgroundTaskImpl<ServiceErrorOr<
-          std::vector<scoped_refptr<RefCountedUnexportableKey>>>> {
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>> {
  public:
   GetAllKeysTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
@@ -89,7 +88,7 @@ class DeleteKeysTask
  public:
   DeleteKeysTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
-      std::vector<scoped_refptr<RefCountedUnexportableKey>> keys,
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback);
 };

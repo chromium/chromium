@@ -119,9 +119,9 @@ std::string_view GetApplicationTag(
 }
 
 // Convenience method to create a `WrappedKeyAndTag` from a
-// `RefCountedUnexportableKey`.
+// `RefCountedUnexportableSigningKey`.
 std::pair<std::vector<uint8_t>, std::string> GetWrappedKeyAndTag(
-    const RefCountedUnexportableKey& key) {
+    const RefCountedUnexportableSigningKey& key) {
   std::string tag;
   if (const crypto::StatefulKey* stateful_key = key.key().AsStatefulKey()) {
     tag = stateful_key->GetKeyTag();
@@ -832,7 +832,7 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   // Delete the keys from the in-memory maps.
-  std::vector<ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>>
+  std::vector<ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       keys_or_errors =
           base::ToVector(key_ids, [&](UnexportableSigningKeyId key_id) {
             return ExtractKeyFromMaps(key_id);
@@ -840,7 +840,7 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
 
   // Collect the keys that were successfully deleted.
   std::erase_if(keys_or_errors, [](auto& k) { return !k.has_value(); });
-  std::vector<scoped_refptr<RefCountedUnexportableKey>> keys_to_delete =
+  std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys_to_delete =
       base::ToVector(keys_or_errors, [](auto& key) { return *std::move(key); });
 
   // If no keys were deleted, return an error.
@@ -927,7 +927,7 @@ UnexportableKeyServiceImpl::GetStatefulKey(
   return base::unexpected(ServiceError::kOperationNotSupported);
 }
 
-ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>
+ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
 UnexportableKeyServiceImpl::ExtractKeyFromMaps(
     UnexportableSigningKeyId key_id) {
   // Check the garbage collection map first. Ensure the `key_id` can't be
@@ -952,10 +952,11 @@ UnexportableKeyServiceImpl::ExtractKeyFromMaps(
 
 ServiceErrorOr<std::vector<UnexportableSigningKeyId>>
 UnexportableKeyServiceImpl::OnGetAllKeysForGarbageCollectionSlowlyImpl(
-    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
+    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
         keys_or_error) {
-  ASSIGN_OR_RETURN(std::vector<scoped_refptr<RefCountedUnexportableKey>> keys,
-                   std::move(keys_or_error));
+  ASSIGN_OR_RETURN(
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
+      std::move(keys_or_error));
 
   auto key_ids = base::ToVector(keys, [](auto& key) { return key->id(); });
   all_gc_keys_by_key_id_.clear();

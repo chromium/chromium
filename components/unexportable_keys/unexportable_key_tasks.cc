@@ -24,27 +24,7 @@ namespace unexportable_keys {
 
 namespace {
 
-ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
-MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
-  if (!key) {
-    return base::unexpected(ServiceError::kCryptoApiFailed);
-  }
-
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key));
-}
-
-ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>
-MakeAttestationKeyRefCounted(
-    std::unique_ptr<crypto::UnexportableAttestationKey> key) {
-  if (!key) {
-    return base::unexpected(ServiceError::kCryptoApiFailed);
-  }
-
-  return base::MakeRefCounted<RefCountedUnexportableAttestationKey>(
-      std::move(key));
-}
-
-ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
+ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
 GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
                  void* task_ptr_for_tracing) {
   TRACE_EVENT("browser", "unexportable_keys::GetAllKeysSlowly",
@@ -57,11 +37,9 @@ GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
           .GetAllKeysSlowly(),
       [] { return ServiceError::kCryptoApiFailed; });
 
-  return base::ToVector<scoped_refptr<RefCountedUnexportableKey>>(
-      std::move(keys),
-      [](std::unique_ptr<crypto::UnexportableSigningKey>& key) {
-        return MakeSigningKeyRefCounted(std::move(key)).value();
-      });
+  return base::ToVector(std::move(keys), [](auto& key) {
+    return MakeRefCountedUnexportableSigningKey(std::move(key));
+  });
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
@@ -76,8 +54,11 @@ GenerateSigningKeySlowly(
   if (!key_provider->SelectAlgorithm(acceptable_algorithms).has_value()) {
     return base::unexpected(ServiceError::kAlgorithmNotSupported);
   }
-  return MakeSigningKeyRefCounted(
-      key_provider->GenerateSigningKeySlowly(acceptable_algorithms));
+  auto key = key_provider->GenerateSigningKeySlowly(acceptable_algorithms);
+  if (!key) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+  return MakeRefCountedUnexportableSigningKey(std::move(key));
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
@@ -87,8 +68,11 @@ FromWrappedSigningKeySlowly(crypto::UnexportableKeyProvider* key_provider,
   TRACE_EVENT("browser", "unexportable_keys::FromWrappedSigningKeySlowly",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
   CHECK(key_provider);
-  return MakeSigningKeyRefCounted(
-      key_provider->FromWrappedSigningKeySlowly(wrapped_key));
+  auto key = key_provider->FromWrappedSigningKeySlowly(wrapped_key);
+  if (!key) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+  return MakeRefCountedUnexportableSigningKey(std::move(key));
 }
 
 ServiceErrorOr<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
@@ -121,7 +105,7 @@ ServiceErrorOr<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
 
 ServiceErrorOr<size_t> DeleteKeysSlowly(
     crypto::UnexportableKeyProvider* key_provider,
-    base::span<const scoped_refptr<RefCountedUnexportableKey>> keys,
+    base::span<const scoped_refptr<RefCountedUnexportableSigningKey>> keys,
     void* task_ptr_for_tracing) {
   TRACE_EVENT("browser", "unexportable_keys::DeleteKeysSlowly",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
@@ -156,8 +140,11 @@ GenerateAttestationKeySlowly(
   if (!key_provider->SelectAlgorithm(acceptable_algorithms).has_value()) {
     return base::unexpected(ServiceError::kAlgorithmNotSupported);
   }
-  return MakeAttestationKeyRefCounted(
-      key_provider->GenerateAttestationKeySlowly(acceptable_algorithms));
+  auto key = key_provider->GenerateAttestationKeySlowly(acceptable_algorithms);
+  if (!key) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+  return MakeRefCountedUnexportableAttestationKey(std::move(key));
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>
@@ -167,8 +154,11 @@ FromWrappedAttestationKeySlowly(crypto::UnexportableKeyProvider* key_provider,
   TRACE_EVENT("browser", "unexportable_keys::FromWrappedAttestationKeySlowly",
               perfetto::Flow::FromPointer(task_ptr_for_tracing));
   CHECK(key_provider);
-  return MakeAttestationKeyRefCounted(
-      key_provider->FromWrappedAttestationKeySlowly(wrapped_key));
+  auto key = key_provider->FromWrappedAttestationKeySlowly(wrapped_key);
+  if (!key) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+  return MakeRefCountedUnexportableAttestationKey(std::move(key));
 }
 
 ServiceErrorOr<crypto::AttestationStatement> CertifySlowly(
@@ -254,7 +244,7 @@ bool SignTask::ShouldRetryBasedOnResult(
 
 DeleteKeysTask::DeleteKeysTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
-    std::vector<scoped_refptr<RefCountedUnexportableKey>> keys,
+    std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback)
     : internal::BackgroundTaskImpl<DeleteKeysTask::ReturnType>(

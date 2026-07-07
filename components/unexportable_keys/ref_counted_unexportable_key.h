@@ -16,20 +16,6 @@
 
 namespace unexportable_keys {
 
-// Shared base class for lifetime interlocking of unexportable keys.
-class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableKey
-    : public base::RefCountedThreadSafe<RefCountedUnexportableKey> {
- public:
-  virtual crypto::UnexportableSigningKey& key() const = 0;
-  virtual const UnexportableSigningKeyId& id() const = 0;
-
- protected:
-  virtual ~RefCountedUnexportableKey() = default;
-
- private:
-  friend class base::RefCountedThreadSafe<RefCountedUnexportableKey>;
-};
-
 // RefCounted wrapper around `crypto::UnexportableSigningKey`.
 //
 // Also contains a unique id token that identifies a class instance. This id can
@@ -37,24 +23,26 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableKey
 // infos). It doesn't guarantee that two objects with different ids have
 // different underlying keys.
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
-    : public RefCountedUnexportableKey {
+    : public base::RefCountedThreadSafe<RefCountedUnexportableSigningKey> {
  public:
   using IdType = UnexportableSigningKeyId;
 
-  // `key` must be non-null.
-  explicit RefCountedUnexportableSigningKey(
-      std::unique_ptr<crypto::UnexportableSigningKey> key);
+  virtual crypto::UnexportableSigningKey& key() const = 0;
+  virtual const UnexportableSigningKeyId& id() const = 0;
 
-  // Use covariance to return more specific types for `key` and `id`.
-  crypto::UnexportableSigningKey& key() const override;
-  const UnexportableSigningKeyId& id() const override;
+ protected:
+  virtual ~RefCountedUnexportableSigningKey() = default;
 
  private:
-  ~RefCountedUnexportableSigningKey() override;
-
-  const std::unique_ptr<crypto::UnexportableSigningKey> key_;
-  const UnexportableSigningKeyId id_;
+  friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;
 };
+
+// Creates a `RefCountedUnexportableSigningKey` wrapping `key`.
+// `key` must be non-null.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
+scoped_refptr<RefCountedUnexportableSigningKey>
+MakeRefCountedUnexportableSigningKey(
+    std::unique_ptr<crypto::UnexportableSigningKey> key);
 
 // RefCounted wrapper around `crypto::UnexportableAttestationKey`.
 //
@@ -63,24 +51,24 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
 // infos). It doesn't guarantee that two objects with different ids have
 // different underlying keys.
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableAttestationKey
-    : public RefCountedUnexportableKey {
+    : public RefCountedUnexportableSigningKey {
  public:
   using IdType = UnexportableAttestationKeyId;
 
-  // `key` must be non-null.
-  explicit RefCountedUnexportableAttestationKey(
-      std::unique_ptr<crypto::UnexportableAttestationKey> key);
-
   // Use covariance to return more specific types for `key` and `id`.
-  crypto::UnexportableAttestationKey& key() const override;
-  const UnexportableAttestationKeyId& id() const override;
+  crypto::UnexportableAttestationKey& key() const override = 0;
+  const UnexportableAttestationKeyId& id() const override = 0;
 
- private:
-  ~RefCountedUnexportableAttestationKey() override;
-
-  const std::unique_ptr<crypto::UnexportableAttestationKey> key_;
-  const UnexportableAttestationKeyId id_;
+ protected:
+  ~RefCountedUnexportableAttestationKey() override = default;
 };
+
+// Creates a `RefCountedUnexportableAttestationKey` wrapping `key`.
+// `key` must be non-null.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
+scoped_refptr<RefCountedUnexportableAttestationKey>
+MakeRefCountedUnexportableAttestationKey(
+    std::unique_ptr<crypto::UnexportableAttestationKey> key);
 
 }  // namespace unexportable_keys
 

@@ -11,39 +11,58 @@
 
 namespace unexportable_keys {
 
-RefCountedUnexportableSigningKey::RefCountedUnexportableSigningKey(
-    std::unique_ptr<crypto::UnexportableSigningKey> key)
-    : key_(std::move(key)) {
-  CHECK(key_);
+namespace {
+
+class RefCountedUnexportableSigningKeyImpl
+    : public RefCountedUnexportableSigningKey {
+ public:
+  explicit RefCountedUnexportableSigningKeyImpl(
+      std::unique_ptr<crypto::UnexportableSigningKey> key)
+      : key_(std::move(key)) {}
+
+  crypto::UnexportableSigningKey& key() const override { return *key_; }
+  const UnexportableSigningKeyId& id() const override { return id_; }
+
+ private:
+  ~RefCountedUnexportableSigningKeyImpl() override = default;
+
+  const std::unique_ptr<crypto::UnexportableSigningKey> key_;
+  const UnexportableSigningKeyId id_;
+};
+
+class RefCountedUnexportableAttestationKeyImpl
+    : public RefCountedUnexportableAttestationKey {
+ public:
+  explicit RefCountedUnexportableAttestationKeyImpl(
+      std::unique_ptr<crypto::UnexportableAttestationKey> key)
+      : key_(std::move(key)) {}
+
+  crypto::UnexportableAttestationKey& key() const override { return *key_; }
+  const UnexportableAttestationKeyId& id() const override { return id_; }
+
+ private:
+  ~RefCountedUnexportableAttestationKeyImpl() override = default;
+
+  const std::unique_ptr<crypto::UnexportableAttestationKey> key_;
+  const UnexportableAttestationKeyId id_;
+};
+
+}  // namespace
+
+scoped_refptr<RefCountedUnexportableSigningKey>
+MakeRefCountedUnexportableSigningKey(
+    std::unique_ptr<crypto::UnexportableSigningKey> key) {
+  CHECK(key);
+  return base::MakeRefCounted<RefCountedUnexportableSigningKeyImpl>(
+      std::move(key));
 }
 
-RefCountedUnexportableSigningKey::~RefCountedUnexportableSigningKey() = default;
-
-crypto::UnexportableSigningKey& RefCountedUnexportableSigningKey::key() const {
-  return *key_;
-}
-
-const UnexportableSigningKeyId& RefCountedUnexportableSigningKey::id() const {
-  return id_;
-}
-
-RefCountedUnexportableAttestationKey::RefCountedUnexportableAttestationKey(
-    std::unique_ptr<crypto::UnexportableAttestationKey> key)
-    : key_(std::move(key)) {
-  CHECK(key_);
-}
-
-RefCountedUnexportableAttestationKey::~RefCountedUnexportableAttestationKey() =
-    default;
-
-crypto::UnexportableAttestationKey& RefCountedUnexportableAttestationKey::key()
-    const {
-  return *key_;
-}
-
-const UnexportableAttestationKeyId& RefCountedUnexportableAttestationKey::id()
-    const {
-  return id_;
+scoped_refptr<RefCountedUnexportableAttestationKey>
+MakeRefCountedUnexportableAttestationKey(
+    std::unique_ptr<crypto::UnexportableAttestationKey> key) {
+  CHECK(key);
+  return base::MakeRefCounted<RefCountedUnexportableAttestationKeyImpl>(
+      std::move(key));
 }
 
 }  // namespace unexportable_keys

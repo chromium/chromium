@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
  private:
   using AllKeysForGarbageCollectionMap =
       absl::flat_hash_map<UnexportableSigningKeyId,
-                          scoped_refptr<RefCountedUnexportableKey>>;
+                          scoped_refptr<RefCountedUnexportableSigningKey>>;
 
   // Repositories storing and managing the lifetime of loaded unexportable
   // signing and attestation keys, respectively.
@@ -173,13 +173,14 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // Removes the key with `key_id` from the in-memory maps.
   // Returns the mapped key on success, or `ServiceError::kKeyNotFound` if the
   // key was not found.
-  ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>> ExtractKeyFromMaps(
-      UnexportableSigningKeyId key_id);
+  ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+  ExtractKeyFromMaps(UnexportableSigningKeyId key_id);
 
   // Callback for `GetAllKeysForGarbageCollectionSlowlyAsync()`.
   ServiceErrorOr<std::vector<UnexportableSigningKeyId>>
   OnGetAllKeysForGarbageCollectionSlowlyImpl(
-      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
+      ServiceErrorOr<
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
           keys_or_error);
 
   // Generic trampoline that runs the callback only if the WeakPtr used to bind

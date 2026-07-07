@@ -121,8 +121,9 @@ void UnexportableKeyTaskManager::GetAllKeysForGarbageCollectionSlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(
-        ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>)>
+    base::OnceCallback<
+        void(ServiceErrorOr<
+             std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>)>
         callback) {
   auto callback_wrapper = WrapCallbackWithMetrics(
       BackgroundTaskType::kGetAllKeys, origin, std::move(callback));
@@ -229,7 +230,7 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
 void UnexportableKeyTaskManager::DeleteKeysSlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,
-    std::vector<scoped_refptr<RefCountedUnexportableKey>> keys,
+    std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   auto callback_wrapper = WrapCallbackWithMetrics(
