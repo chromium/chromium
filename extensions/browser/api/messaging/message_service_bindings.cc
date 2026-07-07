@@ -73,15 +73,18 @@ bool IsPortContextSandboxed(RenderProcessHost& process,
   return frame->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
 }
 
-// Returns true if `source_endpoint` can be legitimately claimed/used by
-// `process`.  Otherwise reports a bad IPC message and returns false (expecting
-// the caller to not take any action based on the rejected, untrustworthy
-// `source_endpoint`). `source_context` provides additional information about
-// the source, such as whether it refers to a frame or a worker.
-bool IsValidMessagingSource(RenderProcessHost& process,
-                            const MessagingEndpoint& source_endpoint,
-                            const PortContext& source_context) {
-  switch (source_endpoint.type) {
+// Returns true if `source_endpoint_type` and `source_endpoint_extension_id` can
+// be legitimately claimed/used by `process`.  Otherwise reports a bad IPC
+// message and returns false (expecting the caller to not take any action based
+// on the rejected, untrustworthy endpoint). `source_context` provides
+// additional information about the source, such as whether it refers to a frame
+// or a worker.
+bool IsValidMessagingSource(
+    RenderProcessHost& process,
+    mojom::MessagingEndpointType source_endpoint_type,
+    const std::optional<ExtensionId>& source_endpoint_extension_id,
+    const PortContext& source_context) {
+  switch (source_endpoint_type) {
     case MessagingEndpoint::Type::kNativeApp:
       // Requests for channels initiated by native applications don't originate
       // from renderer processes.
@@ -90,7 +93,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       return false;
 
     case MessagingEndpoint::Type::kExtension:
-      if (!source_endpoint.extension_id.has_value()) {
+      if (!source_endpoint_extension_id.has_value()) {
         if (!base::FeatureList::IsEnabled(
                 extensions_features::kCheckingNoExtensionIdInExtensionIpcs)) {
           base::UmaHistogramSparse(
@@ -103,27 +106,39 @@ bool IsValidMessagingSource(RenderProcessHost& process,
         return false;
       }
       if (!util::CanRendererHostExtensionOrigin(
-              process.GetDeprecatedID(), source_endpoint.extension_id.value(),
+              process.GetDeprecatedID(), source_endpoint_extension_id.value(),
               IsPortContextSandboxed(process, source_context))) {
         bad_message::ReceivedBadMessage(
             &process,
             bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
         return false;
       }
+      if (!ProcessMap::Get(process.GetBrowserContext())
+               ->Contains(*source_endpoint_extension_id, process.GetID())) {
+        // The process isn't in the extension process map. This is legitimately
+        // possible for extension frames that are marked as sandboxed in their
+        // manifests. However, these frames do *not* have access to extension
+        // APIs, including messaging. As such, we consider this an invalid
+        // messaging attempt and kill the renderer.
+        bad_message::ReceivedBadMessage(
+            &process, bad_message::EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS);
+        return false;
+      }
+
       return true;
 
     case MessagingEndpoint::Type::kContentScript: {
-      if (!source_endpoint.extension_id) {
+      if (!source_endpoint_extension_id) {
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
         return false;
       }
       bool is_content_script_expected =
           ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
-              process, *source_endpoint.extension_id);
+              process, *source_endpoint_extension_id);
       if (!is_content_script_expected) {
         debug::ScopedScriptInjectionTrackerFailureCrashKeys tracker_keys(
-            *process.GetBrowserContext(), source_endpoint.extension_id.value());
+            *process.GetBrowserContext(), source_endpoint_extension_id.value());
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
         return false;
@@ -132,14 +147,14 @@ bool IsValidMessagingSource(RenderProcessHost& process,
     }
 
     case MessagingEndpoint::Type::kUserScript: {
-      if (!source_endpoint.extension_id) {
+      if (!source_endpoint_extension_id) {
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
         return false;
       }
       bool is_user_script_expected =
           ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
-              process, *source_endpoint.extension_id);
+              process, *source_endpoint_extension_id);
       if (!is_user_script_expected) {
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
@@ -152,7 +167,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
     case MessagingEndpoint::Type::kWebPage:
       // NOTE: We classify hosted apps as kWebPage, but we don't include
       // the extension ID in the source for those messages.
-      if (source_endpoint.extension_id) {
+      if (source_endpoint_extension_id) {
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE);
         return false;
@@ -459,7 +474,8 @@ void MessageService::OpenChannelToExtension(
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   debug::ScopedPortContextCrashKeys port_context_crash_keys(
       source.port_context());
-  if (!IsValidMessagingSource(*process, info.source_endpoint,
+  if (!IsValidMessagingSource(*process, info.source_endpoint.type,
+                              info.source_endpoint.extension_id,
                               source.port_context()) ||
       !IsValidMessagingTarget(*process, info.source_endpoint, info.target_id) ||
       !IsValidSourceUrl(*process, info.source_url, source.port_context()) ||
@@ -526,9 +542,16 @@ void MessageService::OpenChannelToTab(
   std::optional<ExtensionId> extension_id =
       ValidateSourceContextAndExtractExtensionId(*process,
                                                  source.port_context());
-  if (!extension_id) {
+  // tabs.sendMessage() and tabs.connect() are only available to extensions, so
+  // we validate against a kExtension endpoint type.
+  constexpr mojom::MessagingEndpointType endpoint_type =
+      mojom::MessagingEndpointType::kExtension;
+  if (!extension_id ||
+      !IsValidMessagingSource(*process, endpoint_type, extension_id,
+                              source.port_context())) {
     // No need to call ReceivedBadMessage here, because it will be called (when
-    // appropriate) within ValidateSourceContextAndExtractExtensionId.
+    // appropriate) within ValidateSourceContextAndExtractExtensionId() or
+    // IsValidMessagingSource().
     return;
   }
 
