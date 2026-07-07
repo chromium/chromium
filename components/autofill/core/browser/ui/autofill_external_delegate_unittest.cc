@@ -46,7 +46,6 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
-#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
@@ -368,14 +367,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void, OnSuggestionsHidden, (SuggestionHidingReason), (override));
 };
 
-class StubAtMemoryQueryServiceDelegate : public AtMemoryQueryServiceDelegate {
- public:
-  void RetrieveLiveTabContext(
-      LiveTabContextQuery query,
-      base::OnceCallback<void(LiveTabContextResponse)> callback) override {
-    std::move(callback).Run({});
-  }
-};
 
 class AutofillExternalDelegateTest : public testing::Test,
                                      public WithTestAutofillClientDriverManager<

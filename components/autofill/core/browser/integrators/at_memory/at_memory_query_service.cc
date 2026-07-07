@@ -26,7 +26,6 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
-#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
@@ -619,12 +618,10 @@ void QueryPersonalContextDebug(
 }  // namespace
 
 AtMemoryQueryService::AtMemoryQueryService(
-    std::unique_ptr<AtMemoryQueryServiceDelegate> delegate,
     std::unique_ptr<AutofillDataProvider> data_provider,
     personal_context::PersonalContextService* personal_context_service,
     const std::string& locale)
-    : delegate_(std::move(delegate)),
-      data_provider_(std::move(data_provider)),
+    : data_provider_(std::move(data_provider)),
       personal_context_service_(personal_context_service),
       locale_(locale) {}
 

@@ -436,8 +436,6 @@ static_library("browser") {
     "integrators/address_on_typing/address_on_typing_manager.h",
     "integrators/at_memory/at_memory_query_service.cc",
     "integrators/at_memory/at_memory_query_service.h",
-    "integrators/at_memory/at_memory_query_service_delegate.cc",
-    "integrators/at_memory/at_memory_query_service_delegate.h",
     "integrators/autofill_ai/autofill_ai_import_utils.cc",
     "integrators/autofill_ai/autofill_ai_import_utils.h",
     "integrators/autofill_ai/autofill_ai_labels.cc",

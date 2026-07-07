@@ -24,8 +24,6 @@ source_set("accessibility_annotator") {
 source_set("impl") {
   sources = [
     "accessibility_annotator_backend_factory.cc",
-    "at_memory_query_service_delegate_impl.cc",
-    "at_memory_query_service_delegate_impl.h",
     "at_memory_query_service_factory.cc",
   ]
   deps = [
@@ -75,22 +73,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-}
-
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "at_memory_query_service_delegate_impl_browsertest.cc" ]
-    deps = [
-      ":accessibility_annotator",
-      ":impl",
-      "//base",
-      "//chrome/test:test_support",
-      "//components/page_content_annotations/content:test_support",
-      "//components/passage_embeddings/core:test_support",
-      "//content/test:test_support",
-      "//testing/gtest",
-    ]
-  }
 }
