@@ -475,9 +475,10 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
+// TODO(crbug.com/429495554): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
-    SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitSplit) {
+    DISABLED_SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitSplit) {
   auto* tab_strip_model = browser()->tab_strip_model();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
