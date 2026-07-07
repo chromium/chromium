@@ -17,6 +17,9 @@ namespace disk_cache {
 
 class DummyBackend {
  public:
+  DummyBackend() { did_construct_ = true; }
+  ~DummyBackend() { did_destruct_ = true; }
+
   void VoidMethod() { did_run_void_method_ = true; }
   void VoidMethodWithArgs(int x) {
     did_run_void_method_with_args_ = true;
@@ -31,6 +34,8 @@ class DummyBackend {
     return x * 2;
   }
 
+  static bool did_construct_;
+  static bool did_destruct_;
   static bool did_run_void_method_;
   static bool did_run_void_method_with_args_;
   static bool did_run_int_method_;
@@ -38,6 +43,8 @@ class DummyBackend {
   static int arg_x_;
 };
 
+bool DummyBackend::did_construct_ = false;
+bool DummyBackend::did_destruct_ = false;
 bool DummyBackend::did_run_void_method_ = false;
 bool DummyBackend::did_run_void_method_with_args_ = false;
 bool DummyBackend::did_run_int_method_ = false;
@@ -151,6 +158,20 @@ TEST_F(SqlTrackedSequenceBoundTest, MissingWithArgs) {
   EXPECT_CHECK_DEATH_WITH(
       tracked_sequence_bound.AsyncCall(&DummyBackend::VoidMethodWithArgs),
       "Wrong number of arguments provided to WithArgs");
+}
+
+TEST_F(SqlTrackedSequenceBoundTest, ConstructionAndDestructionTracked) {
+  DummyBackend::did_construct_ = false;
+  DummyBackend::did_destruct_ = false;
+
+  {
+    SqlTrackedSequenceBound<DummyBackend> tracked_sequence_bound(
+        base::ThreadPool::CreateSequencedTaskRunner({}), async_task_manager_);
+  }
+
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(DummyBackend::did_construct_);
+  EXPECT_TRUE(DummyBackend::did_destruct_);
 }
 
 }  // namespace disk_cache

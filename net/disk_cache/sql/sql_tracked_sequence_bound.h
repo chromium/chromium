@@ -42,20 +42,42 @@ class SqlTrackedSequenceBound {
   SqlTrackedSequenceBound(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           SqlAsyncTaskManager& async_task_manager,
                           Args&&... args)
-      : async_task_manager_(&async_task_manager),
-        sequence_bound_(std::move(task_runner), std::forward<Args>(args)...) {
+      : task_runner_(task_runner),
+        async_task_manager_(&async_task_manager),
+        sequence_bound_(task_runner, std::forward<Args>(args)...) {
     CHECK(async_task_manager_);
+    PostTrackingTask();
   }
 
-  SqlTrackedSequenceBound(SqlTrackedSequenceBound&&) = default;
-  SqlTrackedSequenceBound& operator=(SqlTrackedSequenceBound&&) = default;
+  SqlTrackedSequenceBound(SqlTrackedSequenceBound&& other)
+      : task_runner_(std::move(other.task_runner_)),
+        async_task_manager_(other.async_task_manager_),
+        sequence_bound_(std::move(other.sequence_bound_)) {
+    other.async_task_manager_ = nullptr;
+  }
 
-  ~SqlTrackedSequenceBound() = default;
+  SqlTrackedSequenceBound& operator=(SqlTrackedSequenceBound&& other) {
+    if (this != &other) {
+      Reset();
+      task_runner_ = std::move(other.task_runner_);
+      async_task_manager_ = other.async_task_manager_;
+      sequence_bound_ = std::move(other.sequence_bound_);
+      other.async_task_manager_ = nullptr;
+    }
+    return *this;
+  }
+
+  ~SqlTrackedSequenceBound() { Reset(); }
 
   bool is_null() const { return sequence_bound_.is_null(); }
   explicit operator bool() const { return !is_null(); }
 
-  void Reset() { sequence_bound_.Reset(); }
+  void Reset() {
+    if (!sequence_bound_.is_null()) {
+      sequence_bound_.Reset();
+      PostTrackingTask();
+    }
+  }
 
   template <typename R, typename C, typename... Args>
   auto AsyncCall(
@@ -183,6 +205,15 @@ class SqlTrackedSequenceBound {
     ArgsTuple args_;
   };
 
+  void PostTrackingTask() {
+    if (async_task_manager_ && task_runner_) {
+      task_runner_->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(),
+          base::DoNothingWithBoundArgs(async_task_manager_->StartTask()));
+    }
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<SqlAsyncTaskManager> async_task_manager_ = nullptr;
   base::SequenceBound<T> sequence_bound_;
 };
