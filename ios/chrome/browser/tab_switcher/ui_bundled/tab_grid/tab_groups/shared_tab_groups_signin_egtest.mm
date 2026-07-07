@@ -120,6 +120,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 - (void)tearDownHelper {
   [super tearDownHelper];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
   // Delete all groups.
   [TabGroupAppInterface cleanup];
 }
