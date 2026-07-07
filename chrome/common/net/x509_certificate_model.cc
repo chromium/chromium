@@ -518,19 +518,6 @@ std::string FormatGeneralName(int key_string_id, std::string_view value) {
   return FormatGeneralName(l10n_util::GetStringUTF16(key_string_id), value);
 }
 
-bool ParseOtherName(bssl::der::Input other_name,
-                    bssl::der::Input* type,
-                    bssl::der::Input* value) {
-  // OtherName ::= SEQUENCE {
-  //      type-id    OBJECT IDENTIFIER,
-  //      value      [0] EXPLICIT ANY DEFINED BY type-id }
-  bssl::der::Parser sequence_parser(other_name);
-  return sequence_parser.ReadTag(CBS_ASN1_OBJECT, type) &&
-         sequence_parser.ReadTag(
-             CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0, value) &&
-         !sequence_parser.HasMore();
-}
-
 std::optional<std::string> ProcessGeneralNames(
     const bssl::GeneralNames& names) {
   // Note: The old x509_certificate_model_nss impl would process names in the

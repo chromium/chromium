@@ -114,6 +114,55 @@ class X509CertificateModel : public X509CertificateModelBase {
   // Returns the BasicConstraints pathLenConstraint, or nullopt if the extension
   // is absent, could not be parsed, or does not specify a path length.
   std::optional<uint8_t> GetBasicConstraintsPathLen() const;
+
+  // Returns true if the SubjectKeyIdentifier extension is present and marked
+  // critical.
+  bool IsSubjectKeyIdentifierCritical() const;
+
+  // Returns the SubjectKeyIdentifier key identifier as a hex string, or an
+  // empty string if the extension is not present or could not be parsed.
+  std::string GetSubjectKeyIdentifier() const;
+
+  // A single decoded RFC 5280 GeneralName referenced from bssl::GeneralNames.
+  // `value` holds the decoded text for textual variants
+  // (URI/DNS/email/IP/registeredID) or hex for opaque ones
+  // (x400Address/ediPartyName).
+  struct GeneralName {
+    enum class Type {
+      kOtherName,
+      kRFC822Name,
+      kDNSName,
+      kX400Address,
+      kDirectoryName,
+      kEDIPartyName,
+      kURI,
+      kIPAddress,
+      kRegisteredID,
+    };
+    Type type;
+    std::string value;
+    // For `kOtherName` only: the type-id. Empty for all other types.
+    std::string other_name_oid;
+    // For `kDirectoryName` only: the parsed RDNs. Empty for all other types.
+    std::vector<RDNAttribute> directory_name;
+  };
+
+  // Returns true if the AuthorityKeyIdentifier extension is present and marked
+  // critical.
+  bool IsAuthorityKeyIdentifierCritical() const;
+
+  // Returns the AuthorityKeyIdentifier keyIdentifier as a hex string, or an
+  // empty string if the extension is not present, could not be parsed, or does
+  // not contain a keyIdentifier.
+  std::string GetAuthorityKeyIdentifier() const;
+
+  // Returns the authorityCertIssuer entries decoded as GeneralNames, grouped by
+  // type (directoryName, URI, DNS, ...). Empty if the extension is absent or
+  // does not contain an authorityCertIssuer.
+  std::vector<GeneralName> GetAuthorityKeyIdentifierIssuer() const;
+
+  // Returns the authorityCertSerialNumber as hex, or an empty string if absent.
+  std::string GetAuthorityKeyIdentifierSerial() const;
 };
 
 }  // namespace x509_certificate_model

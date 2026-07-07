@@ -37,6 +37,21 @@ bool ContainsAttribute(
   return false;
 }
 
+// Returns true if any directoryName GeneralName in `names` carries an RDN
+// matching (`oid`, `value`) in its parsed `directory_name` list.
+bool ContainsDirectoryNameAttribute(
+    const std::vector<X509CertificateModel::GeneralName>& names,
+    std::string_view oid,
+    std::string_view value) {
+  for (const auto& name : names) {
+    if (name.type == X509CertificateModel::GeneralName::Type::kDirectoryName &&
+        ContainsAttribute(name.directory_name, oid, value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class X509CertificateModelTest : public PlatformTest {};
@@ -372,6 +387,16 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
   ASSERT_EQ(2u, eku_purposes.size());
   EXPECT_EQ("Server Authentication", eku_purposes[0]);
   EXPECT_EQ("Client Authentication", eku_purposes[1]);
+
+  EXPECT_FALSE(model.IsSubjectKeyIdentifierCritical());
+  EXPECT_EQ("59 BC D9 69 F7 B0 65 BB C8 34 C5 D2 C2 EF 17 78 A6 47 1E 8B",
+            model.GetSubjectKeyIdentifier());
+
+  EXPECT_FALSE(model.IsAuthorityKeyIdentifierCritical());
+  EXPECT_EQ("8A FC 14 1B 3D A3 59 67 A5 3B E1 73 92 A6 62 91 7F E4 78 30",
+            model.GetAuthorityKeyIdentifier());
+  EXPECT_TRUE(model.GetAuthorityKeyIdentifierIssuer().empty());
+  EXPECT_EQ("", model.GetAuthorityKeyIdentifierSerial());
 }
 
 TEST_F(X509CertificateModelTest, DiginotarCert) {
@@ -397,6 +422,76 @@ TEST_F(X509CertificateModelTest, DiginotarCert) {
   std::optional<uint8_t> path_len = model.GetBasicConstraintsPathLen();
   ASSERT_TRUE(path_len.has_value());
   EXPECT_EQ(0u, path_len.value());
+
+  EXPECT_FALSE(model.IsSubjectKeyIdentifierCritical());
+  EXPECT_EQ("DF 33 C0 AF 92 FE 37 FC B6 D8 16 16 D0 D9 B1 91 D5 FA 6E A5",
+            model.GetSubjectKeyIdentifier());
+
+  EXPECT_FALSE(model.IsAuthorityKeyIdentifierCritical());
+  EXPECT_EQ("88 68 BF E0 8E 35 C4 3B 38 6B 62 F7 28 3B 84 81 C8 0C D7 4D",
+            model.GetAuthorityKeyIdentifier());
+}
+
+TEST_F(X509CertificateModelTest, DiginotarCyberCa) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "diginotar_cyber_ca.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  // The cert has 6 extensions in this DER order.
+  EXPECT_THAT(
+      model.GetExtensionOidsInOrder(),
+      testing::ElementsAre(bssl::der::Input(bssl::kBasicConstraintsOid),
+                           bssl::der::Input(bssl::kCertificatePoliciesOid),
+                           bssl::der::Input(bssl::kKeyUsageOid),
+                           bssl::der::Input(bssl::kAuthorityKeyIdentifierOid),
+                           bssl::der::Input(bssl::kCrlDistributionPointsOid),
+                           bssl::der::Input(bssl::kSubjectKeyIdentifierOid)));
+
+  EXPECT_TRUE(model.IsBasicConstraintsCritical());
+  EXPECT_TRUE(model.IsBasicConstraintsCA());
+  std::optional<uint8_t> path_len = model.GetBasicConstraintsPathLen();
+  ASSERT_TRUE(path_len.has_value());
+  EXPECT_EQ(1u, path_len.value());
+
+  EXPECT_TRUE(model.IsKeyUsageCritical());
+  EXPECT_EQ("Certificate Signer, CRL Signer", model.GetKeyUsageString());
+
+  EXPECT_FALSE(model.IsSubjectKeyIdentifierCritical());
+  EXPECT_EQ("AB F9 68 DF CF 4A 37 D7 7B 45 8C 5F 72 DE 40 44 C3 65 BB C2",
+            model.GetSubjectKeyIdentifier());
+
+  EXPECT_FALSE(model.IsAuthorityKeyIdentifierCritical());
+  EXPECT_EQ("A6 0C 1D 9F 61 FF 07 17 B5 BF 38 46 DB 43 30 D5 8E B0 52 06",
+            model.GetAuthorityKeyIdentifier());
+}
+
+TEST_F(X509CertificateModelTest, AuthorityKeyIdentifierAllFields) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "diginotar_cyber_ca.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ("A6 0C 1D 9F 61 FF 07 17 B5 BF 38 46 DB 43 30 D5 8E B0 52 06",
+            model.GetAuthorityKeyIdentifier());
+
+  auto aki_issuer = model.GetAuthorityKeyIdentifierIssuer();
+  EXPECT_FALSE(aki_issuer.empty());
+  // 2.5.4.3 = commonName.
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.3",
+                                             "GTE CyberTrust Global Root"));
+  // 2.5.4.6 = countryName.
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.6", "US"));
+  // 2.5.4.10 = organizationName.
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.10",
+                                             "GTE Corporation"));
+  // 2.5.4.11 = organizationalUnitName.
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(aki_issuer, "2.5.4.11",
+                                             "GTE CyberTrust Solutions, Inc."));
+
+  EXPECT_EQ("01 A5", model.GetAuthorityKeyIdentifierSerial());
 }
 
 }  // namespace x509_certificate_model

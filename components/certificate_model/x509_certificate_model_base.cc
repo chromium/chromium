@@ -61,6 +61,23 @@ bool ParseSubjectPublicKeyInfo(bssl::der::Input spki_tlv,
   return true;
 }
 
+std::string GetAlgorithmOidTextOrNumeric(bssl::der::Input oid) {
+  std::optional<int> common_id = GetCommonOidStringId(oid);
+  if (common_id.has_value()) {
+    return l10n_util::GetStringUTF8(*common_id);
+  }
+  return OidToNumericString(oid);
+}
+
+std::string ProcessAlgorithmIdentifier(bssl::der::Input algorithm_tlv) {
+  bssl::der::Input oid;
+  bssl::der::Input params;
+  if (!bssl::ParseAlgorithmIdentifier(algorithm_tlv, &oid, &params)) {
+    return std::string();
+  }
+  return GetAlgorithmOidTextOrNumeric(oid);
+}
+
 }  // namespace
 
 // ---------------------------------------------------------------------------
@@ -260,26 +277,18 @@ std::optional<int> GetCommonOidStringId(bssl::der::Input oid) {
   return std::nullopt;
 }
 
-namespace {
-
-std::string GetAlgorithmOidTextOrNumeric(bssl::der::Input oid) {
-  std::optional<int> common_id = GetCommonOidStringId(oid);
-  if (common_id.has_value()) {
-    return l10n_util::GetStringUTF8(*common_id);
-  }
-  return OidToNumericString(oid);
+bool ParseOtherName(bssl::der::Input other_name,
+                    bssl::der::Input* type,
+                    bssl::der::Input* value) {
+  // OtherName ::= SEQUENCE {
+  //      type-id    OBJECT IDENTIFIER,
+  //      value      [0] EXPLICIT ANY DEFINED BY type-id }
+  bssl::der::Parser sequence_parser(other_name);
+  return sequence_parser.ReadTag(CBS_ASN1_OBJECT, type) &&
+         sequence_parser.ReadTag(
+             CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0, value) &&
+         !sequence_parser.HasMore();
 }
-
-std::string ProcessAlgorithmIdentifier(bssl::der::Input algorithm_tlv) {
-  bssl::der::Input oid;
-  bssl::der::Input params;
-  if (!bssl::ParseAlgorithmIdentifier(algorithm_tlv, &oid, &params)) {
-    return std::string();
-  }
-  return GetAlgorithmOidTextOrNumeric(oid);
-}
-
-}  // namespace
 
 // ---------------------------------------------------------------------------
 // X509CertificateModelBase implementation.

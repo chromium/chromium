@@ -158,6 +158,17 @@ std::optional<std::string> ProcessUserNoticeDisplayText(CBS_ASN1_TAG tag,
 // found, or std::nullopt if the OID is not in the shared map.
 std::optional<int> GetCommonOidStringId(bssl::der::Input oid);
 
+// Splits an OtherName value (from bssl::GeneralNames::other_names, with the
+// outer [0]/SEQUENCE tags already stripped) into its type-id OBJECT IDENTIFIER
+// and its [0] EXPLICIT value. Both outputs are raw DER. Returns false if the
+// structure is malformed.
+//   OtherName ::= SEQUENCE {
+//     type-id  OBJECT IDENTIFIER,
+//     value    [0] EXPLICIT ANY DEFINED BY type-id }
+bool ParseOtherName(bssl::der::Input other_name,
+                    bssl::der::Input* type,
+                    bssl::der::Input* value);
+
 }  // namespace x509_certificate_model
 
 #endif  // COMPONENTS_CERTIFICATE_MODEL_X509_CERTIFICATE_MODEL_BASE_H_
