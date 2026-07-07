@@ -18,9 +18,11 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
@@ -39,12 +41,16 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using RenderFrameHost = content::RenderFrameHost;
 
@@ -95,7 +101,9 @@ void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
 
   switch (enclave_state_) {
     case EnclaveState::kUnknown:
-      // EnclaveLoaded() will invoke ContinuePendingUpgradeRequest().
+    case EnclaveState::kLoading:
+      // EnclaveLoaded() or OnAccountStateDownloaded() will invoke
+      // ContinuePendingUpgradeRequest().
       break;
     case EnclaveState::kError:
       FinishRequest(PasskeyUpgradeResult::kEnclaveNotInitialized);
@@ -236,15 +244,65 @@ Profile* PasskeyUpgradeRequestController::profile() const {
 
 void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
   CHECK(enclave_manager_->IsLoaded());
-  enclave_state_ =
-      enclave_manager_->IsReady() ? EnclaveState::kReady : EnclaveState::kError;
-  if (!pending_request_) {
+  if (!enclave_manager_->IsReady()) {
+    enclave_state_ = EnclaveState::kError;
+    if (pending_request_) {
+      FinishRequest(PasskeyUpgradeResult::kEnclaveNotInitialized);
+    }
     return;
   }
-  if (enclave_state_ == EnclaveState::kReady) {
-    ContinuePendingUpgradeRequest();
-  } else {
-    FinishRequest(PasskeyUpgradeResult::kEnclaveNotInitialized);
+
+  enclave_state_ = EnclaveState::kLoading;
+  FIDO_LOG(EVENT) << "Fetching account state for upgrade request";
+
+  auto* rfh = content::RenderFrameHost::FromID(frame_host_id_);
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader =
+      EnclaveManagerFactory::url_loader_override();
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      testing_url_loader ? testing_url_loader
+                         : SystemNetworkContextManager::GetInstance()
+                               ->GetSharedURLLoaderFactory();
+  std::unique_ptr<trusted_vault::TrustedVaultConnection> trusted_vault_conn =
+      GpmTrustedVaultConnectionProvider::GetConnection(rfh, identity_manager,
+                                                       url_loader_factory);
+
+  auto* conn = trusted_vault_conn.get();
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  download_account_state_request_ =
+      conn->DownloadAuthenticationFactorsRegistrationState(
+          account,
+          base::BindOnce(
+              &PasskeyUpgradeRequestController::OnAccountStateDownloaded,
+              weak_factory_.GetWeakPtr(), std::move(trusted_vault_conn)),
+          base::DoNothing());
+}
+
+void PasskeyUpgradeRequestController::OnAccountStateDownloaded(
+    std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        result) {
+  download_account_state_request_.reset();
+
+  FIDO_LOG(EVENT) << "Download account state result for upgrade: "
+                  << static_cast<int>(result.state)
+                  << ", key_version: " << result.key_version.value_or(0);
+
+  if (enclave_manager_->IsReady() &&
+      enclave_manager_->ConsiderSecurityDomainState(result,
+                                                    base::DoNothing())) {
+    enclave_state_ = EnclaveState::kReady;
+    if (pending_request_) {
+      ContinuePendingUpgradeRequest();
+    }
+    return;
+  }
+
+  enclave_state_ = EnclaveState::kError;
+  if (pending_request_) {
+    FinishRequest(PasskeyUpgradeResult::kSecurityDomainStateStale);
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 
 namespace content {
 class RenderFrameHost;
@@ -40,9 +41,10 @@ enum class PasskeyUpgradeResult {
   kNoMatchingPassword = 5,
   kNoRecentlyUsedPassword = 6,
   kEnclaveError = 7,
-  kMaxValue = kEnclaveError,
+  kSecurityDomainStateStale = 8,
+  kMaxValue = kSecurityDomainStateStale,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyUpgradeResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyUpgradeResultEnum)
 
 // Record a UMA histogram for the outcome of a passkey upgrade request.
 void RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult);
@@ -80,6 +82,7 @@ class PasskeyUpgradeRequestController
  private:
   enum class EnclaveState {
     kUnknown,
+    kLoading,
     kReady,
     kError,
   };
@@ -102,6 +105,10 @@ class PasskeyUpgradeRequestController
   Profile* profile() const;
 
   void OnEnclaveLoaded();
+  void OnAccountStateDownloaded(
+      std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+          result);
   void ContinuePendingUpgradeRequest();
   void FinishRequest(PasskeyUpgradeResult error);
 
@@ -110,6 +117,9 @@ class PasskeyUpgradeRequestController
   const raw_ptr<EnclaveManager> enclave_manager_;
   EnclaveState enclave_state_ = EnclaveState::kUnknown;
   bool pending_request_ = false;
+
+  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+      download_account_state_request_;
 
   std::string rp_id_;
   std::u16string username_;

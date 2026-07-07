@@ -276,6 +276,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="No password with matching username found"/>
   <int value="6" label="Matching password was not recently used"/>
   <int value="7" label="GPM Enclave error"/>
+  <int value="8" label="Security domain state is stale"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h:PasskeyUpgradeResult) -->
