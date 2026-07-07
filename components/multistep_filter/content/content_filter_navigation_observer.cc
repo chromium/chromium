@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
+#include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
@@ -30,46 +31,38 @@ using content::NavigationHandle;
 namespace {
 
 // Internal structure to hold navigation properties for easier logic processing.
-struct NavigationMetadata {
-  GURL url;
-  GURL prev_url;
-  bool is_cryptographic_scheme;
-  bool is_http_allowed_for_testing;
-  int net_error_code;
-  int http_response_code;
-  bool is_error_page_navigation;
-  bool has_user_gesture;
-  bool was_filter_initiated_navigation;
-  std::optional<UrlFilterSuggestion> applied_suggestion;
-  bool is_same_document_navigation;
-
-  explicit NavigationMetadata(NavigationHandle* handle)
-      : url(handle->GetURL()),
-        prev_url(handle->GetPreviousPrimaryMainFrameURL()),
-        is_cryptographic_scheme(url.SchemeIsCryptographic()),
-        is_http_allowed_for_testing(
-            url.SchemeIs(url::kHttpScheme) &&
-            base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kMultistepFilterAllowHttpForTesting)),
-        net_error_code(handle->GetNetErrorCode()),
-        http_response_code(handle->GetResponseHeaders()
-                               ? handle->GetResponseHeaders()->response_code()
-                               : 200),
-        is_error_page_navigation(
-            handle->IsErrorPage() || net_error_code != 0 ||
-            (http_response_code >= 400 && http_response_code <= 599)),
-        has_user_gesture(handle->HasUserGesture()),
-        was_filter_initiated_navigation(
-            FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle) !=
-            nullptr),
-        applied_suggestion(
-            was_filter_initiated_navigation
-                ? FilterInitiatedNavigationMarker::GetForNavigationHandle(
-                      *handle)
-                      ->suggestion()
-                : std::nullopt),
-        is_same_document_navigation(handle->IsSameDocument()) {}
-};
+FilterNavigationMetadata CreateFilterNavigationMetadata(
+    NavigationHandle* handle) {
+  FilterNavigationMetadata metadata;
+  metadata.navigation_id = handle->GetNavigationId();
+  metadata.url = handle->GetURL();
+  metadata.prev_url = handle->GetPreviousPrimaryMainFrameURL();
+  metadata.is_cryptographic_scheme = metadata.url.SchemeIsCryptographic();
+  metadata.is_http_allowed_for_testing =
+      metadata.url.SchemeIs(url::kHttpScheme) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kMultistepFilterAllowHttpForTesting);
+  metadata.net_error_code = handle->GetNetErrorCode();
+  metadata.http_response_code =
+      handle->GetResponseHeaders()
+          ? handle->GetResponseHeaders()->response_code()
+          : 200;
+  metadata.is_error_page_navigation = handle->IsErrorPage() ||
+                                      metadata.net_error_code != 0 ||
+                                      (metadata.http_response_code >= 400 &&
+                                       metadata.http_response_code <= 599);
+  metadata.has_user_gesture = handle->HasUserGesture();
+  metadata.was_filter_initiated_navigation =
+      FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle) !=
+      nullptr;
+  metadata.applied_suggestion =
+      metadata.was_filter_initiated_navigation
+          ? FilterInitiatedNavigationMarker::GetForNavigationHandle(*handle)
+                ->suggestion()
+          : std::nullopt;
+  metadata.is_same_document_navigation = handle->IsSameDocument();
+  return metadata;
+}
 
 void LogNavigationStarted(MultistepFilterLogRouter* log_router,
                           int64_t navigation_id,
@@ -155,8 +148,9 @@ void ContentFilterNavigationObserver::DidFinishNavigation(
     return;
   }
 
-  NavigationMetadata metadata(navigation_handle);
-  int64_t navigation_id = navigation_handle->GetNavigationId();
+  FilterNavigationMetadata metadata =
+      CreateFilterNavigationMetadata(navigation_handle);
+  int64_t navigation_id = metadata.navigation_id;
   LogNavigationStarted(log_router_, navigation_id, metadata.url.GetHost());
 
   // Avoid clearing suggestions for same-document navigations or same-URL

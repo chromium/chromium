@@ -6,16 +6,15 @@ source_set("data_models") {
   sources = [
     "filter_annotation.cc",
     "filter_annotation.h",
+    "filter_navigation_metadata.h",
     "filter_suggestion_candidate.cc",
     "filter_suggestion_candidate.h",
     "suggestion_user_decision.h",
     "url_filter_suggestion.cc",
     "url_filter_suggestion.h",
   ]
-  deps = [
-    "//base",
-    "//url",
-  ]
+  public_deps = [ "//url" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
