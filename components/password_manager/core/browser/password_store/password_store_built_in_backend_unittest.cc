@@ -960,7 +960,28 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
 }
 
-TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
+// This test verifies Android to web affiliations and grouped logins are
+// correctly handled when GetGroupedMatchingLoginsAsync() is called.
+TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliationsAndGroups) {
+  static constexpr char kTestWebRealmNonPSL[] = "https://example.gov/";
+  static constexpr char kTestWebOriginNonPSL[] = "https://example.gov/origin";
+  static constexpr PasswordFormData kCredentials[] = {
+      // Affiliated Android credential.
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
+       u"username_value_1", u"password_value_1", kTestLastUsageTime, 1},
+      // Exact match credential.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_value_4", u"password_value_4", kTestLastUsageTime,
+       1},
+      // PSL matching credential.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", u"username_value_5", u"password_value_5", kTestLastUsageTime,
+       1},
+      // Non-PSL matching grouped credential.
+      {PasswordForm::Scheme::kHtml, kTestWebRealmNonPSL, kTestWebOriginNonPSL,
+       "", u"", u"", u"", u"username_value_6", u"password_value_6",
+       kTestLastUsageTime, 1}};
+
   auto owning_mock_match_helper =
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
@@ -970,7 +991,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   InitializeBackend(backend);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
-  for (const auto& test_credential : kTestCredentials) {
+  for (const auto& test_credential : kCredentials) {
     all_credentials.push_back(
         FillPasswordFormWithData(test_credential, GetParam()));
     backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
@@ -981,13 +1002,12 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   std::vector<PasswordForm> expected_results;
   expected_results.push_back(*all_credentials[0]);
   expected_results.back().match_type = PasswordForm::MatchType::kAffiliated;
-  expected_results.push_back(*all_credentials[3]);
+  expected_results.push_back(*all_credentials[1]);
   expected_results.back().match_type = PasswordForm::MatchType::kExact;
-  expected_results.push_back(*all_credentials[4]);
+  expected_results.push_back(*all_credentials[2]);
   expected_results.back().match_type = PasswordForm::MatchType::kPSL;
-  expected_results.push_back(*all_credentials[5]);
-  expected_results.back().match_type =
-      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kGrouped;
+  expected_results.push_back(*all_credentials[3]);
+  expected_results.back().match_type = PasswordForm::MatchType::kGrouped;
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};
@@ -995,12 +1015,590 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   std::vector<std::string> affiliated_android_realms;
   affiliated_android_realms.push_back(kTestAndroidRealm1);
   std::vector<std::string> grouped_realms;
-  grouped_realms.push_back(kTestWebRealm3);
+  grouped_realms.push_back(kTestWebRealmNonPSL);
 
   mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, affiliated_android_realms, grouped_realms);
   mock_affiliated_match_helper
       ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// This test verifies that, when there are no affiliated credentials for the
+// realm of the observed form, GetGroupedMatchingLoginsAsync() should still
+// return the exact and PSL matching results.
+TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithoutAffiliations) {
+  static constexpr char kTestPSLMatchingWebRealm[] = "https://psl.example.com/";
+  static constexpr char kTestPSLMatchingWebOrigin[] =
+      "https://psl.example.com/origin";
+  static constexpr char kTestUnrelatedAndroidRealm[] =
+      "android://hash@com.notexample.android/";
+
+  /* clang-format off */
+  static constexpr const PasswordFormData kCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml,
+       kTestWebRealm1,
+       kTestWebOrigin1,
+       "", u"", u"",  u"",
+       u"username_value_1",
+       u"password_value_1", kTestLastUsageTime, 1},
+      // Credential that is a PSL match of the observed form.
+      {PasswordForm::Scheme::kHtml,
+       kTestPSLMatchingWebRealm,
+       kTestPSLMatchingWebOrigin,
+       "", u"", u"",  u"",
+       u"username_value_2",
+       u"password_value_2", kTestLastUsageTime, 1},
+      // Credential for an unrelated Android application.
+      {PasswordForm::Scheme::kHtml,
+       kTestUnrelatedAndroidRealm,
+       "", "", u"", u"", u"",
+       u"username_value_3",
+       u"password_value_3", kTestLastUsageTime, 1}};
+  /* clang-format on */
+
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& credential : kCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(credential, GetParam()));
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
+    RunUntilIdle();
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
+  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  std::vector<PasswordForm> expected_results = {*all_credentials[0],
+                                                *all_credentials[1]};
+
+  std::vector<std::string> no_affiliated_android_realms;
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, no_affiliated_android_realms);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// There are 3 Android applications affiliated with the realm of the observed
+// form, with the `PasswordStore` having credentials for two of these (even two
+// credentials for one). `GetGroupedMatchingLoginsAsync()` should return the
+// exact, and PSL matching credentials, and the credentials for these two
+// Android applications (including one federated), but not for the
+// unaffiliated Android application.
+TEST_P(PasswordStoreBuiltInBackendTest,
+       GetLoginsWithAffiliationsIncludingFederated) {
+  static constexpr char kTestPSLMatchingWebRealm[] = "https://psl.example.com/";
+  static constexpr char kTestPSLMatchingWebOrigin[] =
+      "https://psl.example.com/origin";
+  static constexpr char kTestUnrelatedAndroidRealm[] =
+      "android://hash@com.notexample.android/";
+
+  static constexpr const struct {
+    PasswordFormData form_data;
+    bool use_federated_login;
+  } kCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {
+          {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "",
+           u"", u"", u"", u"username_value_1", u"password_value_1",
+           kTestLastUsageTime, 1},
+          /*use_federated_login=*/false,
+      },
+      // Credential that is a PSL match of the observed form.
+      {
+          {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+           kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_value_2",
+           u"password_value_2", true, 1},
+          /*use_federated_login=*/false,
+      },
+      // Credential for an Android application affiliated with the realm of the
+      // observed from.
+      {
+          {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"",
+           u"", u"username_value_3", u"password_value_3", kTestLastUsageTime,
+           1},
+          /*use_federated_login=*/false,
+      },
+      // Second credential for the same Android application.
+      {
+          {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"",
+           u"", u"username_value_3b", u"password_value_3b", kTestLastUsageTime,
+           1},
+          /*use_federated_login=*/false,
+      },
+      // Third credential for the same application which is username-only.
+      {
+          {PasswordForm::Scheme::kUsernameOnly, kTestAndroidRealm1, "", "", u"",
+           u"", u"", u"username_value_3c", u"password_value_3c",
+           kTestLastUsageTime, 1},
+          /*use_federated_login=*/false,
+      },
+      // Credential for another Android application affiliated with the realm
+      // of the observed from.
+      {
+          {PasswordForm::Scheme::kHtml, kTestAndroidRealm2, "", "", u"", u"",
+           u"", u"username_value_4", u"password_value_4", kTestLastUsageTime,
+           1},
+          /*use_federated_login=*/false,
+      },
+      // Federated credential for this second Android application.
+      {
+          {PasswordForm::Scheme::kHtml, kTestAndroidRealm2, "", "", u"", u"",
+           u"", u"username_value_4b", u"password_value_4b", kTestLastUsageTime,
+           1},
+          /*use_federated_login=*/true,
+      },
+      // Credential for an unrelated Android application.
+      {
+          {PasswordForm::Scheme::kHtml, kTestUnrelatedAndroidRealm, "", "", u"",
+           u"", u"", u"username_value_5", u"password_value_5",
+           kTestLastUsageTime, 1},
+          /*use_federated_login=*/false,
+      }};
+
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& i : kCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(i.form_data, GetParam(),
+                                                       i.use_federated_login));
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
+    RunUntilIdle();
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
+  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[2]->match_type = PasswordForm::MatchType::kAffiliated;
+  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
+  all_credentials[5]->match_type = PasswordForm::MatchType::kAffiliated;
+  all_credentials[6]->match_type = PasswordForm::MatchType::kAffiliated;
+  std::vector<PasswordForm> expected_results = {
+      *all_credentials[0], *all_credentials[1], *all_credentials[2],
+      *all_credentials[3], *all_credentials[5], *all_credentials[6]};
+
+  std::vector<std::string> affiliated_android_realms;
+  affiliated_android_realms.push_back(kTestAndroidRealm1);
+  affiliated_android_realms.push_back(kTestAndroidRealm2);
+  // kTestAndroidRealm3 is also affiliated, but we don't have credentials for
+  // it.
+  affiliated_android_realms.push_back(kTestAndroidRealm3);
+  // kTestUnrelatedAndroidRealm is NOT added here, so it is unaffiliated.
+
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, affiliated_android_realms);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// This test is testing all the combinations of affiliated and PSL matching.
+TEST_P(PasswordStoreBuiltInBackendTest,
+       GetLoginsWithWebAffiliationsAndPSLMatching) {
+  static constexpr char kTestPSLMatchingWebRealm[] = "https://psl.example.com/";
+  static constexpr char kTestPSLMatchingWebOrigin[] =
+      "https://psl.example.com/origin";
+  static constexpr char kTestAffiliatedRealm[] = "https://one.example/";
+  static constexpr char kTestAffiliatedURL[] = "https://one.example/path";
+  static constexpr char kTestAffiliatedPSLWebRealm[] = "https://two.example/";
+  static constexpr char kTestAffiliatedPSLWebURL[] = "https://two.example/path";
+  static constexpr char kTestUnrelatedWebRealm2[] = "https://notexample2.com/";
+  static constexpr char kTestUnrelatedWebOrigin2[] =
+      "https://notexample2.com/origin";
+
+  /* clang-format off */
+  static constexpr const PasswordFormData kCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_1", u"12345"},
+      // Credential that is a PSL, non affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+       kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_2", u"asdf"},
+      // Credential that is a PSL and affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", u"username_3", u"password"},
+      // Credential that is an affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedRealm, kTestAffiliatedURL,
+       "", u"", u"", u"", u"username_4", u"password1"},
+      // Credential that is a PSL match of an affiliated form. It should be
+      // filtered out.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedPSLWebRealm,
+       kTestAffiliatedPSLWebURL, "", u"", u"", u"", u"username_5",
+       u"password3"},
+      // Credential for unrelated origin.
+      {PasswordForm::Scheme::kUsernameOnly, kTestUnrelatedWebRealm2,
+       kTestUnrelatedWebOrigin2, "", u"", u"", u"", u"username_6",
+       u"password2"},
+      // Credential that is a PSL and a group match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", u"",
+       u"", u"", u"username_7", u"password7"}};
+  /* clang-format on */
+
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& credential : kCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(
+        credential, GetParam(), /*use_federated_login=*/false));
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
+    RunUntilIdle();
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
+  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[2]->match_type =
+      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
+  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
+  all_credentials[6]->match_type =
+      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kGrouped;
+  std::vector<PasswordForm> expected_results = {
+      *all_credentials[0], *all_credentials[1], *all_credentials[2],
+      *all_credentials[3], *all_credentials[6]};
+
+  std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2,
+                                                kTestAffiliatedRealm};
+  std::vector<std::string> grouped_realms = {kTestWebRealm3};
+
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, affiliated_realms, grouped_realms);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// Retrieve matching passwords for affiliated, affiliated/PSL-matched,
+// PSL-matched, exact matched credentials and make sure the properties are set
+// correctly. This test is different than the previous one because it uses
+// federated credentials.
+TEST_P(PasswordStoreBuiltInBackendTest,
+       GetLoginsWithWebAffiliationsAndPSLMatchingFederated) {
+  static constexpr char kTestPSLMatchingWebRealm[] = "https://psl.example.com/";
+  static constexpr char kTestPSLMatchingWebOrigin[] =
+      "https://psl.example.com/origin";
+  static constexpr char kTestAffiliatedRealm[] = "https://one.example/";
+  static constexpr char kTestAffiliatedURL[] = "https://one.example/path";
+  static constexpr char kTestAffiliatedPSLWebRealm[] = "https://two.example/";
+  static constexpr char kTestAffiliatedPSLWebURL[] = "https://two.example/path";
+  static constexpr char kTestUnrelatedWebRealm2[] = "https://notexample2.com/";
+  static constexpr char kTestUnrelatedWebOrigin2[] =
+      "https://notexample2.com/origin";
+
+  /* clang-format off */
+  static constexpr const PasswordFormData kCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_1", u"12345"},
+      // Credential that is a PSL, non affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+       kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_2", u"asdf"},
+      // Credential that is a PSL and affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", u"username_3", u"password"},
+      // Credential that is an affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedRealm, kTestAffiliatedURL,
+       "", u"", u"", u"", u"username_4", u"password1"},
+      // Credential that is a PSL match of an affiliated form. It should be
+      // filtered out.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedPSLWebRealm,
+       kTestAffiliatedPSLWebURL, "", u"", u"", u"", u"username_5",
+       u"password3"},
+      // Credential for unrelated origin.
+      {PasswordForm::Scheme::kUsernameOnly, kTestUnrelatedWebRealm2,
+       kTestUnrelatedWebOrigin2, "", u"", u"", u"", u"username_6",
+       u"password2"}};
+  /* clang-format on */
+
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& credential : kCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(
+        credential, GetParam(), /*use_federated_login=*/true));
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
+    RunUntilIdle();
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
+  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[2]->match_type =
+      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
+  all_credentials[3]->match_type = PasswordForm::MatchType::kAffiliated;
+  std::vector<PasswordForm> expected_results = {
+      *all_credentials[0], *all_credentials[1], *all_credentials[2],
+      *all_credentials[3]};
+
+  std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2,
+                                                kTestAffiliatedRealm};
+
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, affiliated_realms);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// This test verifies web to web affiliated and grouped credentials are
+// correctly handled when GetGroupedMatchingLoginsAsync() is called.
+TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithWebGroup) {
+  static constexpr char kTestPSLMatchingWebRealm[] = "https://psl.example.com/";
+  static constexpr char kTestPSLMatchingWebOrigin[] =
+      "https://psl.example.com/origin";
+  static constexpr char kTestGroupRealm[] = "https://one-good.example/";
+  static constexpr char kTestGroupURL[] = "https://one-good.example/path";
+  static constexpr char kTestAffiliatedPSLWebRealm[] = "https://two.example/";
+  static constexpr char kTestAffiliatedPSLWebURL[] = "https://two.example/path";
+  static constexpr char kTestUnrelatedWebRealm2[] = "https://notexample2.com/";
+  static constexpr char kTestUnrelatedWebOrigin2[] =
+      "https://notexample2.com/origin";
+
+  /* clang-format off */
+  static constexpr const PasswordFormData kCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_1", u"12345"},
+      // Credential that is a PSL, non affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+       kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_2", u"asdf"},
+      // Credential that is a PSL and affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", u"username_3", u"password"},
+      // Credential that is a group match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestGroupRealm, kTestGroupURL, "", u"",
+       u"", u"", u"username_4", u"password1"},
+      // Credential that is a PSL match of an affiliated form. It should be
+      // filtered out.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedPSLWebRealm,
+       kTestAffiliatedPSLWebURL, "", u"", u"", u"", u"username_5",
+       u"password3"},
+      // Credential for unrelated origin.
+      {PasswordForm::Scheme::kUsernameOnly, kTestUnrelatedWebRealm2,
+       kTestUnrelatedWebOrigin2, "", u"", u"", u"", u"username_6",
+       u"password2"}};
+  /* clang-format on */
+
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& credential : kCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(credential, GetParam()));
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
+    RunUntilIdle();
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  all_credentials[0]->match_type = PasswordForm::MatchType::kExact;
+  all_credentials[1]->match_type = PasswordForm::MatchType::kPSL;
+  all_credentials[2]->match_type =
+      PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
+  all_credentials[3]->match_type = PasswordForm::MatchType::kGrouped;
+  std::vector<PasswordForm> expected_results = {
+      *all_credentials[0], *all_credentials[1], *all_credentials[2],
+      *all_credentials[3]};
+
+  std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2};
+  std::vector<std::string> grouped_realms = {kTestGroupRealm};
+
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, affiliated_realms, grouped_realms);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation({});
+
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// Retrieve matching passwords for exact match credentials and make sure the
+// affiliation and branding information is set correctly.
+TEST_P(PasswordStoreBuiltInBackendTest,
+       GetLoginsWithBrandingInformationForExactMatch) {
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
+                                kTestWebRealm1,
+                                kTestWebOrigin1,
+                                "",
+                                u"",
+                                u"",
+                                u"",
+                                u"username_value_1",
+                                u"password_value_1",
+                                kTestLastUsageTime,
+                                1};
+  std::unique_ptr<PasswordForm> credential =
+      FillPasswordFormWithData(form_data, /*is_account_store=*/GetParam());
+  backend->AddLoginAsync(FromPasswordForm(*credential), base::DoNothing());
+  RunUntilIdle();
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation(
+          std::move(affiliation_info_for_results));
+
+  credential->match_type = PasswordForm::MatchType::kExact;
+  credential->affiliated_web_realm = kTestWebRealm1;
+  credential->app_display_name = kTestAndroidName1;
+  credential->app_icon_url = GURL(kTestAndroidIconURL1);
+
+  std::vector<std::string> no_affiliated_android_realms;
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, no_affiliated_android_realms);
+
+  std::vector<PasswordForm> expected_results = {*credential};
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
+
+  backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
+  RunUntilIdle();
+}
+
+// Retrieve matching passwords for affiliated match credentials and make sure
+// the affiliation and branding information is set correctly.
+TEST_P(PasswordStoreBuiltInBackendTest,
+       GetLoginsWithBrandingInformationForAffiliatedLogins) {
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service_);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  PasswordStoreBackend* backend =
+      CreateBackend(nullptr, std::move(owning_mock_match_helper));
+  InitializeBackend(backend);
+
+  PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
+                                kTestAndroidRealm1,
+                                "",
+                                "",
+                                u"",
+                                u"",
+                                u"",
+                                u"username_value_3",
+                                u"password_value_3",
+                                kTestLastUsageTime,
+                                1};
+  std::unique_ptr<PasswordForm> credential =
+      FillPasswordFormWithData(form_data, /*is_account_store=*/GetParam());
+  backend->AddLoginAsync(FromPasswordForm(*credential), base::DoNothing());
+  RunUntilIdle();
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndGrouped(
+      observed_form, {kTestAndroidRealm1});
+
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation(
+          std::move(affiliation_info_for_results));
+
+  credential->match_type = PasswordForm::MatchType::kAffiliated;
+  credential->affiliated_web_realm = kTestWebRealm1;
+  credential->app_display_name = kTestAndroidName1;
+  credential->app_icon_url = GURL(kTestAndroidIconURL1);
+
+  std::vector<PasswordForm> expected_results = {*credential};
   base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<BackendLoginsResult>(
