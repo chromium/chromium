@@ -31,7 +31,8 @@ def format_descendant_node_text(node,
                                 total_dur,
                                 min_dur_ms,
                                 is_aggregated,
-                                indent=""):
+                                indent="",
+                                expand_config=None):
     dur_ms = node.dur_ms
     self_ms = node.self_ms
 
@@ -52,9 +53,9 @@ def format_descendant_node_text(node,
         for child in sorted_children:
             lines.extend(
                 format_descendant_node_text(child, total_dur, min_dur_ms, True,
-                                            indent + "  "))
+                                            indent + "  ", expand_config))
     else:
-        sig = trace_analyzer_lib.get_slice_signature(node)
+        sig = trace_analyzer_lib.get_slice_signature(node, expand_config)
         line = (f"{indent}* [{dur_ms:8.3f} ms ({pct_root:5.1f}%) | "
                 f"self: {self_ms:8.3f} ms ({pct_self:5.1f}%)] "
                 f"{sig}")
@@ -63,7 +64,8 @@ def format_descendant_node_text(node,
         for child in sorted_children:
             lines.extend(
                 format_descendant_node_text(child, total_dur, min_dur_ms,
-                                            False, indent + "  "))
+                                            False, indent + "  ",
+                                            expand_config))
     return lines
 
 
@@ -80,7 +82,12 @@ def format_window_node_text(node, total_dur, min_dur_ms, indent=""):
     return lines
 
 
-def generate_text_descendants_report(args, c_roots, c_total, e_roots, e_total):
+def generate_text_descendants_report(args,
+                                     c_roots,
+                                     c_total,
+                                     e_roots,
+                                     e_total,
+                                     expand_config=None):
     output_lines = []
     output_lines.append(
         f"=== COMPARATIVE TEXT FLAMEGRAPH FOR TARGET SLICE: {args.target} ===")
@@ -88,30 +95,34 @@ def generate_text_descendants_report(args, c_roots, c_total, e_roots, e_total):
     output_lines.append("\n--- CONTROL GROUP ---")
     output_lines.append(f"Control Average Duration: {c_total:.3f} ms")
     if args.aggregate:
-        agg_c_root = trace_analyzer_lib.aggregate_trees(c_roots)
+        agg_c_root = trace_analyzer_lib.aggregate_trees(c_roots, expand_config)
         if agg_c_root:
             output_lines.extend(
                 format_descendant_node_text(agg_c_root, agg_c_root.dur,
-                                            args.min_dur, True))
+                                            args.min_dur, True, "",
+                                            expand_config))
     else:
         longest_c_root = c_roots[0]
         output_lines.extend(
             format_descendant_node_text(longest_c_root, longest_c_root.dur,
-                                        args.min_dur, False))
+                                        args.min_dur, False, "",
+                                        expand_config))
 
     output_lines.append("\n--- EXPERIMENT GROUP ---")
     output_lines.append(f"Experiment Average Duration: {e_total:.3f} ms")
     if args.aggregate:
-        agg_e_root = trace_analyzer_lib.aggregate_trees(e_roots)
+        agg_e_root = trace_analyzer_lib.aggregate_trees(e_roots, expand_config)
         if agg_e_root:
             output_lines.extend(
                 format_descendant_node_text(agg_e_root, agg_e_root.dur,
-                                            args.min_dur, True))
+                                            args.min_dur, True, "",
+                                            expand_config))
     else:
         longest_e_root = e_roots[0]
         output_lines.extend(
             format_descendant_node_text(longest_e_root, longest_e_root.dur,
-                                        args.min_dur, False))
+                                        args.min_dur, False, "",
+                                        expand_config))
 
     return "\n".join(output_lines) + "\n"
 
@@ -399,14 +410,16 @@ def process_descendants_mode(args):
     e_num = len(args.experiment)
 
     c_total = sum(r.dur_ms for r in c_roots) / c_num
-    c_metrics = trace_analyzer_lib.get_flat_metrics(c_roots)
+    c_metrics = trace_analyzer_lib.get_flat_metrics(c_roots,
+                                                    args.parsed_expand_config)
     for name in c_metrics:
         c_metrics[name]['dur_ms'] /= c_num
         c_metrics[name]['self_ms'] /= c_num
         c_metrics[name]['count'] /= c_num
 
     e_total = sum(r.dur_ms for r in e_roots) / e_num
-    e_metrics = trace_analyzer_lib.get_flat_metrics(e_roots)
+    e_metrics = trace_analyzer_lib.get_flat_metrics(e_roots,
+                                                    args.parsed_expand_config)
     for name in e_metrics:
         e_metrics[name]['dur_ms'] /= e_num
         e_metrics[name]['self_ms'] /= e_num
@@ -418,7 +431,8 @@ def process_descendants_mode(args):
         write_output(args.output, report)
     elif args.format == "text":
         report = generate_text_descendants_report(args, c_roots, c_total,
-                                                  e_roots, e_total)
+                                                  e_roots, e_total,
+                                                  args.parsed_expand_config)
         write_output(args.output, report)
     else:  # json (Speedscope Diffs)
         c_path_durs = defaultdict(float)
@@ -456,7 +470,8 @@ def process_window_mode(args):
         if slices is None:
             continue
         c_metric_durs.append(m_dur)
-        run_paths = trace_analyzer_lib.build_paths_from_slices(slices)
+        run_paths = trace_analyzer_lib.build_paths_from_slices(
+            slices, args.parsed_expand_config)
         for p, d in run_paths.items():
             c_paths[p].append(d)
 
@@ -498,7 +513,8 @@ def process_window_mode(args):
         if slices is None:
             continue
         e_metric_durs.append(m_dur)
-        run_paths = trace_analyzer_lib.build_paths_from_slices(slices)
+        run_paths = trace_analyzer_lib.build_paths_from_slices(
+            slices, args.parsed_expand_config)
         for p, d in run_paths.items():
             e_paths[p].append(d)
 
@@ -669,6 +685,10 @@ def main():
         "--boundary-arg-value",
         help=("Optional argument value to filter the boundary slice "
               "(requires --boundary-arg-key)"))
+    parser.add_argument(
+        "--expand-config",
+        help=("Optional JSON string or path to a JSON file containing "
+              "slice argument expansion configuration."))
 
     args = parser.parse_args()
 
@@ -689,6 +709,15 @@ def main():
             "--threads and --processes are only valid in 'window' mode.")
     if args.mode == "window" and args.aggregate:
         parser.error("--aggregate is only valid in 'descendants' mode.")
+
+    expand_config = None
+    if args.expand_config:
+        try:
+            expand_config = trace_analyzer_lib.parse_expand_config(
+                args.expand_config)
+        except Exception as e:
+            parser.error(str(e))
+    args.parsed_expand_config = expand_config
 
     if args.mode == "descendants":
         process_descendants_mode(args)

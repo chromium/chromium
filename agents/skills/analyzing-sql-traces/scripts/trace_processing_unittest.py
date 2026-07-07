@@ -146,6 +146,66 @@ class TestTraceAnalyzerLib(unittest.TestCase):
         self.assertEqual(node.dur_ms, 1.5)
         self.assertEqual(node.self_ms, 1.5)
 
+    def test_get_slice_signature(self):
+        # Test no args
+        sig = trace_analyzer_lib.get_slice_signature_raw("SimpleSlice", {})
+        self.assertEqual(sig, "SimpleSlice")
+
+        # Test RunTask formatting
+        args_run_task = {
+            "task.posted_from.file_name": "base/task.cc",
+            "task.posted_from.function_name": "DoWork"
+        }
+        sig = trace_analyzer_lib.get_slice_signature_raw(
+            "ThreadControllerImpl::RunTask", args_run_task)
+        self.assertEqual(
+            sig, "ThreadControllerImpl::RunTask ("
+            "file_name: base/task.cc, function_name: DoWork)")
+
+        # Test RunTask formatting with line number
+        args_run_task_line = {
+            "task.posted_from.file_name": "base/task.cc",
+            "task.posted_from.function_name": "DoWork",
+            "task.posted_from.line_number": "123"
+        }
+        sig = trace_analyzer_lib.get_slice_signature_raw(
+            "ThreadControllerImpl::RunTask", args_run_task_line)
+        self.assertEqual(
+            sig, "ThreadControllerImpl::RunTask ("
+            "file_name: base/task.cc, function_name: DoWork, line_number: 123)"
+        )
+
+        # Test IsSuitableForUrlInfo
+        args_url_info = {
+            "url_info.url": "https://google.com/",
+            "site_instance.site_instance_id": "42"
+        }
+        sig = trace_analyzer_lib.get_slice_signature_raw(
+            "IsSuitableForUrlInfo", args_url_info)
+        self.assertEqual(
+            sig, "IsSuitableForUrlInfo ("
+            "url: https://google.com/, site_instance_id: 42)")
+
+        # Test custom JSON expand config
+        custom_config = {"CustomSlice": ["my_arg", "actual_key"]}
+        args_custom = {"my_arg": "value1", "actual_key": "value2"}
+        sig = trace_analyzer_lib.get_slice_signature_raw(
+            "CustomSlice", args_custom, custom_config)
+        self.assertEqual(sig,
+                         "CustomSlice (my_arg: value1, actual_key: value2)")
+
+        # Test user config merging with default config
+        merge_config = {"DetermineSiteInstanceForURL": ["custom_arg"]}
+        args_merge = {
+            "url_info.url": "https://google.com/",
+            "custom_arg": "custom_val"
+        }
+        sig = trace_analyzer_lib.get_slice_signature_raw(
+            "DetermineSiteInstanceForURL", args_merge, merge_config)
+        self.assertEqual(
+            sig, "DetermineSiteInstanceForURL ("
+            "url: https://google.com/, custom_arg: custom_val)")
+
     @patch('trace_analyzer_lib.TraceSession')
     def test_extract_slice_hierarchies(self, mock_session_class):
         session = mock_session_class.return_value
@@ -251,9 +311,9 @@ class TestTraceAnalyzerLib(unittest.TestCase):
 
         # They should NOT be merged because they have different arguments!
         sig1 = ("IsSuitableForUrlInfo (url: https://google.com, "
-                "site_instance: 1)")
+                "site_instance_id: 1)")
         sig2 = ("IsSuitableForUrlInfo (url: https://youtube.com, "
-                "site_instance: 2)")
+                "site_instance_id: 2)")
         self.assertIn(sig1, agg_root.children)
         self.assertIn(sig2, agg_root.children)
         self.assertEqual(agg_root.children[sig1].count, 1)
