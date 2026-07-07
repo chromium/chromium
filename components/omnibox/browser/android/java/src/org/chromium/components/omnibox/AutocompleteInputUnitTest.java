@@ -8,10 +8,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -29,6 +35,8 @@ import java.util.Set;
 /** Tests for {@link AutocompleteInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private @Mock Callback<Integer> mCallback;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
@@ -481,6 +489,21 @@ public class AutocompleteInputUnitTest {
 
         mInput.setAutocompleteState(AutocompleteState.DISABLED);
         assertFalse(mInput.isStandby());
+    }
+
+    @Test
+    public void getAutocompleteStateSupplier_notifiesObservers() {
+        mInput.getAutocompleteStateSupplier().addSyncObserver(mCallback);
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        verify(mCallback).onResult(AutocompleteState.STANDBY);
+    }
+
+    @Test
+    public void getAutocompleteStateSupplier_resetNotifiesObservers() {
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        mInput.getAutocompleteStateSupplier().addSyncObserver(mCallback);
+        mInput.reset();
+        verify(mCallback).onResult(AutocompleteState.ENABLED);
     }
 
     @Test
