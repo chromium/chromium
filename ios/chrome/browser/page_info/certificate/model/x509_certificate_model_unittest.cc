@@ -13,8 +13,10 @@
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace x509_certificate_model {
@@ -134,6 +136,25 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
       "79 A4 B3 37 8A F4 FE 18 FD BC F9 46 23 50 97 F3 AC FC 24 46 2B 5C "
       "3B B7 45 02 03 01 00 01",
       model.GetPublicKeyData());
+
+  // google.single.pem has 4 extensions in this DER order: Basic Constraints,
+  // CRL Distribution Points, Extended Key Usage, and Authority Information
+  // Access.
+  EXPECT_THAT(
+      model.GetExtensionOidsInOrder(),
+      testing::ElementsAre(bssl::der::Input(bssl::kBasicConstraintsOid),
+                           bssl::der::Input(bssl::kCrlDistributionPointsOid),
+                           bssl::der::Input(bssl::kExtKeyUsageOid),
+                           bssl::der::Input(bssl::kAuthorityInfoAccessOid)));
+
+  EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
+  auto eku_purposes = model.GetExtendedKeyUsagePurposes();
+  ASSERT_EQ(3u, eku_purposes.size());
+  EXPECT_EQ("Server Authentication", eku_purposes[0]);
+  EXPECT_EQ("Client Authentication", eku_purposes[1]);
+  // Unknown OID: Netscape Server Gated Crypto (2.16.840.1.113730.4.1) falls
+  // back to dotted decimal notation.
+  EXPECT_EQ("2.16.840.1.113730.4.1", eku_purposes[2]);
 }
 
 TEST_F(X509CertificateModelTest, GetNDNCertFields) {
@@ -308,6 +329,41 @@ TEST_F(X509CertificateModelTest, Mldsa44PublicKey) {
   EXPECT_TRUE(public_key_size.has_value());
   EXPECT_EQ(10496u, public_key_size.value());
   EXPECT_FALSE(model.GetPublicKeyData().empty());
+}
+
+TEST_F(X509CertificateModelTest, GlobalsignComCert) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "2029_globalsign_com_cert.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  // The cert has 9 extensions in this DER order. The last one, Netscape Cert
+  // Type (2.16.840.1.113730.1.1), has no BoringSSL OID constant.
+  static constexpr uint8_t kNetscapeCertTypeOid[] = {
+      0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42, 0x01, 0x01};
+  EXPECT_THAT(
+      model.GetExtensionOidsInOrder(),
+      testing::ElementsAre(bssl::der::Input(bssl::kSubjectKeyIdentifierOid),
+                           bssl::der::Input(bssl::kAuthorityKeyIdentifierOid),
+                           bssl::der::Input(bssl::kAuthorityInfoAccessOid),
+                           bssl::der::Input(bssl::kCrlDistributionPointsOid),
+                           bssl::der::Input(bssl::kBasicConstraintsOid),
+                           bssl::der::Input(bssl::kKeyUsageOid),
+                           bssl::der::Input(bssl::kExtKeyUsageOid),
+                           bssl::der::Input(bssl::kCertificatePoliciesOid),
+                           bssl::der::Input(kNetscapeCertTypeOid)));
+
+  EXPECT_TRUE(model.IsKeyUsageCritical());
+  EXPECT_EQ(
+      "Digital Signature, Non-repudiation, Key Encipherment, Data Encipherment",
+      model.GetKeyUsageString());
+
+  EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
+  auto eku_purposes = model.GetExtendedKeyUsagePurposes();
+  ASSERT_EQ(2u, eku_purposes.size());
+  EXPECT_EQ("Server Authentication", eku_purposes[0]);
+  EXPECT_EQ("Client Authentication", eku_purposes[1]);
 }
 
 }  // namespace x509_certificate_model

@@ -4,10 +4,15 @@
 
 #include "ios/chrome/browser/page_info/certificate/model/x509_certificate_model.h"
 
+#include <array>
+
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "components/certificate_model/x509_certificate_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "net/cert/x509_certificate.h"
@@ -15,7 +20,9 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parser.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
@@ -25,6 +32,9 @@ namespace x509_certificate_model {
 
 namespace {
 // Converts an OID (DER-encoded) to dotted decimal notation (e.g., "2.5.29.32")
+// Unlike the `OidToNumericString` method in the base class, due to specific
+// requirements of the iOS platform, there is no need to display the "OID."
+// prefix.
 std::string OidToString(bssl::der::Input oid) {
   CBS cbs;
   CBS_init(&cbs, oid.data(), oid.size());
@@ -39,7 +49,20 @@ std::string ProcessRawBytes(base::span<const uint8_t> data) {
   return ProcessRawBytesWithSeparators(data, ' ', ' ');
 }
 
+constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
+    // Extended Key Usage field OIDs:
+    {bssl::der::Input(bssl::kDocumentSigning),
+     IDS_IOS_CERT_EKU_DOCUMENT_SIGNING},
+    {bssl::der::Input(bssl::kRcsMlsClient), IDS_IOS_CERT_EKU_RCS_MLS_CLIENT},
+});
+
 std::optional<std::string> GetOidText(bssl::der::Input oid) {
+  const auto i = kOidStringMap.find(oid);
+  if (i != kOidStringMap.end()) {
+    return l10n_util::GetStringUTF8(i->second);
+  }
+
+  // Fall through to common OIDs shared across platforms.
   std::optional<int> common_id = GetCommonOidStringId(oid);
   if (common_id.has_value()) {
     return l10n_util::GetStringUTF8(*common_id);
@@ -52,6 +75,19 @@ std::optional<std::string> GetOidText(bssl::der::Input oid) {
 std::string GetOidTextOrOid(bssl::der::Input oid) {
   std::optional<std::string> text = GetOidText(oid);
   return text.has_value() ? *std::move(text) : OidToString(oid);
+}
+
+// Looks up an extension by OID in the base class's `extensions_` vector.
+// Returns nullptr if not found.
+const bssl::ParsedExtension* FindExtension(
+    const std::vector<bssl::ParsedExtension>& extensions,
+    bssl::der::Input oid) {
+  for (const bssl::ParsedExtension& extension : extensions) {
+    if (extension.oid == oid) {
+      return &extension;
+    }
+  }
+  return nullptr;
 }
 
 // Parses `spki_tlv` as a SubjectPublicKeyInfo, writing its AlgorithmIdentifier
@@ -244,6 +280,100 @@ std::string X509CertificateModel::GetPublicKeyData() const {
     return std::string();
   }
   return ProcessRawBytes(subject_public_key.bytes());
+}
+
+std::vector<bssl::der::Input> X509CertificateModel::GetExtensionOidsInOrder()
+    const {
+  CHECK(is_valid());
+  std::vector<bssl::der::Input> oids;
+  oids.reserve(extensions_.size());
+  for (const bssl::ParsedExtension& extension : extensions_) {
+    oids.push_back(extension.oid);
+  }
+  return oids;
+}
+
+bool X509CertificateModel::IsKeyUsageCritical() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* key_usage_extension =
+      FindExtension(extensions_, bssl::der::Input(bssl::kKeyUsageOid));
+  return key_usage_extension && key_usage_extension->critical;
+}
+
+std::string X509CertificateModel::GetKeyUsageString() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* key_usage_extension =
+      FindExtension(extensions_, bssl::der::Input(bssl::kKeyUsageOid));
+  if (!key_usage_extension) {
+    return std::string();
+  }
+
+  bssl::der::BitString key_usage;
+  if (!bssl::ParseKeyUsage(key_usage_extension->value, &key_usage)) {
+    return std::string();
+  }
+
+  // The string IDs are indexed by the KeyUsage bit position, matching
+  // bssl::KeyUsageBit:
+  //   KEY_USAGE_BIT_DIGITAL_SIGNATURE = 0,
+  //   KEY_USAGE_BIT_NON_REPUDIATION   = 1,
+  //   KEY_USAGE_BIT_KEY_ENCIPHERMENT  = 2,
+  //   KEY_USAGE_BIT_DATA_ENCIPHERMENT = 3,
+  //   KEY_USAGE_BIT_KEY_AGREEMENT     = 4,
+  //   KEY_USAGE_BIT_KEY_CERT_SIGN     = 5,
+  //   KEY_USAGE_BIT_CRL_SIGN          = 6,
+  //   KEY_USAGE_BIT_ENCIPHER_ONLY     = 7,
+  //   KEY_USAGE_BIT_DECIPHER_ONLY     = 8,
+  static constexpr auto kUsageStringIds = std::to_array<int>({
+      IDS_CERT_X509_KEY_USAGE_SIGNING,
+      IDS_CERT_X509_KEY_USAGE_NONREP,
+      IDS_CERT_X509_KEY_USAGE_ENCIPHERMENT,
+      IDS_CERT_X509_KEY_USAGE_DATA_ENCIPHERMENT,
+      IDS_CERT_X509_KEY_USAGE_KEY_AGREEMENT,
+      IDS_CERT_X509_KEY_USAGE_CERT_SIGNER,
+      IDS_CERT_X509_KEY_USAGE_CRL_SIGNER,
+      IDS_CERT_X509_KEY_USAGE_ENCIPHER_ONLY,
+      IDS_CERT_X509_KEY_USAGE_DECIPHER_ONLY,
+  });
+
+  std::vector<std::string> usages;
+  for (size_t bit = 0; bit < kUsageStringIds.size(); ++bit) {
+    if (key_usage.AssertsBit(bit)) {
+      usages.push_back(l10n_util::GetStringUTF8(kUsageStringIds[bit]));
+    }
+  }
+
+  return base::JoinString(usages, ", ");
+}
+
+bool X509CertificateModel::IsExtendedKeyUsageCritical() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* eku_extension =
+      FindExtension(extensions_, bssl::der::Input(bssl::kExtKeyUsageOid));
+  return eku_extension && eku_extension->critical;
+}
+
+std::vector<std::string> X509CertificateModel::GetExtendedKeyUsagePurposes()
+    const {
+  CHECK(is_valid());
+  std::vector<std::string> purposes;
+
+  const bssl::ParsedExtension* eku_extension =
+      FindExtension(extensions_, bssl::der::Input(bssl::kExtKeyUsageOid));
+  if (!eku_extension) {
+    return purposes;
+  }
+
+  std::vector<bssl::der::Input> eku_oids;
+  if (!bssl::ParseEKUExtension(eku_extension->value, &eku_oids)) {
+    return purposes;
+  }
+
+  purposes.reserve(eku_oids.size());
+  for (const auto& oid : eku_oids) {
+    purposes.push_back(GetOidTextOrOid(oid));
+  }
+  return purposes;
 }
 
 }  // namespace x509_certificate_model

@@ -83,6 +83,25 @@ class X509CertificateModel : public X509CertificateModelBase {
 
   // Get public key data as hex string.
   std::string GetPublicKeyData() const;
+
+  // Returns the OIDs of every extension in the order they appear in the
+  // certificate's DER encoding.
+  std::vector<bssl::der::Input> GetExtensionOidsInOrder() const;
+
+  // Returns true if the KeyUsage extension is present and marked critical.
+  bool IsKeyUsageCritical() const;
+
+  // Returns a comma-separated list of the asserted key usages, or an empty
+  // string if the extension is not present or could not be parsed.
+  std::string GetKeyUsageString() const;
+
+  // Returns true if the ExtendedKeyUsage extension is present and marked
+  // critical.
+  bool IsExtendedKeyUsageCritical() const;
+
+  // Returns a vector of the asserted EKU purposes, or an empty vector if the
+  // extension is not present or could not be parsed.
+  std::vector<std::string> GetExtendedKeyUsagePurposes() const;
 };
 
 }  // namespace x509_certificate_model
