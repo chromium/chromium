@@ -671,6 +671,7 @@ export class ComposeboxVoiceSearchElement extends
     } else {
       // If there is a timer, an error message would show up.
       this.errorMessage_ = this.getErrorText_(error);
+      this.fire('voice-search-error', /*canceled-by-error=*/ false);
 
       if (error === VoiceSearchError.NO_MATCH || error === VoiceSearchError.NO_SPEECH) {
         // NO_MATCH and NO_SPEECH errors auto-close after a longer delay.
