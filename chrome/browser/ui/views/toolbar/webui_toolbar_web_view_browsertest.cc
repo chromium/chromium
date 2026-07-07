@@ -127,6 +127,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -2262,7 +2263,9 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
              features::kWebUISplitTabsButton, features::kWebUIHomeButton,
              features::kWebUIExtensionsContainer,
              features::kSkipIPCChannelPausingForNonGuests,
-             features::kWebUIInProcessResourceLoadingV2},
+             features::kWebUIInProcessResourceLoadingV2,
+             // Needed for browser_tests_no_field_trial.
+             extensions_features::kExtensionsMenuAccessControl},
             {}) {}
 
   void SetUpOnMainThread() override {
