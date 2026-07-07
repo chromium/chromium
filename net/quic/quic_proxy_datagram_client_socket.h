@@ -19,6 +19,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/socket/datagram_client_socket.h"
+#include "net/socket/read_multiple_emulator.h"
 #include "net/socket/udp_socket.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
@@ -238,6 +239,8 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   std::string user_agent_;
 
   NetLogWithSource net_log_;
+
+  ReadMultipleEmulator read_multiple_emulator_{this};
 
   // The default weak pointer factory.
   base::WeakPtrFactory<QuicProxyDatagramClientSocket> weak_factory_{this};
