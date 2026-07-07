@@ -780,6 +780,11 @@ bool AppServiceProxyBase::QueryConflict(const std::string& first_app_id,
 bool AppServiceProxyBase::IsWebAppInExtendedScope(
     const GURL& url,
     const std::string& app_id) const {
+  // Do not "enable" comparison of scope extensions if navigation capturing is
+  // not on-by-default.
+  if (!apps::features::IsNavigationCapturingOnByDefault()) {
+    return false;
+  }
   // If needed, this code could instead be a method on the apps::AppPublisher
   // interface, which is a better delegation of responsibilities, but it seems
   // fine to have it here so this complexity doesn't have to be exposed to the
@@ -801,13 +806,10 @@ bool AppServiceProxyBase::IsWebAppInExtendedScope(
     return false;
   }
 
-  bool is_primary_scope =
-      scope->GetScopeScore(url, {.exclude_scope_extensions = true}) > 0;
-  bool is_any_scope = scope->GetScopeScore(url) > 0;
-
   // Ensure that the app is ONLY in the PWA's scope extensions and not in the
   // primary scope of the PWA.
-  return is_any_scope && !is_primary_scope;
+  return scope->GetScopeScore(url, {.only_consider_scope_extensions = true}) >
+         0;
 }
 
 IntentLaunchInfo::IntentLaunchInfo() = default;

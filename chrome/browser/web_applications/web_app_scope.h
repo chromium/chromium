@@ -25,6 +25,10 @@ struct WebAppScopeScoreOptions {
   // desirable to ignore scope extensions, so this option allows them to be
   // ignored for score calculations.
   bool exclude_scope_extensions = false;
+
+  // When set to true, completely SKIPS looking at the primary scope of the app,
+  // and only looks at the scope extensions of the app.
+  bool only_consider_scope_extensions = false;
 };
 
 // Represents the 'scope' of a web app / manifest entity. This class contains

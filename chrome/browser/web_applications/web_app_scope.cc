@@ -157,6 +157,14 @@ int WebAppScope::GetScopeScore(const GURL& url,
   if (!url.is_valid()) {
     return 0;
   }
+  CHECK(!(options.only_consider_scope_extensions &&
+          options.exclude_scope_extensions))
+      << "Both exclude_scope_extensions && only_consider_scope_extensions set "
+         "to true. Both being set at the same time is contradictory";
+  if (options.only_consider_scope_extensions) {
+    return GetScopeExtensionsScore(app_id_, url, validated_scope_extensions_,
+                                   ScoreBehavior::kMaximumScore);
+  }
   // Note: This code does not do same-origin checks to be compabible with urls
   // like about:blank or blobs, unlike in the IsInScope method above. We could
   // change this in the future if needed.

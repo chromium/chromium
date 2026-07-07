@@ -400,6 +400,68 @@ TEST_F(WebAppScopeTest, RegularScopeHasHigherScoreThanExtendedScope) {
   EXPECT_GT(score_a, score_b);
 }
 
+using WebAppScopeScoreOnlyScopeExtensionsTest = WebAppScopeTest;
+
+TEST_F(WebAppScopeScoreOnlyScopeExtensionsTest, NoPrimaryScopeMatch) {
+  const GURL scope("https://example.com/");
+  const std::vector<ScopeExtensionInfo> scope_extensions = {
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://example.org")))};
+  webapps::AppId app_id =
+      InstallWebAppWithScopeExtensions(scope, scope_extensions);
+  std::optional<WebAppScope> web_app_scope =
+      registrar().GetEffectiveScope(app_id);
+  ASSERT_TRUE(web_app_scope);
+
+  // A URL in the primary scope should have 0 score when only considering scope
+  // extensions.
+  EXPECT_EQ(
+      web_app_scope->GetScopeScore(
+          GURL("https://example.com/page.html"),
+          WebAppScopeScoreOptions{.only_consider_scope_extensions = true}),
+      0);
+}
+
+TEST_F(WebAppScopeScoreOnlyScopeExtensionsTest, PrimaryScopeMatchNoExtensions) {
+  const GURL scope("https://example.com/");
+  const std::vector<ScopeExtensionInfo> scope_extensions = {
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://example.org")))};
+  webapps::AppId app_id =
+      InstallWebAppWithScopeExtensions(scope, scope_extensions);
+  std::optional<WebAppScope> web_app_scope =
+      registrar().GetEffectiveScope(app_id);
+  ASSERT_TRUE(web_app_scope);
+
+  // A URL in the primary scope should have a score when not considering scope
+  // extensions.
+  EXPECT_GT(
+      web_app_scope->GetScopeScore(
+          GURL("https://example.com/page.html"),
+          WebAppScopeScoreOptions{.only_consider_scope_extensions = false}),
+      0);
+}
+
+TEST_F(WebAppScopeScoreOnlyScopeExtensionsTest, CrossOriginExtensionsOnly) {
+  const GURL scope("https://example.com/");
+  const std::vector<ScopeExtensionInfo> scope_extensions = {
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://example.org")))};
+  webapps::AppId app_id =
+      InstallWebAppWithScopeExtensions(scope, scope_extensions);
+  std::optional<WebAppScope> web_app_scope =
+      registrar().GetEffectiveScope(app_id);
+  ASSERT_TRUE(web_app_scope);
+
+  // A URL in the extended scope SHOULD have a score when only considering scope
+  // extensions.
+  EXPECT_GT(
+      web_app_scope->GetScopeScore(
+          GURL("https://example.org/page.html"),
+          WebAppScopeScoreOptions{.only_consider_scope_extensions = true}),
+      0);
+}
+
 }  // namespace
 
 }  // namespace web_app
