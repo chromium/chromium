@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_observation.h"
+#include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension_id.h"
@@ -20,14 +21,14 @@
 namespace chromeos {
 
 inline constexpr auto kCategoriesWithFocusRestriction =
-    base::MakeFixedFlatSet<crosapi::mojom::TelemetryEventCategoryEnum>({
-        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton,
-        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch,
-        crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected,
-        crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch,
-        crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected,
-        crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch,
-        crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected,
+    base::MakeFixedFlatSet<chromeos::api::os_events::EventCategory>({
+        chromeos::api::os_events::EventCategory::kTouchpadButton,
+        chromeos::api::os_events::EventCategory::kTouchpadTouch,
+        chromeos::api::os_events::EventCategory::kTouchpadConnected,
+        chromeos::api::os_events::EventCategory::kStylusTouch,
+        chromeos::api::os_events::EventCategory::kStylusConnected,
+        chromeos::api::os_events::EventCategory::kTouchscreenTouch,
+        chromeos::api::os_events::EventCategory::kTouchscreenConnected,
     });
 
 class EventObservation;
@@ -47,7 +48,7 @@ class EventRouter {
   // extension.
   mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver>
   GetPendingRemoteForCategoryAndExtension(
-      crosapi::mojom::TelemetryEventCategoryEnum category,
+      chromeos::api::os_events::EventCategory category,
       extensions::ExtensionId extension_id);
 
   // Cuts the mojom pipe to all connected remotes for a certain extension.
@@ -57,7 +58,7 @@ class EventRouter {
   // category.
   void ResetReceiversOfExtensionByCategory(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryEventCategoryEnum category);
+      chromeos::api::os_events::EventCategory category);
 
   // Prevent the mojom pipe from sending focus-restricted events to all
   // connected remotes for a certain extension.
@@ -73,7 +74,7 @@ class EventRouter {
   // Checks whether an extension is observing a certain category of event.
   bool IsExtensionObservingForCategory(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryEventCategoryEnum category);
+      chromeos::api::os_events::EventCategory category);
 
   // Checks whether an extension is blocked from focus-restricted events.
   bool IsExtensionRestricted(extensions::ExtensionId extension_id);
@@ -82,12 +83,12 @@ class EventRouter {
   // category of event.
   bool IsExtensionAllowedForCategory(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryEventCategoryEnum category);
+      chromeos::api::os_events::EventCategory category);
 
  private:
   // Observers grouped by category and extension.
   base::flat_map<extensions::ExtensionId,
-                 base::flat_map<crosapi::mojom::TelemetryEventCategoryEnum,
+                 base::flat_map<chromeos::api::os_events::EventCategory,
                                 std::unique_ptr<EventObservation>>>
       observers_;
 

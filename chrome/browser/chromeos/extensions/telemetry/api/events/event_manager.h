@@ -10,9 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -59,17 +58,17 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   // 2. The connection gets cut manually.
   RegisterEventResult RegisterExtensionForEvent(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryEventCategoryEnum category);
+      chromeos::api::os_events::EventCategory category);
 
   // Removes an observation for a certain extension and category.
   // This results in a cut of the mojom pipe to cros_healthd.
   void RemoveObservationsForExtensionAndCategory(
       extensions::ExtensionId extension_id,
-      crosapi::mojom::TelemetryEventCategoryEnum category);
+      chromeos::api::os_events::EventCategory category);
 
   // Checks whether a certain event category is supported.
   void IsEventSupported(
-      crosapi::mojom::TelemetryEventCategoryEnum category,
+      chromeos::api::os_events::EventCategory category,
       ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback);
 
  private:

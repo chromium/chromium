@@ -133,7 +133,7 @@ void OsEventsIsEventSupportedFunction::RunIfAllowed() {
 
   auto* event_manager = EventManager::Get(browser_context());
   event_manager->IsEventSupported(
-      converters::events::Convert(params->category),
+      params->category,
       base::BindOnce(&OsEventsIsEventSupportedFunction::OnEventManagerResult,
                      this));
 }
@@ -184,8 +184,8 @@ void OsEventsStartCapturingEventsFunction::RunIfAllowed() {
     OpenDiagnosticsKeyboardPage(browser_context());
   }
 
-  auto result = event_manager->RegisterExtensionForEvent(
-      extension_id(), converters::events::Convert(params->category));
+  auto result = event_manager->RegisterExtensionForEvent(extension_id(),
+                                                         params->category);
 
   switch (result) {
     case EventManager::kSuccess:
@@ -209,8 +209,8 @@ void OsEventsStopCapturingEventsFunction::RunIfAllowed() {
   }
 
   auto* event_manager = EventManager::Get(browser_context());
-  event_manager->RemoveObservationsForExtensionAndCategory(
-      extension_id(), converters::events::Convert(params->category));
+  event_manager->RemoveObservationsForExtensionAndCategory(extension_id(),
+                                                           params->category);
   Respond(NoArguments());
 }
 

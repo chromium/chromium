@@ -12,9 +12,8 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -24,12 +23,6 @@
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 
 namespace chromeos {
-
-namespace {
-
-namespace crosapi = ::crosapi::mojom;
-
-}  // namespace
 
 // static
 extensions::BrowserContextKeyedAPIFactory<EventManager>*
@@ -63,7 +56,7 @@ void EventManager::OnExtensionUnloaded(
 
 EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     extensions::ExtensionId extension_id,
-    crosapi::TelemetryEventCategoryEnum category) {
+    chromeos::api::os_events::EventCategory category) {
   if (kCategoriesWithFocusRestriction.contains(category)) {
     // Always check if there is a focused UI for focus-restricted events.
     auto observer =
@@ -104,15 +97,16 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     }
   }
 
+  auto crosapi_category = converters::events::Convert(category);
   GetEventService().AddEventObserver(
-      category, event_router_.GetPendingRemoteForCategoryAndExtension(
-                    category, extension_id));
+      crosapi_category, event_router_.GetPendingRemoteForCategoryAndExtension(
+                            category, extension_id));
   return kSuccess;
 }
 
 void EventManager::RemoveObservationsForExtensionAndCategory(
     extensions::ExtensionId extension_id,
-    crosapi::TelemetryEventCategoryEnum category) {
+    chromeos::api::os_events::EventCategory category) {
   event_router_.ResetReceiversOfExtensionByCategory(extension_id, category);
   if (!event_router_.IsExtensionObserving(extension_id)) {
     app_ui_observers_.erase(extension_id);
@@ -120,9 +114,10 @@ void EventManager::RemoveObservationsForExtensionAndCategory(
 }
 
 void EventManager::IsEventSupported(
-    crosapi::TelemetryEventCategoryEnum category,
+    chromeos::api::os_events::EventCategory category,
     ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback) {
-  GetEventService().IsEventSupported(category, std::move(callback));
+  GetEventService().IsEventSupported(converters::events::Convert(category),
+                                     std::move(callback));
 }
 
 ash::TelemetryEventServiceAsh& EventManager::GetEventService() {

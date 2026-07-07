@@ -28,7 +28,7 @@ EventRouter::~EventRouter() = default;
 
 mojo::PendingRemote<crosapi::TelemetryEventObserver>
 EventRouter::GetPendingRemoteForCategoryAndExtension(
-    crosapi::TelemetryEventCategoryEnum category,
+    chromeos::api::os_events::EventCategory category,
     extensions::ExtensionId extension_id) {
   auto iter_extension = observers_.find(extension_id);
   if (iter_extension == observers_.end()) {
@@ -56,7 +56,7 @@ void EventRouter::ResetReceiversForExtension(
 
 void EventRouter::ResetReceiversOfExtensionByCategory(
     extensions::ExtensionId extension_id,
-    crosapi::TelemetryEventCategoryEnum category) {
+    chromeos::api::os_events::EventCategory category) {
   auto it = observers_.find(extension_id);
   if (it == observers_.end()) {
     return;
@@ -84,7 +84,7 @@ bool EventRouter::IsExtensionObserving(extensions::ExtensionId extension_id) {
 
 bool EventRouter::IsExtensionObservingForCategory(
     extensions::ExtensionId extension_id,
-    crosapi::TelemetryEventCategoryEnum category) {
+    chromeos::api::os_events::EventCategory category) {
   auto it = observers_.find(extension_id);
   if (it == observers_.end()) {
     return false;
@@ -99,7 +99,7 @@ bool EventRouter::IsExtensionRestricted(extensions::ExtensionId extension_id) {
 
 bool EventRouter::IsExtensionAllowedForCategory(
     extensions::ExtensionId extension_id,
-    crosapi::TelemetryEventCategoryEnum category) {
+    chromeos::api::os_events::EventCategory category) {
   return !kCategoriesWithFocusRestriction.contains(category) ||
          !restricted_extensions_.contains(extension_id);
 }

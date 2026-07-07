@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "extensions/browser/extensions_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,19 +42,21 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversForExtension) {
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_one(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          crosapi::TelemetryEventCategoryEnum::kAudioJack, kExtensionIdOne));
+          chromeos::api::os_events::EventCategory::kAudioJack,
+          kExtensionIdOne));
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_two(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          crosapi::TelemetryEventCategoryEnum::kAudioJack, kExtensionIdTwo));
+          chromeos::api::os_events::EventCategory::kAudioJack,
+          kExtensionIdTwo));
 
   ASSERT_TRUE(remote_one.is_bound());
   ASSERT_TRUE(remote_two.is_bound());
 
   EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
-      kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+      kExtensionIdOne, chromeos::api::os_events::EventCategory::kAudioJack));
   EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
-      kExtensionIdTwo, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+      kExtensionIdTwo, chromeos::api::os_events::EventCategory::kAudioJack));
 
   GetEventRouter()->ResetReceiversForExtension(kExtensionIdOne);
 
@@ -66,10 +69,10 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversForExtension) {
 
   EXPECT_FALSE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
   EXPECT_FALSE(GetEventRouter()->IsExtensionObservingForCategory(
-      kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+      kExtensionIdOne, chromeos::api::os_events::EventCategory::kAudioJack));
   EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
   EXPECT_TRUE(GetEventRouter()->IsExtensionObservingForCategory(
-      kExtensionIdTwo, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+      kExtensionIdTwo, chromeos::api::os_events::EventCategory::kAudioJack));
 }
 
 TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
@@ -78,22 +81,23 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_one_audio(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          crosapi::TelemetryEventCategoryEnum::kAudioJack, kExtensionIdOne));
+          chromeos::api::os_events::EventCategory::kAudioJack,
+          kExtensionIdOne));
   mojo::Remote<crosapi::TelemetryEventObserver> remote_one_unmapped(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField,
-          kExtensionIdOne));
+          chromeos::api::os_events::EventCategory::kNone, kExtensionIdOne));
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_two(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
-          crosapi::TelemetryEventCategoryEnum::kAudioJack, kExtensionIdTwo));
+          chromeos::api::os_events::EventCategory::kAudioJack,
+          kExtensionIdTwo));
 
   ASSERT_TRUE(remote_one_audio.is_bound());
   ASSERT_TRUE(remote_one_unmapped.is_bound());
   ASSERT_TRUE(remote_two.is_bound());
 
   GetEventRouter()->ResetReceiversOfExtensionByCategory(
-      kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kAudioJack);
+      kExtensionIdOne, chromeos::api::os_events::EventCategory::kAudioJack);
 
   // Flush so the result shows up.
   remote_one_audio.FlushForTesting();
@@ -109,7 +113,7 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
 
   // Reset the last category of extension one.
   GetEventRouter()->ResetReceiversOfExtensionByCategory(
-      kExtensionIdOne, crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
+      kExtensionIdOne, chromeos::api::os_events::EventCategory::kNone);
 
   EXPECT_FALSE(GetEventRouter()->IsExtensionObserving(kExtensionIdOne));
   EXPECT_TRUE(GetEventRouter()->IsExtensionObserving(kExtensionIdTwo));
@@ -118,10 +122,10 @@ TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversOfExtensionByCategory) {
 TEST_F(TelemetryExtensionEventRouterTest, RestrictReceiversForExtension) {
   constexpr char kExtensionIdOne[] = "TESTEXTENSION1";
   constexpr char kExtensionIdTwo[] = "TESTEXTENSION2";
-  constexpr crosapi::TelemetryEventCategoryEnum regular_event =
-      crosapi::TelemetryEventCategoryEnum::kAudioJack;
-  constexpr crosapi::TelemetryEventCategoryEnum focus_restriced_event =
-      crosapi::TelemetryEventCategoryEnum::kTouchpadConnected;
+  constexpr chromeos::api::os_events::EventCategory regular_event =
+      chromeos::api::os_events::EventCategory::kAudioJack;
+  constexpr chromeos::api::os_events::EventCategory focus_restriced_event =
+      chromeos::api::os_events::EventCategory::kTouchpadConnected;
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_one_regular(
       GetEventRouter()->GetPendingRemoteForCategoryAndExtension(
