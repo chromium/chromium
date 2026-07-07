@@ -298,8 +298,7 @@ BASE_FEATURE(kWebViewFasterGetDefaultUserAgent,
 
 // When enabled, navigation headers will be saved and restored as part
 // of saved state for WebView.
-BASE_FEATURE(kWebViewSaveStateIncludeHeaders,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewSaveStateIncludeHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, certain static methods in SharedStatics do not trigger startup.
 BASE_FEATURE(kWebViewStaticMethodsNotTriggerStartup,
