@@ -164,6 +164,9 @@ suite('ComposeboxMixinTest', () => {
 
     element = document.createElement('test-composebox-mixin') as
         TestComposeboxMixinElement;
+    // The mixin queries ZPS on mount by default, which advances the
+    // autocomplete query id; opt out so per-test assertions start clean.
+    element.queryZpsOnLoad = false;
     document.body.appendChild(element);
     await microtasksFinished();
   });
@@ -333,6 +336,36 @@ suite('ComposeboxMixinTest', () => {
         assertDeepEquals(
             args, [0, 'hello world', false, 11, SuggestInventory.kDefault]);
       });
+
+  test('queries autocomplete on load by default', async () => {
+    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+    const freshComposebox = document.createElement('test-composebox-mixin') as
+        TestComposeboxMixinElement;
+    document.body.appendChild(freshComposebox);
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        searchboxHandler.getCallCount('queryAutocompleteWithSuggestInventory'));
+  });
+
+  test('does not query autocomplete on load when queryZpsOnLoad is false',
+       async () => {
+    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+    const freshComposebox =
+        document.createElement('test-composebox-mixin') as
+        TestComposeboxMixinElement;
+    // queryZpsOnLoad is read in connectedCallback, so it must be set before
+    // the element connects. Contextual Tasks sets it false and drives
+    // autocomplete from its own zero-state logic instead.
+    freshComposebox.queryZpsOnLoad = false;
+    document.body.appendChild(freshComposebox);
+    await microtasksFinished();
+
+    assertEquals(
+        0,
+        searchboxHandler.getCallCount('queryAutocompleteWithSuggestInventory'));
+  });
 
   test(
       'Shift+Enter allows inserting a newline when input is focused and not empty',

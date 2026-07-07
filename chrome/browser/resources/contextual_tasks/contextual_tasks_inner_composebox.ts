@@ -60,6 +60,7 @@ export interface ContextualTasksInnerComposeboxInterface {
   isZeroState: boolean;
   lensButtonDisabled: boolean;
   lensButtonTriggersOverlay: boolean;
+  queryZpsOnLoad: boolean;
   searchboxLayoutMode: string;
   showLensButton: boolean;
   showVoiceSearch: boolean;

@@ -1071,14 +1071,14 @@ suite('ComposeboxVoiceSearch', () => {
   test(
       'Queries autocomplete to update suggestions after stop click',
       async () => {
-        // Reset handler calls to ensure a clean slate.
-        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
-
         loadTimeData.overrideValues({
           voiceSearchCoherenceComposeboxesEnabled: true,
         });
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         await createComposeboxElement();
+
+        // Reset so the zps query fired on mount does not count.
+        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
 
         // Open voice search.
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);

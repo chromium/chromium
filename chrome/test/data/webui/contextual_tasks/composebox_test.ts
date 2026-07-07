@@ -1561,8 +1561,9 @@ suite('ContextualTasksComposeboxTest', () => {
 // Fork DUAL-PATH SMOKE SUITE
 // Infrastructure-only coverage: verifies the wrapper's
 // `useContextualTasksComposeboxFork` ternary picks the right inner element
-// on both paths. The fork is a smoke skeleton, so nothing here may depend on
-// inner composebox behavior.
+// and that wrapper-teplate bindings reach the inner element at mount, on both
+// paths. The fork is a smoke skeleton, so nothing here may depend on
+// fork-specific inner composebox behavior.
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
@@ -1643,6 +1644,17 @@ suite('ContextualTasksComposeboxTest', () => {
           assertEquals(
             innerComposebox,
             wrapper.shadowRoot.querySelector('#composebox'));
+        });
+
+        test('inner composebox does not query zps on initial mount', () => {
+          const {innerComposebox} = parts;
+          // The wrapper template binds `.queryZpsOnLoad="${false}"`, so the
+          // mount in setup() must not blindly query zps in connectedCallback.
+          assertFalse(innerComposebox.queryZpsOnLoad);
+          assertEquals(
+              0,
+              mockSearchboxPageHandler.getCallCount(
+                  'queryAutocompleteWithSuggestInventory'));
         });
 
         test('wrapper tracks focus state from inner composebox events',
