@@ -30,6 +30,10 @@ config("strict_deps") {
   cflags_cc = [
     "-Wprivate-header",
     "-fmodules-strict-decluse",
+    "-Xclang",
+    "-add-plugin",
+    "-Xclang",
+    "strict-deps",
   ]
 }
 
