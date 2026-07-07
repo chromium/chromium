@@ -4,12 +4,16 @@
 
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,8 +25,30 @@ class ContextHubServiceFactoryTest : public testing::Test {
   ~ContextHubServiceFactoryTest() override = default;
 
  protected:
+  void SetUp() override {
+    testing::Test::SetUp();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ContextHubServiceFactoryTest::
+                                        OnWillCreateBrowserContextKeyedServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) {
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockOptimizationGuideKeyedService>();
+            }));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 TEST_F(ContextHubServiceFactoryTest, CreatesServiceWithFlagEnabled) {

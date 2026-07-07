@@ -16,6 +16,12 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 
+namespace optimization_guide {
+class ModelQualityLogEntry;
+class RemoteModelExecutor;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
+
 namespace personal_context {
 class PersonalContextService;
 }  // namespace personal_context
@@ -26,6 +32,8 @@ class ContextHubService : public KeyedService {
  public:
   explicit ContextHubService(
       personal_context::PersonalContextService* personal_context_service,
+      optimization_guide::RemoteModelExecutor*
+          optimization_guide_remote_model_executor,
       std::unique_ptr<MemoryBank> memory_bank);
 
   ContextHubService(const ContextHubService&) = delete;
@@ -57,13 +65,23 @@ class ContextHubService : public KeyedService {
   // Returns all entries from the memory bank.
   void GetAllEntries(MemoryBank::GetAllEntriesCallback callback) const;
 
+  // Generates tab groups based on the provided `prompt`.
+  void GenerateTabGroups(std::string prompt);
+
  private:
   // Handles the async response from the AutoTodos fetch.
   void OnAutoTodosFetched(AutoTodosCallback callback,
                           personal_context::FetchContextResult result);
 
+  // Handles the result of the model execution from `GenerateTabGroups`.
+  void HandleModelExecutionResult(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
+  const raw_ref<optimization_guide::RemoteModelExecutor>
+      optimization_guide_remote_model_executor_;
 
   // Guaranteed to be non-null. If features::kMemoryBanks is disabled, this
   // will be a NoOpMemoryBank.

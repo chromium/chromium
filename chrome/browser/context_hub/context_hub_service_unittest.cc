@@ -13,6 +13,7 @@
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -31,6 +32,7 @@ class ContextHubServiceTest : public testing::Test {
  public:
   ContextHubServiceTest()
       : service_(&mock_personal_context_service_,
+                 &mock_remote_model_executor_,
                  std::make_unique<InMemoryMemoryBank>()) {}
   ~ContextHubServiceTest() override = default;
 
@@ -38,6 +40,7 @@ class ContextHubServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   personal_context::MockPersonalContextService mock_personal_context_service_;
+  optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   ContextHubService service_;
 };
 

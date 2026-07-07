@@ -37,9 +37,7 @@ source_set("context_hub_page_handler") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui/tabs:tab_strip",
-    ]
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 
@@ -63,9 +61,7 @@ source_set("context_hub") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui/webui:favicon_source",
-    ]
+    deps += [ "//chrome/browser/ui/webui:favicon_source" ]
   }
 }
 
@@ -76,6 +72,7 @@ source_set("unit_tests") {
     ":context_hub_page_handler",
     "//base/test:test_support",
     "//chrome/browser/context_hub",
+    "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/personal_context",
     "//chrome/test:test_support",
     "//components/personal_context/core:test_support",
