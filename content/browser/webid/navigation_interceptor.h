@@ -44,18 +44,18 @@ class CONTENT_EXPORT NavigationInterceptor
   class ResponseBuilder {
    public:
     ResponseBuilder() = default;
-    CONTENT_EXPORT std::optional<NavigationController::LoadURLParams> Build(
-        const base::Value& response);
+    CONTENT_EXPORT std::optional<content::NavigationController::LoadURLParams>
+    Build(const base::Value& response);
   };
 
   using RequestInitiator = base::RepeatingCallback<bool(
-      RenderFrameHost* rfh,
+      content::RenderFrameHost* rfh,
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
           idp_get_params,
-      ::password_manager::CredentialMediationRequirement requirement,
+      MediationRequirement requirement,
       NavigationHandle* navigation_handle,
       const GURL& intercepted_url,
-      Request::RequestTokenCallback callback)>;
+      RequestTokenCallback callback)>;
 
   explicit NavigationInterceptor(NavigationThrottleRegistry& registry);
   NavigationInterceptor(NavigationThrottleRegistry& registry,
@@ -65,7 +65,7 @@ class CONTENT_EXPORT NavigationInterceptor
   NavigationInterceptor(const NavigationInterceptor&) = delete;
   NavigationInterceptor& operator=(const NavigationInterceptor&) = delete;
 
-  // NavigationThrottle overrides:
+  // content::NavigationThrottle overrides:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;

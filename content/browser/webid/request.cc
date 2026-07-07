@@ -64,11 +64,18 @@
 using base::Value;
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
-using blink::mojom::IdentityProviderGetParametersPtr;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
 using blink::mojom::RegisterIdpStatus;
 using blink::mojom::RequestTokenStatus;
 using blink::mojom::RequestUserInfoStatus;
+using FederatedApiPermissionStatus =
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using DisconnectStatusForMetrics = content::webid::DisconnectStatus;
+using TokenStatus = content::webid::RequestIdTokenStatus;
+using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
+using LoginState = content::IdentityRequestAccount::LoginState;
+using SignInMode = content::IdentityRequestAccount::SignInMode;
+using ErrorDialogResult = content::webid::ErrorDialogResult;
 using CompleteRequestWithErrorCallback =
     base::OnceCallback<void(blink::mojom::FederatedAuthRequestResult,
                             std::optional<content::webid::RequestIdTokenStatus>,
@@ -76,20 +83,9 @@ using CompleteRequestWithErrorCallback =
 
 namespace content::webid {
 
+using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
 using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
-using FederatedApiPermissionStatus =
-    FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
-using IdentityProviderGetInfo = AccountsFetcher::IdentityProviderGetInfo;
-using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
-using LoginState = IdentityRequestAccount::LoginState;
-using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using RpMode = blink::mojom::RpMode;
-using SignInMode = IdentityRequestAccount::SignInMode;
-using TokenError = IdentityCredentialTokenError;
-using TokenStatus = RequestIdTokenStatus;
-using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 
 namespace {
 static constexpr base::TimeDelta kTokenRequestDelay = base::Seconds(3);
@@ -135,7 +131,7 @@ bool IsFrameActive(RenderFrameHost* frame) {
 
 bool IsFrameVisible(RenderFrameHost* frame) {
   return frame && frame->IsActive() &&
-         frame->GetVisibilityState() == PageVisibilityState::kVisible;
+         frame->GetVisibilityState() == content::PageVisibilityState::kVisible;
 }
 
 bool CanBypassPermissionStatusCheck(
@@ -1582,7 +1578,7 @@ void Request::OnContinueOnResponseReceived(
   }
 
   fedcm_metrics_->RecordContinueOnPopupStatus(
-      ContinueOnPopupStatus::kPopupOpened);
+      webid::ContinueOnPopupStatus::kPopupOpened);
   ShowModalDialog(DialogType::kContinueOnPopup, idp->config->config_url,
                   continue_on);
 }
@@ -1617,7 +1613,7 @@ void Request::RedirectTo(const GURL& idp_config_url,
   DCHECK(render_frame_host().IsInPrimaryMainFrame());
 
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(&render_frame_host()));
+      content::WebContents::FromRenderFrameHost(&render_frame_host()));
 
   if (!web_contents) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
@@ -1626,7 +1622,7 @@ void Request::RedirectTo(const GURL& idp_config_url,
     return;
   }
 
-  NavigationController::LoadURLParams params(redirect_to);
+  content::NavigationController::LoadURLParams params(redirect_to);
   params.transition_type = ui::PAGE_TRANSITION_LINK;
   params.initiator_frame_token = render_frame_host().GetFrameToken();
   params.initiator_process_id = render_frame_host().GetProcess()->GetID();

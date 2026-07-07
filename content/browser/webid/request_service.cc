@@ -30,31 +30,15 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
-namespace content::webid {
+namespace content {
 
-DOCUMENT_USER_DATA_KEY_IMPL(RequestService);
+DOCUMENT_USER_DATA_KEY_IMPL(webid::RequestService);
+
+namespace webid {
+
+using TokenStatus = RequestIdTokenStatus;
 
 using blink::mojom::RegisterIdpStatus;
-
-using DisconnectCallback =
-    blink::mojom::FederatedRequestService::DisconnectCallback;
-using MediationRequirement = ::password_manager::CredentialMediationRequirement;
-using PreventSilentAccessCallback =
-    blink::mojom::FederatedRequestService::PreventSilentAccessCallback;
-using RegisterIdPCallback =
-    blink::mojom::FederatedRequestService::RegisterIdPCallback;
-using RequestTokenCallback = Request::RequestTokenCallback;
-using RequestUserInfoCallback =
-    blink::mojom::FederatedRequestService::RequestUserInfoCallback;
-using ResolveTokenRequestCallback =
-    blink::mojom::FederatedRequestService::ResolveTokenRequestCallback;
-using SetIdpSigninStatusCallback =
-    blink::mojom::FederatedRequestService::SetIdpSigninStatusCallback;
-using StartTokenRequestCallback =
-    blink::mojom::FederatedRequestService::StartTokenRequestCallback;
-using TokenStatus = RequestIdTokenStatus;
-using UnregisterIdPCallback =
-    blink::mojom::FederatedRequestService::UnregisterIdPCallback;
 
 RequestService::RequestService(RenderFrameHost* rfh)
     : DocumentUserData<RequestService>(rfh),
@@ -428,6 +412,8 @@ void RequestService::RegisterIdP(const GURL& idp,
     return;
   }
 
+  // TODO(crbug.com/519217823): Determine whether having a single registration
+  // handler and network manager for all registrations is sufficient.
   if (!registration_network_manager_) {
     registration_network_manager_ = CreateNetworkManager();
   }
@@ -803,4 +789,5 @@ IdentityRegistry* RequestService::GetIdentityRegistry() {
       WebContents::FromRenderFrameHost(&render_frame_host()));
 }
 
-}  // namespace content::webid
+}  // namespace webid
+}  // namespace content
