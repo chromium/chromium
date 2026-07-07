@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_ORIGIN_GATING_CORE_TYPES_H_
 #define COMPONENTS_ORIGIN_GATING_CORE_TYPES_H_
 
-#include <optional>
+#include <string>
+#include <string_view>
+#include <variant>
 
 #include "base/functional/callback.h"
 
@@ -37,10 +39,49 @@ enum class DecisionSource {
   kNoVerdict,
 };
 
+// Encapsulates the source of any positive/negative gating verdict.
+class DecisionAttribution {
+ public:
+  enum class Type {
+    kDecisionSource,
+    kCustomPredicate,
+  };
+
+  DecisionAttribution() = delete;
+  explicit DecisionAttribution(DecisionSource source);
+  explicit DecisionAttribution(std::string custom_predicate_name);
+
+  ~DecisionAttribution();
+  DecisionAttribution(const DecisionAttribution&);
+  DecisionAttribution& operator=(const DecisionAttribution&);
+  DecisionAttribution(DecisionAttribution&&);
+  DecisionAttribution& operator=(DecisionAttribution&&);
+
+  Type type() const;
+
+  // Returns the DecisionSource. Safe to call only when `type()` is
+  // `Type::kDecisionSource`.
+  DecisionSource Source() const;
+
+  // Returns the custom predicate name. Safe to call only when `type()` is
+  // `Type::kCustomPredicate`.
+  const std::string& CustomPredicateName() const;
+
+  bool operator==(DecisionSource source) const;
+  bool operator==(std::string_view name) const;
+  bool operator==(const DecisionAttribution& other) const;
+
+ private:
+  bool is_source() const { return type() == Type::kDecisionSource; }
+  bool is_custom_predicate() const { return type() == Type::kCustomPredicate; }
+
+  std::variant<DecisionSource, std::string> attribution_;
+};
+
 // Struct wrapping the final gating verdict and its resolution metadata.
 struct GatingDecision {
   bool is_allowed = false;
-  DecisionSource source;
+  DecisionAttribution attribution;
 };
 
 // Opaque virtual base class for consumer-specific context passed along the

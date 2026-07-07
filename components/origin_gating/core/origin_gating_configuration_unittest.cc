@@ -4,19 +4,50 @@
 
 #include "components/origin_gating/core/origin_gating_configuration.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace origin_gating {
+namespace {
 
 TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
+  CustomPredicate custom1(
+      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
+                             const GURL&,
+                             base::OnceCallback<void(Decision)> callback) {
+        std::move(callback).Run(Decision::kNoDecision);
+      }),
+      "custom_1");
+
+  CustomPredicate custom2(
+      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
+                             const GURL&,
+                             base::OnceCallback<void(Decision)> callback) {
+        std::move(callback).Run(Decision::kAllowed);
+      }),
+      "custom_2");
+
   OriginGatingConfiguration config(
       {
           DecisionSource::kAllowSameOrigin,
+          custom1,
+          custom2,
       },
       /*use_site_keyed_cache=*/false);
+
   EXPECT_THAT(config.predicates(),
-              testing::ElementsAre(DecisionSource::kAllowSameOrigin));
+              testing::ElementsAre(
+                  testing::VariantWith<DecisionSource>(
+                      DecisionSource::kAllowSameOrigin),
+                  testing::VariantWith<CustomPredicate>(
+                      testing::Property(&CustomPredicate::name, "custom_1")),
+                  testing::VariantWith<CustomPredicate>(
+                      testing::Property(&CustomPredicate::name, "custom_2"))));
 }
 
 TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {
@@ -28,4 +59,5 @@ TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {
       "");
 }
 
+}  // namespace
 }  // namespace origin_gating

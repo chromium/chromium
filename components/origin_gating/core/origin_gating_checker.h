@@ -89,21 +89,23 @@ class OriginGatingChecker {
     std::optional<bool> requires_user_confirmation;
   };
 
-  void RunNextPredicate(std::unique_ptr<GatingDecisionContext> context,
-                        base::span<const DecisionSource> pending_predicates,
-                        DelegateInputs input,
-                        GatingDecisionCallback callback);
+  void RunNextPredicate(
+      std::unique_ptr<GatingDecisionContext> context,
+      base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
+      DelegateInputs input,
+      GatingDecisionCallback callback);
 
   void OnPredicateVerdict(std::unique_ptr<GatingDecisionContext> context,
-                          base::span<const DecisionSource> remaining_predicates,
-                          DecisionSource attribution,
+                          base::span<const OriginGatingConfiguration::Predicate>
+                              remaining_predicates,
+                          DecisionAttribution attribution,
                           DelegateInputs input,
                           GatingDecisionCallback callback,
                           Decision decision);
 
   void OnUserConfirmationRequiredAnswer(
       std::unique_ptr<GatingDecisionContext> context,
-      base::span<const DecisionSource> pending_predicates,
+      base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
       DelegateInputs input,
       GatingDecisionCallback callback,
       bool requires_user_confirmation);

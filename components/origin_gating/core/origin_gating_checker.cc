@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
 namespace origin_gating {
@@ -68,7 +70,7 @@ void OriginGatingChecker::ComputeGatingDecision(
 
 void OriginGatingChecker::RunNextPredicate(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const DecisionSource> pending_predicates,
+    base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
     DelegateInputs input,
     GatingDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,59 +94,83 @@ void OriginGatingChecker::RunNextPredicate(
     return;
   }
 
-  DecisionSource source_enum = pending_predicates.front();
-  base::span<const DecisionSource> remaining_predicates =
+  const OriginGatingConfiguration::Predicate& predicate =
+      pending_predicates.front();
+  base::span<const OriginGatingConfiguration::Predicate> remaining_predicates =
       pending_predicates.subspan(1u);
 
-  switch (source_enum) {
-    case DecisionSource::kAllowSameOrigin: {
-      Decision decision = EvaluateAllowSameOrigin(input.source_origin,
-                                                  input.destination_origin);
-      OnPredicateVerdict(std::move(context), remaining_predicates, source_enum,
-                         std::move(input), std::move(callback), decision);
-      break;
-    }
-    case DecisionSource::kCacheWithUserConfirmation: {
-      Decision decision =
-          IsCachedWithUserConfirmation(input.destination_origin);
-      OnPredicateVerdict(std::move(context), remaining_predicates, source_enum,
-                         std::move(input), std::move(callback), decision);
-      break;
-    }
-    case DecisionSource::kCacheWithoutUserConfirmation:
-      if (input.requires_user_confirmation.has_value()) {
-        Decision decision =
-            !input.requires_user_confirmation.value() &&
-                    cache_.IsNavigationAllowed(input.source_origin,
-                                               input.destination_origin)
-                ? Decision::kAllowed
-                : Decision::kNoDecision;
-        OnPredicateVerdict(std::move(context), remaining_predicates,
-                           source_enum, std::move(input), std::move(callback),
-                           decision);
-      } else {
-        GURL source = input.source;
-        GURL destination = input.destination;
-        delegate_->DoesOriginRequireUserConfirmation(
-            raw_context, source, destination,
-            base::BindOnce(
-                &OriginGatingChecker::OnUserConfirmationRequiredAnswer,
-                weak_ptr_factory_.GetWeakPtr(), std::move(context),
-                pending_predicates, std::move(input), std::move(callback)));
-      }
-      break;
-    case DecisionSource::kNoVerdict:
-      // This is an internal/fallback decision source and is not an executable
-      // predicate. OriginGatingConfiguration's constructor guarantees that this
-      // is never present in the predicates list, making this block unreachable.
-      NOTREACHED();
-  }
+  std::visit(
+      absl::Overload{
+          [&](DecisionSource source_enum) {
+            switch (source_enum) {
+              case DecisionSource::kAllowSameOrigin: {
+                Decision decision = EvaluateAllowSameOrigin(
+                    input.source_origin, input.destination_origin);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kCacheWithUserConfirmation: {
+                Decision decision =
+                    IsCachedWithUserConfirmation(input.destination_origin);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kCacheWithoutUserConfirmation: {
+                if (input.requires_user_confirmation.has_value()) {
+                  Decision decision =
+                      !input.requires_user_confirmation.value() &&
+                              cache_.IsNavigationAllowed(
+                                  input.source_origin, input.destination_origin)
+                          ? Decision::kAllowed
+                          : Decision::kNoDecision;
+                  OnPredicateVerdict(std::move(context), remaining_predicates,
+                                     DecisionAttribution(source_enum),
+                                     std::move(input), std::move(callback),
+                                     decision);
+                } else {
+                  GURL source = input.source;
+                  GURL destination = input.destination;
+                  delegate_->DoesOriginRequireUserConfirmation(
+                      raw_context, source, destination,
+                      base::BindOnce(&OriginGatingChecker::
+                                         OnUserConfirmationRequiredAnswer,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(context), pending_predicates,
+                                     std::move(input), std::move(callback)));
+                }
+                break;
+              }
+              case DecisionSource::kNoVerdict:
+                // These are internal/fallback decision sources and are not
+                // executable predicates. OriginGatingConfiguration's
+                // constructor guarantees that these are never present in the
+                // predicates list, making this block unreachable.
+                NOTREACHED();
+            }
+          },
+          [&](const CustomPredicate& custom_predicate) {
+            GatingDecisionContext* raw_context = context.get();
+            custom_predicate.Run(
+                raw_context, input.source, input.destination,
+                base::BindOnce(&OriginGatingChecker::OnPredicateVerdict,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(context), remaining_predicates,
+                               DecisionAttribution(custom_predicate.name()),
+                               input, std::move(callback)));
+          }},
+      predicate);
 }
 
 void OriginGatingChecker::OnPredicateVerdict(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const DecisionSource> remaining_predicates,
-    DecisionSource attribution,
+    base::span<const OriginGatingConfiguration::Predicate> remaining_predicates,
+    DecisionAttribution attribution,
     DelegateInputs input,
     GatingDecisionCallback callback,
     Decision decision) {
@@ -155,14 +181,14 @@ void OriginGatingChecker::OnPredicateVerdict(
       ResolveGatingDecision(std::move(callback), std::move(context),
                             GatingDecision{
                                 .is_allowed = true,
-                                .source = attribution,
+                                .attribution = std::move(attribution),
                             });
       return;
     case Decision::kBlocked:
       ResolveGatingDecision(std::move(callback), std::move(context),
                             GatingDecision{
                                 .is_allowed = false,
-                                .source = attribution,
+                                .attribution = std::move(attribution),
                             });
       return;
     case Decision::kNoDecision:
@@ -175,7 +201,7 @@ void OriginGatingChecker::OnPredicateVerdict(
 
 void OriginGatingChecker::OnUserConfirmationRequiredAnswer(
     std::unique_ptr<GatingDecisionContext> context,
-    base::span<const DecisionSource> pending_predicates,
+    base::span<const OriginGatingConfiguration::Predicate> pending_predicates,
     DelegateInputs input,
     GatingDecisionCallback callback,
     bool requires_user_confirmation) {
@@ -196,11 +222,12 @@ void OriginGatingChecker::OnNoVerdictAnswer(
     AllowNavigationTo(url::Origin::Create(destination), result.did_prompt_user);
   }
 
-  ResolveGatingDecision(std::move(callback), std::move(context),
-                        GatingDecision{
-                            .is_allowed = result.is_allowed,
-                            .source = DecisionSource::kNoVerdict,
-                        });
+  ResolveGatingDecision(
+      std::move(callback), std::move(context),
+      GatingDecision{
+          .is_allowed = result.is_allowed,
+          .attribution = DecisionAttribution(DecisionSource::kNoVerdict),
+      });
 }
 
 Decision OriginGatingChecker::IsCachedWithUserConfirmation(

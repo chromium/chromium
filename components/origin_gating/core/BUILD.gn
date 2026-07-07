@@ -12,6 +12,7 @@ source_set("core") {
     "origin_gating_checker.h",
     "origin_gating_configuration.cc",
     "origin_gating_configuration.h",
+    "types.cc",
     "types.h",
   ]
 

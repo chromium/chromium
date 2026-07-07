@@ -95,6 +95,8 @@ namespace actor {
 
 namespace {
 
+constexpr char kSafetyListPredicateName[] = "actor_safety_list_check";
+
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
                      bool skip,
@@ -108,6 +110,24 @@ struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   bool skip_prompt;
   base::ScopedUmaHistogramTimer timer;
 };
+
+origin_gating::CustomPredicate CreateSafetyListPredicate() {
+  return origin_gating::CustomPredicate(
+      base::BindRepeating([](const origin_gating::GatingDecisionContext*,
+                             const GURL& source_url,
+                             const GURL& destination_url) {
+        switch (SafetyListManager::GetInstance()->Find(source_url,
+                                                       destination_url)) {
+          case SafetyListManager::Decision::kNone:
+            return origin_gating::Decision::kNoDecision;
+          case SafetyListManager::Decision::kAllow:
+            return origin_gating::Decision::kAllowed;
+          case SafetyListManager::Decision::kBlock:
+            return origin_gating::Decision::kBlocked;
+        }
+      }),
+      kSafetyListPredicateName);
+}
 
 static constexpr std::string_view kPermissionGrantedHistogram =
     "Actor.NavigationGating.PermissionGranted";
@@ -145,15 +165,26 @@ url::Origin OriginOrPrecursorIfOpaque(const url::Origin& origin) {
       origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 }
 
-ExecutionEngine::GatingDecision MapDecisionSourceToGatingDecision(
-    origin_gating::DecisionSource source) {
-  switch (source) {
-    case origin_gating::DecisionSource::kAllowSameOrigin:
-      return ExecutionEngine::GatingDecision::kAllowSameOrigin;
-    case origin_gating::DecisionSource::kCacheWithUserConfirmation:
-    case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
-    case origin_gating::DecisionSource::kNoVerdict:
-      return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
+    const origin_gating::GatingDecision& decision) {
+  switch (decision.attribution.type()) {
+    case origin_gating::DecisionAttribution::Type::kDecisionSource:
+      switch (decision.attribution.Source()) {
+        case origin_gating::DecisionSource::kAllowSameOrigin:
+          return ExecutionEngine::GatingDecision::kAllowSameOrigin;
+        case origin_gating::DecisionSource::kCacheWithUserConfirmation:
+        case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
+        case origin_gating::DecisionSource::kNoVerdict:
+          return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+      }
+    case origin_gating::DecisionAttribution::Type::kCustomPredicate:
+      if (decision.attribution == kSafetyListPredicateName) {
+        return decision.is_allowed
+                   ? ExecutionEngine::GatingDecision::kAllowByStaticList
+                   : ExecutionEngine::GatingDecision::kBlockByStaticList;
+      }
+      NOTREACHED() << "Unrecognized custom predicate attribution: "
+                   << decision.attribution.CustomPredicateName();
   }
 }
 
@@ -241,6 +272,7 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  CreateSafetyListPredicate(),
                   origin_gating::DecisionSource::kCacheWithUserConfirmation,
                   origin_gating::DecisionSource::kAllowSameOrigin,
                   origin_gating::DecisionSource::kCacheWithoutUserConfirmation,
@@ -397,16 +429,16 @@ void ExecutionEngine::OnComputedGatingDecision(
     origin_gating::GatingDecision decision) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* actor_context = static_cast<ActorGatingContext*>(context.get());
+  bool is_no_verdict =
+      decision.attribution == origin_gating::DecisionSource::kNoVerdict;
   LogNavigationGating(source_origin, initiator, destination_origin,
-                      /*applied_gate=*/decision.source ==
-                          origin_gating::DecisionSource::kNoVerdict);
+                      /*applied_gate=*/!decision.is_allowed || is_no_verdict);
 
-  RecordNavigationGatingDecision(
-      MapDecisionSourceToGatingDecision(decision.source));
+  RecordNavigationGatingDecision(MapGatingDecisionToEngineDecision(decision));
 
-  if (decision.source ==
+  if (decision.attribution ==
           origin_gating::DecisionSource::kCacheWithoutUserConfirmation ||
-      decision.source ==
+      decision.attribution ==
           origin_gating::DecisionSource::kCacheWithUserConfirmation) {
     ukm::builders::Actor_OriginGating builder(actor_context->ukm_source_id);
     builder
@@ -459,15 +491,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
                : GatingDecision::kBlockByContainerConfig;
   }
 
-  switch (SafetyListManager::GetInstance()->Find(source_url, destination_url)) {
-    case SafetyListManager::Decision::kNone:
-      return GatingDecision::kNeedsAsyncCheck;
-    case SafetyListManager::Decision::kAllow:
-      return GatingDecision::kAllowByStaticList;
-    case SafetyListManager::Decision::kBlock:
-      return GatingDecision::kBlockByStaticList;
-  }
-  NOTREACHED();
+  return GatingDecision::kNeedsAsyncCheck;
 }
 
 void ExecutionEngine::DoesOriginRequireUserConfirmation(
