@@ -2300,11 +2300,6 @@ class ComputedStyle final : public ComputedStyleBase {
            HasMaskBoxImageOutsets() || HasGapRule() || HasBorderShape();
   }
 
-  bool IsStackedWithoutContainment() const {
-    return IsStackingContextWithoutContainment() ||
-           GetPosition() != EPosition::kStatic;
-  }
-
   // Pseudo-element styles.
   bool HasAnyPseudoElementStyles() const;
   bool HasAnyHighlightPseudoElementStyles() const;
