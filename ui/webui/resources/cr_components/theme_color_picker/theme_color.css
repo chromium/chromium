@@ -17,6 +17,10 @@
   width: 100%;
 }
 
+:host([checked]) {
+  border: var(--cr-theme-color-border, 0);
+}
+
 :host(:focus):host-context(.focus-outline-visible) {
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }

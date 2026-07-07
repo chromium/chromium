@@ -181,6 +181,9 @@
   /* Feature Showcase colors. */ \
   E_CPONLY(kColorFeatureShowcaseStepperCheck) \
   E_CPONLY(kColorFeatureShowcaseStepperDot) \
+  E_CPONLY(kColorFeatureShowcaseThemePickerWrapperBackground) \
+  E_CPONLY(kColorFeatureShowcaseThemePickerBackground) \
+  E_CPONLY(kColorFeatureShowcaseThemeColorBorder) \
   E_CPONLY(kColorFeatureLensPromoBubbleBackground) \
   E_CPONLY(kColorFeatureLensPromoBubbleForeground) \
   /* Find bar colors. */ \

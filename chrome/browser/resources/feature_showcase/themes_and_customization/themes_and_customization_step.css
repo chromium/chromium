@@ -10,19 +10,29 @@
 
 #illustration {
   align-items: center;
-  background-color: var(--color-sys-surface5);
+  background-color: var(
+      --color-feature-showcase-theme-picker-wrapper-background,
+      var(--cr-fallback-color-neutral-container));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: center;
-  padding: 0 70px;
+  padding: 0 16px;
   width: 100%;
+}
+
+@media screen and ((max-width: 640px) or (max-height: 754px)) {
+  #illustration {
+    background-color: transparent;
+  }
 }
 
 .picker-container {
   align-items: stretch;
-  background-color: var(--cr-fallback-color-surface);
+  background-color: var(
+      --color-feature-showcase-theme-picker-background,
+      var(--cr-fallback-color-surface));
   border-radius: 24px;
   display: flex;
   flex-direction: column;
@@ -36,6 +46,11 @@ cr-theme-color-picker {
 }
 
 cr-theme-color-picker {
+  --color-theme-color-picker-option-background:
+      var(--cr-fallback-color-neutral-container);
+  --cr-theme-color-border: 2px solid
+      var(--color-feature-showcase-theme-color-border,
+          var(--cr-fallback-color-primary));
   --cr-theme-color-border-radius: 12px;
   --cr-theme-color-padding: 7px;
   --cr-theme-color-picker-column-width: 72px;
