@@ -15,8 +15,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -70,7 +68,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
@@ -109,9 +106,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -253,6 +248,10 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         mAppMenuItemTheme = new AppMenuItemTheme(mContext, mTabModelSelector);
     }
 
+    protected AppMenuItemTheme getAppMenuItemTheme() {
+        return mAppMenuItemTheme;
+    }
+
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
@@ -334,292 +333,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public abstract ModelList buildMenuModelList();
 
     /**
-     * Builds a property model for a divider item type.
-     *
-     * @param id The id of the divider.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForDivider(@IdRes int id) {
-        return new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                .build();
-    }
-
-    /**
-     * Constructs the basis for text menu items models.
-     *
-     * @param id The id of the text menu item.
-     * @return A Builder object that forms the basis for text menu item models.
-     */
-    public PropertyModel.Builder buildBaseModelForTextItem(@IdRes int id) {
-        return populateBaseModelForTextItem(
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS), id);
-    }
-
-    /**
-     * Populates the PropertyModel.Builder with the common properties for a text menu item.
-     *
-     * @param builder The builder to populate with data.
-     * @param id The id of the text menu item.
-     * @return A Builder object that forms the basis for text menu item models.
-     */
-    public PropertyModel.Builder populateBaseModelForTextItem(
-            PropertyModel.Builder builder, @IdRes int id) {
-        return builder.with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                .with(AppMenuItemProperties.ENABLED, true)
-                .with(
-                        AppMenuItemProperties.ICON_COLOR_RES,
-                        mAppMenuItemTheme.getMenuItemIconColorRes(id))
-                .with(
-                        AppMenuItemProperties.ICON_SHOW_BADGE,
-                        mAppMenuItemTheme.shouldShowBadgeOnMenuItemIcon(id))
-                .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                .with(
-                        AppMenuItemProperties.TITLE_CONDENSED,
-                        mAppMenuItemTheme.getContentDescription(id))
-                .with(AppMenuItemProperties.MANAGED, mAppMenuItemTheme.isMenuItemManaged(id));
-    }
-
-    /**
-     * Build a property model for a standard text menu item.
-     *
-     * @param id The id of the menu item.
-     * @param titleId The resource id of the title to be displayed.
-     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForStandardMenuItem(
-            @IdRes int id, @StringRes int titleId, @DrawableRes int iconResId) {
-        PropertyModel model =
-                buildBaseModelForTextItem(id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
-                        .build();
-        if (iconResId != 0) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, iconResId));
-        }
-        return model;
-    }
-
-    /**
-     * Build a property model for a text menu item w/ checkbox.
-     *
-     * @param id The id of the menu item.
-     * @param titleId The resource id of the title to be displayed.
-     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
-     * @param checkBoxId The id of the checkbox item.
-     * @param isChecked Whether the checkbox is currently checked.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForMenuItemWithCheckbox(
-            @IdRes int id,
-            @StringRes int titleId,
-            @DrawableRes int iconResId,
-            @IdRes int checkBoxId,
-            boolean isChecked) {
-        PropertyModel checkBoxModel =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, checkBoxId)
-                        .with(AppMenuItemProperties.CHECKABLE, true)
-                        .with(AppMenuItemProperties.CHECKED, isChecked)
-                        .with(AppMenuItemProperties.ENABLED, true)
-                        .build();
-        ModelList subList = new ModelList();
-        subList.add(new ListItem(0, checkBoxModel));
-
-        PropertyModel model =
-                buildBaseModelForTextItem(id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
-                        .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
-                        .build();
-        if (iconResId != 0) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, iconResId));
-        }
-        return model;
-    }
-
-    /**
-     * Build a property model for a text menu item w/ secondary action button.
-     *
-     * @param id The id of the menu item.
-     * @param titleId The resource id of the title to be displayed.
-     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
-     * @param secondaryActionId The id of the secondary action.
-     * @param secondaryActionTitle The title for the secondary action.
-     * @param secondaryActionIcon The icon for the secondary action.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForMenuItemWithSecondaryButton(
-            @IdRes int id,
-            @StringRes int titleId,
-            @DrawableRes int iconResId,
-            @IdRes int secondaryActionId,
-            CharSequence secondaryActionTitle,
-            Drawable secondaryActionIcon) {
-        PropertyModel secondaryActionModel =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, secondaryActionId)
-                        .with(AppMenuItemProperties.TITLE, secondaryActionTitle)
-                        .with(AppMenuItemProperties.ICON, secondaryActionIcon)
-                        .with(AppMenuItemProperties.ENABLED, true)
-                        .build();
-
-        ModelList subList = new ModelList();
-        subList.add(new MVCListAdapter.ListItem(0, secondaryActionModel));
-
-        PropertyModel model =
-                buildBaseModelForTextItem(id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
-                        .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
-                        .build();
-        if (iconResId != 0) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, iconResId));
-        }
-        return model;
-    }
-
-    /**
-     * Build a property model for a menu item with submenu.
-     *
-     * @param id The id of the menu item.
-     * @param titleId The resource id of the title to be displayed.
-     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
-     * @param submenuItemProvider The provider of {@code ListItem}s in the submenu.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForMenuItemWithSubmenu(
-            @IdRes int id,
-            @StringRes int titleId,
-            @DrawableRes int iconResId,
-            Supplier<List<ListItem>> submenuItemProvider) {
-        return buildModelForMenuItemWithSubmenu(
-                id, mContext.getString(titleId), iconResId, submenuItemProvider);
-    }
-
-    public PropertyModel buildModelForMenuItemWithSubmenu(
-            @IdRes int id,
-            String title,
-            @DrawableRes int iconResId,
-            Supplier<List<ListItem>> submenuItemProvider) {
-        Drawable icon = iconResId != 0 ? AppCompatResources.getDrawable(mContext, iconResId) : null;
-        return buildModelForMenuItemWithSubmenu(id, title, icon, submenuItemProvider);
-    }
-
-    public PropertyModel buildModelForMenuItemWithSubmenu(
-            @IdRes int id,
-            @StringRes int titleId,
-            @Nullable Drawable icon,
-            Supplier<List<ListItem>> submenuItemProvider) {
-        return buildModelForMenuItemWithSubmenu(
-                id, mContext.getString(titleId), icon, submenuItemProvider);
-    }
-
-    public PropertyModel buildModelForMenuItemWithSubmenu(
-            @IdRes int id,
-            String title,
-            @Nullable Drawable icon,
-            Supplier<List<ListItem>> submenuItemProvider) {
-        PropertyModel model =
-                new PropertyModel.Builder(AppMenuItemWithSubmenuProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                        .with(AppMenuItemProperties.TITLE, title)
-                        .with(AppMenuItemProperties.ENABLED, true)
-                        .with(
-                                AppMenuItemProperties.ICON_COLOR_RES,
-                                mAppMenuItemTheme.getMenuItemIconColorRes(id))
-                        .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                        .with(
-                                AppMenuItemProperties.MANAGED,
-                                mAppMenuItemTheme.isMenuItemManaged(id))
-                        .with(
-                                AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER,
-                                submenuItemProvider)
-                        .with(
-                                AppMenuItemProperties.ICON_SHOW_BADGE,
-                                mAppMenuItemTheme.shouldShowBadgeOnMenuItemIcon(id))
-                        .build();
-        if (icon != null) {
-            model.set(AppMenuItemProperties.ICON, icon);
-        }
-        return model;
-    }
-
-    /**
-     * Build a property model for an icon row button.
-     *
-     * @param id The id of the menu item.
-     * @param titleId The resource id of the title for this icon.
-     * @param titleCondensedId The resource id of the condensed title for this icon, which is used
-     *     for accessibility.
-     * @param iconResId The resource id of the icon to be displayed.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForIcon(
-            @IdRes int id,
-            @StringRes int titleId,
-            @StringRes int titleCondensedId,
-            @DrawableRes int iconResId) {
-        PropertyModel model =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_ICON_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
-                        .with(
-                                AppMenuItemProperties.TITLE_CONDENSED,
-                                mContext.getString(titleCondensedId))
-                        .with(AppMenuItemProperties.ENABLED, true)
-                        .build();
-        if (iconResId != 0) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, iconResId));
-        }
-        return model;
-    }
-
-    /**
-     * Build a property model for an icon row.
-     *
-     * @param id The id of the menu item.
-     * @param iconModels The list of models representing the icons in the row.
-     * @return The property model for this item.
-     */
-    public PropertyModel buildModelForIconRow(@IdRes int id, List<PropertyModel> iconModels) {
-        ModelList subList = new ModelList();
-        for (PropertyModel iconModel : iconModels) {
-            subList.add(new MVCListAdapter.ListItem(0, iconModel));
-        }
-
-        return new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
-                .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                .build();
-    }
-
-    protected MVCListAdapter.ListItem createStandardListItem(
-            PropertyModel model, boolean showIcon) {
-        return new MVCListAdapter.ListItem(
-                showIcon
-                        ? AppMenuHandler.AppMenuItemType.STANDARD
-                        : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                model);
-    }
-
-    protected MVCListAdapter.ListItem createMenuItemWithSubmenuListItem(
-            PropertyModel model, boolean showIcon) {
-        return new MVCListAdapter.ListItem(
-                showIcon
-                        ? AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU
-                        : AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU_NO_ICON,
-                model);
-    }
-
-    /**
      * @param currentTab The currentTab for which the app menu is showing.
      * @return Whether reader mode is currently showing.
      */
@@ -631,13 +344,16 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     /** Construct the reader mode menu item. */
     protected MVCListAdapter.ListItem buildReaderModeItem(Tab currentTab, boolean showIcon) {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.reader_mode_menu_id,
                         DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
                                 ? R.string.hide_reading_mode_text
                                 : R.string.show_reading_mode_text,
-                        showIcon ? R.drawable.ic_mobile_friendly_24dp : 0),
+                        showIcon ? R.drawable.ic_mobile_friendly_24dp : 0,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -702,10 +418,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         assert shouldShowTranslateMenuItem(currentTab);
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.translate_id,
                         R.string.menu_translate,
-                        showIcon ? R.drawable.ic_translate : 0));
+                        showIcon ? R.drawable.ic_translate : 0,
+                        isMenuIconAtStart()));
     }
 
     /** Return whether the current tab should show the "Open with..." item. */
@@ -721,10 +440,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         assert shouldShowOpenWithItem(currentTab);
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.open_with_id,
                         R.string.menu_open_with,
-                        showIcon ? R.drawable.ic_open_in_new : 0));
+                        showIcon ? R.drawable.ic_open_in_new : 0,
+                        isMenuIconAtStart()));
     }
 
     /**
@@ -772,7 +494,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the backward navigation action. */
     protected PropertyModel buildBackwardActionModel(@Nullable Tab currentTab) {
         PropertyModel backwardButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.back_menu_id,
                         R.string.accessibility_menu_back,
                         R.string.menu_back,
@@ -785,7 +508,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the forward navigation action. */
     protected PropertyModel buildForwardActionModel(@Nullable Tab currentTab) {
         PropertyModel forwardButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.forward_menu_id,
                         R.string.accessibility_menu_forward,
                         R.string.menu_forward,
@@ -798,7 +522,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the bookmark this page action. */
     protected PropertyModel buildBookmarkActionModel(@Nullable Tab currentTab) {
         PropertyModel bookmarkButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.bookmark_this_page_id,
                         R.string.accessibility_menu_bookmark,
                         R.string.menu_bookmark,
@@ -810,7 +535,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the download this page action. */
     protected PropertyModel buildDownloadActionModel(@Nullable Tab currentTab) {
         PropertyModel downloadButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.offline_page_id,
                         R.string.download_page,
                         R.string.menu_download,
@@ -832,11 +558,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected MVCListAdapter.ListItem buildPageInfoItem(
             @Nullable Tab currentTab, boolean showIcon) {
         MVCListAdapter.ListItem item =
-                createStandardListItem(
-                        buildModelForStandardMenuItem(
+                AppMenuItemUtils.createStandardListItem(
+                        AppMenuItemUtils.buildModelForStandardMenuItem(
+                                mContext,
+                                mAppMenuItemTheme,
                                 R.id.info_menu_id,
                                 R.string.menu_site_controls,
-                                showIcon ? R.drawable.ic_settings_tune_24dp : 0),
+                                showIcon ? R.drawable.ic_settings_tune_24dp : 0,
+                                isMenuIconAtStart()),
                         showIcon);
         item.model.set(AppMenuItemProperties.ENABLED, currentTab != null);
         return item;
@@ -845,7 +574,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the page info action. */
     protected PropertyModel buildPageInfoModel(@Nullable Tab currentTab) {
         PropertyModel pageInfoButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.info_menu_id,
                         R.string.accessibility_menu_info,
                         R.string.menu_page_info,
@@ -857,7 +587,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /** Build the PropertyModel for the reload/stop action. */
     protected PropertyModel buildReloadModel(@Nullable Tab currentTab) {
         PropertyModel reloadButton =
-                buildModelForIcon(
+                AppMenuItemUtils.buildModelForIcon(
+                        mContext,
                         R.id.reload_menu_id,
                         R.string.accessibility_btn_refresh,
                         R.string.refresh,
@@ -896,7 +627,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     showIcon
                             ? AppMenuHandler.AppMenuItemType.STANDARD
                             : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                    buildBaseModelForTextItem(R.id.open_webapk_id)
+                    AppMenuItemUtils.buildBaseModelForTextItem(
+                                    mAppMenuItemTheme, R.id.open_webapk_id, isMenuIconAtStart())
                             .with(
                                     AppMenuItemProperties.TITLE,
                                     mContext.getString(R.string.menu_open_webapk, appName))
@@ -912,10 +644,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     showIcon
                             ? AppMenuHandler.AppMenuItemType.STANDARD
                             : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.universal_install,
                             R.string.menu_install_create_shortcut,
-                            showIcon ? R.drawable.ic_add_to_home_screen : 0));
+                            showIcon ? R.drawable.ic_add_to_home_screen : 0,
+                            isMenuIconAtStart()));
         }
     }
 
@@ -1067,10 +802,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         if (mReadAloudPos != -1) {
             mHasReadAloudInserted = true;
             PropertyModel propertyModel =
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.readaloud_menu_id,
                             R.string.menu_listen_to_this_page,
-                            R.drawable.ic_play_circle);
+                            R.drawable.ic_play_circle,
+                            isMenuIconAtStart());
             modelList.add(
                     mReadAloudPos,
                     new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, propertyModel));
@@ -1207,17 +945,23 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         if (show) {
             return new ListItem(
                     AppMenuItemType.STANDARD,
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.enable_price_tracking_menu_id,
                             R.string.enable_price_tracking_menu_item,
-                            showIcon ? R.drawable.price_tracking_disabled : 0));
+                            showIcon ? R.drawable.price_tracking_disabled : 0,
+                            isMenuIconAtStart()));
         } else {
             return new ListItem(
                     AppMenuItemType.STANDARD,
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.disable_price_tracking_menu_id,
                             R.string.disable_price_tracking_menu_item,
-                            showIcon ? R.drawable.price_tracking_enabled_filled : 0));
+                            showIcon ? R.drawable.price_tracking_enabled_filled : 0,
+                            isMenuIconAtStart()));
         }
     }
 
@@ -1288,12 +1032,15 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
 
         PropertyModel model =
-                buildModelForMenuItemWithCheckbox(
+                AppMenuItemUtils.buildModelForMenuItemWithCheckbox(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.request_desktop_site_id,
                         R.string.menu_request_desktop_site,
                         showIcon ? R.drawable.ic_desktop_windows : 0,
                         R.id.request_desktop_site_check_id,
-                        isRequestDesktopSite);
+                        isRequestDesktopSite,
+                        isMenuIconAtStart());
 
         // This title doesn't seem to be displayed by Android, but it is used to set up
         // accessibility text in {@link AppMenuAdapter#setupMenuButton}.
@@ -1330,12 +1077,15 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         currentTab.getUrl());
         return new ListItem(
                 AppMenuItemType.TITLE_BUTTON,
-                buildModelForMenuItemWithCheckbox(
+                AppMenuItemUtils.buildModelForMenuItemWithCheckbox(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.auto_dark_web_contents_id,
                         R.string.menu_auto_dark_web_contents,
                         showIcon ? R.drawable.ic_brightness_medium_24dp : 0,
                         R.id.auto_dark_web_contents_check_id,
-                        isEnabled));
+                        isEnabled,
+                        isMenuIconAtStart()));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1365,22 +1115,28 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             }
             return new ListItem(
                     AppMenuItemType.TITLE_BUTTON,
-                    buildModelForMenuItemWithSecondaryButton(
+                    AppMenuItemUtils.buildModelForMenuItemWithSecondaryButton(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.share_menu_id,
                             R.string.menu_share_page,
                             showIcon ? R.drawable.ic_share_white_24dp : Resources.ID_NULL,
                             R.id.direct_share_menu_id,
                             directShareTitle,
-                            directShare.first));
+                            directShare.first,
+                            isMenuIconAtStart()));
         } else {
             return new ListItem(
                     showIcon
                             ? AppMenuHandler.AppMenuItemType.STANDARD
                             : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            mAppMenuItemTheme,
                             R.id.share_menu_id,
                             R.string.menu_share_page,
-                            showIcon ? R.drawable.ic_share_white_24dp : Resources.ID_NULL));
+                            showIcon ? R.drawable.ic_share_white_24dp : Resources.ID_NULL,
+                            isMenuIconAtStart()));
         }
     }
 
@@ -1430,7 +1186,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         assert info != null;
 
         PropertyModel model =
-                buildBaseModelForTextItem(R.id.open_in_app_menu_id)
+                AppMenuItemUtils.buildBaseModelForTextItem(
+                                mAppMenuItemTheme, R.id.open_in_app_menu_id, isMenuIconAtStart())
                         .with(AppMenuItemProperties.TITLE, mContext.getString(R.string.open_in_app))
                         .build();
         if (info.appIcon != null) {
@@ -1490,7 +1247,11 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         ? AppCompatResources.getDrawable(mContext, R.drawable.ic_zoom)
                         : null;
         PropertyModel model =
-                populateBaseModelForTextItem(new PropertyModel.Builder(keys), R.id.page_zoom_id)
+                AppMenuItemUtils.populateBaseModelForTextItem(
+                                new PropertyModel.Builder(keys),
+                                mAppMenuItemTheme,
+                                R.id.page_zoom_id,
+                                isMenuIconAtStart())
                         .with(
                                 AppMenuItemProperties.TITLE,
                                 mContext.getString(R.string.page_zoom_menu_title))
@@ -1513,9 +1274,12 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
         return new ListItem(
                 AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        mAppMenuItemTheme,
                         R.id.page_zoom_id,
                         R.string.page_zoom_menu_title,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_zoom : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_zoom : 0,
+                        isMenuIconAtStart()));
     }
 }

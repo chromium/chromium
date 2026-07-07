@@ -73,6 +73,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuItemTheme.java",
+  "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuItemUtils.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationServiceImpl.java",
   "java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkActivity.java",

@@ -38,6 +38,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
+import org.chromium.chrome.browser.app.appmenu.AppMenuItemUtils;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -328,7 +329,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(
                     new MVCListAdapter.ListItem(
                             AppMenuHandler.AppMenuItemType.BUTTON_ROW,
-                            buildModelForIconRow(R.id.icon_row_menu_id, iconModels)));
+                            AppMenuItemUtils.buildModelForIconRow(
+                                    R.id.icon_row_menu_id, iconModels, isMenuIconAtStart())));
         }
 
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
@@ -432,7 +434,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(
                 new ListItem(
                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                        buildModelForDivider(R.id.divider_line_id)));
+                        AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
 
         // Page Zoom
         // Disable page zoom menu item on Reading Mode pages.
@@ -442,7 +444,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(
                     new ListItem(
                             AppMenuHandler.AppMenuItemType.DIVIDER,
-                            buildModelForDivider(R.id.divider_line_id)));
+                            AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
         }
 
         // Share
@@ -775,7 +777,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         modelList.add(
-                new ListItem(AppMenuHandler.AppMenuItemType.DIVIDER, buildModelForDivider(id)));
+                new ListItem(
+                        AppMenuHandler.AppMenuItemType.DIVIDER,
+                        AppMenuItemUtils.buildModelForDivider(id)));
     }
 
     private void maybeAddDividerLine(List<ListItem> list, @IdRes int id) {
@@ -784,7 +788,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return;
         }
 
-        list.add(new ListItem(AppMenuHandler.AppMenuItemType.DIVIDER, buildModelForDivider(id)));
+        list.add(
+                new ListItem(
+                        AppMenuHandler.AppMenuItemType.DIVIDER,
+                        AppMenuItemUtils.buildModelForDivider(id)));
     }
 
     private void populateOverviewModeMenu(MVCListAdapter.ModelList modelList) {
@@ -820,9 +827,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildUpdateItem() {
         assert shouldShowUpdateMenuItem();
         PropertyModel model =
-                populateBaseModelForTextItem(
+                AppMenuItemUtils.populateBaseModelForTextItem(
                                 new PropertyModel.Builder(UpdateMenuItemViewBinder.ALL_KEYS),
-                                R.id.update_menu_id)
+                                getAppMenuItemTheme(),
+                                R.id.update_menu_id,
+                                isMenuIconAtStart())
                         .with(AppMenuItemProperties.TITLE, mContext.getString(R.string.menu_update))
                         .with(
                                 AppMenuItemProperties.ICON,
@@ -857,21 +866,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildNewTabItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.new_tab_menu_id,
                         R.string.menu_new_tab,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_add_box_rounded_corner
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildHomepageItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.homepage_menu_id,
                         R.string.options_homepage_title,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_home_24dp : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_home_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private boolean isIncognitoShowing() {
@@ -893,8 +908,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             : R.drawable.ic_incognito;
         }
         PropertyModel model =
-                buildModelForStandardMenuItem(
-                        R.id.new_incognito_tab_menu_id, R.string.menu_new_incognito_tab, iconRes);
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.new_incognito_tab_menu_id,
+                        R.string.menu_new_incognito_tab,
+                        iconRes,
+                        isMenuIconAtStart());
         model.set(
                 AppMenuItemProperties.ENABLED, isIncognitoEnabled() && !isIncognitoReauthShowing());
         return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
@@ -907,16 +927,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildAddToGroupItem(@Nullable Tab currentTab, boolean showIcon) {
         assert shouldShowAddToGroup();
         PropertyModel model =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.add_to_group_menu_id,
                         R.string.menu_add_tab_to_group,
-                        showIcon ? R.drawable.ic_widgets : Resources.ID_NULL);
+                        showIcon ? R.drawable.ic_widgets : Resources.ID_NULL,
+                        isMenuIconAtStart());
         model.set(
                 AppMenuItemProperties.TITLE,
                 mContext.getString(
                         getAddToGroupMenuItemString(
                                 currentTab != null ? currentTab.getTabGroupId() : null)));
-        return createStandardListItem(model, showIcon);
+        return AppMenuItemUtils.createStandardListItem(model, showIcon);
     }
 
     private boolean shouldShowTabGroupsParentItem(@Nullable Tab currentTab) {
@@ -928,11 +951,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildCreateNewTabGroupItem(boolean showIcon) {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.create_new_tab_group_menu_id,
                         R.string.menu_create_new_tab_group,
-                        showIcon ? R.drawable.ic_library_add_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_library_add_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -941,11 +967,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.tab_groups_parent_menu_id,
                         R.string.menu_tab_groups,
                         shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
-                        () -> getTabGroupsSubmenuItems(currentTab, shouldShowIconBeforeItem())));
+                        () -> getTabGroupsSubmenuItems(currentTab, shouldShowIconBeforeItem()),
+                        isMenuIconAtStart()));
     }
 
     private Drawable getTabGroupDrawable(@TabGroupColorId int color) {
@@ -982,8 +1011,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         submenuItems.add(
                 new ListItem(
                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                        buildModelForDivider(R.id.divider_line_id)));
-        submenuItems.add(buildHeaderItem(R.id.tab_groups_header_menu_id, R.string.menu_tab_groups));
+                        AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
+        submenuItems.add(
+                AppMenuItemUtils.buildHeaderItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.tab_groups_header_menu_id,
+                        R.string.menu_tab_groups,
+                        isMenuIconAtStart()));
 
         // TODO(crbug.com/509065807): Observe TabModel to update this while the menu is open.
         for (Token groupId : groupIds) {
@@ -995,17 +1030,20 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             }
 
             PropertyModel model =
-                    buildModelForMenuItemWithSubmenu(
+                    AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                            mContext,
+                            getAppMenuItemTheme(),
                             R.id.tab_group_menu_item_id,
                             title,
                             showIcons
                                     ? getTabGroupDrawable(
                                             tabModel.getTabGroupColorWithFallback(groupId))
                                     : null,
-                            () -> getTabsSubmenuItems(groupId, tabModel));
+                            () -> getTabsSubmenuItems(groupId, tabModel),
+                            isMenuIconAtStart());
             model.set(AppMenuItemProperties.ICON_NO_TINT, true);
 
-            submenuItems.add(createMenuItemWithSubmenuListItem(model, showIcons));
+            submenuItems.add(AppMenuItemUtils.createMenuItemWithSubmenuListItem(model, showIcons));
         }
 
         return submenuItems;
@@ -1016,9 +1054,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         List<Tab> tabs = tabModel.getTabsInGroup(groupId);
         for (Tab tab : tabs) {
             PropertyModel model =
-                    populateBaseModelForTextItem(
+                    AppMenuItemUtils.populateBaseModelForTextItem(
                                     new PropertyModel.Builder(AppMenuTabItemProperties.ALL_KEYS),
-                                    R.id.tab_group_tab_menu_item)
+                                    getAppMenuItemTheme(),
+                                    R.id.tab_group_tab_menu_item,
+                                    isMenuIconAtStart())
                             .with(AppMenuItemProperties.TITLE, tab.getTitle())
                             .with(AppMenuTabItemProperties.TAB_ID, tab.getId())
                             .with(
@@ -1110,19 +1150,25 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowNewWindow();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.new_window_menu_id,
                         R.string.menu_new_window,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_new_window : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_new_window : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildNewIncognitoWindowItem() {
         assert shouldShowNewIncognitoWindow();
         PropertyModel model =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.new_incognito_window_menu_id,
                         R.string.menu_new_incognito_window,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_incognito : Resources.ID_NULL);
+                        shouldShowIconBeforeItem() ? R.drawable.ic_incognito : Resources.ID_NULL,
+                        isMenuIconAtStart());
         model.set(
                 AppMenuItemProperties.ENABLED, isIncognitoEnabled() && !isIncognitoReauthShowing());
         return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
@@ -1132,24 +1178,30 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowMoveToOtherWindow();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.move_to_other_window_menu_id,
                         R.string.menu_move_to_other_window,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_open_in_browser
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildManageWindowsItem() {
         assert MultiWindowUtils.shouldShowManageWindowsMenu();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.manage_all_windows_menu_id,
                         R.string.menu_manage_all_windows,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_select_window
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowPasswordsAndAutofillParentItem() {
@@ -1157,29 +1209,38 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildGooglePasswordManagerItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.google_password_manager_menu_id,
                         R.string.menu_google_password_manager,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildPaymentsItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.payment_methods_menu_id,
                         R.string.menu_payment_methods,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildAddressesAndMoreItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.addresses_and_more_menu_id,
                         R.string.menu_addresses_and_more,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -1193,13 +1254,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.passwords_and_autofill_parent_menu_id,
                         R.string.menu_passwords_and_autofill,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_password_manager_24dp
                                 : Resources.ID_NULL,
-                        () -> submenuItems));
+                        () -> submenuItems,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowHistoryParentItem() {
@@ -1237,10 +1301,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         submenuItems.add(
                                 new ListItem(
                                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        buildModelForDivider(R.id.divider_line_id)));
+                                        AppMenuItemUtils.buildModelForDivider(
+                                                R.id.divider_line_id)));
                         submenuItems.add(
-                                buildHeaderItem(
-                                        R.id.recent_tabs_header_menu_id, R.string.recent_tabs));
+                                AppMenuItemUtils.buildHeaderItem(
+                                        mContext,
+                                        getAppMenuItemTheme(),
+                                        R.id.recent_tabs_header_menu_id,
+                                        R.string.recent_tabs,
+                                        isMenuIconAtStart()));
                         submenuItems.addAll(recentEntries);
                     }
 
@@ -1252,7 +1321,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         submenuItems.add(
                                 new ListItem(
                                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        buildModelForDivider(R.id.divider_line_id)));
+                                        AppMenuItemUtils.buildModelForDivider(
+                                                R.id.divider_line_id)));
                         submenuItems.addAll(foreignSessions);
                     }
 
@@ -1261,19 +1331,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.history_parent_menu_id,
                         R.string.menu_history,
                         shouldShowIconBeforeItem() ? R.drawable.ic_history_24dp : Resources.ID_NULL,
-                        submenuItemsSupplier));
-    }
-
-    private ListItem buildHeaderItem(@IdRes int id, @StringRes int titleRes) {
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.HEADER,
-                buildBaseModelForTextItem(id)
-                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleRes))
-                        .build());
+                        submenuItemsSupplier,
+                        isMenuIconAtStart()));
     }
 
     private static ListItem buildEmptySubmenuItem() {
@@ -1344,15 +1409,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 };
 
         PropertyModel model =
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.recent_entry_menu_item,
                         session.name,
                         shouldShowIconBeforeItem()
                                 ? getIconForFormFactor(session.formFactor)
                                 : Resources.ID_NULL,
-                        submenuItemsSupplier);
+                        submenuItemsSupplier,
+                        isMenuIconAtStart());
 
-        return createMenuItemWithSubmenuListItem(model, shouldShowIconBeforeItem());
+        return AppMenuItemUtils.createMenuItemWithSubmenuListItem(
+                model, shouldShowIconBeforeItem());
     }
 
     private @DrawableRes int getIconForFormFactor(@FormFactor int formFactor) {
@@ -1419,7 +1488,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         submenuItems.add(
                                 new ListItem(
                                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        buildModelForDivider(R.id.divider_line_id)));
+                                        AppMenuItemUtils.buildModelForDivider(
+                                                R.id.divider_line_id)));
                         for (RecentlyClosedTab tab : tabs) {
                             submenuItems.add(
                                     buildClosedWindowTabMenuItem(tab, window.getInstanceId()));
@@ -1429,7 +1499,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 };
 
         PropertyModel model =
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.recent_entry_menu_item,
                         getRecentEntrySubmenuTitle(
                                 window.getTitle().equals(RecentlyClosedWindow.WINDOW_DEFAULT_TITLE)
@@ -1437,23 +1509,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                         : window.getTitle(),
                                 window.getTabCount()),
                         shouldShowIconBeforeItem() ? R.drawable.ic_window_24dp : Resources.ID_NULL,
-                        submenuItemsSupplier);
+                        submenuItemsSupplier,
+                        isMenuIconAtStart());
 
         // TODO(crbug.com/521223427): Implement dynamic updates so we can re-enable this once the
         // model loads.
         model.set(AppMenuItemProperties.ENABLED, mTabModelSelector.isTabStateInitialized());
 
-        return createMenuItemWithSubmenuListItem(model, shouldShowIconBeforeItem());
+        return AppMenuItemUtils.createMenuItemWithSubmenuListItem(
+                model, shouldShowIconBeforeItem());
     }
 
     private ListItem buildRestoreWindowMenuItem(RecentlyClosedWindow window) {
         // TODO(crbug.com/521223427): Implement dynamic updates so we can re-enable this once the
         // model loads.
         PropertyModel model =
-                populateBaseModelForTextItem(
+                AppMenuItemUtils.populateBaseModelForTextItem(
                                 new PropertyModel.Builder(
                                         AppMenuRecentEntryItemProperties.ALL_KEYS),
-                                R.id.recent_entry_window_menu_item)
+                                getAppMenuItemTheme(),
+                                R.id.recent_entry_window_menu_item,
+                                isMenuIconAtStart())
                         .with(
                                 AppMenuItemProperties.TITLE,
                                 mContext.getString(R.string.menu_recent_entry_restore_window))
@@ -1507,7 +1583,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     submenuItems.add(
                             new ListItem(
                                     AppMenuHandler.AppMenuItemType.DIVIDER,
-                                    buildModelForDivider(R.id.divider_line_id)));
+                                    AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
                     for (RecentlyClosedTab tab : tabs) {
                         submenuItems.add(buildRecentTabMenuItem(tab));
                     }
@@ -1515,27 +1591,33 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 };
 
         PropertyModel model =
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.recent_entry_menu_item,
                         getRecentEntrySubmenuTitle(group.getTitle(), group.getTabs().size()),
                         shouldShowIconBeforeItem() ? getTabGroupDrawable(group.getColor()) : null,
-                        submenuItemsSupplier);
+                        submenuItemsSupplier,
+                        isMenuIconAtStart());
         model.set(AppMenuItemProperties.ICON_NO_TINT, true);
         // TODO(crbug.com/521223427): Implement dynamic updates so we can re-enable this once the
         // model loads.
         model.set(AppMenuItemProperties.ENABLED, mTabModelSelector.isTabStateInitialized());
 
-        return createMenuItemWithSubmenuListItem(model, shouldShowIconBeforeItem());
+        return AppMenuItemUtils.createMenuItemWithSubmenuListItem(
+                model, shouldShowIconBeforeItem());
     }
 
     private ListItem buildRestoreGroupMenuItem(RecentlyClosedGroup group) {
         // TODO(crbug.com/521223427): Implement dynamic updates so we can re-enable this once the
         // model loads.
         PropertyModel model =
-                populateBaseModelForTextItem(
+                AppMenuItemUtils.populateBaseModelForTextItem(
                                 new PropertyModel.Builder(
                                         AppMenuRecentEntryItemProperties.ALL_KEYS),
-                                R.id.recent_entry_group_menu_item)
+                                getAppMenuItemTheme(),
+                                R.id.recent_entry_group_menu_item,
+                                isMenuIconAtStart())
                         .with(
                                 AppMenuItemProperties.TITLE,
                                 mContext.getString(R.string.menu_recent_entry_restore_group))
@@ -1569,10 +1651,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // TODO(crbug.com/521223427): Implement dynamic updates so we can re-enable this once the
         // model loads.
         PropertyModel.Builder builder =
-                populateBaseModelForTextItem(
+                AppMenuItemUtils.populateBaseModelForTextItem(
                                 new PropertyModel.Builder(
                                         AppMenuRecentEntryItemProperties.ALL_KEYS),
-                                R.id.recent_entry_tab_menu_item)
+                                getAppMenuItemTheme(),
+                                R.id.recent_entry_tab_menu_item,
+                                isMenuIconAtStart())
                         .with(AppMenuItemProperties.TITLE, title)
                         .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, entry)
                         .with(
@@ -1586,23 +1670,29 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildHistoryItem(boolean showIcon) {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.open_history_menu_id,
                         R.string.menu_history,
-                        showIcon ? R.drawable.ic_history_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_history_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
     private ListItem buildDownloadsItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.downloads_menu_id,
                         R.string.menu_downloads,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_download_done_24dp
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowBookmarksParentItem() {
@@ -1621,7 +1711,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     submenuItems.add(
                             new ListItem(
                                     AppMenuHandler.AppMenuItemType.DIVIDER,
-                                    buildModelForDivider(R.id.divider_line_id)));
+                                    AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
 
                     submenuItems.add(buildBookmarksItem(/* showIcon= */ false));
 
@@ -1630,7 +1720,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     submenuItems.add(
                             new ListItem(
                                     AppMenuHandler.AppMenuItemType.DIVIDER,
-                                    buildModelForDivider(R.id.divider_line_id)));
+                                    AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
 
                     submenuItems.add(buildToggleBookmarksBarItem());
 
@@ -1647,17 +1737,23 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             submenuItems.add(
                                     new ListItem(
                                             AppMenuHandler.AppMenuItemType.DIVIDER,
-                                            buildModelForDivider(R.id.divider_line_id)));
+                                            AppMenuItemUtils.buildModelForDivider(
+                                                    R.id.divider_line_id)));
                             submenuItems.add(
-                                    buildHeaderItem(
-                                            R.id.bookmarks_header_menu_id, R.string.bookmarks));
+                                    AppMenuItemUtils.buildHeaderItem(
+                                            mContext,
+                                            getAppMenuItemTheme(),
+                                            R.id.bookmarks_header_menu_id,
+                                            R.string.bookmarks,
+                                            isMenuIconAtStart()));
                             submenuItems.addAll(bookmarksBarItems);
                         }
 
                         submenuItems.add(
                                 new ListItem(
                                         AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        buildModelForDivider(R.id.divider_line_id)));
+                                        AppMenuItemUtils.buildModelForDivider(
+                                                R.id.divider_line_id)));
 
                         submenuItems.add(
                                 buildBookmarkFolderParentItem(
@@ -1679,13 +1775,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.bookmarks_parent_menu_id,
                         R.string.menu_bookmarks,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
-                        submenuItemsSupplier));
+                        submenuItemsSupplier,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildBookmarkFolderParentItem(
@@ -1710,52 +1809,67 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 };
 
         PropertyModel model =
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.bookmark_folder_menu_id,
                         titleRes,
                         Resources.ID_NULL,
-                        submenuItemsSupplier);
-        return createMenuItemWithSubmenuListItem(model, /* showIcon= */ false);
+                        submenuItemsSupplier,
+                        isMenuIconAtStart());
+        return AppMenuItemUtils.createMenuItemWithSubmenuListItem(model, /* showIcon= */ false);
     }
 
     private ListItem buildReadingListItem(@Nullable Tab currentTab) {
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(
-                createStandardListItem(
-                        buildModelForStandardMenuItem(
+                AppMenuItemUtils.createStandardListItem(
+                        AppMenuItemUtils.buildModelForStandardMenuItem(
+                                mContext,
+                                getAppMenuItemTheme(),
                                 R.id.show_reading_list_menu_id,
                                 R.string.menu_show_reading_list,
-                                Resources.ID_NULL),
+                                Resources.ID_NULL,
+                                isMenuIconAtStart()),
                         /* showIcon= */ false));
 
         if (currentTab != null && BookmarkUtils.isReadingListSupported(currentTab.getUrl())) {
             submenuItems.add(
-                    createStandardListItem(
-                            buildModelForStandardMenuItem(
+                    AppMenuItemUtils.createStandardListItem(
+                            AppMenuItemUtils.buildModelForStandardMenuItem(
+                                    mContext,
+                                    getAppMenuItemTheme(),
                                     R.id.add_to_reading_list_menu_id,
                                     R.string.menu_add_to_reading_list,
-                                    Resources.ID_NULL),
+                                    Resources.ID_NULL,
+                                    isMenuIconAtStart()),
                             /* showIcon= */ false));
         }
 
         PropertyModel model =
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.reading_list_parent_menu_id,
                         R.string.menu_reading_list,
                         Resources.ID_NULL,
-                        () -> submenuItems);
-        return createMenuItemWithSubmenuListItem(model, false);
+                        () -> submenuItems,
+                        isMenuIconAtStart());
+        return AppMenuItemUtils.createMenuItemWithSubmenuListItem(model, false);
     }
 
     private ListItem buildToggleBookmarksBarItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.toggle_bookmarks_bar_menu_id,
                         BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(
                                         mTabModelSelector.getCurrentModel().getProfile())
                                 ? R.string.menu_hide_bookmarks_bar
                                 : R.string.menu_show_bookmarks_bar,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -1793,7 +1907,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (item.isFolder()) {
             return new ListItem(
                     AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                    buildModelForMenuItemWithSubmenu(
+                    AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                            mContext,
+                            getAppMenuItemTheme(),
                             R.id.bookmark_folder_menu_id,
                             item.getTitle(),
                             shouldShowIconBeforeItem()
@@ -1808,13 +1924,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                     items.add(buildEmptySubmenuItem());
                                 }
                                 return items;
-                            }));
+                            },
+                            isMenuIconAtStart()));
         } else {
             PropertyModel model =
-                    populateBaseModelForTextItem(
+                    AppMenuItemUtils.populateBaseModelForTextItem(
                                     new PropertyModel.Builder(
                                             AppMenuBookmarkItemProperties.ALL_KEYS),
-                                    R.id.bookmark_menu_id)
+                                    getAppMenuItemTheme(),
+                                    R.id.bookmark_menu_id,
+                                    isMenuIconAtStart())
                             .with(AppMenuItemProperties.TITLE, item.getTitle())
                             .with(AppMenuBookmarkItemProperties.BOOKMARK_ID, item.getId())
                             .with(
@@ -1846,20 +1965,26 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildBookmarksItem(boolean showIcon) {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.all_bookmarks_menu_id,
                         R.string.menu_bookmarks,
-                        showIcon ? R.drawable.ic_star_filled_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_star_filled_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
     private ListItem buildBookmarkThisPageItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.bookmark_this_page_menu_id,
                         R.string.menu_bookmark_this_page,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -1869,11 +1994,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private ListItem buildRecentTabsItem(boolean showIcon) {
         assert shouldShowRecentTabsItem();
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.recent_tabs_menu_id,
                         R.string.menu_recent_tabs,
-                        showIcon ? R.drawable.devices_black_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.devices_black_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -1892,23 +2020,29 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.extensions_parent_menu_id,
                         R.string.menu_extensions,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_extension_24dp
                                 : Resources.ID_NULL,
-                        () -> submenuItems));
+                        () -> submenuItems,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildExtensionsMenuItem(boolean showIcon) {
         assert shouldShowExtensionsItem();
 
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.extensions_menu_menu_id,
                         R.string.menu_extensions_menu,
-                        showIcon ? R.drawable.ic_extension_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_extension_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -1919,21 +2053,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // disabled but in different context.
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
 
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.manage_extensions_menu_id,
                         R.string.menu_manage_extensions,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildChromeWebstoreItem() {
         assert shouldShowExtensionsItem();
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.extensions_webstore_menu_id,
                         R.string.menu_chrome_webstore,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -2009,45 +2149,64 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.save_and_share_parent_menu_id,
                         R.string.menu_save_and_share,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_share_white_24dp
                                 : Resources.ID_NULL,
-                        () -> submenuItems));
+                        () -> submenuItems,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildCopyLinkItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.copy_link_menu_id, R.string.menu_copy_link, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.copy_link_menu_id,
+                        R.string.menu_copy_link,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildSendToDevicesItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.send_to_devices_menu_id,
                         R.string.menu_send_to_devices,
-                        Resources.ID_NULL),
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildShareQrCodeItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.qr_code_menu_id, R.string.menu_qr_code, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.qr_code_menu_id,
+                        R.string.menu_qr_code,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildDownloadPageItem(Tab currentTab, boolean showIcon) {
         assert shouldShowDownloadPageMenuItem(currentTab);
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.download_page_id,
                         R.string.menu_download_page,
-                        showIcon ? R.drawable.ic_file_download_white_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_file_download_white_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -2084,10 +2243,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowPrintItem(currentTab);
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.print_id,
                         R.string.menu_print,
-                        shouldShowIconBeforeItem() ? R.drawable.sharing_print : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.sharing_print : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowTaskManagerItem() {
@@ -2097,9 +2259,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildTaskManagerItem() {
         assert shouldShowTaskManagerItem();
 
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.task_manager, R.string.menu_task_manager, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.task_manager,
+                        R.string.menu_task_manager,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -2127,9 +2294,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildDevToolsItem(@Nullable Tab currentTab) {
         assert shouldShowDevToolsItem(currentTab);
 
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.dev_tools, R.string.menu_dev_tools, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.dev_tools,
+                        R.string.menu_dev_tools,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -2233,13 +2405,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.more_tools_menu_id,
                         R.string.menu_more_tools,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_more_tools_24dp
                                 : Resources.ID_NULL,
-                        submenuItemsSupplier));
+                        submenuItemsSupplier,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowNameWindowItem() {
@@ -2247,11 +2422,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildNameWindowItem(boolean showIcon) {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.name_window_menu_id,
                         R.string.menu_name_window,
-                        showIcon ? R.drawable.ic_window_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_window_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -2274,8 +2452,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             : R.drawable.ic_dock_to_right_24dp;
         }
 
-        return createStandardListItem(
-                buildModelForStandardMenuItem(R.id.toggle_tab_layout_menu_id, stringRes, iconRes),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.toggle_tab_layout_menu_id,
+                        stringRes,
+                        iconRes,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -2323,43 +2507,55 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.get_image_descriptions_id,
                         titleId,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_image_descriptions
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildNewTabGroupItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.new_tab_group_menu_id,
                         R.string.menu_new_tab_group,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildCloseAllTabsItem() {
         final PropertyModel model;
         if (isIncognitoShowing()) {
             model =
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            getAppMenuItemTheme(),
                             R.id.close_all_incognito_tabs_menu_id,
                             R.string.menu_close_all_incognito_tabs,
                             shouldShowIconBeforeItem()
                                     ? R.drawable.ic_close_all_tabs
-                                    : Resources.ID_NULL);
+                                    : Resources.ID_NULL,
+                            isMenuIconAtStart());
             model.set(
                     AppMenuItemProperties.ENABLED, mTabModelSelector.getModel(true).getCount() > 0);
         } else {
             model =
-                    buildModelForStandardMenuItem(
+                    AppMenuItemUtils.buildModelForStandardMenuItem(
+                            mContext,
+                            getAppMenuItemTheme(),
                             R.id.close_all_tabs_menu_id,
                             R.string.menu_close_all_tabs,
                             shouldShowIconBeforeItem()
                                     ? R.drawable.btn_close_white
-                                    : Resources.ID_NULL);
+                                    : Resources.ID_NULL,
+                            isMenuIconAtStart());
             model.set(AppMenuItemProperties.ENABLED, mTabModelSelector.getTotalTabCount() > 0);
         }
         return new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
@@ -2378,12 +2574,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private ListItem buildSelectTabsItem() {
         PropertyModel model =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.menu_select_tabs,
                         R.string.menu_select_tabs,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_select_check_box_24dp
-                                : Resources.ID_NULL);
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart());
         boolean isEnabled =
                 !isIncognitoReauthShowing()
                         && mTabModelSelector.isTabStateInitialized()
@@ -2396,10 +2595,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildSettingsItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.preferences_id,
                         R.string.menu_settings,
-                        shouldShowIconBeforeItem() ? R.drawable.settings_cog : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.settings_cog : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     @Contract("null -> false")
@@ -2424,10 +2626,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildListenToFeedItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.listen_to_feed_id,
                         R.string.menu_listen_to_feed,
-                        R.drawable.ic_play_circle));
+                        R.drawable.ic_play_circle,
+                        isMenuIconAtStart()));
     }
 
     /**
@@ -2445,11 +2650,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private ListItem buildNtpCustomizationsItem(Tab currentTab, boolean showIcon) {
         assert shouldShowNtpCustomizations(currentTab);
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.ntp_customization_id,
                         R.string.menu_ntp_customization,
-                        showIcon ? R.drawable.ic_edit_24dp : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -2457,10 +2665,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         int helpString = HelpAndFeedbackLauncher.getHelpMenuStringRes();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.help_id,
                         helpString,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildHelpParentItem() {
@@ -2474,31 +2685,49 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         int helpString = HelpAndFeedbackLauncher.getHelpMenuStringRes();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
+                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.help_parent_menu_id,
                         helpString,
                         shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : Resources.ID_NULL,
-                        () -> submenuItems));
+                        () -> submenuItems,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildHelpCenterItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.help_id, R.string.menu_help_center, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.help_id,
+                        R.string.menu_help_center,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildReportIssueItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.report_issue_menu_id, R.string.menu_report_issue, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.report_issue_menu_id,
+                        R.string.menu_report_issue,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
     private ListItem buildAboutChromeItem() {
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
-                        R.id.about_chrome_menu_id, R.string.menu_about_chrome, Resources.ID_NULL),
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
+                        R.id.about_chrome_menu_id,
+                        R.string.menu_about_chrome,
+                        Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 /* showIcon= */ false);
     }
 
@@ -2510,12 +2739,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowQuickDeleteItem();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.quick_delete_menu_id,
                         R.string.menu_quick_delete,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.material_ic_delete_24dp
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     @Override
@@ -2548,12 +2780,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowFindInPageItem(currentTab);
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.find_in_page_id,
                         R.string.menu_find_in_page,
-                        shouldShowIconBeforeItem()
-                                ? R.drawable.ic_find_in_page
-                                : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_find_in_page : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private boolean shouldShowLensOverlayItem(@Nullable Tab currentTab) {
@@ -2563,12 +2796,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private MVCListAdapter.ListItem buildLensOverlayItem(@Nullable Tab currentTab) {
         assert shouldShowLensOverlayItem(currentTab);
         PropertyModel model =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.lens_overlay_menu_id,
                         R.string.menu_search_tab_with_google_lens,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.lens_camera_icon
-                                : Resources.ID_NULL);
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart());
 
         // Disable the item if the overlay is already showing.
         model.set(
@@ -2585,10 +2821,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildDefaultBrowserPromoItem() {
         assert shouldShowDefaultBrowserPromo();
         PropertyModel model =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.default_browser_promo_menu_id,
                         R.string.make_chrome_default,
-                        Resources.ID_NULL);
+                        Resources.ID_NULL,
+                        isMenuIconAtStart());
 
         // Make the Chrome logo environment specific (Canary logo for Canary, etc.).
         model.set(
@@ -2620,10 +2859,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.glic_menu_id,
                         R.string.glic_button_entrypoint_ask_gemini_label,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_spark_24dp : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_spark_24dp : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     /**
@@ -2642,11 +2884,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private ListItem buildPaintPreviewItem(boolean isNativePage, Tab currentTab, boolean showIcon) {
         assert shouldShowPaintPreview(isNativePage, currentTab);
-        return createStandardListItem(
-                buildModelForStandardMenuItem(
+        return AppMenuItemUtils.createStandardListItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.paint_preview_show_id,
                         R.string.menu_paint_preview_show,
-                        showIcon ? R.drawable.ic_photo_camera : Resources.ID_NULL),
+                        showIcon ? R.drawable.ic_photo_camera : Resources.ID_NULL,
+                        isMenuIconAtStart()),
                 showIcon);
     }
 
@@ -2720,22 +2965,28 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         assert shouldShowManagedByMenuItem(currentTab);
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.managed_by_menu_id,
                         R.string.managed_browser,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_domain : Resources.ID_NULL));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_domain : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     private ListItem buildContentFilterHelpCenterMenuItem(Tab currentTab) {
         assert shouldShowContentFilterHelpCenterMenuItem(currentTab);
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.menu_item_content_filter_help_center_id,
                         R.string.menu_item_content_filter_help_center_link,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_account_child_20dp
-                                : Resources.ID_NULL));
+                                : Resources.ID_NULL,
+                        isMenuIconAtStart()));
     }
 
     @Override
@@ -2793,11 +3044,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private ListItem buildReadAloudSubmenuItem(boolean showIcon) {
         PropertyModel propertyModel =
-                buildModelForStandardMenuItem(
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        getAppMenuItemTheme(),
                         R.id.readaloud_menu_id,
                         R.string.menu_listen_to_this_page,
-                        showIcon ? R.drawable.ic_play_circle : Resources.ID_NULL);
-        return createStandardListItem(propertyModel, showIcon);
+                        showIcon ? R.drawable.ic_play_circle : Resources.ID_NULL,
+                        isMenuIconAtStart());
+        return AppMenuItemUtils.createStandardListItem(propertyModel, showIcon);
     }
 
     private Profile getProfileFromTabModel() {
