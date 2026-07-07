@@ -38,6 +38,10 @@ base::TimeTicks LifecycleUnitBase::GetStateChangeTime() const {
   return state_change_time_;
 }
 
+base::Time LifecycleUnitBase::GetStateChangeWallTime() const {
+  return state_change_wall_time_;
+}
+
 size_t LifecycleUnitBase::GetDiscardCount() const {
   return discard_count_;
 }
@@ -65,6 +69,7 @@ void LifecycleUnitBase::SetState(LifecycleUnitState state) {
   LifecycleUnitState last_state = state_;
   state_ = state;
   state_change_time_ = NowTicks();
+  state_change_wall_time_ = Now();
   for (auto& observer : observers_)
     observer.OnLifecycleUnitStateChanged(this, last_state);
 }

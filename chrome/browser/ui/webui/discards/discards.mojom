@@ -70,8 +70,8 @@ struct TabDiscardsInfo {
   double site_engagement_score;
   // Whether or not the tab has input focus.
   bool has_focus;
-  // Delta between Unix Epoch and time at which the lifecycle state has changed.
-  mojo_base.mojom.TimeDelta state_change_time;
+  // Wall-clock time at which the lifecycle state last changed.
+  mojo_base.mojom.JSTime state_change_time;
 };
 
 // Interface for providing information about discards. Lives in the browser

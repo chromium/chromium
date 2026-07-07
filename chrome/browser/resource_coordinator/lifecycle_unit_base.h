@@ -33,6 +33,7 @@ class LifecycleUnitBase : public LifecycleUnit {
   int32_t GetID() const override;
   LifecycleUnitState GetState() const override;
   base::TimeTicks GetStateChangeTime() const override;
+  base::Time GetStateChangeWallTime() const override;
   size_t GetDiscardCount() const override;
   void AddObserver(LifecycleUnitObserver* observer) override;
   void RemoveObserver(LifecycleUnitObserver* observer) override;
@@ -65,8 +66,10 @@ class LifecycleUnitBase : public LifecycleUnit {
   // Current state of this LifecycleUnit.
   LifecycleUnitState state_ = LifecycleUnitState::ACTIVE;
 
-  // Time at which the state changed.
+  // Time at which the state changed, stamped together in both the monotonic
+  // and wall-clock domains.
   base::TimeTicks state_change_time_ = NowTicks();
+  base::Time state_change_wall_time_ = Now();
 
   // The number of times that this lifecycle unit has been discarded.
   int discard_count_ = 0;

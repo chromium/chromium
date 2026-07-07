@@ -74,13 +74,21 @@ TEST_F(LifecycleUnitBaseTest, GetID) {
 TEST_F(LifecycleUnitBaseTest, SetStateUpdatesTime) {
   TestLifecycleUnit lifecycle_unit;
   EXPECT_EQ(NowTicks(), lifecycle_unit.GetStateChangeTime());
+  EXPECT_EQ(Now(), lifecycle_unit.GetStateChangeWallTime());
 
   test_tick_clock_.Advance(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
   base::TimeTicks first_state_change_time = NowTicks();
+  base::Time first_state_change_wall_time = Now();
   lifecycle_unit.SetState(LifecycleUnitState::DISCARDED);
   EXPECT_EQ(first_state_change_time, lifecycle_unit.GetStateChangeTime());
+  EXPECT_EQ(first_state_change_wall_time,
+            lifecycle_unit.GetStateChangeWallTime());
   test_tick_clock_.Advance(base::Seconds(1));
+  test_clock_.Advance(base::Seconds(1));
   EXPECT_EQ(first_state_change_time, lifecycle_unit.GetStateChangeTime());
+  EXPECT_EQ(first_state_change_wall_time,
+            lifecycle_unit.GetStateChangeWallTime());
 }
 
 // Verify that observers are notified when the state changes and when the

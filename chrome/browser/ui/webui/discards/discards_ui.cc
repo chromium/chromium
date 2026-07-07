@@ -267,8 +267,7 @@ class DiscardsDetailsProviderImpl
                 ? base::TimeDelta()
                 : (resource_coordinator::NowTicks() - last_focused_time);
         info->last_active_seconds = static_cast<int32_t>(elapsed.InSeconds());
-        info->state_change_time =
-            lifecycle_unit->GetStateChangeTime() - base::TimeTicks::UnixEpoch();
+        info->state_change_time = lifecycle_unit->GetStateChangeWallTime();
       }
 #endif  // !BUILDFLAG(IS_DESKTOP_ANDROID)
 

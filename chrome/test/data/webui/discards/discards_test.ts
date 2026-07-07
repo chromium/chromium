@@ -30,7 +30,7 @@ suite('discards', function() {
       discardReason: LifecycleUnitDiscardReason.EXTERNAL,
       id: 0,
       siteEngagementScore: 0,
-      stateChangeTime: {microseconds: 0n},
+      stateChangeTime: new Date(0),
     };
     const dummy2: TabDiscardsInfo = {
       title: 'title 2',
@@ -51,7 +51,7 @@ suite('discards', function() {
       discardReason: LifecycleUnitDiscardReason.EXTERNAL,
       id: 0,
       siteEngagementScore: 0,
-      stateChangeTime: {microseconds: 0n},
+      stateChangeTime: new Date(0),
     };
 
     ['title', 'tabUrl', 'visibility', 'state', 'isAutoDiscardable',

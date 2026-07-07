@@ -9,7 +9,6 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {boolToString, durationToString, getOrCreateDetailsProvider} from './discards.js';
 import type {DetailsProviderRemote, TabDiscardsInfo} from './discards.mojom-webui.js';
@@ -273,15 +272,15 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
    *     is only used if the state is discard related.
    * @param visibility A visibility value.
    * @param hasFocus Whether or not the tab has input focus.
-   * @param stateChangeTime Delta between Unix Epoch and the time at
-   *     which the lifecycle state has changed.
+   * @param stateChangeTime Wall-clock time at which the lifecycle state
+   *     last changed.
    * @return A string representation of the lifecycle state,
    *     augmented with the discard reason if appropriate.
    */
   private lifecycleStateToString_(
       state: LifecycleUnitState, reason: LifecycleUnitDiscardReason,
       visibility: LifecycleUnitVisibility, hasFocus: boolean,
-      stateChangeTime: TimeDelta): string {
+      stateChangeTime: Date): string {
     function pageLifecycleStateFromVisibilityAndFocus(): string {
       switch (visibility) {
         case LifecycleUnitVisibility.HIDDEN:
@@ -302,12 +301,9 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'frozen';
       case LifecycleUnitState.DISCARDED:
         return 'discarded (' + this.discardReasonToString_(reason) + ')' +
-            ((reason === LifecycleUnitDiscardReason.URGENT) ? ' at ' +
-                     // Must convert since Date constructor takes
-                     // milliseconds.
-                     (new Date(Number(stateChangeTime.microseconds) / 1000)
-                          .toLocaleString()) :
-                                                              '');
+            ((reason === LifecycleUnitDiscardReason.URGENT) ?
+                 ' at ' + stateChangeTime.toLocaleString() :
+                 '');
       default:
         assertNotReached();
     }
