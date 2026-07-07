@@ -4486,6 +4486,8 @@ data/accessibility/html/img-expected-fuchsia.txt
 data/accessibility/html/img-expected-mac.txt
 data/accessibility/html/img-expected-uia-win.txt
 data/accessibility/html/img-expected-win.txt
+data/accessibility/html/img-inside-focusable-parent-expected-android.txt
+data/accessibility/html/img-inside-focusable-parent.html
 data/accessibility/html/img-link-empty-alt-expected-android-assist-data.txt
 data/accessibility/html/img-link-empty-alt-expected-android-external.txt
 data/accessibility/html/img-link-empty-alt-expected-android.txt

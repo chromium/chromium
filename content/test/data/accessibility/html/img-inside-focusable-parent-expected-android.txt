@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused has_image
+++android.view.View focusable has_image interesting name='Text before Green Box  Text after Green Box'
+++++android.widget.TextView interesting name='Text before Green Box '
+++++android.widget.Image has_image interesting content_description='green box'
+++++android.widget.TextView interesting name=' Text after Green Box'
+
