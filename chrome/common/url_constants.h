@@ -445,8 +445,6 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
 #endif
 
 // The URL for the "Pay over time" support page.
-// TODO(crbug.com/395027230): Change URL once official support page is
-// finalized.
 inline constexpr char16_t kPayOverTimeLearnMoreUrl[] =
     u"https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 
