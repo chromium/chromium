@@ -1055,7 +1055,7 @@ targets.binaries.console_test_launcher(
 
 targets.binaries.console_test_launcher(
     name = "device_realtarget_browsertests",
-    label = "//chrome/test:device_realtarget_browsertests",
+    label = "//chrome/test/device_realtarget:device_realtarget_browsertests",
     skip_usage_check = True,
     module_scheme = "gtest",
 )

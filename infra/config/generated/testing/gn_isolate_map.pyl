@@ -1007,7 +1007,7 @@
     "skip_usage_check": True,
   },
   "device_realtarget_browsertests": {
-    "label": "//chrome/test:device_realtarget_browsertests",
+    "label": "//chrome/test/device_realtarget:device_realtarget_browsertests",
     "type": "console_test_launcher",
     "module_scheme": "gtest",
     "skip_usage_check": True,

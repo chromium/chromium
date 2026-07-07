@@ -88,6 +88,9 @@ group("test") {
     "fuzzing:test",
     "//chrome/test/variations:variations_desktop_smoke_tests",
   ]
+  if (is_linux || is_mac || is_win) {
+    deps += [ "//chrome/test/device_realtarget:device_realtarget_browsertests" ]
+  }
 }
 
 if (is_android) {
@@ -10745,22 +10748,6 @@ if (!is_android && enable_print_preview) {
       "//chrome/browser/printing",
       "//components/printing/common:mojo_interfaces",
       "//content/public/browser",
-    ]
-  }
-}
-
-if (is_linux || is_mac || is_win) {
-  test("device_realtarget_browsertests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    deps = [
-      ":browser_tests_runner",
-      ":test_support",
-      "//chrome:packed_resources",
-      "//chrome/browser/bluetooth:device_realtarget_browsertests",
-      "//chrome/browser/hid:device_realtarget_browsertests",
-      "//chrome/browser/serial:device_realtarget_browsertests",
-      "//chrome/browser/usb:device_realtarget_browsertests",
     ]
   }
 }
