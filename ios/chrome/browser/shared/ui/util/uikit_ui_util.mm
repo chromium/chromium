@@ -173,7 +173,7 @@ UIImage* NativeImage(int imageID) {
 }
 
 UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window) {
-  return window.windowScene.effectiveGeometry.interfaceOrientation;
+  return window.windowScene.interfaceOrientation;
 }
 
 UIActivityIndicatorView* GetMediumUIActivityIndicatorView() {
