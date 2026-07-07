@@ -38,8 +38,8 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
   // The window sizing code only works when the window hasn't yet been created.
   std::unique_ptr<Browser> CreateWindowlessBrowser(
       Browser::CreateParams params) {
-    params.skip_window_init_for_testing = true;
-    return Browser::DeprecatedCreateOwnedForTesting(params);
+    return chrome::CreateBrowserWithAuraTestWindowForParams(
+        std::unique_ptr<aura::Window>(), &params);
   }
 
   // Similar to WindowSizerTestUtil::GetWindowBounds() but takes an existing

@@ -289,10 +289,6 @@ class Browser : public TabStripModelObserver,
     // 2) undocked devtool windows.
     // 3) popup windows spawned from v1 applications.
     std::string app_name;
-
-    // When set to true, skip initializing |window_| and everything that depends
-    // on it.
-    bool skip_window_init_for_testing = false;
   };
 
   // Constructors, Creation, Showing //////////////////////////////////////////
@@ -307,8 +303,8 @@ class Browser : public TabStripModelObserver,
   // for the browser - the created BrowserWindow will take the ownership of the
   // created Browser instance.
   //
-  // If |params.window| or |params.skip_window_init_for_testing| are set, the
-  // caller is expected to take the ownership of the created Browser instance.
+  // If |params.window| is set, the caller is expected to take the ownership
+  // of the created Browser instance.
   static Browser* Create(const CreateParams& params);
 
   // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
