@@ -743,6 +743,24 @@
             ]
         }
     ],
+    "Aim3pEntrypoint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "enable_features": [
+                        "Aim3pEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlignPdfDefaultPrintSettingsWithHTML": [
         {
             "platforms": [
