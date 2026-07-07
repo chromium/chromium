@@ -2924,7 +2924,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.NumberOfActiveAccounts.{TimeRange}" units="accounts"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -3086,7 +3086,7 @@ should be kept to monitor/debug signin Multilogin issues-->
 </histogram>
 
 <histogram name="Signin.OAuthMultiloginResponseStatus{PartitionSuffix}"
-    enum="OAuthMultiloginResponseStatus" expires_after="2027-01-06">
+    enum="OAuthMultiloginResponseStatus" expires_after="2027-01-03">
 <!-- TODO(crbug.com/531677785): Remove this histogram once we have recorded the new
 Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough time. -->
 

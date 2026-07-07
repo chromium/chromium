@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.CaretBrowsing.Enabled"
-    enum="BooleanEnabled" expires_after="2026-11-01">
+    enum="BooleanEnabled" expires_after="2027-01-03">
   <owner>lokeric@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

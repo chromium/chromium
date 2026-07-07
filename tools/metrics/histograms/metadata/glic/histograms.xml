@@ -1265,7 +1265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

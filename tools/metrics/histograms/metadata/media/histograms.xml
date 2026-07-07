@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10s"
-    units="discontinuities" expires_after="2026-10-31">
+    units="discontinuities" expires_after="2027-01-03">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

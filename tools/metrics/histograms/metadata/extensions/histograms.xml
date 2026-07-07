@@ -4385,7 +4385,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}"
-    enum="ServiceWorkerStatusCode" expires_after="2026-10-25">
+    enum="ServiceWorkerStatusCode" expires_after="2027-01-03">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
