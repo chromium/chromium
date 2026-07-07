@@ -37,6 +37,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -77,6 +78,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -2476,6 +2478,10 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     }
     profile_observation_.Observe(&GetProfileAttributesStorage());
 
+    subscription_service_observation_.Observe(
+        subscription_eligibility::SubscriptionEligibilityServiceFactory::
+            GetForProfile(profile));
+
   } else if (profile->IsGuestSession()) {
     // This state is always active.
     states_[ButtonState::kGuestSession] =
@@ -2743,6 +2749,11 @@ void AvatarToolbarButtonStateManager::
 
 void AvatarToolbarButtonStateManager::UpdateButtonIcon() {
   avatar_control_->UpdateIcon();
+}
+
+void AvatarToolbarButtonStateManager::OnAiSubscriptionTierUpdated(
+    int32_t new_subscription_tier) {
+  UpdateAvatarButton();
 }
 
 void AvatarToolbarButtonStateManager::UpdateButtonText() {

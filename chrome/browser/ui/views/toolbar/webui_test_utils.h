@@ -5,16 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TEST_UTILS_H_
 
+#include <memory>
 #include <string>
 #include <variant>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 
 class AvatarToolbarButton;
-class AvatarToolbarButtonInterface;
 class Browser;
 class BrowserWindowInterface;
 class WebUIAvatarToolbarButton;
@@ -56,6 +60,28 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
 // `browser`.
 WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser);
 
+class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
+ public:
+  explicit AvatarButtonUpdateWaiter(AvatarToolbarButtonInterface* button);
+  ~AvatarButtonUpdateWaiter() override;
+
+  AvatarButtonUpdateWaiter(const AvatarButtonUpdateWaiter&) = delete;
+  AvatarButtonUpdateWaiter& operator=(const AvatarButtonUpdateWaiter&) = delete;
+
+  void Wait();
+
+  // AvatarToolbarButtonInterface::Observer:
+  void OnIconUpdated() override;
+
+ private:
+  bool updated_ = false;
+  base::RunLoop run_loop_;
+  base::RepeatingClosure quit_closure_;
+  base::ScopedObservation<AvatarToolbarButtonInterface,
+                          AvatarToolbarButtonInterface::Observer>
+      scoped_observation_{this};
+};
+
 class AvatarToolbarButtonTestAccessor {
  public:
   using ButtonVariant =
@@ -67,6 +93,7 @@ class AvatarToolbarButtonTestAccessor {
   bool WaitForText(const std::u16string& text);
   bool WaitForTextNotEqual(const std::u16string& text);
   bool WaitForState(AvatarToolbarButtonState state);
+  std::unique_ptr<AvatarButtonUpdateWaiter> CreateUpdateWaiter();
   AvatarToolbarButtonState GetState();
   bool WaitForRenderedTooltipText(const std::u16string& text);
   bool WaitForAccessibilityLabel(const std::u16string& text);

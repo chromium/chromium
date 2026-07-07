@@ -194,6 +194,9 @@ void AvatarToolbarButton::UpdateIcon() {
     SetImageModel(ButtonState::STATE_PRESSED, std::nullopt);
   }
 
+  // Update the layout insets as the new icon might have caused them to change
+  // size (e.g. in the case of an AI ring addition/removal).
+  UpdateLayoutInsets();
   state_manager_.NotifyIconUpdated();
 }
 
