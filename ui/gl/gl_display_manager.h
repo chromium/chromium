@@ -122,6 +122,16 @@ class GLDisplayManager {
     return GetDisplay(GetSystemDeviceId(preference), gl::DisplayKey::kDefault);
   }
 
+  GLDisplayPlatform* GetDisplay(void* platform_display) {
+    base::AutoLock auto_lock(lock_);
+    for (const auto& display : displays_) {
+      if (display->GetDisplay() == platform_display) {
+        return display.get();
+      }
+    }
+    return nullptr;
+  }
+
  private:
   friend class base::NoDestructor<GLDisplayManager<GLDisplayPlatform>>;
   friend class GLDisplayManagerEGLTest;
