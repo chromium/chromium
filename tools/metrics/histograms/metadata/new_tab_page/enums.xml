@@ -719,7 +719,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="[Deprecated] Open History Search Settings"/>
   <int value="16" label="Open Glic"/>
   <int value="17" label="Open Glic settings"/>
-  <int value="18" label="Prewarm Glic FRE"/>
+  <int value="18" label="[Deprecated] Prewarm Glic FRE"/>
   <int value="19" label="Open Split View"/>
   <int value="20" label="[Deprecated] Open Autofill Settings"/>
   <int value="21" label="Enable Vertical Tabs"/>

@@ -152,9 +152,6 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenGlicSettings:
       can_execute = true;
       break;
-    case Command::kPrewarmGlicFre:
-      can_execute = true;
-      break;
     case Command::kOpenSplitView:
       can_execute = true;
       break;
@@ -250,9 +247,6 @@ void BrowserCommandHandler::HandleCommandWithDisposition(
     }
     case Command::kOpenGlicSettings:
       OpenGlicSettings();
-      break;
-    case Command::kPrewarmGlicFre:
-      // No-op: Glic FRE pre-warming is removed.
       break;
     case Command::kOpenSplitView:
       OpenSplitView();

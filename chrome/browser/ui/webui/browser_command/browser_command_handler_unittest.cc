@@ -57,7 +57,6 @@ std::vector<Command> supported_commands = {
     Command::kOpenPaymentsSettings,
     Command::kOpenGlic,
     Command::kOpenGlicSettings,
-    Command::kPrewarmGlicFre,
     Command::kOpenSplitView,
     Command::kEnableVerticalTabs,
 };
@@ -230,8 +229,6 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenGlic, ());
 
   MOCK_METHOD(void, OpenGlicSettings, ());
-
-  MOCK_METHOD(void, PrewarmGlicFre, ());
 
   MOCK_METHOD(void, OpenSplitView, ());
 
