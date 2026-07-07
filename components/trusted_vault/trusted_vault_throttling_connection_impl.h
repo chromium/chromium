@@ -60,6 +60,10 @@ class TrustedVaultThrottlingConnectionImpl
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) override;
 
+  std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
+      const CoreAccountInfo& account_info,
+      DownloadGaiaPasswordPublicKeyCallback callback) override;
+
   std::unique_ptr<TrustedVaultConnection::Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,

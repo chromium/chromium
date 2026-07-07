@@ -49,6 +49,11 @@ class MockTrustedVaultThrottlingConnection
                IsRecoverabilityDegradedCallback callback),
               (override));
   MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadGaiaPasswordPublicKey,
+              (const CoreAccountInfo& account_info,
+               DownloadGaiaPasswordPublicKeyCallback callback),
+              (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
               DownloadAuthenticationFactorsRegistrationState,
               (const CoreAccountInfo& account_info,
                DownloadAuthenticationFactorsRegistrationStateCallback callback,

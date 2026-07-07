@@ -46,6 +46,28 @@ TEST(StandaloneTrustedVaultServerConstantsTest,
                  "&request_header.force_master_read=true"));
 }
 
+TEST(StandaloneTrustedVaultServerConstantsTest,
+     ShouldGetDownloadGaiaPasswordPublicKeyURL) {
+  const GURL kTestUrl("https://example.com/v1/");
+  EXPECT_THAT(
+      GetDownloadGaiaPasswordPublicKeyURL(kTestUrl).spec(),
+      Eq("https://example.com/v1:getCurrentGaiaPasswordEncryptionKeyData"));
+
+  const GURL kTestUrlNoSlash("https://example.com/v1");
+  EXPECT_THAT(
+      GetDownloadGaiaPasswordPublicKeyURL(kTestUrlNoSlash).spec(),
+      Eq("https://example.com/v1:getCurrentGaiaPasswordEncryptionKeyData"));
+}
+
+TEST(StandaloneTrustedVaultServerConstantsTest,
+     ShouldGetFullDownloadGaiaPasswordPublicKeyURLForTesting) {
+  const GURL kTestUrl("https://example.com/v1/");
+  EXPECT_THAT(
+      GetFullDownloadGaiaPasswordPublicKeyURLForTesting(kTestUrl).spec(),
+      Eq("https://example.com/"
+         "v1:getCurrentGaiaPasswordEncryptionKeyData?alt=proto"));
+}
+
 }  // namespace
 
 }  // namespace trusted_vault

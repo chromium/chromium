@@ -72,6 +72,22 @@ enum class TrustedVaultDownloadKeysStatus {
   kOtherError,
 };
 
+enum class TrustedVaultDownloadPasswordPublicKeyStatus {
+  kSuccess,
+  // Used when request wasn't sent due to transient auth error that prevented
+  // fetching an access token.
+  kTransientAccessTokenFetchError,
+  // Used when request wasn't sent due to persistent auth error that prevented
+  // fetching an access token.
+  kPersistentAccessTokenFetchError,
+  // Used when request wasn't sent because primary account changed meanwhile.
+  kPrimaryAccountChangeAccessTokenFetchError,
+  // Used for all network errors.
+  kNetworkError,
+  // Used for all http and protocol errors, when no statuses above fits.
+  kOtherError,
+};
+
 // This enum is used in histograms. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused, only add
 // at the end and. Also remember to update in tools/metrics/histograms/enums.xml
@@ -265,6 +281,9 @@ class TrustedVaultConnection {
   using DownloadAuthenticationFactorsRegistrationStateCallback =
       base::OnceCallback<void(
           DownloadAuthenticationFactorsRegistrationStateResult)>;
+  using DownloadGaiaPasswordPublicKeyCallback =
+      base::OnceCallback<void(TrustedVaultDownloadPasswordPublicKeyStatus,
+                              const std::vector<uint8_t>&)>;
 
   // Used to control ongoing request lifetime, destroying Request object causes
   // request cancellation.
@@ -322,6 +341,13 @@ class TrustedVaultConnection {
   DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) = 0;
+
+  // Asynchronously attempts to download the Gaia password public key from the
+  // trusted vault server. Caller should hold returned request object until
+  // |callback| call or until request needs to be cancelled.
+  [[nodiscard]] virtual std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
+      const CoreAccountInfo& account_info,
+      DownloadGaiaPasswordPublicKeyCallback callback) = 0;
 
   // Enumerates the members of the security domain and determines the
   // recoverability of the security domain. (See the values of

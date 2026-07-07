@@ -19,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -46,7 +47,9 @@ namespace trusted_vault {
 namespace {
 
 using testing::_;
+using testing::ElementsAreArray;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::Ne;
 using testing::NotNull;
@@ -304,6 +307,24 @@ class TrustedVaultConnectionImplTest
 
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         request_url.spec(), response_body, response_http_code);
+  }
+
+  bool RespondToDownloadGaiaPasswordPublicKeyRequest(
+      net::HttpStatusCode response_http_code,
+      const std::string& response_content) {
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullDownloadGaiaPasswordPublicKeyURLForTesting(kTestURL).spec(),
+        response_content, response_http_code);
+  }
+
+  bool RespondToDownloadGaiaPasswordPublicKeyRequestWithNetworkError() {
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullDownloadGaiaPasswordPublicKeyURLForTesting(kTestURL),
+        network::URLLoaderCompletionStatus(net::ERR_FAILED),
+        /*response_head=*/network::mojom::URLResponseHead::New(),
+        /*content=*/std::string());
   }
 
   base::test::SingleThreadTaskEnvironment& task_environment() {
@@ -1453,6 +1474,112 @@ TEST_P(TrustedVaultConnectionImplTest,
       /*recovery_factor_filter=*/{},
       /*next_page_token=*/std::nullopt, net::HTTP_OK,
       /*response_body=*/"not a valid protobuf"));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, DownloadGaiaPasswordPublicKeySuccess) {
+  std::string expected_public_key = "test_public_key_bytes";
+  trusted_vault_pb::GetCurrentGaiaPasswordEncryptionKeyDataResponse response;
+  response.mutable_current_gaia_password_encryption_key_data()->set_public_key(
+      expected_public_key);
+
+  base::test::TestFuture<TrustedVaultDownloadPasswordPublicKeyStatus,
+                         const std::vector<uint8_t>&>
+      future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
+      net::HTTP_OK, response.SerializeAsString()));
+
+  EXPECT_EQ(future.Get<0>(),
+            TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess);
+  EXPECT_THAT(future.Get<1>(), ElementsAreArray(expected_public_key.begin(),
+                                                expected_public_key.end()));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadGaiaPasswordPublicKeyNetworkError) {
+  base::test::TestFuture<TrustedVaultDownloadPasswordPublicKeyStatus,
+                         const std::vector<uint8_t>&>
+      future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequestWithNetworkError());
+
+  EXPECT_EQ(future.Get<0>(),
+            TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError);
+  EXPECT_THAT(future.Get<1>(), IsEmpty());
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadGaiaPasswordPublicKeyParsingError) {
+  base::test::TestFuture<TrustedVaultDownloadPasswordPublicKeyStatus,
+                         const std::vector<uint8_t>&>
+      future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
+      net::HTTP_OK, "corrupted_proto_bytes"));
+
+  EXPECT_EQ(future.Get<0>(),
+            TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError);
+  EXPECT_THAT(future.Get<1>(), IsEmpty());
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadGaiaPasswordPublicKeyEmptyKeyError) {
+  trusted_vault_pb::GetCurrentGaiaPasswordEncryptionKeyDataResponse response;
+  // The public key inside the response is empty.
+
+  base::test::TestFuture<TrustedVaultDownloadPasswordPublicKeyStatus,
+                         const std::vector<uint8_t>&>
+      future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                  future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToDownloadGaiaPasswordPublicKeyRequest(
+      net::HTTP_OK, response.SerializeAsString()));
+
+  EXPECT_EQ(future.Get<0>(),
+            TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError);
+  EXPECT_THAT(future.Get<1>(), IsEmpty());
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadGaiaPasswordPublicKeyAccessTokenFetchingFailure) {
+  std::unique_ptr<TrustedVaultConnectionImpl> connection =
+      CreateConnectionWithAccessTokenError(
+          TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError);
+
+  base::test::TestFuture<TrustedVaultDownloadPasswordPublicKeyStatus,
+                         const std::vector<uint8_t>&>
+      future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection->DownloadGaiaPasswordPublicKey(CoreAccountInfo(),
+                                                future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_EQ(future.Get<0>(), TrustedVaultDownloadPasswordPublicKeyStatus::
+                                 kPersistentAccessTokenFetchError);
+  EXPECT_THAT(future.Get<1>(), IsEmpty());
+
+  // No requests should be sent to the network.
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
 }
 
 }  // namespace

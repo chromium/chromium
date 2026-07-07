@@ -567,6 +567,65 @@ std::vector<TrustedVaultKeyAndVersion> ConstantKeySource() {
            /*version=*/kUnknownConstantKeyVersion}};
 }
 
+void ProcessDownloadGaiaPasswordPublicKeyResponse(
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback callback,
+    TrustedVaultRequest::HttpStatus http_status,
+    const std::string& response_body) {
+  switch (http_status) {
+    case TrustedVaultRequest::HttpStatus::kSuccess:
+      break;
+    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+      std::move(callback).Run(TrustedVaultDownloadPasswordPublicKeyStatus::
+                                  kTransientAccessTokenFetchError,
+                              std::vector<uint8_t>());
+      return;
+    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+      std::move(callback).Run(TrustedVaultDownloadPasswordPublicKeyStatus::
+                                  kPersistentAccessTokenFetchError,
+                              std::vector<uint8_t>());
+      return;
+    case TrustedVaultRequest::HttpStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+      std::move(callback).Run(TrustedVaultDownloadPasswordPublicKeyStatus::
+                                  kPrimaryAccountChangeAccessTokenFetchError,
+                              std::vector<uint8_t>());
+      return;
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
+      std::move(callback).Run(
+          TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError,
+          std::vector<uint8_t>());
+      return;
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+    case TrustedVaultRequest::HttpStatus::kConflict:
+    case TrustedVaultRequest::HttpStatus::kOtherError:
+      std::move(callback).Run(
+          TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError,
+          std::vector<uint8_t>());
+      return;
+  }
+
+  trusted_vault_pb::GetCurrentGaiaPasswordEncryptionKeyDataResponse response;
+  if (!response.ParseFromString(response_body)) {
+    std::move(callback).Run(
+        TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError,
+        std::vector<uint8_t>());
+    return;
+  }
+
+  const std::string& key_str =
+      response.current_gaia_password_encryption_key_data().public_key();
+  if (key_str.empty()) {
+    std::move(callback).Run(
+        TrustedVaultDownloadPasswordPublicKeyStatus::kOtherError,
+        std::vector<uint8_t>());
+    return;
+  }
+
+  std::move(callback).Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+                          std::vector<uint8_t>(key_str.begin(), key_str.end()));
+}
+
 }  // namespace
 
 std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
@@ -671,6 +730,27 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
 
   request->FetchAccessTokenAndSendRequest(base::BindOnce(
       &ProcessDownloadIsRecoverabilityDegradedResponse, std::move(callback)));
+
+  return request;
+}
+
+std::unique_ptr<TrustedVaultConnection::Request>
+TrustedVaultConnectionImpl::DownloadGaiaPasswordPublicKey(
+    const CoreAccountInfo& account_info,
+    DownloadGaiaPasswordPublicKeyCallback callback) {
+  GURL url = GetDownloadGaiaPasswordPublicKeyURL(trusted_vault_service_url_);
+  auto request = std::make_unique<TrustedVaultRequest>(
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kGet, url,
+      /*serialized_request_proto=*/std::nullopt,
+      /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
+      access_token_fetcher_->Clone(),
+      MakeFetchStatusCallback(
+          security_domain_,
+          TrustedVaultURLFetchReasonForUMA::kDownloadGaiaPasswordPublicKey));
+
+  request->FetchAccessTokenAndSendRequest(base::BindOnce(
+      &ProcessDownloadGaiaPasswordPublicKeyResponse, std::move(callback)));
 
   return request;
 }

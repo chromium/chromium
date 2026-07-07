@@ -295,6 +295,8 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="Any reason"/>
     <variant name=".DownloadAuthenticationFactorsRegistrationState"
         summary="Downloading of auth factor registrations"/>
+    <variant name=".DownloadGaiaPasswordPublicKey"
+        summary="Downloading of Gaia password public key"/>
     <variant name=".DownloadIsRecoverabilityDegraded"
         summary="Downloading of the recoverability-degraded state"/>
     <variant name=".DownloadKeys" summary="Downloading of keys"/>

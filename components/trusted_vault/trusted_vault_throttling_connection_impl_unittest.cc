@@ -225,6 +225,18 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
   EXPECT_THAT(request, NotNull());
 }
 
+TEST_F(TrustedVaultThrottlingConnectionImplTest,
+       ShouldCallDownloadGaiaPasswordPublicKey) {
+  EXPECT_CALL(*delegate(), DownloadGaiaPasswordPublicKey)
+      .WillOnce(InvokeWithoutArgs([]() {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      }));
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      throttling_connection()->DownloadGaiaPasswordPublicKey(account_info(),
+                                                             base::DoNothing());
+  EXPECT_THAT(request, NotNull());
+}
+
 }  // namespace
 
 }  // namespace trusted_vault
