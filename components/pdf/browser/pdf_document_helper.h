@@ -44,6 +44,8 @@ class PDFDocumentHelper
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
+  using PdfListener = ::pdf::mojom::PdfListener;
+
   // Registers a callback to be called when a `PDFDocumentHelper` is created
   // for `web_contents`. This should only be called if a `PDFDocumentHelper`
   // does not already exist for `web_contents`.
@@ -145,14 +147,17 @@ class PDFDocumentHelper
   bool SearchifyStarted() const { return searchify_started_; }
 #endif
 
-  // Queries whether the PDF document has meaningful text. If called before
+  // Queries whether the PDF document has meaningful text. If called before the
   // document is loaded, the callback will be invoked with false.
-  void HasMeaningfulText(
-      pdf::mojom::PdfListener::HasMeaningfulTextCallback callback);
+  void HasMeaningfulText(PdfListener::HasMeaningfulTextCallback callback);
 
   // Queries whether the PDF document has JavaScript actions. If called before
-  // document is loaded, the callback will be invoked with `false`.
-  void HasJavaScript(pdf::mojom::PdfListener::HasJavaScriptCallback callback);
+  // the document is loaded, the callback will be invoked with `false`.
+  void HasJavaScript(PdfListener::HasJavaScriptCallback callback);
+
+  // Queries whether the PDF document is password protected. If called before
+  // the document is loaded, the callback will be invoked with `false`.
+  void IsPasswordProtected(PdfListener::IsPasswordProtectedCallback callback);
 
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
