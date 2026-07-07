@@ -289,13 +289,16 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
         return mGuid;
     }
 
+    /** Returns the timestamp in milliseconds when the tab was added in the background. */
+    public long getAdditionTimestampMs() {
+        return mAdditionTimestampMs;
+    }
+
     public String getSenderDeviceNameForTesting() {
         return mSenderDeviceName;
     }
 
-    public long getAdditionTimestampMsForTesting() {
-        return mAdditionTimestampMs;
-    }
+
 
     /**
      * Sets the addition timestamp for testing purposes.
