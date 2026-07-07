@@ -48,6 +48,7 @@ enum WrappablePointerTag : uint16_t {
   kJsMessageEvent,                   // android_webview::JsMessageEvent
   kJsSandboxMessagePort,             // android_webview::JsSandboxMessagePort
   kLastErrorObject,                  // extensions::LastErrorObject
+  kLoadTimesBindings,                // LoadTimesBindings
   kLocalStorageArea,                 // extensions::LocalStorageArea
   kManagedStorageArea,               // extensions::ManagedStorageArea
   kMojo,                             // ax::Mojo

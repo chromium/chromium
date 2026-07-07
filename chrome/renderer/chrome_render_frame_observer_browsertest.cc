@@ -508,3 +508,80 @@ TEST_F(ChromeRenderFrameObserverWithOnlyNetBenchmarkingTest,
       &result));
   EXPECT_EQ(1, result);
 }
+
+TEST_F(ChromeRenderFrameObserverTest, LoadTimesAndCsiDefinedUnconditionally) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // Check chrome.loadTimes exists and is a function
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.loadTimes === "
+      u"'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Check chrome.csi exists and is a function
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.csi === 'function' ? 1 "
+      u": 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+TEST_F(ChromeRenderFrameObserverTest, LoadTimesAndCsiValues) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // Test chrome.loadTimes() return value structure
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"(function() {"
+      u"  const lt = chrome.loadTimes();"
+      u"  if (typeof lt !== 'object' || lt === null) return 0;"
+      u"  const expectedKeys = ["
+      u"    'requestTime', 'startLoadTime', 'commitLoadTime', "
+      u"    'finishDocumentLoadTime', 'finishLoadTime', 'firstPaintTime', "
+      u"    'firstPaintAfterLoadTime', 'navigationType', 'wasFetchedViaSpdy', "
+      u"    'wasNpnNegotiated', 'npnNegotiatedProtocol', "
+      u"    'wasAlternateProtocolAvailable', 'connectionInfo'"
+      u"  ];"
+      u"  for (const key of expectedKeys) {"
+      u"    if (!(key in lt)) return 2;"
+      u"  }"
+      u"  if (typeof lt.requestTime !== 'number') return 3;"
+      u"  if (typeof lt.startLoadTime !== 'number') return 4;"
+      u"  if (typeof lt.commitLoadTime !== 'number') return 5;"
+      u"  if (typeof lt.finishDocumentLoadTime !== 'number') return 6;"
+      u"  if (typeof lt.finishLoadTime !== 'number') return 7;"
+      u"  if (typeof lt.firstPaintTime !== 'number') return 8;"
+      u"  if (typeof lt.firstPaintAfterLoadTime !== 'number') return 9;"
+      u"  if (typeof lt.navigationType !== 'string') return 10;"
+      u"  if (typeof lt.wasFetchedViaSpdy !== 'boolean') return 11;"
+      u"  if (typeof lt.wasNpnNegotiated !== 'boolean') return 12;"
+      u"  if (typeof lt.npnNegotiatedProtocol !== 'string') return 13;"
+      u"  if (typeof lt.wasAlternateProtocolAvailable !== 'boolean') return 14;"
+      u"  if (typeof lt.connectionInfo !== 'string') return 15;"
+      u"  return 1;"
+      u"})()",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // Test chrome.csi() return value structure
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"(function() {"
+      u"  const csi = chrome.csi();"
+      u"  if (typeof csi !== 'object' || csi === null) return 0;"
+      u"  const expectedKeys = ['startE', 'onloadT', 'pageT', 'tran'];"
+      u"  for (const key of expectedKeys) {"
+      u"    if (!(key in csi)) return 2;"
+      u"  }"
+      u"  if (typeof csi.startE !== 'number') return 3;"
+      u"  if (typeof csi.onloadT !== 'number') return 4;"
+      u"  if (typeof csi.pageT !== 'number') return 5;"
+      u"  if (typeof csi.tran !== 'number') return 6;"
+      u"  return 1;"
+      u"})()",
+      &result));
+  EXPECT_EQ(1, result);
+}

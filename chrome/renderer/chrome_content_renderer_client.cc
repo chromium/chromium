@@ -58,7 +58,7 @@
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/controlled_frame/controlled_frame_extensions_renderer_api_provider.h"
 #include "chrome/renderer/google_accounts_private_api_extension.h"
-#include "chrome/renderer/loadtimes_extension_bindings.h"
+#include "chrome/renderer/loadtimes_bindings.h"
 #include "chrome/renderer/media/flash_embed_rewrite.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
 #include "chrome/renderer/net/net_error_helper.h"
@@ -453,9 +453,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   thread->AddObserver(phishing_model_setter_.get());
 #endif
-
-  blink::WebScriptController::RegisterExtension(
-      extensions_v8::LoadTimesExtension::Get());
 
   // chrome: is also to be permitted to embeds https:// things and have them
   // treated as first-party.
@@ -1501,6 +1498,7 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
           service_worker_scope, script_url, service_worker_token);
 #endif
   BenchmarkingBindings::InstallConditionally(v8_context);
+  LoadTimesBindings::Install(v8_context);
 }
 
 void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
