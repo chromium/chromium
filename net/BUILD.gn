@@ -1291,6 +1291,7 @@ component("net") {
 
   if (enable_device_bound_sessions) {
     sources += [
+      "device_bound_sessions/cookie_access_check_params.h",
       "device_bound_sessions/cookie_craving.cc",
       "device_bound_sessions/cookie_craving.h",
       "device_bound_sessions/dbsc_request.cc",

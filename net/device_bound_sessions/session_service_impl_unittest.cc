@@ -182,7 +182,8 @@ class SessionServiceImplTest : public ::testing::Test,
     service_ = std::make_unique<SessionServiceImpl>(
         unexportable_key_service_, context_.get(),
         /*store=*/nullptr,
-        /*restricted_sites=*/std::vector<SchemefulSite>());
+        /*restricted_sites=*/std::vector<SchemefulSite>(),
+        /*has_cookie_access_cb=*/base::NullCallback());
   }
 
   void TearDown() override {
@@ -2578,7 +2579,8 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
         service_(unexportable_key_service_,
                  context_.get(),
                  store_.get(),
-                 /*restricted_sites=*/std::vector<SchemefulSite>()) {
+                 /*restricted_sites=*/std::vector<SchemefulSite>(),
+                 /*has_cookie_access_cb=*/base::NullCallback()) {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
   }

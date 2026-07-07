@@ -10,7 +10,9 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "net/base/net_export.h"
+#include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
@@ -37,6 +39,8 @@ class NET_EXPORT SessionService {
   using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
   using OnEventCallback = base::RepeatingCallback<void(const SessionEvent&)>;
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
+  using CookieAccessCallback =
+      base::RepeatingCallback<bool(const CookieAccessCheckParams&)>;
 
   // Indicates the reason for deferring. Exactly one of
   // `is_pending_initialization` or `session_id` will be truthy.
@@ -79,7 +83,8 @@ class NET_EXPORT SessionService {
   // platform or the device.
   static std::unique_ptr<SessionService> Create(
       const URLRequestContext* request_context,
-      const std::vector<SchemefulSite>& restricted_sites);
+      const std::vector<SchemefulSite>& restricted_sites,
+      CookieAccessCallback has_cookie_access_cb = base::NullCallback());
 
   SessionService(const SessionService&) = delete;
   SessionService& operator=(const SessionService&) = delete;

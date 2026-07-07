@@ -171,12 +171,14 @@ SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* request_context,
     SessionStore* store,
-    const std::vector<SchemefulSite>& restricted_sites)
+    const std::vector<SchemefulSite>& restricted_sites,
+    CookieAccessCallback has_cookie_access_cb)
     : pending_initialization_(!!store),
       key_service_(key_service),
       context_(request_context),
       session_store_(store),
-      restricted_sites_(restricted_sites) {
+      restricted_sites_(restricted_sites),
+      has_cookie_access_cb_(std::move(has_cookie_access_cb)) {
   ignore_refresh_quota_ = !features::kDeviceBoundSessionsRefreshQuota.Get();
   CHECK(context_);
 }

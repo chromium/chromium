@@ -146,7 +146,8 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
             unexportable_key_service_,
             context_.get(),
             /*store=*/nullptr,
-            /*restricted_sites=*/std::vector<net::SchemefulSite>())),
+            /*restricted_sites=*/std::vector<net::SchemefulSite>(),
+            /*has_cookie_access_cb=*/base::NullCallback())),
         cookie_manager_(std::make_unique<CookieManager>(
             context_.get(),
             nullptr,

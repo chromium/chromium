@@ -73,7 +73,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   SessionServiceImpl(unexportable_keys::UnexportableKeyService& key_service,
                      const URLRequestContext* request_context,
                      SessionStore* store,
-                     const std::vector<SchemefulSite>& restricted_sites);
+                     const std::vector<SchemefulSite>& restricted_sites,
+                     CookieAccessCallback has_cookie_access_cb);
   ~SessionServiceImpl() override;
 
   // Loads saved session data from disk if a `SessionStore` object is provided
@@ -415,6 +416,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Session Credential sessions unless
   // `kDeviceBoundSessionRestrictedSites` is enabled.
   std::vector<SchemefulSite> restricted_sites_;
+
+  // Callback to check if storage access is allowed.
+  CookieAccessCallback has_cookie_access_cb_;
 
   base::WeakPtrFactory<SessionServiceImpl> weak_factory_{this};
 };

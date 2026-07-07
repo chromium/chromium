@@ -533,7 +533,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     }
     context->set_device_bound_session_service(
         device_bound_sessions::SessionService::Create(
-            context.get(), device_bound_sessions_restricted_sites_));
+            context.get(), device_bound_sessions_restricted_sites_,
+            std::move(device_bound_sessions_cookie_access_callback_)));
   } else {
     if (device_bound_session_service_) {
       context->set_device_bound_session_service(

@@ -106,6 +106,10 @@ class URLRequestContext;
 class URLRequestContextBuilder;
 }  // namespace net
 
+namespace net::device_bound_sessions {
+struct CookieAccessCheckParams;
+}  // namespace net::device_bound_sessions
+
 namespace certificate_transparency {
 class ChromeRequireCTDelegate;
 }  // namespace certificate_transparency
@@ -610,6 +614,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;
+
+  bool HasCookieAccessForDeviceBoundSession(
+      const net::device_bound_sessions::CookieAccessCheckParams& params);
 
   void SetTLS13EarlyDataEnabled(bool enabled);
 
