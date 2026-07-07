@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "components/safe_browsing/core/browser/db/v5_store.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -276,22 +278,21 @@ void SBDatabase::ApplyUpdate(std::unique_ptr<SBUpdateResponseMap> update_map,
     CHECK(iter != store_map_->end())
         << "Got update for unexpected identifier: " << list_id;
     const SBStorePtr& old_store = iter->second;
-    std::string new_state;
-    // TODO(crbug.com/362791941): handle v5
-    if (response->v4_response) {
-      new_state = response->v4_response->new_client_state();
-    }
+    CHECK(response->v4_response || response->v5_response);
+    std::string new_state = response->v4_response
+                                ? response->v4_response->new_client_state()
+                                : response->v5_response->version();
     if (old_store->GetStoreState() != new_state) {
       // A different state implies there are updates to process.
       pending_store_updates_++;
       UpdatedStoreReadyCallback store_ready_callback =
           base::BindOnce(&SBDatabase::UpdatedStoreReady,
-                         weak_factory_on_io_.GetWeakPtr(), list_id);
+                          weak_factory_on_io_.GetWeakPtr(), list_id);
       db_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SBStore::ApplyUpdate,
-                         base::Unretained(old_store.get()), std::move(response),
-                         current_task_runner, std::move(store_ready_callback)));
+          FROM_HERE, base::BindOnce(&SBStore::ApplyUpdate,
+                                    base::Unretained(old_store.get()),
+                                    std::move(response), current_task_runner,
+                                    std::move(store_ready_callback)));
     }
   }
 

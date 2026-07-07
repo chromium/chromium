@@ -111,6 +111,7 @@ static_library("sb_database") {
     ":v4_protocol_manager_util",
     "//base",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:webui_proto",
   ]
 }

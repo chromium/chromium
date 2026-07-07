@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,7 +27,9 @@
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/browser/db/v5_store.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
+#include "crypto/hash.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
@@ -82,6 +85,56 @@ class FakeV4StoreFactory : public V4StoreFactory {
   const bool hash_prefix_should_match_;
 };
 
+class FakeV5Store : public V5Store {
+ public:
+  FakeV5Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+              const base::FilePath& store_path,
+              PrefixSize prefix_size,
+              const base::FilePath& v4_store_path,
+              bool hash_prefix_matches)
+      : V5Store(task_runner,
+                store_path,
+                prefix_size,
+                v4_store_path,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false),
+        hash_prefix_should_match_(hash_prefix_matches) {}
+
+  HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override {
+    return hash_prefix_should_match_ ? full_hash : HashPrefixStr();
+  }
+
+  bool HasValidData() override { return true; }
+
+  void set_hash_prefix_matches(bool hash_prefix_matches) {
+    hash_prefix_should_match_ = hash_prefix_matches;
+  }
+
+ private:
+  bool hash_prefix_should_match_;
+};
+
+class FakeV5StoreFactory : public V5StoreFactory {
+ public:
+  explicit FakeV5StoreFactory(bool hash_prefix_matches)
+      : hash_prefix_should_match_(hash_prefix_matches) {}
+
+  V5StorePtr CreateV5Store(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      const base::FilePath& store_path,
+      PrefixSize prefix_size,
+      const base::FilePath& v4_store_path,
+      bool is_eligible_for_v4_to_v5_disk_migration,
+      bool is_extensions_blocklist) override {
+    return V5StorePtr(new FakeV5Store(task_runner, store_path, prefix_size,
+                                      v4_store_path, hash_prefix_should_match_),
+                      SBStoreDeleter(task_runner));
+  }
+
+ private:
+  const bool hash_prefix_should_match_;
+};
+
 class SBDatabaseTest : public PlatformTest {
  public:
   SBDatabaseTest()
@@ -112,7 +165,17 @@ class SBDatabaseTest : public PlatformTest {
         std::make_unique<FakeV4StoreFactory>(hash_prefix_matches));
   }
 
-  void SetupInfoMapAndExpectedState() {
+  static void RegisterStoreFactoryForTest(
+      std::unique_ptr<SBStoreFactory> factory) {
+    SBDatabase::RegisterStoreFactoryForTest(std::move(factory));
+  }
+
+  const StoreMap* GetStoreMap() { return sb_database_->store_map_.get(); }
+
+  // TODO(crbug.com/362791941): Once v5 checks are handled, this can be moved
+  // to the parameterized test fixture's `SetupInfoMapAndExpectedState` else
+  // case instead.
+  virtual void SetupInfoMapAndExpectedState() {
     list_infos_.emplace_back(true, "win_url_malware", win_malware_id_,
                              SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
     expected_identifiers_.push_back(win_malware_id_);
@@ -173,41 +236,6 @@ class SBDatabaseTest : public PlatformTest {
     }
     created_and_called_back_waiter.Run();
   }
-
-  std::unique_ptr<ParsedServerResponse> CreateFakeServerResponse(
-      StoreStateMap store_state_map,
-      bool use_valid_response_type) {
-    auto parsed_server_response = std::make_unique<ParsedServerResponse>();
-    for (const auto& store_state_iter : store_state_map) {
-      ListIdentifier identifier = store_state_iter.first;
-      auto lur = std::make_unique<ListUpdateResponse>();
-      lur->set_platform_type(identifier.platform_type());
-      lur->set_threat_entry_type(identifier.threat_entry_type());
-      lur->set_threat_type(identifier.threat_type());
-      lur->set_new_client_state(store_state_iter.second);
-      if (use_valid_response_type) {
-        lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
-      } else {
-        lur->set_response_type(ListUpdateResponse::RESPONSE_TYPE_UNSPECIFIED);
-      }
-      parsed_server_response->push_back(std::move(lur));
-    }
-    return parsed_server_response;
-  }
-
-  // TODO(crbug.com/362791941): Handle v5
-  std::unique_ptr<SBUpdateResponseMap> ConvertToV4UpdateMap(
-      std::unique_ptr<ParsedServerResponse> parsed_server_response) {
-    auto update_map = std::make_unique<SBUpdateResponseMap>();
-    for (auto& response : *parsed_server_response) {
-      ListIdentifier identifier(*response);
-      auto sb_response = std::make_unique<SBUpdateResponse>();
-      sb_response->v4_response = std::move(response);
-      update_map->insert({identifier, std::move(sb_response)});
-    }
-    return update_map;
-  }
-
   void VerifyExpectedStoresState(bool expect_new_stores) {
     const StoreMap* new_store_map = sb_database_->store_map_.get();
     std::unique_ptr<StoreStateMap> new_store_state_map =
@@ -249,8 +277,100 @@ class SBDatabaseTest : public PlatformTest {
   const ListIdentifier linux_malware_id_, win_malware_id_;
 };
 
+// Parameterized test fixture that runs both for v4 and v5.
+class SBDatabaseTest_V4V5 : public SBDatabaseTest,
+                            public ::testing::WithParamInterface<bool> {
+ public:
+  SBDatabaseTest_V4V5() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
+    } else {
+      feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+    }
+  }
+
+  bool IsV5Enabled() const { return GetParam(); }
+
+  void RegisterFactory(bool hash_prefix_matches = true) {
+    if (IsV5Enabled()) {
+      RegisterStoreFactoryForTest(
+          std::make_unique<FakeV5StoreFactory>(hash_prefix_matches));
+    } else {
+      RegisterStoreFactoryForTest(
+          std::make_unique<FakeV4StoreFactory>(hash_prefix_matches));
+    }
+  }
+
+  // Sets up the list info map and expected store states. Overridden to handle
+  // v5.
+  void SetupInfoMapAndExpectedState() override {
+    if (IsV5Enabled()) {
+      ListIdentifier malware_id_v5(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+      ListIdentifier phishing_id_v5(SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+
+      list_infos_.emplace_back(true, "win_url_malware", malware_id_v5,
+                               SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+      expected_identifiers_.push_back(malware_id_v5);
+      expected_store_paths_.push_back(
+          database_dirname_.AppendASCII("win_url_malware_v5.store"));
+
+      list_infos_.emplace_back(true, "linux_url_malware", phishing_id_v5,
+                               SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+      expected_identifiers_.push_back(phishing_id_v5);
+      expected_store_paths_.push_back(
+          database_dirname_.AppendASCII("linux_url_malware_v5.store"));
+    } else {
+      SBDatabaseTest::SetupInfoMapAndExpectedState();
+    }
+  }
+
+  std::unique_ptr<SBUpdateResponseMap> CreateFakeUpdateResponseMap(
+      StoreStateMap store_state_map,
+      bool use_valid_response_type) {
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    for (const auto& store_state_iter : store_state_map) {
+      ListIdentifier identifier = store_state_iter.first;
+      auto sb_response = std::make_unique<SBUpdateResponse>();
+      if (IsV5Enabled()) {
+        auto v5_response = std::make_unique<V5::HashList>();
+        v5_response->set_version(store_state_iter.second);
+        if (use_valid_response_type) {
+          std::array<uint8_t, 32> empty_checksum =
+              crypto::hash::Sha256(base::span<const uint8_t>());
+          v5_response->set_sha256_checksum(
+              std::string(empty_checksum.begin(), empty_checksum.end()));
+          sb_response->v5_response = std::move(v5_response);
+        } else {
+          auto* additions = v5_response->mutable_additions_four_bytes();
+          additions->set_rice_parameter(3);
+          additions->set_entries_count(1);
+          additions->set_encoded_data("");
+          sb_response->v5_response = std::move(v5_response);
+        }
+      } else {
+        auto lur = std::make_unique<ListUpdateResponse>();
+        lur->set_platform_type(identifier.platform_type());
+        lur->set_threat_entry_type(identifier.threat_entry_type());
+        lur->set_threat_type(identifier.threat_type());
+        lur->set_new_client_state(store_state_iter.second);
+        if (use_valid_response_type) {
+          lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
+        } else {
+          lur->set_response_type(ListUpdateResponse::RESPONSE_TYPE_UNSPECIFIED);
+        }
+        sb_response->v4_response = std::move(lur);
+      }
+      update_map->insert({identifier, std::move(sb_response)});
+    }
+    return update_map;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test to set up the database with fake stores.
-TEST_F(SBDatabaseTest, TestSetupDatabaseWithFakeStores) {
+TEST_P(SBDatabaseTest_V4V5, TestSetupDatabaseWithFakeStores) {
   RegisterFactory();
   WaitForSBDatabaseReady(CreateTaskRunner(),
                          /*simple_task_runners_to_wait_for=*/{});
@@ -259,7 +379,7 @@ TEST_F(SBDatabaseTest, TestSetupDatabaseWithFakeStores) {
 }
 
 // Test to check database updates as expected.
-TEST_F(SBDatabaseTest, TestApplyUpdateWithNewStates) {
+TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithNewStates) {
   RegisterFactory();
 
   WaitForSBDatabaseReady(CreateTaskRunner(),
@@ -267,7 +387,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNewStates) {
 
   // The database has now been created. Time to try to update it.
   EXPECT_TRUE(sb_database_);
-  const StoreMap* db_stores = sb_database_->store_map_.get();
+  const StoreMap* db_stores = GetStoreMap();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
     SBStore* store = store_iter.second.get();
@@ -277,9 +397,10 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNewStates) {
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
-                                expected_store_state_map_, true)),
-                            callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(
+      CreateFakeUpdateResponseMap(expected_store_state_map_,
+                                  /*use_valid_response_type=*/true),
+      callback_db_updated_run_loop.QuitClosure());
 
   // Wait for the ApplyUpdate callback to get called.
   callback_db_updated_run_loop.Run();
@@ -288,7 +409,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNewStates) {
 }
 
 // Test to ensure no state updates leads to no store updates.
-TEST_F(SBDatabaseTest, TestApplyUpdateWithNoNewState) {
+TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithNoNewState) {
   RegisterFactory();
 
   WaitForSBDatabaseReady(CreateTaskRunner(),
@@ -296,7 +417,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNoNewState) {
 
   // The database has now been created. Time to try to update it.
   EXPECT_TRUE(sb_database_);
-  const StoreMap* db_stores = sb_database_->store_map_.get();
+  const StoreMap* db_stores = GetStoreMap();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
     SBStore* store = store_iter.second.get();
@@ -305,9 +426,10 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNoNewState) {
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
-                                expected_store_state_map_, true)),
-                            callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(
+      CreateFakeUpdateResponseMap(expected_store_state_map_,
+                                  /*use_valid_response_type=*/true),
+      callback_db_updated_run_loop.QuitClosure());
 
   callback_db_updated_run_loop.Run();
 
@@ -315,7 +437,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNoNewState) {
 }
 
 // Test to ensure no updates leads to no store updates.
-TEST_F(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate) {
+TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithEmptyUpdate) {
   RegisterFactory();
 
   WaitForSBDatabaseReady(CreateTaskRunner(),
@@ -323,7 +445,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate) {
 
   // The database has now been created. Time to try to update it.
   EXPECT_TRUE(sb_database_);
-  const StoreMap* db_stores = sb_database_->store_map_.get();
+  const StoreMap* db_stores = GetStoreMap();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
     SBStore* store = store_iter.second.get();
@@ -332,9 +454,8 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate) {
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  auto parsed_server_response = std::make_unique<ParsedServerResponse>();
   sb_database_->ApplyUpdate(
-      ConvertToV4UpdateMap(std::move(parsed_server_response)),
+      CreateFakeUpdateResponseMap({}, /*use_valid_response_type=*/true),
       callback_db_updated_run_loop.QuitClosure());
 
   callback_db_updated_run_loop.Run();
@@ -343,7 +464,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate) {
 }
 
 // Test to ensure invalid update leads to no store changes.
-TEST_F(SBDatabaseTest, TestApplyUpdateWithInvalidUpdate) {
+TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithInvalidUpdate) {
   RegisterFactory();
 
   WaitForSBDatabaseReady(CreateTaskRunner(),
@@ -351,7 +472,7 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithInvalidUpdate) {
 
   // The database has now been created. Time to try to update it.
   EXPECT_TRUE(sb_database_);
-  const StoreMap* db_stores = sb_database_->store_map_.get();
+  const StoreMap* db_stores = GetStoreMap();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
     SBStore* store = store_iter.second.get();
@@ -360,14 +481,16 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithInvalidUpdate) {
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
-                                expected_store_state_map_, false)),
-                            callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(
+      CreateFakeUpdateResponseMap(expected_store_state_map_,
+                                  /*use_valid_response_type=*/false),
+      callback_db_updated_run_loop.QuitClosure());
   callback_db_updated_run_loop.Run();
 
   VerifyExpectedStoresState(false);
 }
 
+// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that all stores match a given full hash.
 TEST_F(SBDatabaseTest, TestAllStoresMatchFullHash) {
   bool hash_prefix_matches = true;
@@ -390,6 +513,7 @@ TEST_F(SBDatabaseTest, TestAllStoresMatchFullHash) {
   EXPECT_EQ(stores_to_check, stores_found);
 }
 
+// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that no stores match a given full hash.
 TEST_F(SBDatabaseTest, TestNoStoreMatchesFullHash) {
   bool hash_prefix_matches = false;
@@ -407,6 +531,7 @@ TEST_F(SBDatabaseTest, TestNoStoreMatchesFullHash) {
   EXPECT_TRUE(store_and_hash_prefixes.empty());
 }
 
+// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that some stores match a given full hash.
 TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHash) {
   // Setup stores to not match the full hash.
@@ -432,6 +557,7 @@ TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHash) {
   EXPECT_FALSE(store_and_hash_prefixes.begin()->hash_prefix.empty());
 }
 
+// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that only some stores are reported to match a given
 // full hash because of StoresToCheck.
 TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
@@ -453,7 +579,7 @@ TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
   EXPECT_FALSE(store_and_hash_prefixes.begin()->hash_prefix.empty());
 }
 
-TEST_F(SBDatabaseTest, VerifyChecksumCalledAsync) {
+TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCalledAsync) {
   bool hash_prefix_matches = true;
   RegisterFactory(hash_prefix_matches);
 
@@ -469,7 +595,7 @@ TEST_F(SBDatabaseTest, VerifyChecksumCalledAsync) {
   EXPECT_TRUE(verify_checksum_future.Wait());
 }
 
-TEST_F(SBDatabaseTest, VerifyChecksumCancelled) {
+TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCancelled) {
   bool hash_prefix_matches = true;
   RegisterFactory(hash_prefix_matches);
 
@@ -496,7 +622,7 @@ TEST_F(SBDatabaseTest, VerifyChecksumCancelled) {
 }
 
 // Test that we can properly check for unsupported stores
-TEST_F(SBDatabaseTest, TestStoresAvailable) {
+TEST_P(SBDatabaseTest_V4V5, TestStoresAvailable) {
   bool hash_prefix_matches = false;
   RegisterFactory(hash_prefix_matches);
 
@@ -504,23 +630,26 @@ TEST_F(SBDatabaseTest, TestStoresAvailable) {
                          /*simple_task_runners_to_wait_for=*/{});
 
   // Doesn't exist in out list
-  const ListIdentifier bogus_id(LINUX_PLATFORM, CHROME_EXTENSION,
-                                CSD_ALLOWLIST);
+  ListIdentifier bogus_id =
+      IsV5Enabled()
+          ? ListIdentifier(
+                SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING)
+          : ListIdentifier(LINUX_PLATFORM, CHROME_EXTENSION, CSD_ALLOWLIST);
 
   EXPECT_TRUE(sb_database_->AreAllStoresAvailable(
-      StoresToCheck({linux_malware_id_, win_malware_id_})));
+      StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]})));
   EXPECT_TRUE(sb_database_->AreAnyStoresAvailable(
-      StoresToCheck({linux_malware_id_, win_malware_id_})));
+      StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]})));
 
-  EXPECT_TRUE(
-      sb_database_->AreAllStoresAvailable(StoresToCheck({linux_malware_id_})));
-  EXPECT_TRUE(
-      sb_database_->AreAnyStoresAvailable(StoresToCheck({linux_malware_id_})));
+  EXPECT_TRUE(sb_database_->AreAllStoresAvailable(
+      StoresToCheck({expected_identifiers_[1]})));
+  EXPECT_TRUE(sb_database_->AreAnyStoresAvailable(
+      StoresToCheck({expected_identifiers_[1]})));
 
   EXPECT_FALSE(sb_database_->AreAllStoresAvailable(
-      StoresToCheck({linux_malware_id_, bogus_id})));
+      StoresToCheck({expected_identifiers_[1], bogus_id})));
   EXPECT_TRUE(sb_database_->AreAnyStoresAvailable(
-      StoresToCheck({linux_malware_id_, bogus_id})));
+      StoresToCheck({expected_identifiers_[1], bogus_id})));
 
   EXPECT_FALSE(sb_database_->AreAllStoresAvailable(StoresToCheck({bogus_id})));
 }
@@ -558,7 +687,7 @@ class TestApplyUpdateCallback {
 
 // Test to ensure that the callback to the database is dropped when the database
 // gets destroyed. See http://crbug.com/683147#c5 for more details.
-TEST_F(SBDatabaseTest, UsingWeakPtrDropsCallback) {
+TEST_P(SBDatabaseTest_V4V5, UsingWeakPtrDropsCallback) {
   scoped_refptr<base::TestSimpleTaskRunner> db_task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
@@ -568,23 +697,18 @@ TEST_F(SBDatabaseTest, UsingWeakPtrDropsCallback) {
   WaitForSBDatabaseReady(db_task_runner,
                          /*simple_task_runners_to_wait_for=*/{db_task_runner});
 
-  // Step 2: Try to update the database. This posts V4Store::ApplyUpdate() on
+  // Step 2: Try to update the database. This posts ApplyUpdate() on
   // the `db_task_runner`.
-  auto parsed_server_response = std::make_unique<ParsedServerResponse>();
-  auto lur = std::make_unique<ListUpdateResponse>();
-  lur->set_platform_type(linux_malware_id_.platform_type());
-  lur->set_threat_entry_type(linux_malware_id_.threat_entry_type());
-  lur->set_threat_type(linux_malware_id_.threat_type());
-  lur->set_new_client_state("new_state");
-  lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
-  parsed_server_response->push_back(std::move(lur));
+  StoreStateMap store_state_map;
+  store_state_map[expected_identifiers_[1]] = "new_state";
 
-  // The callback passed to ApplyUpdate() is called from V4Store::ApplyUpdate().
+  // The callback passed to ApplyUpdate() is called from SBStore::ApplyUpdate().
   // We expect the callback not to be executed. Use TestApplyUpdateCallback to
   // verify this.
   TestApplyUpdateCallback test_callback;
   sb_database_->ApplyUpdate(
-      ConvertToV4UpdateMap(std::move(parsed_server_response)),
+      CreateFakeUpdateResponseMap(store_state_map,
+                                  /*use_valid_response_type=*/true),
       test_callback.CreateRepeatingClosure());
 
   // Step 3: Post task to destroy SBDatabase on db thread.
@@ -594,7 +718,7 @@ TEST_F(SBDatabaseTest, UsingWeakPtrDropsCallback) {
   // Step 4: Simulate SBDatabase::~SBDatabase() being called on db thread prior
   // to SBDatabase::UpdatedStoreReady() being called on UI thread.
   // SBDatabase::UpdatedStoreReady() is posted to the UI thread from
-  // V4Store::ApplyUpdate().
+  // SBStore::ApplyUpdate().
   db_task_runner->RunPendingTasks();
   EXPECT_TRUE(test_callback.was_callback_destroyed());
   EXPECT_FALSE(test_callback.was_called());
@@ -765,5 +889,7 @@ TEST(SBDatabaseListInfoTest, TestNonSyncProperties) {
   EXPECT_EQ("", list_info.v4_filename());
   EXPECT_FALSE(list_info.v5_prefix_size().has_value());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SBDatabaseTest_V4V5, ::testing::Bool());
 
 }  // namespace safe_browsing
