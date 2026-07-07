@@ -2404,4 +2404,26 @@ TEST_F(V5StoreTest, WriteToDiskFails_DeleteHashFile) {
   EXPECT_TRUE(enumerator.Next().empty());
 }
 
+TEST_F(V5StoreTest, TestReset) {
+  ListDetails list_details;
+  list_details.set_version("test_version");
+  list_details.mutable_checksum()->set_sha256(
+      "test_checksum_value_32_bytes____");
+  WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_EQ("test_version", store.version());
+  EXPECT_EQ("test_checksum_value_32_bytes____", GetExpectedChecksum(store));
+
+  store.Reset();
+  EXPECT_FALSE(store.HasValidData());
+  EXPECT_TRUE(store.version().empty());
+  EXPECT_TRUE(GetExpectedChecksum(store).empty());
+  EXPECT_TRUE(GetHashPrefixList(store).view().empty());
+  EXPECT_EQ(0, GetFileSize(store));
+}
+
 }  // namespace safe_browsing

@@ -481,8 +481,11 @@ int64_t V5Store::RecordAndReturnFileSize(const std::string& base_metric) {
 }
 
 void V5Store::Reset() {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
+  expected_checksum_.clear();
+  hash_prefix_list_->Clear();
+  version_.clear();
+  has_valid_data_ = false;
+  file_size_ = 0;
 }
 
 bool V5Store::VerifyChecksum() {
