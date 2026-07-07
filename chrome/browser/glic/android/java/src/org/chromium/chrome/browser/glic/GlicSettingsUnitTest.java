@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_
 
 import android.Manifest;
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -97,6 +98,10 @@ public class GlicSettingsUnitTest {
     }
 
     private GlicSettings launchFragment() {
+        return launchFragment(null);
+    }
+
+    private GlicSettings launchFragment(Bundle args) {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         GlicSettings glicSettings =
                 (GlicSettings)
@@ -107,6 +112,9 @@ public class GlicSettingsUnitTest {
                                         GlicSettings.class.getName());
         glicSettings.setProfile(mProfileMock);
         glicSettings.setCustomTabLauncher(mCustomTabLauncher);
+        if (args != null) {
+            glicSettings.setArguments(args);
+        }
         fragmentManager.beginTransaction().replace(android.R.id.content, glicSettings).commit();
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
 
@@ -121,6 +129,24 @@ public class GlicSettingsUnitTest {
     public void testLaunchGlicSettings() {
         // Verifies that the fragment can be launched without crashing.
         launchFragment();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)
+    public void testLocationHighlightParam() {
+        Bundle args = new Bundle();
+        args.putString(
+                GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD,
+                GlicNavigationUtils.FIELD_LOCATION_PERMISSION);
+
+        // Verifies launching with highlight parameters does not crash
+        GlicSettings fragment = launchFragment(args);
+
+        // Flush shadow main looper to run the posted scroll/highlight runnables
+        org.robolectric.shadows.ShadowLooper.idleMainLooper();
+
+        ChromeSwitchPreference locationPref = fragment.findPreference(GlicSettings.PERMISSION_LOCATION);
+        assertTrue("Location preference should be visible", locationPref.isVisible());
     }
 
     @Test

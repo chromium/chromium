@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 public class GlicNavigationUtils {
     public static final String EXTRA_HIGHLIGHT_FIELD =
             "org.chromium.chrome.browser.glic.highlight_field";
+    public static final String FIELD_LOCATION_PERMISSION = "location_permission";
     private static @Nullable Supplier<SigninAndHistorySyncActivityLauncher> sLauncherSupplier;
 
     /**

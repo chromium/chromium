@@ -17,10 +17,13 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
+import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.preference.TwoStatePreference;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -44,6 +47,11 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -56,7 +64,7 @@ import org.chromium.ui.util.AttrUtils;
 public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PREFERENCE_BUTTON = "glic_button";
     private static final String PREFERENCE_BUTTON_TOGGLE = "glic_button_toggle";
-    private static final String PERMISSION_LOCATION = "permissions_location";
+    @VisibleForTesting static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
@@ -88,6 +96,65 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             mUserEnabledActuationOnWebObserver;
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String highlightField =
+                getArguments() != null
+                        ? getArguments().getString(GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD)
+                        : null;
+        if (GlicNavigationUtils.FIELD_LOCATION_PERMISSION.equals(highlightField)) {
+            view.post(() -> {
+                if (!isAdded() || getView() == null) return;
+                scrollAndHighlightPreference(PERMISSION_LOCATION);
+            });
+        }
+    }
+
+    private void scrollAndHighlightPreference(String key) {
+        RecyclerView listView = getListView();
+        if (listView == null) return;
+
+        RecyclerView.Adapter adapter = listView.getAdapter();
+        if (!(adapter instanceof PreferencePositionCallback)) return;
+        PreferencePositionCallback callback = (PreferencePositionCallback) adapter;
+
+        int position = callback.getPreferenceAdapterPosition(key);
+        if (position == RecyclerView.NO_POSITION) return;
+
+        scrollToPreference(key);
+
+        listView.post(() -> {
+            if (!isAdded() || getView() == null) return;
+            highlightPreferenceAtPosition(listView, position);
+        });
+    }
+
+    private void highlightPreferenceAtPosition(RecyclerView listView, int position) {
+        RecyclerView.ViewHolder viewHolder = listView.findViewHolderForAdapterPosition(position);
+        if (viewHolder == null) return;
+
+        View prefView = viewHolder.itemView;
+        HighlightParams params = new HighlightParams(HighlightShape.RECTANGLE);
+        params.setNumPulses(1);
+
+        // Copy rounded corners from ContainmentItemDecoration if present.
+        for (int i = 0; i < listView.getItemDecorationCount(); i++) {
+            RecyclerView.ItemDecoration decoration = listView.getItemDecorationAt(i);
+            if (decoration instanceof ContainmentItemDecoration) {
+                ContainmentItemDecoration containmentDec = (ContainmentItemDecoration) decoration;
+                ContainerStyle style = containmentDec.getContainerStyle(position);
+                if (style != null) {
+                    params.setTopCornerRadius((int) style.getTopRadius());
+                    params.setBottomCornerRadius((int) style.getBottomRadius());
+                }
+                break;
+            }
+        }
+
+        ViewHighlighter.turnOnHighlight(prefView, params);
+    }
+
+    @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.glic_settings);
         mPageTitle.set(getString(R.string.glic_setting_label));
@@ -104,7 +171,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         ChromeSwitchPreference buttonTogglePref =
                 assertNonNull(findPreference(PREFERENCE_BUTTON_TOGGLE));
 
-        var context = getContext();
+        Context context = getContext();
         // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
         // supported on LFF
         if (AndroidSidePanelEnabledFn.isEnabled()) {
