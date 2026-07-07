@@ -2701,6 +2701,7 @@ test("content_unittests") {
     "../browser/cpu_performance/cpu_performance_unittest.cc",
     "../browser/declarative_performance_observer/declarative_performance_observer_store_unittest.cc",
     "../browser/declarative_performance_observer/declarative_performance_observer_unittest.cc",
+    "../browser/device_posture/device_posture_provider_impl_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
     "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
     "../browser/devtools/devtools_http_handler_unittest.cc",

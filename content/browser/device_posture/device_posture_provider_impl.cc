@@ -22,7 +22,8 @@ DevicePostureProviderImpl* DevicePostureProviderImpl::GetOrCreate(
 }
 
 DevicePostureProviderImpl::DevicePostureProviderImpl(WebContents* web_contents)
-    : WebContentsUserData<DevicePostureProviderImpl>(*web_contents) {
+    : WebContentsUserData<DevicePostureProviderImpl>(*web_contents),
+      WebContentsObserver(web_contents) {
   platform_provider_ = DevicePosturePlatformProvider::Create(web_contents);
   // We need to  listen to disconnections so that if there is nobody interested
   // in posture changes we can shutdown the native backends.
@@ -42,6 +43,13 @@ DevicePosturePlatformProvider* DevicePostureProviderImpl::platform_provider()
   return platform_provider_.get();
 }
 
+blink::mojom::DevicePostureType DevicePostureProviderImpl::GetCurrentPosture()
+    const {
+  return (is_posture_emulated_ && emulated_posture_)
+             ? *emulated_posture_
+             : platform_provider_->GetDevicePosture();
+}
+
 void DevicePostureProviderImpl::AddListenerAndGetCurrentPosture(
     mojo::PendingRemote<blink::mojom::DevicePostureClient> client,
     AddListenerAndGetCurrentPostureCallback callback) {
@@ -49,17 +57,27 @@ void DevicePostureProviderImpl::AddListenerAndGetCurrentPosture(
     platform_provider_->AddObserver(this);
   }
   posture_clients_.Add(std::move(client));
-  blink::mojom::DevicePostureType posture =
-      platform_provider_->GetDevicePosture();
+  blink::mojom::DevicePostureType posture = GetCurrentPosture();
   std::move(callback).Run(posture);
+  last_dispatched_posture_ = posture;
 }
 
 void DevicePostureProviderImpl::OverrideDevicePostureForEmulation(
     blink::mojom::DevicePostureType emulated_posture) {
-  // Notify the related clients about the new posture.
   is_posture_emulated_ = true;
-  for (auto& client : posture_clients_) {
-    client->OnPostureChanged(emulated_posture);
+  emulated_posture_ = emulated_posture;
+  // If the page is hidden, we store the emulated posture but defer dispatching
+  // the event until the page becomes visible again (handled in
+  // OnVisibilityChanged).
+  if (web_contents()->GetVisibility() != Visibility::VISIBLE) {
+    return;
+  }
+  if (!last_dispatched_posture_ ||
+      *last_dispatched_posture_ != emulated_posture) {
+    for (auto& client : posture_clients_) {
+      client->OnPostureChanged(emulated_posture);
+    }
+    last_dispatched_posture_ = emulated_posture;
   }
 }
 
@@ -72,21 +90,52 @@ void DevicePostureProviderImpl::DisableDevicePostureOverrideForEmulation() {
 
   // Restore the original posture from the platform.
   is_posture_emulated_ = false;
-  for (auto& client : posture_clients_) {
-    client->OnPostureChanged(platform_provider_->GetDevicePosture());
+  emulated_posture_.reset();
+  if (web_contents()->GetVisibility() != Visibility::VISIBLE) {
+    return;
+  }
+  blink::mojom::DevicePostureType posture =
+      platform_provider_->GetDevicePosture();
+  if (!last_dispatched_posture_ || *last_dispatched_posture_ != posture) {
+    for (auto& client : posture_clients_) {
+      client->OnPostureChanged(posture);
+    }
+    last_dispatched_posture_ = posture;
   }
 }
 
 void DevicePostureProviderImpl::OnDevicePostureChanged(
     const blink::mojom::DevicePostureType& posture) {
-  // If we receive a posture change from the platform but we're emulating it we
-  // shouldn't notify the clients.
-  if (is_posture_emulated_) {
+  // If we receive a posture change from the platform but we're emulating it,
+  // or if the page is not visible, we shouldn't notify the clients.
+  if (is_posture_emulated_ ||
+      web_contents()->GetVisibility() != Visibility::VISIBLE) {
     return;
   }
 
-  for (auto& client : posture_clients_) {
-    client->OnPostureChanged(posture);
+  if (!last_dispatched_posture_ || *last_dispatched_posture_ != posture) {
+    for (auto& client : posture_clients_) {
+      client->OnPostureChanged(posture);
+    }
+    last_dispatched_posture_ = posture;
+  }
+}
+
+void DevicePostureProviderImpl::OnVisibilityChanged(Visibility visibility) {
+  if (visibility != Visibility::VISIBLE || posture_clients_.empty()) {
+    return;
+  }
+
+  // When the tab regains visibility, dispatch the latest posture to the
+  // clients if it changed while the tab was hidden.
+  blink::mojom::DevicePostureType current_posture = GetCurrentPosture();
+
+  if (!last_dispatched_posture_ ||
+      *last_dispatched_posture_ != current_posture) {
+    for (auto& client : posture_clients_) {
+      client->OnPostureChanged(current_posture);
+    }
+    last_dispatched_posture_ = current_posture;
   }
 }
 
@@ -95,6 +144,7 @@ void DevicePostureProviderImpl::OnRemoteDisconnect(
   if (posture_clients_.empty()) {
     // We're not interested in receiving posture changes.
     platform_provider_->RemoveObserver(this);
+    last_dispatched_posture_.reset();
   }
 }
 

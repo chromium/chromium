@@ -7,6 +7,7 @@
 
 #include "content/browser/device_posture/device_posture_platform_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,10 +17,11 @@
 
 namespace content {
 
-class DevicePostureProviderImpl final
+class CONTENT_EXPORT DevicePostureProviderImpl final
     : public blink::mojom::DevicePostureProvider,
       public WebContentsUserData<DevicePostureProviderImpl>,
-      public DevicePosturePlatformProvider::Observer {
+      public DevicePosturePlatformProvider::Observer,
+      public WebContentsObserver {
  public:
   static DevicePostureProviderImpl* GetOrCreate(WebContents*);
   explicit DevicePostureProviderImpl(content::WebContents* web_contents);
@@ -32,14 +34,17 @@ class DevicePostureProviderImpl final
       mojo::PendingReceiver<blink::mojom::DevicePostureProvider> receiver);
   DevicePosturePlatformProvider* platform_provider() const;
 
-  CONTENT_EXPORT void OverrideDevicePostureForEmulation(
+  void OverrideDevicePostureForEmulation(
       blink::mojom::DevicePostureType posture);
-  CONTENT_EXPORT void DisableDevicePostureOverrideForEmulation();
+  void DisableDevicePostureOverrideForEmulation();
 
  private:
   // DevicePostureClient implementation.
   void OnDevicePostureChanged(
       const blink::mojom::DevicePostureType& posture) override;
+
+  // WebContentsObserver implementation.
+  void OnVisibilityChanged(Visibility visibility) override;
 
   // DevicePostureProvider implementation.
   void AddListenerAndGetCurrentPosture(
@@ -48,8 +53,12 @@ class DevicePostureProviderImpl final
 
   void OnRemoteDisconnect(mojo::RemoteSetElementId);
 
+  blink::mojom::DevicePostureType GetCurrentPosture() const;
+
   std::unique_ptr<DevicePosturePlatformProvider> platform_provider_;
   bool is_posture_emulated_ = false;
+  std::optional<blink::mojom::DevicePostureType> emulated_posture_;
+  std::optional<blink::mojom::DevicePostureType> last_dispatched_posture_;
   mojo::ReceiverSet<blink::mojom::DevicePostureProvider> receivers_;
   mojo::RemoteSet<blink::mojom::DevicePostureClient> posture_clients_;
 
