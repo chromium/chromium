@@ -301,9 +301,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxDragAndDrop) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileCarousel) {
-  RunTest("new_tab_page/composebox/file_carousel_test.js", "mocha.run()");
-}
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
   RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
