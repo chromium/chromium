@@ -56,26 +56,17 @@
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Sets `enabled` on the closeAll button.
-- (void)setCloseAllButtonEnabled:(BOOL)enabled;
-// Uses undo or closeAll text on the close all button based on `useUndo` value.
-- (void)useUndoCloseAll:(BOOL)useUndo;
 
 // Sets `enabled` on the close tabs button.
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled;
 
-// Sets `enabled` on the close tabs button.
+// Sets `enabled` on the share tabs button.
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
 // Sets the `menu` displayed on tapping the Add To button.
 - (void)setAddToButtonMenu:(UIMenu*)menu;
 // Sets `enabled` on the Add To button.
 - (void)setAddToButtonEnabled:(BOOL)enabled;
-
-// Sets the `menu` displayed on tapping the Edit button.
-- (void)setEditButtonMenu:(UIMenu*)menu;
-// Sets `enabled` on the Edit button.
-- (void)setEditButtonEnabled:(BOOL)enabled;
 // Updates the appearance of the this toolbar, based on whether the content
 // below it is `scrolledToEdge` or not.
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;

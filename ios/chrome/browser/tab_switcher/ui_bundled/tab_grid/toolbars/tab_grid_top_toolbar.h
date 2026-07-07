@@ -66,19 +66,10 @@
 - (void)setCloseOtherTabsEnabled:(BOOL)enabled;
 // Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Sets `enabled` on the undo button.
-- (void)setUndoButtonEnabled:(BOOL)enabled;
-// Uses undo text on the close all button based on `useUndo` value.
-- (void)useUndo:(BOOL)useUndo;
 // Sets `enabled` on the page action menu entry point.
 - (void)setPageActionMenuButtonEnabled:(BOOL)enabled;
 // Sets `visible` on the page action menu entry point.
 - (void)setPageActionMenuButtonVisible:(BOOL)visible;
-
-// Sets the `menu` displayed on tapping the Edit button.
-- (void)setEditButtonMenu:(UIMenu*)menu;
-// Sets `enabled` on the Edit button.
-- (void)setEditButtonEnabled:(BOOL)enabled;
 
 // Sets `enabled` on the Overflow Menu.
 - (void)setOverflowMenuEnabled:(BOOL)enabled;

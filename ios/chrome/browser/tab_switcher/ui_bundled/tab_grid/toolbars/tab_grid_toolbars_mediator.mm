@@ -84,14 +84,8 @@
   [self.topToolbarConsumer
       configureSelectionButtonTitleSelectAll:_configuration.selectAllButton];
 
-  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    [self.topToolbarConsumer setEditButtonEnabled:NO];
-    [self.bottomToolbarConsumer setEditButtonEnabled:NO];
-    [self.topToolbarConsumer
-        setOverflowMenuEnabled:_configuration.overflowMenuButton];
-  } else {
-    [self configureEditOrUndoButton];
-  }
+  [self.topToolbarConsumer
+      setOverflowMenuEnabled:_configuration.overflowMenuButton];
 
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
@@ -246,74 +240,6 @@
   [self.topToolbarConsumer
       setSelectAllButtonEnabled:_configuration.selectAllButton ||
                                 _configuration.deselectAllButton];
-}
-
-// Helpers to determine which button should be selected between "Edit" or "Undo"
-// and if the "Edit" button should be enabled.
-// TODO(crbug.com/40273478): Send buttons configuration directly to the correct
-// consumer instead of send information to object when it is not necessary.
-- (void)configureEditOrUndoButton {
-  CHECK(!base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu));
-  [self.topToolbarConsumer useUndo:_configuration.undoButton];
-  [self.bottomToolbarConsumer useUndoCloseAll:_configuration.undoButton];
-
-  // TODO(crbug.com/40273478): Separate "Close All" and "Undo".
-  [self.topToolbarConsumer setUndoButtonEnabled:_configuration.closeAllButton ||
-                                                _configuration.undoButton];
-  [self.bottomToolbarConsumer
-      setCloseAllButtonEnabled:_configuration.closeAllButton ||
-                               _configuration.undoButton];
-
-  BOOL shouldEnableEditButton =
-      _configuration.closeAllButton || _configuration.selectTabsButton;
-
-  [self configureEditButtons];
-  [self.bottomToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
-  [self.topToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
-}
-
-// Configures buttons that are available under the edit menu.
-- (void)configureEditButtons {
-  BOOL shouldEnableEditButton =
-      _configuration.closeAllButton || _configuration.selectTabsButton;
-
-  UIMenu* menu = nil;
-  if (shouldEnableEditButton) {
-    ActionFactory* actionFactory = [[ActionFactory alloc]
-        initWithScenario:kMenuScenarioHistogramTabGridEdit];
-    __weak id<TabGridToolbarsGridDelegate> weakButtonDelegate =
-        _buttonsDelegate;
-    NSMutableArray<UIMenuElement*>* menuElements =
-        [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
-          [weakButtonDelegate closeAllButtonTapped:nil];
-        }] ] mutableCopy];
-
-    if (_configuration.closeOtherTabsButton) {
-      UIAction* closeOtherTabsAction =
-          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
-            [weakButtonDelegate closeOtherTabsButtonTapped:nil];
-          }];
-      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
-                                               image:nil
-                                          identifier:nil
-                                             options:UIMenuOptionsDisplayInline
-                                            children:@[ closeOtherTabsAction ]];
-      [menuElements addObject:closeOtherMenu];
-    }
-    // Disable the "Select All" option from the edit button when there are no
-    // tabs in the regular tab grid. "Close All" can still be called if there
-    // are inactive tabs.
-    if (_configuration.selectTabsButton) {
-      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                      [weakButtonDelegate selectTabsButtonTapped:nil];
-                    }]];
-    }
-
-    menu = [UIMenu menuWithChildren:menuElements];
-  }
-
-  [self.topToolbarConsumer setEditButtonMenu:menu];
-  [self.bottomToolbarConsumer setEditButtonMenu:menu];
 }
 
 @end

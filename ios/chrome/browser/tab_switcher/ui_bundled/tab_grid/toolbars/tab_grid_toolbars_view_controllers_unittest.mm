@@ -68,7 +68,6 @@ TEST_F(TabGridToolbarsViewControllersTest, TopToolbarsImplementsActions) {
   // Load the view.
   std::ignore = top_toolbar_;
   [top_toolbar_ keyCommand_closeAll];
-  [top_toolbar_ keyCommand_undo];
   [top_toolbar_ keyCommand_find];
   [top_toolbar_ keyCommand_close];
 }
@@ -78,7 +77,6 @@ TEST_F(TabGridToolbarsViewControllersTest, BottomToolbarsImplementsActions) {
   // Load the view.
   std::ignore = bottom_toolbar_;
   [bottom_toolbar_ keyCommand_closeAll];
-  [bottom_toolbar_ keyCommand_undo];
   [bottom_toolbar_ keyCommand_close];
 }
 
@@ -88,7 +86,6 @@ TEST_F(TabGridToolbarsViewControllersTest, Metrics) {
   std::ignore = top_toolbar_;
   std::ignore = bottom_toolbar_;
   ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
-  ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
   ExpectUMA(@"keyCommand_close", kMobileKeyCommandClose);
 
   // Check only top toolbar.

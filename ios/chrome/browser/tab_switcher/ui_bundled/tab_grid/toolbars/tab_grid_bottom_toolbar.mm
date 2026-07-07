@@ -63,12 +63,9 @@ CGFloat CompactButtonHorizontalPadding() {
   TabGridNewTabButton* _smallNewTabButton;
   TabGridNewTabButton* _largeNewTabButton;
   UIButton* _doneButton;
-  UIButton* _undoButton;
-  UIButton* _editButton;
   UIButton* _addToButton;
   UIButton* _closeTabsButton;
   UIButton* _shareButton;
-  BOOL _undoActive;
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
   TabGridToolbarScrollingBackground* _scrollBackgroundView;
@@ -170,21 +167,9 @@ CGFloat CompactButtonHorizontalPadding() {
   _doneButton.enabled = enabled;
 }
 
-- (void)setCloseAllButtonEnabled:(BOOL)enabled {
-  _undoButton.enabled = enabled;
-}
-
 - (void)setIncognitoBackgroundHidden:(BOOL)hidden {
   [_scrollBackgroundView hideIncognitoToolbarBackground:hidden];
   [self updateBackgroundVisibility];
-}
-
-- (void)useUndoCloseAll:(BOOL)useUndo {
-  _undoButton.enabled = YES;
-  if (_undoActive != useUndo) {
-    _undoActive = useUndo;
-    [self updateLayout];
-  }
 }
 
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge {
@@ -228,16 +213,6 @@ CGFloat CompactButtonHorizontalPadding() {
 
 - (void)setAddToButtonEnabled:(BOOL)enabled {
   _addToButton.enabled = enabled;
-}
-
-#pragma mark Edit Button
-
-- (void)setEditButtonMenu:(UIMenu*)menu {
-  _editButton.menu = menu;
-}
-
-- (void)setEditButtonEnabled:(BOOL)enabled {
-  _editButton.enabled = enabled;
 }
 
 #pragma mark - LayoutStateObserver
@@ -330,33 +305,17 @@ CGFloat CompactButtonHorizontalPadding() {
   NSMutableArray<NSLayoutConstraint*>* constraints =
       [NSMutableArray arrayWithArray:@[
         // Vertical layout:
-        [_editButton.centerYAnchor
-            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
-        [_undoButton.centerYAnchor
-            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
         [_smallNewTabButton.centerYAnchor
             constraintEqualToAnchor:_containerToolbar.centerYAnchor],
         [_doneButton.centerYAnchor
             constraintEqualToAnchor:_containerToolbar.centerYAnchor],
 
         // Horizontal layout:
-        [_editButton.leadingAnchor
-            constraintEqualToAnchor:_containerToolbar.leadingAnchor
-                           constant:CompactButtonHorizontalPadding()],
-        [_undoButton.leadingAnchor
-            constraintEqualToAnchor:_containerToolbar.leadingAnchor
-                           constant:CompactButtonHorizontalPadding()],
         [_doneButton.trailingAnchor
             constraintEqualToAnchor:_containerToolbar.trailingAnchor
                            constant:-CompactButtonHorizontalPadding()],
         [_smallNewTabButton.centerXAnchor
             constraintEqualToAnchor:_containerToolbar.centerXAnchor],
-        [_smallNewTabButton.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor:_editButton.trailingAnchor
-                                        constant:kCompactMinButtonSpacing],
-        [_smallNewTabButton.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor:_undoButton.trailingAnchor
-                                        constant:kCompactMinButtonSpacing],
         [_doneButton.leadingAnchor
             constraintGreaterThanOrEqualToAnchor:_smallNewTabButton
                                                      .trailingAnchor
@@ -415,15 +374,6 @@ CGFloat CompactButtonHorizontalPadding() {
 
   [self addSubview:_containerToolbar];
 
-  // Close button.
-  _undoButton =
-      [self createButtonWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON)
-                            image:nil
-                   targetSelector:@selector(closeAllButtonTapped:)];
-  _undoButton.accessibilityIdentifier = kTabGridUndoCloseAllButtonIdentifier;
-  [_containerToolbar addSubview:_undoButton];
-
   // Done button.
   _doneButton = [self
       createButtonWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON)
@@ -451,15 +401,6 @@ CGFloat CompactButtonHorizontalPadding() {
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;
   [self addSubview:_largeNewTabButton];
-
-  // Edit button.
-  _editButton = [self
-      createButtonWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON)
-                      image:nil
-             targetSelector:nil];
-  _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
-  _editButton.showsMenuAsPrimaryAction = YES;
-  [_containerToolbar addSubview:_editButton];
 
   // Add To button.
   _addToButton = [self createButtonWithTitle:l10n_util::GetNSString(
@@ -562,13 +503,6 @@ CGFloat CompactButtonHorizontalPadding() {
     } else if (self.isInTabGroupView) {
       _smallNewTabButton.hidden = NO;
     } else {
-      if (_undoActive) {
-        _undoButton.hidden = NO;
-      } else {
-        BOOL overflowEnabled =
-            base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu);
-        _editButton.hidden = overflowEnabled;
-      }
       _smallNewTabButton.hidden = NO;
       _doneButton.hidden = NO;
     }
@@ -652,9 +586,7 @@ CGFloat CompactButtonHorizontalPadding() {
 
 // Hides all buttons from superView.
 - (void)hideAllButtons {
-  _undoButton.hidden = YES;
   _doneButton.hidden = YES;
-  _editButton.hidden = YES;
   _addToButton.hidden = YES;
   _closeTabsButton.hidden = YES;
   _shareButton.hidden = YES;
@@ -675,15 +607,12 @@ CGFloat CompactButtonHorizontalPadding() {
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  return @[ UIKeyCommand.cr_undo, UIKeyCommand.cr_close ];
+  return @[ UIKeyCommand.cr_closeAll, UIKeyCommand.cr_close ];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
-    return !_undoActive && _undoButton.enabled;
-  }
-  if (sel_isEqual(action, @selector(keyCommand_undo))) {
-    return _undoActive;
+    return _doneButton.enabled;
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
     return _doneButton.enabled;
@@ -693,14 +622,7 @@ CGFloat CompactButtonHorizontalPadding() {
 
 - (void)keyCommand_closeAll {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandCloseAll"));
-  [self closeAllButtonTapped:nil];
-}
-
-- (void)keyCommand_undo {
-  base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
-  // This function is also responsible for handling undo.
-  // TODO(crbug.com/40273478): This should be separated to avoid confusion.
-  [self closeAllButtonTapped:nil];
+  [self.buttonsDelegate closeAllButtonTapped:nil];
 }
 
 - (void)keyCommand_close {
@@ -709,12 +631,6 @@ CGFloat CompactButtonHorizontalPadding() {
 }
 
 #pragma mark - Control actions
-
-- (void)closeAllButtonTapped:(id)sender {
-  if (_undoButton.enabled) {
-    [self.buttonsDelegate closeAllButtonTapped:sender];
-  }
-}
 
 - (void)doneButtonTapped:(id)sender {
   if (_doneButton.enabled) {

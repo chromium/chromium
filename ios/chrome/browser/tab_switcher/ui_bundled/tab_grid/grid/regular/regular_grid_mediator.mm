@@ -138,35 +138,31 @@ using ScopedTabGroupSyncObservation =
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
 // function name to close all.
 - (void)closeAllItems {
-  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    [self.inactiveTabsGridCommands closeAllItems];
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
+  [self.inactiveTabsGridCommands closeAllItems];
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 
-    // Save tabs groups before closing.
-    const int tabGroupCount = self.webStateList->GetGroups().size();
-    if (_tabGroupSyncService) {
-      for (const TabGroup* tab_group : self.webStateList->GetGroups()) {
-        tab_groups::TabGroupId local_id = tab_group->tab_group_id();
-        std::optional<tab_groups::SavedTabGroup> saved_group =
-            _tabGroupSyncService->GetGroup(local_id);
-        if (saved_group) {
-          _tabGroupSyncService->RemoveLocalTabGroupMapping(
-              local_id, tab_groups::ClosingSource::kCloseAllTabs);
-        }
+  // Save tabs groups before closing.
+  const int tabGroupCount = self.webStateList->GetGroups().size();
+  if (_tabGroupSyncService) {
+    for (const TabGroup* tab_group : self.webStateList->GetGroups()) {
+      tab_groups::TabGroupId local_id = tab_group->tab_group_id();
+      std::optional<tab_groups::SavedTabGroup> saved_group =
+          _tabGroupSyncService->GetGroup(local_id);
+      if (saved_group) {
+        _tabGroupSyncService->RemoveLocalTabGroupMapping(
+            local_id, tab_groups::ClosingSource::kCloseAllTabs);
       }
     }
-
-    const int closedTabsCount =
-        self.webStateList->count() - self.webStateList->pinned_tabs_count();
-    RecordTabGridCloseTabsCount(closedTabsCount);
-    CloseAllNonPinnedWebStates(*self.webStateList,
-                               WebStateList::ClosingReason::kUserAction);
-    SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
-    [self showTabGroupSnackbarOrIPH:tabGroupCount];
-  } else {
-    NOTREACHED() << "Regular tabs should be saved before close all.";
   }
+
+  const int closedTabsCount =
+      self.webStateList->count() - self.webStateList->pinned_tabs_count();
+  RecordTabGridCloseTabsCount(closedTabsCount);
+  CloseAllNonPinnedWebStates(*self.webStateList,
+                             WebStateList::ClosingReason::kUserAction);
+  SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+  [self showTabGroupSnackbarOrIPH:tabGroupCount];
 }
 
 - (void)saveAndCloseAllItems {
@@ -227,27 +223,7 @@ using ScopedTabGroupSyncObservation =
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    [self.regularDelegate showCloseAllConfirmationFromSourceView:sender];
-    return;
-  }
-  // TODO(crbug.com/40273478): Clean this in order to have "Close All" and
-  // "Undo" separated actions. This was saved as a stack: first save the
-  // inactive tabs, then the active tabs. So undo in the reverse order: first
-  // undo the active tabs, then the inactive tabs.
-  if ([self canUndoCloseRegularOrInactiveTabs]) {
-    [self.consumer willUndoCloseAll];
-    [self undoCloseAllItems];
-    [self.consumer didUndoCloseAll];
-  } else {
-    [self.consumer willCloseAll];
-    [self saveAndCloseAllItems];
-    [self.consumer didCloseAll];
-  }
-  // This is needed because configure button is called (web state list
-  // observer in base grid mediator) when regular tabs are modified but not
-  // when inactive tabs are modified.
-  [self configureToolbarsButtons];
+  [self.regularDelegate showCloseAllConfirmationFromSourceView:sender];
 }
 
 - (void)closeOtherTabsButtonTapped:(id)sender {
