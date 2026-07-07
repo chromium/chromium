@@ -118,6 +118,13 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->uses_platform_autofill = data.uses_platform_autofill();
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  out->autofill_shortcut_key_code =
+      static_cast<ui::KeyboardCode>(data.autofill_shortcut_key_code());
+  out->autofill_shortcut_modifiers = data.autofill_shortcut_modifiers();
+  if (!data.ReadAutofillTriggerString(&out->autofill_trigger_string)) {
+    return false;
+  }
+
   if (!data.ReadExplicitlyAllowedNetworkPorts(
           &out->explicitly_allowed_network_ports)) {
     return false;

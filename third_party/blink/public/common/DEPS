@@ -43,6 +43,7 @@ include_rules = [
     "+ui/display",
     "+ui/events/event_constants.h",
     "+ui/events/types",
+    "+ui/events/keycodes/keyboard_codes.h",
     "+ui/gfx/color_space.h",
     "+ui/gfx/display_color_spaces.h",
     "+ui/gfx/geometry",

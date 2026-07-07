@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "ui/gfx/mojom/font_render_params.mojom";
+import "ui/events/mojom/keyboard_codes.mojom";
 import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_url_entry.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
@@ -191,6 +192,14 @@ struct RendererPreferences {
   // Currently only true on Android.
   [EnableIf=is_android]
   bool uses_platform_autofill = false;
+
+  // Triggers for the Autofill AtMemory UI.
+  // Typing the trigger string or pressing keyboard shortcut in an editable DOM
+  // element (e.g., <input> or <div contenteditable>) opens a UI that lets the
+  // user search for and fill values into the field.
+  string autofill_trigger_string;         // An arbitrary string, e.g., "@@".
+  int32 autofill_shortcut_key_code = 0;   // A `ui::KeyboardCode`.
+  int32 autofill_shortcut_modifiers = 0;  // A `ui::EventFlags` bitmask.
 
   array<uint16> explicitly_allowed_network_ports;
 
