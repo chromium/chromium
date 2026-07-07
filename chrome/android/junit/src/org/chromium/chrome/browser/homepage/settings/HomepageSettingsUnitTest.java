@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -95,6 +96,10 @@ public class HomepageSettingsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock public HomepagePolicyManager mMockHomepagePolicyManager;
     @Mock public PartnerBrowserCustomizations mMockPartnerBrowserCustomizations;
     @Mock public Profile mProfile;
@@ -115,7 +120,7 @@ public class HomepageSettingsUnitTest {
     public void setUp() {
         HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManager);
         PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
+        mActivityScenario = mActivityScenarioRule.getScenario();
         mActivityScenario.onActivity(
                 activity -> {
                     mActivity = activity;
@@ -129,7 +134,6 @@ public class HomepageSettingsUnitTest {
 
     @After
     public void tearDown() {
-        mActivityScenario.close();
         mActionTester.tearDown();
     }
 

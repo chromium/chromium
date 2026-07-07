@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -57,7 +56,7 @@ public class ContainmentItemController {
      *
      * @param context The context to get the resources from.
      */
-    public ContainmentItemController(@NonNull Context context) {
+    public ContainmentItemController(Context context) {
         mDefaultRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
@@ -129,7 +128,7 @@ public class ContainmentItemController {
      * @param position The position of the current preference in the list.
      * @return The {@link ContainerStyle} for the preference.
      */
-    private @NonNull ContainerStyle getPreferenceStyleForPosition(
+    private ContainerStyle getPreferenceStyleForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
 

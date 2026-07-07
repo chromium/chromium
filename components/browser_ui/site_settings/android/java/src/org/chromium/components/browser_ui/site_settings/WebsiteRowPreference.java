@@ -183,16 +183,16 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
         int cookies = mSiteEntry.getNumberOfCookies();
         if (cookies > 0) {
-            String cookie_str =
+            String cookieStr =
                     getContext()
                             .getResources()
                             .getQuantityString(R.plurals.cookies_count, cookies, cookies);
             if (summary.isEmpty()) {
-                summary = cookie_str;
+                summary = cookieStr;
             } else {
                 summary =
                         getContext()
-                                .getString(R.string.summary_with_one_bullet, cookie_str, summary);
+                                .getString(R.string.summary_with_one_bullet, cookieStr, summary);
             }
         }
 

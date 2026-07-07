@@ -182,7 +182,8 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         if (action == MotionEvent.ACTION_DOWN) {
             // mCurrentX needs init here as well, since we might not get ACTION_MOVE
             // for a simple click turning into a long click when selection mode is on.
-            mAnchorX = mCurrentX = event.getX();
+            mCurrentX = event.getX();
+            mAnchorX = mCurrentX;
         } else if (action == MotionEvent.ACTION_MOVE) {
             mCurrentX = event.getX();
         }

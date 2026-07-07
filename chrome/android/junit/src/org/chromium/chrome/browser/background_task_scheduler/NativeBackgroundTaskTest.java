@@ -19,6 +19,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.app.Notification;
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,16 +52,20 @@ import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.content_public.browser.BrowserStartupController;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.CountDownLatch;
 
 /** Unit tests for {@link NativeBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NativeBackgroundTaskTest {
-    private enum InitializerSetup {
-        SUCCESS,
-        FAILURE,
-        EXCEPTION,
+    @IntDef({InitializerSetup.SUCCESS, InitializerSetup.FAILURE, InitializerSetup.EXCEPTION})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface InitializerSetup {
+        int SUCCESS = 0;
+        int FAILURE = 1;
+        int EXCEPTION = 2;
     }
 
     private static class LazyTaskParameters {
@@ -264,12 +270,12 @@ public class NativeBackgroundTaskTest {
         verifyNoMoreInteractions(mExternalUmaMock);
     }
 
-    private void setUpChromeBrowserInitializer(InitializerSetup setup) {
+    private void setUpChromeBrowserInitializer(@InitializerSetup int setup) {
         doNothing()
                 .when(mChromeBrowserInitializer)
                 .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         switch (setup) {
-            case SUCCESS:
+            case InitializerSetup.SUCCESS:
                 doAnswer(
                                 new Answer<>() {
                                     @Override
@@ -281,7 +287,7 @@ public class NativeBackgroundTaskTest {
                         .when(mChromeBrowserInitializer)
                         .handlePostNativeStartup(eq(true), mBrowserParts.capture());
                 break;
-            case FAILURE:
+            case InitializerSetup.FAILURE:
                 doAnswer(
                                 new Answer<>() {
                                     @Override
@@ -293,7 +299,7 @@ public class NativeBackgroundTaskTest {
                         .when(mChromeBrowserInitializer)
                         .handlePostNativeStartup(eq(true), mBrowserParts.capture());
                 break;
-            case EXCEPTION:
+            case InitializerSetup.EXCEPTION:
                 doThrow(new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED))
                         .when(mChromeBrowserInitializer)
                         .handlePostNativeStartup(eq(true), any(BrowserParts.class));
