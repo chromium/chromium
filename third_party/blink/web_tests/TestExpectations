@@ -4503,10 +4503,6 @@ crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_i
 crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?pen [ Failure ]
 crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?touch [ Failure ]
 
-# Wasm flag renaming (crbug.com/526972176)
-crbug.com/526972176 wpt_internal/wasm/custom_descriptors_feature.any.html [ Failure Pass ]
-crbug.com/526972176 wpt_internal/wasm/custom_descriptors_feature.any.worker.html [ Failure Pass ]
-
 ### external/wpt/speculation-rules/prerender
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.https.html [ Skip Timeout ]
 # Failures for other reasons.
