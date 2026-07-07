@@ -65,7 +65,7 @@ using ScheduledRemovalSettings =
     ChromeBrowsingDataLifetimeManager::ScheduledRemovalSettings;
 
 // An observer of all the browsing data removal tasks that are started by the
-// ChromeBrowsingDataLifetimeManager that records the the tasks starts and
+// ChromeBrowsingDataLifetimeManager that records the tasks starts and
 // completed states as well as their durations.
 class BrowsingDataRemoverObserver
     : public content::BrowsingDataRemover::Observer {
