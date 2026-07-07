@@ -16022,6 +16022,26 @@
             ]
         }
     ],
+    "Localized1PSkills": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkillsServiceApi"
+                    ],
+                    "disable_features": [
+                        "Skills1PDisabledForNonEnLocales"
+                    ]
+                }
+            ]
+        }
+    ],
     "LockTopControlsOnLargeTabletsV2": [
         {
             "platforms": [

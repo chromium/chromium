@@ -5,9 +5,11 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/json/json_writer.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -413,6 +415,30 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
   test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
                                        net::HTTP_OK);
 
+  // Mock the JSON API response.
+  base::DictValue root;
+  base::ListValue skills_list_val;
+  for (const auto& s : skills_list.skills()) {
+    base::DictValue dict;
+    dict.Set("id", s.id());
+    dict.Set("name", s.name());
+    dict.Set("category", s.category());
+    dict.Set("icon", s.icon());
+    dict.Set("prompt", s.prompt());
+    dict.Set("description", s.description());
+    if (s.has_image_url()) {
+      dict.Set("imageUrl", s.image_url());
+    }
+    skills_list_val.Append(std::move(dict));
+  }
+  root.Set("skills", std::move(skills_list_val));
+  std::optional<std::string> json_data = base::WriteJson(root);
+  ASSERT_TRUE(json_data.has_value());
+
+  GURL api_url(features::kSkillsServiceApiUrl.Get());
+  test_url_loader_factory_.AddResponse(api_url.spec(), *json_data,
+                                       net::HTTP_OK);
+
   const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
       "skills-app", "discover-skills-page", "skill-card"};
 
@@ -471,6 +497,40 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
 
   GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
   test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                       net::HTTP_OK);
+
+  // Mock the JSON API response.
+  base::DictValue root;
+  base::ListValue skills_list_val;
+  for (const auto& s : skills_list.skills()) {
+    base::DictValue dict;
+    dict.Set("id", s.id());
+    dict.Set("name", s.name());
+    dict.Set("category", s.category());
+    dict.Set("icon", s.icon());
+    dict.Set("prompt", s.prompt());
+    dict.Set("description", s.description());
+    if (s.has_image_url()) {
+      dict.Set("imageUrl", s.image_url());
+    }
+    skills_list_val.Append(std::move(dict));
+  }
+  root.Set("skills", std::move(skills_list_val));
+
+  base::ListValue topics_list_val;
+  for (const auto& t : skills_list.topics_info_list()) {
+    base::DictValue dict;
+    dict.Set("categoryName", t.category_name());
+    dict.Set("displayName", t.display_name());
+    topics_list_val.Append(std::move(dict));
+  }
+  root.Set("topicsInfoList", std::move(topics_list_val));
+
+  std::optional<std::string> json_data = base::WriteJson(root);
+  ASSERT_TRUE(json_data.has_value());
+
+  GURL api_url(features::kSkillsServiceApiUrl.Get());
+  test_url_loader_factory_.AddResponse(api_url.spec(), *json_data,
                                        net::HTTP_OK);
 
   const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
