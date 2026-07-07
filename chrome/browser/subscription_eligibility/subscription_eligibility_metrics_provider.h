@@ -28,7 +28,9 @@ enum class AiSubscriptionTierStatus {
   kAllProfilesAtTierEquals3 = 7,
 
   // Values must not be deleted or repurposed. Must be kept in sync with
-  // SubscriptionEligibilityAiSubscriptionTierStatus in others.enums.xml.
+  // SubscriptionEligibilityAiSubscriptionTierStatus in others.enums.xml. Please
+  // also update the kSubscriptionEligibilityAiSubscriptionTierStatus in
+  // go/internal-pipeline-ai-subsciption-status.
 
   // New values above this line.
   kMaxValue = kAllProfilesAtTierEquals3,
