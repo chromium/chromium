@@ -11,6 +11,7 @@
 
 namespace views {
 class BoxLayoutView;
+class Throbber;
 }
 
 class SigninQRCodeInfoBarDelegate;
@@ -21,8 +22,7 @@ class SigninQRCodeInfoBar : public InfoBarView {
   METADATA_HEADER(SigninQRCodeInfoBar, InfoBarView)
 
  public:
-  explicit SigninQRCodeInfoBar(
-      std::unique_ptr<SigninQRCodeInfoBarDelegate> delegate);
+  explicit SigninQRCodeInfoBar(std::unique_ptr<SigninQRCodeInfoBarDelegate> delegate);
   SigninQRCodeInfoBar(const SigninQRCodeInfoBar&) = delete;
   SigninQRCodeInfoBar& operator=(const SigninQRCodeInfoBar&) = delete;
   ~SigninQRCodeInfoBar() override;
@@ -32,6 +32,7 @@ class SigninQRCodeInfoBar : public InfoBarView {
 
  private:
   raw_ptr<views::BoxLayoutView> qr_container_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_SIGNIN_QRCODE_INFOBAR_H_

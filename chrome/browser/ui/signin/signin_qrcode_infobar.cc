@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace {
@@ -54,6 +55,11 @@ SigninQRCodeInfoBar::SigninQRCodeInfoBar(
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetPreferredSize(gfx::Size(kQrContainerWidth, kQrContainerHeight))
           .Build());
+
+  // Add the throbber (spinner) initially.
+  throbber_ = qr_container_->AddChildView(
+      views::Builder<views::Throbber>().Build());
+  throbber_->Start();
 
   content_container()->AddChildView(
       views::Builder<views::BoxLayoutView>()
