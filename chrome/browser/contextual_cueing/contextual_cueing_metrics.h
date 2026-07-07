@@ -54,7 +54,8 @@ void RecordCueShownToPrivateInsights(
     CueTargetType cue_type,
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
-    const std::vector<tabs::TabHandle>& tabs_to_show);
+    const std::vector<tabs::TabHandle>& tabs_to_show,
+    const std::vector<optimization_guide::proto::Tab>& background_tabs);
 
 void RecordCueingInteractionToPrivateInsights(
     Profile* profile,
