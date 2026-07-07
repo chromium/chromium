@@ -42,6 +42,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -152,6 +153,7 @@ public class MessageBannerRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @RequiresRestart("Test alters low-end device command line flags")
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testBasicLowEndDevice() throws Exception {
         Drawable drawable =
