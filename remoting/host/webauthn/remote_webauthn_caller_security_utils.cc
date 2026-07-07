@@ -58,39 +58,6 @@ constexpr auto kAllowedCallerPrograms =
 
 #elif BUILDFLAG(IS_WIN)
 
-// Helper to verify that the cmd.exe binary is located in a trusted system
-// directory.
-bool IsSystemCmd(const base::FilePath& process_image_path) {
-  if (!base::FilePath::CompareEqualIgnoreCase(
-          process_image_path.BaseName().value(), L"cmd.exe")) {
-    return false;
-  }
-
-  base::FilePath process_dir = process_image_path.DirName();
-
-  base::FilePath system_dir;
-  if (base::PathService::Get(base::DIR_SYSTEM, &system_dir)) {
-    if (base::FilePath::CompareEqualIgnoreCase(process_dir.value(),
-                                               system_dir.value())) {
-      return true;
-    }
-  }
-
-  // Also check for the native system directory if it's different (e.g.
-  // SysWOW64 vs System32).
-  base::FilePath windows_dir;
-  if (base::PathService::Get(base::DIR_WINDOWS, &windows_dir)) {
-    if (base::FilePath::CompareEqualIgnoreCase(
-            process_dir.value(), windows_dir.Append(L"System32").value()) ||
-        base::FilePath::CompareEqualIgnoreCase(
-            process_dir.value(), windows_dir.Append(L"SysWOW64").value())) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 #elif BUILDFLAG(IS_MAC)
 
 constexpr auto kAllowedIdentifiers = std::to_array<const std::string_view>(
@@ -115,35 +82,19 @@ bool IsLaunchedByTrustedProcess() {
   base::FilePath parent_image_path = GetProcessImagePath(parent_pid);
   return kAllowedCallerPrograms.contains(parent_image_path.value());
 #elif BUILDFLAG(IS_WIN)
-  base::ProcessId parent_pid =
-      base::GetParentProcessId(base::GetCurrentProcessHandle());
-  base::FilePath parent_image_path = GetProcessImagePath(parent_pid);
-
-  // On Windows, Chrome launches native messaging hosts via cmd for stdio
-  // communication. See:
-  //   chrome/browser/extensions/api/messaging/native_process_launcher_win.cc
-  // Therefore, we check if the parent is cmd and skip to the grandparent if
-  // that's the case. It's possible to do stdio communications without cmd, so
-  // we don't require the parent to always be cmd.
-
-  // Use IsSystemCmd() for comparison as a 64-bit Chrome launches a 64-bit
-  // cmd.exe which is in C:\Windows\System32, but for a 32-bit native messaging
-  // host, C:\Windows\System32 will be redirected to C:\Windows\SysWOW64, so we
-  // perform case-insensitive directory checks.
-  if (IsSystemCmd(parent_image_path)) {
-    // Skip to the grandparent.
-    base::win::ScopedHandle parent_handle(
-        OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, parent_pid));
-    if (parent_handle.is_valid()) {
-      parent_pid = base::GetParentProcessId(parent_handle.Get());
-      parent_image_path = GetProcessImagePath(parent_pid);
-    } else {
-      PLOG(ERROR) << "Failed to query parent info.";
-      return false;
-    }
+  base::ProcessId launcher_pid = GetLauncherProcessIdFromStdioPipes();
+  if (launcher_pid == base::kNullProcessId) {
+    LOG(ERROR) << "Failed to resolve launcher PID from stdio pipes.";
+    return false;
   }
 
-  return IsBinaryTrusted(parent_image_path);
+  base::FilePath launcher_image_path = GetProcessImagePath(launcher_pid);
+  if (launcher_image_path.empty()) {
+    LOG(ERROR) << "Failed to get launcher process image path.";
+    return false;
+  }
+
+  return IsBinaryTrusted(launcher_image_path);
 #elif BUILDFLAG(IS_MAC)
   // TODO: crbug.com/410903981 - move away from PID-based security checks, which
   // might be susceptible of PID reuse attacks, if Apple provides APIs to query

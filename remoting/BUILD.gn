@@ -110,6 +110,7 @@ test("remoting_unittests") {
     deps += [
       "//remoting/codec:unit_tests",
       "//remoting/host:unit_tests",
+      "//remoting/host/base:unit_tests",
       "//ui/gfx",
     ]
     if (is_posix) {

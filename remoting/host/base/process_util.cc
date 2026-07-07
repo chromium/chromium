@@ -83,4 +83,45 @@ base::FilePath GetProcessImagePath(const base::Process& process) {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
+base::ProcessId GetLauncherProcessIdFromPipes(HANDLE stdin_handle,
+                                              HANDLE stdout_handle) {
+  if (stdin_handle == INVALID_HANDLE_VALUE || stdin_handle == nullptr ||
+      stdout_handle == INVALID_HANDLE_VALUE || stdout_handle == nullptr) {
+    return base::kNullProcessId;
+  }
+
+  if (::GetFileType(stdin_handle) != FILE_TYPE_PIPE ||
+      ::GetFileType(stdout_handle) != FILE_TYPE_PIPE) {
+    return base::kNullProcessId;
+  }
+
+  ULONG stdin_server_pid = 0;
+  if (!::GetNamedPipeServerProcessId(stdin_handle, &stdin_server_pid)) {
+    PLOG(ERROR) << "GetNamedPipeServerProcessId failed for stdin";
+    return base::kNullProcessId;
+  }
+
+  ULONG stdout_server_pid = 0;
+  if (!::GetNamedPipeServerProcessId(stdout_handle, &stdout_server_pid)) {
+    PLOG(ERROR) << "GetNamedPipeServerProcessId failed for stdout";
+    return base::kNullProcessId;
+  }
+
+  if (stdin_server_pid != stdout_server_pid) {
+    LOG(ERROR)
+        << "stdin and stdout pipes belong to different server processes ("
+        << stdin_server_pid << " vs " << stdout_server_pid << ")";
+    return base::kNullProcessId;
+  }
+
+  return static_cast<base::ProcessId>(stdin_server_pid);
+}
+
+base::ProcessId GetLauncherProcessIdFromStdioPipes() {
+  return GetLauncherProcessIdFromPipes(::GetStdHandle(STD_INPUT_HANDLE),
+                                       ::GetStdHandle(STD_OUTPUT_HANDLE));
+}
+#endif
+
 }  // namespace remoting

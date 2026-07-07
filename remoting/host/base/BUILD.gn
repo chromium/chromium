@@ -54,4 +54,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  if (is_win) {
+    sources += [ "process_util_win_unittest.cc" ]
+  }
 }
