@@ -4,7 +4,6 @@
 
 source_set("subscription_eligibility") {
   sources = [
-    "subscription_eligibility_metrics_provider.cc",
     "subscription_eligibility_metrics_provider.h",
     "subscription_eligibility_service_factory.cc",
     "subscription_eligibility_service_factory.h",
@@ -15,14 +14,32 @@ source_set("subscription_eligibility") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//components/keyed_service/core",
+    "//components/metrics",
     "//components/subscription_eligibility",
   ]
 
   deps = [
     "//chrome/browser:browser_process",
-    "//components/metrics",
     "//components/pref_registry",
     "//components/prefs",
+    "//third_party/metrics_proto:metrics_proto_gen",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "subscription_eligibility_metrics_provider.cc" ]
+
+  public_deps = [ ":subscription_eligibility" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/metrics",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
+    "//components/metrics",
+    "//components/subscription_eligibility",
+    "//components/variations",
     "//third_party/metrics_proto:metrics_proto_gen",
   ]
 }
@@ -36,6 +53,7 @@ if (!is_android) {
     sources = [ "subscription_eligibility_service_browsertest.cc" ]
 
     deps = [
+      ":impl",
       ":subscription_eligibility",
       "//base",
       "//base/test:test_support",
@@ -47,9 +65,11 @@ if (!is_android) {
       "//components/metrics",
       "//components/prefs",
       "//components/subscription_eligibility",
+      "//components/variations",
       "//content/test:test_support",
       "//testing/gtest",
       "//third_party/metrics_proto:metrics_proto_gen",
     ]
   }
 }
+

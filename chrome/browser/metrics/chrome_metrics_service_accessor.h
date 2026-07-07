@@ -37,6 +37,10 @@ namespace browser_sync {
 class ChromeSyncClient;
 }
 
+namespace subscription_eligibility {
+class SubscriptionEligibilityMetricsProvider;
+}  // namespace subscription_eligibility
+
 namespace supervised_user {
 class MetricsServiceAccessorDelegateImpl;
 }
@@ -175,6 +179,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class Browser;
   friend class BrowserProcessImpl;
   friend class GlobalFeatures;
+  friend class subscription_eligibility::SubscriptionEligibilityMetricsProvider;
   friend class supervised_user::MetricsServiceAccessorDelegateImpl;
   friend class glic::GlicMetricsProvider;
   friend class glic::GlicSyntheticTrialManager;

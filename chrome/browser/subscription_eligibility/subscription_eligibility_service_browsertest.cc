@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +19,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/variations/active_field_trials.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -102,6 +105,9 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kNoProfilesSubscribed,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier",
+                                            "NoProfilesSubscribed"));
   }
 
   {
@@ -114,6 +120,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesAtTierEquals1,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier", "Tier1"));
   }
 
   {
@@ -126,6 +134,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesAtTierEquals2,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier", "Tier2"));
   }
 
   {
@@ -138,6 +148,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesAtTierEquals3,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier", "Tier3"));
   }
 
   {
@@ -150,6 +162,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesSubscribedForUnknownTier,
         1);
+    EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+        "AiSubscriptionTier", "AllProfilesSubscribedForUnknownTier"));
   }
 
   // Add another profile. The default value for subscription tier is 0.
@@ -168,6 +182,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kSomeProfilesSubscribed,
         1);
+    EXPECT_TRUE(variations::IsInSyntheticTrialGroup("AiSubscriptionTier",
+                                                    "SomeProfilesSubscribed"));
   }
 
   {
@@ -180,6 +196,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesSubscribedButDifferentTiers,
         1);
+    EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+        "AiSubscriptionTier", "AllProfilesSubscribedButDifferentTiers"));
   }
 
   {
@@ -192,6 +210,8 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kAllProfilesAtTierEquals1,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier", "Tier1"));
   }
 
   {
@@ -205,6 +225,9 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
         subscription_eligibility::AiSubscriptionTierStatus::
             kNoProfilesSubscribed,
         1);
+    EXPECT_TRUE(
+        variations::IsInSyntheticTrialGroup("AiSubscriptionTier",
+                                            "NoProfilesSubscribed"));
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

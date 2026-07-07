@@ -8,14 +8,45 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
+#include "components/variations/synthetic_trials.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace subscription_eligibility {
+
+namespace {
+
+std::string GetSyntheticTrialGroupName(AiSubscriptionTierStatus status) {
+  switch (status) {
+    case AiSubscriptionTierStatus::kValueNotSet:
+      NOTREACHED();
+    case AiSubscriptionTierStatus::kNoProfilesSubscribed:
+      return "NoProfilesSubscribed";
+    case AiSubscriptionTierStatus::kSomeProfilesSubscribed:
+      return "SomeProfilesSubscribed";
+    case AiSubscriptionTierStatus::kAllProfilesSubscribedButDifferentTiers:
+      return "AllProfilesSubscribedButDifferentTiers";
+    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals1:
+      return "Tier1";
+    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals2:
+      return "Tier2";
+    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals3:
+      return "Tier3";
+    case AiSubscriptionTierStatus::kAllProfilesSubscribedForUnknownTier:
+      return "AllProfilesSubscribedForUnknownTier";
+  }
+}
+
+}  // namespace
+
+
 
 SubscriptionEligibilityMetricsProvider::
     SubscriptionEligibilityMetricsProvider() = default;
@@ -79,6 +110,11 @@ void SubscriptionEligibilityMetricsProvider::ProvideCurrentSessionData(
   CHECK_NE(status, AiSubscriptionTierStatus::kValueNotSet);
   base::UmaHistogramEnumeration(
       "SubscriptionEligibility.AiSubscriptionTierStatus", status);
+
+  std::string group_name = GetSyntheticTrialGroupName(status);
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "AiSubscriptionTier", group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 }  // namespace subscription_eligibility
