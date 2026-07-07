@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebGL background discard copy does not crash</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<canvas id="source1" width="100" height="100"></canvas>
+<canvas id="source2" width="100" height="100"></canvas>
+<canvas id="dest" width="100" height="100"></canvas>
+<canvas id="dest2d" width="100" height="100"></canvas>
+<script>
+function verifyTextureIsCleared(gl, tex) {
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  assert_equals(gl.checkFramebufferStatus(gl.FRAMEBUFFER), gl.FRAMEBUFFER_COMPLETE, "Framebuffer should be complete");
+  const pixels = new Uint8Array(4);
+  gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  assert_array_equals(pixels, [0, 0, 0, 0], "Texture should be cleared to transparent black");
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.deleteFramebuffer(fb);
+}
+
+async_test(t => {
+  const source1 = document.getElementById("source1");
+  const source2 = document.getElementById("source2");
+  const dest = document.getElementById("dest");
+  const dest2d = document.getElementById("dest2d");
+
+  // Force DidMoveToNewDocument and SetPage() for both source canvases
+  for (const source of [source1, source2]) {
+    const otherDoc = document.implementation.createHTMLDocument();
+    otherDoc.adoptNode(source);
+    document.adoptNode(source);
+    document.body.appendChild(source);
+  }
+
+  const gl1 = source1.getContext("webgl");
+  const gl2 = source2.getContext("webgl");
+  const glDest = dest.getContext("webgl");
+  assert_not_equals(gl1, null, "WebGL source1 context should be initialized");
+  assert_not_equals(gl2, null, "WebGL source2 context should be initialized");
+  assert_not_equals(glDest, null, "WebGL dest context should be initialized");
+
+  // Present once on source1 to perform initial allocation
+  gl1.clearColor(0.0, 1.0, 0.0, 1.0);
+  gl1.clear(gl1.COLOR_BUFFER_BIT);
+
+  // Present once on source2, then bind a custom framebuffer
+  gl2.clearColor(0.0, 1.0, 0.0, 1.0);
+  gl2.clear(gl2.COLOR_BUFFER_BIT);
+  const fb2 = gl2.createFramebuffer();
+  gl2.bindFramebuffer(gl2.FRAMEBUFFER, fb2);
+  const tex2_internal = gl2.createTexture();
+  gl2.bindTexture(gl2.TEXTURE_2D, tex2_internal);
+  gl2.texImage2D(gl2.TEXTURE_2D, 0, gl2.RGBA, 100, 100, 0, gl2.RGBA, gl2.UNSIGNED_BYTE, null);
+  gl2.framebufferTexture2D(gl2.FRAMEBUFFER, gl2.COLOR_ATTACHMENT0, gl2.TEXTURE_2D, tex2_internal, 0);
+
+  document.addEventListener('visibilitychange', t.step_func(() => {
+    if (document.visibilityState === 'hidden') {
+      try {
+        // 1. Copy from source1 (no framebuffer bound)
+        const tex1 = glDest.createTexture();
+        glDest.bindTexture(glDest.TEXTURE_2D, tex1);
+        glDest.texImage2D(glDest.TEXTURE_2D, 0, glDest.RGBA, glDest.RGBA, glDest.UNSIGNED_BYTE, source1);
+        assert_equals(glDest.getError(), glDest.NO_ERROR, "Should not trigger any GL errors during copy from source1");
+        verifyTextureIsCleared(glDest, tex1);
+
+        // 2. Copy from source2 (framebuffer bound)
+        const tex2 = glDest.createTexture();
+        glDest.bindTexture(glDest.TEXTURE_2D, tex2);
+        glDest.texImage2D(glDest.TEXTURE_2D, 0, glDest.RGBA, glDest.RGBA, glDest.UNSIGNED_BYTE, source2);
+        assert_equals(glDest.getError(), glDest.NO_ERROR, "Should not trigger any GL errors during copy from source2");
+        verifyTextureIsCleared(glDest, tex2);
+
+        // 3. Verify that calling toDataURL() on both canvases doesn't crash
+        source1.toDataURL();
+        source2.toDataURL();
+
+        // 4. Verify that drawing both canvases to a 2D canvas context doesn't crash
+        const ctx2d = dest2d.getContext("2d");
+        ctx2d.drawImage(source1, 0, 0);
+        ctx2d.drawImage(source2, 0, 0);
+
+      } catch (e) {
+        assert_unreached("WebGL operations in background should not throw: " + e);
+      }
+
+      // Restore page visibility
+      if (window.testRunner) {
+        testRunner.setMainWindowHidden(false);
+      }
+    } else if (document.visibilityState === 'visible') {
+      t.done();
+    }
+  }));
+
+  // Wait for the compositor to present the green frames before hiding the window
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (window.testRunner) {
+        testRunner.setMainWindowHidden(true);
+      } else {
+        // Fallback for manual testing: run copy immediately
+        t.done();
+      }
+    });
+  });
+}, "Verifies that copying, calling toDataURL, or drawing from a background-discarded WebGL canvas (with or without a bound framebuffer) does not crash.");
+</script>
+</body>
+</html>

@@ -891,5 +891,4 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundBindReallocation) {
   // fallbacks.
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
 }
-
 }  // namespace blink

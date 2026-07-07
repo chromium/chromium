@@ -1789,7 +1789,15 @@ WebGLRenderingContextBase::ClearIfComposited(
     return kSkipped;
   }
 
-  if (!framebuffer_binding_) {
+  if (!framebuffer_binding_ ||
+      (caller != kClearCallerDrawOrClear &&
+       base::FeatureList::IsEnabled(features::kWebGLDiscardBackBuffer))) {
+    // If the back buffer was discarded when the page was hidden, it must be
+    // recreated before we can read or copy from it (which corresponds to
+    // kClearCallerOther). If a custom framebuffer is currently bound, the back
+    // buffer isn't active for drawing, but it is still needed for the
+    // copy/read.
+    //
     // DrawingBuffer may have discarded the back buffer, and we are about to use
     // it, recreate it. Note: we don't call MarkContentsChanged(), because it
     // hasn't (there is no new content to present).
@@ -6305,6 +6313,9 @@ void WebGLRenderingContextBase::TexImageViaGPU(
           gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
+      // If the source's back buffer has been discarded, make sure it's back and
+      // initialized.
+      gl->ClearIfComposited(kClearCallerOther);
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
               ContextGL(), params.target, target_texture, params.level,

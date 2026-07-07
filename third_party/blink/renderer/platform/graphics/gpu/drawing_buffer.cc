@@ -1079,6 +1079,7 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformInternal(
     src_alpha_type = src_color_buffer->shared_image->alpha_type();
     produce_sync_token = src_color_buffer->produce_sync_token;
   } else {
+    CHECK(!back_buffer_discarded_);
     src_color_buffer = back_color_buffer_;
     src_alpha_type = src_color_buffer->shared_image->alpha_type();
     need_restore_access = true;
