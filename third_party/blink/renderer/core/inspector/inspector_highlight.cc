@@ -1045,11 +1045,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePathsForGridLanes(
         grid_lanes->GridGap(is_for_columns ? kForColumns : kForRows);
 
     // Get container bounds for the cross-axis (non-stacking direction).
+    const PhysicalRect content_rect = grid_lanes->PhysicalContentBoxRect();
     const LayoutUnit cross_axis_start =
-        is_for_columns ? grid_lanes->ContentTop() : grid_lanes->ContentLeft();
-    const LayoutUnit cross_axis_size = is_for_columns
-                                           ? grid_lanes->ContentHeight()
-                                           : grid_lanes->ContentWidth();
+        is_for_columns ? content_rect.Y() : content_rect.X();
+    const LayoutUnit cross_axis_size =
+        is_for_columns ? content_rect.Height() : content_rect.Width();
     for (const auto& item : *named_area_map) {
       const GridArea& area = item.value;
       const String& name = item.key;
@@ -1598,10 +1598,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
   const LayoutUnit gap =
       grid_lanes->GridGap(is_for_columns ? kForColumns : kForRows) +
       grid_lanes->GridLanesItemOffset(is_for_columns ? kForColumns : kForRows);
+  const PhysicalRect content_rect = grid_lanes->PhysicalContentBoxRect();
   const LayoutUnit span_start =
-      is_for_columns ? grid_lanes->ContentTop() : grid_lanes->ContentLeft();
+      is_for_columns ? content_rect.Y() : content_rect.X();
   const LayoutUnit span_size =
-      is_for_columns ? grid_lanes->ContentHeight() : grid_lanes->ContentWidth();
+      is_for_columns ? content_rect.Height() : content_rect.Width();
   const LayoutUnit border_padding_inline_end =
       (grid_lanes->BorderOutsets() + grid_lanes->PaddingOutsets())
           .ConvertToLogical(style.GetWritingDirection())
@@ -1682,9 +1683,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
 
   // Negative column/row line positions.
   if (grid_highlight_config.show_negative_line_numbers) {
-    LayoutUnit span_end =
-        is_for_columns ? grid_lanes->ContentTop() + grid_lanes->ContentHeight()
-                       : grid_lanes->ContentLeft() + grid_lanes->ContentWidth();
+    const LayoutUnit span_end =
+        is_for_columns ? content_rect.Bottom() : content_rect.Right();
     grid_info->setValue(
         is_for_columns ? "negativeColumnLineNumberPositions"
                        : "negativeRowLineNumberPositions",
@@ -1729,13 +1729,13 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
   if (is_rtl) {
     grid_lanes_container_size = -grid_lanes_container_size;
   }
+
   PhysicalSize grid_lanes_size(
-      is_for_columns ? grid_lanes_container_size : grid_lanes->ContentWidth(),
-      is_for_columns ? grid_lanes->ContentHeight() : grid_lanes_container_size);
+      is_for_columns ? grid_lanes_container_size : content_rect.Width(),
+      is_for_columns ? content_rect.Height() : grid_lanes_container_size);
   PhysicalRect grid_lanes_rect(
-      PhysicalOffset(is_rtl ? grid_lanes->ContentLeft() + rtl_offset
-                            : grid_lanes->ContentLeft(),
-                     grid_lanes->ContentTop()),
+      PhysicalOffset(is_rtl ? content_rect.X() + rtl_offset : content_rect.X(),
+                     content_rect.Y()),
       grid_lanes_size);
   gfx::QuadF grid_lanes_quad =
       grid_lanes->LocalRectToAbsoluteQuad(grid_lanes_rect);
@@ -1836,8 +1836,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
     grid_info->setValue(
         "writingModeRoot",
         BuildPosition(LocalToAbsolutePoint(
-            element, PhysicalOffset(grid->ContentLeft(), grid->ContentTop()),
-            scale)));
+            element, grid->PhysicalContentBoxRect().offset, scale)));
   }
   grid_info->setValue(
       "columns",
@@ -2846,9 +2845,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildIsolatedElementInfo(
 
   auto isolated_element_info = protocol::DictionaryValue::create();
 
-  auto element_box = layout_box->PhysicalContentBoxRect();
+  const PhysicalRect content_rect = layout_box->PhysicalContentBoxRect();
   gfx::QuadF element_box_quad =
-      layout_box->LocalRectToAbsoluteQuad(element_box);
+      layout_box->LocalRectToAbsoluteQuad(content_rect);
   FrameQuadToViewport(containing_view, element_box_quad);
   isolated_element_info->setDouble("currentX", element_box_quad.p1().x());
   isolated_element_info->setDouble("currentY", element_box_quad.p1().y());
@@ -2856,26 +2855,22 @@ std::unique_ptr<protocol::DictionaryValue> BuildIsolatedElementInfo(
   // Isolation mode's resizer size should be consistent with
   // Device Mode's resizer size, which is 20px.
   const LayoutUnit resizer_size(20 / scale);
-  PhysicalRect width_resizer_box(
-      layout_box->ContentLeft() + layout_box->ContentWidth(),
-      layout_box->ContentTop(), resizer_size, layout_box->ContentHeight());
+  PhysicalRect width_resizer_box(content_rect.Right(), content_rect.Y(),
+                                 resizer_size, content_rect.Height());
   isolated_element_info->setValue(
       "widthResizerBorder",
       BuildPathFromQuad(containing_view, layout_box->LocalRectToAbsoluteQuad(
                                              width_resizer_box)));
-  PhysicalRect height_resizer_box(
-      layout_box->ContentLeft(),
-      layout_box->ContentTop() + layout_box->ContentHeight(),
-      layout_box->ContentWidth(), resizer_size);
+
+  PhysicalRect height_resizer_box(content_rect.X(), content_rect.Bottom(),
+                                  content_rect.Width(), resizer_size);
   isolated_element_info->setValue(
       "heightResizerBorder",
       BuildPathFromQuad(containing_view, layout_box->LocalRectToAbsoluteQuad(
                                              height_resizer_box)));
 
   PhysicalRect bidirection_resizer_box(
-      layout_box->ContentLeft() + layout_box->ContentWidth(),
-      layout_box->ContentTop() + layout_box->ContentHeight(), resizer_size,
-      resizer_size);
+      content_rect.Right(), content_rect.Bottom(), resizer_size, resizer_size);
   isolated_element_info->setValue(
       "bidirectionResizerBorder",
       BuildPathFromQuad(containing_view, layout_box->LocalRectToAbsoluteQuad(
