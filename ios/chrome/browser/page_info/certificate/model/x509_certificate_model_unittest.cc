@@ -52,6 +52,20 @@ bool ContainsDirectoryNameAttribute(
   return false;
 }
 
+// Returns true if `names` contains a GeneralName whose `type` matches `type`
+// and `value` matches `value`.
+bool ContainsGeneralName(
+    const std::vector<X509CertificateModel::GeneralName>& names,
+    X509CertificateModel::GeneralName::Type type,
+    std::string_view value) {
+  for (const auto& name : names) {
+    if (name.type == type && name.value == value) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class X509CertificateModelTest : public PlatformTest {};
@@ -556,6 +570,47 @@ TEST_F(X509CertificateModelTest,
   EXPECT_EQ(X509CertificateModel::GeneralName::Type::kRFC822Name,
             aia[0].location.type);
   EXPECT_EQ("foo@example.com", aia[0].location.value);
+}
+
+TEST_F(X509CertificateModelTest, SubjectAltNameSanityTest) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "subjectAltName_sanity_check.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_FALSE(model.IsSubjectAlternativeNameCritical());
+
+  // subjectAltName_sanity_check.pem carries: IP 127.0.0.2, IP fe80::1,
+  // DNS test.example, email test@test.example, otherName 1.2.3.4,
+  // DirName CN=127.0.0.3.
+  using GeneralName = X509CertificateModel::GeneralName;
+  auto names = model.GetSubjectAlternativeNames();
+
+  EXPECT_TRUE(
+      ContainsGeneralName(names, GeneralName::Type::kIPAddress, "127.0.0.2"));
+  EXPECT_TRUE(
+      ContainsGeneralName(names, GeneralName::Type::kIPAddress, "fe80::1"));
+  EXPECT_TRUE(
+      ContainsGeneralName(names, GeneralName::Type::kDNSName, "test.example"));
+  EXPECT_TRUE(ContainsGeneralName(names, GeneralName::Type::kRFC822Name,
+                                  "test@test.example"));
+
+  // otherName: type-id 1.2.3.4, value decoded from the inner UTF8String.
+  const GeneralName* other_name = nullptr;
+  for (const auto& name : names) {
+    if (name.type == GeneralName::Type::kOtherName) {
+      other_name = &name;
+      break;
+    }
+  }
+  ASSERT_NE(other_name, nullptr);
+  EXPECT_EQ("1.2.3.4", other_name->other_name_oid);
+  EXPECT_EQ("ignore me", other_name->value);
+
+  // The directoryName entry carries parsed RDNs in `directory_name`, not in
+  // `value`; assert via the RDN helper. 2.5.4.3 = commonName.
+  EXPECT_TRUE(ContainsDirectoryNameAttribute(names, "2.5.4.3", "127.0.0.3"));
 }
 
 }  // namespace x509_certificate_model

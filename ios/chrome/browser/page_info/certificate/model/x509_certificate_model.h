@@ -176,6 +176,15 @@ class X509CertificateModel : public X509CertificateModelBase {
   // Returns the AuthorityInformationAccess descriptions in DER order, or an
   // empty vector if the extension is absent or could not be parsed.
   std::vector<AccessDescription> GetAuthorityInformationAccess() const;
+
+  // Returns true if the SubjectAlternativeName extension is present and marked
+  // critical.
+  bool IsSubjectAlternativeNameCritical() const;
+
+  // Returns every SubjectAlternativeName entry decoded as a GeneralName,
+  // grouped by type (DNS, IP, URI, ...). Empty if the extension is absent or
+  // cannot be parsed.
+  std::vector<GeneralName> GetSubjectAlternativeNames() const;
 };
 
 }  // namespace x509_certificate_model

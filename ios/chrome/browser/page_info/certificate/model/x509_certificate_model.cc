@@ -644,4 +644,21 @@ X509CertificateModel::GetAuthorityInformationAccess() const {
   return result;
 }
 
+bool X509CertificateModel::IsSubjectAlternativeNameCritical() const {
+  CHECK(is_valid());
+  return IsExtensionCritical(extensions_,
+                             bssl::der::Input(bssl::kSubjectAltNameOid));
+}
+
+std::vector<X509CertificateModel::GeneralName>
+X509CertificateModel::GetSubjectAlternativeNames() const {
+  CHECK(is_valid());
+  // The base class already parsed the SubjectAltName extension into
+  // `subject_alt_names_` (null if the extension is absent).
+  if (!subject_alt_names_) {
+    return {};
+  }
+  return ToGeneralNameList(*subject_alt_names_);
+}
+
 }  // namespace x509_certificate_model
