@@ -1110,6 +1110,7 @@ class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
       disabled_features.push_back(*feature_ref_and_params.feature);
     }
     disabled_features.push_back(ntp_features::kNtpNextFeatures);
+    disabled_features.push_back(omnibox::kVoiceSearchCoherenceSearchbox);
 
     feature_list_.InitWithFeaturesAndParameters(
         {{omnibox::kOmniboxAppendInvocationSource, {}}}, disabled_features);

@@ -150,6 +150,13 @@ suite('NewTabPageAppTest', () => {
   }
 
   suite('Misc', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
+        voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: false,
+      });
+    });
+
     test('logs height', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));
@@ -1279,6 +1286,8 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         searchboxShowComposeEntrypoint: true,
         searchboxShowComposebox: true,
+        voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
+        voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: false,
       });
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
@@ -2701,6 +2710,7 @@ suite('NewTabPageAppTest', () => {
             'coherence with live transcription is disabled',
         async () => {
           loadTimeData.overrideValues({
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
             voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: false,
           });
           await recreateApp();
