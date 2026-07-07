@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {ComposeboxWindowProxy} from 'chrome://new-tab-page/lazy_load.js';
-import type {ComposeboxFile, ComposeboxFileCarouselElement, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {ComposeboxFile, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputType, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
