@@ -259,7 +259,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void SetIsShowingLiveSessionDormantSnackbar(bool showing);
 
   // Updates the Gemini Live leading icon visibility in the location bar.
-  void UpdateGeminiLiveIconVisibility();
+  void UpdateGeminiLiveIconVisibility(bool animated = true);
 
   // Returns the floaty offset based on current fullscreen progress.
   CGFloat GetFloatyOffset();

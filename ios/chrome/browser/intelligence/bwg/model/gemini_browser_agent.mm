@@ -611,7 +611,7 @@ void GeminiBrowserAgent::OnSceneActivationLevelChanged(
                                   /*animated=*/false);
     }
   }
-  UpdateGeminiLiveIconVisibility();
+  UpdateGeminiLiveIconVisibility(/*animated=*/false);
 }
 
 void GeminiBrowserAgent::OnWillEnterIncognito() {
@@ -779,8 +779,8 @@ bool GeminiBrowserAgent::HasCompletedFirstRun() {
   return pref_service->GetBoolean(prefs::kIOSBwgConsent);
 }
 
-void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility() {
-  if (IsChromeNextIaEnabled()) {
+void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility(bool animated) {
+  if (IsChromeNextIaEnabled() || !IsGeminiLiveEnabled()) {
     return;
   }
   CGFloat progress = 1.0;
@@ -793,7 +793,7 @@ void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility() {
   if ([dispatcher dispatchingForProtocol:@protocol(OmniboxCommands)]) {
     id<OmniboxCommands> omnibox_handler =
         HandlerForProtocol(dispatcher, OmniboxCommands);
-    [omnibox_handler setCustomLeadingViewVisible:visible animated:YES];
+    [omnibox_handler setCustomLeadingViewVisible:visible animated:animated];
   }
 }
 
