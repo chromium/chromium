@@ -6870,6 +6870,11 @@ RenderFrameImpl::CloneLoaderFactories() {
       std::move(pending_bundle));
 }
 
+std::unique_ptr<network::PendingSharedURLLoaderFactory>
+RenderFrameImpl::CloneLoaderFactoryBundle() {
+  return GetLoaderFactoryBundle()->Clone();
+}
+
 blink::scheduler::WebAgentGroupScheduler&
 RenderFrameImpl::GetAgentGroupScheduler() {
   return agent_scheduling_group_->agent_group_scheduler();
@@ -7125,7 +7130,10 @@ WebView* RenderFrameImpl::CreateNewWindow(
   main_frame_params->widget_params = std::move(widget_params);
   main_frame_params->subresource_loader_factories =
       base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(
-          CloneLoaderFactories()->Clone().release()));
+          base::FeatureList::IsEnabled(
+              features::kReduceMojoURLLoaderFactoryCloning)
+              ? CloneLoaderFactoryBundle().release()
+              : CloneLoaderFactories()->Clone().release()));
 
   view_params->main_frame =
       mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));

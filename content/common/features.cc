@@ -634,6 +634,11 @@ BASE_FEATURE(kProcessReuseOnPrerenderCOOPSwap,
 BASE_FEATURE(kProgressiveAccessibilityPhase2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Minimizes Mojo URLLoaderFactory cloning overhead during navigation and worker
+// startup.
+BASE_FEATURE(kReduceMojoURLLoaderFactoryCloning,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of
