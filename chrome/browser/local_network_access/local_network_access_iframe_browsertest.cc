@@ -59,10 +59,8 @@ class LocalNetworkAccessIframeBrowserTest
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
 
   // Enable auto-denial of LNA permission request.
   bubble_factory()->set_response_type(
@@ -86,10 +84,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeAcceptPermission) {
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
@@ -114,14 +110,13 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 // page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPagePublicIframe) {
-  GURL initial_url = https_server().GetURL(
-      "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
+  GURL initial_url = https_public_server().GetURL(
+      "a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
-  GURL iframe_url = https_server().GetURL(
-      "b.com",
-      "/local_network_access/"
-      "client-redirect-treat-as-public-address.html?url=" +
-          final_url.spec());
+  GURL iframe_url = https_public_server().GetURL("b.com",
+                                                 "/local_network_access/"
+                                                 "client-redirect.html?url=" +
+                                                     final_url.spec());
 
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
 }
@@ -130,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 // loopback page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPageLoopbackIframe) {
-  GURL initial_url = https_server().GetURL(
-      "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
+  GURL initial_url = https_public_server().GetURL(
+      "a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
   GURL iframe_url = https_server().GetURL(
       "b.com",
@@ -146,11 +141,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
-  GURL iframe_url = https_server().GetURL(
-      "b.com",
-      "/local_network_access/"
-      "client-redirect-treat-as-public-address.html?url=" +
-          final_url.spec());
+  GURL iframe_url = https_public_server().GetURL("b.com",
+                                                 "/local_network_access/"
+                                                 "client-redirect.html?url=" +
+                                                     final_url.spec());
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
 }
 
@@ -171,14 +165,13 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 // page. The page and the iframe have the same origin
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavPublicPagePublicLoopbackSameOrigin) {
-  GURL initial_url = https_server().GetURL(
-      "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
+  GURL initial_url = https_public_server().GetURL(
+      "a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
-  GURL iframe_url = https_server().GetURL(
-      "a.com",
-      "/local_network_access/"
-      "client-redirect-treat-as-public-address.html?url=" +
-          final_url.spec());
+  GURL iframe_url = https_public_server().GetURL("a.com",
+                                                 "/local_network_access/"
+                                                 "client-redirect.html?url=" +
+                                                     final_url.spec());
 
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
 }

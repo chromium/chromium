@@ -50,10 +50,8 @@ class LocalNetworkAccessPromptBrowserTest
     LocalNetworkAccessBrowserTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(content::NavigateToURL(
-        web_contents(),
-        https_server().GetURL(
-            kHostA,
-            "/local_network_access/no-favicon-treat-as-public-address.html")));
+        web_contents(), https_public_server().GetURL(
+                            kHostA, "/local_network_access/no-favicon.html")));
 
     // Enable auto-accept of LNA permission request; this ensures that if the
     // connection is made the fetch() will succeed. In most of the tests below,

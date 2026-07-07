@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
   GURL initial_url = https_public_server().GetURL(
-      "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
+      "a.com", "/local_network_access/no-favicon.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
 
   GURL nav_url = https_server().GetURL("c.com", kLnaPath);
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
   GURL initial_url = https_public_server().GetURL(
-      "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
+      "a.com", "/local_network_access/no-favicon.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
 
   GURL nav_url = https_server().GetURL("c.com", kLnaPath);
