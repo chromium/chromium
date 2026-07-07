@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
@@ -40,6 +39,7 @@
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -659,8 +659,9 @@ void CertStoreServiceTest::CheckInstalledCerts(
 }
 
 Profile* CertStoreServiceTest::profile() {
-  return ash::ProfileHelper::Get()->GetProfileByAccountId(
-      affiliation_mixin_.account_id());
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          affiliation_mixin_.account_id()));
 }
 
 void CertStoreServiceTest::SetUpTestClientCerts(
