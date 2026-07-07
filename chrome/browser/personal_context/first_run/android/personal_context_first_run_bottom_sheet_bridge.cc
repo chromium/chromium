@@ -56,7 +56,7 @@ bool PersonalContextFirstRunBottomSheetBridge::PerformShowContent() {
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PersonalContextFirstRunBottomSheetBridge_show(
-      env, java_obj_, kPersonalContextSettingsURL,
+      env, java_obj_, kPersonalContextConnectedAppsURL,
       kPersonalContextLearnMoreURL);
 }
 

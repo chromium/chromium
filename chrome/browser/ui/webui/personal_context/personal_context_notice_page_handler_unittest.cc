@@ -192,7 +192,7 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnManageSettingsClicked) {
 
   EXPECT_CALL(mock_browser_interface_,
               OpenURL(testing::Field(&content::OpenURLParams::url,
-                                     GURL(kPersonalContextSettingsURL)),
+                                     GURL(kPersonalContextConnectedAppsURL)),
                       testing::_))
       .WillOnce(testing::Return(nullptr));
 

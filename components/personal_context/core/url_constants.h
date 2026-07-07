@@ -10,8 +10,6 @@ namespace personal_context {
 inline constexpr char kPersonalContextLearnMoreURL[] =
     "https://support.google.com/chrome?p=chrome_pi";
 
-inline constexpr char kPersonalContextSettingsURL[] =
-    "https://gemini.google.com/personalization-settings";
 
 inline constexpr char kPersonalContextTriggerText[] = "@@";
 

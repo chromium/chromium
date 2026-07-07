@@ -103,7 +103,7 @@ void PersonalContextNoticePageHandler::OnManageSettingsClicked() {
   if (browser_window_interface) {
     browser_window_interface->OpenURL(
         content::OpenURLParams(
-            GURL(kPersonalContextSettingsURL), content::Referrer(),
+            GURL(kPersonalContextConnectedAppsURL), content::Referrer(),
             WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
             /*is_renderer_initiated=*/false),
         /*navigation_handle_callback=*/base::DoNothing());
