@@ -70,9 +70,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         'Unknown';
     accessor searchboxAriaDescription: string = '';
     accessor dropdownIsVisible: boolean = false;
-    // Tracks the latest query sent for autocompletion. Used to filter out stale
-    // results.
+    // Tracks the latest query sent for autocompletion. Used to filter out
+    // stale results. `activeQueryId` is reset to -1 when the last query needs
+    // to be abandoned. `nextQueryId_` is monotonically increasing to avoid
+    // reusing IDs.
     activeQueryId: number = -1;
+    private nextQueryId_: number = 0;
     accessor lastQueriedInput: string|null = null;
     accessor multiLineEnabled: boolean = false;
     accessor result: AutocompleteResult|null = null;
@@ -146,7 +149,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     queryAutocomplete(
         input: string, preventInlineAutocomplete: boolean = false) {
-      this.activeQueryId++;
+      this.activeQueryId = this.nextQueryId_++;
       this.lastQueriedInput = input;
 
       preventInlineAutocomplete = preventInlineAutocomplete ||
@@ -377,7 +380,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (!array.includes(e.target as HTMLElement)) {
           return;
         }
-        if (this.result?.queryId === this.activeQueryId) {
+        // If no new query's `results` are pending (though new async results for
+        // the current query may be pending), navigate. Otherwise, the user
+        // pressed enter after sending a new query that hasn't returned any
+        // results yet. Wait for the 1st results of the new query before
+        // navigating.
+        if (this.activeQueryId === -1 ||
+            this.result?.queryId === this.activeQueryId) {
           if (this.selectedMatch) {
             this.navigateToMatch(this.selectedMatchIndex, e);
           }

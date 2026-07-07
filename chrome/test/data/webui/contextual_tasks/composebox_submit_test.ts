@@ -1344,7 +1344,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               'queryAutocompleteWithSuggestInventory');
 
           await setupAutocompleteResults(
-              searchboxCallbackRouterRemote, TEST_QUERY, mockTimer);
+              searchboxCallbackRouterRemote, innerComposebox.activeQueryId,
+              TEST_QUERY, mockTimer);
 
           // Wait for the matches to be populated.
           while (!innerComposebox.getDropdownElement().result) {

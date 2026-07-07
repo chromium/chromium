@@ -2226,7 +2226,8 @@ suite('ContextualTasksComposeboxTest', () => {
                   'queryAutocompleteWithSuggestInventory');
 
               await setupAutocompleteResults(
-                  searchboxCallbackRouterRemote, TEST_QUERY, mockTimer);
+                  searchboxCallbackRouterRemote, innerComposebox.activeQueryId,
+                  TEST_QUERY, mockTimer);
               while (!innerComposebox.getDropdownElement().result) {
                 mockTimer.tick(10);
                 await Promise.resolve();

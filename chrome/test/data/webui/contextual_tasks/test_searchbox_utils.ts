@@ -15,8 +15,8 @@ export const ADD_FILE_CONTEXT_FN = 'addFileContext';
 export const ADD_TAB_CONTEXT_FN = 'addTabContext';
 
 export async function setupAutocompleteResults(
-    searchboxCallbackRouterRemote: SearchboxPageRemote, testQuery: string,
-    mockTimer: MockTimer) {
+    searchboxCallbackRouterRemote: SearchboxPageRemote, queryId: number,
+    testQuery: string, mockTimer: MockTimer) {
   const matches = [
     createAutocompleteMatch({
       allowedToBeDefaultMatch: true,
@@ -29,6 +29,7 @@ export async function setupAutocompleteResults(
   ];
   searchboxCallbackRouterRemote.autocompleteResultChanged(
       createAutocompleteResultForTesting({
+        queryId: queryId,
         input: testQuery,
         matches: matches,
       }));
