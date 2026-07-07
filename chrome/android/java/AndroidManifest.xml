@@ -1305,7 +1305,7 @@ by a child template that "extends" this file.
           android:process=":sandboxed_process{{ i }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
           android:isolatedProcess="true"
-          android:exported="False"
+          android:exported="false"
           {% if (i == 0) %}
           android:useAppZygote="true"
           {% endif %} />
@@ -1320,7 +1320,7 @@ by a child template that "extends" this file.
           {% if (i == 0) %}
           android:useAppZygote="true"
           {% endif %}
-          android:exported="False" >
+          android:exported="false" >
           <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
               android:value="lib{{ library_name }}.so" />
           <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME"
