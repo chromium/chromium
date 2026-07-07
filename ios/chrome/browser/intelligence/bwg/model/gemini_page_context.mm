@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 @implementation GeminiPageContext {
   // A pointer to the page context proto.
@@ -13,6 +14,13 @@
 }
 
 - (std::unique_ptr<optimization_guide::proto::PageContext>)uniquePageContext {
+  if (!_uniquePageContext) {
+    return nullptr;
+  }
+  if (IsGeminiMultiTabContextEnabled()) {
+    return std::make_unique<optimization_guide::proto::PageContext>(
+        *_uniquePageContext);
+  }
   return std::move(_uniquePageContext);
 }
 

@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
@@ -250,37 +251,15 @@ UIImage* GeminiTabHelper::GetFavicon() {
     }
   }
 
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:gfx::kFaviconSize
-                          weight:UIImageSymbolWeightBold
-                           scale:UIImageSymbolScaleMedium];
-  current_favicon_ =
-      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  current_favicon_ = gemini::GetDefaultFavicon();
   return current_favicon_;
 }
 
-GeminiPageContext* GeminiTabHelper::GetPartialPageContext() {
-  GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
-  gemini_page_context.favicon = GetFavicon();
+GeminiPageContext* GeminiTabHelper::GetPartialPageContext(bool forced) {
+  bool is_eligible = forced ? CanExtractPageContextForWebState(web_state_)
+                            : CanExtractPageContextForGemini();
 
-  if (!CanExtractPageContextForGemini()) {
-    gemini_page_context.geminiPageContextComputationState =
-        ios::provider::GeminiPageContextComputationState::kBlocked;
-    // Attachment state will be explicitly determined by the browser agent
-    // applying user prefs.
-    return gemini_page_context;
-  }
-
-  gemini_page_context.geminiPageContextComputationState =
-      ios::provider::GeminiPageContextComputationState::kPending;
-
-  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-      std::make_unique<optimization_guide::proto::PageContext>();
-  page_context->set_url(current_url_.spec());
-  page_context->set_title(base::UTF16ToUTF8(current_title_));
-  gemini_page_context.uniquePageContext = std::move(page_context);
-
-  return gemini_page_context;
+  return gemini::CreatePartialPageContextForWebState(web_state_, is_eligible);
 }
 
 bool GeminiTabHelper::ShouldBlockFloatyFromShowing() {

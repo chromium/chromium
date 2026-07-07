@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <map>
 #import <memory>
 #import <set>
 
@@ -190,12 +191,17 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Fetches the full context of the active page and feeds it to Gemini.
   void RequestPageContextGeneration();
 
-  // Propagates the page context to the provider if the floaty is invoked.
-  void PropagatePageContextToProvider(GeminiPageContext* gemini_page_context);
+  // Updates the active page context and passes it to the Gemini provider, along
+  // with any shared tabs.
+  void PropagatePageContextToProvider(GeminiPageContext* active_page_context);
 
   // Updates the floaty with partial page context synchronously if the tab
   // helper is available.
   void UpdateFloatyWithPartialPageContext();
+
+  // Returns the array of page contexts for all currently attached
+  // shared tabs.
+  NSArray<GeminiPageContext*>* GetSharedTabs() const;
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
@@ -349,6 +355,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // state.
   void UpdateAttachedTabsForActiveWebState(web::WebState* active_web_state);
 
+  // Creates a partial page context synchronously for a web state.
+  GeminiPageContext* CreatePartialPageContext(web::WebState* web_state);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -407,8 +416,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;
 
-  // The set of tabs currently attached to the floaty. Includes the active tab.
-  std::set<web::WebStateID> attached_tabs_;
+  // The active and shared tabs currently attached to the floaty, represented by
+  // a mapping of the tab's WebStateID to its page context.
+  std::map<web::WebStateID, __strong GeminiPageContext*> attached_tabs_;
 
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.

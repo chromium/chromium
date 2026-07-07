@@ -6,7 +6,9 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -41,6 +43,9 @@ TEST_F(GeminiPageContextTest, InitialState) {
 
 // Tests setting and getting uniquePageContext.
 TEST_F(GeminiPageContextTest, SetUniquePageContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kGeminiMultiTabContext);
+
   auto proto_page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
 
@@ -53,6 +58,28 @@ TEST_F(GeminiPageContextTest, SetUniquePageContext) {
 
   // Subsequent calls should return nullptr.
   EXPECT_EQ(page_context_.uniquePageContext, nullptr);
+}
+
+// Tests setting and getting uniquePageContext with multi-tab context enabled.
+TEST_F(GeminiPageContextTest, SetUniquePageContext_MultiTabEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  auto proto_page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+
+  page_context_.uniquePageContext = std::move(proto_page_context);
+
+  std::unique_ptr<optimization_guide::proto::PageContext> retrieved_context =
+      page_context_.uniquePageContext;
+
+  EXPECT_NE(retrieved_context, nullptr);
+
+  // Subsequent calls should return a new copy.
+  std::unique_ptr<optimization_guide::proto::PageContext> retrieved_context2 =
+      page_context_.uniquePageContext;
+  EXPECT_NE(retrieved_context2, nullptr);
+  EXPECT_NE(retrieved_context.get(), retrieved_context2.get());
 }
 
 // Tests setting and getting states and favicon.

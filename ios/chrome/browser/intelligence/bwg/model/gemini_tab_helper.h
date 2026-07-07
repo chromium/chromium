@@ -140,8 +140,10 @@ class GeminiTabHelper : public web::WebStateObserver,
       base::RepeatingCallback<void(GeminiPageContext*)> callback);
 
   // Returns the partial PageContext for the current WebState, including URL,
-  // Title, and Favicon.
-  GeminiPageContext* GetPartialPageContext();
+  // Title, and Favicon. `forced` indicates whether to bypass
+  // eligibility checks related to this tab's visibility, NextIA or Gemini Live
+  // (useful for generating context for tabs other than the active one).
+  GeminiPageContext* GetPartialPageContext(bool forced = false);
 
   // Returns true if a show floaty trigger should be blocked resulting in an
   // early return and the floaty remaining hidden. Used when the floaty is

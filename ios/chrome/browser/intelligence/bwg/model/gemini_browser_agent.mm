@@ -48,11 +48,13 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -68,6 +70,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -89,6 +92,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image.h"
@@ -200,6 +204,21 @@ void ShowMicrophoneSettingsAlert(UIViewController* base_view_controller,
   [base_view_controller presentViewController:alert
                                      animated:YES
                                    completion:nil];
+}
+
+// Returns true if the page context is eligible to be listed in the tab picker.
+// A context is eligible if it is explicitly attached and its computation state
+// is either success or pending (meaning it is not blocked or protected).
+bool IsPageContextEligibleForTabPicker(GeminiPageContext* context) {
+  if (context.geminiPageContextAttachmentState !=
+      ios::provider::GeminiPageContextAttachmentState::kAttached) {
+    return false;
+  }
+  auto computation_state = context.geminiPageContextComputationState;
+  return computation_state ==
+             ios::provider::GeminiPageContextComputationState::kSuccess ||
+         computation_state ==
+             ios::provider::GeminiPageContextComputationState::kPending;
 }
 
 }  // namespace
@@ -324,7 +343,13 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
           };
       gemini_tab_picker_handler_.selectedTabsProvider = ^{
         if (weak_this) {
-          return weak_this->attached_tabs_;
+          std::set<web::WebStateID> eligible_tabs;
+          for (const auto& [tab_id, context] : weak_this->attached_tabs_) {
+            if (IsPageContextEligibleForTabPicker(context)) {
+              eligible_tabs.insert(tab_id);
+            }
+          }
+          return eligible_tabs;
         }
         return std::set<web::WebStateID>();
       };
@@ -1246,30 +1271,63 @@ void GeminiBrowserAgent::ForceDismissFloaty() {
 
 void GeminiBrowserAgent::OnTabPickerSelectionChanged(
     std::set<web::WebStateID> selected_tabs) {
-  attached_tabs_ = selected_tabs;
-
-  // If the active tab was selected or deselected via the tab picker, update its
-  // attachment state and update the floaty UI to reflect its new state.
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (!active_web_state) {
     return;
   }
   web::WebStateID active_web_state_id = active_web_state->GetUniqueIdentifier();
-  ios::provider::GeminiPageContextAttachmentState current_state =
-      ios::provider::GetCurrentPageContextAttachmentState();
+
+  // Erase any unselected shared tabs from `attached_tabs_`.
+  std::vector<web::WebStateID> tabs_to_erase;
+  for (const auto& [tab_id, context] : attached_tabs_) {
+    if (tab_id != active_web_state_id && selected_tabs.count(tab_id) == 0) {
+      tabs_to_erase.push_back(tab_id);
+    }
+  }
+  for (web::WebStateID tab_to_erase : tabs_to_erase) {
+    attached_tabs_.erase(tab_to_erase);
+  }
+
+  // Generate and store contexts for newly selected shared tabs.
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  if (web_state_list) {
+    for (web::WebStateID selected_tab : selected_tabs) {
+      if (selected_tab == active_web_state_id) {
+        continue;
+      }
+      if (attached_tabs_.count(selected_tab) == 0) {
+        web::WebState* web_state = GetWebState(
+            web_state_list, WebStateSearchCriteria{.identifier = selected_tab});
+        if (web_state) {
+          GeminiPageContext* context = CreatePartialPageContext(web_state);
+          if (context) {
+            context.geminiPageContextAttachmentState =
+                ios::provider::GeminiPageContextAttachmentState::kAttached;
+            attached_tabs_[selected_tab] = context;
+          }
+        }
+      } else {
+        attached_tabs_[selected_tab].geminiPageContextAttachmentState =
+            ios::provider::GeminiPageContextAttachmentState::kAttached;
+      }
+    }
+  }
+
+  // If the active tab was selected or deselected via the tab picker, update its
+  // attachment state and update the floaty UI to reflect its new state.
   ios::provider::GeminiPageContextAttachmentState new_state =
-      attached_tabs_.count(active_web_state_id)
+      selected_tabs.count(active_web_state_id)
           ? ios::provider::GeminiPageContextAttachmentState::kAttached
           : ios::provider::GeminiPageContextAttachmentState::kDetached;
 
-  if (new_state != current_state) {
-    ios::provider::UpdatePageAttachmentState(new_state);
-    ios::provider::RequestUIChange(
-        ios::provider::GeminiUIElementType::kContextAttachment);
+  if (attached_tabs_.count(active_web_state_id) > 0) {
+    attached_tabs_[active_web_state_id].geminiPageContextAttachmentState =
+        new_state;
   }
 
-  // TODO(crbug.com/503002699): Generate and pass shared tab page context.
+  ios::provider::UpdateActivePageContext(attached_tabs_[active_web_state_id],
+                                         GetSharedTabs());
 }
 
 void GeminiBrowserAgent::SwitchToChatModeOrDismiss(bool animated) {
@@ -1404,11 +1462,17 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
 void GeminiBrowserAgent::OnWebStateInserted(web::WebState* web_state) {}
 
 void GeminiBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+  if (!IsGeminiMultiTabContextEnabled()) {
+    return;
+  }
   web::WebStateID removed_web_state_id = web_state->GetUniqueIdentifier();
   attached_tabs_.erase(removed_web_state_id);
 }
 
 void GeminiBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  if (!IsGeminiMultiTabContextEnabled()) {
+    return;
+  }
   web::WebStateID deleted_web_state_id = web_state->GetUniqueIdentifier();
   attached_tabs_.erase(deleted_web_state_id);
 }
@@ -1662,19 +1726,25 @@ void GeminiBrowserAgent::RequestPageContextGeneration() {
 
 void GeminiBrowserAgent::UpdateAttachedTabsForActiveWebState(
     web::WebState* active_web_state) {
+  if (!IsGeminiMultiTabContextEnabled()) {
+    return;
+  }
+
   if (!active_web_state) {
     attached_tabs_.clear();
     return;
   }
 
   web::WebStateID new_active_id = active_web_state->GetUniqueIdentifier();
-  if (attached_tabs_.count(new_active_id) == 0) {
+  if (attached_tabs_.count(new_active_id) == 0 ||
+      attached_tabs_[new_active_id].geminiPageContextAttachmentState !=
+          ios::provider::GeminiPageContextAttachmentState::kAttached) {
     attached_tabs_.clear();
   }
 }
 
 void GeminiBrowserAgent::PropagatePageContextToProvider(
-    GeminiPageContext* gemini_page_context) {
+    GeminiPageContext* active_page_context) {
   if (!is_floaty_invoked_) {
     return;
   }
@@ -1687,50 +1757,52 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
 
   // Handle programmatic blocking/detachment for ineligible or hidden pages.
   if (!is_eligible) {
-    gemini_page_context.geminiPageContextComputationState =
+    active_page_context.geminiPageContextComputationState =
         ios::provider::GeminiPageContextComputationState::kBlocked;
-    gemini_page_context.geminiPageContextAttachmentState =
+    active_page_context.geminiPageContextAttachmentState =
         ios::provider::GetCurrentPageContextAttachmentState();
-    gemini_page_context.uniquePageContext = nullptr;
+    active_page_context.uniquePageContext = nullptr;
   } else {
     // Apply user settings.
-    ApplyUserPrefsToPageContext(gemini_page_context);
+    ApplyUserPrefsToPageContext(active_page_context);
 
     // Persists manual detachment across navigations. If the user explicitly
     // detached the context via the paperclip UI, respect that choice over the
     // default attached state.
-    if (gemini_page_context.geminiPageContextAttachmentState ==
+    if (active_page_context.geminiPageContextAttachmentState ==
             ios::provider::GeminiPageContextAttachmentState::kAttached &&
         ios::provider::GetCurrentPageContextAttachmentState() ==
             ios::provider::GeminiPageContextAttachmentState::kDetached) {
-      gemini_page_context.geminiPageContextAttachmentState =
+      active_page_context.geminiPageContextAttachmentState =
           ios::provider::GeminiPageContextAttachmentState::kDetached;
     }
   }
 
-  // Use attachment state and computation state to decide if the active page
-  // context should be part of selected page contexts.
-  bool is_context_eligible = false;
-  if (gemini_page_context.geminiPageContextAttachmentState ==
-      ios::provider::GeminiPageContextAttachmentState::kAttached) {
-    auto computation_state =
-        gemini_page_context.geminiPageContextComputationState;
-    if (computation_state ==
-            ios::provider::GeminiPageContextComputationState::kSuccess ||
-        computation_state ==
-            ios::provider::GeminiPageContextComputationState::kPending) {
-      is_context_eligible = true;
+  // Save the new active web state to attached tabs.
+  if (active_web_state && IsGeminiMultiTabContextEnabled()) {
+    attached_tabs_[active_web_state->GetUniqueIdentifier()] =
+        active_page_context;
+  }
+
+  ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
+}
+
+NSArray<GeminiPageContext*>* GeminiBrowserAgent::GetSharedTabs() const {
+  NSMutableArray<GeminiPageContext*>* shared_tabs = [NSMutableArray array];
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  web::WebStateID active_web_state_id =
+      active_web_state ? active_web_state->GetUniqueIdentifier()
+                       : web::WebStateID();
+
+  for (const auto& [tab_id, context] : attached_tabs_) {
+    if (tab_id != active_web_state_id &&
+        context.geminiPageContextAttachmentState ==
+            ios::provider::GeminiPageContextAttachmentState::kAttached) {
+      [shared_tabs addObject:context];
     }
   }
-
-  if (is_context_eligible) {
-    attached_tabs_.insert(active_web_state->GetUniqueIdentifier());
-  } else {
-    attached_tabs_.erase(active_web_state->GetUniqueIdentifier());
-  }
-
-  // TODO(crbug.com/503002699): Generate and pass shared tab page context.
-  ios::provider::UpdatePageContext(gemini_page_context);
+  return shared_tabs;
 }
 
 void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
@@ -1849,6 +1921,21 @@ void GeminiBrowserAgent::ResetFullscreenDisabler() {
   }
 
   fullscreen_disabler_.reset();
+}
+
+GeminiPageContext* GeminiBrowserAgent::CreatePartialPageContext(
+    web::WebState* web_state) {
+  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
+  if (tab_helper) {
+    // If web state is realized, get partial page context via tab helper
+    // to perform page context extraction eligibility checks.
+    return tab_helper->GetPartialPageContext(/*forced=*/true);
+  }
+
+  // If the web state is unrealized, the tab has cached APC and we can bypass
+  // page context extraction eligibility checks.
+  return gemini::CreatePartialPageContextForWebState(web_state,
+                                                     /*is_eligible=*/true);
 }
 
 void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
