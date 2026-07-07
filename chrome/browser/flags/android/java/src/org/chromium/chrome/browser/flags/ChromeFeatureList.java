@@ -704,6 +704,7 @@ public abstract class ChromeFeatureList {
     public static final String TIPS_SELF_SERVICE = "TipsSelfService";
     public static final String TOOLBAR_CAPTURE_FIX_FOR_SPAS = "ToolbarCaptureFixForSPAs";
     public static final String TOOLBAR_PHONE_ANIMATION_REFACTOR = "ToolbarPhoneAnimationRefactor";
+    public static final String TOOLBAR_PROGRESS_BAR_REFACTOR = "ToolbarProgressBarRefactor";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOOLBAR_SNAPSHOT_REFACTOR = "ToolbarSnapshotRefactor";
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
@@ -1213,6 +1214,11 @@ public abstract class ChromeFeatureList {
                     TOOLBAR_PHONE_ANIMATION_REFACTOR,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
+    public static final CachedFlag sToolbarProgressBarRefactor =
+            newCachedFlag(
+                    TOOLBAR_PROGRESS_BAR_REFACTOR,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sToolbarSnapshotRefactor =
             newCachedFlag(
                     TOOLBAR_SNAPSHOT_REFACTOR,
@@ -1422,6 +1428,7 @@ public abstract class ChromeFeatureList {
                     sThreeDotMenuBackButton,
                     sToolbarCaptureFixForSPAs,
                     sToolbarPhoneAnimationRefactor,
+                    sToolbarProgressBarRefactor,
                     sToolbarSnapshotRefactor,
                     sToolbarTabletResizeRefactor,
                     sTouchToSearchCallout,

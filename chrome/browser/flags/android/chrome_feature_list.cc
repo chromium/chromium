@@ -464,6 +464,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTipsSelfService,
     &kToolbarCaptureFixForSPAs,
     &kToolbarPhoneAnimationRefactor,
+    &kToolbarProgressBarRefactor,
     &kToolbarSnapshotRefactor,
     &kToolbarTabletResizeRefactor,
     &kTouchToSearchCallout,
@@ -839,6 +840,7 @@ BASE_FEATURE(kThreeDotMenuBackButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTipsSelfService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarCaptureFixForSPAs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarPhoneAnimationRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kToolbarProgressBarRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarSnapshotRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarTabletResizeRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTouchToSearchCallout, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -8233,6 +8233,7 @@ from previous Chrome versions.
   <int value="-2030217301" label="password-export:disabled"/>
   <int value="-2029912304" label="StaleWhileRevalidate2:enabled"/>
   <int value="-2029381098" label="CompressionDictionaryTTL:enabled"/>
+  <int value="-2029060782" label="ToolbarProgressBarRefactor:disabled"/>
   <int value="-2028961033" label="SanitizerAPIv0:disabled"/>
   <int value="-2028402892" label="EnableIkev2Vpn:enabled"/>
   <int value="-2028336995" label="VirtualKeyboardDarkMode:disabled"/>
@@ -11678,6 +11679,7 @@ from previous Chrome versions.
   <int value="-932261921"
       label="enable-defer-all-script-without-optimization-hints"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
+  <int value="-931410760" label="ToolbarProgressBarRefactor:enabled"/>
   <int value="-930676269" label="TranslateOpenSettings:enabled"/>
   <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
   <int value="-930168768" label="IsolatedWebAppAutomaticUpdates:disabled"/>

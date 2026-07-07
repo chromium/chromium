@@ -5516,6 +5516,12 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kToolbarProgressBarRefactorName[] =
+    "Toolbar Progress Bar Refactor";
+inline constexpr char kToolbarProgressBarRefactorDescription[] =
+    "Enables the Toolbar Progress Bar Refactor feature which decouples the "
+    "progress bar from the Toolbar";
+
 inline constexpr char kUpdatePaddingForDisplayCalculationName[] =
     "Update Padding For Display Calculation";
 inline constexpr char kUpdatePaddingForDisplayCalculationDescription[] =

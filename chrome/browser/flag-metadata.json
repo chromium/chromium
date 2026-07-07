@@ -9355,6 +9355,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "toolbar-progress-bar-refactor",
+    "owners": ["mschillaci@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 159
+  },
+  {
     "name": "toolbar-snapshot-refactor",
     "owners": [ "mschillaci@google.com", "wenyufu@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 156

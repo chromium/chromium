@@ -13355,6 +13355,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpVisionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNtpVision)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"toolbar-progress-bar-refactor",
+     flag_descriptions::kToolbarProgressBarRefactorName,
+     flag_descriptions::kToolbarProgressBarRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarProgressBarRefactor)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
