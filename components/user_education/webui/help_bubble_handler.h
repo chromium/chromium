@@ -32,6 +32,7 @@ class WebContents;
 
 namespace ui {
 class TrackedElementHandler;
+class TrackedElementWebUI;
 }  // namespace ui
 
 namespace user_education {
@@ -106,12 +107,12 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   struct ElementData;
 
   std::unique_ptr<HelpBubbleWebUI> CreateHelpBubble(
-      ui::ElementIdentifier target,
+      ui::TrackedElementWebUI* element,
       HelpBubbleParams params);
   void OnHelpBubbleClosing(ui::ElementIdentifier anchor_id);
   bool ToggleHelpBubbleFocusForAccessibility(ui::ElementIdentifier anchor_id);
   gfx::Rect GetHelpBubbleBoundsInScreen(ui::ElementIdentifier anchor_id) const;
-  void OnFloatingHelpBubbleCreated(ui::ElementIdentifier anchor_id,
+  void OnFloatingHelpBubbleCreated(ui::TrackedElementWebUI* anchor_id,
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
                                   const HelpBubble* help_bubble,

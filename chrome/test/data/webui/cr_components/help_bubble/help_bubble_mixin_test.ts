@@ -14,7 +14,7 @@ import {ANCHOR_HIGHLIGHT_CLASS} from 'chrome://resources/cr_components/help_bubb
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
+import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver, TrackedElementIdentifier, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -131,24 +131,26 @@ class TestTrackedElementHandler extends TestBrowserProxy implements
     this.methodCalled('setManager');
   }
 
-  trackedElementVisibilityChanged(nativeIdentifier: string, visible: boolean) {
-    this.visibility.set(nativeIdentifier, visible);
+  trackedElementVisibilityChanged(
+      id: TrackedElementIdentifier, visible: boolean) {
+    this.visibility.set(id.nativeIdentifier, visible);
     this.methodCalled(
-        'trackedElementVisibilityChanged', nativeIdentifier, visible);
+        'trackedElementVisibilityChanged', id.nativeIdentifier, visible);
   }
 
-  trackedElementActivated(nativeIdentifier: string) {
-    this.methodCalled('trackedElementActivated', nativeIdentifier);
+  trackedElementActivated(id: TrackedElementIdentifier) {
+    this.methodCalled('trackedElementActivated', id.nativeIdentifier);
   }
 
-  trackedElementCustomEvent(nativeIdentifier: string, eventName: string) {
-    this.methodCalled('trackedElementCustomEvent', nativeIdentifier, eventName);
+  trackedElementCustomEvent(id: TrackedElementIdentifier, eventName: string) {
+    this.methodCalled(
+        'trackedElementCustomEvent', id.nativeIdentifier, eventName);
   }
 
   trackedElementCanHighlightChanged(
-      nativeIdentifier: string, canHighlight: boolean) {
+      id: TrackedElementIdentifier, canHighlight: boolean) {
     this.methodCalled(
-        'trackedElementCanHighlightChanged', nativeIdentifier, canHighlight);
+        'trackedElementCanHighlightChanged', id.nativeIdentifier, canHighlight);
   }
 }
 

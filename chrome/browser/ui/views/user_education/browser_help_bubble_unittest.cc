@@ -24,6 +24,7 @@
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+constexpr std::string_view kTestElementSecondaryId = "3";
 
 class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
  public:
@@ -118,7 +119,8 @@ class BrowserHelpBubbleUnitTest : public ChromeRenderViewHostTestHarness {
     handler_ = std::make_unique<TestHelpBubbleHandler>(
         tracked_element_handler_->GetWeakPtr());
     anchor_ = std::make_unique<ui::TrackedElementWebUI>(
-        tracked_element_handler_.get(), kTestElementId, context);
+        tracked_element_handler_.get(), kTestElementId, kTestElementSecondaryId,
+        context);
   }
 
   void TearDown() override {

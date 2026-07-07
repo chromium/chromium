@@ -187,8 +187,9 @@ void HelpBubbleHandlerBase::ReportBadMessage(std::string_view error) {
 }
 
 std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
-    ui::ElementIdentifier identifier,
+    ui::TrackedElementWebUI* element,
     HelpBubbleParams params) {
+  const auto identifier = element->identifier();
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
     NOTREACHED() << "Identifier " << identifier << " was never registered.";
@@ -207,8 +208,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
   data.params = std::make_unique<HelpBubbleParams>(std::move(params));
   if (tracked_element_handler_) {
-    data.visibility_lock =
-        tracked_element_handler_->LockVisible(identifier.GetName());
+    data.visibility_lock = element->LockVisible();
   }
   data.anchor_hidden_subscription =
       ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
@@ -385,8 +385,9 @@ gfx::Rect HelpBubbleHandlerBase::GetHelpBubbleBoundsInScreen(
 }
 
 void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
-    ui::ElementIdentifier anchor_id,
+    ui::TrackedElementWebUI* element,
     HelpBubble* help_bubble) {
+  const auto anchor_id = element->identifier();
   GetClient()->ExternalHelpBubbleUpdated(anchor_id.GetName(), true);
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
@@ -394,8 +395,7 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
   }
   DCHECK(!it->second.external_bubble_subscription);
   if (tracked_element_handler_) {
-    it->second.visibility_lock =
-        tracked_element_handler_->LockVisible(anchor_id.GetName());
+    it->second.visibility_lock = element->LockVisible();
   }
   it->second.external_bubble_subscription = help_bubble->AddOnClosingCallback(
       base::BindOnce(&HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed,

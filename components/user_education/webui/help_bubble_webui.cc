@@ -57,9 +57,10 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryWebUI::CreateBubble(
   HelpBubbleHandlerBase* handler = element->AsA<ui::TrackedElementWebUI>()
                                        ->handler()
                                        ->GetHelpBubbleHandler();
-  return handler ? handler->CreateHelpBubble(element->identifier(),
-                                             std::move(params))
-                 : nullptr;
+  return handler
+             ? handler->CreateHelpBubble(
+                   element->AsA<ui::TrackedElementWebUI>(), std::move(params))
+             : nullptr;
 }
 
 bool HelpBubbleFactoryWebUI::CanBuildBubbleForTrackedElement(

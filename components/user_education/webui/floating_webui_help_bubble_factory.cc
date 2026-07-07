@@ -79,7 +79,8 @@ std::unique_ptr<HelpBubble> FloatingWebUIHelpBubbleFactory::CreateBubble(
   element->AsA<ui::TrackedElementWebUI>()
       ->handler()
       ->GetHelpBubbleHandler()
-      ->OnFloatingHelpBubbleCreated(element->identifier(), result.get());
+      ->OnFloatingHelpBubbleCreated(element->AsA<ui::TrackedElementWebUI>(),
+                                    result.get());
   return result;
 }
 

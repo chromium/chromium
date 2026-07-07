@@ -60,16 +60,21 @@ class TrackedElementWebUI : public ui::TrackedElement {
 
   TrackedElementWebUI(TrackedElementHandler* handler,
                       ui::ElementIdentifier identifier,
+                      std::string_view secondary_identifier,
                       ui::ElementContext context);
   ~TrackedElementWebUI() override;
 
   DECLARE_SAFE_CAST_TARGET()
 
   TrackedElementHandler* handler() const { return handler_; }
+  const std::string& secondary_identifier() const {
+    return secondary_identifier_;
+  }
 
   // ui::TrackedElement:
   gfx::Rect GetScreenBounds() const override;
   gfx::NativeView GetNativeView() const override;
+  std::string ToString() const override;
 
   bool can_highlight() const { return can_highlight_; }
 
@@ -77,6 +82,9 @@ class TrackedElementWebUI : public ui::TrackedElement {
   // Returns any pre-existing highlight handle or makes a new one, asking the
   // other end to apply a highlight.
   scoped_refptr<HighlightHandle> GetOrMakeHighlightHandle();
+
+  // Returns a new visibility lock.
+  std::unique_ptr<TrackedElementVisibilityLock> LockVisible();
 
  private:
   friend class TrackedElementHandler;
@@ -91,12 +99,11 @@ class TrackedElementWebUI : public ui::TrackedElement {
   bool visible() const { return visible_; }
   void set_can_highlight(bool can_highlight) { can_highlight_ = can_highlight; }
 
-  // Returns a new visibility lock.
-  std::unique_ptr<TrackedElementVisibilityLock> LockVisible();
   void AddVisibilityLock();
   void RemoveVisibilityLock();
 
   const raw_ptr<TrackedElementHandler> handler_;
+  const std::string secondary_identifier_;
   bool visible_ = false;
   bool raw_visible_ = false;
   bool can_highlight_ = false;

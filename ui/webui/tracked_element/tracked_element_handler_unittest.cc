@@ -5,6 +5,7 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -48,8 +49,15 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier2);
+constexpr std::string_view kTestSecondaryId1 = "3";
+constexpr std::string_view kTestSecondaryId2 = "7";
 constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
 constexpr gfx::RectF kElementBounds2{15, 25, 35, 45};
+
+auto MakeId(ElementIdentifier id, std::string_view secondary_id) {
+  return tracked_element::mojom::TrackedElementIdentifier::New(
+      id.GetName(), std::string(secondary_id));
+}
 
 class TestTrackedElementManager
     : public tracked_element::mojom::TrackedElementManager {
@@ -60,52 +68,54 @@ class TestTrackedElementManager
     receiver_.Bind(std::move(pending_receiver));
   }
 
-  void OnElementHighlightChanged(const std::string& native_identifier,
-                                 bool highlighted) override {
-    highlight_events_.emplace_back(native_identifier, highlighted);
+  void OnElementHighlightChanged(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      bool highlighted) override {
+    highlight_events_.emplace_back(id->native_identifier, highlighted);
   }
 
-  void ClickElement(const std::string& native_identifier,
+  void ClickElement(tracked_element::mojom::TrackedElementIdentifierPtr id,
                     ClickElementCallback callback) override {
-    interaction_events_.push_back("Click:" + native_identifier);
+    interaction_events_.push_back("Click:" + id->native_identifier);
     std::move(callback).Run(true);
   }
 
-  void FocusElement(const std::string& native_identifier,
+  void FocusElement(tracked_element::mojom::TrackedElementIdentifierPtr id,
                     FocusElementCallback callback) override {
-    interaction_events_.push_back("Focus:" + native_identifier);
+    interaction_events_.push_back("Focus:" + id->native_identifier);
     std::move(callback).Run(true);
   }
 
-  void SelectTab(const std::string& native_identifier,
+  void SelectTab(tracked_element::mojom::TrackedElementIdentifierPtr id,
                  uint32_t index,
                  SelectTabCallback callback) override {
     interaction_events_.push_back(base::StringPrintf(
-        "SelectTab:%s:%u", native_identifier.c_str(), index));
+        "SelectTab:%s:%u", id->native_identifier.c_str(), index));
     std::move(callback).Run(true);
   }
 
-  void SelectDropdownItem(const std::string& native_identifier,
-                          uint32_t index,
-                          SelectDropdownItemCallback callback) override {
+  void SelectDropdownItem(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      uint32_t index,
+      SelectDropdownItemCallback callback) override {
     interaction_events_.push_back(base::StringPrintf(
-        "SelectDropdownItem:%s:%u", native_identifier.c_str(), index));
+        "SelectDropdownItem:%s:%u", id->native_identifier.c_str(), index));
     std::move(callback).Run(true);
   }
 
-  void EnterText(const std::string& native_identifier,
+  void EnterText(tracked_element::mojom::TrackedElementIdentifierPtr id,
                  const std::u16string& text,
                  tracked_element::mojom::TextEntryMode mode,
                  EnterTextCallback callback) override {
     interaction_events_.push_back(base::StringPrintf(
-        "EnterText:%s:%s:%d", native_identifier.c_str(),
+        "EnterText:%s:%s:%d", id->native_identifier.c_str(),
         base::UTF16ToUTF8(text).c_str(), static_cast<int>(mode)));
     std::move(callback).Run(true);
   }
 
-  void Confirm(const std::string& native_identifier,
+  void Confirm(tracked_element::mojom::TrackedElementIdentifierPtr id,
                ConfirmCallback callback) override {
-    interaction_events_.push_back("Confirm:" + native_identifier);
+    interaction_events_.push_back("Confirm:" + id->native_identifier);
     std::move(callback).Run(true);
   }
 
@@ -173,7 +183,7 @@ TEST_F(TrackedElementHandlerTest, StartsWithNoElement) {
 
 TEST_F(TrackedElementHandlerTest, ElementCreatedOnEvent) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const element =
@@ -195,13 +205,13 @@ TEST_F(TrackedElementHandlerTest, ElementCreatedOnEvent) {
 
 TEST_F(TrackedElementHandlerTest, ElementHiddenOnEvent) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
 
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), false, gfx::RectF());
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false, gfx::RectF());
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
@@ -211,8 +221,8 @@ TEST_F(TrackedElementHandlerTest, ElementHiddenOnEvent) {
 
 TEST_F(TrackedElementHandlerTest, ElementActivatedOnEvent) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, activated);
-  const std::string name = kTestElementIdentifier1.GetName();
-  handler_remote()->TrackedElementVisibilityChanged(name, true, kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -223,7 +233,8 @@ TEST_F(TrackedElementHandlerTest, ElementActivatedOnEvent) {
       ui::ElementTracker::GetElementTracker()->AddElementActivatedCallback(
           element->identifier(), element->context(), activated.Get());
   EXPECT_CALL_IN_SCOPE(activated, Run(element), {
-    handler_remote()->TrackedElementActivated(name);
+    handler_remote()->TrackedElementActivated(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1));
     tracked_element_handler_remote_.FlushForTesting();
   });
 }
@@ -232,10 +243,9 @@ TEST_F(TrackedElementHandlerTest, ElementCustomEventOnEvent) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEvent);
   kCustomEvent.GetName();  // Register it.
   const std::string event_name = kCustomEvent.GetName();
-  const std::string element_name = kTestElementIdentifier1.GetName();
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, custom_event);
-  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                    kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -246,7 +256,8 @@ TEST_F(TrackedElementHandlerTest, ElementCustomEventOnEvent) {
       ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
           kCustomEvent, element->context(), custom_event.Get());
   EXPECT_CALL_IN_SCOPE(custom_event, Run(element), {
-    handler_remote()->TrackedElementCustomEvent(element_name, event_name);
+    handler_remote()->TrackedElementCustomEvent(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), event_name);
     tracked_element_handler_remote_.FlushForTesting();
   });
 }
@@ -254,11 +265,9 @@ TEST_F(TrackedElementHandlerTest, ElementCustomEventOnEvent) {
 TEST_F(TrackedElementHandlerTest,
        ElementBoundsChangedEventFiredOnBoundsChange) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
-  const std::string element_name = kTestElementIdentifier1.GetName();
-
   // Make element visible with initial bounds.
-  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                    kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -273,8 +282,9 @@ TEST_F(TrackedElementHandlerTest,
 
   // Change bounds - should trigger the event.
   EXPECT_CALL_IN_SCOPE(bounds_changed, Run(element), {
-    handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                      kElementBounds2);
+    handler_remote()->TrackedElementVisibilityChanged(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), true,
+        kElementBounds2);
     tracked_element_handler_remote_.FlushForTesting();
   });
 }
@@ -282,11 +292,10 @@ TEST_F(TrackedElementHandlerTest,
 TEST_F(TrackedElementHandlerTest,
        ElementBoundsChangedEventNotFiredWhenBoundsUnchanged) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
-  const std::string element_name = kTestElementIdentifier1.GetName();
 
   // Make element visible with initial bounds.
-  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                    kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -301,18 +310,17 @@ TEST_F(TrackedElementHandlerTest,
 
   // Send same bounds - should NOT trigger the event.
   EXPECT_CALL(bounds_changed, Run).Times(0);
-  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                    kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 }
 
 TEST_F(TrackedElementHandlerTest, ElementBoundsChangedEventNotFiredWhenHidden) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
-  const std::string element_name = kTestElementIdentifier1.GetName();
 
   // Make element visible with initial bounds.
-  handler_remote()->TrackedElementVisibilityChanged(element_name, true,
-                                                    kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -327,17 +335,17 @@ TEST_F(TrackedElementHandlerTest, ElementBoundsChangedEventNotFiredWhenHidden) {
 
   // Hide element - should NOT trigger bounds changed event.
   EXPECT_CALL(bounds_changed, Run).Times(0);
-  handler_remote()->TrackedElementVisibilityChanged(element_name, false,
-                                                    gfx::RectF());
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false, gfx::RectF());
   tracked_element_handler_remote_.FlushForTesting();
 }
 
 TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
   // Show two elements.
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier2.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
@@ -346,7 +354,7 @@ TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
 
   // Hide one element.
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), false, gfx::RectF());
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false, gfx::RectF());
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
@@ -355,7 +363,7 @@ TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
 
   // Hide the other element.
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier2.GetName(), false, gfx::RectF());
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), false, gfx::RectF());
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
@@ -364,7 +372,7 @@ TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
 
   // Re-show an element.
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTestElementIdentifier1));
@@ -374,13 +382,15 @@ TEST_F(TrackedElementHandlerTest, MultipleIdentifiers) {
 
 TEST_F(TrackedElementHandlerTest, DestroyHandlerCleansUpElement) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const element =
       ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
           kTestElementIdentifier1);
   ASSERT_TRUE(element);
+  EXPECT_EQ(kTestSecondaryId1,
+            element->AsA<TrackedElementWebUI>()->secondary_identifier());
   const ui::ElementContext context = element->context();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kTestElementIdentifier1, context));
@@ -392,9 +402,9 @@ TEST_F(TrackedElementHandlerTest, DestroyHandlerCleansUpElement) {
 
 TEST_F(TrackedElementHandlerTest, CanHighlight) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier2.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
   auto* const element1 =
       ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
@@ -412,9 +422,9 @@ TEST_F(TrackedElementHandlerTest, CanHighlight) {
           element2));
 
   handler_remote()->TrackedElementCanHighlightChanged(
-      kTestElementIdentifier1.GetName(), true);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true);
   handler_remote()->TrackedElementCanHighlightChanged(
-      kTestElementIdentifier2.GetName(), false);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), false);
   tracked_element_handler_remote_.FlushForTesting();
 
   EXPECT_TRUE(ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
@@ -432,13 +442,13 @@ TEST_F(TrackedElementHandlerTest, Highlight) {
 
   handler_remote()->SetManager(manager_remote.Unbind());
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier2.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), true, kElementBounds);
   handler_remote()->TrackedElementCanHighlightChanged(
-      kTestElementIdentifier1.GetName(), true);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true);
   handler_remote()->TrackedElementCanHighlightChanged(
-      kTestElementIdentifier2.GetName(), false);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), false);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* element1 =
@@ -476,7 +486,7 @@ TEST_F(TrackedElementHandlerTest, Highlight) {
 
   // Now enable highlighting for element2 as well.
   handler_remote()->TrackedElementCanHighlightChanged(
-      kTestElementIdentifier2.GetName(), true);
+      MakeId(kTestElementIdentifier2, kTestSecondaryId2), true);
   tracked_element_handler_remote_.FlushForTesting();
 
   // Grab and release HL on it.
@@ -499,35 +509,37 @@ TEST_F(TrackedElementHandlerTest, Interaction) {
   handler_remote()->SetManager(manager_remote.Unbind());
   tracked_element_handler_remote_.FlushForTesting();
 
-  const std::string name = kTestElementIdentifier1.GetName();
+  TrackedElementWebUI element(handler(), kTestElementIdentifier1, "1",
+                              handler()->context());
 
-  EXPECT_TRUE(handler()->ClickElement(name));
+  const std::string name = kTestElementIdentifier1.GetName();
+  EXPECT_TRUE(handler()->ClickElement(element));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("Click:" + name));
 
-  EXPECT_TRUE(handler()->FocusElement(name));
+  EXPECT_TRUE(handler()->FocusElement(element));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("Focus:" + name));
 
-  EXPECT_TRUE(handler()->SelectTab(name, 2));
+  EXPECT_TRUE(handler()->SelectTab(element, 2));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("SelectTab:" + name + ":2"));
 
-  EXPECT_TRUE(handler()->SelectDropdownItem(name, 1));
+  EXPECT_TRUE(handler()->SelectDropdownItem(element, 1));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("SelectDropdownItem:" + name + ":1"));
 
   EXPECT_TRUE(handler()->EnterText(
-      name, u"hello", tracked_element::mojom::TextEntryMode::kAppend));
+      element, u"hello", tracked_element::mojom::TextEntryMode::kAppend));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("EnterText:" + name + ":hello:2"));
 
   EXPECT_TRUE(handler()->EnterText(
-      name, u"hello", tracked_element::mojom::TextEntryMode::kReplaceAll));
+      element, u"hello", tracked_element::mojom::TextEntryMode::kReplaceAll));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("EnterText:" + name + ":hello:0"));
 
-  EXPECT_TRUE(handler()->Confirm(name));
+  EXPECT_TRUE(handler()->Confirm(element));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("Confirm:" + name));
 }
@@ -535,7 +547,7 @@ TEST_F(TrackedElementHandlerTest, Interaction) {
 TEST_F(TrackedElementHandlerTest,
        WebContentsVisibilityChangesElementVisibility) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -556,7 +568,7 @@ TEST_F(TrackedElementHandlerTest,
 
 TEST_F(TrackedElementHandlerTest, DestroyHandlerHidesElement) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -573,7 +585,7 @@ TEST_F(TrackedElementHandlerTest, DestroyHandlerHidesElement) {
 
 TEST_F(TrackedElementHandlerTest, VisibilityLockPreventsHiding) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -584,7 +596,7 @@ TEST_F(TrackedElementHandlerTest, VisibilityLockPreventsHiding) {
   EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
 
   // Acquire lock.
-  auto lock = handler()->LockVisible(kTestElementIdentifier1.GetName());
+  auto lock = element->AsA<TrackedElementWebUI>()->LockVisible();
   ASSERT_TRUE(lock);
 
   // Hide WebContents.
@@ -600,7 +612,7 @@ TEST_F(TrackedElementHandlerTest, VisibilityLockPreventsHiding) {
 
 TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const tracker = ui::ElementTracker::GetElementTracker();
@@ -609,8 +621,8 @@ TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
   ASSERT_TRUE(element);
   const ui::ElementContext context = element->context();
 
-  auto lock1 = handler()->LockVisible(kTestElementIdentifier1.GetName());
-  auto lock2 = handler()->LockVisible(kTestElementIdentifier1.GetName());
+  auto lock1 = element->AsA<TrackedElementWebUI>()->LockVisible();
+  auto lock2 = element->AsA<TrackedElementWebUI>()->LockVisible();
 
   handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
   EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
@@ -678,7 +690,7 @@ class TrackedElementHandlerWidgetTest : public views::test::WidgetTest {
 
 TEST_F(TrackedElementHandlerWidgetTest, GetNativeView) {
   handler_remote()->TrackedElementVisibilityChanged(
-      kTestElementIdentifier1.GetName(), true, kElementBounds);
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
   tracked_element_handler_remote_.FlushForTesting();
 
   auto* const element =

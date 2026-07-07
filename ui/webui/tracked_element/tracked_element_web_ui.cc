@@ -4,9 +4,13 @@
 
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
+#include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
+#include "base/logging.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_events.h"
@@ -65,9 +69,13 @@ TrackedElementWebUI::HighlightHandle::~HighlightHandle() {
 
 TrackedElementWebUI::TrackedElementWebUI(TrackedElementHandler* handler,
                                          ui::ElementIdentifier identifier,
+                                         std::string_view secondary_identifier,
                                          ui::ElementContext context)
-    : TrackedElement(identifier, context), handler_(handler) {
-  DCHECK(handler);
+    : TrackedElement(identifier, context),
+      handler_(handler),
+      secondary_identifier_(secondary_identifier) {
+  CHECK(handler);
+  CHECK(!secondary_identifier.empty());
 }
 
 TrackedElementWebUI::~TrackedElementWebUI() {
@@ -106,6 +114,18 @@ gfx::NativeView TrackedElementWebUI::GetNativeView() const {
 #endif
 }
 
+std::string TrackedElementWebUI::ToString() const {
+  std::ostringstream oss;
+  oss << TrackedElement::ToString() << " with secondary id "
+      << secondary_identifier() << " in page ";
+  if (const auto* contents = handler_->web_contents()) {
+    oss << contents->GetLastCommittedURL();
+  } else {
+    oss << "[none]";
+  }
+  return oss.str();
+}
+
 scoped_refptr<TrackedElementWebUI::HighlightHandle>
 TrackedElementWebUI::GetOrMakeHighlightHandle() {
   DCHECK(can_highlight_);
@@ -116,14 +136,16 @@ TrackedElementWebUI::GetOrMakeHighlightHandle() {
   auto result = base::WrapRefCounted<HighlightHandle>(
       new HighlightHandle(weak_ptr_factory_.GetWeakPtr()));
   highlight_handle_ = result.get();
-  handler_->SetHighlightState(identifier().GetName(), true);
+  handler_->SetHighlightState(*this, true,
+                              base::PassKey<TrackedElementWebUI>());
   return result;
 }
 
 void TrackedElementWebUI::ReleaseHighlightHandle() {
   DCHECK(highlight_handle_);
   highlight_handle_ = nullptr;
-  handler_->SetHighlightState(identifier().GetName(), false);
+  handler_->SetHighlightState(*this, false,
+                              base::PassKey<TrackedElementWebUI>());
 }
 
 std::unique_ptr<TrackedElementVisibilityLock>

@@ -5,15 +5,16 @@
 #ifndef UI_WEBUI_TRACKED_ELEMENT_TRACKED_ELEMENT_HANDLER_H_
 #define UI_WEBUI_TRACKED_ELEMENT_TRACKED_ELEMENT_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <ranges>
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,8 +36,8 @@ class HelpBubbleHandlerBase;
 
 namespace ui {
 
+class InteractionTestUtilSimulatorWebUI;
 class TrackedElementWebUI;
-class TrackedElementVisibilityLock;
 
 // Mojo handler that supports tracking elements in WebUIs.
 class TrackedElementHandler
@@ -98,11 +99,9 @@ class TrackedElementHandler
           receiver);
 
   // Asks the WebUI side to change highlighting of the given element.
-  void SetHighlightState(const std::string& identifier_name, bool highlight);
-
-  // Returns a visibility lock for the given element.
-  std::unique_ptr<TrackedElementVisibilityLock> LockVisible(
-      const std::string& identifier_name);
+  void SetHighlightState(TrackedElementWebUI& element,
+                         bool highlight,
+                         base::PassKey<TrackedElementWebUI>);
 
   std::vector<std::string> GetIdentifiers();
   ui::ElementContext context() { return context_; }
@@ -111,39 +110,84 @@ class TrackedElementHandler
   void FlushManagerRemoteForTesting();
 
   // Interaction simulation methods.
-  bool ClickElement(const std::string& identifier_name);
-  bool FocusElement(const std::string& identifier_name);
-  bool SelectTab(const std::string& identifier_name, size_t index);
-  bool SelectDropdownItem(const std::string& identifier_name, size_t index);
-  bool EnterText(const std::string& identifier_name,
+  bool ClickElement(TrackedElementWebUI& element,
+                    base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return ClickElement(element);
+  }
+  bool FocusElement(TrackedElementWebUI& element,
+                    base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return FocusElement(element);
+  }
+  bool SelectTab(TrackedElementWebUI& element,
+                 size_t index,
+                 base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return SelectTab(element, index);
+  }
+  bool SelectDropdownItem(TrackedElementWebUI& element,
+                          size_t index,
+                          base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return SelectDropdownItem(element, index);
+  }
+  bool EnterText(TrackedElementWebUI& element,
                  const std::u16string& text,
-                 tracked_element::mojom::TextEntryMode mode);
-  bool Confirm(const std::string& identifier_name);
+                 tracked_element::mojom::TextEntryMode mode,
+                 base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return EnterText(element, text, mode);
+  }
+  bool Confirm(TrackedElementWebUI& element,
+               base::PassKey<InteractionTestUtilSimulatorWebUI>) {
+    return Confirm(element);
+  }
 
   // tracked_element::mojom::TrackedElementHandler:
   void SetManager(
       mojo::PendingRemote<tracked_element::mojom::TrackedElementManager>
           manager) override;
-  void TrackedElementVisibilityChanged(const std::string& identifier_name,
-                                       bool visible,
-                                       const gfx::RectF& rect) override;
-  void TrackedElementActivated(const std::string& identifier_name) override;
-  void TrackedElementCustomEvent(const std::string& identifier_name,
-                                 const std::string& event_name) override;
-  void TrackedElementCanHighlightChanged(const std::string& identifier_name,
-                                         bool can_highlight) override;
+  void TrackedElementVisibilityChanged(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      bool visible,
+      const gfx::RectF& rect) override;
+  void TrackedElementActivated(
+      tracked_element::mojom::TrackedElementIdentifierPtr id) override;
+  void TrackedElementCustomEvent(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      const std::string& event_name) override;
+  void TrackedElementCanHighlightChanged(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      bool can_highlight) override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility new_visibility) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TrackedElementHandlerTest, Interaction);
+
+  // Interaction simulation methods.
+  bool ClickElement(TrackedElementWebUI& element);
+  bool FocusElement(TrackedElementWebUI& element);
+  bool SelectTab(TrackedElementWebUI& element, size_t index);
+  bool SelectDropdownItem(TrackedElementWebUI& element, size_t index);
+  bool EnterText(TrackedElementWebUI& element,
+                 const std::u16string& text,
+                 tracked_element::mojom::TextEntryMode mode);
+  bool Confirm(TrackedElementWebUI& element);
+
   void UpdateAllEffectiveVisibilities();
-  TrackedElementWebUI* GetElement(const std::string& identifier_name);
   void RegisterIdentifier(ui::ElementIdentifier id);
+  TrackedElementWebUI* GetElement(
+      const tracked_element::mojom::TrackedElementIdentifierPtr& id,
+      bool create_if_not_present = false);
+
+  void ReportBadMessage(
+      std::string_view description,
+      const tracked_element::mojom::TrackedElementIdentifierPtr& id);
 
   const ui::ElementContext context_;
-  absl::flat_hash_map<std::string, std::unique_ptr<TrackedElementWebUI>>
-      elements_;
+  template <typename K, typename V>
+  using MapType = absl::flat_hash_map<K, V>;
+  using SecondaryIdentifierMapType =
+      MapType<std::string, std::unique_ptr<TrackedElementWebUI>>;
+  MapType<std::string, SecondaryIdentifierMapType> elements_;
 
   bool is_web_contents_visible_ = false;
   base::WeakPtr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
