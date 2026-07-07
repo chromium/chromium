@@ -13,7 +13,9 @@ export function getHtml(this: SplitNewTabPageAppElement) {
   return html`<!--_html_template_start_-->
 <div id="header" ?hidden="${this.allEligibleTabs_.length === 0}">
   <cr-icon-button id="closeButton"
-      iron-icon="tab-search:close"
+      iron-icon="${
+      this.webuiRoundedIconsEnabled_ ? 'tab-search:close' :
+                                       'tab-search:close-old'}"
       title="$i18n{splitViewCloseButtonAriaLabel}"
       @click="${this.onCloseClick_}"
       @focus="${this.onCloseButtonFocus_}"

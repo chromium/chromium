@@ -110,7 +110,10 @@ export class TabSearchItemElement extends TabSearchItemBase {
   accessor size: TabSearchItemSize = TabSearchItemSize.MEDIUM;
   accessor hideUrl: boolean = false;
   accessor hideCloseButton: boolean = false;
-  accessor closeButtonIcon: string = 'tab-search:close';
+  accessor closeButtonIcon: string =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+      'tab-search:close' :
+      'tab-search:close-old';
   accessor closeButtonAriaLabel: string = '';
   accessor closeButtonTooltip: string = '';
 

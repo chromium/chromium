@@ -123,6 +123,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       searchOptions_: {type: Object},
       recentlyClosedDefaultItemDisplayCount_: {type: Number},
       activeSelectionId_: {type: String},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -164,6 +165,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   protected accessor searchResultText_: string = '';
   protected accessor activeSelectionId_: string|undefined;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   override autofocus: boolean = false;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();

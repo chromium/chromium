@@ -58,7 +58,10 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
   });
   protected accessor buttonRipples_: boolean =
       loadTimeData.getBoolean('useRipples');
-  accessor closeButtonIcon: string = 'tab-search:close';
+  accessor closeButtonIcon: string =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+      'tab-search:close' :
+      'tab-search:close-old';
   protected accessor tabGroupColorRefresh_: boolean =
       loadTimeData.getBoolean('useTabGroupColorRefresh');
 
