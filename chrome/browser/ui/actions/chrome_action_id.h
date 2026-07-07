@@ -510,7 +510,7 @@
   E(kActionCommercePriceInsights) \
   E(kActionCommerceDiscounts) \
   /*Vertical Tabs*/ \
-  E(kActionToggleCollapseVertical) \
+  E(kActionToggleCollapseVertical, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) \
   /*Projects Panel*/ \
   E(kActionToggleProjectsPanel) \
   /*Omnibox Context Menu*/       \

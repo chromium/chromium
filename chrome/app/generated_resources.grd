@@ -10413,6 +10413,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="The accessibility label for the button in the tab group header that opens the editor bubble.">
             More Options
       </message>
+      <message name="IDS_VERTICAL_TABS_VIEW_MENU_TOGGLE_COLLAPSE" desc="In Title Case: The mac view menu item that toggles the collapse state.">
+            Collapse Vertical Tabs
+      </message>
       <!-- /Vertical Tab Strings -->
 
       <!-- Projects Panel Strings -->

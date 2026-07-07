@@ -311,6 +311,9 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
               Item(IDS_SWITCH_TO_VERTICAL_TAB)
                   .command_id(IDC_TOGGLE_VERTICAL_TABS)
                   .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
+              Item(IDS_VERTICAL_TABS_VIEW_MENU_TOGGLE_COLLAPSE)
+                  .command_id(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE)
+                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
                   .tag(IDC_CUSTOMIZE_TOUCH_BAR)
                   .action(@selector(toggleTouchBarCustomizationPalette:))

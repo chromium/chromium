@@ -16,6 +16,9 @@
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -49,6 +53,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -392,6 +397,17 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       }
       break;
     }
+    case IDC_TOGGLE_VERTICAL_TABS_COLLAPSE: {
+      if (auto* vertical_tab_strip_state_controller =
+              tabs::VerticalTabStripStateController::From(browser)) {
+        result->set_hidden_state = true;
+        result->new_hidden_state =
+            !vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
+        result->new_toggle_state =
+            vertical_tab_strip_state_controller->IsCollapsed();
+      }
+      break;
+    }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
       PrefService* prefs = browser->profile()->GetPrefs();
       result->new_toggle_state =
@@ -477,6 +493,17 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
       const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
       tabs::RecordVerticalTabStripModeChanged(
           is_vertical, tabs::VerticalTabStripEntryPoint::kMacViewMenu);
+    }
+  } else if (command == IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) {
+    if (auto* controller =
+            tabs::VerticalTabStripStateController::From(browser)) {
+      if (controller->IsCollapsed()) {
+        base::RecordAction(base::UserMetricsAction(
+            "VerticalTabs_TabStrip_ViewMenuToggleUncollapsed"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "VerticalTabs_TabStrip_ViewMenuToggleCollapsed"));
+      }
     }
   } else if (command == IDC_CLEAR_BROWSING_DATA) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
