@@ -61,12 +61,6 @@ constexpr char kExtractTaskAttributesResponseUrl[] =
 constexpr char kGetTaskExecutionStrategiesResponseUrl[] =
     "type.googleapis.com/multistep_filter.GetTaskExecutionStrategiesResponse";
 
-OptimizationMetadata CreateOptimizationMetadata(const Any& any_metadata) {
-  OptimizationMetadata metadata;
-  metadata.set_any_metadata(any_metadata);
-  return metadata;
-}
-
 OptimizationMetadata CreateMalformedOptimizationMetadata(
     std::string_view type_url) {
   Any any_metadata;
@@ -114,7 +108,8 @@ class OptimizationGuideAnnotationIndexClientTest : public testing::Test {
                 OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
               base::flat_map<OptimizationType,
                              OptimizationGuideDecisionWithMetadata>
-                  decisions = {{optimization_type, {decision, metadata}}};
+                  decisions = {{optimization_type, CreateDecisionWithMetadata(
+                                                       decision, metadata)}};
               callback.Run(GURL(kTestUrl), decisions);
             }));
   }

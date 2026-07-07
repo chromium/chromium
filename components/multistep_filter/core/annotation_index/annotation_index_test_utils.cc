@@ -8,9 +8,17 @@
 #include <vector>
 
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
+
+using ::optimization_guide::OptimizationGuideDecision;
+using ::optimization_guide::OptimizationGuideDecisionWithMetadata;
+using ::optimization_guide::OptimizationMetadata;
+using ::optimization_guide::proto::Any;
 
 ExtractTaskAttributesResponse CreateExtractTaskAttributesResponse(
     const std::string& task_type,
@@ -59,6 +67,21 @@ GetTaskExecutionStrategiesResponse CreateTaskExecutionStrategiesResponse(
   suggestion_msg->set_detailed_text("Template");
 
   return response;
+}
+
+OptimizationMetadata CreateOptimizationMetadata(const Any& any_metadata) {
+  OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  return metadata;
+}
+
+optimization_guide::OptimizationGuideDecisionWithMetadata
+CreateDecisionWithMetadata(const OptimizationGuideDecision& decision,
+                           const OptimizationMetadata& metadata) {
+  OptimizationGuideDecisionWithMetadata decision_with_metadata;
+  decision_with_metadata.decision = decision;
+  decision_with_metadata.metadata = metadata;
+  return decision_with_metadata;
 }
 
 }  // namespace multistep_filter
