@@ -431,6 +431,12 @@ bool ContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
   return false;
 }
 
+bool ContentBrowserClient::ShouldAllowMojoJsBindingsForSite(
+    BrowserContext* browser_context,
+    const GURL& site_url) {
+  return false;
+}
+
 bool ContentBrowserClient::IsMultiCaptureAllowed(
     content::RenderFrameHost* render_frame_host) {
   return false;

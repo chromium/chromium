@@ -311,6 +311,10 @@ inline constexpr char kChromeResourcesTestExtensionId[] =
 // replacement.
 inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";
 
+// The extension id of the AIM Eligibility component extension.
+inline constexpr char kAimEligibilityExtensionId[] =
+    "kgjeljgkbckpoekmgjfplammhcggiiaf";
+
 // The extension id of the Files Manager application.
 inline constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 

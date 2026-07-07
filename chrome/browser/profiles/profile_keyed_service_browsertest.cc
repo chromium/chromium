@@ -393,6 +393,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
                        GuestProfileOTR_NeededServices) {
   // clang-format off
   std::set<std::string> guest_otr_active_services {
+    "AimEligibilityExtensionBridge",
     "AlarmManager",
     "AXMainNodeAnnotatorController",
     "AutocompleteActionPredictor",
@@ -598,6 +599,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ActivityLogPrivateAPI",
     "AdvancedProtectionStatusManager",
     "AiModeButtonService",
+    "AimEligibilityExtensionBridge",
     "AimEligibilityService",
     "AlarmManager",
     "AnnouncementNotificationService",

@@ -247,6 +247,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void LogWebUIUsage(
       std::variant<content::WebUI*, GURL> webui_variant) override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
+  bool ShouldAllowMojoJsBindingsForSite(
+      content::BrowserContext* browser_context,
+      const GURL& site_url) override;
   bool IsHandledURL(const GURL& url) override;
   bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
                               const std::string& scheme) override;

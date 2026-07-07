@@ -18729,11 +18729,14 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
 
 void RenderFrameHostImpl::EnableMojoJsBindings(
     content::mojom::ExtraMojoJsFeaturesPtr features) {
-  // This method should only be called on RenderFrameHost which is for a WebUI.
-  CHECK_NE(WebUI::kNoWebUI,
-           WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
-               GetSiteInstance()->GetBrowserContext(),
-               site_instance_->GetSiteInfo().site_url()));
+  // This method should only be called on RenderFrameHost which is for a WebUI
+  // or custom URLs allowlisted by the embedder.
+  CHECK(WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
+            GetSiteInstance()->GetBrowserContext(),
+            site_instance_->GetSiteInfo().site_url()) != WebUI::kNoWebUI ||
+        GetContentClient()->browser()->ShouldAllowMojoJsBindingsForSite(
+            GetSiteInstance()->GetBrowserContext(),
+            site_instance_->GetSiteInfo().site_url()));
 
   GetFrameBindingsControl()->EnableMojoJsBindings(std::move(features));
 }

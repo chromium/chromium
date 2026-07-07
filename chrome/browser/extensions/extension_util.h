@@ -102,6 +102,11 @@ bool AreExtensionsDisabled(const base::CommandLine& command_line,
 // main extensions page.
 GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 
+// Returns true if the extension with the given ID is allowed to use MojoJS
+// bindings.
+bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
+                                 content::BrowserContext* context);
+
 }  // namespace util
 }  // namespace extensions
 
