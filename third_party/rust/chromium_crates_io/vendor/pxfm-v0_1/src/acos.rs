@@ -185,16 +185,12 @@ pub fn f_acos(x: f64) -> f64 {
     //   asin(x) = pi/2 - (v_hi + v_lo) * (ASIN_COEFFS[idx][0] + p)
     let r0 = DoubleDouble::quick_mult(DoubleDouble::new(vl, vh), p);
 
-    let r_hi;
-    let r_lo;
-    if x.is_sign_positive() {
-        r_hi = r0.hi;
-        r_lo = r0.lo;
+    let (r_hi, r_lo) = if x.is_sign_positive() {
+        (r0.hi, r0.lo)
     } else {
         let r = DoubleDouble::from_exact_add(PI.hi, -r0.hi);
-        r_hi = r.hi;
-        r_lo = (PI.lo - r0.lo) + r.lo;
-    }
+        (r.hi, (PI.lo - r0.lo) + r.lo)
+    };
 
     let r_upper = r_hi + (r_lo + err);
     let r_lower = r_hi + (r_lo - err);

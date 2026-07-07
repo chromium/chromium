@@ -346,18 +346,18 @@ fn as_expm1_accurate(x: f64) -> f64 {
         f = DoubleDouble::quick_mult(f, bt);
         f = DoubleDouble::add(bt, f);
         let off: u64 = (2048i64 + 1023i64).wrapping_sub(ie).wrapping_shl(52) as u64;
-        let e: f64;
-        if ie < 53 {
+
+        let e: f64 = if ie < 53 {
             let fhz = DoubleDouble::from_exact_add(f64::from_bits(off), f.hi);
             f.hi = fhz.hi;
-            e = fhz.lo;
+            fhz.lo
         } else if ie < 104 {
             let fhz = DoubleDouble::from_exact_add(f.hi, f64::from_bits(off));
             f.hi = fhz.hi;
-            e = fhz.lo;
+            fhz.lo
         } else {
-            e = 0.;
-        }
+            0.
+        };
         f.lo += e;
         let dst = DoubleDouble::from_exact_add(f.hi, f.lo);
         fast_ldexp(dst.hi, ie as i32)
