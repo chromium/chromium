@@ -478,4 +478,17 @@ TEST_F(RequestRegistryTest, SetIdpSigninStatusInsecurePictureUrl) {
               testing::HasSubstr("VALIDATION_ERROR_DESERIALIZATION_FAILED"));
 }
 
+// Test that CloseModalDialogView via FederatedRequestService Mojo remote
+// notifies IdentityRegistry.
+TEST_F(RequestRegistryTest, RequestServiceCloseModalDialogView) {
+  base::RunLoop run_loop;
+  url::Origin origin = url::Origin::Create(GURL(kIdpUrl));
+  EXPECT_CALL(*mock_identity_registry_, NotifyClose(origin))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  request_service_remote_->CloseModalDialogView();
+
+  run_loop.Run();
+}
+
 }  // namespace content::webid
