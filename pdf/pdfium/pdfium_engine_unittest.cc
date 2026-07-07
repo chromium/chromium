@@ -83,6 +83,7 @@
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
 #endif
 
 namespace chrome_pdf {
@@ -1811,6 +1812,101 @@ TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineDeathTest, testing::Bool());
+
+class PDFiumEnginePageMutationTest : public PDFiumEngineTest {
+ protected:
+  FPDF_FORMHANDLE GetFormHandle(PDFiumEngine* engine) { return engine->form(); }
+
+  FPDF_DOCUMENT GetDoc(PDFiumEngine* engine) { return engine->doc(); }
+
+  void InvalidateAllPages(PDFiumEngine* engine) {
+    engine->InvalidateAllPages();
+  }
+
+  void SetLastFocusedPage(PDFiumEngine* engine, int page_index) {
+    engine->last_focused_page_ = page_index;
+  }
+};
+
+// Simulates an XFA page deletion when handling a char event.
+TEST_P(PDFiumEnginePageMutationTest, PageCountShrinkOnHandleInputEvent) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_TRUE(GetFormHandle(engine.get()));
+
+  bool test_triggered = false;
+  bool in_on_char = false;
+
+  // Invalidate() is called during form changes.
+  EXPECT_CALL(client, Invalidate(_)).WillRepeatedly([&](const gfx::Rect& rect) {
+    if (in_on_char && !test_triggered) {
+      test_triggered = true;
+      FPDFPage_Delete(GetDoc(engine.get()), 1);
+      InvalidateAllPages(engine.get());
+    }
+  });
+
+  engine->PluginSizeUpdated({1024, 4096});
+
+  // Put focus on an annotation on page 2.
+  {
+    constexpr int kPageIndex = 1;
+    constexpr int kAnnotIndex = 0;
+    PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+    ScopedFPDFAnnotation annot(FPDFPage_GetAnnot(page.GetPage(), kAnnotIndex));
+    ASSERT_TRUE(annot);
+    engine->UpdateFocus(/*has_focus=*/true);
+    ASSERT_TRUE(FORM_SetFocusedAnnot(GetFormHandle(engine.get()), annot.get()));
+    SetLastFocusedPage(engine.get(), kPageIndex);
+  }
+
+  // Trigger OnChar() on page 2. This executes FORM_OnChar().
+  blink::WebKeyboardEvent char_event(
+      blink::WebInputEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  char_event.text[0] = 'a';
+
+  // HandleInputEvent() should complete without crashing.
+  in_on_char = true;
+  engine->HandleInputEvent(char_event);
+  in_on_char = false;
+
+  EXPECT_TRUE(test_triggered);
+}
+
+TEST_P(PDFiumEnginePageMutationTest, DeferPageDestructionWithPreventer) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+
+  {
+    // Get page 2.
+    constexpr int kPageIndex = 1;
+    PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+    PDFiumPage::ScopedPageUnloadPreventer preventer(&page);
+
+    // Delete page 2 in the document.
+    FPDFPage_Delete(GetDoc(engine.get()), kPageIndex);
+
+    // Trigger a layout update. Since the preventer is active, page 2's
+    // destruction must be deferred.
+    InvalidateAllPages(engine.get());
+
+    // Page 2 is removed from engine's active pages list.
+    EXPECT_EQ(1, engine->GetNumberOfPages());
+
+    // `preventer` is still holding a raw pointer to `page`. `page` should be
+    // kept alive, and its destruction should be deferred. This should complete
+    // without crashing.
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEnginePageMutationTest, testing::Bool());
 
 class PDFiumEngineTabbingTest : public PDFiumTestBase {
  public:
