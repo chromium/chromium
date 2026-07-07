@@ -24,6 +24,7 @@ enum TaskDuration {
   kTransient = 2,
 };
 
+// @generate glic_api
 // Contains information about the task.
 struct TaskOptions {
   // A user-facing string that describes the task.
@@ -269,12 +270,9 @@ enum GmailOtpOptInErrorReason {
   // subscribed to the request yet. We couldn't show the dialog in this case.
   [Default] kRequestPromiseNoSubscriber = 0,
 };
-// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/actor/actor_types.ts:GmailOtpOptInErrorReason)
 
+// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/actor/actor_types.ts:GmailOtpOptInErrorReason)
 union GmailOtpOptInResult {
   bool permission_granted;
   GmailOtpOptInErrorReason error_reason;
 };
-
-
-

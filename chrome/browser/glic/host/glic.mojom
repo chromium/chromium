@@ -2324,15 +2324,17 @@ struct DocumentData {
   bool inner_text_truncated;
 };
 
+// @generate glic_api
 // Information about a PDF document.
 struct PdfDocumentData {
   // Origin of the PDF document. This may not match the origin of the tab.
   url.mojom.Origin origin;
   // Raw PDF bytes.
+  // @glic_type ReadableStream<Uint8Array>
   array<uint8>? pdf_data;
   // Whether the the PDF size exceeds the requested limit. If true, pdf data is
   // not returned.
-  bool size_limit_exceeded;
+  bool pdf_size_limit_exceeded;
 };
 
 // @generate glic_api
@@ -2420,11 +2422,13 @@ struct NoFocusedTabData {
   string no_focus_reason;
 };
 
+// @generate glic_api
 // Information about the annotated page content.
 struct AnnotatedPageData {
   // Proto for AnnotatedPageContent.
   // See components/optimization_guide/proto/features/common_quality_data.proto
   // Provided only if requested.
+  // @glic_type ReadableStream<Uint8Array>
   mojo_base.mojom.ProtoWrapper? annotated_page_content;
 
   // Metadata about the page content.
@@ -2519,12 +2523,15 @@ interface CaptureRegionObserver {
   OnUpdate(CaptureRegionResult? result, CaptureRegionErrorReason? reason);
 };
 
+// @generate glic_api
 // An encoded screenshot image and associated metadata.
 struct Screenshot {
   // Width and height of the image in pixels.
   uint32 width_pixels;
   uint32 height_pixels;
-  // Encoded image data.
+  // Encoded image data. ArrayBuffer is transferable, so it should be copied
+  // more efficiently over postMessage.
+  // @glic_type ArrayBuffer
   array<uint8> data;
   // The image encoding format represented as a MIME type.
   string mime_type;
@@ -2532,7 +2539,8 @@ struct Screenshot {
   ImageOriginAnnotations origin_annotations;
 };
 
-// Information about an image on the page.
+// @generate glic_api
+// Metadata about an image on the page.
 struct ImageInfo {
   // Caption of the image if available.
   string? caption;
@@ -2544,9 +2552,11 @@ struct ImageInfo {
   string? mime_type;
 };
 
+// @generate glic_api
 // Result of retrieving image bytes.
 struct ImageBytesResult {
   // Raw encoded image bytes.
+  // @glic_type ArrayBuffer
   mojo_base.mojom.BigBuffer bytes;
   // Metadata about the image.
   ImageInfo image_info;

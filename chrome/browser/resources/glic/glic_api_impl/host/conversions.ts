@@ -123,7 +123,7 @@ export function pdfDocumentDataToClient(
   }
   return {
     origin: originToClient(pdfDocumentData.origin),
-    pdfSizeLimitExceeded: pdfDocumentData.sizeLimitExceeded,
+    pdfSizeLimitExceeded: pdfDocumentData.pdfSizeLimitExceeded,
     pdfData,
   };
 }

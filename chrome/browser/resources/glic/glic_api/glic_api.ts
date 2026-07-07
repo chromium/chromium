@@ -1366,29 +1366,6 @@ export declare interface ResumeActorTaskResult extends TabContextResult {
   actionResult?: number;
 }
 
-/** Information about a PDF document. */
-export declare interface PdfDocumentData {
-  /** Origin of the document. */
-  origin: string;
-  /** Raw PDF data, if it could be obtained. */
-  pdfData?: ReadableStream<Uint8Array>;
-  /**
-   * Whether the PDF size limit was exceeded. If true, `pdfData` will be empty.
-   */
-  pdfSizeLimitExceeded: boolean;
-}
-
-/** Annotated data from a web document. */
-export declare interface AnnotatedPageData {
-  /** Serialized annotatedPageContent proto. */
-  annotatedPageContent?: ReadableStream<Uint8Array>;
-  /**
-   * Metadata about the annotated page content. Present when
-   * annotatedPageContent has been requested.
-   */
-  metadata?: PageMetadata;
-}
-
 /** WARNING: See additional properties of TabData in the generated section */
 export declare interface TabData {
   /**
@@ -1439,66 +1416,6 @@ export declare interface FocusedTabDataHasNoFocus {
  * for annotating the captured screenshots.
  */
 export declare interface ImageOriginAnnotations { }
-
-/**
- * An encoded screenshot image and associated metadata.
- */
-export declare interface Screenshot {
-  /** Width and height of the image in pixels. */
-  widthPixels: number;
-  heightPixels: number;
-  /**
-   * Encoded image data. ArrayBuffer is transferable, so it should be copied
-   * more efficiently over postMessage.
-   */
-  data: ArrayBuffer;
-  /** The image encoding format represented as a MIME type. */
-  mimeType: string;
-  /** Image annotations for this screenshot. */
-  originAnnotations: ImageOriginAnnotations;
-}
-
-/**
- * Metadata about an image on the page.
- */
-export declare interface ImageInfo {
-  /** The accessible name or descriptive caption of the image. */
-  caption?: string;
-  /** The origin of the page or document containing the image source. */
-  sourceOrigin?: string;
-  /** The URL source location of the image. It is empty if not available. */
-  url: string;
-  /** The image encoding format represented as a MIME type. */
-  mimeType?: string;
-}
-
-/**
- * Result of retrieving image bytes.
- */
-export declare interface ImageBytesResult {
-  /** Raw encoded image bytes. */
-  bytes: ArrayBuffer;
-  /** Metadata about the image. */
-  imageInfo: ImageInfo;
-}
-
-/**
- * Contains information about the task.
- */
-export declare interface TaskOptions {
-  /**
-   * A user-facing string that describes the task.
-   */
-  title?: string;
-  /**
-   * The expected duration of the the task.
-   */
-  duration?: TaskDuration;
-  /**
-   * The feature mode for the task.
-   */
-  featureMode?: FeatureMode;
-}
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
 export declare interface ErrorReasonTypes {
@@ -3233,6 +3150,19 @@ export declare interface DocumentData {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information about a PDF document.
+export declare interface PdfDocumentData {
+  // Origin of the PDF document. This may not match the origin of the tab.
+  origin: string;
+  // Raw PDF bytes.
+  pdfData?: ReadableStream<Uint8Array>;
+  // Whether the the PDF size exceeds the requested limit. If true, pdf data is
+  // not returned.
+  pdfSizeLimitExceeded: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Various bits of data about a browser tab. Optional fields may not be
 // available while the page is being loaded or if not provided by the page
 // itself.
@@ -3289,6 +3219,18 @@ export declare interface TabData {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information about the annotated page content.
+export declare interface AnnotatedPageData {
+  // Proto for AnnotatedPageContent.
+  // See components/optimization_guide/proto/features/common_quality_data.proto
+  // Provided only if requested.
+  annotatedPageContent?: ReadableStream<Uint8Array>;
+  // Metadata about the page content.
+  metadata?: PageMetadata;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // The captured region with an ID.
 export declare interface PendingCapturedRegion {
   // The ID of the captured region.
@@ -3310,11 +3252,63 @@ export declare interface CaptureRegionResult {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// An encoded screenshot image and associated metadata.
+export declare interface Screenshot {
+  // Width and height of the image in pixels.
+  widthPixels: number;
+  heightPixels: number;
+  // Encoded image data. ArrayBuffer is transferable, so it should be copied
+  // more efficiently over postMessage.
+  data: ArrayBuffer;
+  // The image encoding format represented as a MIME type.
+  mimeType: string;
+  // Image annotations for this screenshot.
+  originAnnotations: ImageOriginAnnotations;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Metadata about an image on the page.
+export declare interface ImageInfo {
+  // Caption of the image if available.
+  caption?: string;
+  // Security origin of the image resource.
+  sourceOrigin?: string;
+  // Source URL of the image.
+  url: string;
+  // The image encoding format represented as a MIME type (e.g., image/jpeg).
+  mimeType?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Result of retrieving image bytes.
+export declare interface ImageBytesResult {
+  // Raw encoded image bytes.
+  bytes: ArrayBuffer;
+  // Metadata about the image.
+  imageInfo: ImageInfo;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Optional parameters for the openGlicSettingsPage function.
 export declare interface OpenSettingsOptions {
   // Optionally select a field to be highlighted while opening the Glic settings
   // page.
   highlightField?: SettingsPageField;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Contains information about the task.
+export declare interface TaskOptions {
+  // A user-facing string that describes the task.
+  title?: string;
+  // The expected duration of the the task.
+  duration?: TaskDuration;
+  // The feature mode for the task.
+  featureMode?: FeatureMode;
 }
 
 ///////////////////////////////////////////////

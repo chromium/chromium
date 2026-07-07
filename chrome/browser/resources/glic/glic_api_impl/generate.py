@@ -189,6 +189,8 @@ class Converter:
         type_str = ident.id
         if type_str in type_mappings:
             return type_mappings[type_str]
+        # Strip namespaces (e.g. glic.mojom.FeatureMode -> FeatureMode)
+        type_str = type_str.split('.')[-1]
         # For named types, just assume we have that type in glic_api.ts.
         # If it doesn't actually exist, the compiler will catch it, and the
         # user can either generate it or manually define it.
@@ -264,11 +266,12 @@ class Converter:
                 continue
             self.PrintComments(field, 2)
             typename = field.typename
-            # Treat int32 "*_id" fields as strings.
+            # Treat int32 "*_id" fields as strings (except for *node_id).
             if not ts_type and field.mojom_name.name.endswith(
-                    '_id') and isinstance(
-                        typename.identifier,
-                        ast.Identifier) and typename.identifier.id == 'int32':
+                    '_id'
+            ) and not field.mojom_name.name.endswith('node_id') and isinstance(
+                    typename.identifier,
+                    ast.Identifier) and typename.identifier.id == 'int32':
                 ts_type = 'string'
             if not ts_type:
                 ts_type = self.MapMojoTypeToTs(typename, type_mappings)

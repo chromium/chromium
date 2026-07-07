@@ -2877,7 +2877,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
   {
     auto pdf_data = mojom::PdfDocumentData::New();
     pdf_data->origin = url::Origin::Create(context->frameUrl.value());
-    pdf_data->size_limit_exceeded = false;
+    pdf_data->pdf_size_limit_exceeded = false;
     pdf_data->pdf_data = std::vector<uint8_t>{'p', 'd', 'f'};
     parts.push_back(
         mojom::AdditionalContextPart::NewPdfDocumentData(std::move(pdf_data)));

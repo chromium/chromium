@@ -193,7 +193,7 @@ void HandleFetchPageResult(
             std::get_if<std::vector<uint8_t>>(&page_context.pdf_result->data)) {
       auto pdf_document_data = mojom::PdfDocumentData::New();
       pdf_document_data->origin = page_context.pdf_result->origin;
-      pdf_document_data->size_limit_exceeded =
+      pdf_document_data->pdf_size_limit_exceeded =
           page_context.pdf_result->size_exceeded;
       pdf_document_data->pdf_data = std::move(*pdf_data);
       tab_context->pdf_document_data = std::move(pdf_document_data);
