@@ -112,7 +112,6 @@ When comparing two runs (e.g., BiDi vs. CDP), they are treated as independent sa
 Ensure you have installed the project dependencies and built the project:
 
 ```bash
-npm install
 npm run build
 ```
 

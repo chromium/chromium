@@ -8,6 +8,9 @@ exclude = [
     "lib",
     "node_modules",
     "wpt",
+    "third_party",
+    "playwright",
+    "puppeteer",
 ]
 
 [tool.ruff.lint]

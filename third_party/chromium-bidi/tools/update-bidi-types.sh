@@ -122,7 +122,7 @@ cp "$BUILD_DIR/digital-credentials/digital-credentials.cddl" ./digital-credentia
 
 # 7. Install chromium-bidi dependencies
 echo "Installing npm dependencies for chromium-bidi..."
-npm ci
+npm run build
 
 # 8. Generate TypeScript and Zod types from CDDL files
 echo "Generating types..."

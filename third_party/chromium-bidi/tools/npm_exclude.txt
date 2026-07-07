@@ -1,0 +1,26 @@
++ /.bin/
++ /.bin/***
++ *.d.ts
+*/.*
+*/example/
+*/examples/
+*.html
+*.lock
+*.md
+*.png
+*.sh
+*.svg
+*/test/
+*.ts
+*.woff
+*.yml
+Makefile
+source-map.debug.js
+powered-test/es6-destructuring-assignments.js
+*.map
+*.markdown
+*.flow
+lcov.info
+travis-gh-pages
+*/lcov-report/*
+node_modules.tar.gz

@@ -45,8 +45,7 @@ jobs:
         run: bash tools/gclient-sync.sh
       - name: Generate Ninja config
         run: npm run gn:gen
-      - name: Install and build npm dependencies
-        run: npm ci
+
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
@@ -55,6 +54,7 @@ jobs:
       - name: Install Puppeteer
         # Use latest Puppeteer version to support new chromium-bidi export structure.
         run: npm install puppeteer
+
       - name: Link chromium-bidi
         run: |
           npm link
@@ -104,8 +104,6 @@ jobs:
         run: bash tools/gclient-sync.sh
       - name: Generate Ninja config
         run: npm run gn:gen
-      - name: Install and build npm dependencies
-        run: npm ci
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
@@ -163,8 +161,7 @@ jobs:
         run: bash tools/gclient-sync.sh
       - name: Generate Ninja config
         run: npm run gn:gen
-      - name: Install and build npm dependencies
-        run: npm ci
+
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries

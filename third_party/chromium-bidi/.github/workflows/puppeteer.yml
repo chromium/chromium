@@ -62,11 +62,6 @@ jobs:
       - name: Generate Ninja config
         working-directory: bidi
         run: npm run gn:gen
-      - name: Install Chromium-BiDi dependencies
-        working-directory: bidi
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build Chromium-BiDi
         working-directory: bidi
         run: |

@@ -35,7 +35,6 @@ jobs:
         run: bash tools/gclient-sync.sh
       - name: Generate Ninja config
         run: npm run gn:gen
-      - run: npm ci
       - run: npm run build
       - name: Test that BidiMapper can be imported
         run: ./tools/node.py out/Default/gen/src/bidiMapper/BidiMapper.js

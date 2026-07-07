@@ -51,6 +51,20 @@ deps = {
     'condition': 'build_with_chromium == False',
   },
 
+  'node_modules': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-nodejs',
+    'objects': [
+      {
+        'object_name': 'chromium-bidi/888cf5993c20a0758494796bc4931b2fa85d7ac32f81095cbc02108a3ecdc453',
+        'sha256sum': '888cf5993c20a0758494796bc4931b2fa85d7ac32f81095cbc02108a3ecdc453',
+        'size_bytes': 17602252,
+        'generation': 1783417539972035,
+        'output_file': 'node_modules.tar.gz',
+      },
+    ],
+  },
+
   # Platform-specific GN packages via CIPD
   'buildtools/linux64': {
     'packages': [

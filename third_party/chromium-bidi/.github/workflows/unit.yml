@@ -33,8 +33,8 @@ jobs:
         run: bash tools/gclient-sync.sh
       - name: Generate Ninja config
         run: npm run gn:gen
-      - name: Install and build npm dependencies
-        run: npm ci
+      - name: Build npm dependencies
+        run: npm run build
       - name: Verify mapper size
         run: du -sh out/Default/gen/src/mapperTab.js
       - name: Run unit tests

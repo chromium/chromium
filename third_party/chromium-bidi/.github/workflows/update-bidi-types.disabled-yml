@@ -139,7 +139,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          cargo install cddlconv@0.1.7;
+          cargo install cddlconv@0.1.7
           npm install parse5
       - name: Check out the main spec repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -195,8 +195,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
-      - name: Install and build npm dependencies
-        run: npm ci
+      - name: Build npm dependencies
+        run: npm run build
       - name: Download WebDriverBidi CDDL
         uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:

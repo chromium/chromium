@@ -17,7 +17,7 @@
     "flake8": "flake8 examples/ tests/",
     "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
     "format:eslint": "eslint --cache --fix .",
-    "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -v '^wpt$')",
+    "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -vE '^(wpt|third_party|playwright|puppeteer)(/|$)')",
     "format:prettier": "prettier --cache --write .",
     "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (pipenv run ruff check --fix . && pipenv run ruff format .)",
     "prepare": "npm run build",

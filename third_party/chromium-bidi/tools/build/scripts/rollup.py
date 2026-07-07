@@ -30,7 +30,9 @@ def main():
     # Resolve absolute path to rollup under repository root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(script_dir, "../../.."))
-    rollup_path = os.path.join(repo_root, "node_modules/rollup/dist/bin/rollup")
+    rollup_path = os.path.join(
+        repo_root, "node_modules/@rollup/wasm-node/dist/bin/rollup"
+    )
 
     # Invoke rollup via node wrapper, setting the working directory to the repository root
     node_path = os.path.join(repo_root, "tools", "node.py")

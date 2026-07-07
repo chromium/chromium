@@ -13,6 +13,7 @@ node_modules/
 wptreport*.json
 /tests/
 /wpt/
+/third_party/
 /wpt-metadata/*/
 
 # Prettier Specific

@@ -158,14 +158,6 @@ Event = {
 
 ## Dev Setup
 
-### `npm`
-
-This is a Node.js project, so install dependencies as usual:
-
-```sh
-npm install
-```
-
 ### Build Setup
 
 The project uses Chromium build toolchains (`gn` and `ninja`) for compiling TypeScript and bundling.
