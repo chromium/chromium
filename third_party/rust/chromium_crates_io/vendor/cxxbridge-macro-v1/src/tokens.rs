@@ -1,6 +1,6 @@
 use crate::syntax::Receiver;
 use proc_macro2::TokenStream;
-use quote::{quote_spanned, ToTokens};
+use quote::{ToTokens, quote_spanned};
 use syn::Token;
 
 pub(crate) struct ReceiverType<'a>(&'a Receiver);

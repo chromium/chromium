@@ -1,7 +1,7 @@
 use self::ImproperCtype::*;
+use crate::syntax::Types;
 use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::query::TypeQuery;
-use crate::syntax::Types;
 use proc_macro2::Ident;
 
 pub(crate) enum ImproperCtype<'a> {

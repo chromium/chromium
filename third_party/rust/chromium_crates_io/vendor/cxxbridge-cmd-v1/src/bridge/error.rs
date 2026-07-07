@@ -1,4 +1,4 @@
-use crate::gen::fs;
+use crate::bridge::fs;
 use crate::syntax;
 use codespan_reporting::diagnostic::{Diagnostic, Label};
 use codespan_reporting::files::SimpleFiles;

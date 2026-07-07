@@ -402,7 +402,7 @@ pub unsafe trait UniquePtrTarget {
     unsafe fn __drop(repr: MaybeUninit<*mut c_void>);
 }
 
-extern "C" {
+unsafe extern "C" {
     #[link_name = "cxxbridge1$unique_ptr$std$string$null"]
     fn unique_ptr_std_string_null(this: *mut MaybeUninit<*mut c_void>);
     #[link_name = "cxxbridge1$unique_ptr$std$string$raw"]

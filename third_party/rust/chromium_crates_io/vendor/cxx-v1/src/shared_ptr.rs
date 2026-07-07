@@ -406,42 +406,42 @@ macro_rules! impl_shared_ptr_target {
                 f.write_str($name)
             }
             unsafe fn __null(new: *mut c_void) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$null")]
                     fn __null(new: *mut c_void);
                 }
                 unsafe { __null(new) }
             }
             unsafe fn __new(value: Self, new: *mut c_void) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$uninit")]
                     fn __uninit(new: *mut c_void) -> *mut c_void;
                 }
                 unsafe { __uninit(new).cast::<$ty>().write(value) }
             }
             unsafe fn __raw(new: *mut c_void, raw: *mut Self) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$raw")]
                     fn __raw(new: *mut c_void, raw: *mut c_void);
                 }
                 unsafe { __raw(new, raw.cast::<c_void>()) }
             }
             unsafe fn __clone(this: *const c_void, new: *mut c_void) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$clone")]
                     fn __clone(this: *const c_void, new: *mut c_void);
                 }
                 unsafe { __clone(this, new) }
             }
             unsafe fn __get(this: *const c_void) -> *const Self {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$get")]
                     fn __get(this: *const c_void) -> *const c_void;
                 }
                 unsafe { __get(this) }.cast()
             }
             unsafe fn __drop(this: *mut c_void) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$shared_ptr$", $segment, "$drop")]
                     fn __drop(this: *mut c_void);
                 }

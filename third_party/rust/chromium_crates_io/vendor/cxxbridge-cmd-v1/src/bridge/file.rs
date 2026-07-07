@@ -2,7 +2,7 @@ use crate::syntax::file::Module;
 use crate::syntax::namespace::Namespace;
 use syn::parse::discouraged::Speculative;
 use syn::parse::{Error, Parse, ParseStream, Result};
-use syn::{braced, Attribute, Ident, Item, Meta, Token, Visibility};
+use syn::{Attribute, Ident, Item, Meta, Token, Visibility, braced};
 
 pub(crate) struct File {
     pub modules: Vec<Module>,

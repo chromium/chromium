@@ -31,7 +31,7 @@ But the C++ side of the bindings needs to be generated. Your options are:
   ```
 
   It's packaged as the `cxxbridge-cmd` crate on crates.io or can be built from
-  the *gen/cmd/* directory of the CXX GitHub repo.
+  the *bridge/cmd/* directory of the CXX GitHub repo.
 
 - Or, build your own code generator frontend on top of the [cxx-gen] crate. This
   is currently unofficial and unsupported.

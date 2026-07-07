@@ -1,7 +1,7 @@
 use crate::syntax::map::UnorderedMap;
 use crate::syntax::resolve::Resolution;
 use crate::syntax::types::Types;
-use crate::syntax::{mangle, Symbol, Ty1, Type};
+use crate::syntax::{Symbol, Ty1, Type, mangle};
 use proc_macro2::{Ident, Span};
 use std::hash::{Hash, Hasher};
 

@@ -24,7 +24,7 @@ cxx = "1.0"
 cxx-build = "1.0"
 ```
 
-*Compiler support: requires rustc 1.82+ and c++11 or newer*<br>
+*Compiler support: requires rustc 1.85+ and c++11 or newer*<br>
 *[Release notes](https://github.com/dtolnay/cxx/releases)*
 
 <br>
@@ -136,7 +136,7 @@ generators:
 $ cargo expand --manifest-path demo/Cargo.toml
 
    # run C++ code generator and print to stdout
-$ cargo run --manifest-path gen/cmd/Cargo.toml -- demo/src/main.rs
+$ cargo run --manifest-path bridge/cmd/Cargo.toml -- demo/src/main.rs
 ```
 
 <br>
@@ -259,7 +259,7 @@ fn main() {
 For use in non-Cargo builds like Bazel or Buck, CXX provides an alternate way of
 invoking the C++ code generator as a standalone command line tool. The tool is
 packaged as the `cxxbridge-cmd` crate on crates.io or can be built from the
-*gen/cmd* directory of this repo.
+*bridge/cmd* directory of this repo.
 
 ```bash
 $ cargo install cxxbridge-cmd

@@ -1,10 +1,10 @@
-use indexmap::{indexset as set, IndexSet as Set};
+use indexmap::{IndexSet as Set, indexset as set};
 use proc_macro2::Ident;
 use std::hash::{Hash, Hasher};
 use std::iter;
 use std::mem;
 use syn::parse::{Error, ParseStream, Result};
-use syn::{parenthesized, token, Attribute, LitStr, Token};
+use syn::{Attribute, LitStr, Token, parenthesized, token};
 
 #[derive(Clone)]
 pub(crate) enum CfgExpr {

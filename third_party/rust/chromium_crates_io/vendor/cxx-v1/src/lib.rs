@@ -18,7 +18,7 @@
 //!
 //! <br>
 //!
-//! *Compiler support: requires rustc 1.82+ and c++11 or newer*<br>
+//! *Compiler support: requires rustc 1.85+ and c++11 or newer*<br>
 //! *[Release notes](https://github.com/dtolnay/cxx/releases)*
 //!
 //! <br>
@@ -140,7 +140,7 @@
 //! $ cargo expand --manifest-path demo/Cargo.toml
 //!
 //!    # run C++ code generator and print to stdout
-//! $ cargo run --manifest-path gen/cmd/Cargo.toml -- demo/src/main.rs
+//! $ cargo run --manifest-path bridge/cmd/Cargo.toml -- demo/src/main.rs
 //! ```
 //!
 //! <br>
@@ -266,7 +266,7 @@
 //! For use in non-Cargo builds like Bazel or Buck, CXX provides an alternate
 //! way of invoking the C++ code generator as a standalone command line tool.
 //! The tool is packaged as the `cxxbridge-cmd` crate on crates.io or can be
-//! built from the *gen/cmd* directory of <https://github.com/dtolnay/cxx>.
+//! built from the *bridge/cmd* directory of <https://github.com/dtolnay/cxx>.
 //!
 //! ```bash
 //! $ cargo install cxxbridge-cmd
@@ -363,7 +363,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.194")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.196")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -371,11 +371,7 @@
     missing_docs,
     unsafe_op_in_unsafe_fn
 )]
-#![warn(
-    clippy::alloc_instead_of_core,
-    clippy::std_instead_of_alloc,
-    clippy::std_instead_of_core
-)]
+#![warn(clippy::alloc_instead_of_core, clippy::std_instead_of_alloc)]
 #![expect(non_camel_case_types)]
 #![allow(
     clippy::cast_possible_truncation,
@@ -465,7 +461,7 @@ pub use crate::cxx_vector::CxxVector;
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub use crate::exception::Exception;
-pub use crate::extern_type::{kind, ExternType};
+pub use crate::extern_type::{ExternType, kind};
 pub use crate::shared_ptr::SharedPtr;
 pub use crate::string::CxxString;
 pub use crate::unique_ptr::UniquePtr;
@@ -494,13 +490,13 @@ pub mod private {
     pub use crate::hash::hash;
     pub use crate::opaque::Opaque;
     #[cfg(feature = "alloc")]
-    pub use crate::result::{r#try, Result};
+    pub use crate::result::{Result, r#try};
     pub use crate::rust_slice::RustSlice;
     pub use crate::rust_str::RustStr;
     #[cfg(feature = "alloc")]
     pub use crate::rust_string::RustString;
     pub use crate::rust_type::{
-        require_box, require_unpin, require_vec, with, ImplBox, ImplVec, RustType, Without,
+        ImplBox, ImplVec, RustType, Without, require_box, require_unpin, require_vec, with,
     };
     #[cfg(feature = "alloc")]
     pub use crate::rust_vec::RustVec;

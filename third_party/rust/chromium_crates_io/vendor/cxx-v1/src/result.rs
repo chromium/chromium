@@ -40,7 +40,7 @@ unsafe fn to_c_error(msg: String) -> Result {
     let ptr = msg.as_ptr();
     let len = msg.len();
 
-    extern "C" {
+    unsafe extern "C" {
         #[link_name = "cxxbridge1$error"]
         fn error(ptr: *const u8, len: usize) -> NonNull<u8>;
     }

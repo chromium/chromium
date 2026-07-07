@@ -1,7 +1,7 @@
 use crate::syntax::cfg::{CfgExpr, ComputedCfg};
 use proc_macro2::{Delimiter, Group, Ident, Span, TokenStream};
 use quote::{ToTokens, TokenStreamExt as _};
-use syn::{token, AttrStyle, Attribute, MacroDelimiter, Meta, MetaList, Path, Token};
+use syn::{AttrStyle, Attribute, MacroDelimiter, Meta, MetaList, Path, Token, token};
 
 impl<'a> ComputedCfg<'a> {
     pub(crate) fn into_attr(&self) -> Option<Attribute> {

@@ -1,5 +1,5 @@
 use crate::syntax::check::Check;
-use crate::syntax::{error, Api, Pair};
+use crate::syntax::{Api, Pair, error};
 
 fn check(cx: &mut Check, name: &Pair) {
     for segment in &name.namespace {

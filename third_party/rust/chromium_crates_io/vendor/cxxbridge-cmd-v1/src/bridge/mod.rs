@@ -19,12 +19,12 @@ mod pragma;
 mod write;
 
 use self::cfg::UnsupportedCfgEvaluator;
-use self::error::{format_err, Result};
+use self::error::{Result, format_err};
 use self::file::File;
 use self::include::Include;
 use crate::syntax::cfg::CfgExpr;
 use crate::syntax::report::Errors;
-use crate::syntax::{self, attrs, Types};
+use crate::syntax::{self, Types, attrs};
 use std::collections::BTreeSet as Set;
 use std::path::Path;
 
@@ -189,10 +189,10 @@ pub(super) fn generate(syntax: File, opt: &Opt) -> Result<GeneratedCode> {
     // one or the other.
     let (mut header, mut implementation) = Default::default();
     if opt.gen_header {
-        header = write::gen(apis, types, opt, true);
+        header = write::generate(apis, types, opt, true);
     }
     if opt.gen_implementation {
-        implementation = write::gen(apis, types, opt, false);
+        implementation = write::generate(apis, types, opt, false);
     }
     Ok(GeneratedCode {
         header,

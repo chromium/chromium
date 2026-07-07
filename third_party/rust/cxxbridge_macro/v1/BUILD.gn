@@ -63,12 +63,12 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.194"
+  cargo_pkg_version = "1.0.196"
 
   allow_unsafe = false
 

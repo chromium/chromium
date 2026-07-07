@@ -3,8 +3,8 @@ use crate::syntax::namespace::Namespace;
 use quote::quote;
 use syn::parse::{Error, Parse, ParseStream, Result};
 use syn::{
-    braced, token, Abi, Attribute, ForeignItem, Ident, Item as RustItem, ItemEnum, ItemImpl,
-    ItemStruct, ItemUse, LitStr, Token, Visibility,
+    Abi, Attribute, ForeignItem, Ident, Item as RustItem, ItemEnum, ItemImpl, ItemStruct, ItemUse,
+    LitStr, Token, Visibility, braced, token,
 };
 
 pub(crate) struct Module {

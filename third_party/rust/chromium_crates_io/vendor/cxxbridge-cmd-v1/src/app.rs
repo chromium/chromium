@@ -3,8 +3,8 @@
 mod test;
 
 use super::{Opt, Output};
+use crate::bridge::include::Include;
 use crate::cfg::{self, CfgValue};
-use crate::gen::include::Include;
 use crate::syntax::IncludeKind;
 use clap::builder::{ArgAction, ValueParser};
 use clap::{Arg, Command};

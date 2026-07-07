@@ -30,15 +30,15 @@
 #![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 mod app;
+mod bridge;
 mod cfg;
-mod gen;
 mod output;
 mod syntax;
 
+use crate::bridge::error::{Result, report};
+use crate::bridge::fs;
+use crate::bridge::include::{self, Include};
 use crate::cfg::{CfgValue, FlagsCfgEvaluator};
-use crate::gen::error::{report, Result};
-use crate::gen::fs;
-use crate::gen::include::{self, Include};
 use crate::output::Output;
 use std::collections::{BTreeMap as Map, BTreeSet as Set};
 use std::io::{self, Write};
@@ -91,7 +91,7 @@ fn try_main() -> Result<()> {
         outputs.push((output, kind));
     }
 
-    let gen = gen::Opt {
+    let bridge = bridge::Opt {
         include: opt.include,
         cxx_impl_annotations: opt.cxx_impl_annotations,
         gen_header,
@@ -101,7 +101,7 @@ fn try_main() -> Result<()> {
     };
 
     let generated_code = if let Some(input) = opt.input {
-        gen::generate_from_path(&input, &gen)
+        bridge::generate_from_path(&input, &bridge)
     } else {
         Default::default()
     };

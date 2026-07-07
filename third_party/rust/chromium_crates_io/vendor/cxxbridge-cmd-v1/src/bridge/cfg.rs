@@ -1,7 +1,7 @@
-use crate::gen::{CfgEvaluator, CfgResult};
+use crate::bridge::{CfgEvaluator, CfgResult};
+use crate::syntax::Api;
 use crate::syntax::cfg::CfgExpr;
 use crate::syntax::report::Errors;
-use crate::syntax::Api;
 use quote::quote;
 use std::collections::BTreeSet as Set;
 use std::mem;

@@ -1,5 +1,5 @@
-use crate::syntax::namespace::Namespace;
 use crate::syntax::Api;
+use crate::syntax::namespace::Namespace;
 
 impl Api {
     pub(crate) fn namespace(&self) -> &Namespace {

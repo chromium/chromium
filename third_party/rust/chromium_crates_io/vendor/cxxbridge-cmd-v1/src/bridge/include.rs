@@ -1,4 +1,4 @@
-use crate::gen::out::{Content, OutFile};
+use crate::bridge::out::{Content, OutFile};
 use crate::syntax::{self, IncludeKind};
 use std::ops::{Deref, DerefMut};
 

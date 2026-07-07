@@ -1,5 +1,5 @@
-use crate::syntax::map::UnorderedMap as Map;
 use crate::syntax::Api;
+use crate::syntax::map::UnorderedMap as Map;
 use proc_macro2::Ident;
 
 pub(crate) struct NamespaceEntries<'a> {
@@ -58,8 +58,8 @@ mod tests {
     use crate::syntax::namespace::Namespace;
     use crate::syntax::{Api, Doc, ExternType, ForeignName, Lang, Lifetimes, Pair};
     use proc_macro2::{Ident, Span};
-    use syn::punctuated::Punctuated;
     use syn::Token;
+    use syn::punctuated::Punctuated;
 
     #[test]
     fn test_ns_entries_sort() {

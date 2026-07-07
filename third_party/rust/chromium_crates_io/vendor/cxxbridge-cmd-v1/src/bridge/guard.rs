@@ -1,6 +1,6 @@
-use crate::gen::out::OutFile;
-use crate::syntax::symbol::Symbol;
+use crate::bridge::out::OutFile;
 use crate::syntax::Pair;
+use crate::syntax::symbol::Symbol;
 use std::fmt::{self, Display};
 
 pub(crate) struct Guard {

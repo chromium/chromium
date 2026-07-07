@@ -1,4 +1,4 @@
-use crate::gen::{CfgEvaluator, CfgResult};
+use crate::bridge::{CfgEvaluator, CfgResult};
 use std::collections::{BTreeMap as Map, BTreeSet as Set};
 use std::fmt::{self, Debug};
 use syn::parse::ParseStream;

@@ -1,5 +1,5 @@
-use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::Type;
+use crate::syntax::atom::Atom::{self, *};
 
 pub(crate) enum PrimitiveKind {
     Boolean,

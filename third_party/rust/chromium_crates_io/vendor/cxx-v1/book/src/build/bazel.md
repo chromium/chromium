@@ -6,7 +6,7 @@ invoke it as a `genrule` will run CXX's C++ code generator via its `cxxbridge`
 command line interface.
 
 The tool is packaged as the `cxxbridge-cmd` crate on crates.io or can be built
-from the *gen/cmd/* directory of the CXX GitHub repo.
+from the *bridge/cmd/* directory of the CXX GitHub repo.
 
 ```console
 $  cargo install cxxbridge-cmd

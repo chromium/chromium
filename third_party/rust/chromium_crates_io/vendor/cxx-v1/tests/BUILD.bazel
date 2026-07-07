@@ -6,7 +6,7 @@ rust_test(
     name = "test",
     size = "small",
     srcs = ["test.rs"],
-    edition = "2021",
+    edition = "2024",
     deps = [
         ":cxx_test_suite",
         "//:cxx",
@@ -21,9 +21,11 @@ rust_library(
         "ffi/lib.rs",
         "ffi/module.rs",
     ],
-    edition = "2021",
-    deps = [
+    edition = "2024",
+    link_deps = [
         ":impl",
+    ],
+    deps = [
         "//:cxx",
         "@crates.io//:serde",
     ],

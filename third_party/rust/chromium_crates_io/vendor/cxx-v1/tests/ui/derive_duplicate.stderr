@@ -1,7 +1,7 @@
-error[E0119]: conflicting implementations of trait `Clone` for type `Struct`
+error[E0119]: conflicting implementations of trait `Clone` for type `ffi::Struct`
  --> tests/ui/derive_duplicate.rs:3:21
   |
 3 |     #[derive(Clone, Clone)]
-  |              -----  ^^^^^ conflicting implementation for `Struct`
+  |              -----  ^^^^^ conflicting implementation for `ffi::Struct`
   |              |
   |              first implementation here

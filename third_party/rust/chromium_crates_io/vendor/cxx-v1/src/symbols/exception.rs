@@ -6,7 +6,7 @@ use alloc::string::String;
 use core::ptr::NonNull;
 use core::slice;
 
-#[export_name = "cxxbridge1$exception"]
+#[unsafe(export_name = "cxxbridge1$exception")]
 unsafe extern "C" fn exception(ptr: *const u8, len: usize) -> PtrLen {
     let slice = unsafe { slice::from_raw_parts(ptr, len) };
     let string = String::from_utf8_lossy(slice);

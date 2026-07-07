@@ -3,7 +3,7 @@ load("//tools/buck:rust_cxx_bridge.bzl", "rust_cxx_bridge")
 rust_test(
     name = "test",
     srcs = ["test.rs"],
-    edition = "2021",
+    edition = "2024",
     deps = [
         ":ffi",
         "//:cxx",
@@ -18,7 +18,7 @@ rust_library(
         "ffi/module.rs",
     ],
     crate = "cxx_test_suite",
-    edition = "2021",
+    edition = "2024",
     deps = [
         ":impl",
         "//:cxx",

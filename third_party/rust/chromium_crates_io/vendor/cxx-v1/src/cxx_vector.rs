@@ -450,14 +450,14 @@ macro_rules! vector_element_by_value_methods {
     (opaque, $segment:expr, $ty:ty) => {};
     (trivial, $segment:expr, $ty:ty) => {
         unsafe fn __push_back(v: Pin<&mut CxxVector<$ty>>, value: &mut ManuallyDrop<$ty>) {
-            extern "C" {
+            unsafe extern "C" {
                 #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$push_back")]
                 fn __push_back(_: Pin<&mut CxxVector<$ty>>, _: &mut ManuallyDrop<$ty>);
             }
             unsafe { __push_back(v, value) }
         }
         unsafe fn __pop_back(v: Pin<&mut CxxVector<$ty>>, out: &mut MaybeUninit<$ty>) {
-            extern "C" {
+            unsafe extern "C" {
                 #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$pop_back")]
                 fn __pop_back(_: Pin<&mut CxxVector<$ty>>, _: &mut MaybeUninit<$ty>);
             }
@@ -476,35 +476,35 @@ macro_rules! impl_vector_element {
                 f.write_str($name)
             }
             fn __vector_new() -> *mut CxxVector<Self> {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$new")]
                     fn __vector_new() -> *mut CxxVector<$ty>;
                 }
                 unsafe { __vector_new() }
             }
             fn __vector_size(v: &CxxVector<$ty>) -> usize {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$size")]
                     fn __vector_size(_: &CxxVector<$ty>) -> usize;
                 }
                 unsafe { __vector_size(v) }
             }
             fn __vector_capacity(v: &CxxVector<$ty>) -> usize {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$capacity")]
                     fn __vector_capacity(_: &CxxVector<$ty>) -> usize;
                 }
                 unsafe { __vector_capacity(v) }
             }
             unsafe fn __get_unchecked(v: *mut CxxVector<$ty>, pos: usize) -> *mut $ty {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$get_unchecked")]
                     fn __get_unchecked(_: *mut CxxVector<$ty>, _: usize) -> *mut $ty;
                 }
                 unsafe { __get_unchecked(v, pos) }
             }
             unsafe fn __reserve(v: Pin<&mut CxxVector<$ty>>, new_cap: usize) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$std$vector$", $segment, "$reserve")]
                     fn __reserve(_: Pin<&mut CxxVector<$ty>>, _: usize);
                 }
@@ -512,7 +512,7 @@ macro_rules! impl_vector_element {
             }
             vector_element_by_value_methods!($kind, $segment, $ty);
             fn __unique_ptr_null() -> MaybeUninit<*mut c_void> {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$unique_ptr$std$vector$", $segment, "$null")]
                     fn __unique_ptr_null(this: *mut MaybeUninit<*mut c_void>);
                 }
@@ -521,7 +521,7 @@ macro_rules! impl_vector_element {
                 repr
             }
             unsafe fn __unique_ptr_raw(raw: *mut CxxVector<Self>) -> MaybeUninit<*mut c_void> {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$unique_ptr$std$vector$", $segment, "$raw")]
                     fn __unique_ptr_raw(this: *mut MaybeUninit<*mut c_void>, raw: *mut CxxVector<$ty>);
                 }
@@ -530,21 +530,21 @@ macro_rules! impl_vector_element {
                 repr
             }
             unsafe fn __unique_ptr_get(repr: MaybeUninit<*mut c_void>) -> *const CxxVector<Self> {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$unique_ptr$std$vector$", $segment, "$get")]
                     fn __unique_ptr_get(this: *const MaybeUninit<*mut c_void>) -> *const CxxVector<$ty>;
                 }
                 unsafe { __unique_ptr_get(&repr) }
             }
             unsafe fn __unique_ptr_release(mut repr: MaybeUninit<*mut c_void>) -> *mut CxxVector<Self> {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$unique_ptr$std$vector$", $segment, "$release")]
                     fn __unique_ptr_release(this: *mut MaybeUninit<*mut c_void>) -> *mut CxxVector<$ty>;
                 }
                 unsafe { __unique_ptr_release(&mut repr) }
             }
             unsafe fn __unique_ptr_drop(mut repr: MaybeUninit<*mut c_void>) {
-                extern "C" {
+                unsafe extern "C" {
                     #[link_name = concat!("cxxbridge1$unique_ptr$std$vector$", $segment, "$drop")]
                     fn __unique_ptr_drop(this: *mut MaybeUninit<*mut c_void>);
                 }

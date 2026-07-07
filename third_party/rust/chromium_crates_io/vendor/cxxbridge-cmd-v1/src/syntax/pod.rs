@@ -1,6 +1,6 @@
 use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::query::TypeQuery;
-use crate::syntax::{primitive, Types};
+use crate::syntax::{Types, primitive};
 
 impl<'a> Types<'a> {
     pub(crate) fn is_guaranteed_pod(&self, ty: impl Into<TypeQuery<'a>>) -> bool {

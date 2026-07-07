@@ -1,5 +1,5 @@
-use crate::gen::include::HEADER;
-use crate::gen::out::Content;
+use crate::bridge::include::HEADER;
+use crate::bridge::out::Content;
 
 pub(super) fn write(out: &mut Content, needed: bool, guard: &str) {
     let ifndef = format!("#ifndef {}", guard);

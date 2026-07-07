@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.82"
+edition = "2024"
+rust-version = "1.85"
 name = "cxxbridge-flags"
-version = "1.0.194"
+version = "1.0.196"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false

@@ -13,24 +13,24 @@ cargo_crate("cxxbridge") {
   crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/main.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/app.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/block.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/cfg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/check.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/fs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/guard.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/ifndef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/include.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/namespace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/nested.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/out.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/pragma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/write.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/cfg.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/block.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/cfg.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/check.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/fs.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/guard.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/ifndef.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/include.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/names.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/namespace.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/nested.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/out.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/pragma.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/write.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/main.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/output.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/syntax/atom.rs",
@@ -72,34 +72,34 @@ cargo_crate("cxxbridge") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/test.rs",
   ]
   inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/alignmax.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/deleter_if.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/destroy.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/friend_impl.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/manually_drop.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/maybe_uninit.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/maybe_uninit_detail.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/ptr_len.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/relocatable_or_array.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/repr_fat.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/rust_error.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/rust_slice_uninit.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/rust_str_uninit.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/shared_ptr.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/trycatch.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/trycatch_detail.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/vector.h",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/include/cxx.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/alignmax.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/deleter_if.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/destroy.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/friend_impl.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/manually_drop.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/maybe_uninit.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/maybe_uninit_detail.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/ptr_len.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/relocatable_or_array.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/repr_fat.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/rust_error.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/rust_slice_uninit.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/rust_str_uninit.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/shared_ptr.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/trycatch.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/trycatch_detail.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/builtin/vector.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/bridge/include/cxx.h",
   ]
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-cmd"
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.194"
+  cargo_pkg_version = "1.0.196"
 
   allow_unsafe = false
 

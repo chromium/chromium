@@ -18,7 +18,7 @@ jobs:
         os: [ubuntu, macos, windows]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rust-src
@@ -26,3 +26,5 @@ jobs:
       - run: buck2 run demo
       - run: buck2 build ...
       - run: buck2 test ...
+      - name: Run buck2 starlark lint
+        run: git ls-files ':(glob)tools/buck/**/*.bzl' | xargs buck2 starlark lint

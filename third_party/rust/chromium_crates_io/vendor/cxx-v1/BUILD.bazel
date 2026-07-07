@@ -8,14 +8,16 @@ rust_library(
         "alloc",
         "std",
     ],
-    edition = "2021",
+    edition = "2024",
+    link_deps = [
+        ":core-lib",
+    ],
     proc_macro_deps = [
         ":cxxbridge-macro",
     ],
     version = module_version(),
     visibility = ["//visibility:public"],
     deps = [
-        ":core-lib",
         "@crates.io//:foldhash",
     ],
 )
@@ -28,9 +30,9 @@ alias(
 
 rust_binary(
     name = "cxxbridge",
-    srcs = glob(["gen/cmd/src/**/*.rs"]),
-    compile_data = glob(["gen/cmd/src/gen/**/*.h"]),
-    edition = "2021",
+    srcs = glob(["bridge/cmd/src/**/*.rs"]),
+    compile_data = glob(["bridge/cmd/src/bridge/**/*.h"]),
+    edition = "2024",
     version = module_version(),
     deps = [
         "@crates.io//:clap",
@@ -60,7 +62,7 @@ cc_library(
 rust_proc_macro(
     name = "cxxbridge-macro",
     srcs = glob(["macro/src/**/*.rs"]),
-    edition = "2021",
+    edition = "2024",
     proc_macro_deps = [
         "@crates.io//:rustversion",
     ],
@@ -75,9 +77,9 @@ rust_proc_macro(
 
 rust_library(
     name = "cxx-build",
-    srcs = glob(["gen/build/src/**/*.rs"]),
-    compile_data = glob(["gen/build/src/gen/**/*.h"]),
-    edition = "2021",
+    srcs = glob(["bridge/build/src/**/*.rs"]),
+    compile_data = glob(["bridge/build/src/bridge/**/*.h"]),
+    edition = "2024",
     version = module_version(),
     deps = [
         "@crates.io//:cc",
@@ -92,9 +94,9 @@ rust_library(
 
 rust_library(
     name = "cxx-gen",
-    srcs = glob(["gen/lib/src/**/*.rs"]),
-    compile_data = glob(["gen/lib/src/gen/**/*.h"]),
-    edition = "2021",
+    srcs = glob(["bridge/lib/src/**/*.rs"]),
+    compile_data = glob(["bridge/lib/src/bridge/**/*.h"]),
+    edition = "2024",
     version = module_version(),
     visibility = ["//visibility:public"],
     deps = [

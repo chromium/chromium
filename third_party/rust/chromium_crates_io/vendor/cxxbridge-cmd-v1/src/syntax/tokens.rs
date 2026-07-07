@@ -4,8 +4,8 @@ use crate::syntax::{
     Ref, Signature, SliceRef, Struct, Ty1, Type, TypeAlias, Var,
 };
 use proc_macro2::{Ident, Span, TokenStream};
-use quote::{quote_spanned, ToTokens};
-use syn::{token, Token};
+use quote::{ToTokens, quote_spanned};
+use syn::{Token, token};
 
 impl ToTokens for Type {
     fn to_tokens(&self, tokens: &mut TokenStream) {

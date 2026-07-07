@@ -1,16 +1,16 @@
 [package]
 name = "cxxbridge-macro"
-version = "1.0.194"
+version = "1.0.196"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi"]
 description = "Implementation detail of the `cxx` crate."
-edition = "2021"
+edition = "2024"
 exclude = ["build.rs", "README.md"]
 homepage = "https://cxx.rs"
 keywords = ["ffi"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
-rust-version = "1.82"
+rust-version = "1.85"
 
 [lib]
 proc-macro = true

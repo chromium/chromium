@@ -3,11 +3,12 @@ use crate::syntax::message::Message;
 use crate::syntax::report::Errors;
 use crate::syntax::visit::{self, Visit};
 use crate::syntax::{
-    error, ident, trivial, Api, Array, Enum, ExternFn, ExternType, FnKind, Impl, Lang, Lifetimes,
-    NamedType, Ptr, Receiver, Ref, Signature, SliceRef, Struct, Trait, Ty1, Type, TypeAlias, Types,
+    Api, Array, Enum, ExternFn, ExternType, FnKind, Impl, Lang, Lifetimes, NamedType, Ptr,
+    Receiver, Ref, Signature, SliceRef, Struct, Trait, Ty1, Type, TypeAlias, Types, error, ident,
+    trivial,
 };
 use proc_macro2::{Delimiter, Group, Ident, TokenStream};
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use std::fmt::Display;
 use syn::{GenericParam, Generics, Lifetime};
 
@@ -418,7 +419,10 @@ fn check_api_enum(cx: &mut Check, enm: &Enum) {
                 let default_variants = enm.variants.iter().filter(|v| v.default).count();
                 if default_variants != 1 {
                     let mut msg = Message::new();
-                    write!(msg, "derive(Default) on enum requires exactly one variant to be marked with #[default]");
+                    write!(
+                        msg,
+                        "derive(Default) on enum requires exactly one variant to be marked with #[default]"
+                    );
                     if default_variants > 0 {
                         write!(msg, " (found {})", default_variants);
                     }

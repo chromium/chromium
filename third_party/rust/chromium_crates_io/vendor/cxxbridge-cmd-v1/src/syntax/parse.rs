@@ -1,14 +1,14 @@
+use crate::syntax::Atom::*;
 use crate::syntax::attrs::OtherAttrs;
 use crate::syntax::cfg::CfgExpr;
 use crate::syntax::discriminant::DiscriminantSet;
 use crate::syntax::file::{Item, ItemForeignMod};
 use crate::syntax::report::Errors;
 use crate::syntax::repr::Repr;
-use crate::syntax::Atom::*;
 use crate::syntax::{
-    attrs, error, Api, Array, Derive, Doc, Enum, EnumRepr, ExternFn, ExternType, FnKind,
-    ForeignName, Impl, Include, IncludeKind, Lang, Lifetimes, NamedType, Namespace, Pair, Ptr,
-    Receiver, Ref, Signature, SliceRef, Struct, Ty1, Type, TypeAlias, Var, Variant,
+    Api, Array, Derive, Doc, Enum, EnumRepr, ExternFn, ExternType, FnKind, ForeignName, Impl,
+    Include, IncludeKind, Lang, Lifetimes, NamedType, Namespace, Pair, Ptr, Receiver, Ref,
+    Signature, SliceRef, Struct, Ty1, Type, TypeAlias, Var, Variant, attrs, error,
 };
 use proc_macro2::{Delimiter, Group, Span, TokenStream, TokenTree};
 use quote::{format_ident, quote, quote_spanned};

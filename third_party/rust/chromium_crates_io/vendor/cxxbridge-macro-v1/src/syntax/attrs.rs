@@ -2,7 +2,7 @@ use crate::syntax::cfg::CfgExpr;
 use crate::syntax::namespace::Namespace;
 use crate::syntax::report::Errors;
 use crate::syntax::repr::Repr;
-use crate::syntax::{cfg, Derive, Doc, ForeignName};
+use crate::syntax::{Derive, Doc, ForeignName, cfg};
 use proc_macro2::Ident;
 use syn::parse::ParseStream;
 use syn::{Attribute, Error, Expr, Lit, LitStr, Meta, Path, Result, Token};

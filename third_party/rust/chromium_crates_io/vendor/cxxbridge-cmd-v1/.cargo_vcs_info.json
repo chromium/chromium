@@ -1,6 +1,6 @@
 {
   "git": {
-    "sha1": "255e7afa8fbebfb5ac59d4749fd5ac981a6b68ba"
+    "sha1": "eae54e0f2586183cce1d64b39fdd586d2124b7a4"
   },
-  "path_in_vcs": "gen/cmd"
+  "path_in_vcs": "bridge/cmd"
 }

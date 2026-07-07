@@ -1,8 +1,8 @@
-use crate::gen::block::Block;
-use crate::gen::ifndef;
-use crate::gen::include::Includes;
-use crate::gen::out::{Content, OutFile};
-use crate::gen::pragma::Pragma;
+use crate::bridge::block::Block;
+use crate::bridge::ifndef;
+use crate::bridge::include::Includes;
+use crate::bridge::out::{Content, OutFile};
+use crate::bridge::pragma::Pragma;
 
 #[derive(Default, PartialEq)]
 pub(crate) struct Builtins<'a> {
@@ -443,16 +443,16 @@ fn write_builtin<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::gen::include::Includes;
-    use crate::gen::out::Content;
-    use crate::gen::pragma::Pragma;
+    use crate::bridge::include::Includes;
+    use crate::bridge::out::Content;
+    use crate::bridge::pragma::Pragma;
     use std::fs;
 
     #[test]
     fn test_write_builtin() {
         let mut builtin_src = Vec::new();
 
-        for entry in fs::read_dir("src/gen/builtin").unwrap() {
+        for entry in fs::read_dir("src/bridge/builtin").unwrap() {
             let path = entry.unwrap().path();
             let src = fs::read_to_string(path).unwrap();
             builtin_src.push(src);

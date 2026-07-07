@@ -1,7 +1,7 @@
 use crate::syntax::Atom::{self, *};
 use proc_macro2::{Ident, Span};
 use syn::parse::{Error, Parse, ParseStream, Result};
-use syn::{parenthesized, Expr, LitInt};
+use syn::{Expr, LitInt, parenthesized};
 
 pub(crate) enum Repr {
     Align(LitInt),

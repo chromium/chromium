@@ -28,7 +28,7 @@ Edit the Cargo.toml to add a dependency on the `cxx` crate:
 ...[package]
 ...name = "cxx-demo"
 ...version = "0.1.0"
-...edition = "2021"
+...edition = "2024"
 
 [dependencies]
 cxx = "1.0"
@@ -182,7 +182,7 @@ Cargo.toml:
 ...[package]
 ...name = "cxx-demo"
 ...version = "0.1.0"
-...edition = "2021"
+...edition = "2024"
 
 [dependencies]
 cxx = "1.0"

@@ -1,4 +1,4 @@
-use crate::gen::out::{Content, OutFile};
+use crate::bridge::out::{Content, OutFile};
 use std::collections::BTreeSet;
 
 #[derive(Default)]

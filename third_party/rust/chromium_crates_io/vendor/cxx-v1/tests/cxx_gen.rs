@@ -1,4 +1,4 @@
-use cxx_gen::{generate_header_and_cc, Opt};
+use cxx_gen::{Opt, generate_header_and_cc};
 use std::str;
 
 const CXXPREFIX: &str = concat!("cxxbridge1$", env!("CARGO_PKG_VERSION_PATCH"));

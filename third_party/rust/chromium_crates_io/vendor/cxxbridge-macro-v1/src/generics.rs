@@ -3,7 +3,7 @@ use crate::syntax::instantiate::NamedImplKey;
 use crate::syntax::types::ConditionalImpl;
 use crate::syntax::{Lifetimes, Type, Types};
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use syn::{Lifetime, Token};
 
 pub(crate) struct ResolvedGenericType<'a> {

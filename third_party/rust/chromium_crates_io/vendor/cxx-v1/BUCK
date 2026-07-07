@@ -8,7 +8,7 @@ rust_library(
     doc_deps = [
         ":cxx-build",
     ],
-    edition = "2021",
+    edition = "2024",
     features = [
         "alloc",
         "std",
@@ -30,13 +30,13 @@ alias(
 rust_binary(
     name = "cxxbridge",
     srcs = glob([
-        "gen/cmd/src/**/*.rs",
-        "gen/src/builtin/*.h",
+        "bridge/cmd/src/**/*.rs",
+        "bridge/src/builtin/*.h",
     ]) + [
-        "gen/cmd/src/gen",
-        "gen/cmd/src/syntax",
+        "bridge/cmd/src/bridge",
+        "bridge/cmd/src/syntax",
     ],
-    edition = "2021",
+    edition = "2024",
     env = {
         "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
     },
@@ -65,7 +65,7 @@ rust_library(
     name = "cxxbridge-macro",
     srcs = glob(["macro/src/**/*.rs"]) + ["macro/src/syntax"],
     doctests = False,
-    edition = "2021",
+    edition = "2024",
     env = {
         "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
     },
@@ -82,14 +82,14 @@ rust_library(
 rust_library(
     name = "cxx-build",
     srcs = glob([
-        "gen/build/src/**/*.rs",
-        "gen/src/builtin/*.h",
+        "bridge/build/src/**/*.rs",
+        "bridge/src/builtin/*.h",
     ]) + [
-        "gen/build/src/gen",
-        "gen/build/src/syntax",
+        "bridge/build/src/bridge",
+        "bridge/build/src/syntax",
     ],
     doctests = False,
-    edition = "2021",
+    edition = "2024",
     env = {
         "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
     },
@@ -107,13 +107,13 @@ rust_library(
 rust_library(
     name = "cxx-gen",
     srcs = glob([
-        "gen/lib/src/**/*.rs",
-        "gen/src/builtin/*.h",
+        "bridge/lib/src/**/*.rs",
+        "bridge/src/builtin/*.h",
     ]) + [
-        "gen/lib/src/gen",
-        "gen/lib/src/syntax",
+        "bridge/lib/src/bridge",
+        "bridge/lib/src/syntax",
     ],
-    edition = "2021",
+    edition = "2024",
     env = {
         "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
     },

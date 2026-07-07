@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.82.0]
+        rust: [nightly, beta, stable, 1.85.0]
         os: [ubuntu]
         cc: [g++]
         flags: ['']
@@ -107,7 +107,7 @@ jobs:
       - name: Enable symlinks (windows)
         if: matrix.os == 'windows'
         run: git config --global core.symlinks true
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -138,7 +138,7 @@ jobs:
       - run: cargo check --no-default-features
         env:
           RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu' && matrix.rust == 'nightly' && matrix.cc == '' && matrix.flags == '' && always()
         with:
           name: Cargo.lock
@@ -147,24 +147,26 @@ jobs:
 
   wasi:
     name: WebAssembly
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-wasip1
           components: rust-src
       - uses: dtolnay/install@wasmtime-cli
-      - run: curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-27/wasi-sdk-27.0-x86_64-linux.tar.gz --location --silent --show-error --fail --retry 2 --output ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux.tar.gz
-      - run: tar xf ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux.tar.gz -C ${{runner.temp}}
+      - run: curl https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz --location --silent --show-error --fail --retry 2 --output ${{runner.temp}}/wasi-sdk-33.0-x86_64-linux.tar.gz
+      - run: tar xf ${{runner.temp}}/wasi-sdk-33.0-x86_64-linux.tar.gz -C ${{runner.temp}}
       - run: cargo build --target=wasm32-wasip1 --manifest-path=demo/Cargo.toml --release
-          --config='target.wasm32-wasip1.linker="${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/bin/lld"'
-          --config='target.wasm32-wasip1.rustflags=["-Clink-args=-L${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/share/wasi-sysroot/lib/wasm32-wasip1", "-Clink-args=-lc++abi"]'
+          --config='target.wasm32-wasip1.linker="${{runner.temp}}/wasi-sdk-33.0-x86_64-linux/bin/lld"'
+          --config='target.wasm32-wasip1.rustflags=["-Clink-args=-L${{runner.temp}}/wasi-sdk-33.0-x86_64-linux/share/wasi-sysroot/lib/wasm32-wasip1/eh", "-Clink-args=-lc++abi", "-Clink-args=-lunwind"]'
         env:
-          CXX: ${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/bin/clang++
-          CXXFLAGS: --sysroot=${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/share/wasi-sysroot
-      - run: wasmtime target/wasm32-wasip1/release/demo.wasm
+          CXX: ${{runner.temp}}/wasi-sdk-33.0-x86_64-linux/bin/clang++
+          CXXFLAGS: --sysroot=${{runner.temp}}/wasi-sdk-33.0-x86_64-linux/share/wasi-sysroot
+      - run: wasmtime --wasm=exceptions target/wasm32-wasip1/release/demo.wasm
 
   emscripten:
     name: Emscripten
@@ -173,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-emscripten
@@ -190,9 +192,10 @@ jobs:
       - name: Create demo.html for demo.js
         run: echo '<!DOCTYPE html><script src="demo.js"></script>' > target/wasm32-unknown-emscripten/release/demo.html
       - name: Install firefox
-        run: sudo snap install firefox
+        uses: browser-actions/setup-firefox@v1
+        id: setup-firefox
       - run: emrun target/wasm32-unknown-emscripten/release/demo.html
-          --browser=/snap/firefox/current/usr/lib/firefox/firefox
+          --browser=${{steps.setup-firefox.outputs.firefox-path}}
           --browser_args=-headless
           --safe_firefox_profile
           --log_stdout=${{runner.temp}}/demo.log
@@ -207,7 +210,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rust-src
@@ -227,7 +230,7 @@ jobs:
         os: [ubuntu, macos, windows]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Disable initramfs update
         run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
         if: matrix.os == 'ubuntu'
@@ -251,6 +254,21 @@ jobs:
         run: git diff --exit-code
         if: matrix.os == 'ubuntu' || matrix.os == 'macos'
 
+  buildifier:
+    name: Buildifier
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - run: go install github.com/bazelbuild/buildtools/buildifier@latest
+      - run: echo $(go env GOPATH)/bin >> $GITHUB_PATH
+      - run: git ls-files '*.bzl' '*.bazel' | xargs buildifier
+      - run: git ls-files ':(glob)**/BUCK' | xargs -n1 buildifier -path BUILD.bazel -lint fix
+      - name: Check that buildifier wanted no changes
+        run: git diff --exit-code
+
   minimal:
     name: Minimal versions
     needs: pre_ci
@@ -258,7 +276,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo generate-lockfile -Z minimal-versions
       - run: cargo check --locked --workspace
@@ -272,7 +290,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -Dwarnings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rust-src
@@ -283,6 +301,20 @@ jobs:
       - run: cargo docs-rs -p cxxbridge-flags
       - run: cargo docs-rs -p cxxbridge-macro
 
+  miri:
+    name: Miri
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@miri
+      - run: cargo miri setup
+      - run: cargo miri test --test=cxx_string
+        env:
+          MIRIFLAGS: -Zmiri-strict-provenance
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
@@ -291,7 +323,7 @@ jobs:
     env:
       RUSTFLAGS: -Dwarnings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rust-src
@@ -304,7 +336,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Disable initramfs update
         run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
       - name: Disable man-db update
@@ -320,7 +352,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: npm install
         working-directory: book
       - run: npx eslint
@@ -332,7 +364,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1
