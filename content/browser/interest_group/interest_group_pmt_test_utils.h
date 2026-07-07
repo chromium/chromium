@@ -12,8 +12,7 @@
 #include "base/containers/span.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_pmt_report_util.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
+#include "crypto/keypair.h"
 
 namespace content::PrivateModelTrainingTestUtils {
 
@@ -30,17 +29,17 @@ class TestHpkeKey {
   TestHpkeKey& operator=(TestHpkeKey&) = delete;
 
   std::string_view key_id() const { return key_id_; }
-  const EVP_HPKE_KEY& full_hpke_key() const { return *full_hpke_key_.get(); }
+  crypto::keypair::PrivateKey full_hpke_key() const { return full_hpke_key_; }
   BiddingAndAuctionServerKey GetPublicKey() const;
 
  private:
   std::string key_id_;
-  bssl::ScopedEVP_HPKE_KEY full_hpke_key_;
+  crypto::keypair::PrivateKey full_hpke_key_;
 };
 
 std::optional<std::vector<uint8_t>> ExtractAndDecryptFramedPayloadFromCbor(
     const std::vector<uint8_t>& cbor_data,
-    const EVP_HPKE_KEY& hpke_private_key);
+    crypto::keypair::PrivateKey hpke_private_key);
 
 }  // namespace content::PrivateModelTrainingTestUtils
 

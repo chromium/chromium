@@ -14,6 +14,9 @@
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/services/auction_worklet/public/cpp/private_model_training_reporting.h"
+#include "crypto/hpke.h"
+#include "crypto/keypair.h"
+
 namespace content {
 
 namespace {
@@ -47,63 +50,32 @@ std::optional<std::vector<uint8_t>> FrameAndSerializePayload(
 }
 
 // Handle encrypting the serialized payload with HPKE.
-// Returns empty vector on error.
+// Returns nullopt on error.
 std::optional<std::vector<uint8_t>> EncryptPayloadWithHpke(
     std::vector<uint8_t> unencrypted_payload,
-    uint32_t desired_size,
+    uint32_t unused_desired_size,
     std::vector<uint8_t> encryption_shared_info,
     const BiddingAndAuctionServerKey& public_key) {
-  bssl::ScopedEVP_HPKE_CTX sender_context;
-  base::span<const uint8_t> public_key_bytes =
-      base::as_byte_span(public_key.key);
-  // Max overhead based on the current context.
-  // Needed here so that we can allocate the payload properly and avoid making a
-  // copy, if the result of `EVP_HPKE_CTX_max_overhead()` changes from this, it
-  // would hit our DCHECK.
-  const size_t max_overhead = 16;
-  // This vector will hold the encapsulated shared secret "enc" followed by
-  // the symmetrically encrypted ciphertext "ct".
-  std::vector<uint8_t> payload(EVP_HPKE_MAX_ENC_LENGTH +
-                               unencrypted_payload.size() + max_overhead);
-  size_t encapsulated_shared_secret_len;
-
-  if (!EVP_HPKE_CTX_setup_sender(
-          /*ctx=*/sender_context.get(),
-          /*out_enc=*/payload.data(),
-          /*out_enc_len=*/&encapsulated_shared_secret_len,
-          /*max_enc=*/payload.size(),
-          /*kem=*/EVP_hpke_x25519_hkdf_sha256(), /*kdf=*/EVP_hpke_hkdf_sha256(),
-          /*aead=*/EVP_hpke_chacha20_poly1305(),
-          /*peer_public_key=*/public_key_bytes.data(),
-          /*peer_public_key_len=*/public_key_bytes.size(),
-          /*info=*/encryption_shared_info.data(),
-          /*info_len=*/encryption_shared_info.size())) {
+  std::optional<base::span<const uint8_t, 32>> public_key_bytes =
+      base::as_byte_span(public_key.key).to_fixed_extent<32>();
+  if (!public_key_bytes) {
     return std::nullopt;
   }
-  // This ensures the resize will not grow the buffer and not require a copy.
-  DCHECK_GE(payload.size(),
-            encapsulated_shared_secret_len + unencrypted_payload.size() +
-                EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
-  payload.resize(encapsulated_shared_secret_len + unencrypted_payload.size() +
-                 EVP_HPKE_CTX_max_overhead(sender_context.get()));
-
-  base::span<uint8_t> ciphertext =
-      base::span(payload).subspan(encapsulated_shared_secret_len);
-  size_t ciphertext_len;
-
-  if (!EVP_HPKE_CTX_seal(
-          /*ctx=*/sender_context.get(), /*out=*/ciphertext.data(),
-          /*out_len=*/&ciphertext_len,
-          /*max_out_len=*/ciphertext.size(),
-          /*in=*/unencrypted_payload.data(),
-          /*in_len*/ unencrypted_payload.size(),
-          /*ad=*/nullptr,
-          /*ad_len=*/0)) {
+  std::optional<crypto::keypair::PublicKey> recipient =
+      crypto::keypair::PublicKey::FromX25519PublicKey(*public_key_bytes);
+  if (!recipient) {
     return std::nullopt;
   }
-  payload.resize(encapsulated_shared_secret_len + ciphertext_len);
-  return payload;
+  const crypto::hpke::HpkeParams kParams = {
+      .kem = crypto::hpke::KemType::kX25519HkdfSha256,
+      .kdf = crypto::hpke::KdfType::kHkdfSha256,
+      .aead = crypto::hpke::AeadType::kChaCha20Poly1305,
+  };
+
+  return crypto::hpke::Seal(kParams, *recipient,
+                            /*plaintext=*/unencrypted_payload,
+                            /*info=*/encryption_shared_info, /*ad=*/{});
 }
 
 }  // namespace

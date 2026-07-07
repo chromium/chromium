@@ -16,9 +16,9 @@
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_pmt_report_util.h"
+#include "crypto/hpke.h"
+#include "crypto/keypair.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace content::PrivateModelTrainingTestUtils {
 namespace {
@@ -27,36 +27,16 @@ namespace {
 // Returns empty vector in the case of an error.
 std::optional<std::vector<uint8_t>> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
-    const EVP_HPKE_KEY& key,
+    crypto::keypair::PrivateKey key,
     base::span<const uint8_t> expected_serialized_shared_info) {
-  base::span<const uint8_t> enc = payload.first<X25519_PUBLIC_VALUE_LEN>();
-
-  bssl::ScopedEVP_HPKE_CTX recipient_context;
-  if (!EVP_HPKE_CTX_setup_recipient(
-          /*ctx=*/recipient_context.get(), /*key=*/&key,
-          /*kdf=*/EVP_hpke_hkdf_sha256(),
-          /*aead=*/EVP_hpke_chacha20_poly1305(),
-          /*enc=*/enc.data(), /*enc_len=*/enc.size(),
-          /*info=*/expected_serialized_shared_info.data(),
-          /*info_len=*/expected_serialized_shared_info.size())) {
-    return std::nullopt;
-  }
-
-  auto ciphertext = payload.subspan<X25519_PUBLIC_VALUE_LEN>();
-  std::vector<uint8_t> plaintext(ciphertext.size());
-  size_t plaintext_len;
-
-  if (!EVP_HPKE_CTX_open(
-          /*ctx=*/recipient_context.get(), /*out=*/plaintext.data(),
-          /*out_len*/ &plaintext_len, /*max_out_len=*/plaintext.size(),
-          /*in=*/ciphertext.data(), /*in_len=*/ciphertext.size(),
-          /*ad=*/nullptr,
-          /*ad_len=*/0)) {
-    return std::nullopt;
-  }
-
-  plaintext.resize(plaintext_len);
-  return plaintext;
+  const crypto::hpke::HpkeParams kParams = {
+      .kem = crypto::hpke::KemType::kX25519HkdfSha256,
+      .kdf = crypto::hpke::KdfType::kHkdfSha256,
+      .aead = crypto::hpke::AeadType::kChaCha20Poly1305,
+  };
+  return crypto::hpke::Open(kParams, key, /*plaintext=*/payload,
+                            /*info=*/expected_serialized_shared_info,
+                            /*ad=*/{});
 }
 
 // Helper function to create the shared info CBOR with the domain separation
@@ -130,9 +110,9 @@ std::optional<std::vector<uint8_t>> ExtractPayloadFromCbor(
 }
 }  // namespace
 
-TestHpkeKey::TestHpkeKey(std::string key_id) : key_id_(std::move(key_id)) {
-  EVP_HPKE_KEY_generate(full_hpke_key_.get(), EVP_hpke_x25519_hkdf_sha256());
-}
+TestHpkeKey::TestHpkeKey(std::string key_id)
+    : key_id_(std::move(key_id)),
+      full_hpke_key_(crypto::keypair::PrivateKey::GenerateX25519()) {}
 
 TestHpkeKey::~TestHpkeKey() = default;
 
@@ -141,19 +121,14 @@ TestHpkeKey::TestHpkeKey(TestHpkeKey&&) = default;
 TestHpkeKey& TestHpkeKey::operator=(TestHpkeKey&&) = default;
 
 BiddingAndAuctionServerKey TestHpkeKey::GetPublicKey() const {
-  std::vector<uint8_t> public_key(X25519_PUBLIC_VALUE_LEN);
-  size_t public_key_len;
-  EXPECT_TRUE(EVP_HPKE_KEY_public_key(
-      /*key=*/full_hpke_key_.get(), /*out=*/public_key.data(),
-      /*out_len=*/&public_key_len, /*max_out=*/public_key.size()));
-  EXPECT_EQ(public_key.size(), public_key_len);
   return BiddingAndAuctionServerKey(
-      std::string(public_key.begin(), public_key.end()), key_id_);
+      std::string(base::as_string_view(full_hpke_key_.ToX25519PublicKey())),
+      key_id_);
 }
 
 std::optional<std::vector<uint8_t>> ExtractAndDecryptFramedPayloadFromCbor(
     const std::vector<uint8_t>& cbor_data,
-    const EVP_HPKE_KEY& hpke_private_key) {
+    crypto::keypair::PrivateKey hpke_private_key) {
   std::optional<std::vector<uint8_t>> payload =
       ExtractPayloadFromCbor(cbor_data);
   std::optional<std::vector<uint8_t>> shared_info =
