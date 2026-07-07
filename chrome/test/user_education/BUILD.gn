@@ -46,3 +46,14 @@ source_set("impl") {
     "//components/user_education/views",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "interactive_feature_promo_test_interactive_uitest.cc" ]
+  deps = [
+    ":impl",
+    "//components/feature_engagement/test:test_support",
+    "//components/user_education/views",
+  ]
+}

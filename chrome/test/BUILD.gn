@@ -9713,7 +9713,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/impl/browser_feature_promo_preconditions_interactive_uitest.cc",
         "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
-        "user_education/interactive_feature_promo_test_interactive_uitest.cc",
       ]
 
       deps += [
@@ -9774,7 +9773,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/webauthn:test_support",
         "//chrome/test/data/webui:resources_grit",
         "//chrome/test/interaction:interactive_ui_tests",
-        "//chrome/test/user_education:impl",
+        "//chrome/test/user_education:interactive_ui_tests",
         "//components/actor/core:task_id",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
