@@ -152,7 +152,9 @@ void DirectManipulationHelper::OnAnimationStep(base::TimeTicks timestamp) {
 
 void DirectManipulationHelper::OnCompositingShuttingDown(
     ui::Compositor* notifying_compositor) {
-  CHECK_EQ(notifying_compositor, compositor(), base::NotFatalUntil::M152);
+  // TODO(crbug.com/529369162): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(notifying_compositor, compositor());
   Destroy();
 }
 
