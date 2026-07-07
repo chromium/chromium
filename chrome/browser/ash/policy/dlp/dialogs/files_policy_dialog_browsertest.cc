@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -77,8 +78,11 @@ class FilesPolicyDialogBrowserTest
 
  protected:
   Browser* FindFilesApp() {
-    return FindSystemWebAppBrowser(browser()->profile(),
-                                   ash::SystemWebAppType::FILE_MANAGER);
+    ash::BrowserDelegate* delegate = FindSystemWebAppBrowser(
+        browser()->profile(), ash::SystemWebAppType::FILE_MANAGER,
+        ash::BrowserType::kApp);
+    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
+                    : nullptr;
   }
 
   Browser* OpenFilesApp() {

@@ -21,10 +21,10 @@
 #include "base/test/test_switches.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
@@ -213,15 +213,19 @@ ui::ElementContext InteractiveAshTest::FindSystemWebApp(
     ash::SystemWebAppType type) {
   Profile* profile = GetActiveUserProfile();
   CHECK(profile);
-  Browser* browser = FindSystemWebAppBrowser(profile, type);
+  ash::BrowserDelegate* browser =
+      ash::FindSystemWebAppBrowser(profile, type, ash::BrowserType::kApp);
   CHECK(browser);
-  return BrowserElements::From(browser)->GetContext();
+  return BrowserElements::From(
+             browser->GetBrowser().GetBrowserForMigrationOnly())
+      ->GetContext();
 }
 
 void InteractiveAshTest::CloseSystemWebApp(ash::SystemWebAppType type) {
   if (Profile* const profile = GetActiveUserProfile()) {
-    if (Browser* const browser = FindSystemWebAppBrowser(profile, type)) {
-      chrome::CloseWindow(browser);
+    if (ash::BrowserDelegate* const browser = ash::FindSystemWebAppBrowser(
+            profile, type, ash::BrowserType::kApp)) {
+      browser->Close();
     }
   }
 }

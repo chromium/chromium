@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -164,8 +164,9 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   WaitForViewDestroyed();
 
   // Terminal should launch after use clicks 'Cancel'.
-  Browser* terminal_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::TERMINAL);
+  ash::BrowserDelegate* terminal_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::TERMINAL,
+      ash::BrowserType::kApp);
   EXPECT_NE(nullptr, terminal_browser);
 
   // Any new apps launched should show the dialog again.

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -196,11 +197,12 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 
   navigation_observer.Wait();
 
-  Browser* settings_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  ash::BrowserDelegate* settings_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::SETTINGS,
+      ash::BrowserType::kApp);
   ASSERT_TRUE(settings_browser);
   content::WebContents* settings_contents =
-      settings_browser->tab_strip_model()->GetActiveWebContents();
+      settings_browser->GetActiveWebContents();
   ASSERT_TRUE(settings_contents);
   EXPECT_EQ(os_settings_people, settings_contents->GetLastCommittedURL());
   EXPECT_EQ(0, fake_account_manager_ui.show_account_addition_dialog_calls());

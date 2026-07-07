@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/search/test/test_continue_files_search_provider.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -71,8 +72,9 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   // Returns the first published continue section result.
   const ChromeSearchResult* FindLeadingContinueSectionResult() {
     for (const ChromeSearchResult* result : PublishedResults()) {
-      if (result->display_type() == ash::SearchResultDisplayType::kContinue)
+      if (result->display_type() == ash::SearchResultDisplayType::kContinue) {
         return result;
+      }
     }
     return nullptr;
   }
@@ -372,12 +374,11 @@ IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, Launch) {
   result->Open(ui::EF_NONE);
   navigation_observer.Wait();
 
-  Browser* help_app_browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::HELP);
+  ash::BrowserDelegate* help_app_browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::HELP, ash::BrowserType::kApp);
   ASSERT_TRUE(help_app_browser);
-  EXPECT_EQ(expected_url, help_app_browser->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetVisibleURL());
+  EXPECT_EQ(expected_url,
+            help_app_browser->GetActiveWebContents()->GetVisibleURL());
 }
 
 }  // namespace app_list::test

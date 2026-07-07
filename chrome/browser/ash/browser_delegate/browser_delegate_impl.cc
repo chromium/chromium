@@ -130,7 +130,9 @@ const SystemWebAppDelegate* BrowserDelegateImpl::GetSWADelegate() const {
 }
 
 bool BrowserDelegateImpl::IsAttemptingToClose() const {
-  return UnloadController::From(&*browser_)->is_attempting_to_close_browser();
+  auto* unload_controller = UnloadController::From(&*browser_);
+  return unload_controller ? unload_controller->is_attempting_to_close_browser()
+                           : IsClosing();
 }
 
 bool BrowserDelegateImpl::IsClosing() const {

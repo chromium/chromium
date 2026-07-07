@@ -20,10 +20,10 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_restore/full_restore_app_launch_handler.h",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
-  "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/interaction",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/grit",

@@ -38,6 +38,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -1017,8 +1018,13 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleSystemWebAppBrowserTest,
   ASSERT_TRUE(swa_contents);
   EXPECT_TRUE(content::WaitForLoadStop(swa_contents));
 
-  Browser* swa_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  ash::BrowserDelegate* swa_browser_delegate = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::SETTINGS,
+      ash::BrowserType::kApp);
+  Browser* swa_browser =
+      swa_browser_delegate
+          ? swa_browser_delegate->GetBrowser().GetBrowserForMigrationOnly()
+          : nullptr;
   ASSERT_TRUE(swa_browser);
 
   base::ScopedClosureRunner auto_close(

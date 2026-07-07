@@ -487,7 +487,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   LaunchApp(GetAppType());
 
   // Should have one SWA window and one default browser window.
-  EXPECT_TRUE(ash::FindSystemWebAppBrowser(browser()->profile(), GetAppType()));
+  EXPECT_TRUE(ash::FindSystemWebAppBrowser(browser()->profile(), GetAppType(),
+                                           ash::BrowserType::kApp));
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   SessionStartupPref::SetStartupPref(

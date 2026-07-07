@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -226,8 +227,11 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
 
   // Returns the last active Files app window, or nullptr when none are found.
   Browser* FindFilesApp() {
-    return FindSystemWebAppBrowser(browser()->profile(),
-                                   ash::SystemWebAppType::FILE_MANAGER);
+    ash::BrowserDelegate* delegate = FindSystemWebAppBrowser(
+        browser()->profile(), ash::SystemWebAppType::FILE_MANAGER,
+        ash::BrowserType::kApp);
+    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
+                    : nullptr;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -330,8 +334,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
   auto action = GetParam();
   EXPECT_CALL(*factory_, CreateWarnDialog).Times(0);
   // No Files app opened.
-  ASSERT_FALSE(FindSystemWebAppBrowser(browser()->profile(),
-                                       ash::SystemWebAppType::FILE_MANAGER));
+  ASSERT_FALSE(FindFilesApp());
 
   // The callback is invoked directly from the notification.
   base::MockCallback<WarningWithJustificationCallback> cb;
@@ -347,8 +350,7 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
   bridge_->Click(kNotificationId, NotificationButton::OK);
 
   // No Files app opened.
-  ASSERT_FALSE(FindSystemWebAppBrowser(browser()->profile(),
-                                       ash::SystemWebAppType::FILE_MANAGER));
+  ASSERT_FALSE(FindFilesApp());
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());

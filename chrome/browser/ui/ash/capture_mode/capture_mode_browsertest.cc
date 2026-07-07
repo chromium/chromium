@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -894,8 +895,8 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
     ash::ProjectorClient::Get()->OpenProjectorApp();
     browser_created_observer.Wait();
 
-    Browser* app_browser =
-        FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+    ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+        profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
     ASSERT_TRUE(app_browser);
   }
 

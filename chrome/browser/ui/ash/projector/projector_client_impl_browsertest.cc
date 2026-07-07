@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -198,11 +198,10 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -224,14 +223,13 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
-  Browser* app_browser1 =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser1 = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser1);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
             starting_browser_count + 1);
 
-  content::WebContents* tab =
-      app_browser1->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = app_browser1->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_TRUE(WaitForLoadStop(tab));
 
@@ -241,14 +239,14 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   SendFilesToProjectorApp({file1, file2});
 
   // Verify that the Projector App is still open.
-  Browser* app_browser2 =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser2 = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   // Launching the app with files should not open a new window.
   EXPECT_EQ(app_browser1, app_browser2);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
             starting_browser_count + 1);
 
-  tab = app_browser2->tab_strip_model()->GetActiveWebContents();
+  tab = app_browser2->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -263,18 +261,18 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
   client()->MinimizeProjectorApp();
   // Verify that Projector App is minimized.
-  EXPECT_TRUE(app_browser->GetWindow()->IsMinimized());
+  EXPECT_TRUE(app_browser->IsMinimized());
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
@@ -286,21 +284,21 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   browser_created_observer.Wait();
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
-  EXPECT_FALSE(
-      UnloadController::From(app_browser)->is_attempting_to_close_browser());
+  EXPECT_FALSE(app_browser->IsAttemptingToClose());
   client()->CloseProjectorApp();
-  // Verify that Projector App is closing.
-  EXPECT_TRUE(
-      UnloadController::From(app_browser)->is_attempting_to_close_browser());
+  // Verify that Projector App is closing or closed.
+  ash::BrowserDelegate* closing_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
+  EXPECT_TRUE(!closing_browser || closing_browser->IsAttemptingToClose());
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
@@ -434,8 +432,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   }
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
 
   if (is_child()) {
     // Can't open for Family Link account.
@@ -465,11 +463,11 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   browser_created_observer.Wait();
 
   // Verify the user can open the Projector App when the policy is enabled.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -478,8 +476,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   // the Projector app open.
   profile->GetPrefs()->SetBoolean(GetPolicy(), false);
   // The Projector app immediately closes to prevent further access.
-  EXPECT_TRUE(
-      UnloadController::From(app_browser)->is_attempting_to_close_browser());
+  ash::BrowserDelegate* closing_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
+  EXPECT_TRUE(!closing_browser || closing_browser->IsAttemptingToClose());
 
   auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
   base::RunLoop loop;

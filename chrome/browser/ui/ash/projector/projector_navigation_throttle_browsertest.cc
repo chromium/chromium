@@ -16,11 +16,11 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -176,12 +176,11 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
             navigate_target_blank() ? 2u : 1u);
   // Set the default browser to the swa browser.
   SetBrowser(swa_browser);
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -297,13 +296,12 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Set the default browser to the swa browser.
   SetBrowser(swa_browser);
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
 
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -323,12 +321,11 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
       browser(), untrusted_url, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
@@ -380,11 +377,11 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
 
   navigation_observer.Wait();
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
 
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab = app_browser->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_TRUE(WaitForLoadStop(tab));
 

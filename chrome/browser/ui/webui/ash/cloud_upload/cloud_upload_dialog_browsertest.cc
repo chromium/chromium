@@ -30,6 +30,7 @@
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -43,7 +44,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -323,9 +323,9 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, NewModalParentCreated) {
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-  Browser* browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  ASSERT_EQ(nullptr, browser);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
+  ASSERT_EQ(nullptr, app_browser);
 
   // Launch File Handler dialog.
   LaunchCloudUploadDialog(
@@ -333,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, NewModalParentCreated) {
       std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
                                          /*file_count=*/1));
 
-  browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
+  ash::BrowserDelegate* browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   ASSERT_NE(nullptr, browser);
 }
 
@@ -343,9 +344,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        ExistingWindowUsedAsModalParent) {
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-  Browser* browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  ASSERT_EQ(nullptr, browser);
+  ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
+  ASSERT_EQ(nullptr, app_browser);
 
   // Open a files app window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -355,8 +356,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   EXPECT_EQ(future.Get(), platform_util::OpenOperationResult::OPEN_SUCCEEDED);
   browser_created_observer.Wait();
 
-  browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  ASSERT_NE(nullptr, browser);
+  app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
+  ASSERT_NE(nullptr, app_browser);
 
   // Launch File Handler dialog.
   LaunchCloudUploadDialog(
@@ -365,8 +367,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                                          /*file_count=*/1));
 
   // Check that the existing Files app window was used.
-  ASSERT_EQ(browser,
-            FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER));
+  ash::BrowserDelegate* new_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
+  ASSERT_EQ(app_browser, new_browser);
 }
 
 // Test which launches a `CloudUploadDialog` which in turn creates a
@@ -427,9 +430,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
 
   // Close the Files app and wait for the dialog to close.
   content::WebContentsDestroyedWatcher watcher(web_contents);
-  Browser* files_app_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  files_app_browser->GetWindow()->Close();
+  ash::BrowserDelegate* files_app_browser = FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
+  files_app_browser->Close();
   watcher.Wait();
 
   // Expect a kCancelledAtSetup TaskResult.

@@ -24,11 +24,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -63,12 +63,6 @@ void ClickButton(const views::Button* button) {
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseToInHost(button->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
-}
-
-const GURL& GetActiveUrl(Browser* browser) {
-  return browser->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetLastCommittedURL();
 }
 
 // This class observes the `TabStripModelObserver` and reacts with predetermined
@@ -172,10 +166,12 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
   navigation_observer.Wait();
 
   // Verify correct OS Settings page is opened.
-  Browser* settings_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  ash::BrowserDelegate* settings_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::SETTINGS,
+      ash::BrowserType::kApp);
   ASSERT_TRUE(settings_browser);
-  ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
+  ASSERT_EQ(os_settings,
+            settings_browser->GetActiveWebContents()->GetLastCommittedURL());
 }
 
 // -----------------------------------------------------------------------------

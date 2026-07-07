@@ -43,6 +43,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test(|_.*)\\.(cc|h)": [
+    "+chrome/browser/ash/browser_delegate/browser_delegate.h",
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

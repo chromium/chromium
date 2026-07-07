@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ash/webui/print_management/backend/print_management_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
@@ -25,10 +25,8 @@ namespace {
 
 constexpr char kOsPrinterSettingsUrl[] = "chrome://os-settings/cupsPrinters";
 
-const GURL& GetActiveUrl(Browser* browser) {
-  return browser->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetLastCommittedURL();
+const GURL& GetActiveUrl(ash::BrowserDelegate* browser) {
+  return browser->GetActiveWebContents()->GetLastCommittedURL();
 }
 
 }  // namespace
@@ -59,8 +57,8 @@ IN_PROC_BROWSER_TEST_P(PrintManagementDelegateImplTest, LaunchPrinterSettings) {
   navigation_observer.Wait();
 
   // Verify correct OS Settings page is opened.
-  Browser* settings_browser =
-      ash::FindSystemWebAppBrowser(profile(), SystemWebAppType::SETTINGS);
+  ash::BrowserDelegate* settings_browser = ash::FindSystemWebAppBrowser(
+      profile(), SystemWebAppType::SETTINGS, ash::BrowserType::kApp);
   ASSERT_NE(nullptr, settings_browser);
   ASSERT_EQ(os_settings_printer, GetActiveUrl(settings_browser));
 }

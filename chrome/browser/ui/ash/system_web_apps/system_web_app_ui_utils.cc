@@ -282,15 +282,6 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
   return browser;
 }
 
-Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 SystemWebAppType app_type,
-                                 BrowserWindowInterface::Type browser_type,
-                                 const GURL& url) {
-  auto* browser = FindSystemWebAppBrowser(
-      profile, app_type, FromInternalBrowserType(browser_type), url);
-  return browser ? browser->GetBrowser().GetBrowserForMigrationOnly() : nullptr;
-}
-
 BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
                                          SystemWebAppType app_type,
                                          BrowserType browser_type,

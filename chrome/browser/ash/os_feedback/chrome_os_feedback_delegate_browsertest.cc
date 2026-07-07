@@ -28,6 +28,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -279,8 +280,14 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     // Wait for the Feedback app to launch.
     navigation_observer.Wait();
 
-    Browser* feedback_browser = ash::FindSystemWebAppBrowser(
-        browser()->profile(), ash::SystemWebAppType::OS_FEEDBACK);
+    ash::BrowserDelegate* feedback_browser_delegate =
+        ash::FindSystemWebAppBrowser(browser()->profile(),
+                                     ash::SystemWebAppType::OS_FEEDBACK,
+                                     ash::BrowserType::kApp);
+    Browser* feedback_browser = feedback_browser_delegate
+                                    ? feedback_browser_delegate->GetBrowser()
+                                          .GetBrowserForMigrationOnly()
+                                    : nullptr;
 
     EXPECT_NE(feedback_browser, nullptr);
 
@@ -316,9 +323,9 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
   }
 
   // Find the url of the active tab of the browser if any.
-  GURL FindActiveUrl(Browser* browser) {
+  GURL FindActiveUrl(ash::BrowserDelegate* browser) {
     if (browser) {
-      return browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+      return browser->GetActiveWebContents()->GetURL();
     }
     return GURL();
   }
@@ -699,8 +706,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   feedback_delegate.OpenDiagnosticsApp();
   browser_created_observer.Wait();
 
-  Browser* app_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
+  ash::BrowserDelegate* app_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS,
+      ash::BrowserType::kApp);
 
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(diagnostics_url_, FindActiveUrl(app_browser));
@@ -741,8 +749,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
   feedback_delegate.OpenExploreApp();
   browser_created_observer.Wait();
 
-  Browser* app_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::HELP);
+  ash::BrowserDelegate* app_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::HELP,
+      ash::BrowserType::kApp);
 
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(explore_url_, FindActiveUrl(app_browser));

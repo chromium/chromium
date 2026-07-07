@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -139,8 +140,9 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
 
   // Wait for the Feedback app to launch.
   navigation_observer.Wait();
-  Browser* feedback_browser = FindSystemWebAppBrowser(
-      browser()->profile(), SystemWebAppType::OS_FEEDBACK);
+  ash::BrowserDelegate* feedback_browser = FindSystemWebAppBrowser(
+      browser()->profile(), SystemWebAppType::OS_FEEDBACK,
+      ash::BrowserType::kApp);
   EXPECT_TRUE(feedback_browser);
 }
 
@@ -159,8 +161,10 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
 
   // Wait for the Shortcut Customization app to launch.
   navigation_observer.Wait();
-  Browser* shortcut_customization_browser = FindSystemWebAppBrowser(
-      browser()->profile(), SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  ash::BrowserDelegate* shortcut_customization_browser =
+      FindSystemWebAppBrowser(browser()->profile(),
+                              SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+                              ash::BrowserType::kApp);
   EXPECT_TRUE(shortcut_customization_browser);
 }
 
@@ -182,8 +186,10 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 
   // Wait for the Shortcut Customization app to launch.
   navigation_observer.Wait();
-  Browser* shortcut_customization_browser = FindSystemWebAppBrowser(
-      browser()->profile(), SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  ash::BrowserDelegate* shortcut_customization_browser =
+      FindSystemWebAppBrowser(browser()->profile(),
+                              SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+                              ash::BrowserType::kApp);
   EXPECT_TRUE(shortcut_customization_browser);
 }
 

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_navigation_throttle.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -177,7 +178,10 @@ class OnTaskLockedSessionNavigationThrottleInteractiveUITestBase
   }
 
   Browser* FindBocaSystemWebAppBrowser() {
-    return FindSystemWebAppBrowser(profile(), SystemWebAppType::BOCA);
+    ash::BrowserDelegate* delegate = FindSystemWebAppBrowser(
+        profile(), SystemWebAppType::BOCA, ash::BrowserType::kApp);
+    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
+                    : nullptr;
   }
 
   void VerifyUrlBlockedToastShown(bool toast_was_shown) {

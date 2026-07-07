@@ -18,7 +18,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
-class Browser;
 class Profile;
 
 namespace ash {
@@ -119,12 +118,6 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
 // Consider using the WebUIController to retrieve the WebContents currently
 // rendering the app if you want to interact with app's JavaScript environment.
 //
-// TODO(crbug.com/369689187): Migrate to the BrowserDelegate* overload.
-Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 SystemWebAppType app_type,
-                                 BrowserWindowInterface::Type browser_type =
-                                     BrowserWindowInterface::TYPE_APP,
-                                 const GURL& url = GURL());
 // The `browser_type` must be kApp or kAppPopup.
 BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
                                          SystemWebAppType app_type,
