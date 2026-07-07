@@ -41,6 +41,8 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
       return "OnDevToolsSessionConnectionChanged";
     case kOnProvisionallySaveForm:
       return "OnProvisionallySaveForm";
+    case kOnJavaScriptAutofillDetected:
+      return "OnJavaScriptAutofillDetected";
     case kOnTextFieldValueChanged:
       return "OnTextFieldValueChanged";
     case kQueryAutofillSuggestions:

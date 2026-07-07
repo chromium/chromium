@@ -334,6 +334,13 @@ class AutofillManager
       const FormData& form,
       const FieldGlobalId& field_id);
 
+  // Invoked when the renderer suspects a custom JavaScript autofill event has
+  // occurred.
+  virtual void OnDidDetectJavaScriptAutofill(
+      const FormData& form,
+      const FieldGlobalId& trigger_field_id,
+      const std::vector<FieldGlobalId>& field_ids);
+
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
@@ -485,6 +492,10 @@ class AutofillManager
       const FormData& form,
       const FieldGlobalId& field_id,
       const std::u16string& old_value) = 0;
+  virtual void OnDidDetectJavaScriptAutofillImpl(
+      const FormData& form,
+      const FieldGlobalId& trigger_field_id,
+      const std::vector<FieldGlobalId>& field_ids) = 0;
   virtual void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) = 0;
 

@@ -479,6 +479,13 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::FormWithEmailVerificationTokenSubmitted,
              form, field_id);
   }
+  void DidDetectJavaScriptAutofill(
+      const FormData& form,
+      FieldRendererId trigger_field_id,
+      const std::vector<FieldRendererId>& field_ids) override {
+    DeferMsg(&mojom::AutofillDriver::DidDetectJavaScriptAutofill, form,
+             trigger_field_id, field_ids);
+  }
 
   const raw_ref<AutofillAgent> agent_;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
@@ -2372,7 +2379,25 @@ void AutofillAgent::OnJavaScriptAutofillDetected(
     FormRendererId form_id,
     FieldRendererId trigger_field_id,
     const std::vector<FieldRendererId>& field_ids) {
-  // TODO(crbug.com/529775544): Notify the browser of the detection.
+  if (field_ids.empty()) {
+    return;
+  }
+  blink::WebFormControlElement element =
+      form_util::GetFormControlByRendererId(field_ids.front());
+  if (!element) {
+    return;
+  }
+  if (std::optional<FormAndField> form_and_field =
+          form_util::FindFormAndFieldForFormControlElement(
+              element, field_data_manager(),
+              GetCallTimerState(kOnJavaScriptAutofillDetected),
+              button_titles_cache(), /*form_cache=*/{})) {
+    auto& [form, field] = *form_and_field;
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->DidDetectJavaScriptAutofill(form, trigger_field_id,
+                                                   field_ids);
+    }
+  }
 }
 
 }  // namespace autofill

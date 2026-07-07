@@ -182,11 +182,13 @@ template <typename T>
            AnyOf<T,
                  bool,
                  FieldGlobalId,
+                 FormGlobalId,
                  FillId,
                  base::TimeTicks,
                  gfx::Rect,
                  std::u16string,
-                 std::vector<FormGlobalId>>)
+                 std::vector<FormGlobalId>,
+                 std::vector<FieldGlobalId>>)
 T&& WithNewVersion(T&& x) {
   return std::forward<T>(x);
 }
@@ -721,6 +723,16 @@ void ContentAutofillDriver::FormWithEmailVerificationTokenSubmitted(
                  &AutofillDriverRouter::FormWithEmailVerificationTokenSubmitted,
                  &AutofillManager::OnFormWithEmailVerificationTokenSubmitted,
                  form, field_id);
+}
+
+void ContentAutofillDriver::DidDetectJavaScriptAutofill(
+    const FormData& form,
+    FieldRendererId trigger_field_id,
+    const std::vector<FieldRendererId>& field_ids) {
+  RouteToManager(*this, router(),
+                 &AutofillDriverRouter::DidDetectJavaScriptAutofill,
+                 &AutofillManager::OnDidDetectJavaScriptAutofill, form,
+                 trigger_field_id, field_ids);
 }
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&

@@ -155,6 +155,13 @@ interface AutofillDriver {
   // ContentAutofillDriver.
   FormWithEmailVerificationTokenSubmitted(FormData form,
                                           FieldRendererId field_id);
+
+  // Sent when the renderer suspects a custom JavaScript autofill event has
+  // occurred, filling all fields in `field_ids`, and suspecting that
+  // `trigger_field_id` is the field that triggered this.
+  DidDetectJavaScriptAutofill(FormData form,
+                              FieldRendererId trigger_field_id,
+                              array<FieldRendererId> field_ids);
 };
 
 // There is one instance of this interface per web contents in the browser

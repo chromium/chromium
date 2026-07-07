@@ -478,6 +478,14 @@ class AutofillField : public FormFieldData {
   void set_was_focused(bool was_focused) { was_focused_ = was_focused; }
   bool was_focused() const { return was_focused_; }
 
+  void set_did_trigger_javascript_autofill(
+      bool did_trigger_javascript_autofill) {
+    did_trigger_javascript_autofill_ = did_trigger_javascript_autofill;
+  }
+  bool did_trigger_javascript_autofill() const {
+    return did_trigger_javascript_autofill_;
+  }
+
   void set_ml_supported_types(const FieldTypeSet& s) {
     ml_supported_types_ = s;
   }
@@ -654,6 +662,9 @@ class AutofillField : public FormFieldData {
 
   // True iff the field was ever focused.
   bool was_focused_ = false;
+
+  // Denotes whether this field triggered a custom JS autofill.
+  bool did_trigger_javascript_autofill_ = false;
 
   // Field types that the ML model is able to output.
   // Assigned by the model when it has classified the field.

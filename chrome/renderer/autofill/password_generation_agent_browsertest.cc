@@ -146,6 +146,11 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       FieldRendererId field_id) override {}
 
+  void DidDetectJavaScriptAutofill(
+      const FormData& form,
+      FieldRendererId trigger_field_id,
+      const std::vector<FieldRendererId>& field_ids) override {}
+
   std::unique_ptr<base::RunLoop> forms_seen_run_loop_;
 
   mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;

@@ -501,6 +501,30 @@ void AutofillDriverRouter::FormWithEmailVerificationTokenSubmitted(
   callback(CHECK_DEREF(target), browser_form, field_id);
 }
 
+void AutofillDriverRouter::DidDetectJavaScriptAutofill(
+    RoutedCallback<const FormData&,
+                   const FieldGlobalId&,
+                   const std::vector<FieldGlobalId>&> callback,
+    AutofillDriver& source,
+    FormData form,
+    FieldGlobalId trigger_field_id,
+    const std::vector<FieldGlobalId>& field_ids) {
+  FormGlobalId form_id = form.global_id();
+  form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
+
+  const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
+  if (!std::ranges::contains(browser_form.fields(), trigger_field_id,
+                             &FormFieldData::global_id)) {
+    // To avoid very large flattened forms, UpdateTreeOfRendererForm() may have
+    // cut the tree into two and, as a result, may have lost some fields. We
+    // drop such events.
+    // See `kMaxVisits` in FormForest::UpdateTreeOfRendererForm() for details.
+    return;
+  }
+  auto* target = DriverOfFrame(browser_form.host_frame());
+  callback(CHECK_DEREF(target), browser_form, trigger_field_id, field_ids);
+}
+
 void AutofillDriverRouter::SelectFieldOptionsDidChange(
     RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,

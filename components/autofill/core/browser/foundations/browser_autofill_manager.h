@@ -297,6 +297,10 @@ class BrowserAutofillManager : public AutofillManager {
       const std::u16string& old_value) override;
   void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) override;
+  void OnDidDetectJavaScriptAutofillImpl(
+      const FormData& form,
+      const FieldGlobalId& trigger_field_id,
+      const std::vector<FieldGlobalId>& field_ids) override;
   void Reset() override;
 
   base::WeakPtr<BrowserAutofillManager> GetBrowserAutofillManagerWeakPtr();

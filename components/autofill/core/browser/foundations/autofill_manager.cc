@@ -560,6 +560,19 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
               form.global_id(), field_id)));
 }
 
+void AutofillManager::OnDidDetectJavaScriptAutofill(
+    const FormData& form,
+    const FieldGlobalId& trigger_field_id,
+    const std::vector<FieldGlobalId>& field_ids) {
+  if (!IsValidFormData(form)) {
+    return;
+  }
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnDidDetectJavaScriptAutofillImpl,
+                            trigger_field_id, field_ids)
+                .Then(base::BindOnce([](AutofillManager&) {})));
+}
+
 const FormStructure* AutofillManager::FindCachedFormById(
     const FormGlobalId& form_id) const {
   auto it = form_structures_.find(form_id);

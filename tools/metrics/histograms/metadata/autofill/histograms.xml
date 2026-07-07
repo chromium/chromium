@@ -408,6 +408,7 @@ chromium-metrics-reviews@google.com.
   <variant name="JavaScriptSetValue"/>
   <variant name="NotifyPasswordManagerAboutClearedForm"/>
   <variant name="OnDevToolsSessionConnectionChanged"/>
+  <variant name="OnJavaScriptAutofillDetected"/>
   <variant name="OnProvisionallySaveForm"/>
   <variant name="OnTextFieldValueChanged"/>
   <variant name="QueryAutofillSuggestions"/>

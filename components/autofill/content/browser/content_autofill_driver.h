@@ -315,6 +315,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void FormWithEmailVerificationTokenSubmitted(
       const FormData& form,
       FieldRendererId field_id) override;
+  void DidDetectJavaScriptAutofill(
+      const FormData& form,
+      FieldRendererId trigger_field_id,
+      const std::vector<FieldRendererId>& field_ids) override;
 
   // The functions below this line do not cross the IPC boundary.
   bool IsSafeToFill(const FormFieldData& field,

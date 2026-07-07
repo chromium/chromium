@@ -2467,6 +2467,32 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
       old_value);
 }
 
+void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
+    const FormData& form,
+    const FieldGlobalId& trigger_field_id,
+    const std::vector<FieldGlobalId>& field_ids) {
+  auto [form_structure, trigger_field] =
+      GetCachedFormAndField(form.global_id(), trigger_field_id);
+  if (!form_structure || !trigger_field ||
+      !trigger_field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+    return;
+  }
+
+  size_t address_fields_count =
+      std::ranges::count_if(field_ids, [&](const FieldGlobalId& field_id) {
+        const AutofillField* field = form_structure->GetFieldById(field_id);
+        return field &&
+               field->Type().GetGroups().contains(FieldTypeGroup::kAddress);
+      });
+
+  // The threshold for minimum fields changed.
+  // TODO(crbug.com/41495779): Use a constant or feature parameter.
+  constexpr size_t kMinFieldsChanged = 3;
+  if (address_fields_count >= kMinFieldsChanged) {
+    trigger_field->set_did_trigger_javascript_autofill(true);
+  }
+}
+
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ref<FormStructure>> forms) {
   for (const raw_ref<FormStructure>& form : forms) {

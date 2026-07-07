@@ -7073,5 +7073,81 @@ TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
       "Autofill.SuggestionGeneration.GeneratedFillingProduct", 2);
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       OnDidDetectJavaScriptAutofill_ValidAddressAutofill) {
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_CITY},
+                                                {.role = ADDRESS_HOME_ZIP}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->field_count(), 3u);
+  EXPECT_TRUE(form_structure->field(0)->Type().GetGroups().contains(
+      FieldTypeGroup::kAddress));
+  EXPECT_TRUE(form_structure->field(1)->Type().GetGroups().contains(
+      FieldTypeGroup::kAddress));
+  EXPECT_TRUE(form_structure->field(2)->Type().GetGroups().contains(
+      FieldTypeGroup::kAddress));
+
+  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
+                                          form.fields()[1].global_id(),
+                                          form.fields()[2].global_id()};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_ids);
+
+  EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
+  EXPECT_FALSE(form_structure->field(1)->did_trigger_javascript_autofill());
+  EXPECT_FALSE(form_structure->field(2)->did_trigger_javascript_autofill());
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       OnDidDetectJavaScriptAutofill_InvalidTooFewFields) {
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_CITY},
+                                                {.role = ADDRESS_HOME_ZIP}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
+  // Only 2 fields in the signal.
+  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
+                                          form.fields()[1].global_id()};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_ids);
+
+  EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       OnDidDetectJavaScriptAutofill_InvalidNonAddressFields) {
+  // Use credit card fields (FieldTypeGroup::kCreditCard) instead of address.
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER},
+                                    {.role = CREDIT_CARD_NAME_FULL},
+                                    {.role = CREDIT_CARD_EXP_MONTH}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  EXPECT_FALSE(form_structure->field(0)->Type().GetGroups().contains(
+      FieldTypeGroup::kAddress));
+
+  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
+                                          form.fields()[1].global_id(),
+                                          form.fields()[2].global_id()};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_ids);
+
+  EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
 }  // namespace
 }  // namespace autofill
