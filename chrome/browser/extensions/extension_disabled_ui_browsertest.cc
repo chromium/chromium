@@ -43,6 +43,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -145,6 +146,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, AcceptPermissions) {
   ASSERT_FALSE(GetExtensionDisabledGlobalError());
   // Expect onInstalled event to fire.
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+}
+
+// Regression test: the bubble must not crash when the granted-permissions pref
+// is missing for a disabled extension (observed during install/uninstall/update
+// races and on corrupted profiles), which makes
+// ExtensionPrefs::GetGrantedPermissions() return null. See crbug.com/471501756.
+IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
+                       NullGrantedPermissionsDoesNotCrash) {
+  const Extension* extension = InstallAndUpdateIncreasingPermissionsExtension();
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+  GlobalErrorWithStandardBubble* error =
+      static_cast<GlobalErrorWithStandardBubble*>(
+          GetExtensionDisabledGlobalError());
+  ASSERT_TRUE(error);
+
+  // Clear the extension's prefs so GetGrantedPermissions() returns null.
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+  extension_prefs->DeleteExtensionPrefs(extension_id);
+  ASSERT_FALSE(extension_prefs->GetGrantedPermissions(extension_id));
+
+  // Should not crash; with no previously granted permissions, all current
+  // permissions are reported as newly granted.
+  std::vector<std::u16string> messages = error->GetBubbleViewMessages();
+  EXPECT_FALSE(messages.empty());
 }
 
 // Tests uninstalling an extension that was disabled due to higher permissions.
