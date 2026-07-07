@@ -49,6 +49,10 @@ FullRestoreReadHandler::FullRestoreReadHandler() {
 
 FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 
+void FullRestoreReadHandler::OnWillDestroyEnv() {
+  env_observer_.Reset();
+}
+
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   int32_t window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
