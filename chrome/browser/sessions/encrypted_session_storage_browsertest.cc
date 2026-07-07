@@ -243,9 +243,14 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
   }
 
   GURL GetUrl(int index) {
+    CHECK_GE(index, 1);
+    // Only bot1.html, bot2.html, and bot3.html exist in session_history.
+    // Cycle through existing files rather than navigating to non-existent
+    // files that trigger error pages.
+    const int file_index = ((index - 1) % 3) + 1;
     return chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
-        base::FilePath().AppendASCII("bot" + base::NumberToString(index) +
+        base::FilePath().AppendASCII("bot" + base::NumberToString(file_index) +
                                      ".html"));
   }
 
