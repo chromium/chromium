@@ -25729,6 +25729,26 @@
             ]
         }
     ],
+    "VisitCustomSearchOnUndefaulting": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260707",
+                    "enable_features": [
+                        "VisitCustomSearchOnUndefaulting"
+                    ]
+                }
+            ]
+        }
+    ],
     "VisitedURLRankingService": [
         {
             "platforms": [
