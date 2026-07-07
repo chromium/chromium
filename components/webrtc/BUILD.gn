@@ -8,6 +8,16 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+component("features") {
+  output_name = "components_webrtc_features"
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  defines = [ "IS_COMPONENTS_WEBRTC_FEATURES_IMPL" ]
+  deps = [ "//base" ]
+}
+
 if (use_blink) {
   source_set("media_stream_device_enumerator") {
     sources = [

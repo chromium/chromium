@@ -10,6 +10,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/message_loop/message_pump_type.h"
@@ -23,6 +24,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
+#include "components/webrtc/features.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -39,6 +41,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/file_descriptor_store.h"
@@ -477,7 +480,15 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 #endif
 
-  ChildProcess utility_process(base::ThreadType::kDefault);
+  base::ThreadType io_thread_type = base::ThreadType::kDefault;
+  // The video capture service's IO thread carries time-sensitive video frame
+  // deliveries over mojo channels.
+  if (utility_sub_type == video_capture::mojom::VideoCaptureService::Name_ &&
+      base::FeatureList::IsEnabled(
+          webrtc::features::kWebRTCBoostMediaIOThreads)) {
+    io_thread_type = base::ThreadType::kPresentation;
+  }
+  ChildProcess utility_process(io_thread_type);
   GetContentClient()->utility()->PostIOThreadCreated(
       utility_process.io_task_runner());
   base::RunLoop run_loop;
