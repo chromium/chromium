@@ -1310,6 +1310,12 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL" desc="Label for the card benefits preferences in both the payments settings page and card benefits settings page. These preferences help users access the card benefits settings." formatter_data="android_java">
       Card benefits
   </message>
+  <message name="IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_MAIN_TEXT" desc="The main text shown for the AI card recommendation suggestion. When this suggestion is accepted, it prompts Gemini to recommend credit cards for autofill.">
+    Maximize rewards
+  </message>
+  <message name="IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_SECONDARY_TEXT" desc="The secondary text shown for the AI card recommendation suggestion. When this suggestion is accepted, it prompts Gemini to recommend credit cards for autofill.">
+    Compare card benefits using Gemini
+  </message>
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK" desc="Sublabel for the payments settings page card benefits toggle, including a hyperlinked text to learn about card benefits.">
       Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN">&lt;a href="$1" aria-description="$2"&gt;</ph>Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END">&lt;/a&gt;</ph>

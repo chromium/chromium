@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -50,6 +51,161 @@
 namespace autofill {
 
 namespace {
+
+bool ShouldShowMaximizeCreditCardBenefitsSuggestion(
+    const std::vector<CreditCard>& cards_to_suggest,
+    bool is_card_number_field_empty) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiCardRecommendation)) {
+    return false;
+  }
+
+  // This ensures the credit card field is empty before we show the
+  // "Maximize rewards" suggestion so that, upon suggestion acceptance, AI
+  // amount extraction isn't able to see the credit card number.
+  if (!is_card_number_field_empty) {
+    return false;
+  }
+  size_t eligible_cards_count =
+      std::ranges::count_if(cards_to_suggest, [](const CreditCard& card) {
+        return !card.product_description().empty();
+      });
+  return eligible_cards_count >= 2;
+}
+
+Suggestion CreateBnplFootnoteSuggestion() {
+  Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
+  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  bnpl_footnote.tab_index = kPayLaterSuggestionTabIndex;
+
+  return bnpl_footnote;
+}
+
+Suggestion CreateMaximizeCreditCardBenefitsSuggestion() {
+  Suggestion suggestion{SuggestionType::kMaximizeCreditCardBenefitsEntry};
+
+  suggestion.icon = Suggestion::Icon::kSpark;
+
+  suggestion.main_text = Suggestion::Text(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_MAIN_TEXT),
+      Suggestion::Text::IsPrimary(true));
+  suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_SECONDARY_TEXT))}};
+
+  return suggestion;
+}
+
+Suggestion CreateUndoOrClearFormSuggestion() {
+#if BUILDFLAG(IS_IOS)
+  std::u16string value =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  // TODO(crbug.com/40266549): iOS still uses Clear Form logic, replace with
+  // Undo.
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kClear;
+#else
+  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    value = base::i18n::ToUpper(value);
+  }
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kUndo;
+#endif
+  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
+}
+
+// Returns non credit card suggestions which are displayed below credit card
+// suggestions in the Autofill popup. `should_show_scan_credit_card` is used
+// to conditionally add scan credit card suggestion. `is_autofilled` is used to
+// conditionally add suggestion for clearing all autofilled fields.
+// `should_show_pay_later_tab_suggestions` is used to append the Pay Later tab
+// footnote suggestion.
+// `should_append_bnpl_suggestion` is used to append a generic BNPL suggestion
+// to the end of the payment methods suggestions.
+// `should_append_maximize_credit_card_benefits_suggestion` is used to append
+// the "Maximize rewards" suggestion to the end of the suggestions list, used
+// to trigger the `ai_card_recommendation_manager` flow.
+// `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
+// payment methods suggestion.
+// `has_timed_out_for_page_load` indicates whether the AI amount extraction
+// request timed out. If true, the returned BNPL suggestion is deactivated for
+// the remainder of this page load.
+// `seen_unsupported_currency_for_page_load` indicates whether the AI amount
+// extraction has seen an unsupported currency. If true, the returned BNPL
+// suggestion is deactivated for the remainder of this page load.
+// `bnpl_manager` will be used to check if there is a cached BNPL footer
+// suggestion. If there is, it will be reused instead of generating a new BNPL
+// footer suggestion.
+std::vector<Suggestion> GetCreditCardFooterSuggestions(
+    const AutofillClient& client,
+    bool should_show_pay_later_tab_suggestions,
+    bool should_append_bnpl_suggestion,
+    bool should_show_scan_credit_card,
+    bool should_append_maximize_credit_card_benefits_suggestion,
+    bool is_autofilled,
+    bool with_gpay_logo,
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::BnplManager* bnpl_manager) {
+  std::vector<Suggestion> footer_suggestions;
+
+  // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
+  // for this transaction if the previous amount extraction is timeout.
+  if (should_append_bnpl_suggestion) {
+    if (base::FeatureList::IsEnabled(
+            features::
+                kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
+      footer_suggestions.emplace_back(SuggestionType::kSeparator);
+    }
+
+    footer_suggestions.push_back(CreateBnplSuggestion(
+        client.GetPersonalDataManager()
+            .payments_data_manager()
+            .GetBnplIssuers(),
+        /*extracted_amount_in_micros=*/std::nullopt, amount_extraction_status));
+  }
+
+  if (should_show_pay_later_tab_suggestions) {
+    std::optional<Suggestion> cached_footnote;
+    if (bnpl_manager) {
+      for (const Suggestion& s : bnpl_manager->GetCachedSuggestions()) {
+        if (s.type == SuggestionType::kBnplFootnote) {
+          cached_footnote = s;
+          break;
+        }
+      }
+    }
+    if (cached_footnote) {
+      footer_suggestions.push_back(*cached_footnote);
+    } else {
+      footer_suggestions.push_back(CreateBnplFootnoteSuggestion());
+    }
+  }
+
+  if (should_show_scan_credit_card) {
+    Suggestion scan_credit_card(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+        SuggestionType::kScanCreditCard);
+    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
+    footer_suggestions.push_back(scan_credit_card);
+  }
+
+  if (should_append_maximize_credit_card_benefits_suggestion) {
+    footer_suggestions.emplace_back(SuggestionType::kSeparator);
+    footer_suggestions.push_back(CreateMaximizeCreditCardBenefitsSuggestion());
+  }
+
+  footer_suggestions.emplace_back(SuggestionType::kSeparator);
+  if (is_autofilled) {
+    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
+  }
+  footer_suggestions.push_back(
+      CreateManageCreditCardsSuggestion(with_gpay_logo));
+  return footer_suggestions;
+}
 
 using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 
@@ -195,10 +351,15 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
         bnpl_manager->GetBnplSuggestions(is_card_number_field_empty));
   }
 
+  const bool should_append_maximize_credit_card_benefits_suggestion =
+      ShouldShowMaximizeCreditCardBenefitsSuggestion(
+          cards_to_suggest, is_card_number_field_empty);
+
   base::Extend(suggestions,
                GetCreditCardFooterSuggestions(
                    client, should_show_pay_later_tab_suggestions,
                    should_append_bnpl_suggestion, should_show_scan_credit_card,
+                   should_append_maximize_credit_card_benefits_suggestion,
                    // TODO(crbug.com/393114125): Change to use
                    // `AutofillField::field_modifiers_`.
                    trigger_field.is_autofilled_according_to_renderer(),
@@ -284,16 +445,18 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
     suggestions.push_back(suggestion);
   }
 
-  std::ranges::move(GetCreditCardFooterSuggestions(
-                        client, /*should_show_pay_later_tab_suggestions=*/false,
-                        /*should_append_bnpl_suggestion=*/false,
-                        /*should_show_scan_credit_card=*/false,
-                        // TODO(crbug.com/393114125): Change to use
-                        // `AutofillField::field_modifiers_`.
-                        trigger_field.is_autofilled_according_to_renderer(),
-                        /*with_gpay_logo=*/true, amount_extraction_status,
-                        /*bnpl_manager=*/nullptr),
-                    std::back_inserter(suggestions));
+  std::ranges::move(
+      GetCreditCardFooterSuggestions(
+          client, /*should_show_pay_later_tab_suggestions=*/false,
+          /*should_append_bnpl_suggestion=*/false,
+          /*should_show_scan_credit_card=*/false,
+          /*should_append_maximize_credit_card_benefits_suggestion=*/false,
+          // TODO(crbug.com/393114125): Change to use
+          // `AutofillField::field_modifiers_`.
+          trigger_field.is_autofilled_according_to_renderer(),
+          /*with_gpay_logo=*/true, amount_extraction_status,
+          /*bnpl_manager=*/nullptr),
+      std::back_inserter(suggestions));
 
   return suggestions;
 }
@@ -501,17 +664,19 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
-    base::Extend(suggestions,
-                 GetCreditCardFooterSuggestions(
-                     client, /*should_show_pay_later_tab_suggestions=*/false,
-                     /*should_append_bnpl_suggestion=*/false,
-                     ShouldShowScanCreditCard(*form_structure,
-                                              *trigger_autofill_field, client),
-                     // TODO(crbug.com/393114125): Change to use
-                     // `AutofillField::field_modifiers_` after launching.
-                     trigger_field.is_autofilled_according_to_renderer(),
-                     display_gpay_logo, amount_extraction_status,
-                     /*bnpl_manager=*/nullptr));
+    base::Extend(
+        suggestions,
+        GetCreditCardFooterSuggestions(
+            client, /*should_show_pay_later_tab_suggestions=*/false,
+            /*should_append_bnpl_suggestion=*/false,
+            ShouldShowScanCreditCard(*form_structure, *trigger_autofill_field,
+                                     client),
+            /*should_append_maximize_credit_card_benefits_suggestion=*/false,
+            // TODO(crbug.com/393114125): Change to use
+            // `AutofillField::field_modifiers_` after launching.
+            trigger_field.is_autofilled_according_to_renderer(),
+            display_gpay_logo, amount_extraction_status,
+            /*bnpl_manager=*/nullptr));
     data_source = SuggestionDataSource::kSaveAndFillPromo;
   } else if (!virtual_card_guid_to_last_four_map.empty() &&
              !exclude_virtual_cards_) {
@@ -576,6 +741,22 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
   }
 
   callback({data_source, std::move(suggestions)});
+}
+
+std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    const AutofillClient& client,
+    bool should_show_pay_later_tab_suggestions,
+    bool should_append_bnpl_suggestion,
+    bool should_show_scan_credit_card,
+    bool should_append_maximize_credit_card_benefits_suggestion,
+    bool is_autofilled,
+    bool with_gpay_logo,
+    const payments::AmountExtractionStatus& amount_extraction_status) {
+  return GetCreditCardFooterSuggestions(
+      client, should_show_pay_later_tab_suggestions,
+      should_append_bnpl_suggestion, should_show_scan_credit_card,
+      should_append_maximize_credit_card_benefits_suggestion, is_autofilled,
+      with_gpay_logo, amount_extraction_status, /*bnpl_manager=*/nullptr);
 }
 
 }  // namespace autofill

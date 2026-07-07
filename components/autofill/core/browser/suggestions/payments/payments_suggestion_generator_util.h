@@ -32,10 +32,6 @@
 
 namespace autofill {
 
-namespace payments {
-class BnplManager;
-}  // namespace payments
-
 class AutofillClient;
 class BrowserAutofillManager;
 class CreditCard;
@@ -170,34 +166,6 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
                                      bool is_complete_form,
                                      const FormFieldData& trigger_field);
 
-// Returns non credit card suggestions which are displayed below credit card
-// suggestions in the Autofill popup. `should_show_scan_credit_card` is used
-// to conditionally add scan credit card suggestion. `is_autofilled` is used to
-// conditionally add suggestion for clearing all autofilled fields.
-// `should_show_pay_later_tab_suggestions` is used to append the Pay Later tab
-// footnote suggestion.
-// `should_append_bnpl_suggestion` is used to append a generic BNPL suggestion
-// to the end of the payment methods suggestions.
-// `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
-// payment methods suggestion.
-// `has_timed_out_for_page_load` indicates whether the AI amount extraction
-// request timed out. If true, the returned BNPL suggestion is deactivated for
-// the remainder of this page load.
-// `seen_unsupported_currency_for_page_load` indicates whether the AI amount
-// extraction has seen an unsupported currency. If true, the returned BNPL
-// suggestion is deactivated for the remainder of this page load.
-// `bnpl_manager` will be used to check if there is a cached BNPL footer
-// suggestion. If there is, it will be reused instead of generating a new BNPL
-// footer suggestion.
-std::vector<Suggestion> GetCreditCardFooterSuggestions(
-    const AutofillClient& client,
-    bool should_show_pay_later_tab_suggestions,
-    bool should_append_bnpl_suggestion,
-    bool should_show_scan_credit_card,
-    bool is_autofilled,
-    bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status,
-    payments::BnplManager* bnpl_manager);
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.
@@ -241,15 +209,6 @@ Suggestion CreateCreditCardSuggestionForTest(
     base::optional_ref<autofill_metrics::CardMetadataLoggingContext>
         metadata_logging_context = std::nullopt);
 
-// Exposes `GetCreditCardFooterSuggestions` in tests.
-std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
-    const AutofillClient& client,
-    bool should_show_pay_later_tab_suggestions,
-    bool should_append_bnpl_suggestion,
-    bool should_show_scan_credit_card,
-    bool is_autofilled,
-    bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status);
 
 // Exposes `GetBnplPriceLowerBound` in tests.
 std::u16string GetBnplPriceLowerBoundForTest(

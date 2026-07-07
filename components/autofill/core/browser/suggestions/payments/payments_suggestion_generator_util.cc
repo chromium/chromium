@@ -83,28 +83,6 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 static constexpr int kPrefixLength = 2;
 static constexpr int kSuffixLength = 4;
 
-Suggestion CreateUndoOrClearFormSuggestion() {
-#if BUILDFLAG(IS_IOS)
-  std::u16string value =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-  // TODO(crbug.com/40266549): iOS still uses Clear Form logic, replace with
-  // Undo.
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kClear;
-#else
-  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    value = base::i18n::ToUpper(value);
-  }
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kUndo;
-#endif
-  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  return suggestion;
-}
-
 // The priority ranking for deduplicating a duplicate card is:
 // 1. RecordType::kMaskedServerCard
 // 2. RecordType::kLocalCard
@@ -1037,14 +1015,6 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
                                          with_gpay_logo);
 }
 
-Suggestion CreateBnplFootnoteSuggestion() {
-  Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
-  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
-  bnpl_footnote.tab_index = kPayLaterSuggestionTabIndex;
-
-  return bnpl_footnote;
-}
-
 Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
                                        bool& display_gpay_logo) {
 #if BUILDFLAG(IS_IOS)
@@ -1189,21 +1159,6 @@ Suggestion CreateCreditCardSuggestionForTest(
       credit_card, client, trigger_field_type, virtual_card_option,
       metadata_logging_context.has_value() ? *metadata_logging_context
                                            : dummy_context);
-}
-
-std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
-    const AutofillClient& client,
-    bool should_show_pay_later_tab_suggestions,
-    bool should_append_bnpl_suggestion,
-    bool should_show_scan_credit_card,
-    bool is_autofilled,
-    bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status) {
-  return GetCreditCardFooterSuggestions(
-      client, should_show_pay_later_tab_suggestions,
-      should_append_bnpl_suggestion, should_show_scan_credit_card,
-      is_autofilled, with_gpay_logo, amount_extraction_status,
-      /*bnpl_manager=*/nullptr);
 }
 
 std::u16string GetBnplPriceLowerBoundForTest(
@@ -1379,66 +1334,6 @@ Suggestion CreateCreditCardSuggestion(
   }
 
   return suggestion;
-}
-
-std::vector<Suggestion> GetCreditCardFooterSuggestions(
-    const AutofillClient& client,
-    bool should_show_pay_later_tab_suggestions,
-    bool should_append_bnpl_suggestion,
-    bool should_show_scan_credit_card,
-    bool is_autofilled,
-    bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status,
-    payments::BnplManager* bnpl_manager) {
-  std::vector<Suggestion> footer_suggestions;
-
-  // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
-  // for this transaction if the previous amount extraction is timeout.
-  if (should_append_bnpl_suggestion) {
-    if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
-      footer_suggestions.emplace_back(SuggestionType::kSeparator);
-    }
-
-    footer_suggestions.push_back(CreateBnplSuggestion(
-        client.GetPersonalDataManager()
-            .payments_data_manager()
-            .GetBnplIssuers(),
-        /*extracted_amount_in_micros=*/std::nullopt, amount_extraction_status));
-  }
-
-  if (should_show_pay_later_tab_suggestions) {
-    std::optional<Suggestion> cached_footnote;
-    if (bnpl_manager) {
-      for (const Suggestion& s : bnpl_manager->GetCachedSuggestions()) {
-        if (s.type == SuggestionType::kBnplFootnote) {
-          cached_footnote = s;
-          break;
-        }
-      }
-    }
-    if (cached_footnote) {
-      footer_suggestions.push_back(*cached_footnote);
-    } else {
-      footer_suggestions.push_back(CreateBnplFootnoteSuggestion());
-    }
-  }
-
-  if (should_show_scan_credit_card) {
-    Suggestion scan_credit_card(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
-        SuggestionType::kScanCreditCard);
-    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
-    footer_suggestions.push_back(scan_credit_card);
-  }
-  footer_suggestions.emplace_back(SuggestionType::kSeparator);
-  if (is_autofilled) {
-    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
-  }
-  footer_suggestions.push_back(
-      CreateManageCreditCardsSuggestion(with_gpay_logo));
-  return footer_suggestions;
 }
 
 bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,

@@ -1680,8 +1680,10 @@ TEST_F(CreditCardSuggestionGeneratorTest, IsCreditCardFooterSuggestion) {
       GetCreditCardFooterSuggestionsForTest(
           autofill_client(), /*should_show_pay_later_tab_suggestions=*/false,
           /*should_append_bnpl_suggestion=*/false,
-          /*should_show_scan_credit_card=*/true, /*is_autofilled=*/true,
-          /*with_gpay_logo=*/true, payments::AmountExtractionStatus());
+          /*should_show_scan_credit_card=*/true,
+          /*should_append_maximize_credit_card_benefits_suggestion=*/false,
+          /*is_autofilled=*/true, /*with_gpay_logo=*/true,
+          payments::AmountExtractionStatus());
 
   for (size_t index = 0; index < footer_suggestions.size(); index++) {
     EXPECT_TRUE(IsCreditCardFooterSuggestion(footer_suggestions, index));
@@ -6590,6 +6592,214 @@ TEST_F(CreditCardSuggestionGeneratorTest, AutofillSettingsBlocked) {
       AutofillMetrics::PaymentsSigninState::kUnknown,
       /*exclude_virtual_cards=*/false);
   EXPECT_TRUE(suggestions.empty());
+}
+
+// Tests that "Maximize rewards" suggestion is NOT generated when the
+// feature flag is disabled.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       MaximizeCreditCardBenefits_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAiCardRecommendation);
+
+  // Setup 2 eligible cards for AI card recommendations.
+  CreditCard card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  card1.set_product_description(u"Amex Gold");
+  card1.set_card_art_url(GURL("https://example.com/amex.png"));
+  payments_data().AddServerCreditCard(card1);
+
+  CreditCard card2 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2);
+  card2.set_product_description(u"Chase Sapphire");
+  card2.set_card_art_url(GURL("https://example.com/chase.png"));
+  payments_data().AddServerCreditCard(card2);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  // The suggestion should not be generated.
+  EXPECT_FALSE(std::ranges::any_of(suggestions, [](const Suggestion& s) {
+    return s.type == SuggestionType::kMaximizeCreditCardBenefitsEntry;
+  }));
+}
+
+// Tests that "Maximize rewards" suggestion is NOT generated if the user has
+// fewer than 2 cards.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       MaximizeCreditCardBenefits_NotEnoughCards) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiCardRecommendation};
+
+  // Setup only 1 eligible card for AI card recommendations.
+  CreditCard card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  card1.set_product_description(u"Amex Gold");
+  card1.set_card_art_url(GURL("https://example.com/amex.png"));
+  payments_data().AddServerCreditCard(card1);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  // The suggestion should not be generated.
+  EXPECT_FALSE(std::ranges::any_of(suggestions, [](const Suggestion& s) {
+    return s.type == SuggestionType::kMaximizeCreditCardBenefitsEntry;
+  }));
+}
+
+// Tests that "Maximize rewards" suggestion is NOT generated if cards lack
+// product name.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       MaximizeCreditCardBenefits_CardsNotEligible) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiCardRecommendation};
+
+  // Setup 2 cards: 1 that's eligible and 1 that doesn't have art or product
+  // name.
+  CreditCard card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  card1.set_product_description(u"Amex Gold");
+  card1.set_card_art_url(GURL("https://example.com/amex.png"));
+  payments_data().AddServerCreditCard(card1);
+
+  CreditCard card2 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2);
+  payments_data().AddServerCreditCard(card2);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  // The suggestion should not be generated.
+  EXPECT_FALSE(std::ranges::any_of(suggestions, [](const Suggestion& s) {
+    return s.type == SuggestionType::kMaximizeCreditCardBenefitsEntry;
+  }));
+}
+
+// Tests that "Maximize rewards" suggestion is NOT generated if the focused
+// credit card number field is not empty.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       MaximizeCreditCardBenefits_CardNumberFieldNotEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiCardRecommendation};
+
+  // Setup 2 eligible cards for AI card recommendations.
+  CreditCard card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  card1.set_product_description(u"Amex Gold");
+  card1.set_card_art_url(GURL("https://example.com/amex.png"));
+  payments_data().AddServerCreditCard(card1);
+
+  CreditCard card2 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2);
+  card2.set_product_description(u"Chase Sapphire");
+  card2.set_card_art_url(GURL("https://example.com/chase.png"));
+  payments_data().AddServerCreditCard(card2);
+
+  FormBundle form_bundle = GetFormWithTypes(
+      {.fields = {{.role = CREDIT_CARD_NUMBER, .value = u"4111"}}});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  // The suggestion should not be generated.
+  EXPECT_FALSE(std::ranges::any_of(suggestions, [](const Suggestion& s) {
+    return s.type == SuggestionType::kMaximizeCreditCardBenefitsEntry;
+  }));
+}
+
+// Tests that "Maximize rewards" suggestion is generated with correct data
+// when all criteria are met.
+TEST_F(CreditCardSuggestionGeneratorTest,
+       MaximizeCreditCardBenefits_SuggestionCreatedSuccess) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiCardRecommendation};
+
+  // Setup 2 eligible cards for AI card recommendations.
+  CreditCard card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  card1.set_product_description(u"Amex Gold");
+  card1.set_card_art_url(GURL("https://example.com/amex.png"));
+  payments_data().AddServerCreditCard(card1);
+
+  CreditCard card2 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2);
+  card2.set_product_description(u"Chase Sapphire");
+  card2.set_card_art_url(GURL("https://example.com/chase.png"));
+  payments_data().AddServerCreditCard(card2);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  // The suggestion should be generated with the correct copy, labels, and
+  // icon, and it should be the third last suggestion in the suggestion list,
+  // behind a `kSeparator` and the "Manage payment methods..." suggestion.
+  ASSERT_GE(suggestions.size(), 3u);
+  EXPECT_THAT(
+      suggestions[suggestions.size() - 3],
+      EqualsSuggestion(
+          SuggestionType::kMaximizeCreditCardBenefitsEntry,
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_MAIN_TEXT),
+          Suggestion::Icon::kSpark,
+          std::vector<std::vector<
+              Suggestion::Text>>{{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_MAXIMIZE_CREDIT_CARD_BENEFITS_SUGGESTION_SECONDARY_TEXT))}}));
+
+  // Check if the last 2 suggestions are `kSeparator` and `kManageCreditCard`.
+  EXPECT_EQ(suggestions[suggestions.size() - 2].type,
+            SuggestionType::kSeparator);
+  EXPECT_EQ(suggestions.back().type, SuggestionType::kManageCreditCard);
 }
 
 }  // namespace

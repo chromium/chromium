@@ -4190,6 +4190,24 @@ TEST_F(AutofillExternalDelegateTest,
   OnSuggestionsReturned(queried_field(), {});
 }
 
+// Tests that the "Maximize rewards" suggestion functions properly when the
+// user clicks it.
+TEST_F(AutofillExternalDelegateTest,
+       DidAcceptMaximizeCreditCardBenefitsSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiCardRecommendation};
+  IssueOnQuery();
+
+  // Ensure that the suggestions popup is not hidden.
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+  // Ensure that this suggestion does not fill the credit card info.
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(SuggestionType::kMaximizeCreditCardBenefitsEntry),
+      SuggestionPosition{.multi_index = {0}});
+}
+
 }  // namespace
 
 }  // namespace autofill

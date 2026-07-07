@@ -807,7 +807,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kIbanEntry:
-    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
@@ -815,6 +814,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kVirtualCreditCardEntry:
       DidAcceptPaymentsSuggestion(suggestion, metadata);
       break;
+    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
+      DidAcceptPaymentsSuggestion(suggestion, metadata);
+      // For `kMaximizeCreditCardBenefitsEntry`, the popup remains open as it is
+      // needed to display the best reward card from Gemini.
+      return;
     case SuggestionType::kBnplEntry:
       DidAcceptPaymentsSuggestion(suggestion, metadata);
       if (base::FeatureList::IsEnabled(
@@ -1536,9 +1540,10 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       }
       break;
     }
-    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
+    case SuggestionType::kMaximizeCreditCardBenefitsEntry: {
       // TODO(haochenf) Handle MaximizeCreditCardBenefitsEntry selection.
-      [[fallthrough]];
+      break;
+    }
     default:
       NOTREACHED();  // Should be handled elsewhere
   }

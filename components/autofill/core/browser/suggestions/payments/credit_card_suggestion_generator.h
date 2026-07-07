@@ -59,6 +59,16 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
 Suggestion GetLoadingSuggestionForPayLaterTab(
     int expected_number_of_suggestions);
 
+std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    const AutofillClient& client,
+    bool should_show_pay_later_tab_suggestions,
+    bool should_append_bnpl_suggestion,
+    bool should_show_scan_credit_card,
+    bool should_append_maximize_credit_card_benefits_suggestion,
+    bool is_autofilled,
+    bool with_gpay_logo,
+    const payments::AmountExtractionStatus& amount_extraction_status);
+
 // A `SuggestionGenerator` for `FillingProduct::kCreditCard`.
 //
 // This class encapsulates logic used exclusively for generating credit card
