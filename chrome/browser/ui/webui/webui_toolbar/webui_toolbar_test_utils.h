@@ -136,6 +136,11 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void, SetAvatarButtonFocused, (bool), (override));
   MOCK_METHOD(void, SetAvatarButtonIPHPromoShowing, (bool), (override));
   MOCK_METHOD(void, OnAppMenuFocusChanged, (bool), (override));
+  MOCK_METHOD(void, ExecuteExtensionAction, (const std::string&), (override));
+  MOCK_METHOD(void,
+              ShowExtensionContextMenu,
+              (const std::string&, ui::mojom::MenuSourceType),
+              (override));
 };
 
 class MockBrowserControlsServiceDelegate

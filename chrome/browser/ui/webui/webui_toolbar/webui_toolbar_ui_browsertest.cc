@@ -187,6 +187,15 @@ class MockToolbarUIDelegate
   MOCK_METHOD(void, SetAvatarButtonFocused, (bool));
   MOCK_METHOD(void, SetAvatarButtonIPHPromoShowing, (bool));
   MOCK_METHOD(void, OnAppMenuFocusChanged, (bool), (override));
+  MOCK_METHOD(void,
+              ExecuteExtensionAction,
+              (const std::string& extension_id),
+              (override));
+  MOCK_METHOD(void,
+              ShowExtensionContextMenu,
+              (const std::string& extension_id,
+               ui::mojom::MenuSourceType source),
+              (override));
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between

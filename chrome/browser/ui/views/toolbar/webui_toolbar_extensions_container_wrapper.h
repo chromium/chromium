@@ -47,6 +47,10 @@ class WebUIToolbarExtensionsContainerWrapper
   void Init(content::WebContents* web_contents);
   void OnThemeChanged();
 
+  void ExecuteUserAction(const std::string& extension_id);
+  void ShowContextMenu(ui::mojom::MenuSourceType source,
+                       const std::string& extension_id);
+
   // WebUIToolbarExtensionsContainer::Observer:
   void OnActionsAddedOrUpdated(
       std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
@@ -57,6 +61,11 @@ class WebUIToolbarExtensionsContainerWrapper
   void OnActionPoppedOut(base::OnceClosure callback) override;
 
  private:
+  // This string is used as the extensions_bar::mojom::ExtensionActionInfo::id
+  // value to indicate the extensions button (not actually an extension).
+  // Empty string should not overlap with actual extension IDs.
+  static constexpr char kExtensionsButtonId[] = "";
+
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void SendExtensionsState();
   // Returns whether any of `cached_actions_` have access to `web_contents`.

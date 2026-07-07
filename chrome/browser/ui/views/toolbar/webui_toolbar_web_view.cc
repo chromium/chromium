@@ -664,6 +664,17 @@ void WebUIToolbarWebView::OnAppMenuFocusChanged(bool focused) {
   app_menu_control_.SetFocused(focused);
 }
 
+void WebUIToolbarWebView::ExecuteExtensionAction(
+    const std::string& extension_id) {
+  extensions_container_.ExecuteUserAction(extension_id);
+}
+
+void WebUIToolbarWebView::ShowExtensionContextMenu(
+    const std::string& extension_id,
+    ui::mojom::MenuSourceType source) {
+  extensions_container_.ShowContextMenu(source, extension_id);
+}
+
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
 }

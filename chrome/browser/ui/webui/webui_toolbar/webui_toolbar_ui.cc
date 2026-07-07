@@ -306,11 +306,17 @@ void WebUIToolbarUI::CreateHelpBubbleHandler(
 const std::vector<ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() {
   static const base::NoDestructor<std::vector<ui::ElementIdentifier>> ids(
-      {kLocationBarElementId, kLocationIconElementId, kOmniboxElementId,
-       kReloadButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
-       kToolbarHomeButtonElementId, kToolbarBackButtonElementId,
-       kToolbarForwardButtonElementId, kSharedTabGroupFeedbackElementId,
-       kToolbarAppMenuButtonElementId, kSharedTabGroupCommentsActionElementId,
+      {kLocationBarElementId,
+       kLocationIconElementId,
+       kOmniboxElementId,
+       kReloadButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarHomeButtonElementId,
+       kToolbarBackButtonElementId,
+       kToolbarForwardButtonElementId,
+       kSharedTabGroupFeedbackElementId,
+       kToolbarAppMenuButtonElementId,
+       kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId,
        kPinnedToolbarActionShowSidePanelContextualTasksElementId,
@@ -318,7 +324,8 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kToolbarAvatarButtonElementId,
        PermissionChipView::kPermissionRequestChipElementId,
        PermissionChipView::kIndicatorChipElementId,
-       kToolbarBatterySaverButtonElementId});
+       kToolbarBatterySaverButtonElementId,
+       kExtensionsMenuButtonElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
   pinned_ids.reserve(pinned_ids.size() + ids->size());
   pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());

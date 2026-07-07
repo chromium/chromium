@@ -304,4 +304,18 @@ void ToolbarUIService::OnAppMenuFocusChanged(bool focused) {
     delegate_->OnAppMenuFocusChanged(focused);
   }
 }
+
+void ToolbarUIService::ExecuteExtensionAction(const std::string& extension_id) {
+  if (delegate_) {
+    delegate_->ExecuteExtensionAction(extension_id);
+  }
+}
+
+void ToolbarUIService::ShowExtensionContextMenu(
+    const std::string& extension_id,
+    ui::mojom::MenuSourceType source) {
+  if (delegate_) {
+    delegate_->ShowExtensionContextMenu(extension_id, source);
+  }
+}
 }  // namespace toolbar_ui_api

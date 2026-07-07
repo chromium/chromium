@@ -82,9 +82,7 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
   extensions_bar::mojom::ExtensionActionInfoPtr button =
       extensions_bar::mojom::ExtensionActionInfo::New();
 
-  // Empty string should not overlap with actual extension IDs.
-  button->id = "";
-
+  button->id = kExtensionsButtonId;
   button->is_visible = true;
 
   // Fill in the rest of the fields based on `state`.
@@ -92,10 +90,10 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
       ExtensionsToolbarViewModel::GetToolbarButtonIcon(state));
   CHECK(icon_handle.has_value());
   button->icon = icon_handle.value();
-  button->accessible_name = base::UTF16ToUTF8(
-      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state));
-  button->tooltip = base::UTF16ToUTF8(
-      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(state));
+  button->accessible_name =
+      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state);
+  button->tooltip =
+      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(state);
 
   return button;
 }
@@ -166,4 +164,23 @@ void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
     state.push_back(GetExtensionsButton());
   }
   delegate_->OnExtensionsStateChanged(std::move(state));
+}
+
+void WebUIToolbarExtensionsContainerWrapper::ExecuteUserAction(
+    const std::string& extension_id) {
+  if (extensions_container_) {
+    if (extension_id == kExtensionsButtonId) {
+      extensions_container_->ToggleExtensionsMenu();
+    } else {
+      extensions_container_->ExecuteUserAction(extension_id);
+    }
+  }
+}
+
+void WebUIToolbarExtensionsContainerWrapper::ShowContextMenu(
+    ui::mojom::MenuSourceType source,
+    const std::string& extension_id) {
+  if (extensions_container_ && extension_id != kExtensionsButtonId) {
+    extensions_container_->ShowContextMenu(source, extension_id);
+  }
 }

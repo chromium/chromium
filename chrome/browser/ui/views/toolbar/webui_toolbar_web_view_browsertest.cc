@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -82,6 +83,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
@@ -130,6 +132,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -2303,6 +2306,75 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
                                                          text.c_str())));
   }
 
+  scoped_refptr<const extensions::Extension> LoadAndPinExtension(
+      content::WebContents* web_contents,
+      base::ScopedTempDir& temp_dir,
+      bool has_background_script = false) {
+    base::FilePath manifest_path =
+        temp_dir.GetPath().AppendASCII("manifest.json");
+
+    std::string background_section = "";
+    if (has_background_script) {
+      background_section = R"(
+        , "background": {
+          "service_worker": "background.js"
+        }
+      )";
+      base::FilePath script_path =
+          temp_dir.GetPath().AppendASCII("background.js");
+      std::string script_content = R"(
+        chrome.action.onClicked.addListener(() => {
+          chrome.test.sendMessage("clicked");
+        });
+      )";
+      EXPECT_TRUE(base::WriteFile(script_path, script_content));
+    }
+
+    std::string manifest_content =
+        base::StringPrintf(R"({
+      "name": "Test Extension",
+      "version": "1.0",
+      "manifest_version": 3,
+      "action": {}
+      %s,
+      "host_permissions": ["*://allowed.com/*"]
+    })",
+                           background_section.c_str());
+
+    EXPECT_TRUE(base::WriteFile(manifest_path, manifest_content));
+
+    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    scoped_refptr<const extensions::Extension> extension =
+        loader.LoadExtension(temp_dir.GetPath());
+    EXPECT_TRUE(extension);
+
+    // Pin the extension so it becomes visible.
+    ToolbarActionsModel::Get(browser()->profile())
+        ->SetActionVisibility(extension->id(), true);
+
+    std::string extension_id = extension->id();
+    // Verify extension is present.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(web_contents,
+                             base::StringPrintf(R"(
+        (() => {
+          const app = document.querySelector('toolbar-app');
+          if (!app) return false;
+          const extensionsContainer = app.shadowRoot
+              .querySelector('#extensions');
+          if (!extensionsContainer) return false;
+          const extensionElements = extensionsContainer.shadowRoot
+              .querySelectorAll('webui-toolbar-extension');
+          return Array.from(extensionElements).some(el => el.state.id === '%s');
+        })();
+      )",
+                                                extension_id.c_str()))
+          .ExtractBool();
+    }));
+
+    return extension;
+  }
+
   void SimulateUriListDropOnToolbar(content::WebContents* web_contents,
                                     const std::string& url) {
     EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
@@ -3816,45 +3888,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath manifest_path =
-      temp_dir.GetPath().AppendASCII("manifest.json");
-  // Request host permissions only for "allowed.com".
-  std::string manifest_content = R"({
-    "name": "Test Extension",
-    "version": "1.0",
-    "manifest_version": 3,
-    "action": {},
-    "host_permissions": ["*://allowed.com/*"]
-  })";
-  ASSERT_TRUE(base::WriteFile(manifest_path, manifest_content));
-
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
   scoped_refptr<const extensions::Extension> extension =
-      loader.LoadExtension(temp_dir.GetPath());
+      LoadAndPinExtension(web_contents, temp_dir,
+                          /*has_background_script=*/false);
   ASSERT_TRUE(extension);
 
-  // Pin the extension so it becomes visible.
-  ToolbarActionsModel::Get(browser()->profile())
-      ->SetActionVisibility(extension->id(), true);
-
   std::string extension_id = extension->id();
-  // Verify extension is present.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_contents,
-                           base::StringPrintf(R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        if (!app) return false;
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        if (!extensionsContainer) return false;
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        return Array.from(extensionElements).some(el => el.state.id === '%s');
-      })();
-    )",
-                                              extension_id.c_str()))
-        .ExtractBool();
-  }));
 
   // Verify extensions button (puzzle piece) is present and has "has access"
   // tooltip. Also verify divider is present.
@@ -3924,6 +3963,128 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
     )")
         .ExtractBool();
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       ExtensionUserActionsPlumbing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadAndPinExtension(web_contents, temp_dir,
+                          /*has_background_script=*/true);
+  ASSERT_TRUE(extension);
+
+  std::string extension_id = extension->id();
+
+  // Retrieve the C++ ExtensionsContainer.
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  // 1. Test onClick plumbing for the extension.
+  {
+    ExtensionTestMessageListener listener("clicked");
+
+    // Click the extension button.
+    EXPECT_TRUE(content::ExecJs(web_contents,
+                                base::StringPrintf(R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements)
+            .find(el => el.state.id === '%s');
+        el.shadowRoot.querySelector('cr-button').click();
+      })();
+    )",
+                                                   extension_id.c_str())));
+
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // 2. Test onClick plumbing for the extensions menu button (id: "").
+  {
+    auto* coordinator = container->extensions_menu_coordinator_.get();
+    ASSERT_TRUE(coordinator);
+    EXPECT_FALSE(coordinator->IsShowing());
+
+    // Click the extensions button (puzzle piece, id: "").
+    EXPECT_TRUE(content::ExecJs(web_contents, R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements).find(el => el.state.id === '');
+        el.shadowRoot.querySelector('cr-button').click();
+      })();
+    )"));
+
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+
+    // Toggle it back off.
+    EXPECT_TRUE(content::ExecJs(web_contents, R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements).find(el => el.state.id === '');
+        el.shadowRoot.querySelector('cr-button').click();
+      })();
+    )"));
+
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
+  }
+
+  // 3. Test onContextMenu plumbing for the extension.
+  {
+    EXPECT_FALSE(container->context_menu_);
+
+    // Trigger context menu event on the extension.
+    EXPECT_TRUE(content::ExecJs(web_contents,
+                                base::StringPrintf(R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements)
+            .find(el => el.state.id === '%s');
+        const btn = el.shadowRoot.querySelector('cr-button');
+        btn.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 2
+        }));
+      })();
+    )",
+                                                   extension_id.c_str())));
+
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return container->context_menu_ != nullptr; }));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,

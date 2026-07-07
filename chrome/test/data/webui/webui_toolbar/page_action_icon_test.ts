@@ -64,6 +64,10 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   onPageActionChipShowingChanged(_actionId: PageActionId) {
     return Promise.resolve({result: {}});
   }
+
+  executeExtensionAction(_extensionId: string) {}
+
+  showExtensionContextMenu(_extensionId: string, _source: any) {}
 }
 
 class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {

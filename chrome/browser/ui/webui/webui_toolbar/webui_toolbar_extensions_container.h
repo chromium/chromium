@@ -21,6 +21,7 @@
 
 class BrowserWindowInterface;
 class ExtensionsMenuCoordinator;
+class WebUIToolbarWebViewBrowserTest;
 
 namespace webui_toolbar {
 class IconTable;
@@ -94,6 +95,8 @@ class WebUIToolbarExtensionsContainer
   void ToggleExtensionsMenuFromWebUI() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
+                           ExtensionUserActionsPlumbing);
   class ActionInfo;
   class ContextMenu;
 

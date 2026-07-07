@@ -134,4 +134,10 @@ interface ToolbarUIService {
 
   // Called when the app menu button focus state changes.
   OnAppMenuFocusChanged(bool focused);
+
+  // Executes the user action for the extension with the given ID.
+  ExecuteExtensionAction(string extension_id);
+
+  // Displays the context menu for the extension with the given ID.
+  ShowExtensionContextMenu(string extension_id, ui.mojom.MenuSourceType source);
 };

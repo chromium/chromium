@@ -5,15 +5,17 @@
 module extensions_bar.mojom;
 
 import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 
 // Data of a toolbar button for dealing with extensions.
 struct ExtensionActionInfo {
   // This is the action id used to identify the action in the
   // ExtensionsContainer and related APIs --- and is the extenion's identifier
-  // string.
+  // string. Empty string indicates extensions button (puzzle piece) rather
+  // than a specific extension.
   string id;
-  string accessible_name;
-  string tooltip;
+  mojo_base.mojom.String16 accessible_name;
+  mojo_base.mojom.String16 tooltip;
 
   // True if button is visible for any reason; e.g. pinned, or popped out
   // because the user is interacting with this extension.

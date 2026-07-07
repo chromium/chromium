@@ -57,9 +57,8 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
         browser_->GetTabStripModel()->GetActiveWebContents();
     auto result = extensions_bar::mojom::ExtensionActionInfo::New();
     result->id = model_->GetId();
-    result->accessible_name =
-        base::UTF16ToUTF8(model_->GetAccessibleName(web_contents));
-    result->tooltip = base::UTF16ToUTF8(model_->GetTooltip(web_contents));
+    result->accessible_name = model_->GetAccessibleName(web_contents);
+    result->tooltip = model_->GetTooltip(web_contents);
     result->is_visible =
         extensions_container_->IsActionVisibleOnToolbar(result->id);
 

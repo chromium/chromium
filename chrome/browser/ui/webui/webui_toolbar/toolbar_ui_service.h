@@ -76,6 +76,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void SetAvatarButtonFocused(bool focused) = 0;
     virtual void SetAvatarButtonIPHPromoShowing(bool showing) = 0;
     virtual void OnAppMenuFocusChanged(bool focused) = 0;
+    virtual void ExecuteExtensionAction(const std::string& extension_id) = 0;
+    virtual void ShowExtensionContextMenu(const std::string& extension_id,
+                                          ui::mojom::MenuSourceType source) = 0;
   };
 
   ToolbarUIService(
@@ -141,6 +144,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       bool showing,
       SetAvatarButtonIphPromoShowingCallback callback) override;
   void OnAppMenuFocusChanged(bool focused) override;
+  void ExecuteExtensionAction(const std::string& extension_id) override;
+  void ShowExtensionContextMenu(const std::string& extension_id,
+                                ui::mojom::MenuSourceType source) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

@@ -9,6 +9,7 @@ import type {ExtensionElement} from './extension.js';
 export function getHtml(this: ExtensionElement) {
   return html`<!--_html_template_start_-->
   <cr-button type="button"
+      ?is-menu-open="${this.trackedHighlighted}"
       title="${this.state.tooltip}"
       aria-label="${this.state.accessibleName || this.state.tooltip}"
       @click="${this.onClick_}"
