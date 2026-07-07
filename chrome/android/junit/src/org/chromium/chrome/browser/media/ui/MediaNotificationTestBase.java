@@ -104,6 +104,11 @@ public class MediaNotificationTestBase {
         FeatureOverrides.newBuilder()
                 .disable(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
                 .applyWithoutOverwrite();
+        // The MediaNotificationManager is in components, but the flag is in Chrome. In production
+        // code, we expect Chrome code to call
+        // MediaNotificationManager.setMultipleMediaNotificationsEnabled. In the test, this is not
+        // happening, so we have to do it manually.
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(false);
 
         mMockContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mMockContext);
@@ -183,6 +188,7 @@ public class MediaNotificationTestBase {
     public void tearDown() {
         MediaNotificationManager.hideForAllTabs(getNotificationId());
         MediaNotificationManager.setService(getNotificationId(), null);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(false);
     }
 
     MediaNotificationController getController() {
