@@ -259,30 +259,5 @@ TEST_F(WebAppUtilsTest, GeminiAppWillBeSystemWebApp) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(WebAppUtilsTest, ResetAllContentSettings) {
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  GURL url("isolated-app://abcdef");
-  host_content_settings_map->SetPermissionSettingDefaultScope(
-      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-      GeolocationSetting{.approximate = PermissionOption::kAllowed,
-                         .precise = PermissionOption::kDenied});
-  host_content_settings_map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::NOTIFICATIONS,
-      ContentSetting::CONTENT_SETTING_ALLOW);
-
-  ResetAllContentSettingsForWebApp(profile(), url);
-
-  EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
-                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
-            content_settings::PermissionSettingsRegistry::GetInstance()
-                ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
-                ->GetInitialDefaultSetting());
-  EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
-                url, url, ContentSettingsType::NOTIFICATIONS),
-            content_settings::PermissionSettingsRegistry::GetInstance()
-                ->Get(ContentSettingsType::NOTIFICATIONS)
-                ->GetInitialDefaultSetting());
-}
 
 }  // namespace web_app

@@ -12,10 +12,14 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
     "isolated_web_app_features.h",
     "isolated_web_app_url_info.cc",
     "isolated_web_app_url_info.h",
+    "key_rotation_util.cc",
+    "key_rotation_util.h",
     "policy/isolated_web_app_external_install_options.cc",
     "policy/isolated_web_app_external_install_options.h",
     "policy/isolated_web_app_policy_constants.cc",
     "policy/isolated_web_app_policy_constants.h",
+    "remove_isolated_web_app_data.cc",
+    "remove_isolated_web_app_data.h",
     "storage_util.cc",
     "storage_util.h",
     "update/version_change_validator.cc",
@@ -30,6 +34,7 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/web_applications:iwa_types",
     "//components/content_settings/core/browser",
     "//components/web_package",
     "//components/webapps/browser",
@@ -44,10 +49,12 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
   ]
 
   deps = [
+    "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:app_id_helpers",
+    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//components/base32",

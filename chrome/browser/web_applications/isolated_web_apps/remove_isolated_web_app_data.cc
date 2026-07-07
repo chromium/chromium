@@ -15,8 +15,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/webapps/isolated_web_apps/bundle_operations/bundle_operations.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
@@ -75,6 +75,37 @@ void CloseBundle(Profile* profile,
 
 }  // namespace
 
+namespace internal {
+void ResetAllContentSettingsForIsolatedWebApp(Profile* profile,
+                                              const GURL& app_scope) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  for (int i = static_cast<int>(ContentSettingsType::kMinValue);
+       i <= static_cast<int>(ContentSettingsType::kMaxValue); ++i) {
+    ContentSettingsType content_type = static_cast<ContentSettingsType>(i);
+
+    if (content_type == ContentSettingsType::MIXEDSCRIPT ||
+        content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
+      // These types are excluded because one can't call
+      // GetDefaultContentSetting() for them.
+      continue;
+    }
+
+    // ContentSettingsType enum values may include deprecated types or other
+    // that are not registered in the PermissionSettingsRegistry.
+    // `Get()` returns nullptr for unregistered types. Skip these, as they
+    // cannot be managed or reset via HostContentSettingsMap.
+    if (!content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            content_type)) {
+      continue;
+    }
+
+    host_content_settings_map->SetPermissionSettingDefaultScope(
+        app_scope, app_scope, content_type, CONTENT_SETTING_DEFAULT);
+  }
+}
+}  // namespace internal
+
 void RemoveIsolatedWebAppBrowsingData(Profile* profile,
                                       const url::Origin& iwa_origin,
                                       base::OnceClosure callback) {
@@ -85,7 +116,8 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
   // entries for the uninstalled IWA from appearing in Chrome's site settings
   // page (e.g., showing granted permissions for an app that's no longer
   //  present).
-  ResetAllContentSettingsForWebApp(profile, iwa_origin.GetURL());
+  internal::ResetAllContentSettingsForIsolatedWebApp(profile,
+                                                     iwa_origin.GetURL());
 
   auto filter = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);

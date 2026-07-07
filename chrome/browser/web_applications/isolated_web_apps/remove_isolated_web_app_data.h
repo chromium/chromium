@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_REMOVE_ISOLATED_WEB_APP_DATA_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/web_applications/web_app.h"
 
 class Profile;
 
 namespace url {
 class Origin;
 }  // namespace url
+
+class GURL;
 
 namespace web_app {
 
@@ -23,6 +24,12 @@ class IsolatedWebAppStorageLocation;
 void RemoveIsolatedWebAppBrowsingData(Profile* profile,
                                       const url::Origin& iwa_origin,
                                       base::OnceClosure callback);
+
+namespace internal {
+// Resets all content settings for a given isolated web app.
+void ResetAllContentSettingsForIsolatedWebApp(Profile* profile,
+                                              const GURL& app_scope);
+}  // namespace internal
 
 // Closes the reader (if any) that use the singed web bundle in the |location|
 // and deletes the location's directory if it is owned by Chrome.

@@ -597,33 +597,6 @@ bool IsValidScopeForLinkCapturing(const GURL& scope) {
   return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
 }
 
-void ResetAllContentSettingsForWebApp(Profile* profile, const GURL& app_scope) {
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  for (int i = static_cast<int>(ContentSettingsType::kMinValue);
-       i <= static_cast<int>(ContentSettingsType::kMaxValue); ++i) {
-    ContentSettingsType content_type = static_cast<ContentSettingsType>(i);
-
-    if (content_type == ContentSettingsType::MIXEDSCRIPT ||
-        content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
-      // These types are excluded because one can't call
-      // GetDefaultContentSetting() for them.
-      continue;
-    }
-
-    // ContentSettingsType enum values may include deprecated types or other
-    // that are not registered in the PermissionSettingsRegistry.
-    // `Get()` returns nullptr for unregistered types. Skip these, as they
-    // cannot be managed or reset via HostContentSettingsMap.
-    if (!content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-            content_type)) {
-      continue;
-    }
-
-    host_content_settings_map->SetPermissionSettingDefaultScope(
-        app_scope, app_scope, content_type, CONTENT_SETTING_DEFAULT);
-  }
-}
 
 // TODO(crbug.com/331208955): Remove after migration.
 bool WillBeSystemWebApp(const webapps::AppId& app_id,
