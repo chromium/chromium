@@ -22,10 +22,41 @@ namespace extensions {
 // drained, `CreatePipe()` replays the entire buffer into a fresh
 // consumer pipe.
 //
-// Responses larger than the configured cap abandon caching: the
-// buffer is released and the forwarding pipe (if any) is torn down,
-// which aborts the live load. `is_complete()` stays false so the
-// fallback path refetches from the network.
+// Responses larger than the configured cap abandon caching: the buffer
+// is released and `is_complete()` stays false so the fallback path
+// refetches from the network. A live forwarding consumer keeps
+// receiving the remaining bytes with bounded memory: the crossover
+// reuses the cached buffer as the staged backlog (bounded by the
+// cap); once it drains, bytes flow straight from the source pipe to
+// the consumer, and back-pressure leaves them unread in the source
+// pipe until the consumer makes room.
+//
+// State machine (a chunk handler returns the next action; the source
+// watcher re-arms only between chunks). A consumer disconnect while
+// caching keeps the state at kCaching so the replay buffer stays
+// available for the fallback path:
+//
+//                            source bytes
+//                                 |
+//                                 v
+//                          +---------------+
+//                          |    kCaching   |  append to buffer_;
+//                          | (buffer for   |  forward live if a
+//                          |    replay)    |  consumer is attached
+//                          +---------------+
+//                            |     |     |
+//             EOF under cap  |     |     |  over cap, no consumer
+//                  +---------+     |     +---------+
+//                  |   over cap, live consumer     |
+//                  v               v               v
+//           +-----------+   +--------------+   +-----------+
+//           | kComplete |   | kForwardOnly |   |  kStopped |
+//           |  (replay  |   | (stream rest |   | (no replay|
+//           |  buffer_) |   |  bounded mem)|   |  source   |
+//           +-----------+   +--------------+   |  closed)  |
+//                                  |           +-----------+
+//                         EOF / consumer gone        ^
+//                                  +-----------------+
 class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
  public:
   // Creates a cache that drains `source` into memory. If
@@ -56,7 +87,9 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // Returns true if the response exceeded the cap and the cache
   // released its buffer. `is_complete()` stays false in this state;
   // callers must refetch from the network for the full body.
-  bool is_abandoned() const { return state_ == State::kAbandoned; }
+  bool is_abandoned() const {
+    return state_ == State::kForwardOnly || state_ == State::kStopped;
+  }
 
   // Returns the number of cached bytes.
   size_t cached_size() const { return buffer_.size(); }
@@ -70,7 +103,31 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   ~MimeHandlerBodyCache();
 
   // Lifecycle of the buffered drain.
-  enum class State { kCaching, kComplete, kAbandoned };
+  enum class State {
+    // Source bytes are accumulated in `buffer_` for replay.
+    kCaching,
+    // The source ended under the cap; `buffer_` is replayable.
+    kComplete,
+    // The cap was exceeded: replay is abandoned, but bytes keep
+    // streaming to the live forwarding consumer with bounded memory.
+    kForwardOnly,
+    // No replay is possible and no live consumer remains.
+    kStopped,
+  };
+
+  // Continuation after a source chunk has been dispatched.
+  enum class NextAction {
+    kNone,
+    kReadSource,
+    kFlushStaging,
+    kStop,
+  };
+
+  // Result of dispatching one source chunk.
+  struct SourceReadResult {
+    size_t consumed = 0;
+    NextAction next_action = NextAction::kNone;
+  };
 
   // Creates the forwarding data pipe and stores the producer end.
   // Returns false on pipe creation failure.
@@ -80,10 +137,30 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // Takes ownership of `source` and starts pumping it.
   void StartReading(mojo::ScopedDataPipeConsumerHandle source);
 
-  // Source watcher callback: reads the next chunk, appends it to
-  // `buffer_` (or abandons on overflow), ends the read, and re-arms.
+  // Source watcher callback shell: reads the next chunk, dispatches it
+  // via `HandleSourceBytes()`, ends the read, and runs the returned
+  // continuation.
   void OnSourceReadable(MojoResult result,
                         const mojo::HandleSignalsState& state);
+
+  // Dispatches one source chunk according to the current state.
+  SourceReadResult HandleSourceBytes(base::span<const uint8_t> data);
+
+  // Appends `data` to `buffer_`, or crosses over to `kForwardOnly` /
+  // `kStopped` when the chunk would exceed the cap. The returned
+  // `consumed` count may be zero: at the crossover the chunk is left in
+  // the source pipe (appending it to the backlog could reallocate the
+  // cap-sized buffer) and is re-read once the backlog drains.
+  SourceReadResult HandleCachingBytes(base::span<const uint8_t> data);
+
+  // Forwards `data` straight from the source span into the forwarding
+  // pipe in `kForwardOnly`, once the crossover backlog has drained.
+  SourceReadResult HandleForwardOnlyBytes(base::span<const uint8_t> data);
+
+  // Runs the continuation chosen by a chunk handler: re-arms the
+  // source, flushes the crossover backlog, finishes teardown, or does
+  // nothing.
+  void RunNextAction(NextAction action);
 
   // Handles source EOF (or a broken source pipe, which is
   // indistinguishable and treated the same way).
@@ -107,15 +184,36 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // forwarding pipe. Re-arms the watcher when the pipe is back-pressured.
   void WritePendingToForwarding();
 
+  // Flushes `staging_` into the forwarding pipe. Source reads resume
+  // only once the whole staged backlog has been accepted; on
+  // back-pressure the writable watcher re-arms instead.
+  void FlushStaging();
+
   // Watcher callback that resumes forwarding when the pipe becomes
-  // writable, or tears it down on peer close / error.
+  // writable.
   void OnForwardingPipeWritable(MojoResult result,
                                 const mojo::HandleSignalsState& state);
 
-  // Closes the forwarding producer and cancels its watcher.
+  // Watcher callback for forwarding-pipe peer closure. Armed once at
+  // creation so a disconnect is noticed even while no write is
+  // pending.
+  void OnForwardingPeerClosed(MojoResult result,
+                              const mojo::HandleSignalsState& state);
+
+  // Reacts to the forwarding consumer going away: before overflow the
+  // cache keeps buffering for replay; after overflow nothing needs the
+  // remaining bytes, so everything shuts down.
+  void OnForwardingGone();
+
+  // Closes the forwarding producer and cancels its watchers.
   void CloseForwarding();
 
-  // Source pipe being pumped into `buffer_`.
+  // Terminal teardown: releases all pipes, watchers and staged bytes.
+  void EnterStopped();
+
+  // Source pipe being pumped. Reads are eager while caching; in
+  // `kForwardOnly` they pause while the backlog is in flight or the
+  // forwarding pipe is full.
   mojo::ScopedDataPipeConsumerHandle source_;
 
   // Watches `source_` for readability.
@@ -131,12 +229,29 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // not requested or has been torn down.
   mojo::ScopedDataPipeProducerHandle forwarding_producer_;
 
-  // Watches `forwarding_producer_` for writable / peer-closed signals.
+  // Watches `forwarding_producer_` for writability; armed only while
+  // forwarded bytes are pending behind back-pressure.
   mojo::SimpleWatcher forwarding_watcher_;
+
+  // Watches `forwarding_producer_` for peer closure. Separate from
+  // `forwarding_watcher_`, which is armed only under back-pressure: an
+  // idle cache would otherwise never observe a disconnect and, after
+  // overflow, would keep the source pipe open indefinitely.
+  mojo::SimpleWatcher forwarding_peer_watcher_;
 
   // Number of bytes from `buffer_` that have already been written into
   // `forwarding_producer_`.
   size_t forwarding_offset_ = 0;
+
+  // The cached buffer, reused at the crossover as the in-flight
+  // backlog for the forwarding pipe (bounded by the cap;
+  // `staging_offset_` skips the already-forwarded prefix). Empty once
+  // drained: from then on bytes are forwarded straight from the
+  // source pipe. This is what bounds memory in `kForwardOnly`.
+  std::vector<uint8_t> staging_;
+
+  // Number of bytes from `staging_` already accepted by the pipe.
+  size_t staging_offset_ = 0;
 
   base::WeakPtrFactory<MimeHandlerBodyCache> weak_factory_{this};
 };

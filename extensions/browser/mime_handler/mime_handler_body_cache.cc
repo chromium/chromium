@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 
@@ -57,8 +58,9 @@ MimeHandlerBodyCache::SetMaxCacheBytesForTesting(  // IN-TEST
 
 MimeHandlerBodyCache::MimeHandlerBodyCache()
     : source_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      forwarding_watcher_(FROM_HERE,
-                          mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
+      forwarding_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
+      forwarding_peer_watcher_(FROM_HERE,
+                               mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 MimeHandlerBodyCache::~MimeHandlerBodyCache() = default;
 
@@ -71,11 +73,19 @@ bool MimeHandlerBodyCache::InitializeForwarding(
   }
 
   forwarding_watcher_.Watch(
-      forwarding_producer_.get(),
-      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      forwarding_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
       base::BindRepeating(&MimeHandlerBodyCache::OnForwardingPipeWritable,
                           weak_factory_.GetWeakPtr()));
+
+  // Armed only once: a peer can only close once, and the handler
+  // always tears the forwarding pipe down.
+  forwarding_peer_watcher_.Watch(
+      forwarding_producer_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(&MimeHandlerBodyCache::OnForwardingPeerClosed,
+                          weak_factory_.GetWeakPtr()));
+  forwarding_peer_watcher_.ArmOrNotify();
 
   *out_forwarding_pipe = std::move(consumer);
   return true;
@@ -112,43 +122,114 @@ void MimeHandlerBodyCache::OnSourceReadable(
     return;
   }
 
-  if (state_ == State::kAbandoned) {
-    source_->EndReadData(data.size());
-    return;
-  }
-  if (buffer_.size() + data.size() > g_max_cache_bytes) {
-    // Response exceeds the cap. Release the buffer and tear down the
-    // forwarding pipe; the live load aborts, and the fallback reload
-    // path refetches from the network (`is_complete()` stays false).
-    state_ = State::kAbandoned;
-    buffer_.clear();
-    buffer_.shrink_to_fit();
-    forwarding_producer_.reset();
-    forwarding_watcher_.Cancel();
-    source_->EndReadData(data.size());
-    source_watcher_.Cancel();
-    source_.reset();
-    return;
-  }
-  buffer_.insert(buffer_.end(), data.begin(), data.end());
-  source_->EndReadData(data.size());
+  // `data` is only valid until `EndReadData()`; the handler consumes
+  // it before that.
+  SourceReadResult dispatch = HandleSourceBytes(data);
+  source_->EndReadData(dispatch.consumed);
+  RunNextAction(dispatch.next_action);
+}
 
-  if (forwarding_producer_.is_valid()) {
-    WritePendingToForwarding();
+MimeHandlerBodyCache::SourceReadResult MimeHandlerBodyCache::HandleSourceBytes(
+    base::span<const uint8_t> data) {
+  switch (state_) {
+    case State::kCaching:
+      return HandleCachingBytes(data);
+    case State::kForwardOnly:
+      return HandleForwardOnlyBytes(data);
+    case State::kComplete:
+    case State::kStopped:
+      NOTREACHED();
   }
-  source_watcher_.ArmOrNotify();
+}
+
+void MimeHandlerBodyCache::RunNextAction(NextAction action) {
+  switch (action) {
+    case NextAction::kNone:
+      break;
+    case NextAction::kReadSource:
+      source_watcher_.ArmOrNotify();
+      break;
+    case NextAction::kFlushStaging:
+      // The unconsumed chunk is still in the source pipe; source reads
+      // resume once the backlog drains.
+      FlushStaging();
+      break;
+    case NextAction::kStop:
+      EnterStopped();
+      break;
+  }
 }
 
 void MimeHandlerBodyCache::OnSourceDone() {
   source_watcher_.Cancel();
   source_.reset();
-  if (state_ == State::kAbandoned) {
-    return;
-  }
-  state_ = State::kComplete;
 
+  switch (state_) {
+    case State::kCaching:
+      state_ = State::kComplete;
+      if (forwarding_producer_.is_valid()) {
+        // Flushes the tail; the producer closes once everything has
+        // been written, signalling EOF to the live consumer.
+        WritePendingToForwarding();
+      }
+      break;
+    case State::kForwardOnly:
+      // Source reads pause while the backlog is in flight, so EOF
+      // can only be observed with an empty staging buffer. Closing the
+      // forwarding producer signals EOF to the live consumer.
+      CHECK(staging_.empty());
+      EnterStopped();
+      break;
+    case State::kComplete:
+    case State::kStopped:
+      NOTREACHED();
+  }
+}
+
+MimeHandlerBodyCache::SourceReadResult MimeHandlerBodyCache::HandleCachingBytes(
+    base::span<const uint8_t> data) {
+  if (buffer_.size() + data.size() > g_max_cache_bytes) {
+    // Response exceeds the cap: replay is abandoned and `is_complete()`
+    // stays false, so the fallback path refetches from the network.
+    if (!forwarding_producer_.is_valid()) {
+      // No live consumer needs the remaining bytes either.
+      buffer_.clear();
+      buffer_.shrink_to_fit();
+      return {data.size(), NextAction::kStop};
+    }
+    // A live consumer still needs the body. The cached buffer becomes
+    // the staged backlog as-is (no copy); the chunk stays unconsumed
+    // in the source pipe and is re-read once the backlog drains, so
+    // streaming continues with bounded memory from here on.
+    state_ = State::kForwardOnly;
+    staging_ = std::exchange(buffer_, {});
+    staging_offset_ = forwarding_offset_;
+    return {0, NextAction::kFlushStaging};
+  }
+
+  buffer_.insert(buffer_.end(), data.begin(), data.end());
   if (forwarding_producer_.is_valid()) {
     WritePendingToForwarding();
+  }
+  return {data.size(), NextAction::kReadSource};
+}
+
+MimeHandlerBodyCache::SourceReadResult
+MimeHandlerBodyCache::HandleForwardOnlyBytes(base::span<const uint8_t> data) {
+  // Source reads pause while the crossover backlog is in flight, so it
+  // has necessarily drained here: bytes go straight from the source
+  // span into the pipe.
+  CHECK(staging_.empty());
+  size_t offset = 0;
+  switch (ForwardBytes(data, offset)) {
+    case ForwardResult::kPeerGone:
+      return {offset, NextAction::kStop};
+    case ForwardResult::kDrained:
+      return {offset, NextAction::kReadSource};
+    case ForwardResult::kBackpressured:
+      // `ForwardBytes()` armed the writable watcher; the unread bytes
+      // stay in the source pipe.
+      return {offset, NextAction::kNone};
   }
 }
 
@@ -163,7 +244,8 @@ MimeHandlerBodyCache::ForwardResult MimeHandlerBodyCache::ForwardBytes(
     if (result == MOJO_RESULT_OK) {
       offset += bytes_written;
     } else if (result == MOJO_RESULT_SHOULD_WAIT) {
-      // The pipe is full; re-arm the writable watcher to resume later.
+      // Back-pressure: source reads stay paused until the consumer
+      // drains the pipe and the watcher fires.
       forwarding_watcher_.ArmOrNotify();
       return ForwardResult::kBackpressured;
     } else {
@@ -182,31 +264,111 @@ void MimeHandlerBodyCache::WritePendingToForwarding() {
     case ForwardResult::kBackpressured:
       return;
     case ForwardResult::kPeerGone:
+      // The consumer went away; keep caching for the fallback replay.
       CloseForwarding();
       return;
     case ForwardResult::kDrained:
       break;
   }
 
-  if (state_ == State::kComplete && forwarding_offset_ >= buffer_.size()) {
+  if (state_ == State::kComplete) {
     CloseForwarding();
   }
+}
+
+void MimeHandlerBodyCache::FlushStaging() {
+  CHECK(state_ == State::kForwardOnly);
+
+  switch (ForwardBytes(staging_, staging_offset_)) {
+    case ForwardResult::kBackpressured:
+      return;
+    case ForwardResult::kPeerGone:
+      EnterStopped();
+      return;
+    case ForwardResult::kDrained:
+      break;
+  }
+
+  // The backlog has been fully handed to the pipe; release the
+  // memory before resuming source reads. It can be as large as the
+  // cap, so keeping its capacity around would defeat the bound.
+  staging_.clear();
+  staging_.shrink_to_fit();
+  staging_offset_ = 0;
+  source_watcher_.ArmOrNotify();
 }
 
 void MimeHandlerBodyCache::OnForwardingPipeWritable(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK || state.peer_closed()) {
-    CloseForwarding();
+    OnForwardingGone();
     return;
   }
 
-  WritePendingToForwarding();
+  switch (state_) {
+    case State::kCaching:
+    case State::kComplete:
+      WritePendingToForwarding();
+      break;
+    case State::kForwardOnly:
+      if (!staging_.empty()) {
+        FlushStaging();
+      } else {
+        // Back-pressure hit on a direct forward: the bytes are still
+        // in the source pipe, so resume reading it.
+        source_watcher_.ArmOrNotify();
+      }
+      break;
+    case State::kStopped:
+      NOTREACHED();
+  }
+}
+
+void MimeHandlerBodyCache::OnForwardingPeerClosed(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  if (result == MOJO_RESULT_CANCELLED) {
+    // The watched handle was closed locally; not a disconnect.
+    return;
+  }
+  OnForwardingGone();
+}
+
+void MimeHandlerBodyCache::OnForwardingGone() {
+  switch (state_) {
+    case State::kCaching:
+    case State::kComplete:
+      // The live consumer went away; keep caching so the fallback
+      // replay stays available.
+      CloseForwarding();
+      break;
+    case State::kForwardOnly:
+      // No replay and no live consumer: nothing needs the remaining
+      // bytes, so stop reading and close the source.
+      EnterStopped();
+      break;
+    case State::kStopped:
+      NOTREACHED();
+  }
 }
 
 void MimeHandlerBodyCache::CloseForwarding() {
+  // Cancel before closing the handle so neither watcher observes the
+  // local close as a MOJO_RESULT_CANCELLED notification.
   forwarding_watcher_.Cancel();
+  forwarding_peer_watcher_.Cancel();
   forwarding_producer_.reset();
+}
+
+void MimeHandlerBodyCache::EnterStopped() {
+  state_ = State::kStopped;
+  staging_.clear();
+  staging_.shrink_to_fit();
+  staging_offset_ = 0;
+  CloseForwarding();
+  source_watcher_.Cancel();
+  source_.reset();
 }
 
 mojo::ScopedDataPipeConsumerHandle MimeHandlerBodyCache::CreatePipe() {
