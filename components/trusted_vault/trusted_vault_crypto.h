@@ -40,7 +40,7 @@ bool VerifyMemberProof(const SecureBoxPublicKey& key,
 
 // Signs |trusted_vault_key| with |prev_trusted_vault_key| using SecureBox
 // symmetric encryption.
-std::vector<uint8_t> ComputeRotationProofForTesting(
+std::vector<uint8_t> ComputeRotationProof(
     const std::vector<uint8_t>& trusted_vault_key,
     const std::vector<uint8_t>& prev_trusted_vault_key);
 

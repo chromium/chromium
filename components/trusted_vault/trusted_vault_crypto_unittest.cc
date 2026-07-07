@@ -69,8 +69,7 @@ TEST(TrustedVaultCrypto, ShouldComputeAndVerifyRotationProof) {
   const std::vector<uint8_t> prev_trusted_vault_key = {1, 2, 3, 5};
   EXPECT_TRUE(VerifyRotationProof(
       trusted_vault_key, prev_trusted_vault_key, /*rotation_proof=*/
-      ComputeRotationProofForTesting(trusted_vault_key,
-                                     prev_trusted_vault_key)));
+      ComputeRotationProof(trusted_vault_key, prev_trusted_vault_key)));
 }
 
 TEST(TrustedVaultCrypto, ShouldDetectIncorrectRotationProof) {
@@ -79,8 +78,7 @@ TEST(TrustedVaultCrypto, ShouldDetectIncorrectRotationProof) {
   const std::vector<uint8_t> incorrect_trusted_vault_key = {1, 2, 3, 6};
   EXPECT_FALSE(VerifyRotationProof(
       trusted_vault_key, prev_trusted_vault_key, /*rotation_proof=*/
-      ComputeRotationProofForTesting(trusted_vault_key,
-                                     incorrect_trusted_vault_key)));
+      ComputeRotationProof(trusted_vault_key, incorrect_trusted_vault_key)));
 }
 
 }  // namespace

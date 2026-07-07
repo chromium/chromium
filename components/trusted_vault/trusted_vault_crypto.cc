@@ -55,13 +55,17 @@ bool VerifyMemberProof(const SecureBoxPublicKey& key,
                                     *proof);
 }
 
-std::vector<uint8_t> ComputeRotationProofForTesting(  // IN-TEST
+std::vector<uint8_t> ComputeRotationProof(
     const std::vector<uint8_t>& trusted_vault_key,
     const std::vector<uint8_t>& prev_trusted_vault_key) {
+  // This constant payload is added because of crbug.com/192545331, and to stay
+  // consistent with rotation proof computation on other platforms.
+  // The payload is irrelevant for validating the rotation proof.
+  const uint8_t kPayload[] = {0x00};
   return SecureBoxSymmetricEncrypt(
       /*shared_secret=*/prev_trusted_vault_key,
       /*header=*/trusted_vault_key,
-      /*payload=*/base::span<uint8_t>());
+      /*payload=*/kPayload);
 }
 
 bool VerifyRotationProof(const std::vector<uint8_t>& trusted_vault_key,

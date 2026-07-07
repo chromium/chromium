@@ -62,7 +62,7 @@ void AddSecurityDomainMembership(
       trusted_vault_pb::RotationProof* rotation_proof =
           membership->add_rotation_proofs();
       rotation_proof->set_new_epoch(trusted_vault_keys_versions[i]);
-      AssignBytesToProtoString(ComputeRotationProofForTesting(
+      AssignBytesToProtoString(ComputeRotationProof(
                                    /*trusted_vault_key=*/trusted_vault_keys[i],
                                    /*prev_trusted_vault_key=*/signing_keys[i]),
                                rotation_proof->mutable_rotation_proof());

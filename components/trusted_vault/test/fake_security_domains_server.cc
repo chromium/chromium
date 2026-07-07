@@ -253,7 +253,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
     trusted_vault_pb::RotationProof rotation_proof;
     rotation_proof.set_new_epoch(state_.current_epoch);
     AssignBytesToProtoString(
-        ComputeRotationProofForTesting(
+        ComputeRotationProof(
             /*trusted_vault_key=*/new_trusted_vault_key,
             /*prev_trusted_vault_key=*/last_trusted_vault_key),
         rotation_proof.mutable_rotation_proof());
