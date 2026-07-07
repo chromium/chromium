@@ -83,8 +83,6 @@ static_library("renderer") {
     "net/net_error_helper_core.h",
     "net/net_error_page_controller.cc",
     "net/net_error_page_controller.h",
-    "net_benchmarking_extension.cc",
-    "net_benchmarking_extension.h",
     "plugins/non_loadable_plugin_placeholder.cc",
     "plugins/non_loadable_plugin_placeholder.h",
     "plugins/pdf_plugin_placeholder.cc",

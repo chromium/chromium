@@ -369,10 +369,7 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
 void ChromeRenderFrameObserver::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarkingApi)) {
-    BenchmarkingBindings::Install(context);
-  }
+  BenchmarkingBindings::InstallConditionally(context);
 }
 
 void ChromeRenderFrameObserver::DidMeaningfulLayout(

@@ -380,3 +380,131 @@ TEST_F(ChromeRenderFrameObserverWithBenchmarkingTest, BenchmarkingInterval) {
       &result));
   EXPECT_EQ(1, result);
 }
+
+TEST_F(ChromeRenderFrameObserverWithBenchmarkingTest,
+       NetBenchmarkingUndefinedWithoutSwitch) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // chrome.benchmarking should be defined.
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.benchmarking !== "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // but chrome.benchmarking.clearCache should not be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.clearCache === 'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+class ChromeRenderFrameObserverWithNetBenchmarkingTest
+    : public ChromeRenderFrameObserverWithBenchmarkingTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableNetBenchmarking);
+    ChromeRenderFrameObserverWithBenchmarkingTest::SetUp();
+  }
+};
+
+TEST_F(ChromeRenderFrameObserverWithNetBenchmarkingTest,
+       NetBenchmarkingEnabledWithSwitch) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // chrome.benchmarking should be defined.
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.benchmarking !== "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // and chrome.benchmarking.clearCache should be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.clearCache === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // and chrome.benchmarking.clearHostResolverCache should be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.clearHostResolverCache === 'function' ? 1 : "
+      u"0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // and chrome.benchmarking.clearPredictorCache should be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.clearPredictorCache === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // and chrome.benchmarking.closeConnections should be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.closeConnections === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+TEST_F(ChromeRenderFrameObserverWithNetBenchmarkingTest,
+       NetBenchmarkingMethodsCanBeCalled) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"try {"
+      u"  chrome.benchmarking.clearCache();"
+      u"  chrome.benchmarking.clearHostResolverCache();"
+      u"  chrome.benchmarking.clearPredictorCache();"
+      u"  chrome.benchmarking.closeConnections();"
+      u"  1;"
+      u"} catch(e) {"
+      u"  0;"
+      u"}",
+      &result));
+  EXPECT_EQ(1, result);
+}
+
+class ChromeRenderFrameObserverWithOnlyNetBenchmarkingTest
+    : public ChromeRenderFrameObserverTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableNetBenchmarking);
+    ChromeRenderFrameObserverTest::SetUp();
+  }
+};
+
+TEST_F(ChromeRenderFrameObserverWithOnlyNetBenchmarkingTest,
+       NetBenchmarkingEnabledWithSwitch) {
+  LoadHTML("<html><body></body></html>");
+
+  int result = -1;
+  // chrome.benchmarking should be defined.
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome !== 'undefined' && typeof chrome.benchmarking !== "
+      u"'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // and chrome.benchmarking.clearCache should be defined.
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.clearCache === 'function' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+
+  // BUT benchmarking methods should NOT be defined (e.g., hiResTime).
+  result = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"typeof chrome.benchmarking.hiResTime === 'undefined' ? 1 : 0",
+      &result));
+  EXPECT_EQ(1, result);
+}

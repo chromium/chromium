@@ -7,7 +7,9 @@
 
 #include <cstdint>
 
+#include "chrome/common/net_benchmarking.mojom.h"
 #include "gin/wrappable.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "v8/include/v8-forward.h"
 
 class BenchmarkingBindings final : public gin::Wrappable<BenchmarkingBindings> {
@@ -18,7 +20,7 @@ class BenchmarkingBindings final : public gin::Wrappable<BenchmarkingBindings> {
   BenchmarkingBindings(const BenchmarkingBindings&) = delete;
   BenchmarkingBindings& operator=(const BenchmarkingBindings&) = delete;
 
-  static void Install(v8::Local<v8::Context> context);
+  static void InstallConditionally(v8::Local<v8::Context> context);
 
   BenchmarkingBindings();
   ~BenchmarkingBindings() override;
@@ -29,12 +31,21 @@ class BenchmarkingBindings final : public gin::Wrappable<BenchmarkingBindings> {
   double HiResTime();
   v8::Local<v8::Object> GetMarkFunctions(v8::Isolate* isolate);
 
+  void ClearCache();
+  void ClearHostResolverCache();
+  void ClearPredictorCache();
+  void CloseConnections();
+
  private:
+  chrome::mojom::NetBenchmarking* GetNetBenchmarking();
+
   // gin::WrappableBase
   const gin::WrapperInfo* wrapper_info() const override;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  mojo::Remote<chrome::mojom::NetBenchmarking> net_benchmarking_;
 };
 
 #endif  // CHROME_RENDERER_BENCHMARKING_BINDINGS_H_

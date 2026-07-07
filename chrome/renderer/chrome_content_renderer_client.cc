@@ -62,7 +62,6 @@
 #include "chrome/renderer/media/flash_embed_rewrite.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
 #include "chrome/renderer/net/net_error_helper.h"
-#include "chrome/renderer/net_benchmarking_extension.h"
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/process_state.h"
@@ -458,13 +457,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   blink::WebScriptController::RegisterExtension(
       extensions_v8::LoadTimesExtension::Get());
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  if (command_line->HasSwitch(switches::kEnableNetBenchmarking)) {
-    blink::WebScriptController::RegisterExtension(
-        extensions_v8::NetBenchmarkingExtension::Get());
-  }
-
   // chrome: is also to be permitted to embeds https:// things and have them
   // treated as first-party.
   // See
@@ -532,6 +524,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   // kInstantProcess command-line switch and all code that depends on it will be
   // removed. Remove this display-isolation policy block as part of that
   // cleanup.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool should_restrict_chrome_search_scheme =
       !command_line->HasSwitch(switches::kInstantProcess);
 
@@ -1507,10 +1500,7 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
           service_worker_scope, script_url, service_worker_token);
 #endif
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarkingApi)) {
-    BenchmarkingBindings::Install(v8_context);
-  }
+  BenchmarkingBindings::InstallConditionally(v8_context);
 }
 
 void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
