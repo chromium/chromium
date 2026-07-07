@@ -505,8 +505,15 @@ if (!is_android) {
     if (is_win) {
       sources += [ "chrome_mojo_proxy_resolver_win_browsertest.cc" ]
     }
+    if (is_mac) {
+      sources += [ "chrome_mojo_proxy_resolver_mac_browsertest.cc" ]
+    }
     if (enable_device_bound_sessions) {
       sources += [ "device_bound_sessions_browsertest.cc" ]
+    }
+    if (enable_reporting) {
+      sources += [ "reporting_browsertest.cc" ]
+      deps += [ "//chrome/browser/ssl:cert_verifier_test_support" ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
