@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -553,20 +554,20 @@ TEST_F(DeclarativePerformanceObserverStoreTest, Enforces7DayTTL) {
   base::FilePath db_path =
       temp_dir_.GetPath().AppendASCII("declarative_performance_observer.db");
 
-  // 1. Manually populate DB with both expired (8 days old) and active (1 day
+  // 1. Initialize store once to create the database schema, then close it.
+  {
+    auto store = CreateStore();
+    base::RunLoop run_loop;
+    store->Close(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // 2. Manually populate DB with both expired (8 days old) and active (1 day
   // old) reports. We do this by creating a transient SQL connection to bypass
   // the store's automatic timestamping.
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path));
-
-    // Re-create tables manually if they don't exist yet (just in case)
-    ASSERT_TRUE(db.Execute(
-        "CREATE TABLE IF NOT EXISTS declarative_performance_observer_reports ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "origin TEXT NOT NULL, "
-        "payload BLOB NOT NULL, "
-        "created_at INTEGER NOT NULL)"));
 
     int64_t eight_days_ago_us = (base::Time::Now() - base::Days(8))
                                     .ToDeltaSinceWindowsEpoch()
@@ -581,8 +582,7 @@ TEST_F(DeclarativePerformanceObserverStoreTest, Enforces7DayTTL) {
 
     // Insert expired report (8 days old)
     insert_stmt.BindString(0, kOrigin.Serialize());
-    insert_stmt.BindBlob(
-        1, base::as_byte_span(std::string_view("{\"test_key\":\"expired\"}")));
+    insert_stmt.BindString(1, "{\"test_key\":\"expired\"}");
     insert_stmt.BindInt64(2, eight_days_ago_us);
     ASSERT_TRUE(insert_stmt.Run());
 
@@ -590,8 +590,7 @@ TEST_F(DeclarativePerformanceObserverStoreTest, Enforces7DayTTL) {
 
     // Insert active report (1 day old)
     insert_stmt.BindString(0, kOrigin.Serialize());
-    insert_stmt.BindBlob(
-        1, base::as_byte_span(std::string_view("{\"test_key\":\"active\"}")));
+    insert_stmt.BindString(1, "{\"test_key\":\"active\"}");
     insert_stmt.BindInt64(2, one_day_ago_us);
     ASSERT_TRUE(insert_stmt.Run());
   }
@@ -725,6 +724,115 @@ TEST_F(DeclarativePerformanceObserverStoreTest, RecordsEvictionHistograms) {
   histogram_tester.ExpectUniqueSample(
       "Storage.DeclarativePerformanceObserver.EvictionCount",
       /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest,
+       RecordsExpiredReportsHistogram) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
+  base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("TestProfileTTLExpired");
+  base::FilePath db_file = profile_path.Append(
+      FILE_PATH_LITERAL("declarative_performance_observer.db"));
+
+  base::Time now = base::Time::Now();
+  int64_t eight_days_ago_us =
+      (now - base::Days(8)).ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  // 1. Initialize store once to create the database schema, then close it.
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+
+    base::RunLoop run_loop_close;
+    store->Close(run_loop_close.QuitClosure());
+    run_loop_close.Run();
+  }
+
+  // 2. Manually populate DB with an expired report.
+  {
+    sql::Database db(sql::Database::Tag("DeclarativePerformanceObserver"));
+    ASSERT_TRUE(base::CreateDirectory(db_file.DirName()));
+    ASSERT_TRUE(db.Open(db_file));
+
+    sql::Statement insert_stmt(db.GetUniqueStatement(
+        "INSERT INTO declarative_performance_observer_reports (origin, "
+        "payload, created_at) VALUES (?, ?, ?)"));
+    insert_stmt.BindString(0, kOrigin.Serialize());
+    insert_stmt.BindString(1, "{\"test\":\"expired\"}");
+    insert_stmt.BindInt64(2, eight_days_ago_us);
+    ASSERT_TRUE(insert_stmt.Run());
+  }
+
+  // 2. Initialize the store. It should trigger TTL cleanup and log expired
+  // count.
+  base::HistogramTester histogram_tester;
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Storage.DeclarativePerformanceObserver.ExpiredReportsCount",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeclarativePerformanceObserverStoreTest,
+       RecordsReadReportResultHistogram) {
+  base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("TestProfileReadResult");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com/"));
+
+  // 1. Populate database manually with a corrupted JSON payload.
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+
+    base::RunLoop run_loop_close;
+    store->Close(run_loop_close.QuitClosure());
+    run_loop_close.Run();
+  }
+
+  {
+    sql::Database db(sql::Database::Tag("DeclarativePerformanceObserver"));
+    ASSERT_TRUE(db.Open(profile_path.Append(
+        FILE_PATH_LITERAL("declarative_performance_observer.db"))));
+    sql::Statement insert_stmt(db.GetUniqueStatement(
+        "INSERT INTO declarative_performance_observer_reports (origin, "
+        "payload, created_at) VALUES (?, ?, ?)"));
+    insert_stmt.BindString(0, kOrigin.Serialize());
+    insert_stmt.BindString(1, "invalid_json_payload");
+    insert_stmt.BindInt64(
+        2, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    ASSERT_TRUE(insert_stmt.Run());
+  }
+
+  // 2. Read reports from the store and check UMA.
+  base::HistogramTester histogram_tester;
+  {
+    base::RunLoop run_loop;
+    auto store = std::make_unique<DeclarativePerformanceObserverStore>(
+        /*is_in_memory=*/false, profile_path, nullptr, run_loop.QuitClosure());
+    run_loop.Run();
+
+    base::RunLoop run_loop_take;
+    store->TakeEarlyFailureReports(
+        kOrigin,
+        base::BindOnce([](base::OnceClosure quit,
+                          base::ListValue res) { std::move(quit).Run(); },
+                       run_loop_take.QuitClosure()));
+    run_loop_take.Run();
+  }
+
+  // We expect kFailedJsonParse = 3
+  histogram_tester.ExpectUniqueSample(
+      "Storage.DeclarativePerformanceObserver.ReadReportResult",
+      /*sample=*/3, /*expected_bucket_count=*/1);
 }
 
 }  // namespace content

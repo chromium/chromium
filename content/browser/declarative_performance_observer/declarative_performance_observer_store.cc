@@ -52,9 +52,26 @@ enum class StoreReportResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DeclarativePerformanceObserverStoreReadResult)
+enum class ReadReportResult {
+  kSuccess = 0,
+  kFailedDbInit = 1,
+  kFailedSqlRun = 2,
+  kFailedJsonParse = 3,
+  kMaxValue = kFailedJsonParse,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml)
+
 void RecordStoreReportResult(StoreReportResult result) {
   base::UmaHistogramEnumeration(
       base::StrCat({kHistogramPrefix, "StoreReportResult"}), result);
+}
+
+void RecordReadReportResult(ReadReportResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, "ReadReportResult"}), result);
 }
 
 }  // namespace
@@ -164,45 +181,54 @@ class DeclarativePerformanceObserverStore::Backend
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::OnceCallback<void(base::ListValue)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(db_sequence_checker_);
-    base::ListValue reports;
+
     if (!InitOnDbSequence()) {
+      RecordReadReportResult(ReadReportResult::kFailedDbInit);
       ui_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(reports)));
+          FROM_HERE, base::BindOnce(std::move(callback), base::ListValue()));
       return;
     }
 
     sql::Transaction transaction(db_.get());
     if (!transaction.Begin()) {
+      RecordReadReportResult(ReadReportResult::kFailedSqlRun);
       ui_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(reports)));
+          FROM_HERE, base::BindOnce(std::move(callback), base::ListValue()));
       return;
     }
 
+    base::ListValue reports;
+    ReadReportResult result = ReadReportResult::kSuccess;
+
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
-        "SELECT payload FROM declarative_performance_observer_reports WHERE "
-        "origin = ? ORDER BY id ASC"));
+        "SELECT payload FROM declarative_performance_observer_reports "
+        "WHERE origin = ? ORDER BY id ASC"));
     statement.BindString(0, origin.Serialize());
     while (statement.Step()) {
       std::optional<base::Value> value = base::JSONReader::Read(
           statement.ColumnStringView(0), base::JSON_PARSE_RFC);
       if (value && value->is_dict()) {
         reports.Append(std::move(*value));
+      } else {
+        result = ReadReportResult::kFailedJsonParse;
       }
     }
 
-    sql::Statement delete_statement(db_->GetUniqueStatement(
+    sql::Statement delete_statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
         "DELETE FROM declarative_performance_observer_reports WHERE origin = "
         "?"));
     delete_statement.BindString(0, origin.Serialize());
 
-    if (delete_statement.Run() && transaction.Commit()) {
-      ui_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(reports)));
-    } else {
-      ui_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::ListValue()));
+    if (!delete_statement.Run() || !transaction.Commit()) {
+      result = ReadReportResult::kFailedSqlRun;
+      reports.clear();
     }
+
+    RecordReadReportResult(result);
+    ui_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(reports)));
   }
 
   void SetQuotaLimitForTestingOnDbSequence(  // IN-TEST
@@ -413,7 +439,14 @@ class DeclarativePerformanceObserverStore::Backend
                                .ToDeltaSinceWindowsEpoch()
                                .InMicroseconds();
     clean_statement.BindInt64(0, threshold_us);
-    clean_statement.Run();
+    if (clean_statement.Run()) {
+      int expired_rows = db_->GetLastChangeCount();
+      if (expired_rows > 0) {
+        base::UmaHistogramCounts1000(
+            base::StrCat({kHistogramPrefix, "ExpiredReportsCount"}),
+            expired_rows);
+      }
+    }
 
     // Log storage stats:
     if (!db_path_.empty()) {

@@ -1320,6 +1320,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.DeclarativePerformanceObserver.ExpiredReportsCount"
+    units="reports" expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of stored early failure reports deleted during database
+    initialization because they exceeded the TTL limit. Recorded only when the
+    number of expired reports is greater than zero.
+  </summary>
+</histogram>
+
+<histogram name="Storage.DeclarativePerformanceObserver.ReadReportResult"
+    enum="DeclarativePerformanceObserverStoreReadResult"
+    expires_after="2026-12-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the outcome of reading stored early failure reports from the
+    Declarative Performance Observer SQLite database. Recorded on the database
+    sequence whenever early failure reports are taken for delivery.
+  </summary>
+</histogram>
+
 <histogram name="Storage.DeclarativePerformanceObserver.StoredOriginCount"
     units="origins" expires_after="2026-12-19">
   <owner>sisidovski@chromium.org</owner>
