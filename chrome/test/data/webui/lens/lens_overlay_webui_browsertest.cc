@@ -245,7 +245,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslatePromo) {
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, Searchbox) {
-  RunOverlayTest("lens/overlay/searchbox_test.js", "mocha.run()");
+  RunOverlayTest("lens/overlay/searchbox_test.js",
+                 "runMochaSuite('Searchbox')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, SearchboxThumbnails) {
+  RunOverlayTest("lens/overlay/searchbox_test.js",
+                 "runMochaSuite('SearchboxThumbnails')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, SearchboxMotionTweaks) {
+  RunOverlayTest("lens/overlay/searchbox_test.js",
+                 "runMochaSuite('SearchboxMotionTweaks')");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, ReshowOverlay) {

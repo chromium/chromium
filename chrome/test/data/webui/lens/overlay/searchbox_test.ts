@@ -21,14 +21,6 @@ suite('Searchbox', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let testSearchboxProxy: TestSearchboxBrowserProxy;
   let lensOverlayElement: LensOverlayAppElement;
-  let lensSearchbox: LensSearchboxElement;
-
-  async function areMatchesShowing(): Promise<boolean> {
-    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    return window.getComputedStyle(lensSearchbox.getDropdownElement())
-               .display !== 'none';
-  }
 
   setup(async () => {
     testSearchboxProxy = new TestSearchboxBrowserProxy();
@@ -55,8 +47,6 @@ suite('Searchbox', () => {
 
     testBrowserProxy.page.shouldShowContextualSearchBox(true);
     await waitAfterNextRender(lensOverlayElement);
-
-    lensSearchbox = lensOverlayElement.$.searchbox;
     await microtasksFinished();
   });
 
@@ -271,6 +261,50 @@ suite('Searchbox', () => {
 
     // Dropdown should show (queryInputAutocomplete should be called).
     assertTrue(queryAutocompleteCalled);
+  });
+});
+
+suite('SearchboxThumbnails', () => {
+  let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let testSearchboxProxy: TestSearchboxBrowserProxy;
+  let lensOverlayElement: LensOverlayAppElement;
+  let lensSearchbox: LensSearchboxElement;
+
+  async function areMatchesShowing(): Promise<boolean> {
+    await testSearchboxProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    return window.getComputedStyle(lensSearchbox.getDropdownElement())
+               .display !== 'none';
+  }
+
+  setup(async () => {
+    testSearchboxProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testSearchboxProxy);
+
+    // Resetting the HTML needs to be the first thing we do in setup to
+    // guarantee that any singleton instances don't change while any UI is still
+    // attached to the DOM.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      'autoFocusSearchbox': true,
+      'enablePrivacyNotice': false,
+      'enableOverlayContextualSearchbox': true,
+      'enableGhostLoader': true,
+    });
+
+    testBrowserProxy = new TestLensOverlayBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+
+    lensOverlayElement = document.createElement('lens-overlay-app');
+    document.body.appendChild(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
+
+    testBrowserProxy.page.shouldShowContextualSearchBox(true);
+    await waitAfterNextRender(lensOverlayElement);
+
+    lensSearchbox = lensOverlayElement.$.searchbox;
+    await microtasksFinished();
   });
 
   //============================================================================
