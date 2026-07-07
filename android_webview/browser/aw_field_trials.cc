@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/features.h"
 #include "components/input/features.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/payments/content/android/payment_feature_map.h"
 #include "components/permissions/features.h"
@@ -351,4 +352,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable HappyEyeballsV2 for WebView for now.
   // DISABLED_TEMPORARY: crbug.com/529948671
   aw_feature_overrides.DisableFeature(net::features::kHappyEyeballsV2);
+}
+
+void AwFieldTrials::EnableRuntimeMutableFeatures(
+    base::FeatureList* feature_list) {
+  // Add calls to enable runtime-mutable features here.
 }

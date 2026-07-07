@@ -14,6 +14,8 @@ source_set("metrics_internals") {
     "metrics_internals_handler.h",
     "metrics_internals_ui.cc",
     "metrics_internals_ui.h",
+    "runtime_mutable_features_handler.cc",
+    "runtime_mutable_features_handler.h",
   ]
   public_deps = [ "//content/public/browser" ]
   deps = [

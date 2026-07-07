@@ -74,6 +74,13 @@ BASE_DECLARE_FEATURE(kConsolidateMetricsServiceLocales);
 // kBasic, kAdvanced].
 BASE_DECLARE_FEATURE(kRestructureMetricsConsentSettings);
 
+// No-op features for testing runtime mutability.
+BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureVariationsEnabled);
+
+// Enables the no-op runtime mutable features with the FeatureList.
+void EnableNoopRuntimeMutableFeatures(base::FeatureList* feature_list);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

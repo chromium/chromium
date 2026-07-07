@@ -51,12 +51,11 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
   // together, like Android WebView and Android Chrome.
   virtual void RegisterFeatureOverrides(base::FeatureList* feature_list) {}
 
-  // Registers runtime mutable features. Called after server trials and client
+  // Enables runtime mutable features. Called after server trials and client
   // side trials are set up, before initializing the singleton feature list.
-  // This must be used to register features that are runtime mutable with their
+  // This must be used to enable features that are runtime mutable with their
   // callbacks, allowing their enabled/disabled state to be changed at runtime.
-  virtual void RegisterRuntimeMutableFeatures(base::FeatureList* feature_list) {
-  }
+  virtual void EnableRuntimeMutableFeatures(base::FeatureList* feature_list) {}
 };
 
 }  // namespace variations

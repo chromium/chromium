@@ -96,6 +96,20 @@ export interface FieldTrialState {
   restartRequired: boolean;
 }
 
+/**
+ * A feature that has runtime mutability enabled. Includes its name, whether it
+ * is currently enabled, the name of the field trial that controls it (if
+ * any), the group name of that field trial (if any), and whether the current
+ * state is controlled by a runtime override.
+ */
+export interface RuntimeMutableFeature {
+  name: string;
+  enabled: boolean;
+  fieldTrial: string;
+  fieldTrialGroup: string;
+  runtimeOverride: boolean;
+}
+
 export interface MetricsInternalsBrowserProxy {
   /**
    * Gets UMA log data. |includeLogProtoData| determines whether or not the
@@ -149,6 +163,26 @@ export interface MetricsInternalsBrowserProxy {
   fetchEncryptionPublicKey(): Promise<CwtKeyInfo>;
 
   /**
+   * Fetches the current state of runtime mutable features.
+   */
+  fetchRuntimeMutableFeatures(): Promise<RuntimeMutableFeature[]>;
+
+  /**
+   * Returns true if background seed fetching is paused.
+   */
+  isSeedFetchingPaused(): Promise<boolean>;
+
+  /**
+   * Pauses or resumes background seed fetching.
+   */
+  setSeedFetchingPaused(paused: boolean): Promise<void>;
+
+  /**
+   * Uploads a variations seed to be processed.
+   */
+  uploadSeed(seed: Uint8Array): Promise<void>;
+
+  /**
    * Restarts the browser.
    */
   restart(): Promise<void>;
@@ -195,6 +229,22 @@ export class MetricsInternalsBrowserProxyImpl implements
 
   fetchEncryptionPublicKey(): Promise<CwtKeyInfo> {
     return sendWithPromise('fetchEncryptionPublicKey');
+  }
+
+  fetchRuntimeMutableFeatures(): Promise<RuntimeMutableFeature[]> {
+    return sendWithPromise('fetchRuntimeMutableFeatures');
+  }
+
+  isSeedFetchingPaused(): Promise<boolean> {
+    return sendWithPromise('isSeedFetchingPaused');
+  }
+
+  setSeedFetchingPaused(paused: boolean): Promise<void> {
+    return sendWithPromise('setSeedFetchingPaused', paused);
+  }
+
+  uploadSeed(seed: Uint8Array): Promise<void> {
+    return sendWithPromise('uploadSeed', seed);
   }
 
   restart(): Promise<void> {

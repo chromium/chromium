@@ -4,6 +4,10 @@
 
 #include "components/metrics/metrics_features.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
+
 namespace metrics::features {
 
 BASE_FEATURE(kStructuredMetrics,
@@ -35,5 +39,34 @@ BASE_FEATURE(kRestructureMetricsConsentSettings,
 
 BASE_FEATURE(kConsolidateMetricsServiceLocales,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureVariationsEnabled,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+void OnNoopFeatureStateChanged(
+    std::reference_wrapper<const base::Feature> feature,
+    std::string_view field_trial_name,
+    std::string_view group_name,
+    base::FeatureList::OverrideState override_state) {
+  DVLOG(1) << "Runtime mutable feature state changed: " << feature.get().name
+           << ", trial: " << field_trial_name << ", group: " << group_name
+           << ", state: " << override_state;
+}
+
+}  // namespace
+
+void EnableNoopRuntimeMutableFeatures(base::FeatureList* feature_list) {
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutableFeatureDefaultEnabled,
+      base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutableFeatureVariationsEnabled,
+      base::BindRepeating(&OnNoopFeatureStateChanged));
+}
 
 }  // namespace metrics::features

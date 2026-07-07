@@ -37,6 +37,7 @@ class AwFieldTrials : public variations::PlatformFieldTrials {
   // variations::PlatformFieldTrials:
   void OnVariationsSetupComplete() override;
   void RegisterFeatureOverrides(base::FeatureList* feature_list) override;
+  void EnableRuntimeMutableFeatures(base::FeatureList* feature_list) override;
 };
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_

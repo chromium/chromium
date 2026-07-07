@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/path_service.h"
+#import "components/metrics/metrics_features.h"
 #import "components/metrics/persistent_histograms.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -38,4 +39,9 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
   if (tests_hook::DisableClientSideFieldTrials()) {
     return;
   }
+}
+
+void IOSChromeFieldTrials::EnableRuntimeMutableFeatures(
+    base::FeatureList* feature_list) {
+  // Add calls to enable runtime-mutable features here.
 }

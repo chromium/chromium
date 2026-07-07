@@ -38,6 +38,7 @@
 #include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/language/core/browser/locale_util.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -371,7 +372,11 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
 
   platform_field_trials->RegisterFeatureOverrides(feature_list.get());
 
-  platform_field_trials->RegisterRuntimeMutableFeatures(feature_list.get());
+  // Enable the no-op mutable features, for testing.
+  metrics::features::EnableNoopRuntimeMutableFeatures(feature_list.get());
+
+  // Enable the production runtime mutable features.
+  platform_field_trials->EnableRuntimeMutableFeatures(feature_list.get());
 
   feature_list->SetVariationCountry(GetPermanentConsistencyCountry());
   base::FeatureList::SetInstance(std::move(feature_list));

@@ -24,6 +24,7 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override;
+  void EnableRuntimeMutableFeatures(base::FeatureList* feature_list) override;
 
  private:
   // Tracks whether a seed has been used to set up field trials.

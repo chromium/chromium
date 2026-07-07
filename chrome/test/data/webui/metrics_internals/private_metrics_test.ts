@@ -5,7 +5,7 @@
 import 'chrome://metrics-internals/app.js';
 
 import {MetricsInternalsBrowserProxyImpl} from 'chrome://metrics-internals/browser_proxy.js';
-import type {FieldTrialState, HashNameMap, KeyValue, MetricsInternalsBrowserProxy, SeedType} from 'chrome://metrics-internals/browser_proxy.js';
+import type {FieldTrialState, HashNameMap, KeyValue, MetricsInternalsBrowserProxy, RuntimeMutableFeature, SeedType} from 'chrome://metrics-internals/browser_proxy.js';
 import type {CwtKeyInfo, PrivateMetricsAppElement} from 'chrome://metrics-internals/private_metrics.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -33,6 +33,10 @@ class FakeBrowser extends TestBrowserProxy implements
       'fetchTrialState',
       'lookupTrialOrGroupName',
       'fetchEncryptionPublicKey',
+      'fetchRuntimeMutableFeatures',
+      'isSeedFetchingPaused',
+      'setSeedFetchingPaused',
+      'uploadSeed',
       'restart',
     ]);
   }
@@ -95,6 +99,30 @@ class FakeBrowser extends TestBrowserProxy implements
     this.methodCalled('fetchEncryptionPublicKey');
     await wait();
     return this.cwtKeyInfo;
+  }
+
+  async fetchRuntimeMutableFeatures(): Promise<RuntimeMutableFeature[]> {
+    this.methodCalled('fetchRuntimeMutableFeatures');
+    await wait();
+    return [];
+  }
+
+  // Returns the default unpaused state. This stub does not support pausing
+  // and resuming seed fetching.
+  async isSeedFetchingPaused(): Promise<boolean> {
+    this.methodCalled('isSeedFetchingPaused');
+    await wait();
+    return false;
+  }
+
+  async setSeedFetchingPaused(paused: boolean): Promise<void> {
+    this.methodCalled('setSeedFetchingPaused', paused);
+    await wait();
+  }
+
+  async uploadSeed(seed: Uint8Array): Promise<void> {
+    this.methodCalled('uploadSeed', seed);
+    await wait();
   }
 
   async restart(): Promise<void> {

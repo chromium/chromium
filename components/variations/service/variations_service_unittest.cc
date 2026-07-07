@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -54,6 +55,16 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// A fake version of RuntimeMutableFeaturesHandler, to generate PassKeys for
+// testing purposes.  The real RuntimeMutableFeaturesHandler class is not
+// defined in `components/`. We're creating a surrogate of it here so that we
+// can generate PassKeys for testing, without violating dependency layering.
+class RuntimeMutableFeaturesHandler {
+ public:
+  using PassKey = base::PassKey<RuntimeMutableFeaturesHandler>;
+  static PassKey CreatePassKeyForTesting() { return PassKey(); }
+};
 
 namespace variations {
 namespace {
@@ -1067,5 +1078,39 @@ TEST_F(VariationsServiceTest, VariationsServiceStartsRequestOnNetworkChange) {
 
 // TODO(isherman): Add an integration test for saving and loading a safe seed,
 // once the loading functionality is implemented on the seed store.
+
+TEST_F(VariationsServiceTest, VariationsServiceSeedFetchingPauseResume) {
+  VariationsService::EnableFetchForTesting();
+
+  // Start with online connection so fetch can happen.
+  network_tracker_->SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  // Keep intercepts_fetch = true (default).
+  service.CancelCurrentRequestForTesting();
+
+  // Pause fetching.
+  service.SetSeedFetchingPaused(
+      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting(), true);
+  EXPECT_TRUE(service.IsSeedFetchingPaused());
+
+  // Start repeated fetch (simulating startup).
+  service.StartRepeatedVariationsSeedFetchForTesting();
+
+  // Verify no request was made because it is paused.
+  EXPECT_FALSE(service.fetch_attempted());
+
+  // Resume fetching.
+  service.SetSeedFetchingPaused(
+      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting(), false);
+  EXPECT_FALSE(service.IsSeedFetchingPaused());
+
+  // Verify that resume immediately triggered a fetch.
+  EXPECT_TRUE(service.fetch_attempted());
+}
 
 }  // namespace variations

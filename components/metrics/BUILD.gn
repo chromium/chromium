@@ -618,6 +618,7 @@ if (!is_cronet_build) {
       "library_support/histogram_manager_unittest.cc",
       "log_decoder_unittest.cc",
       "metrics_data_validation_unittest.cc",
+      "metrics_features_unittest.cc",
       "metrics_log_store_unittest.cc",
       "metrics_log_unittest.cc",
       "metrics_reporting_choice_service_unittest.cc",

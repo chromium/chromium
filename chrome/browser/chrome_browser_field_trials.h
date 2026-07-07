@@ -34,6 +34,7 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
       base::FeatureList* feature_list) override;
   void RegisterSyntheticTrials() override;
   void RegisterFeatureOverrides(base::FeatureList* feature_list) override;
+  void EnableRuntimeMutableFeatures(base::FeatureList* feature_list) override;
 
  private:
   // Weak pointer to the local state prefs store.

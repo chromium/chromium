@@ -782,6 +782,11 @@ void VariationsService::StartRepeatedVariationsSeedFetch() {
 void VariationsService::FetchVariationsSeed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (seed_fetching_paused_) {
+    DVLOG(1) << "Variations seed fetching is paused. Skipping fetch.";
+    return;
+  }
+
   const web_resource::ResourceRequestAllowedNotifier::State state =
       resource_request_allowed_notifier_->GetResourceRequestsAllowedState();
   RecordRequestsAllowedHistogram(ResourceRequestStateToHistogramValue(state));
@@ -1043,6 +1048,25 @@ void VariationsService::GetStudiesAvailableToForce(
 
 SeedType VariationsService::GetSeedType() const {
   return field_trial_creator_.seed_type();
+}
+
+void VariationsService::SetSeedFetchingPaused(
+    base::PassKey<RuntimeMutableFeaturesHandler> pass_key,
+    bool paused) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (seed_fetching_paused_ == paused) {
+    return;
+  }
+  seed_fetching_paused_ = paused;
+  DVLOG(1) << "Variations seed fetching " << (paused ? "paused" : "resumed");
+  if (!seed_fetching_paused_) {
+    FetchVariationsSeed();
+  }
+}
+
+bool VariationsService::IsSeedFetchingPaused() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return seed_fetching_paused_;
 }
 
 VariationsSource VariationsService::GetVariationsSource() const {

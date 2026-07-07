@@ -1,0 +1,65 @@
+<style>
+  :host {
+    display: block;
+    padding: 16px;
+  }
+  .actions {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  .override-icon {
+    color: #1a73e8;
+    vertical-align: middle;
+  }
+</style>
+
+<div class="actions">
+  <button id="pause-resume-btn">Pause Seed Fetching</button>
+  <span id="fetch-status">Status: Active</span>
+  <input type="file" id="seed-file-picker" accept=".bin,.json,text/plain">
+  <button id="load-seed-btn" disabled>Load Seed</button>
+</div>
+
+<h2>Runtime Mutable Features</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Feature Name</th>
+      <th>State</th>
+      <th>Field Trial</th>
+      <th>Group</th>
+      <th>Runtime</th>
+    </tr>
+  </thead>
+  <tbody id="features-body">
+    <!-- Will be populated dynamically -->
+  </tbody>
+</table>
+
+<template id="feature-row-template">
+  <tr>
+    <td class="feature-name"></td>
+    <td class="feature-state"></td>
+    <td class="feature-field-trial"></td>
+    <td class="feature-field-trial-group"></td>
+    <td class="feature-runtime-override">
+      <svg class="override-icon" viewBox="0 0 24 24" width="18" height="18">
+        <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z">
+      </svg>
+    </td>
+  </tr>
+</template>

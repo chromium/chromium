@@ -557,6 +557,13 @@ void FeatureList::EnableRuntimeMutability(
   DCHECK(feature.HasRuntimeMutabilityEnabled());
 }
 
+const base::flat_map<std::string, internal::RuntimeMutableFeatureState>&
+FeatureList::GetRuntimeMutableFeatureState(
+    PassKey<RuntimeMutableFeaturesHandler> pass_key) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return runtime_mutable_overrides_;
+}
+
 bool FeatureList::UpdateRuntimeMutableFeatureState(
     std::string_view field_trial_name,
     std::string_view group_name,
@@ -1079,6 +1086,18 @@ std::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
 
 FeatureList::OverrideState FeatureList::GetOverrideState(
     const Feature& feature) const {
+  return GetOverrideStateImpl(feature, /*activate_trial=*/true);
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideStateWithoutActivation(
+    const Feature& feature,
+    PassKey<RuntimeMutableFeaturesHandler> pass_key) const {
+  return GetOverrideStateImpl(feature, /*activate_trial=*/false);
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
+    const Feature& feature,
+    bool activate_trial) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature))
@@ -1110,10 +1129,14 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
   }
 
   // Otherwise, look up the static override state by feature name.
-  const OverrideState state = GetOverrideStateByFeatureName(feature.name);
+  const OverrideState state =
+      GetOverrideStateByFeatureNameImpl(feature.name, activate_trial);
 
-  // Update the cache with the override state.
-  AtomicSetFeatureState(feature.cached_value, state, caching_context_);
+  // Update the cache with the override state ONLY if we are performing an
+  // activating query.
+  if (activate_trial) {
+    AtomicSetFeatureState(feature.cached_value, state, caching_context_);
+  }
 
   return state;
 }
@@ -1142,6 +1165,13 @@ FeatureList::MaybeGetRuntimeOverrideState(
 
 FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
     std::string_view feature_name) const {
+  return GetOverrideStateByFeatureNameImpl(feature_name,
+                                           /*activate_trial=*/true);
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureNameImpl(
+    std::string_view feature_name,
+    bool activate_trial) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
 
@@ -1154,8 +1184,8 @@ FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
 
   if (const OverrideEntry* entry =
           GetOverrideEntryByFeatureName(feature_name)) {
-    // Activate the corresponding field trial, if necessary.
-    if (entry->field_trial) {
+    // Activate the corresponding field trial, if necessary and requested.
+    if (activate_trial && entry->field_trial) {
       entry->field_trial->Activate();
     }
 

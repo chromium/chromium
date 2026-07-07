@@ -54,6 +54,8 @@ struct StudyGroupNames;
 class VariationsSeed;
 }  // namespace variations
 
+class RuntimeMutableFeaturesHandler;
+
 namespace variations {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -246,6 +248,14 @@ class VariationsService
   VariationsSource GetVariationsSource() const;
 
   int request_count() const { return request_count_; }
+
+  // Pauses or resumes variations seed fetching.
+  void SetSeedFetchingPaused(
+      base::PassKey<RuntimeMutableFeaturesHandler> pass_key,
+      bool paused);
+
+  // Returns true if variations seed fetching is paused.
+  bool IsSeedFetchingPaused() const;
 
   // Cancels the currently pending fetch request.
   void CancelCurrentRequestForTesting();
@@ -476,6 +486,9 @@ class VariationsService
   // When not empty, contains an override for the os name in the variations
   // server url.
   std::string osname_server_param_override_;
+
+  // True if variations seed fetching is paused.
+  bool seed_fetching_paused_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DeviceVariationsRestrictionByPolicyApplicator>
