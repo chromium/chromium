@@ -349,7 +349,7 @@ constexpr MessageInfo kMissedVsyncsForJankReason = {
     kMissedVsyncsForJankReasonIndices, nullptr};
 
 // Proto Message: Real
-constexpr int kRealIndices[] = {1, 2, 3, -1};
+constexpr int kRealIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kReal = {kRealIndices, nullptr};
 
 // Proto Message: Synthetic
