@@ -1611,7 +1611,6 @@ source_set("unit_tests") {
     "data_model/autofill_ai/date_info_unittest.cc",
     "data_model/autofill_ai/entity_instance_unittest.cc",
     "data_model/autofill_ai/entity_type_unittest.cc",
-    "data_model/autofill_ai/from_accessibility_annotator_unittest.cc",
     "data_model/data_model_utils_unittest.cc",
     "data_model/payments/bank_account_unittest.cc",
     "data_model/payments/bnpl_issuer_unittest.cc",
