@@ -986,12 +986,6 @@ BASE_DECLARE_FEATURE(kPlusButtonInFakebox);
 // Returns true if the plus button in NTP fakebox is enabled
 bool IsPlusButtonInFakeboxEnabled();
 
-// Enables the CobrowseAimHistory feature.
-BASE_DECLARE_FEATURE(kCobrowseAimHistory);
-
-// Returns true if the CobrowseAimHistory feature is enabled.
-bool IsCobrowseAimHistoryEnabled();
-
 // Enables the `AssistantAimMinimizedState` feature.
 BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 

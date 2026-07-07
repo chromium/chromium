@@ -263,21 +263,18 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 
   NSMutableArray* actions = [[NSMutableArray alloc] init];
 
-  if (IsCobrowseAimHistoryEnabled()) {
-    __weak __typeof(self) weakSelf = self;
-    UIAction* historyAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
-                  image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
-                                                  kHeaderActionSymbolPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  [weakSelf didTapHistoryButton];
-                }];
-    [actions addObject:historyAction];
-  }
+  __weak __typeof(self) weakSelf = self;
+  UIAction* historyAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
+                image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
+                                                kHeaderActionSymbolPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf didTapHistoryButton];
+              }];
+  [actions addObject:historyAction];
 
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {
-    __weak __typeof(self) weakSelf = self;
     UIAction* showLogsAction = [UIAction
         actionWithTitle:@"AIM SRP Logs"
                   image:DefaultSymbolWithPointSize(@"binoculars.circle", 16)
