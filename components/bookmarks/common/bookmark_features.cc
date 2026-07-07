@@ -30,7 +30,7 @@ BASE_FEATURE(kEnableBookmarkNodeDataNewPickleFormat,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature enables encryption of bookmarks.
-BASE_FEATURE(kEncryptBookmarks, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEncryptBookmarks, base::FEATURE_DISABLED_BY_DEFAULT);
 // Define the stage of the bookmark encryption feature. This param is ignored if
 // kEncryptBookmarks is disabled.
 // The possible values are:

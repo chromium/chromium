@@ -10451,7 +10451,7 @@
             ]
         }
     ],
-    "EncryptBookmarks_Phase2": [
+    "EncryptBookmarks_Phase1": [
         {
             "platforms": [
                 "chromeos",
@@ -10463,9 +10463,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Phase2",
+                    "name": "Phase1",
                     "params": {
-                        "stage": "write_both_read_prefer_encrypted"
+                        "stage": "write_both_read_only_clear"
                     },
                     "enable_features": [
                         "EncryptBookmarks"
