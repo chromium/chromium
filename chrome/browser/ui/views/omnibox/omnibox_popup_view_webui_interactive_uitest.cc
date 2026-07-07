@@ -341,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
   // Switch back to the initial tab.
   browser()->tab_strip_model()->ActivateTabAt(initial_tab_index);
 
-  // Verify the selection is reset when activating a tab with no saved state.
+  // Verify the selection selects all permanent text when activating a tab with
+  // no saved state.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     auto* popup_view_check = static_cast<OmniboxPopupViewWebUI*>(
         location_bar()->GetOmniboxPopupView());
@@ -358,7 +359,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
     auto* popup_handler_check =
         popup_ui_check ? popup_ui_check->popup_handler() : nullptr;
     return popup_handler_check &&
-           popup_handler_check->latest_selection() == gfx::Range(0, 0);
+           popup_handler_check->latest_selection() ==
+               gfx::Range(0, controller()
+                                 ->edit_model()
+                                 ->GetPermanentDisplayText()
+                                 .length());
   }));
 }
 

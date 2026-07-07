@@ -58,6 +58,9 @@ void OmniboxPopupPresenterBase::Show() {
     return;
   }
 
+  if (ShouldPreserveRequestedFocus()) {
+    focus_requested_ = false;
+  }
   has_logged_content_ready_since_open_ = false;
 
   EnsureWidgetCreated();
@@ -131,7 +134,12 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
 }
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
-  widget_->ShowInactive();
+  if (ShouldPreserveRequestedFocus() &&
+      (widget_->IsActive() || focus_requested_)) {
+    widget_->Show();
+  } else {
+    widget_->ShowInactive();
+  }
   // If the derived class requests hiding for the initial layout pass, make the
   // widget transparent until we receive a valid content height.
   if (ShouldHideForInitialLayout() && content_height_ == 1) {
@@ -154,10 +162,16 @@ void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
   if (auto* content = GetWebUIContent()) {
     content->GetWebContents()->WasShown();
   }
-  RequestFocus();
+
+  if (!ShouldPreserveRequestedFocus() || focus_requested_) {
+    RequestFocus();
+  }
 }
 
 void OmniboxPopupPresenterBase::RequestFocus() {
+  if (ShouldPreserveRequestedFocus()) {
+    focus_requested_ = true;
+  }
   if (widget_ && ShouldReceiveFocus()) {
     widget_->Activate();
     if (auto* content = GetWebUIContent()) {
@@ -215,6 +229,9 @@ void OmniboxPopupPresenterBase::OnVisualStateReadyForMetrics(
 }
 
 void OmniboxPopupPresenterBase::Hide() {
+  if (ShouldPreserveRequestedFocus()) {
+    focus_requested_ = false;
+  }
   is_deferred_ = false;
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
@@ -365,6 +382,10 @@ bool OmniboxPopupPresenterBase::ShouldReceiveFocus() const {
 }
 
 bool OmniboxPopupPresenterBase::ShouldHideForInitialLayout() const {
+  return false;
+}
+
+bool OmniboxPopupPresenterBase::ShouldPreserveRequestedFocus() const {
   return false;
 }
 

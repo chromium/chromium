@@ -1707,6 +1707,13 @@ void OmniboxViewViews::OnBlur() {
   // Save the user's existing selection to restore it later.
   saved_selection_for_focus_change_ = GetSelectedRange();
 
+  // If focus is transferring to the WebUI popup widget, treat this as a
+  // logical focus transfer rather than a true blur. Keep the edit model's
+  // focus state active, and skip all reversion/blurring.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    return;
+  }
+
   // If the view is showing text that's not user-text, revert the text to the
   // permanent display text. This usually occurs if Steady State Elisions is on
   // and the user has unelided, but not edited the URL.
@@ -1722,11 +1729,10 @@ void OmniboxViewViews::OnBlur() {
   // This should never exit keyword mode.
   if (GetWidget() && GetWidget()->IsActive() &&
       !controller()->edit_model()->is_keyword_selected()) {
-    if (((!controller()->edit_model()->user_input_in_progress() &&
-          GetText() != controller()->edit_model()->GetPermanentDisplayText()) ||
-         (controller()->edit_model()->user_input_in_progress() &&
-          GetText() ==
-              controller()->edit_model()->GetPermanentDisplayText()))) {
+    if ((!controller()->edit_model()->user_input_in_progress() &&
+         GetText() != controller()->edit_model()->GetPermanentDisplayText()) ||
+        (controller()->edit_model()->user_input_in_progress() &&
+         GetText() == controller()->edit_model()->GetPermanentDisplayText())) {
       RevertAll();
     }
   }

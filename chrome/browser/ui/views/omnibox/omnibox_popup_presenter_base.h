@@ -64,7 +64,7 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   bool IsShown() const;
 
   // Request focus on the popup widget and its web contents.
-  void RequestFocus();
+  virtual void RequestFocus();
 
   // Caches the height of the WebUI content, which is then used to compute the
   // popup widget bounds.
@@ -149,11 +149,18 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // initial layout pass to complete without visual artifacts.
   virtual bool ShouldHideForInitialLayout() const;
 
+  // Returns true if explicit focus requests should be preserved across widget
+  // show/hide rather than unconditionally re-requesting focus after show.
+  virtual bool ShouldPreserveRequestedFocus() const;
+
   LocationBar* location_bar() const { return location_bar_.get(); }
 
   views::Widget* GetWidget() const { return widget_.get(); }
 
   OmniboxController* controller() const;
+
+  // Whether focus has been explicitly requested since the popup was shown.
+  bool focus_requested_ = false;
 
   // The height of the popup content. Can be 0 if not specified.
   int content_height_ = 0;
