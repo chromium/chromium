@@ -52,8 +52,9 @@ bool IsCrosPythonProcess() {
 #if BUILDFLAG(IS_CHROMEOS)
   char buf[80];
   int num_read = readlink(base::kProcSelfExe, buf, sizeof(buf) - 1);
-  if (num_read == -1)
+  if (num_read == -1) {
     return false;
+  }
   buf[num_read] = 0;
   const char kPythonPrefix[] = "/python";
   return !strncmp(strrchr(buf, '/'), kPythonPrefix, sizeof(kPythonPrefix) - 1);
@@ -65,8 +66,7 @@ bool IsCrosPythonProcess() {
 }  // namespace
 
 ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
-    : content::ContentTestSuiteBase(argc, argv) {
-}
+    : content::ContentTestSuiteBase(argc, argv) {}
 
 ChromeTestSuite::~ChromeTestSuite() {
 #if BUILDFLAG(IS_MAC)
@@ -98,16 +98,16 @@ void ChromeTestSuite::Initialize() {
   // Disable external libraries load if we are under python process in
   // ChromeOS.  That means we are autotest and, if ASAN is used,
   // external libraries load crashes.
-  if (!IsCrosPythonProcess())
+  if (!IsCrosPythonProcess()) {
     media::InitializeMediaLibrary();
+  }
 
   // Initialize after overriding paths as some content paths depend on correct
   // values for DIR_EXE and DIR_MODULE.
   content::ContentTestSuiteBase::Initialize();
 
   ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
-      ChromeMainDelegate::kNonWildcardDomainNonPortSchemes,
-      ChromeMainDelegate::kNonWildcardDomainNonPortSchemesSize);
+      ChromeMainDelegate::GetNonWildcardDomainNonPortSchemes());
 
   // Desktop Identity Consistency (a.k.a. DICE) requires OAuth client to be
   // configured as it is needed for regular web sign-in flows to Google.

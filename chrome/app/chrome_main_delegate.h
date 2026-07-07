@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/startup_timestamps.h"
@@ -33,8 +34,7 @@ class MainThreadStackSamplingProfiler;
 // Chrome implementation of ContentMainDelegate.
 class ChromeMainDelegate : public content::ContentMainDelegate {
  public:
-  static const char* const kNonWildcardDomainNonPortSchemes[];
-  static const size_t kNonWildcardDomainNonPortSchemesSize;
+  static base::span<const char* const> GetNonWildcardDomainNonPortSchemes();
 
 #if BUILDFLAG(IS_ANDROID)
   ChromeMainDelegate();

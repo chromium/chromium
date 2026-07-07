@@ -42,8 +42,8 @@ namespace {
 // Not using kExtensionScheme and kChromeSearchScheme to avoid the dependency
 // to extensions and chrome/common.
 const char* const kNonWildcardDomainNonPortSchemes[] = {
-    "chrome-extension", "chrome-search", "chrome", "chrome-untrusted",
-    "devtools", "isolated-app"};
+    "chrome-extension", "chrome-search", "chrome",
+    "chrome-untrusted", "devtools",      "isolated-app"};
 
 class ComponentsTestSuite : public base::TestSuite {
  public:
@@ -99,8 +99,7 @@ class ComponentsTestSuite : public base::TestSuite {
         ui::kScaleFactorNone);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
-        kNonWildcardDomainNonPortSchemes,
-        std::size(kNonWildcardDomainNonPortSchemes));
+        kNonWildcardDomainNonPortSchemes);
   }
 
   void Shutdown() override {

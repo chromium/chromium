@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -28,9 +29,8 @@
 
 namespace {
 
-// Array of non domain wildcard and non-port scheme names, and their count.
-const char* const* g_non_domain_wildcard_non_port_schemes = nullptr;
-size_t g_non_domain_wildcard_non_port_schemes_count = 0;
+// Array of non domain wildcard and non-port scheme names.
+base::span<const char* const> g_non_domain_wildcard_non_port_schemes;
 
 // Keep it consistent with enum SchemeType in content_settings_pattern.h.
 // TODO(msramek): Layering violation: assemble this array from hardcoded
@@ -55,10 +55,12 @@ static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
 // Note: it is safe to return a std::string_view here as long as they are
 // either empty or referencing constant string literals.
 std::string_view GetDefaultPort(std::string_view scheme) {
-  if (scheme == url::kHttpScheme)
+  if (scheme == url::kHttpScheme) {
     return "80";
-  if (scheme == url::kHttpsScheme)
+  }
+  if (scheme == url::kHttpsScheme) {
     return "443";
+  }
   return std::string_view();
 }
 
@@ -68,12 +70,14 @@ std::string_view GetDefaultPort(std::string_view scheme) {
 bool IsSubDomainOrEqual(std::string_view sub_domain, std::string_view domain) {
   // The empty string serves as wildcard. Each domain is a subdomain of the
   // wildcard.
-  if (domain.empty())
+  if (domain.empty()) {
     return true;
+  }
 
   // The two domains are identical.
-  if (domain == sub_domain)
+  if (domain == sub_domain) {
     return true;
+  }
 
   // The |domain| is a proper domain-suffix of the |sub_domain|.
   return sub_domain.length() > domain.length() &&
@@ -111,15 +115,18 @@ int CompareDomainNames(std::string_view domain_a, std::string_view domain_b) {
     // Domain names are stored in puny code. So it's fine to use the compare
     // method.
     int rv = rightmost_label_a.compare(rightmost_label_b);
-    if (rv != 0)
+    if (rv != 0) {
       return rv;
+    }
   }
 
-  if (rest_of_a && !rest_of_b)
+  if (rest_of_a && !rest_of_b) {
     return 1;
+  }
 
-  if (!rest_of_a && rest_of_b)
+  if (!rest_of_a && rest_of_b) {
     return -1;
+  }
 
   // The domain names are identical.
   DCHECK(!rest_of_a && !rest_of_b);
@@ -229,13 +236,16 @@ BuilderInterface* ContentSettingsPattern::Builder::Invalid() {
 }
 
 ContentSettingsPattern ContentSettingsPattern::Builder::Build() {
-  if (!is_valid_)
+  if (!is_valid_) {
     return ContentSettingsPattern();
-  if (!Canonicalize(&parts_))
+  }
+  if (!Canonicalize(&parts_)) {
     return ContentSettingsPattern();
+  }
   is_valid_ = Validate(parts_);
-  if (!is_valid_)
+  if (!is_valid_) {
     return ContentSettingsPattern();
+  }
 
 #if !defined(NDEBUG)
   // For debug builds, check that canonicalization is idempotent.
@@ -260,8 +270,9 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
       std::string url_spec = base::StrCat(
           {url::kFileScheme, url::kStandardSchemeSeparator, parts->path});
       GURL url(url_spec);
-      if (!url.is_valid())
+      if (!url.is_valid()) {
         return false;
+      }
       if (parts->path == url.path()) {
         break;
       }
@@ -278,14 +289,16 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
     canonicalized_host = net::CanonicalizeHost(parts->host, &host_info);
   }
 
-  if (host_info.IsIPAddress() && parts->has_domain_wildcard)
+  if (host_info.IsIPAddress() && parts->has_domain_wildcard) {
     return false;
+  }
 
   // A domain wildcard pattern involves exactly one separating dot, inside the
   // square brackets. This is a common misunderstanding of that pattern that we
   // want to check for. See: https://crbug.com/823706.
-  if (parts->has_domain_wildcard && base::StartsWith(canonicalized_host, "."))
+  if (parts->has_domain_wildcard && base::StartsWith(canonicalized_host, ".")) {
     return false;
+  }
 
   // Omit a single ending dot as long as there is at least one non-dot character
   // before it, which is in line with the behavior of net::TrimEndingDot; but
@@ -322,10 +335,13 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
 
   // file:// URL patterns have an empty host and port.
   if (parts.scheme == url::kFileScheme) {
-    if (parts.has_domain_wildcard || !parts.host.empty() || !parts.port.empty())
+    if (parts.has_domain_wildcard || !parts.host.empty() ||
+        !parts.port.empty()) {
       return false;
-    if (parts.is_path_wildcard)
+    }
+    if (parts.is_path_wildcard) {
       return parts.path.empty();
+    }
     return (!parts.path.empty() && parts.path != "/" &&
             parts.path.find('*') == std::string::npos);
   }
@@ -345,8 +361,9 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
     return false;
   }
 
-  if (parts.host.find('*') != std::string::npos)
+  if (parts.host.find('*') != std::string::npos) {
     return false;
+  }
 
   // Test if the scheme is supported or a wildcard.
   if (!parts.is_scheme_wildcard && parts.scheme != url::kHttpScheme &&
@@ -504,28 +521,19 @@ ContentSettingsPattern ContentSettingsPattern::FromString(
 
 // static
 void ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
-    const char* const* schemes,
-    size_t count) {
-  DCHECK(schemes || count == 0);
-  if (g_non_domain_wildcard_non_port_schemes) {
-    DCHECK_EQ(g_non_domain_wildcard_non_port_schemes_count, count);
-    for (size_t i = 0; i < count; ++i) {
-      UNSAFE_TODO(
-          DCHECK_EQ(g_non_domain_wildcard_non_port_schemes[i], schemes[i]));
-    }
+    base::span<const char* const> schemes) {
+  if (!g_non_domain_wildcard_non_port_schemes.empty()) {
+    DCHECK(std::ranges::equal(g_non_domain_wildcard_non_port_schemes, schemes));
   }
 
   g_non_domain_wildcard_non_port_schemes = schemes;
-  g_non_domain_wildcard_non_port_schemes_count = count;
 }
 
 // static
 bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
     std::string_view scheme) {
-  DCHECK(g_non_domain_wildcard_non_port_schemes ||
-         g_non_domain_wildcard_non_port_schemes_count == 0);
-  for (size_t i = 0; i < g_non_domain_wildcard_non_port_schemes_count; ++i) {
-    if (UNSAFE_TODO(g_non_domain_wildcard_non_port_schemes[i]) == scheme) {
+  for (const char* non_port_scheme : g_non_domain_wildcard_non_port_schemes) {
+    if (non_port_scheme == scheme) {
       return true;
     }
   }
@@ -601,8 +609,9 @@ ContentSettingsPattern::ContentSettingsPattern(PatternParts parts, bool valid)
 
 bool ContentSettingsPattern::Matches(const GURL& url) const {
   // An invalid pattern matches nothing.
-  if (!is_valid_)
+  if (!is_valid_) {
     return false;
+  }
 
   const GURL* local_url = &url;
   if (url.SchemeIsFileSystem() && url.inner_url()) {
@@ -633,16 +642,19 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   }
 
   if (!parts_.has_domain_wildcard) {
-    if (parts_.host != trimmed_host)
+    if (parts_.host != trimmed_host) {
       return false;
+    }
   } else {
-    if (!IsSubDomainOrEqual(trimmed_host, parts_.host))
+    if (!IsSubDomainOrEqual(trimmed_host, parts_.host)) {
       return false;
+    }
   }
 
   // Ignore the port if the scheme doesn't support it.
-  if (IsNonWildcardDomainNonPortScheme(parts_.scheme))
+  if (IsNonWildcardDomainNonPortScheme(parts_.scheme)) {
     return true;
+  }
 
   // Match the port part.
   // Use the default port if the port string is empty. GURL returns an empty
@@ -672,8 +684,9 @@ bool ContentSettingsPattern::HasDomainWildcard() const {
 }
 
 std::string ContentSettingsPattern::ToString() const {
-  if (IsValid())
+  if (IsValid()) {
     return content_settings::PatternParser::ToString(parts_);
+  }
   return std::string();
 }
 
@@ -689,12 +702,14 @@ GURL ContentSettingsPattern::ToRepresentativeUrl() const {
 
 ContentSettingsPattern::SchemeType ContentSettingsPattern::GetSchemeType()
     const {
-  if (parts_.is_scheme_wildcard)
+  if (parts_.is_scheme_wildcard) {
     return SCHEME_WILDCARD;
+  }
 
   for (size_t i = 2; i < std::size(kSchemeNames); ++i) {
-    if (parts_.scheme == kSchemeNames[i])
+    if (parts_.scheme == kSchemeNames[i]) {
       return static_cast<SchemeType>(i);
+    }
   }
   return SCHEME_OTHER;
 }
@@ -755,41 +770,51 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
   // Two invalid patterns are identical in the way they behave. They don't match
   // anything and are represented as an empty string. So it's fair to treat them
   // as identical.
-  if ((this == &other) || (!is_valid_ && !other.is_valid_))
+  if ((this == &other) || (!is_valid_ && !other.is_valid_)) {
     return IDENTITY;
+  }
 
-  if (!is_valid_ && other.is_valid_)
+  if (!is_valid_ && other.is_valid_) {
     return DISJOINT_ORDER_POST;
-  if (is_valid_ && !other.is_valid_)
+  }
+  if (is_valid_ && !other.is_valid_) {
     return DISJOINT_ORDER_PRE;
+  }
 
   // If either host, port or scheme are disjoint return immediately.
   Relation host_relation = CompareHost(parts_, other.parts_);
   if (host_relation == DISJOINT_ORDER_PRE ||
-      host_relation == DISJOINT_ORDER_POST)
+      host_relation == DISJOINT_ORDER_POST) {
     return host_relation;
+  }
 
   Relation port_relation = ComparePort(parts_, other.parts_);
   if (port_relation == DISJOINT_ORDER_PRE ||
-      port_relation == DISJOINT_ORDER_POST)
+      port_relation == DISJOINT_ORDER_POST) {
     return port_relation;
+  }
 
   Relation scheme_relation = CompareScheme(parts_, other.parts_);
   if (scheme_relation == DISJOINT_ORDER_PRE ||
-      scheme_relation == DISJOINT_ORDER_POST)
+      scheme_relation == DISJOINT_ORDER_POST) {
     return scheme_relation;
+  }
 
   Relation path_relation = ComparePath(parts_, other.parts_);
   if (path_relation == DISJOINT_ORDER_PRE ||
-      path_relation == DISJOINT_ORDER_POST)
+      path_relation == DISJOINT_ORDER_POST) {
     return path_relation;
+  }
 
-  if (host_relation != IDENTITY)
+  if (host_relation != IDENTITY) {
     return host_relation;
-  if (port_relation != IDENTITY)
+  }
+  if (port_relation != IDENTITY) {
     return port_relation;
-  if (scheme_relation != IDENTITY)
+  }
+  if (scheme_relation != IDENTITY) {
     return scheme_relation;
+  }
   return path_relation;
 }
 
@@ -797,16 +822,20 @@ ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
 ContentSettingsPattern::Relation ContentSettingsPattern::CompareScheme(
     const ContentSettingsPattern::PatternParts& parts,
     const ContentSettingsPattern::PatternParts& other_parts) {
-  if (parts.is_scheme_wildcard && !other_parts.is_scheme_wildcard)
+  if (parts.is_scheme_wildcard && !other_parts.is_scheme_wildcard) {
     return ContentSettingsPattern::SUCCESSOR;
-  if (!parts.is_scheme_wildcard && other_parts.is_scheme_wildcard)
+  }
+  if (!parts.is_scheme_wildcard && other_parts.is_scheme_wildcard) {
     return ContentSettingsPattern::PREDECESSOR;
+  }
 
   int result = parts.scheme.compare(other_parts.scheme);
-  if (result == 0)
+  if (result == 0) {
     return ContentSettingsPattern::IDENTITY;
-  if (result > 0)
+  }
+  if (result > 0) {
     return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+  }
   return ContentSettingsPattern::DISJOINT_ORDER_POST;
 }
 
@@ -817,10 +846,12 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
   if (!parts.has_domain_wildcard && !other_parts.has_domain_wildcard) {
     // Case 1: No host starts with a wild card
     int result = CompareDomainNames(parts.host, other_parts.host);
-    if (result == 0)
+    if (result == 0) {
       return ContentSettingsPattern::IDENTITY;
-    if (result < 0)
+    }
+    if (result < 0) {
       return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+    }
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
   if (parts.has_domain_wildcard && !other_parts.has_domain_wildcard) {
@@ -844,19 +875,23 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     //
     // *
     // google.de
-    if (IsSubDomainOrEqual(other_parts.host, parts.host))
+    if (IsSubDomainOrEqual(other_parts.host, parts.host)) {
       return ContentSettingsPattern::SUCCESSOR;
-    if (CompareDomainNames(parts.host, other_parts.host) < 0)
+    }
+    if (CompareDomainNames(parts.host, other_parts.host) < 0) {
       return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+    }
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
   if (!parts.has_domain_wildcard && other_parts.has_domain_wildcard) {
     // Case 3: |host| starts NOT with a domain wildcard and |other_host| starts
     // with a domain wildcard.
-    if (IsSubDomainOrEqual(parts.host, other_parts.host))
+    if (IsSubDomainOrEqual(parts.host, other_parts.host)) {
       return ContentSettingsPattern::PREDECESSOR;
-    if (CompareDomainNames(parts.host, other_parts.host) < 0)
+    }
+    if (CompareDomainNames(parts.host, other_parts.host) < 0) {
       return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+    }
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
   if (parts.has_domain_wildcard && other_parts.has_domain_wildcard) {
@@ -879,14 +914,18 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     //
     // *
     // [*.]youtube.com
-    if (parts.host == other_parts.host)
+    if (parts.host == other_parts.host) {
       return ContentSettingsPattern::IDENTITY;
-    if (IsSubDomainOrEqual(other_parts.host, parts.host))
+    }
+    if (IsSubDomainOrEqual(other_parts.host, parts.host)) {
       return ContentSettingsPattern::SUCCESSOR;
-    if (IsSubDomainOrEqual(parts.host, other_parts.host))
+    }
+    if (IsSubDomainOrEqual(parts.host, other_parts.host)) {
       return ContentSettingsPattern::PREDECESSOR;
-    if (CompareDomainNames(parts.host, other_parts.host) < 0)
+    }
+    if (CompareDomainNames(parts.host, other_parts.host) < 0) {
       return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+    }
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
 
@@ -897,16 +936,20 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
 ContentSettingsPattern::Relation ContentSettingsPattern::ComparePort(
     const ContentSettingsPattern::PatternParts& parts,
     const ContentSettingsPattern::PatternParts& other_parts) {
-  if (parts.is_port_wildcard && !other_parts.is_port_wildcard)
+  if (parts.is_port_wildcard && !other_parts.is_port_wildcard) {
     return ContentSettingsPattern::SUCCESSOR;
-  if (!parts.is_port_wildcard && other_parts.is_port_wildcard)
+  }
+  if (!parts.is_port_wildcard && other_parts.is_port_wildcard) {
     return ContentSettingsPattern::PREDECESSOR;
+  }
 
   int result = parts.port.compare(other_parts.port);
-  if (result == 0)
+  if (result == 0) {
     return ContentSettingsPattern::IDENTITY;
-  if (result > 0)
+  }
+  if (result > 0) {
     return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+  }
   return ContentSettingsPattern::DISJOINT_ORDER_POST;
 }
 
@@ -921,15 +964,19 @@ ContentSettingsPattern::Relation ContentSettingsPattern::ComparePath(
     return ContentSettingsPattern::IDENTITY;
   }
 
-  if (parts.is_path_wildcard && !other_parts.is_path_wildcard)
+  if (parts.is_path_wildcard && !other_parts.is_path_wildcard) {
     return ContentSettingsPattern::SUCCESSOR;
-  if (!parts.is_path_wildcard && other_parts.is_path_wildcard)
+  }
+  if (!parts.is_path_wildcard && other_parts.is_path_wildcard) {
     return ContentSettingsPattern::PREDECESSOR;
+  }
 
   int result = parts.path.compare(other_parts.path);
-  if (result == 0)
+  if (result == 0) {
     return ContentSettingsPattern::IDENTITY;
-  if (result > 0)
+  }
+  if (result > 0) {
     return ContentSettingsPattern::DISJOINT_ORDER_PRE;
+  }
   return ContentSettingsPattern::DISJOINT_ORDER_POST;
 }

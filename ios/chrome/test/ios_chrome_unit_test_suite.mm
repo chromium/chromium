@@ -104,5 +104,5 @@ void IOSChromeUnitTestSuite::Initialize() {
 
   ios::RegisterPathProvider();
   ui::RegisterPathProvider();
-  ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(nullptr, 0);
+  ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes({});
 }

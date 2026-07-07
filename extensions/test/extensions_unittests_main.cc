@@ -75,8 +75,7 @@ void ExtensionsTestSuite::Initialize() {
     ExtensionsContentClient content_client;
     RegisterContentSchemes(&content_client);
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
-        kNonWildcardDomainNonPortSchemes,
-        std::size(kNonWildcardDomainNonPortSchemes));
+        kNonWildcardDomainNonPortSchemes);
   }
   RegisterInProcessThreads();
 
