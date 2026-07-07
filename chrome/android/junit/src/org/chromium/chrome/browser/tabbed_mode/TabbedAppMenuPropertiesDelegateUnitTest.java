@@ -190,7 +190,8 @@ import java.util.List;
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
     // TODO(crbug.com/504757384): Add test for three dot menu flag.
     ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON,
-    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
+    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
+    ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
