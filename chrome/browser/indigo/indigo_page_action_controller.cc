@@ -27,6 +27,7 @@
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
+#include "chrome/browser/indigo/indigo_menu_model.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -627,7 +628,7 @@ void IndigoPageActionController::UpdateEntryPointsState() {
 
   if (should_show) {
     page_action_controller_->Show(kActionIndigo);
-    if (indigo_service_->CanShowAnchoredMessage() &&
+    if (indigo_service_->CanShowContextualCue() &&
         !glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
       ShowAnchoredMessage(
           page_actions::PageActionPriorityCategory::kContextualCue);
@@ -702,7 +703,7 @@ void IndigoPageActionController::OnLocalEligibilityChanged(
 void IndigoPageActionController::OnPageActionAnchoredMessageShown(
     const page_actions::PageActionState& page_action) {
   if (indigo_service_) {
-    indigo_service_->AnchoredMessageShown();
+    indigo_service_->ContextualCueShown();
   }
   base::RecordAction(
       base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
@@ -747,6 +748,24 @@ void IndigoPageActionController::ShowAnchoredMessage(
   page_action_controller_->SetAnchoredMessageIcon(
       kActionIndigo,
       icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel());
+
+  if (priority == page_actions::PageActionPriorityCategory::kUserInteraction) {
+    page_action_controller_->SetAnchoredMessageAction(
+        kActionIndigo, page_actions::AnchoredMessageActionIconType::kClose,
+        nullptr);
+  } else {
+    CHECK_EQ(priority,
+             page_actions::PageActionPriorityCategory::kContextualCue);
+    content::WebContents* web_contents = tab().GetContents();
+    Profile* profile =
+        web_contents
+            ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+            : nullptr;
+    page_action_controller_->SetAnchoredMessageAction(
+        kActionIndigo, page_actions::AnchoredMessageActionIconType::kMenu,
+        std::make_unique<IndigoMenuModel>(profile, GetWeakPtr()));
+  }
+
   page_action_controller_->ShowAnchoredMessage(kActionIndigo,
                                                {.priority = priority});
 }

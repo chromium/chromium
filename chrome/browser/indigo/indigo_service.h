@@ -109,11 +109,11 @@ class IndigoService : public KeyedService,
     return *api_client_;
   }
 
-  // Anchored messages are rate-limited to reduce user fatigue. Clients should
-  // use `CanShowAnchoredMessage` to check eligibility before displaying an
-  // anchored message, and call `AnchoredMessageShown` when they do.
-  bool CanShowAnchoredMessage() const;
-  void AnchoredMessageShown();
+  // Contextual cues are rate-limited to reduce user fatigue. Clients should
+  // use `CanShowContextualCue` to check eligibility before displaying a
+  // contextual cue, and call `ContextualCueShown` when they do.
+  bool CanShowContextualCue() const;
+  void ContextualCueShown();
 
   // Determine whether the feature is capable of generating images right now.
   // This may require contacting the service.
@@ -188,8 +188,8 @@ class IndigoService : public KeyedService,
   base::CallbackListSubscription indigo_component_ready_subscription_;
   std::unique_ptr<ApiClient> api_client_;
 
-  // The earliest time the anchored message can be shown again.
-  base::TimeTicks anchored_message_not_before_;
+  // The earliest time the contextual cue can be shown again.
+  base::TimeTicks contextual_cue_not_before_;
 
   // True if a fetch for remote eligibility is currently in flight.
   bool remote_eligibility_fetch_in_progress_ = false;

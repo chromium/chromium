@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -286,12 +288,15 @@ IndigoService::RegisterLocalEligibilityChangedCallback(
   return local_eligibility_callback_list_.Add(std::move(callback));
 }
 
-bool IndigoService::CanShowAnchoredMessage() const {
-  return base::TimeTicks::Now() >= anchored_message_not_before_;
+bool IndigoService::CanShowContextualCue() const {
+  // TODO(b/519267141): This should also be guarded by the contextual cueing
+  // pref, which gets changed when the user changes the setting.
+  return base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2) &&
+         base::TimeTicks::Now() >= contextual_cue_not_before_;
 }
 
-void IndigoService::AnchoredMessageShown() {
-  anchored_message_not_before_ =
+void IndigoService::ContextualCueShown() {
+  contextual_cue_not_before_ =
       base::TimeTicks::Now() +
       features::kIndigoAnchoredMessageResetDuration.Get();
 }
