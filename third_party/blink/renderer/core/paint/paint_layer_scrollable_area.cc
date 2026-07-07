@@ -678,16 +678,16 @@ gfx::Rect PaintLayerScrollableArea::VisibleContentRect(
 
 PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  const ComputedStyle* style = GetLayoutBox()->Style();
+  const ComputedStyle& style = GetLayoutBox()->StyleRef();
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
   layout_content_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
-  PhysicalBoxStrut padding(MinimumValueForLength(style->ScrollPaddingTop(),
+  PhysicalBoxStrut padding(MinimumValueForLength(style.ScrollPaddingTop(),
                                                  layout_content_rect.Height()),
-                           MinimumValueForLength(style->ScrollPaddingRight(),
+                           MinimumValueForLength(style.ScrollPaddingRight(),
                                                  layout_content_rect.Width()),
-                           MinimumValueForLength(style->ScrollPaddingBottom(),
+                           MinimumValueForLength(style.ScrollPaddingBottom(),
                                                  layout_content_rect.Height()),
-                           MinimumValueForLength(style->ScrollPaddingLeft(),
+                           MinimumValueForLength(style.ScrollPaddingLeft(),
                                                  layout_content_rect.Width()));
   layout_content_rect.Contract(padding);
   return layout_content_rect;

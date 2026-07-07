@@ -251,13 +251,13 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
   // LayoutText::PlainText() gives the rendered text after the application
   // of white-space processing and text-transform rules
   if (RuntimeEnabledFeatures::ElementInnerTextHandleFirstLineStyleEnabled()) {
-    const ComputedStyle* block_style = layout_text.Style();
-    const ComputedStyle* first_line_style = layout_text.FirstLineStyle();
+    const ComputedStyle& block_style = layout_text.StyleRef();
+    const ComputedStyle& first_line_style = layout_text.FirstLineStyleRef();
 
     // first_line_offset is the first character of the text that is not part of
     // ::first_line
     unsigned first_line_offset = 0;
-    if (block_style->TextTransform() != first_line_style->TextTransform()) {
+    if (block_style.TextTransform() != first_line_style.TextTransform()) {
       first_line_offset = ProcessFirstLineAndGetOffset(layout_text);
     }
     const unsigned adjusted_offset =

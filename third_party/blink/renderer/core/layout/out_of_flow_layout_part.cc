@@ -1073,12 +1073,10 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     //
     // Note in cases [2a, 2b] we don't allow a "negative" containing block size,
     // we clamp negative sizes to zero.
-    const ComputedStyle* inline_cb_style = block_info.key->Style();
-    DCHECK(inline_cb_style);
+    const ComputedStyle& inline_cb_style = block_info.key->StyleRef();
 
-    const auto inline_writing_direction =
-        inline_cb_style->GetWritingDirection();
-    BoxStrut inline_cb_borders = ComputeBordersForInline(*inline_cb_style);
+    const auto inline_writing_direction = inline_cb_style.GetWritingDirection();
+    BoxStrut inline_cb_borders = ComputeBordersForInline(inline_cb_style);
     DCHECK_EQ(container_writing_direction.GetWritingMode(),
               inline_writing_direction.GetWritingMode());
 

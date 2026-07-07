@@ -3593,7 +3593,8 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   for (wtf_size_t i = 0; i < annotation_line_list.size(); ++i) {
     LayoutObject& annotation_object =
         *Items()[annotation_data_list[i].start_item_index]->GetLayoutObject();
-    data->annotation_line_list[i].OverrideLineStyle(*annotation_object.Style());
+    data->annotation_line_list[i].OverrideLineStyle(
+        annotation_object.StyleRef());
     data->annotation_line_list[i].SetIsRubyText();
     data->annotation_line_list[i].UpdateTextAlign();
     const LayoutObject* parent = annotation_object.Parent();

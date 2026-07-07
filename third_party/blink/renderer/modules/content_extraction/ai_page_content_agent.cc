@@ -1083,9 +1083,9 @@ void ProcessTextNode(const LayoutText& layout_text,
   DCHECK(!ShouldRedactSubtree(attributes.redaction_decision));
 
   auto text_style = mojom::blink::AIPageContentTextStyle::New();
-  text_style->text_size = GetTextSize(*layout_text.Style(), document_style);
-  text_style->has_emphasis = HasEmphasis(*layout_text.Style());
-  text_style->color = GetColor(*layout_text.Style());
+  text_style->text_size = GetTextSize(layout_text.StyleRef(), document_style);
+  text_style->has_emphasis = HasEmphasis(layout_text.StyleRef());
+  text_style->color = GetColor(layout_text.StyleRef());
 
   auto text_info = mojom::blink::AIPageContentTextInfo::New();
   text_info->text_content =
@@ -2164,7 +2164,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   UpdateLifecycle(document);
 
   auto* layout_view = document.GetLayoutView();
-  auto* document_style = layout_view->Style();
+  const auto& document_style = layout_view->StyleRef();
 
   if (ShouldSkipNonSalientNode(*layout_view, *options_)) {
     return nullptr;
@@ -2181,7 +2181,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   AddFrameData(frame, *frame_data);
   page_content->frame_data = std::move(frame_data);
 
-  RecursionData recursion_data(*document_style);
+  RecursionData recursion_data(document_style);
   recursion_data.accessibility_focused_node_id =
       GetAccessibilityFocusedDOMNodeId(frame);
 
@@ -3213,7 +3213,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes,
     bool is_aria_disabled) {
-  const ComputedStyle& style = *object.Style();
+  const ComputedStyle& style = object.StyleRef();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
     // Treat nodes exposed through pointer-events:none as non-actionable. This
     // includes elements the author explicitly removed from hit testing and

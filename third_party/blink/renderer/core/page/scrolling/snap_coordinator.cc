@@ -114,7 +114,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   PhysicalRect container_rect(
       snap_container.OverflowClipRect(PhysicalOffset()));
 
-  const ComputedStyle* container_style = snap_container.Style();
+  const ComputedStyle& container_style = snap_container.StyleRef();
   // The percentage of scroll-padding is different from that of normal
   // padding, as scroll-padding resolves the percentage against corresponding
   // dimension of the scrollport[1], while the normal padding resolves that
@@ -128,17 +128,17 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // [3] See for example LayoutBoxModelObject::ComputedCSSPadding where it
   //     uses |MinimumValueForLength| but against the "width".
   container_rect.ContractEdges(
-      MinimumValueForLength(container_style->ScrollPaddingTop(),
+      MinimumValueForLength(container_style.ScrollPaddingTop(),
                             container_rect.Height()),
-      MinimumValueForLength(container_style->ScrollPaddingRight(),
+      MinimumValueForLength(container_style.ScrollPaddingRight(),
                             container_rect.Width()),
-      MinimumValueForLength(container_style->ScrollPaddingBottom(),
+      MinimumValueForLength(container_style.ScrollPaddingBottom(),
                             container_rect.Height()),
-      MinimumValueForLength(container_style->ScrollPaddingLeft(),
+      MinimumValueForLength(container_style.ScrollPaddingLeft(),
                             container_rect.Width()));
   snap_container_data.set_rect(gfx::RectF(container_rect));
   snap_container_data.set_has_horizontal_writing_mode(
-      container_style->IsHorizontalWritingMode());
+      container_style.IsHorizontalWritingMode());
 
   if (snap_container_data.scroll_snap_type().strictness ==
       cc::SnapStrictness::kProximity) {
@@ -294,7 +294,6 @@ static cc::ScrollSnapAlign GetPhysicalAlignment(
 cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
     Element& snap_area,
     const LayoutBox& snap_container) {
-  const ComputedStyle* container_style = snap_container.Style();
   const ComputedStyle* area_style = snap_area.GetComputedStyle();
   cc::SnapAreaData snap_area_data;
 
@@ -328,7 +327,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 
   snap_area_data.scroll_snap_align = GetPhysicalAlignment(
-      *area_style, *container_style, area_rect, container_rect);
+      *area_style, snap_container.StyleRef(), area_rect, container_rect);
 
   snap_area_data.must_snap =
       (area_style->ScrollSnapStop() == EScrollSnapStop::kAlways);

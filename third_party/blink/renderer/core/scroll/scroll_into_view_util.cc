@@ -759,7 +759,7 @@ mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
   return ResolveToPhysicalAlignment(
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_inline),
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_block), axis,
-      *object.Style());
+      object.StyleRef());
 }
 
 }  // namespace scroll_into_view_util

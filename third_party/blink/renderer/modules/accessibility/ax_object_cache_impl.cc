@@ -1396,9 +1396,8 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
         node.parentNode()->GetLayoutObject()->IsInline()) {
       return true;  // Parent inline: not a clearfix hack.
     }
-    const ComputedStyle* style = node.GetLayoutObject()->Style();
-    DCHECK(style);
-    ContentData* content_data = style->GetContentData();
+    const ComputedStyle& style = node.GetLayoutObject()->StyleRef();
+    ContentData* content_data = style.GetContentData();
     if (!content_data)
       return true;
     if (!content_data->IsText())

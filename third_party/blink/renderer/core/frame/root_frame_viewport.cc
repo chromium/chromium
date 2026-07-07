@@ -237,15 +237,15 @@ PhysicalRect RootFrameViewport::VisibleScrollSnapportRect(
   if (!LayoutViewport().GetLayoutBox())
     return visible_scroll_snapport;
 
-  const ComputedStyle* style = LayoutViewport().GetLayoutBox()->Style();
+  const ComputedStyle& style = LayoutViewport().GetLayoutBox()->StyleRef();
   visible_scroll_snapport.ContractEdges(
-      MinimumValueForLength(style->ScrollPaddingTop(),
+      MinimumValueForLength(style.ScrollPaddingTop(),
                             visible_scroll_snapport.Height()),
-      MinimumValueForLength(style->ScrollPaddingRight(),
+      MinimumValueForLength(style.ScrollPaddingRight(),
                             visible_scroll_snapport.Width()),
-      MinimumValueForLength(style->ScrollPaddingBottom(),
+      MinimumValueForLength(style.ScrollPaddingBottom(),
                             visible_scroll_snapport.Height()),
-      MinimumValueForLength(style->ScrollPaddingLeft(),
+      MinimumValueForLength(style.ScrollPaddingLeft(),
                             visible_scroll_snapport.Width()));
 
   return visible_scroll_snapport;

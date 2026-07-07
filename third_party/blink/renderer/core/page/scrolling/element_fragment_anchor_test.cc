@@ -95,8 +95,8 @@ TEST_F(ElementFragmentAnchorTest, FocusHandlerRunBeforeRaf) {
   ASSERT_EQ(GetDocument()
                 .body()
                 ->GetLayoutObject()
-                ->Style()
-                ->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+                ->StyleRef()
+                .VisitedDependentColor(GetCSSPropertyBackgroundColor())
                 .NameForLayoutTreeAsText(),
             Color(255, 0, 0).NameForLayoutTreeAsText());
 
@@ -107,8 +107,8 @@ TEST_F(ElementFragmentAnchorTest, FocusHandlerRunBeforeRaf) {
   EXPECT_EQ(GetDocument()
                 .body()
                 ->GetLayoutObject()
-                ->Style()
-                ->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+                ->StyleRef()
+                .VisitedDependentColor(GetCSSPropertyBackgroundColor())
                 .NameForLayoutTreeAsText(),
             Color(0, 255, 0).NameForLayoutTreeAsText());
 }

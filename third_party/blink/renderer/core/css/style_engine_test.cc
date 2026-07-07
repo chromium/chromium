@@ -6380,8 +6380,8 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
   EXPECT_EQ("rgb(255, 0, 0)", custom_scrollbar->GetPart(kThumbPart)
-                                  ->Style()
-                                  ->BackgroundColor()
+                                  ->StyleRef()
+                                  .BackgroundColor()
                                   .GetColor()
                                   .SerializeAsCSSColor());
 
@@ -6389,8 +6389,8 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
   EXPECT_EQ("rgb(0, 128, 0)", custom_scrollbar->GetPart(kThumbPart)
-                                  ->Style()
-                                  ->BackgroundColor()
+                                  ->StyleRef()
+                                  .BackgroundColor()
                                   .GetColor()
                                   .SerializeAsCSSColor());
 }

@@ -345,13 +345,12 @@ static PhysicalRect GetVisibleRect(ScrollableArea* scroller) {
   auto visible_rect =
       ScrollerLayoutBox(scroller)->OverflowClipRect(PhysicalOffset());
 
-  const ComputedStyle* style = ScrollerLayoutBox(scroller)->Style();
+  const ComputedStyle& style = ScrollerLayoutBox(scroller)->StyleRef();
   visible_rect.ContractEdges(
-      MinimumValueForLength(style->ScrollPaddingTop(), visible_rect.Height()),
-      MinimumValueForLength(style->ScrollPaddingRight(), visible_rect.Width()),
-      MinimumValueForLength(style->ScrollPaddingBottom(),
-                            visible_rect.Height()),
-      MinimumValueForLength(style->ScrollPaddingLeft(), visible_rect.Width()));
+      MinimumValueForLength(style.ScrollPaddingTop(), visible_rect.Height()),
+      MinimumValueForLength(style.ScrollPaddingRight(), visible_rect.Width()),
+      MinimumValueForLength(style.ScrollPaddingBottom(), visible_rect.Height()),
+      MinimumValueForLength(style.ScrollPaddingLeft(), visible_rect.Width()));
   return visible_rect;
 }
 

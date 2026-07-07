@@ -311,14 +311,13 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
     // the URL bar movement). Test it for scrolling so that we only promote if
     // we know we won't block scrolling the main document.
     if (IsA<LayoutView>(ancestor)) {
-      const ComputedStyle* ancestor_style = ancestor->Style();
-      DCHECK(ancestor_style);
-
+      const ComputedStyle& ancestor_style = ancestor->StyleRef();
       PaintLayerScrollableArea* area = ancestor->GetScrollableArea();
       DCHECK(area);
 
-      if (ancestor_style->ScrollsOverflowY() && area->HasVerticalOverflow())
+      if (ancestor_style.ScrollsOverflowY() && area->HasVerticalOverflow()) {
         return false;
+      }
     } else {
       if (ancestor->ShouldClipOverflowAlongEitherAxis() ||
           ancestor->HasMask() || ancestor->HasClip() ||

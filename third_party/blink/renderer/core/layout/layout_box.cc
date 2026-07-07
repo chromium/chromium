@@ -685,7 +685,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       layer->ScrollContainerStatusChanged();
   }
 
-  UpdateShapeOutsideInfoAfterStyleChange(*Style(), old_style);
+  UpdateShapeOutsideInfoAfterStyleChange(new_style, old_style);
   UpdateGridPositionAfterStyleChange(old_style);
 
   if (old_style) {
@@ -893,7 +893,6 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
 void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
     const ComputedStyle& old_style) {
   NOT_DESTROYED();
-  DCHECK(Style());
   // scroll-snap-type and scroll-padding invalidate the snap container.
   if (old_style.GetScrollSnapType() != StyleRef().GetScrollSnapType() ||
       old_style.ScrollPaddingBottom() != StyleRef().ScrollPaddingBottom() ||

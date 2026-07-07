@@ -279,7 +279,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   if (!is_hidden_for_media_playback) {
     is_hidden_for_media_playback =
         (!owner_layout_object  // display:none
-         || owner_layout_object->Style()->Visibility() ==
+         || owner_layout_object->StyleRef().Visibility() ==
                 EVisibility::kHidden  // visibility:hidden
          || owner_layout_object->ReplacedContentRect()
                 .IsEmpty());  // zero-area layout
