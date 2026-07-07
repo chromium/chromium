@@ -203,3 +203,64 @@ source_set("isolated_browser_support") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  # Several *_unittest.cc files have file-scope statics of non-trivial-
+  # destructor types (e.g. std::wstring), which -Wexit-time-destructors
+  # rejects.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [
+    "chrome_elf_init_unittest.cc",
+    "isolated_browser_support_unittest.cc",
+    "jumplist_file_util_unittest.cc",
+    "jumplist_update_util_unittest.cc",
+    "registry_watcher_unittest.cc",
+    "remove_app_compat_entries_unittest.cc",
+    "taskbar_manager_unittest.cc",
+    "uninstallation_via_os_settings_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":isolated_browser_support",
+    ":jumplist",
+    ":registry_watcher",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/os_crypt",
+    "//chrome/chrome_elf:constants",
+    "//chrome/common:constants",
+    "//chrome/install_static:install_static_util",
+    "//chrome/install_static/test:test_support",
+    "//chrome/installer/util:with_no_strings",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/variations",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "isolated_browser_support_browsertest.cc" ]
+
+  deps = [
+    ":isolated_browser_support",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//chrome/install_static/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/prefs",
+    "//content/test:test_support",
+  ]
+}
