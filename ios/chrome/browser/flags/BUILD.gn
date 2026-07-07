@@ -75,6 +75,7 @@ source_set("flags") {
     "//components/variations/net",
     "//components/variations/service",
     "//components/wallet/core/common:features",
+    "//components/webauthn/ios:features",
     "//components/webui/flags",
     "//components/webui/flags:switches",
     "//ios/chrome/app:background_mode_buildflags",

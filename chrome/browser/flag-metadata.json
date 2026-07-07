@@ -6091,6 +6091,24 @@
     "expiry_milestone": 155
   },
   {
+    "name": "ios-passkey-conditional-login-with-shim",
+    "owners": [
+      "sugoi@google.com",
+      "tmartino@chromium.org",
+      "bling-transactions-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "ios-passkey-modal-login-with-shim",
+    "owners": [
+      "sugoi@google.com",
+      "tmartino@chromium.org",
+      "bling-transactions-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ios-password-manager-actor-login",
     "owners": ["ginnyhuang@chromium.org", "kaklilu@chromium.org"],
     "expiry_milestone": 160

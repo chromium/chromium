@@ -1066,6 +1066,18 @@ inline constexpr char kIOSOneTimeDefaultBrowserNotificationDescription[] =
     "Enables a one-time notification to prompt the user to set the app as the "
     "default browser.";
 
+inline constexpr char kIOSPasskeyConditionalLoginWithShimName[] =
+    "Conditional Passkey Login with JS Shim";
+inline constexpr char kIOSPasskeyConditionalLoginWithShimDescription[] =
+    "Enables conditional passkey logins via a Javascript shim, bypassing the "
+    "iOS Credential Provider Extension.";
+
+inline constexpr char kIOSPasskeyModalLoginWithShimName[] =
+    "Modal Passkey Login with JS Shim";
+inline constexpr char kIOSPasskeyModalLoginWithShimDescription[] =
+    "Enables modal passkey logins via a Javascript shim, bypassing the iOS "
+    "Credential Provider Extension.";
+
 inline constexpr char kIOSPasswordAutoSubmissionName[] =
     "Auto Submission for Password Autofill";
 inline constexpr char kIOSPasswordAutoSubmissionDescription[] =

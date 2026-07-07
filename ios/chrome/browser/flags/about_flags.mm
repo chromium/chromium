@@ -91,6 +91,7 @@
 #import "components/variations/net/variations_command_line.h"
 #import "components/variations/variations_switches.h"
 #import "components/wallet/core/common/wallet_features.h"
+#import "components/webauthn/ios/features.h"
 #import "components/webui/flags/feature_entry.h"
 #import "components/webui/flags/feature_entry_macros.h"
 #import "components/webui/flags/flags_storage.h"
@@ -2871,6 +2872,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-quizzes", flag_descriptions::kGeminiQuizzesName,
      flag_descriptions::kGeminiQuizzesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiQuizzes)},
+    {"ios-passkey-conditional-login-with-shim",
+     flag_descriptions::kIOSPasskeyConditionalLoginWithShimName,
+     flag_descriptions::kIOSPasskeyConditionalLoginWithShimDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSPasskeyConditionalLoginWithShim)},
+    {"ios-passkey-modal-login-with-shim",
+     flag_descriptions::kIOSPasskeyModalLoginWithShimName,
+     flag_descriptions::kIOSPasskeyModalLoginWithShimDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSPasskeyModalLoginWithShim)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
