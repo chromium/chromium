@@ -656,7 +656,7 @@ third_party/rust/chromium_crates_io/vendor/getrandom-v0_3
 third_party/rust/chromium_crates_io/vendor/getrandom-v0_4
 third_party/rust/chromium_crates_io/vendor/gimli-v0_32
 third_party/rust/chromium_crates_io/vendor/gimli-v0_32/src/read
-third_party/rust/chromium_crates_io/vendor/harfrust-v0_11/src/hb
+third_party/rust/chromium_crates_io/vendor/harfrust-v0_12/src/hb
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16/src
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_17
@@ -735,10 +735,10 @@ third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9/src
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_40/scripts
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_40/src/ps
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_40/src/ps/cff
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_40/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/scripts
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/ps
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/ps/cff
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/tables
 third_party/rust/chromium_crates_io/vendor/ref-cast-v1
 third_party/rust/chromium_crates_io/vendor/ref-cast-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4

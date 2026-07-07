@@ -6,7 +6,6 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 macro_rules! fixed_impl {
     ($name:ident, $bits:literal, $fract_bits:literal, $ty:ty) => {
         #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
-        #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         #[cfg_attr(feature = "bytemuck", derive(bytemuck::AnyBitPattern, bytemuck::NoUninit))]
         #[repr(transparent)]
         #[doc = concat!(stringify!($bits), "-bit signed fixed point number with ", stringify!($fract_bits), " bits of fraction." )]
@@ -268,7 +267,7 @@ macro_rules! fixed_mul_div_assign {
 /// We convert to different float types in order to ensure we can roundtrip
 /// without floating point error.
 macro_rules! float_conv {
-    // default invocation: we will impl Display/Default
+    // default invocation: we will impl Display/Default/Serialize/Deserialize
     ($name:ident, $to:ident, $from:ident, $ty:ty) => {
         float_conv!($name, $to, $from, $ty, no_fmt);
 
@@ -284,11 +283,32 @@ macro_rules! float_conv {
                 self.$to().fmt(f)
             }
         }
+
+        #[cfg(feature = "serde")]
+        impl ::serde::Serialize for $name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: ::serde::Serializer,
+            {
+                <$ty>::serialize(&$name::$to(*self), serializer)
+            }
+        }
+
+        #[cfg(feature = "serde")]
+        impl<'de> ::serde::Deserialize<'de> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: ::serde::Deserializer<'de>,
+            {
+                <$ty>::deserialize(deserializer).map($name::$from)
+            }
+        }
     };
-    // explicitly opt out of Display/Default (for types that get both f32 & f64)
+    // explicitly opt out of Display/Default/Serialize/Deserialize
+    // (for types that get both f32 & f64)
     ($name:ident, $to:ident, $from:ident, $ty:ty, no_fmt) => {
         impl $name {
-            #[doc = concat!("Creates a fixed point value from a", stringify!($ty), ".")]
+            #[doc = concat!("Creates a fixed point value from a ", stringify!($ty), ".")]
             ///
             /// This operation is lossy; the float will be rounded to the nearest
             /// representable value.
@@ -585,5 +605,96 @@ mod tests {
         assert_eq!(F26Dot6::ONE / F26Dot6::ONE, F26Dot6::ONE);
         assert_eq!(F26Dot6::ONE / F26Dot6::ZERO, F26Dot6(0x7FFFFFFF));
         assert_eq!(-F26Dot6::ONE / F26Dot6::ZERO, F26Dot6(-0x7FFFFFFF));
+    }
+
+    #[cfg(feature = "serde")]
+    mod serde {
+        use super::*;
+
+        macro_rules! roundtrip_one {
+            ($fixed:ident) => {{
+                let before = <$fixed>::ONE;
+                let serialized = ::serde_json::to_string(&before).expect("should serialize");
+                assert_eq!(&serialized, "1.0");
+                let after = ::serde_json::from_str(&serialized).expect("should deserialize");
+                assert_eq!(before, after);
+            }};
+        }
+
+        #[test]
+        fn one_is_one_f2dot14() {
+            roundtrip_one!(F2Dot14);
+        }
+
+        #[test]
+        fn one_is_one_f4dot12() {
+            roundtrip_one!(F4Dot12);
+        }
+
+        #[test]
+        fn one_is_one_f6dot10() {
+            roundtrip_one!(F6Dot10);
+        }
+
+        #[test]
+        fn one_is_one_fixed() {
+            roundtrip_one!(Fixed);
+        }
+
+        #[test]
+        fn one_is_one_f26dot6() {
+            roundtrip_one!(F26Dot6);
+        }
+
+        macro_rules! roundtrip_all {
+            ($fixed:ident, $ty:ty) => {
+                for raw in <$ty>::MIN..=<$ty>::MAX {
+                    let fixed = $fixed(raw);
+                    let fixed_float = fixed.to_f64();
+
+                    let json_value = ::serde_json::to_value(&fixed).expect("should serialize");
+                    let json_float = json_value
+                        .as_f64()
+                        .expect("serde didn't serialize the value to a float");
+
+                    // Normally directly comparing floats is flawed, but these
+                    // should have been converted to float using the exact same
+                    // method each, so I wouldn't expect them to be different
+                    assert_eq!(
+                        fixed_float,
+                        json_float,
+                        "failed on {raw} ({fixed_type}({raw:#X})): {json_float} != {fixed_float}",
+                        fixed_type = ::std::stringify!($fixed),
+                    );
+                }
+            };
+        }
+
+        #[test]
+        fn roundtrip_all_f2dot14() {
+            roundtrip_all!(F2Dot14, i16);
+        }
+
+        #[test]
+        fn roundtrip_all_f4dot12() {
+            roundtrip_all!(F4Dot12, i16);
+        }
+
+        #[test]
+        fn roundtrip_all_f6dot10() {
+            roundtrip_all!(F6Dot10, i16);
+        }
+
+        #[test]
+        #[ignore = "enumerating all i32 values takes a while"]
+        fn roundtrip_all_fixed() {
+            roundtrip_all!(Fixed, i32);
+        }
+
+        #[test]
+        #[ignore = "enumerating all i32 values takes a while"]
+        fn roundtrip_all_f26dot6() {
+            roundtrip_all!(F26Dot6, i32);
+        }
     }
 }

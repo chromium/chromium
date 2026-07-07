@@ -58,9 +58,9 @@ if (use_system_harfbuzz) {
     bindgen_deps = [ ":hb_rs_generator" ]
     deps = [
       "//third_party/rust/font_types/v0_12:lib",
-      "//third_party/rust/harfrust/v0_11:lib",
-      "//third_party/rust/read_fonts/v0_40:lib",
-      "//third_party/rust/skrifa/v0_43:lib",
+      "//third_party/rust/harfrust/v0_12:lib",
+      "//third_party/rust/read_fonts/v0_41:lib",
+      "//third_party/rust/skrifa/v0_44:lib",
       "//third_party/rust/smallvec/v1:lib",
     ]
   }
@@ -557,7 +557,7 @@ if (use_system_harfbuzz) {
     deps = [
       ":harfbuzz_rust",
       "//third_party/icu:icuuc",
-      "//third_party/rust/harfrust/v0_11:lib",
+      "//third_party/rust/harfrust/v0_12:lib",
     ]
 
     if (use_glib) {
