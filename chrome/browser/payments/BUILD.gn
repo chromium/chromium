@@ -34,6 +34,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/views/payments",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/common:version_header",

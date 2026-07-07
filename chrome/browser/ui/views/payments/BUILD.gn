@@ -1,0 +1,215 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("payments") {
+  public = [
+    "contact_info_editor_view_controller.h",
+    "editor_view_controller.h",
+    "error_message_view_controller.h",
+    "order_summary_view_controller.h",
+    "payment_handler_modal_dialog_manager_delegate.h",
+    "payment_handler_web_flow_view_controller.h",
+    "payment_method_view_controller.h",
+    "payment_request_dialog_view.h",
+    "payment_request_dialog_view_ids.h",
+    "payment_request_item_list.h",
+    "payment_request_row_view.h",
+    "payment_request_sheet_controller.h",
+    "payment_request_views_util.h",
+    "payment_sheet_view_controller.h",
+    "profile_list_view_controller.h",
+    "secure_payment_confirmation_dialog_view.h",
+    "secure_payment_confirmation_views_util.h",
+    "shipping_address_editor_view_controller.h",
+    "shipping_option_view_controller.h",
+    "validating_combobox.h",
+    "validating_textfield.h",
+    "validation_delegate.h",
+    "view_stack.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/picture_in_picture",
+    "//components/autofill/core/browser",
+    "//components/payments/content",
+    "//components/web_modal",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "contact_info_editor_view_controller.cc",
+    "editor_view_controller.cc",
+    "error_message_view_controller.cc",
+    "order_summary_view_controller.cc",
+    "payment_handler_modal_dialog_manager_delegate.cc",
+    "payment_handler_web_flow_view_controller.cc",
+    "payment_method_view_controller.cc",
+    "payment_request_dialog_view.cc",
+    "payment_request_item_list.cc",
+    "payment_request_row_view.cc",
+    "payment_request_sheet_controller.cc",
+    "payment_request_views_util.cc",
+    "payment_sheet_view_controller.cc",
+    "profile_list_view_controller.cc",
+    "secure_payment_confirmation_dialog_view.cc",
+    "secure_payment_confirmation_views_util.cc",
+    "shipping_address_editor_view_controller.cc",
+    "shipping_option_view_controller.cc",
+    "validating_combobox.cc",
+    "validating_textfield.cc",
+    "validation_delegate.cc",
+    "view_stack.cc",
+  ]
+
+  deps = [
+    ":payments",
+    "//chrome/browser:primitives",
+    "//chrome/browser/devtools",
+    "//chrome/browser/payments",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
+    "//components/payments/content",
+    "//components/payments/content:utils",
+    "//components/payments/content/icon",
+    "//components/payments/core:currency_formatter",
+    "//components/variations/service",
+  ]
+
+  # payment_handler_web_flow_view_controller.cc and
+  # payment_sheet_view_controller.cc include headers still built as part of
+  # //chrome/browser/ui:ui (browser_tabstrip.h, chrome_pages.h). Reach them via
+  # browser_public_dependencies; the reverse edge is expressed by the
+  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [
+    "test_chrome_payment_request_delegate.h",
+    "test_secure_payment_confirmation_payment_request_delegate.h",
+  ]
+
+  sources = [
+    "test_chrome_payment_request_delegate.cc",
+    "test_secure_payment_confirmation_payment_request_delegate.cc",
+  ]
+
+  public_deps = [ ":payments" ]
+
+  deps = [
+    "//chrome/browser/payments",
+    "//components/payments/core",
+    "//components/webauthn/content/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "payment_request_item_list_unittest.cc",
+    "validating_textfield_unittest.cc",
+    "view_stack_unittest.cc",
+  ]
+
+  deps = [
+    ":payments",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "contact_info_editor_view_controller_browsertest.cc",
+    "credit_card_editor_view_controller_browsertest.cc",
+    "empty_update_browsertest.cc",
+    "error_message_view_controller_browsertest.cc",
+    "modifiers_browsertest.cc",
+    "order_summary_view_controller_browsertest.cc",
+    "payment_handler_missing_icon_browsertest.cc",
+    "payment_handler_web_flow_view_browsertest.cc",
+    "payment_handler_window_size_browsertest.cc",
+    "payment_method_view_controller_browsertest.cc",
+    "payment_request_blob_url_browsertest.cc",
+    "payment_request_browsertest.cc",
+    "payment_request_browsertest_base.cc",
+    "payment_request_browsertest_base.h",
+    "payment_request_can_make_payment_metrics_browsertest.cc",
+    "payment_request_completion_status_metrics_browsertest.cc",
+    "payment_request_data_url_browsertest.cc",
+    "payment_request_journey_logger_browsertest.cc",
+    "payment_request_metrics_browsertest.cc",
+    "payment_request_no_update_with_browsertest.cc",
+    "payment_request_payment_app_browsertest.cc",
+    "payment_request_payment_response_browsertest.cc",
+    "payment_request_picture_in_picture_occlusion_browsertest.cc",
+    "payment_request_retry_browsertest.cc",
+    "payment_request_sheet_controller_browsertest.cc",
+    "payment_request_shipping_address_instance_browsertest.cc",
+    "payment_request_show_promise_browsertest.cc",
+    "payment_request_update_with_browsertest.cc",
+    "payment_request_use_stats_browsertest.cc",
+    "payment_request_window_size_browsertest.cc",
+    "payment_sheet_view_controller_browsertest.cc",
+    "profile_list_view_controller_browsertest.cc",
+    "secure_payment_confirmation_dialog_view_browsertest.cc",
+    "shipping_address_editor_view_controller_browsertest.cc",
+    "shipping_option_view_controller_browsertest.cc",
+  ]
+
+  deps = [
+    ":payments",
+    ":test_support",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/autofill",
+    "//chrome/browser/payments",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/payments:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/payments/content:test_support",
+    "//components/payments/content:utils",
+    "//components/payments/content/icon",
+    "//components/payments/core:test_support",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/views:test_support",
+  ]
+
+  if (use_ozone) {
+    # payment_request_window_size_browsertest.cc includes
+    # ui/ozone/public/ozone_platform.h behind BUILDFLAG(IS_OZONE).
+    deps += [ "//ui/ozone" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/system_web_apps" ]
+  }
+}

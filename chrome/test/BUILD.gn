@@ -4065,41 +4065,6 @@ if (!is_android) {
         "../browser/ui/views/passwords/password_cross_domain_confirmation_popup_view_views_browsertest.cc",
         "../browser/ui/views/passwords/password_dialog_view_browsertest.cc",
         "../browser/ui/views/passwords/password_generation_popup_view_views_browsertest.cc",
-        "../browser/ui/views/payments/contact_info_editor_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/credit_card_editor_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/empty_update_browsertest.cc",
-        "../browser/ui/views/payments/error_message_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/modifiers_browsertest.cc",
-        "../browser/ui/views/payments/order_summary_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/payment_handler_missing_icon_browsertest.cc",
-        "../browser/ui/views/payments/payment_handler_web_flow_view_browsertest.cc",
-        "../browser/ui/views/payments/payment_handler_window_size_browsertest.cc",
-        "../browser/ui/views/payments/payment_method_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_blob_url_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_browsertest_base.cc",
-        "../browser/ui/views/payments/payment_request_browsertest_base.h",
-        "../browser/ui/views/payments/payment_request_can_make_payment_metrics_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_completion_status_metrics_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_data_url_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_journey_logger_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_metrics_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_no_update_with_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_payment_app_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_payment_response_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_picture_in_picture_occlusion_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_retry_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_sheet_controller_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_shipping_address_instance_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_show_promise_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_update_with_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_use_stats_browsertest.cc",
-        "../browser/ui/views/payments/payment_request_window_size_browsertest.cc",
-        "../browser/ui/views/payments/payment_sheet_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/profile_list_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/secure_payment_confirmation_dialog_view_browsertest.cc",
-        "../browser/ui/views/payments/shipping_address_editor_view_controller_browsertest.cc",
-        "../browser/ui/views/payments/shipping_option_view_controller_browsertest.cc",
         "../browser/ui/views/permissions/embedded_permission_prompt_uitest.cc",
         "../browser/ui/views/permissions/exclusive_access_permission_prompt_browsertest.cc",
         "../browser/ui/views/permissions/permission_prompt_base_view_browsertest.cc",
@@ -4234,6 +4199,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/desktop_capture:browser_tests",
         "//chrome/browser/ui/views/global_media_controls:browser_tests",
         "//chrome/browser/ui/views/infobars",
+        "//chrome/browser/ui/views/payments:browser_tests",
         "//chrome/browser/ui/views/performance_controls:browser_tests",
         "//chrome/browser/ui/views/permissions:permission_prompt_observer",
         "//chrome/browser/ui/views/permissions/chip",
@@ -4262,9 +4228,17 @@ if (!is_android) {
           [ "//chrome/browser/ui/lens:browser_tests" ]
     }
 
+    # TODO(crbug.com/353332589): Move this browsertest into
+    # //chrome/browser/ui/views/payments:browser_tests. It is left here for now
+    # because its "!is_android || enable_vr" guard interacts with the
+    # browser_tests target's conditional structure, and moving it risks
+    # regressions unrelated to the rest of the payments modularization.
     if (!is_android || enable_vr) {
       sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
-      deps += [ "//components/payments/content/icon" ]
+      deps += [
+        "//chrome/browser/ui/views/payments",
+        "//components/payments/content/icon",
+      ]
     }
 
     if ((is_linux || is_chromeos) && !is_component_build) {
@@ -6996,6 +6970,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/views/page_action:unit_tests",
       "//chrome/browser/ui/views/passwords:test_support",
+      "//chrome/browser/ui/views/payments:unit_tests",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/vertical:unit_tests",
       "//chrome/browser/ui/views/toolbar:unit_tests",
@@ -8479,9 +8454,6 @@ test("unit_tests") {
       "../browser/ui/views/page_info/page_info_permission_content_view_unittest.cc",
       "../browser/ui/views/page_info/safety_tip_page_info_bubble_view_unittest.cc",
       "../browser/ui/views/page_info/star_rating_view_unittest.cc",
-      "../browser/ui/views/payments/payment_request_item_list_unittest.cc",
-      "../browser/ui/views/payments/validating_textfield_unittest.cc",
-      "../browser/ui/views/payments/view_stack_unittest.cc",
       "../browser/ui/views/permissions/chip/multi_image_container_unittest.cc",
       "../browser/ui/views/permissions/chip/permission_chip_unittest.cc",
       "../browser/ui/views/permissions/chip/permission_dashboard_unittest.cc",
