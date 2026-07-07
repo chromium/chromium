@@ -26,12 +26,13 @@ Large padding of 75512 between:
 Large padding of 8168 between:
   A) .text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=$SYSTEM/container.c,flags={gen,clone},num_aliases=3,component=)
   B) .text@2a2000(size_without_padding=8,padding=8168,full_name=OUTLINED_FUNCTION_0,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
-Section .rodata: has 100.0% of 5927652 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
+Section .rodata: has 66.8% of 3962212 bytes accounted for from 3 symbols. 1965440 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
-* 1 placeholders exist (symbols that start with **). Accounts for 5927652 bytes (100.0%).
+* 1 placeholders exist (symbols that start with **). Accounts for 3962172 bytes (100.0%).
 * 0 string literals exist. Accounts for 0 bytes (0.0%) padding is 0 bytes.
+* 2 aliases exist, mapped to 1 unique addresses (40 bytes saved)
 * 0 symbols have shared ownership.
 Section .data.rel.ro: has 100.0% of 1065224 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
@@ -39,11 +40,11 @@ Section .data.rel.ro: has 100.0% of 1065224 bytes accounted for from 1 symbols. 
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 1 placeholders exist (symbols that start with **). Accounts for 1065224 bytes (100.0%).
 * 0 symbols have shared ownership.
-Section .data: has 100.0% of 101768 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
+Section .data: has 99.8% of 101600 bytes accounted for from 4 symbols. 168 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
-* 1 placeholders exist (symbols that start with **). Accounts for 101768 bytes (100.0%).
+* 1 placeholders exist (symbols that start with **). Accounts for 101588 bytes (100.0%).
 * 0 symbols have shared ownership.
 Section .bss: has 100.0% of 1300456 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
@@ -77,10 +78,8 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 by
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 19 placeholders exist (symbols that start with **). Accounts for 4440500 bytes (4.9%).
 * 0 symbols have shared ownership.
-.data@0(size_without_padding=101768,padding=0,full_name=** ELF Section: .data,object_path=,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro@0(size_without_padding=1065224,padding=0,full_name=** ELF Section: .data.rel.ro,object_path=,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro.local@0(size_without_padding=790024,padding=0,full_name=** ELF Section: .data.rel.ro.local,object_path=,source_path=,flags={},num_aliases=1,component=)
-.rodata@0(size_without_padding=5927652,padding=0,full_name=** ELF Section: .rodata,object_path=,source_path=,flags={},num_aliases=1,component=)
 .text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=1,component=)
 .text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=2,component=)
 .text@2a0000(size_without_padding=16,padding=75512,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=$SYSTEM/container.c,flags={gen},num_aliases=2,component=)
@@ -92,6 +91,13 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 by
 .text@2a2128(size_without_padding=248,padding=0,full_name=AssemblySymbol,object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@2a2220(size_without_padding=264,padding=0,full_name=aliasedWithOutlinedFunction(),object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@2a2328(size_without_padding=35897728,padding=0,full_name=** .text (unattributed),object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
+.rodata@284e370(size_without_padding=40,padding=0,full_name=Name,object_path=,source_path=,flags={},num_aliases=2,component=)
+.rodata@284e370(size_without_padding=40,padding=0,full_name=NameAlias,object_path=,source_path=,flags={},num_aliases=2,component=)
+.rodata@284e398(size_without_padding=3962172,padding=0,full_name=** .rodata (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+.data@2de70a8(size_without_padding=4,padding=0,full_name=thinlto_dummy,object_path=,source_path=,flags={},num_aliases=1,component=)
+.data@2de70ac(size_without_padding=4,padding=0,full_name=thinlto1_dummy,object_path=,source_path=,flags={},num_aliases=1,component=)
+.data@2de70b0(size_without_padding=4,padding=0,full_name=thinlto2_dummy,object_path=,source_path=,flags={},num_aliases=1,component=)
+.data@2de70b4(size_without_padding=101588,padding=0,full_name=** .data (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@0(size_without_padding=1300456,padding=0,full_name=** ELF Section: .bss,object_path=,source_path=,flags={},num_aliases=1,component=)
 .part.end@0(size_without_padding=16,padding=0,full_name=** ELF Section: .part.end,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=,flags={},num_aliases=1,component=)

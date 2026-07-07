@@ -23,6 +23,11 @@ _ELF_OUTPUT = """002b6e20 t $t
 002a2020 t OUTLINED_FUNCTION_2
 002a2020 t aliasedWithOutlinedFunction()
 002b6bb8 t $t.22
+0284e370 r Name
+0284e370 r NameAlias
+02de70a8 d thinlto_dummy
+02de70ac d thinlto1_dummy
+02de70b0 d thinlto2_dummy
 """.format(_SHRINK_TO_FIT_CLONE)
 
 _ELF_OUTPUT_WITH_SIZE = """002b6e20 t $t
@@ -42,6 +47,11 @@ _ELF_OUTPUT_WITH_SIZE = """002b6e20 t $t
 002a2138 t .assembly_label
 002a2220 00000108 t aliasedWithOutlinedFunction()
 002b6bb8 00000000 t $t.22
+0284e370 00000028 r Name
+0284e370 00000028 r NameAlias
+02de70a8 00000004 d thinlto_dummy
+02de70ac 00000004 d thinlto1_dummy
+02de70b0 00000004 d thinlto2_dummy
 """.format(_SHRINK_TO_FIT_CLONE)
 _SHRINK_TO_FIT = ('blink::ContiguousContainerBase::shrinkToFit() '
                   '[clone .part.1234] [clone .isra.2]')
@@ -96,10 +106,24 @@ _OBJECT_OUTPUTS = {
         _ALLOWLIST_RESOURCE.format(20289),
         '01010101 t extFromUUseMapping(aj, int)',
         '01010101 t extFromUUseMapping(signed char, unsigned int, int)',
-        '01010101 t Name',
+        '01010101 r Name',
+        '01010101 r NameAlias',
         '01010101 v vtable for mojo::MessageReceiver',
         '01010101 r kMethodsAnimationFrameTimeHistogram (.llvm.12341234)',
-        '01010101 r google::protobuf::internal::pLinuxKernelCmpxchg',
+        '01010101 r google::protobuf::internal::pLinuxKernelCmpxchg.490f3479656f7a156e853d39281f6211',
+        '01010101 r _RNvNtNtNtNtNtCsa8PzCPyefMM_4core3num3imp7flt2dec8strategy6dragon5POW10',
+    ],
+    'obj/base/base/thinlto.o': [
+        '01010101 r ThinLtoUniqueKnown',
+        '01010101 d thinlto_dummy',
+    ],
+    'obj/base/base/thinlto1.o': [
+        '01010101 r ThinLtoAmbigKnown1',
+        '01010101 d thinlto1_dummy',
+    ],
+    'obj/base/base/thinlto2.o': [
+        '01010101 r ThinLtoAmbigKnown2',
+        '01010101 d thinlto2_dummy',
     ],
     'obj/third_party/ffmpeg/libffmpeg_internal.a': [
         '',

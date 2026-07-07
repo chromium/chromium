@@ -13,9 +13,22 @@ import subprocess
 import path_util
 
 _LOWER_HEX_PATTERN = re.compile(r'^[0-9a-f]*$')
+# Matches LLVM promoted global names suffix in demangled names.
+# E.g. matches the suffix in:
+#   "foo (.llvm.1234)"
+#   "foo (.490f3479656f7a156e853d39281f6211)"
+#   "foo (.1.llvm.1234)"
+#   "foo (.1.490f3479656f7a156e853d39281f6211)"
 _PROMOTED_GLOBAL_NAME_DEMANGLED_PATTERN = re.compile(
-    r' \((\.\d+)?\.llvm\.\d+\)$')
-_PROMOTED_GLOBAL_NAME_RAW_PATTERN = re.compile(r'(\.\d+)?\.llvm\.\d+$')
+    r' \((\.\d+)?(?:\.llvm\.\d+|\.[0-9a-f]{16,32})\)$')
+# Matches LLVM promoted global names suffix in raw (mangled) names.
+# E.g. matches the suffix in:
+#   "_ZN3fooEv.llvm.1234"
+#   "_ZN3fooEv.490f3479656f7a156e853d39281f6211"
+#   "_ZN3fooEv.1.llvm.1234"
+#   "_ZN3fooEv.1.490f3479656f7a156e853d39281f6211"
+_PROMOTED_GLOBAL_NAME_RAW_PATTERN = re.compile(
+    r'(\.\d+)?(?:\.llvm\.\d+|\.[0-9a-f]{16,32})$')
 
 def StripLlvmPromotedGlobalNames(name):
   """Strips LLVM promoted global names suffix, and returns the result.
@@ -26,16 +39,16 @@ def StripLlvmPromotedGlobalNames(name):
   ' (.1.llvm.1234)'. Otherwise the suffix is left as is. This function strips
   the suffix to prevent it from intefering with name comparison.
   """
-  llvm_pos = name.find('.llvm.')
-  if llvm_pos < 0:
-    return name  # Handles most cases.
+  if '.' not in name:
+    return name
   if name.endswith(')'):
     return _PROMOTED_GLOBAL_NAME_DEMANGLED_PATTERN.sub('', name)
   return _PROMOTED_GLOBAL_NAME_RAW_PATTERN.sub('', name)
 
 
 def _CanDemangle(name):
-  return name.startswith('_Z') or name.startswith('.Lswitch.table._Z')
+  return (name.startswith('_Z') or name.startswith('.Lswitch.table._Z')
+          or name.startswith('_R'))
 
 
 def _ExtractDemanglablePart(names):

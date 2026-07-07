@@ -6,3 +6,6 @@ build obj/third_party/sub/fft_float.o: rule ../../third_party/fft_float.cc
 build obj/third_party/sub/fft_fixed.o: rule ../../third_party/fft_fixed.cc
 build obj/third_party/sub/ContiguousContainer.o: rule ../../third_party/container/container.c
 build obj/third_party/sub/PaintChunker.o: rule ../../third_party/paint.cc
+build obj/base/base/thinlto.o: rule ../../base/thinlto.cc
+build obj/base/base/thinlto1.o: rule ../../base/thinlto1.cc
+build obj/base/base/thinlto2.o: rule ../../base/thinlto2.cc

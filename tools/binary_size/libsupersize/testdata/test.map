@@ -118,9 +118,21 @@ Memory map
  .rodata.Name
                 0x0284e370       0x28 obj/base/base/page_allocator.o
                 0x0284e370                Name
+                0x0284e370                .Lanon.group_test
  .rodata._ZN6chrome5mojom11FilePatcher5Name_E
                 0x0284e398       0x20 obj/third_party/WebKit.a(sub/ContiguousContainer.o)
                 0x0284e398                chrome::mojom::FilePatcher::Name_
+ .rodata._RNvNtNtNtNtNtCsa8PzCPyefMM_4core3num3imp7flt2dec8strategy6dragon5POW10
+                0x0284e3b8       0x10 obj/base/base/page_allocator.o
+                0x0284e3b8                _RNvNtNtNtNtNtCsa8PzCPyefMM_4core3num3imp7flt2dec8strategy6dragon5POW10
+                0x0284e3c8       0x40 thinlto-cache/Thin-unique.tmp.o:(.rodata.thinlto_unique)
+                0x0284e3c8       0x10         ThinLtoUniqueKnown
+                0x0284e3d8       0x30         .Lanon.thinlto_unique_unknown
+                0x0284e408      0x110 thinlto-cache/Thin-ambig.tmp.o:(.rodata.thinlto_ambig)
+                0x0284e408       0x10         ThinLtoAmbigKnown1
+                0x0284e418       0x10         ThinLtoAmbigKnown2
+                0x0284e428       0x50         .Lanon.thinlto_ambig_small
+                0x0284e478       0xa0         .Lanon.thinlto_ambig_large
  .rodata._ZN12_GLOBAL__N_1L37kAnimationFrameTimeHistogramClassPathE
                 0x028f3450       0x30 obj/third_party/WebKit.a(./../third_party/sub/PaintChunker.o)
  .rodata._ZZN10_GLOBAL__N5blink20CSSValueKeywordsHash13findValueImplEPKcjE15value_word_list
@@ -183,6 +195,15 @@ Memory map
                 0x02de70a0        0x4 obj/third_party/WebKit.a(sub/ContiguousContainer.o)
  .data.rel.local._ZN4base7android12_GLOBAL__N_124g_library_version_numberE
                 0x02de70a4        0x4 obj/third_party/WebKit.a(sub/ContiguousContainer.o)
+ .data.thinlto_dummy
+                0x02de70a8        0x4 obj/base/base/thinlto.o
+                0x02de70a8                thinlto_dummy
+ .data.thinlto1_dummy
+                0x02de70ac        0x4 obj/base/base/thinlto1.o
+                0x02de70ac                thinlto1_dummy
+ .data.thinlto2_dummy
+                0x02de70b0        0x4 obj/base/base/thinlto2.o
+                0x02de70b0                thinlto2_dummy
 
 .bss            0x02dffda0   0x13d7e8
  .bss.g_chrome_content_browser_client

@@ -40,10 +40,10 @@ Other section sizes:
     .plt: 0 bytes (0 bytes) (counted in .other)
     .rel.plt: 0 bytes (0 bytes) (counted in .other)
 
-2 symbols added (+), 1 changed (~), 3 removed (-), 264 unchanged (not shown)
+2 symbols added (+), 1 changed (~), 3 removed (-), 268 unchanged (not shown)
 Added/Removed by section: .data: +2 .pak.translations: -3
 Of changed symbols, 3 grew, 3 shrank
-Number of unique symbols 272 -> 271 (-1)
+Number of unique symbols 276 -> 275 (-1)
 0 paths added, 0 removed, 1 changed
 Changed files:
   third_party/container/container.c

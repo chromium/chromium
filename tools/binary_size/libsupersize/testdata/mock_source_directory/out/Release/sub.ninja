@@ -1,3 +1,3 @@
 build obj/third_party/ffmpeg/libffmpeg_internal.a: alink obj/third_party/sub/fft_fixed.o obj/third_party/sub/fft_float.o | bar
 build obj/third_party/WebKit.a: alink obj/third_party/sub/PaintChunker.o obj/third_party/sub/ContiguousContainer.o
-build a b c d elf: link obj/base/base/page_allocator.o obj/third_party/WebKit.a || dum dee doo dee
+build a b c d elf: link obj/base/base/page_allocator.o obj/base/base/thinlto.o obj/base/base/thinlto1.o obj/base/base/thinlto2.o obj/third_party/WebKit.a || dum dee doo dee

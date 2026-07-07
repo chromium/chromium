@@ -23,29 +23,29 @@ Section .text: has 100.0% of 35982248 bytes accounted for from 23 symbols. 0 byt
 * 4 symbols are marked as "startup". Accounts for 128 bytes (0.0%).
 * 3 symbols are clones. Accounts for 106 bytes (0.0%).
 * 5 symbols are from generated sources. Accounts for 69660 bytes (0.2%).
-Section .rodata: has 100.0% of 5927636 bytes accounted for from 12 symbols. 16 bytes are unaccounted for.
-* Padding accounts for 2637946 bytes (44.5%)
-* 8 have source paths. Accounts for 676149 bytes (11.4%).
-* 8 have a component assigned. Accounts for 676149 bytes (11.4%).
+Section .rodata: has 100.0% of 5927636 bytes accounted for from 14 symbols. 16 bytes are unaccounted for.
+* Padding accounts for 2637930 bytes (44.5%)
+* 10 have source paths. Accounts for 676149 bytes (11.4%).
+* 10 have a component assigned. Accounts for 676149 bytes (11.4%).
 * 4 placeholders exist (symbols that start with **). Accounts for 5251487 bytes (88.6%).
 * 3 string literals exist. Accounts for 21 bytes (0.0%) padding is 0 bytes.
-* 2 aliases exist, mapped to 1 unique addresses (5 bytes saved)
+* 4 aliases exist, mapped to 2 unique addresses (45 bytes saved)
 * 0 symbols have shared ownership.
 * 2 symbols are from generated sources. Accounts for 21 bytes (0.0%).
-Large padding of 675992 between:
-  A) .rodata@284e398(size_without_padding=32,padding=0,full_name=chrome::mojom::FilePatcher::Name_,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=ContainerOverride)
-  B) .rodata@28f3450(size_without_padding=48,padding=675992,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
+Large padding of 675976 between:
+  A) .rodata@284e3b8(size_without_padding=16,padding=0,full_name=core::num::imp::flt2dec::strategy::dragon::POW10,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
+  B) .rodata@28f3450(size_without_padding=48,padding=675976,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
 Section .data.rel.ro: has 100.0% of 1065224 bytes accounted for from 4 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
 * 3 have source paths. Accounts for 92 bytes (0.0%).
 * 3 have a component assigned. Accounts for 92 bytes (0.0%).
 * 1 placeholders exist (symbols that start with **). Accounts for 1065132 bytes (100.0%).
 * 0 symbols have shared ownership.
-Section .data: has 100.0% of 101768 bytes accounted for from 6 symbols. 0 bytes are unaccounted for.
+Section .data: has 100.0% of 101768 bytes accounted for from 9 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
-* 5 have source paths. Accounts for 168 bytes (0.2%).
-* 5 have a component assigned. Accounts for 168 bytes (0.2%).
-* 1 placeholders exist (symbols that start with **). Accounts for 101600 bytes (99.8%).
+* 8 have source paths. Accounts for 180 bytes (0.2%).
+* 8 have a component assigned. Accounts for 180 bytes (0.2%).
+* 1 placeholders exist (symbols that start with **). Accounts for 101588 bytes (99.8%).
 * 0 symbols have shared ownership.
 Section .bss: has 0.0% of 255 bytes accounted for from 6 symbols. 1300201 bytes are unaccounted for.
 * Padding accounts for 207 bytes (81.2%)
@@ -109,9 +109,11 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 by
 .rodata@284d600(size_without_padding=3425,padding=1961920,full_name=** merge constants,object_path=,source_path=,flags={},num_aliases=1,component=)
 .rodata@284e364(size_without_padding=0,padding=3,full_name=** symbol gap 0,object_path=,source_path=,flags={},num_aliases=1,component=)
 .rodata@284e364(size_without_padding=8,padding=0,full_name=,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
-.rodata@284e370(size_without_padding=40,padding=4,full_name=Name,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
+.rodata@284e370(size_without_padding=40,padding=4,full_name=Name,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal)
+.rodata@284e370(size_without_padding=40,padding=4,full_name=NameAlias,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal)
 .rodata@284e398(size_without_padding=32,padding=0,full_name=chrome::mojom::FilePatcher::Name_,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=ContainerOverride)
-.rodata@28f3450(size_without_padding=48,padding=675992,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
+.rodata@284e3b8(size_without_padding=16,padding=0,full_name=core::num::imp::flt2dec::strategy::dragon::POW10,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
+.rodata@28f3450(size_without_padding=48,padding=675976,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
 .rodata@28f3480(size_without_padding=4,padding=0,full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
 .rodata@28f3484(size_without_padding=3286096,padding=0,full_name=** .rodata (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro.local@2c176f0(size_without_padding=56,padding=0,full_name=ChromeMainDelegate [vtable],object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
@@ -128,7 +130,10 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 by
 .data@2de7008(size_without_padding=152,padding=0,full_name=base::android::kBaseRegisteredMethods,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={rel},num_aliases=1,component=ContainerOverride)
 .data@2de70a0(size_without_padding=4,padding=0,full_name=base::android::g_renderer_histogram_code,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={anon},num_aliases=1,component=ContainerOverride)
 .data@2de70a4(size_without_padding=4,padding=0,full_name=base::android::g_library_version_number,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={anon,rel.loc},num_aliases=1,component=ContainerOverride)
-.data@2de70a8(size_without_padding=101600,padding=0,full_name=** .data (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+.data@2de70a8(size_without_padding=4,padding=0,full_name=thinlto_dummy,object_path=base/base/thinlto.o,source_path=base/thinlto.cc,flags={},num_aliases=1,component=Blink>Internal)
+.data@2de70ac(size_without_padding=4,padding=0,full_name=thinlto1_dummy,object_path=base/base/thinlto1.o,source_path=base/thinlto1.cc,flags={},num_aliases=1,component=Blink>Internal)
+.data@2de70b0(size_without_padding=4,padding=0,full_name=thinlto2_dummy,object_path=base/base/thinlto2.o,source_path=base/thinlto2.cc,flags={},num_aliases=1,component=Blink>Internal)
+.data@2de70b4(size_without_padding=101588,padding=0,full_name=** .data (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
 .part.end@0(size_without_padding=16,padding=0,full_name=** ELF Section: .part.end,object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@2dffda0(size_without_padding=28,padding=0,full_name=g_chrome_content_browser_client,object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
 .bss@2dffe80(size_without_padding=4,padding=196,full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer,object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)

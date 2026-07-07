@@ -16,6 +16,7 @@ file uses "coded linker name" to identify formats and variants:
 """
 
 import argparse
+import bisect
 import code
 import collections
 import gzip
@@ -358,6 +359,88 @@ class MapFileParserGold:
         raise
 
 
+def _SymbolNameScore(name):
+  """Assigns a score to a symbol name to prefer better names."""
+  if not name:
+    return 0
+  # Local label (e.g., '.Lanon...')
+  if name.startswith('.L'):
+    return 1
+  # Compiler temp (e.g., '$x.3') or section/dot symbol (e.g., '.text')
+  if name.startswith('.') or name.startswith('$'):
+    return 2
+  # Mangled C++ or Rust symbol (e.g., '_ZN4absl...', '_RNv...')
+  if name.startswith(('_Z', '_R')):
+    return 4
+  # Demangled C++ or Rust symbol (e.g., 'absl::strings_internal::kFiveToNth')
+  return 3
+
+
+def _ProcessLevel3Buffer(buffer):
+  """Processes a buffer of Level 3 symbols at the same address.
+
+  Given buffer = (line, address (same), size, level=3, span, tok), selects the
+  symbol with the best name (highest score) and assigns it the total span of
+  all symbols in the buffer.
+
+  Example input buffer:
+    [
+      (line1, 0x8ddbdc, 0, 3, 0, 'absl::strings_internal::kFiveToNth'),
+      (line2, 0x8ddbdc, 0, 3, 56, '.Lanon.d62e5daa0d7e5ad74addcc3f8be9d01e.43')
+    ]
+  Example output:
+    (line1, 0x8ddbdc, 0, 3, 56, 'absl::strings_internal::kFiveToNth')
+  """
+  if len(buffer) == 1:
+    return buffer[0]
+
+  best_entry = buffer[0]
+  best_score = _SymbolNameScore(best_entry[5])
+  for entry in buffer[1:]:
+    score = _SymbolNameScore(entry[5])
+    if score >= best_score:
+      best_score = score
+      best_entry = entry
+
+  total_span = buffer[-1][4]
+  return (best_entry[0], best_entry[1], best_entry[2], 3, total_span,
+          best_entry[5])
+
+
+def _GroupLevel3(tokenizer):
+  """Groups Level 3 symbols at the same address.
+
+  This generator wraps the tokenizer and yields only one representative
+  symbol for each address, choosing the best name and summing the spans.
+
+  Example:
+    If tokenizer yields:
+      - Level 2: ...
+      - Level 3: 0x8ddbdc, span 0, 'kFiveToNth'
+      - Level 3: 0x8ddbdc, span 56, '.Lanon...43'
+      - Level 3: 0x8ddc14, ...
+    This generator will yield:
+      - Level 2: ...
+      - Level 3: 0x8ddbdc, span 56, 'kFiveToNth'
+      - Level 3: 0x8ddc14, ...
+  """
+  buffer = []
+  for entry in tokenizer:
+    level = entry[3]
+    if level == 3:
+      if buffer and buffer[0][1] != entry[1]:
+        yield _ProcessLevel3Buffer(buffer)
+        buffer = []
+      buffer.append(entry)
+    else:
+      if buffer:
+        yield _ProcessLevel3Buffer(buffer)
+        buffer = []
+      yield entry
+  if buffer:
+    yield _ProcessLevel3Buffer(buffer)
+
+
 class MapFileParserLld:
   """Parses a linker map file from LLD."""
   # Map file writer for LLD linker (for ELF):
@@ -519,7 +602,7 @@ class MapFileParserLld:
     # instead of being in Symbol.
     thin_map = {}
 
-    tokenizer = self.Tokenize(lines)
+    tokenizer = _GroupLevel3(self.Tokenize(lines))
 
     in_jump_table = False
     jump_tables_count = 0
@@ -598,7 +681,7 @@ class MapFileParserLld:
               cur_obj = None
             elif (cur_obj == 'lto.tmp' or 'thinlto-cache' in cur_obj
                   or '.lto.' in cur_obj):
-              thin_map[address] = os.path.basename(cur_obj)
+              thin_map[address] = (size, os.path.basename(cur_obj))
               cur_obj = None
 
           # Create a symbol here since there may be no ensuing Level 3 lines.
@@ -796,19 +879,38 @@ def ParseFile(path):
     return ParseLines(f)
 
 
-def DeduceObjectPathsFromThinMap(raw_symbols, extras):
-  """Uses Thin-LTO object paths to find object_paths of symbols. """
-  thin_map = extras.get('thin_map', None)  # |address| -> |thin_obj|
+def _FindThinObj(address, thin_map, thin_map_keys):
+  """Finds the ThinLTO object file containing the given address.
+
+  Args:
+    address: The address to look up.
+    thin_map: A dict of |address| -> |(size, thin_obj)|.
+    thin_map_keys: A sorted list of keys in |thin_map|.
+  """
+  idx = bisect.bisect_right(thin_map_keys, address) - 1
+  if idx >= 0:
+    start_address = thin_map_keys[idx]
+    size, thin_obj = thin_map[start_address]
+    if address < start_address + size:
+      return thin_obj
+  return None
+
+
+def ProcessThinLtoPaths(raw_symbols, extras):
+  """Corrects paths and creates aliases for symbols with ThinLTO paths."""
+  thin_map = extras.get('thin_map', None)  # |address| -> |(size, thin_obj)|
   if not thin_map:  # None or empty.
     logging.info('No thin-object-path found: Skipping object path deduction.')
-    return
+    return raw_symbols
+
+  thin_map_keys = sorted(thin_map.keys())
 
   # Build map of |thin_obj| -> |object_paths|.
   thin_obj_to_object_paths = collections.defaultdict(set)
   logging.info('Building map of thin-object-path -> object path.')
   for symbol in raw_symbols:
     if symbol.object_path:
-      thin_obj = thin_map.get(symbol.address, None)
+      thin_obj = _FindThinObj(symbol.address, thin_map, thin_map_keys)
       if thin_obj:
         thin_obj_to_object_paths[thin_obj].add(symbol.object_path)
 
@@ -819,20 +921,42 @@ def DeduceObjectPathsFromThinMap(raw_symbols, extras):
   logging.info('Assigning object paths to using ThinLTO paths.')
   ref_tmp_popu = [0] * 3
   ref_tmp_pss = [0] * 3
+  num_aliases = 0
+  pss_aliases = 0
+  num_omitted_aliases = 0
+  pss_omitted_aliases = 0
+  ret = []
   for symbol in raw_symbols:
+    ret.append(symbol)
     if not symbol.object_path:
-      thin_obj = thin_map.get(symbol.address)
+      thin_obj = _FindThinObj(symbol.address, thin_map, thin_map_keys)
       # Ignore non-native symbols.
       if thin_obj:
         count = 0
         object_paths = thin_obj_to_object_paths.get(thin_obj)
         if object_paths is not None:
           count = min(len(object_paths), 2)  # 2+ maps to 2.
-          # We could create path aliases when count > 1, but it wouldn't
-          # necessarily be correct. That occurs when *another* symbol from the
-          # same .o file contains a path alias, but not necessarily this symbol.
           if count == 1:
             symbol.object_path = next(iter(object_paths))
+          elif count > 1:
+            # Impose size limit to prevent trivial symbols proliferation.
+            # In 2026-07 this trimmed symbols from 2,726,424 to 1,975,845.
+            cur_num_aliases = len(object_paths)
+            if symbol.size / cur_num_aliases > 20:
+              num_aliases += cur_num_aliases - 1
+              pss_aliases += symbol.pss
+              sorted_paths = sorted(object_paths)
+              symbol.object_path = sorted_paths[0]
+              for path in sorted_paths[1:]:
+                new_sym = models.Symbol(symbol.section_name,
+                                        symbol.size,
+                                        address=symbol.address,
+                                        full_name=symbol.full_name,
+                                        object_path=path)
+                ret.append(new_sym)
+            else:
+              num_omitted_aliases += 1
+              pss_omitted_aliases += symbol.pss
         ref_tmp_popu[count] += 1
         ref_tmp_pss[count] += symbol.pss
 
@@ -847,6 +971,11 @@ def DeduceObjectPathsFromThinMap(raw_symbols, extras):
                ref_tmp_popu[1], ref_tmp_pss[1])
   logging.info('  Ambiguous (2+ object paths): %d symbols with total PSS = %d',
                ref_tmp_popu[2], ref_tmp_pss[2])
+  logging.info('  Created %d aliases covering %d bytes', num_aliases,
+               pss_aliases)
+  logging.info('  Skipped aliases for %d small symbols, covering %d bytes',
+               num_omitted_aliases, pss_omitted_aliases)
+  return ret
 
 
 def main():

@@ -575,8 +575,8 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
             raw_symbols[idx:idx + 1] = literal_syms
 
   if native_spec.map_path:
-    linker_map_parser.DeduceObjectPathsFromThinMap(raw_symbols,
-                                                   linker_map_extras)
+    raw_symbols = linker_map_parser.ProcessThinLtoPaths(raw_symbols,
+                                                        linker_map_extras)
 
   if native_spec.elf_path and native_spec.track_string_literals:
     sym_and_string_literals = string_extract.ReadStringLiterals(
