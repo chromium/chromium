@@ -1074,5 +1074,145 @@ TEST_F(DeclarativePerformanceObserverTest,
   EXPECT_EQ(reports.size(), 0u);
 }
 
+TEST_F(DeclarativePerformanceObserverTest, DocumentBufferLimitEnforced) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(network::mojom::PerformanceEntryType::kMark);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+
+  // Bind Mojo remote
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  // 1. Send first entry just under 640KB limit (e.g. 400KB detail string)
+  {
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
+    entry->name = "mark_1";
+    entry->start_time = base::Milliseconds(100);
+    base::DictValue detail_dict;
+    detail_dict.Set("payload", std::string(400 * 1024, 'a'));
+    entry->detail = base::Value(std::move(detail_dict));
+    entries.push_back(std::move(entry));
+
+    observer_remote->DidObservePerformanceEntries(std::move(entries));
+    observer_remote.FlushForTesting();
+  }
+
+  // 2. Send second entry (e.g. 300KB detail string) which pushes total above
+  // 640KB
+  {
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
+    entry->name = "mark_2";
+    entry->start_time = base::Milliseconds(200);
+    base::DictValue detail_dict;
+    detail_dict.Set("payload", std::string(300 * 1024, 'b'));
+    entry->detail = base::Value(std::move(detail_dict));
+    entries.push_back(std::move(entry));
+
+    observer_remote->DidObservePerformanceEntries(std::move(entries));
+    observer_remote.FlushForTesting();
+  }
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  // Verify that only the first report was sent and the second was dropped
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  const base::ListValue* entries_list = report.body.FindList("entries");
+  ASSERT_TRUE(entries_list);
+
+  // We expect only mark_1 to be present. mark_2 should be dropped.
+  EXPECT_EQ(entries_list->size(), 1u);
+  bool found_mark_1 = false;
+  bool found_mark_2 = false;
+  for (const auto& entry : *entries_list) {
+    if (const base::DictValue* dict = entry.GetIfDict()) {
+      if (const std::string* name = dict->FindString("name")) {
+        if (*name == "mark_1") {
+          found_mark_1 = true;
+        }
+        if (*name == "mark_2") {
+          found_mark_2 = true;
+        }
+      }
+    }
+  }
+  EXPECT_TRUE(found_mark_1);
+  EXPECT_FALSE(found_mark_2);
+}
+
+TEST_F(DeclarativePerformanceObserverTest,
+       DocumentBufferEntryCountLimitEnforced) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(network::mojom::PerformanceEntryType::kMark);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+
+  // Bind Mojo remote
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  // Set the limit to 5 for testing
+  DeclarativePerformanceObserver* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  ASSERT_TRUE(observer);
+  observer->SetMaxBufferedEntriesForTesting(5);
+
+  // Send 6 tiny performance entries.
+  // The first 5 should be buffered successfully, and the 6th should be dropped.
+  std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+  for (int i = 0; i < 6; ++i) {
+    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
+    entry->name = "mark_tiny";
+    entry->start_time = base::Milliseconds(i);
+    entries.push_back(std::move(entry));
+  }
+  observer_remote->DidObservePerformanceEntries(std::move(entries));
+  observer_remote.FlushForTesting();
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  // Verify that reports are generated and the entry count is capped exactly
+  // at 5.
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  const base::ListValue* entries_list = report.body.FindList("entries");
+  ASSERT_TRUE(entries_list);
+
+  EXPECT_EQ(entries_list->size(), 5u);
+}
+
 }  // namespace
 }  // namespace content
