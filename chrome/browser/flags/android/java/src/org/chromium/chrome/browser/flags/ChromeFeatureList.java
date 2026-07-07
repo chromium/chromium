@@ -492,7 +492,6 @@ public abstract class ChromeFeatureList {
     public static final String GMSCORE_BIND_SERVICE_OPTIMIZATION = "GmsCoreBindServiceOptimization";
     public static final String GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE =
             "GridTabSwitcherSurfaceColorUpdate";
-    public static final String GROUP_NEW_TAB_WITH_PARENT = "GroupNewTabWithParent";
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";

@@ -321,8 +321,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         }
 
         Tab sourceTab = fromWebContents(sourceWebContents);
-        if (sourceTab == null
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)) {
+        if (sourceTab == null) {
             return true;
         }
 

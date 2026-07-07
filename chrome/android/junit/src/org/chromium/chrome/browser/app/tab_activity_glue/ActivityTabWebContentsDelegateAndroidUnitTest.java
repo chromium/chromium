@@ -230,7 +230,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)
     public void testAddNewContentsNotInTabGroup() {
         WebContents newWebContents = mock(WebContents.class);
         Map<WebContents, Tab> tabMap =
@@ -249,7 +248,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)
     public void testAddNewContentsToTabGroup() {
         WebContents newWebContents = mock(WebContents.class);
         Tab parentTab = mock(Tab.class);

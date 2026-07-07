@@ -189,7 +189,6 @@ BASE_DECLARE_FEATURE(kGestureUserEducationBackSwipe);
 BASE_DECLARE_FEATURE(kGlicExperimentalLocation);
 BASE_DECLARE_FEATURE(kGmsCoreBindServiceOptimization);
 BASE_DECLARE_FEATURE(kGridTabSwitcherSurfaceColorUpdate);
-BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomeButtonRemoval);
 BASE_DECLARE_FEATURE(kHomeModulePrefRefactor);
