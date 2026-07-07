@@ -24,7 +24,6 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -826,7 +825,7 @@ public class BookmarkBarCoordinator
         }
 
         @Override
-        public void onAnimationFinished(@NonNull RecyclerView.ViewHolder viewHolder) {
+        public void onAnimationFinished(RecyclerView.ViewHolder viewHolder) {
             super.onAnimationFinished(viewHolder);
             if (!mIsDestroyed) {
                 mPostAnimationRunnable.run();

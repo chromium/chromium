@@ -587,10 +587,10 @@ public class TabPersistentStoreIntegrationTest {
                             () -> finalActivity2.getTabModelSelector().getModel(false));
             int count2 = ThreadUtils.runOnUiThreadBlocking(() -> model2.getCount());
             assertEquals(1, count2);
-            final Tab tab0_w2 = ThreadUtils.runOnUiThreadBlocking(() -> model2.getTabAt(0));
+            final Tab tab0W2 = ThreadUtils.runOnUiThreadBlocking(() -> model2.getTabAt(0));
             String testUrl2 = UrlUtils.encodeHtmlDataUri("<html>test_url_2.</html>");
-            ChromeTabUtils.loadUrlOnUiThread(tab0_w2, testUrl2);
-            ChromeTabUtils.waitForTabPageLoaded(tab0_w2, testUrl2);
+            ChromeTabUtils.loadUrlOnUiThread(tab0W2, testUrl2);
+            ChromeTabUtils.waitForTabPageLoaded(tab0W2, testUrl2);
 
             // 2. Open NTP in Activity2.
             final TabModelOrchestrator orchestrator2 =
@@ -602,7 +602,7 @@ public class TabPersistentStoreIntegrationTest {
             observeOnMetadataSaved(store2, onMetadataSavedW2);
             int saveCount = onMetadataSavedW2.getCallCount();
 
-            final Tab tab1_w2 =
+            final Tab tab1W2 =
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 return finalActivity2
@@ -610,24 +610,24 @@ public class TabPersistentStoreIntegrationTest {
                                         .launchUrl(
                                                 "chrome://newtab/", TabLaunchType.FROM_CHROME_UI);
                             });
-            // Now we have [tab0_w2, tab1_w2]. tab1_w2 (NTP) is active.
+            // Now we have [tab0W2, tab1W2]. tab1W2 (NTP) is active.
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         assertEquals(2, model2.getCount());
-                        assertEquals(tab0_w2, model2.getTabAt(0));
-                        assertEquals(tab1_w2, model2.getTabAt(1));
-                        assertEquals(tab1_w2, TabModelUtils.getCurrentTab(model2));
+                        assertEquals(tab0W2, model2.getTabAt(0));
+                        assertEquals(tab1W2, model2.getTabAt(1));
+                        assertEquals(tab1W2, TabModelUtils.getCurrentTab(model2));
                     });
 
             // 3. Wait for metadata to save for Activity2.
             onMetadataSavedW2.waitForCallback(saveCount);
 
-            // Ensure TabState for tab0_w2 is saved.
-            File tab0StateFile = store2.getTabStateFileForTesting(tab0_w2.getId(), false);
+            // Ensure TabState for tab0W2 is saved.
+            File tab0StateFile = store2.getTabStateFileForTesting(tab0W2.getId(), false);
             waitForFile(tab0StateFile, true);
 
-            // Ensure NTP (tab1_w2) does NOT have a state file.
-            File tab1StateFile = store2.getTabStateFileForTesting(tab1_w2.getId(), false);
+            // Ensure NTP (tab1W2) does NOT have a state file.
+            File tab1StateFile = store2.getTabStateFileForTesting(tab1W2.getId(), false);
             if (tab1StateFile.exists()) {
                 tab1StateFile.delete();
             }
@@ -689,7 +689,7 @@ public class TabPersistentStoreIntegrationTest {
                         assertEquals(testUrl2, r0.getUrl().getSpec());
                         assertTrue(UrlUtilities.isNtpUrl(r1.getUrl()));
                         assertEquals(r1, TabModelUtils.getCurrentTab(newNormalModel2));
-                        assertTrue(tab1_w2.getId() != r1.getId());
+                        assertTrue(tab1W2.getId() != r1.getId());
                     });
         } finally {
             if (recreatedActivity2 != null) {

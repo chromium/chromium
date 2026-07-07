@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -80,9 +78,9 @@ public class BookmarkBarVisibilityProvider {
      * @param xrSpaceModeObservableSupplier The supplier for the XR space mode state.
      */
     public BookmarkBarVisibilityProvider(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull MonotonicObservableSupplier<Profile> profileSupplier,
+            Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;

@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,10 +39,7 @@ public class DialogListItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(
-            @NonNull Rect outRect,
-            @NonNull View view,
-            @NonNull RecyclerView parent,
-            @NonNull RecyclerView.State state) {
+            Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         // The last item does not use additional bottom spacing.
         assumeNonNull(parent.getAdapter());
         outRect.bottom =
@@ -53,8 +49,7 @@ public class DialogListItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(
-            @NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
         for (int index = 0; index < parent.getChildCount(); ++index) {
             View child = parent.getChildAt(index);
