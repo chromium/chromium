@@ -164,7 +164,7 @@ public class UrlBarViewBinderUnitTest {
     public void testSetManageSearchEnginesCallback() {
         Runnable mockCallback = mock(Runnable.class);
         mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mockCallback);
-        assertEquals(mockCallback, mUrlBar.getManageSearchEnginesCallbackForTesting());
+        assertEquals(mockCallback, mUrlBar.getManageSearchEnginesCallback());
     }
 
     @Test

@@ -118,6 +118,7 @@ public class UrlBar extends AutocompleteEditText {
     private @Nullable Runnable mManageSearchEnginesCallback;
     private boolean mShowAiMode;
     private @Nullable Callback<Boolean> mShowAiModeCallback;
+    private @Nullable UrlBarContextMenuHelper mContextMenuHelper;
 
     private final Rect mClipBounds = new Rect();
 
@@ -349,6 +350,10 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     public void destroy() {
+        if (mContextMenuHelper != null) {
+            mContextMenuHelper.destroy();
+            mContextMenuHelper = null;
+        }
         setAllowFocus(false);
         mUrlBarDelegate = null;
         setOnFocusChangeListener(null);
@@ -479,6 +484,21 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+        mContextMenuHelper =
+                new UrlBarContextMenuHelper(
+                        this,
+                        new UrlBarContextMenuHelper.Delegate() {
+                            @Override
+                            public void onTextContextMenuItem(int id) {
+                                UrlBar.this.onTextContextMenuItem(id);
+                            }
+
+                            @Override
+                            public @Nullable Runnable getManageSearchEnginesCallback() {
+                                return mManageSearchEnginesCallback;
+                            }
+                        });
+        setOnCreateContextMenuListener(mContextMenuHelper);
         enforceMaxTextHeight();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
@@ -979,7 +999,8 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         if (mManageSearchEnginesCallback == null
-                || !OmniboxFeatures.sOmniboxSiteSearch.isEnabled()) {
+                || !OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                || OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled()) {
             return;
         }
 
@@ -1696,7 +1717,27 @@ public class UrlBar extends AutocompleteEditText {
         mVisibleTextPrefixHint = hintForTesting;
     }
 
-    /* package */ @Nullable Runnable getManageSearchEnginesCallbackForTesting() {
+    /* package */ @Nullable Runnable getManageSearchEnginesCallback() {
         return mManageSearchEnginesCallback;
+    }
+
+    @Override
+    public boolean showContextMenu(float x, float y) {
+        if (mContextMenuHelper != null) {
+            mContextMenuHelper.setTouchCoordinates(x, y);
+        }
+        return super.showContextMenu(x, y);
+    }
+
+    @Override
+    public boolean showContextMenu() {
+        if (mContextMenuHelper != null) {
+            mContextMenuHelper.clearTouchCoordinates();
+        }
+        return super.showContextMenu();
+    }
+
+    @Nullable UrlBarContextMenuHelper getContextMenuHelperForTesting() {
+        return mContextMenuHelper;
     }
 }

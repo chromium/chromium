@@ -19,6 +19,7 @@ import android.view.inputmethod.InputConnection;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +35,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -42,6 +46,7 @@ import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -742,6 +747,45 @@ public class UrlBarTest {
                         return clip.getItemAt(0).getText().toString();
                     }
                     return "";
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU)
+    public void testUrlBarContextMenu() {
+        mOmnibox.requestFocus();
+        mOmnibox.setText("test context menu");
+
+        // Select all text to ensure copy/cut/share options are available.
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.selectAll());
+
+        // Trigger context menu.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    float x = mUrlBar.getWidth() / 2f;
+                    float y = mUrlBar.getHeight() / 2f;
+                    mUrlBar.showContextMenu(x, y);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    UrlBarContextMenuHelper helper = mUrlBar.getContextMenuHelperForTesting();
+                    Criteria.checkThat(
+                            "Helper should not be null", helper, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "ListMenu should not be empty",
+                            helper.getModelListForTesting().size(),
+                            Matchers.greaterThan(0));
+                });
+
+        // Dismiss it.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UrlBarContextMenuHelper helper = mUrlBar.getContextMenuHelperForTesting();
+                    if (helper != null) {
+                        helper.destroy();
+                    }
                 });
     }
 }
