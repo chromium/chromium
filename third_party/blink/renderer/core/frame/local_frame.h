@@ -134,6 +134,7 @@ class Editor;
 class Element;
 class EventHandler;
 class EventHandlerRegistry;
+class EventTarget;
 class FrameConsole;
 class FrameOverlay;
 class FrameSelection;
@@ -163,22 +164,22 @@ class StyleEnvironmentVariables;
 class SystemClipboard;
 class TextFragmentHandler;
 class TextSuggestionController;
+class URLLoader;
 class VirtualKeyboardOverlayChangedObserver;
 class WebAutofillClient;
 class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
 class WebPrescientNetworking;
-class URLLoader;
+class WindowControlsOverlayChangedDelegate;
+enum class BackForwardCacheAware;
+enum class MediaValueChange;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
-class WindowControlsOverlayChangedDelegate;
 
 namespace v8_compile_hints {
 class V8LocalCompileHintsProducer;
 }  // namespace v8_compile_hints
-
-enum class BackForwardCacheAware;
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 

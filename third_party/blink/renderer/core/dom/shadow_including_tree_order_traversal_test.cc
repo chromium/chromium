@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/html_element.h"

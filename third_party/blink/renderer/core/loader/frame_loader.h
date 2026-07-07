@@ -36,6 +36,7 @@
 #include <memory>
 #include <optional>
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -60,6 +60,7 @@ namespace blink {
 
 class DocumentLoader;
 class FetchClientSettingsObject;
+class LocalDOMWindow;
 class LocalFrame;
 class LocalFrameClient;
 class PolicyContainer;
