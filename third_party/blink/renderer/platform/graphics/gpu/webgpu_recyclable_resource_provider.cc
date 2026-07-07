@@ -69,8 +69,7 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
-  const bool is_gpu_compositing_enabled =
-      SharedGpuContext::IsGpuCompositingEnabled();
+  std::ignore = SharedGpuContext::IsGpuCompositingEnabled();
 
   // If the context is lost we don't want to re-create it here, the resulting
   // resource provider would be invalid anyway
@@ -88,67 +87,11 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
     return nullptr;
   }
 
-  // TODO(crbug.com/40767377): Pass in info as is for all cases.
-  // Overriding the info to use RGBA instead of N32 is needed because code
-  // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
-  // somewhere in the later pipeline but for offscreen canvas only.
-  bool should_force_bgra8_to_rgba =
-      !shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                       gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-#if BUILDFLAG(IS_WIN)
-  // Concurrent read/write on Windows results in a swapchain backing, which
-  // supports BGRA; hence there is no need to force to RGBA in this case.
-  should_force_bgra8_to_rgba =
-      should_force_bgra8_to_rgba &&
-      !shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-#endif
-
 #if BUILDFLAG(IS_LINUX)
   // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
   // dependent on canvas copies being RGBA (not BGRA).
-  should_force_bgra8_to_rgba = true;
-#endif
-
-  if (format != viz::SinglePlaneFormat::kRGBA_F16 &&
-      should_force_bgra8_to_rgba) {
+  if (format != viz::SinglePlaneFormat::kRGBA_F16) {
     format = viz::SinglePlaneFormat::kRGBA_8888;
-  }
-
-  const bool is_mappable_shared_image_allowed =
-      is_gpu_compositing_enabled &&
-      IsScanoutSupportedForCanvasWithFormat(format, capabilities);
-
-  // If we cannot use overlay, we have to remove the scanout flag and the
-  // concurrent read write flag.
-  const auto& shared_image_caps = context_provider_wrapper->ContextProvider()
-                                      .SharedImageInterface()
-                                      ->GetCapabilities();
-  bool is_overlay_supported = is_mappable_shared_image_allowed &&
-                              shared_image_caps.supports_scanout_shared_images;
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows, SCANOUT usage is additionally supported in the special case
-  // of the swapchain being used on the service side to implement concurrent
-  // read/write.
-  is_overlay_supported = is_overlay_supported ||
-                         (shared_image_usage_flags.Has(
-                              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
-                          shared_image_caps.shared_image_swap_chain);
-#endif
-
-  if (!is_overlay_supported) {
-    shared_image_usage_flags.RemoveAll(
-        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-        gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  }
-
-#if BUILDFLAG(IS_MAC)
-  if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
-      format == viz::SinglePlaneFormat::kRGBA_8888) {
-    // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
-    // RGBA_8888 to BGRA_8888 in that case.
-    format = viz::SinglePlaneFormat::kBGRA_8888;
   }
 #endif
 
