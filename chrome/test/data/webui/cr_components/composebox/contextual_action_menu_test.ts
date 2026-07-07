@@ -53,9 +53,9 @@ interface InternalContextualActionMenu {
   updateFlyoutPosition_: () => void;
   scheduleCloseTimer_: () => void;
   metricsSource_: string;
-  closeMenuOnSelect: boolean;
   addTabContext_: (tabInfo: TabInfo) => void;
   deleteTabContext_: (uuid: string) => void;
+  readonly closeMenuOnSelect: boolean;
 }
 
 function asInternal(element: ContextualActionMenuElement):
@@ -73,6 +73,8 @@ suite('ContextualActionMenu', () => {
       composeboxFileMaxCount: 10,
       composeboxShowContextMenuTabPreviews: true,
       ShowContextMenuHeaders: true,
+      contextManagementInComposeboxEnabled: false,
+      keepMenuOpenOnTabSelectForRealbox: false,
     });
 
     const pluralStringProxy = new TestPluralStringProxy();
@@ -1733,40 +1735,79 @@ suite('ContextualActionMenu', () => {
     assertFalse(flyout.hidden);
   });
 
-  test('Menu closes after tab selection in Realbox', async () => {
-    loadTimeData.overrideValues({
-      composeboxContextMenuEnableMultiTabSelection: true,
-    });
-    actionMenu.remove();
-    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
-    actionMenu.contextManagementInComposeboxEnabled = true;
-    Object.assign(actionMenu, {
-      metricsSource_: 'NewTabPage',
-    });
+  test(
+      'Menu closes after tab selection in Realbox if' +
+          ' `keepMenuOpenOnTabSelectForRealbox` flag is false',
+      async () => {
+        loadTimeData.overrideValues({
+          keepMenuOpenOnTabSelectForRealbox: false,
+        });
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        Object.assign(actionMenu, {
+          metricsSource_: 'NewTabPage',
+          contextManagementInComposeboxEnabled: true,
+        });
 
-    const tabInfo = createTabSuggestion({
-      tabId: 1,
-      title: 'Tab 1',
-    });
-    actionMenu.tabSuggestions = [tabInfo];
-    actionMenu.inputState = new MockInputState({
-      allowedInputTypes: [InputType.kBrowserTab],
-    });
-    document.body.appendChild(actionMenu);
-    await microtasksFinished();
+        const tabInfo = createTabSuggestion({
+          tabId: 1,
+          title: 'Tab 1',
+        });
+        actionMenu.tabSuggestions = [tabInfo];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
 
-    actionMenu.showAt(actionMenu);
-    Object.assign(actionMenu, {shareTabsFlyoutOpen_: true});
-    await microtasksFinished();
-    assertTrue(actionMenu.$.menu.open);
+        actionMenu.showAt(actionMenu);
+        Object.assign(actionMenu, {shareTabsFlyoutOpen_: true});
+        await microtasksFinished();
+        assertTrue(actionMenu.$.menu.open);
 
-    const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
-        '.share-tabs-flyout button.dropdown-item')!;
-    tabButton.click();
-    await microtasksFinished();
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.share-tabs-flyout button.dropdown-item')!;
+        tabButton.click();
+        await microtasksFinished();
 
-    assertFalse(actionMenu.$.menu.open);
-  });
+        assertFalse(actionMenu.$.menu.open);
+      });
+
+  test(
+      'Menu stays open after tab selection in Realbox by default', async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: false,
+        });
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        Object.assign(actionMenu, {
+          metricsSource_: 'NewTabPage',
+        });
+
+        const tabInfo = createTabSuggestion({
+          tabId: 1,
+          title: 'Tab 1',
+        });
+        actionMenu.tabSuggestions = [tabInfo];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+        assertTrue(actionMenu.$.menu.open);
+
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.suggestion-container button.dropdown-item')!;
+        tabButton.click();
+        await microtasksFinished();
+
+        assertTrue(actionMenu.$.menu.open);
+      });
 
   test(
       'Menu stays open after tab selection in Side Panel with multi-tab selection',
@@ -1807,8 +1848,8 @@ suite('ContextualActionMenu', () => {
       });
 
   test(
-      'Menu closes when a selected tab is clicked' +
-          ' (deselected) in NTP/Omnibox mode',
+      'Menu closes when a selected tab is deselected if' +
+          ' `keepMenuOpenOnTabSelectForRealbox` is false',
       async () => {
         const tabInfo = createTabSuggestion({
           tabId: 1,
@@ -1816,6 +1857,7 @@ suite('ContextualActionMenu', () => {
         });
         loadTimeData.overrideValues({
           composeboxContextMenuEnableMultiTabSelection: true,
+          keepMenuOpenOnTabSelectForRealbox: false,
         });
         actionMenu.remove();
         actionMenu =
@@ -1844,6 +1886,44 @@ suite('ContextualActionMenu', () => {
         await microtasksFinished();
 
         assertFalse(actionMenu.$.menu.open);
+      });
+
+  test(
+      'Menu stays open when a selected tab is deselected by default',
+      async () => {
+        const tabInfo = createTabSuggestion({
+          tabId: 1,
+          title: 'Tab 1',
+        });
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: false,
+          composeboxContextMenuEnableMultiTabSelection: true,
+        });
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        Object.assign(actionMenu, {
+          metricsSource_: 'NewTabPage',
+          disabledTabIds: new Map([[1, 'some-token']]),
+        });
+
+        actionMenu.tabSuggestions = [tabInfo];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+        assertTrue(actionMenu.$.menu.open);
+
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.suggestion-container button.dropdown-item')!;
+        tabButton.click();
+        await microtasksFinished();
+
+        assertTrue(actionMenu.$.menu.open);
       });
 
   test(
@@ -2883,7 +2963,9 @@ suite('ContextualActionMenu', () => {
     test(
         'pointerLeave is ignored for 1 second after 1st tab added',
         async () => {
-          asInternal(actionMenu).closeMenuOnSelect = false;
+          loadTimeData.overrideValues({
+            keepMenuOpenOnTabSelectForRealbox: true,
+          });
           actionMenu.showAt(actionMenu);
           await microtasksFinished();
 
@@ -2913,8 +2995,9 @@ suite('ContextualActionMenu', () => {
         'deleteTabContext, addTabContext close menu if ntp flag is off', () => {
           // Set to NTP source and flag off
           asInternal(actionMenu).metricsSource_ = 'NewTabPage';
-          asInternal(actionMenu).closeMenuOnSelect =
-              true;  // this means ntp flag is off
+          loadTimeData.overrideValues({
+            keepMenuOpenOnTabSelectForRealbox: false,
+          });
 
           actionMenu.showAt(actionMenu);
           assertTrue(actionMenu.$.menu.open);
