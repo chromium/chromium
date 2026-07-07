@@ -286,15 +286,18 @@ class MultiContentsView
   std::unique_ptr<MultiContentsViewDelegate> delegate_;
 
   raw_ptr<MultiContentsBackgroundView> background_view_;
-  ContentsSeparators contents_separators_;
 
   // Holds ContentsContainerViews, when not in a split view the second
   // ContentsContainerView is not visible.
   std::vector<ContentsContainerView*> contents_container_views_;
 
-  // Holds subscriptions for when the attached contents to ContentsContainerView
-  // are focused.
-  std::vector<base::CallbackListSubscription> contents_focused_subscriptions_;
+  ContentsSeparators contents_separators_;
+
+  // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
+  // that is shown on top of the web contents. It therefore must always have the
+  // same bounds as the contents_web_view_, but also be above the
+  // contents_web_view_.
+  raw_ptr<views::View> lens_overlay_view_ = nullptr;
 
   // The handle responsible for resizing the two contents views as relative to
   // each other.
@@ -303,6 +306,10 @@ class MultiContentsView
   // The views that are shown for entering split view. E.g., this is shown when
   // the user drags a link to the edge of the contents view.
   raw_ptr<MultiContentsDropTargetView> drop_target_view_ = nullptr;
+
+  // Holds subscriptions for when the attached contents to ContentsContainerView
+  // are focused.
+  std::vector<base::CallbackListSubscription> contents_focused_subscriptions_;
 
   // Handles incoming drag events to show/hide the drop target for entering
   // split view.

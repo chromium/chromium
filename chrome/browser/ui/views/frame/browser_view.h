@@ -754,7 +754,6 @@ class BrowserView : public BrowserWindow,
   void OnFocusBookmarksToolbar() override;
 
   // Testing interface:
-  views::View* GetContentsContainerForTest() { return contents_container_; }
   BrowserViewLayout* GetBrowserViewLayoutForTesting() {
     return GetBrowserViewLayout();
   }
@@ -909,9 +908,6 @@ class BrowserView : public BrowserWindow,
 
   // Returns the BrowserViewLayout.
   BrowserViewLayout* GetBrowserViewLayout() const;
-
-  // Returns the ContentsLayoutManager.
-  ContentsLayoutManager* GetContentsLayoutManager() const;
 
   // Prepare to show the Bookmark Bar for the specified WebContents.
   // Returns true if the Bookmark Bar can be shown (i.e. it's supported for this
@@ -1221,18 +1217,6 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
-
-  // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
-  // that is shown on top of the web contents. It therefore must always have the
-  // same bounds as the contents_web_view_, but also be above the
-  // contents_web_view_.
-  raw_ptr<views::View> lens_overlay_view_ = nullptr;
-
-  // The view that contains the AI highlight overlay. The AI highlight overlay
-  // is a UI overlay that is shown on top of the web contents. It therefore must
-  // always have the same bounds as the contents_view_, but also be above the
-  // contents_view_.
-  raw_ptr<views::View> context_highlight_view_ = nullptr;
 
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;

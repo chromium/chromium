@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
@@ -129,6 +130,19 @@ MultiContentsView::MultiContentsView(
   contents_separators_.corner_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTopCornerElementId);
 
+  // Create the view that will house the Lens overlay. This view is visible but
+  // transparent view that is used as a container for the Lens overlay WebView.
+  // It must have a higher index than contents_view so that it is drawn on top
+  // of it. Uses a fill layout so that the overlay WebView can fill the entire
+  // container.
+  auto lens_overlay_view = std::make_unique<views::View>();
+  lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
+  lens_overlay_view->SetProperty(views::kElementIdentifierKey,
+                                 kLensOverlayViewElementId);
+  lens_overlay_view->SetVisible(false);
+  lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  lens_overlay_view_ = AddChildView(std::move(lens_overlay_view));
+
   for (auto* contents_container_view : contents_container_views_) {
     auto& view_map = container_focusable_map_[contents_container_view];
 
@@ -184,6 +198,7 @@ MultiContentsView::~MultiContentsView() {
     drop_target_controller_.reset();
   }
   drop_target_view_ = nullptr;
+  lens_overlay_view_ = nullptr;
   resize_area_ = nullptr;
   contents_separators_.Reset();
   background_view_ = nullptr;
@@ -541,6 +556,9 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(contents_container_views_[1],
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
+  layouts.child_layouts.emplace_back(lens_overlay_view_.get(),
+                                     lens_overlay_view_->GetVisible(),
+                                     gfx::Rect(width, height));
 
   layouts.host_size = gfx::Size(width, height);
   return layouts;

@@ -90,7 +90,6 @@
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -919,40 +918,6 @@ BrowserView::BrowserView(Browser* browser)
   top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
   top_container_insertion_index_ = GetIndexOf(top_container_.get());
 
-  auto contents_container = std::make_unique<views::View>();
-  auto multi_contents_view = std::make_unique<MultiContentsView>(
-      this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
-  multi_contents_view_ =
-      contents_container->AddChildView(std::move(multi_contents_view));
-
-  // Create the view that will house the Lens overlay. This view is visible but
-  // transparent view that is used as a container for the Lens overlay WebView.
-  // It must have a higher index than multi_contents_view so that it is drawn on
-  // top of it. Uses a fill layout so that the overlay WebView can fill the
-  // entire container.
-  auto lens_overlay_view = std::make_unique<views::View>();
-  lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
-  lens_overlay_view->SetProperty(views::kElementIdentifierKey,
-                                 kLensOverlayViewElementId);
-  lens_overlay_view->SetVisible(false);
-  lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  lens_overlay_view_ =
-      contents_container->AddChildView(std::move(lens_overlay_view));
-
-  // Create the view that will house the AI highlight overlay.
-  auto context_highlight_view = std::make_unique<views::View>();
-  context_highlight_view->SetProperty(
-      views::kElementIdentifierKey,
-      ContextHighlightWindowFeature::kContextHighlightViewElementId);
-  context_highlight_view->SetVisible(false);
-  context_highlight_view->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
-  context_highlight_view_ =
-      contents_container->AddChildView(std::move(context_highlight_view));
-
-  contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      multi_contents_view_, lens_overlay_view_, context_highlight_view_));
-
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
 
@@ -960,6 +925,16 @@ BrowserView::BrowserView(Browser* browser)
       ContentsSeparator::CreateContentsSeparator());
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
+
+  auto contents_container = std::make_unique<views::View>();
+
+  auto multi_contents_view = std::make_unique<MultiContentsView>(
+      this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
+  multi_contents_view_ =
+      contents_container->AddChildView(std::move(multi_contents_view));
+
+  contents_container->SetLayoutManager(
+      std::make_unique<ContentsLayoutManager>(multi_contents_view_));
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
@@ -990,7 +965,6 @@ BrowserView::BrowserView(Browser* browser)
   auto* const vertical_tab_strip_state_controller =
       tabs::VerticalTabStripStateController::From(browser_);
   if (vertical_tab_strip_state_controller) {
-    // TODO(466091787): just use BWI.
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
             vertical_tab_strip_state_controller,
@@ -1148,8 +1122,6 @@ BrowserView::~BrowserView() {
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
   main_shadow_overlay_ = nullptr;
-  lens_overlay_view_ = nullptr;
-  context_highlight_view_ = nullptr;
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_region_view_ = nullptr;
@@ -5186,11 +5158,6 @@ const BrowserFrameView* BrowserView::GetFrameView() const {
 
 BrowserViewLayout* BrowserView::GetBrowserViewLayout() const {
   return static_cast<BrowserViewLayout*>(GetLayoutManager());
-}
-
-ContentsLayoutManager* BrowserView::GetContentsLayoutManager() const {
-  return static_cast<ContentsLayoutManager*>(
-      contents_container_->GetLayoutManager());
 }
 
 bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
