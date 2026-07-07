@@ -26,6 +26,16 @@ extern const char kDisableSearchEngineChoiceScreen[];
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kForceSearchEngineChoiceScreen[];
 
+// Quickens the site search expiration time for testing purposes. When this flag
+// is set, the site search expiration time is 20 seconds instead of 2 days.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const char kQuickenSiteSearchExpiryForTesting[];
+
+// When enabled, a custom search engine's last_visited time is updated when it
+// is unset as the default search engine.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kVisitCustomSearchOnUndefaulting);
+
 // When enabled, prefs-based search provider overrides are ignored and
 // prepopulated engines will always be the regional built-in ones. If a user
 // previously had an overridden search engine as DSE, this flag will cause that

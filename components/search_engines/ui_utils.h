@@ -63,7 +63,7 @@ class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // This partially sorts `recently_visited` by last visited time up to a
 // maximum threshold (`kMaxCustomSearchEngines`). Elements not meeting the
-// cut-off, as well as any entries older than `kMaxVisitAge`, are filtered
+// cut-off, as well as any entries older than `GetMaxVisitAge()`, are filtered
 // out and erased from the vector.
 void SortAndFilterRecentlyVisitedURLs(
     TemplateURL::TemplateURLVector& recently_visited);

@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -162,6 +163,78 @@ TEST_F(TemplateURLServiceUnitTest, UpdateUserSelectedDefaultSearchEnginePref) {
   ASSERT_TRUE(pref_url);
   EXPECT_EQ("https://custom2.com/search2?q={searchTerms}", *pref_url);
 }
+
+class TemplateURLServiceUpdateLastVisitedTest
+    : public base::test::WithFeatureOverride,
+      public TemplateURLServiceUnitTest {
+ public:
+  TemplateURLServiceUpdateLastVisitedTest()
+      : base::test::WithFeatureOverride(
+            switches::kVisitCustomSearchOnUndefaulting) {}
+};
+
+TEST_P(TemplateURLServiceUpdateLastVisitedTest,
+       UpdateLastVisitedOnDefaultSearchProviderChange) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  // Let's first ensure the default search provider is a prepopulated engine.
+  const TemplateURL* initial_dse =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(initial_dse);
+  ASSERT_TRUE(template_url_service().IsPrepopulatedOrDefaultProviderByPolicy(
+      initial_dse));
+
+  base::Time initial_dse_last_visited = initial_dse->last_visited();
+
+  const base::Time kOldTime = base::Time::FromTimeT(100);
+
+  // Add a custom search engine.
+  TemplateURLData data1;
+  data1.SetShortName(u"custom1");
+  data1.SetKeyword(u"custom1");
+  data1.SetURL("https://custom1.com/search?q={searchTerms}");
+  data1.sync_guid = "custom-guid1";
+  data1.last_visited = kOldTime;
+
+  TemplateURL* custom_turl1 =
+      template_url_service().Add(std::make_unique<TemplateURL>(data1));
+
+  // Make custom_turl1 the default search provider.
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      custom_turl1, search_engines::ChoiceMadeLocation::kOther);
+
+  // The initial DSE (prepopulated) should NOT have its last_visited updated.
+  EXPECT_EQ(initial_dse->last_visited(), initial_dse_last_visited);
+
+  // custom_turl1 should not have been updated yet.
+  EXPECT_EQ(custom_turl1->last_visited(), kOldTime);
+
+  // Add another custom search engine.
+  TemplateURLData data2;
+  data2.SetShortName(u"custom2");
+  data2.SetKeyword(u"custom2");
+  data2.SetURL("https://custom2.com/search?q={searchTerms}");
+  data2.sync_guid = "custom-guid2";
+
+  TemplateURL* custom_turl2 =
+      template_url_service().Add(std::make_unique<TemplateURL>(data2));
+
+  // Replace custom_turl1 with custom_turl2
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      custom_turl2, search_engines::ChoiceMadeLocation::kOther);
+
+  // custom_turl1 was replaced. If the feature is enabled, since it's a custom
+  // engine, its last_visited should have been updated.
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NE(custom_turl1->last_visited(), kOldTime);
+  } else {
+    EXPECT_EQ(custom_turl1->last_visited(), kOldTime);
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    TemplateURLServiceUpdateLastVisitedTest);
 
 TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
   // Set the default search provider to a custom one.

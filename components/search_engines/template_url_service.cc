@@ -3036,6 +3036,10 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
   // This may be deleted later. Use exclusively for pointer comparison to detect
   // a change.
   TemplateURL* previous_default_search_engine = default_search_provider_;
+  std::string previous_default_search_engine_guid =
+      previous_default_search_engine
+          ? previous_default_search_engine->sync_guid()
+          : "";
 
   Scoper scoper(this);
 
@@ -3115,6 +3119,24 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
   if (default_search_provider_ == previous_default_search_engine) {
     // Default search engine hasn't changed.
     return false;
+  }
+
+  // We must fetch the previous DSE via its GUID rather than using the
+  // `previous_default_search_engine` pointer directly. This is because
+  // operations earlier in this function (like
+  // `UpdateDefaultProvidersCreatedByPolicy()`) may have deleted the engine
+  // from memory, leaving the original pointer dangling.
+  TemplateURL* previous_turl =
+      previous_default_search_engine_guid.empty()
+          ? nullptr
+          : GetTemplateURLForGUID(previous_default_search_engine_guid);
+  if (previous_turl &&
+      previous_turl->starter_pack_id() ==
+          template_url_starter_pack_data::StarterPackId::kNone &&
+      !IsPrepopulatedOrDefaultProviderByPolicy(previous_turl) &&
+      base::FeatureList::IsEnabled(
+          switches::kVisitCustomSearchOnUndefaulting)) {
+    UpdateTemplateURLVisitTime(previous_turl);
   }
 
   model_mutated_notification_pending_ = true;

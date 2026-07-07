@@ -5,9 +5,11 @@
 #include "components/search_engines/ui_utils.h"
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 
 namespace internal {
@@ -16,7 +18,14 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr size_t kMaxCustomSearchEngines = 3;
-constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
+
+base::TimeDelta GetMaxVisitAge() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kQuickenSiteSearchExpiryForTesting)) {
+    return base::Seconds(20);
+  }
+  return base::Days(2);
+}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Helper function to create and configure an icu::Collator.
@@ -170,9 +179,9 @@ void SortAndFilterRecentlyVisitedURLs(
   std::ranges::partial_sort(recently_visited, pivot, std::ranges::greater(),
                             &TemplateURL::last_visited);
 
-  // Keep the search engines visited within `kMaxVisitAge` and erase others.
+  // Keep the search engines visited within `GetMaxVisitAge()` and erase others.
   auto cut_begin = std::ranges::lower_bound(
-      begin, pivot, base::Time::Now() - kMaxVisitAge,
+      begin, pivot, base::Time::Now() - GetMaxVisitAge(),
       std::ranges::greater_equal(), &TemplateURL::last_visited);
   recently_visited.erase(cut_begin, end);
 }
