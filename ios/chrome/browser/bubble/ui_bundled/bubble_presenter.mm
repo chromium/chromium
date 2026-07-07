@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -782,9 +783,11 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   toolbarSwipeGestureIPH.delegate = self;
   [self.rootViewController.view addSubview:toolbarSwipeGestureIPH];
   AddSameConstraints(toolbarSwipeGestureIPH, guide);
-  [self.geminiHandler
-      hideFloatyIfInvokedAnimated:NO
-                       fromSource:gemini::FloatyUpdateSource::GestureIph];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::GestureIph];
+  }
   [toolbarSwipeGestureIPH startAnimation];
   _toolbarSwipeGestureIPH = toolbarSwipeGestureIPH;
 }
@@ -1009,10 +1012,12 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       !dismissButtonTappedEvent.empty()) {
     _engagementTracker->NotifyEvent(dismissButtonTappedEvent);
   }
-  [self.geminiHandler
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   GestureIph];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     GestureIph];
+  }
 }
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
@@ -1428,9 +1433,11 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     [self.rootViewController.view addSubview:gestureIPHView];
     gestureIPHView.delegate = self;
     AddSameConstraints(gestureIPHView, contentAreaGuide);
-    [self.geminiHandler
-        hideFloatyIfInvokedAnimated:NO
-                         fromSource:gemini::FloatyUpdateSource::GestureIph];
+    if (IsPageActionMenuEnabled()) {
+      [self.geminiHandler
+          hideFloatyIfInvokedAnimated:NO
+                           fromSource:gemini::FloatyUpdateSource::GestureIph];
+    }
     return gestureIPHView;
   }
   return nil;

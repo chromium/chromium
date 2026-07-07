@@ -2311,9 +2311,11 @@ inline LayoutStateScenePassKey PassKey() {
 
 - (void)sceneViewControllerShowGeminiFloatyIfInvoked:
     (SceneViewController*)viewController {
-  [self updateFloatyVisibilityIfEligibleAnimated:NO
-                                      fromSource:gemini::FloatyUpdateSource::
-                                                     ViewTransition];
+  if (IsPageActionMenuEnabled()) {
+    [self updateFloatyVisibilityIfEligibleAnimated:NO
+                                        fromSource:gemini::FloatyUpdateSource::
+                                                       ViewTransition];
+  }
 }
 
 #pragma mark - GeminiCommands
