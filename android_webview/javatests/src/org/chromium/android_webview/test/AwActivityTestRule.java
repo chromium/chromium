@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Base64;
@@ -115,6 +116,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     private final List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown =
             new ArrayList<>();
 
+    private final List<WeakReference<Activity>> mActivitiesCreatedInTests = new ArrayList<>();
+
     @Nullable private Consumer<AwSettings> mMaybeMutateAwSettings;
 
     public AwActivityTestRule() {
@@ -150,24 +153,31 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     @Override
     protected void after() {
-        if (!needsAwContentsCleanup()) {
-            super.after();
-            return;
+        if (needsAwContentsCleanup()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        for (WeakReference<AwContents> awContentsRef :
+                                mAwContentsDestroyedInTearDown) {
+                            AwContents awContents = awContentsRef.get();
+                            if (awContents == null) continue;
+                            awContents.destroy();
+                        }
+                    });
+            // Flush the UI queue since destroy posts again to UI thread.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mAwContentsDestroyedInTearDown.clear();
+                    });
         }
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (WeakReference<AwContents> awContentsRef : mAwContentsDestroyedInTearDown) {
-                        AwContents awContents = awContentsRef.get();
-                        if (awContents == null) continue;
-                        awContents.destroy();
-                    }
-                });
-        // Flush the UI queue since destroy posts again to UI thread.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mAwContentsDestroyedInTearDown.clear();
-                });
+        for (WeakReference<Activity> activityRef : mActivitiesCreatedInTests) {
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                ApplicationTestUtils.finishActivity(activity);
+            }
+        }
+        mActivitiesCreatedInTests.clear();
+
         super.after();
     }
 
@@ -605,6 +615,40 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                                 supportsLegacyQuirks,
                                 testDependencyFactory,
                                 browserContext));
+    }
+
+    /**
+     * Helper to reparent an existing AwTestContainerView to a new Activity. This is useful for
+     * testing state preservation across context updates.
+     */
+    public AwTestContainerView reparentAwContents(AwTestContainerView view) {
+        AwTestRunnerActivity newActivity;
+        Intent intent = new Intent(getActivity(), AwTestRunnerActivity.class);
+        newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        AwTestRunnerActivity.class,
+                        Stage.CREATED,
+                        () -> getActivity().startActivity(intent));
+        ApplicationTestUtils.waitForActivityState(newActivity, Stage.RESUMED);
+        mActivitiesCreatedInTests.add(new WeakReference<>(newActivity));
+
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup parent = (ViewGroup) view.getParent();
+                    if (parent != null) {
+                        parent.removeView(view);
+                    }
+
+                    AwTestContainerView newContainerView =
+                            new AwTestContainerView(newActivity, true);
+                    newContainerView.initialize(view.getAwContents());
+                    view.getAwContents()
+                            .adopt(newContainerView, newContainerView.getInternalAccessDelegate());
+
+                    newActivity.addView(newContainerView);
+                    newContainerView.requestFocus();
+                    return newContainerView;
+                });
     }
 
     public void destroyAwContentsOnMainSync(@Nullable final AwContents awContents) {
