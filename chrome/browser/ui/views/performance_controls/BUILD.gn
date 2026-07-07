@@ -119,6 +119,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/user_education",
+      "//chrome/test/user_education:impl",
       "//components/user_education/views",
       "//ui/views:test_support",
     ]
@@ -150,6 +151,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/toolbar",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/user_education:impl",
     "//components/feature_engagement/test:test_support",
     "//components/user_education/views",
     "//content/test:test_support",

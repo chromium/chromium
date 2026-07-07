@@ -262,6 +262,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/cr_components/most_visited",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/test:test_support",
+      "//chrome/test/user_education:impl",
       "//components/user_education/views",
       "//content/test:test_support",
       "//testing/gmock",

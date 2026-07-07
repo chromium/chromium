@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//chrome/browser/user_education",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/user_education:impl",
     "//components/history_embeddings/content",
     "//components/history_embeddings/core",
     "//components/passage_embeddings/core:test_support",

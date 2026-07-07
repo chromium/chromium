@@ -2665,6 +2665,7 @@ if (!is_android) {
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chrome/test/payments:test_support",
       "//chrome/test/supervised_user:test_support",
+      "//chrome/test/user_education:impl",
       "//components/affiliations/core/browser:affiliation_proto",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/content/browser:autofill_shared_storage_proto",
@@ -7031,6 +7032,7 @@ test("unit_tests") {
       "//chrome/browser/webauthn:local_credential_management",
       "//chrome/browser/webauthn:unexportable_key_utils",
       "//chrome/test/interaction:unit_tests",
+      "//chrome/test/user_education:impl",
       "//chrome/utility:unit_tests",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
@@ -8737,14 +8739,6 @@ if (!is_android) {
       "base/web_ui_test_data_source.h",
       "base/web_view_focus_helper.cc",
       "base/web_view_focus_helper.h",
-      "user_education/interactive_feature_promo_test.cc",
-      "user_education/interactive_feature_promo_test.h",
-      "user_education/interactive_feature_promo_test_common.cc",
-      "user_education/interactive_feature_promo_test_common.h",
-      "user_education/interactive_feature_promo_test_internal.cc",
-      "user_education/interactive_feature_promo_test_internal.h",
-      "user_education/mock_browser_user_education_interface.cc",
-      "user_education/mock_browser_user_education_interface.h",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -9780,6 +9774,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/webauthn:test_support",
         "//chrome/test/data/webui:resources_grit",
         "//chrome/test/interaction:interactive_ui_tests",
+        "//chrome/test/user_education:impl",
         "//components/actor/core:task_id",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",

@@ -630,6 +630,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/user_education",
       "//chrome/test:test_support_ui",
+      "//chrome/test/user_education:impl",
     ]
   }
 

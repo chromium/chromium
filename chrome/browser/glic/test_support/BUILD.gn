@@ -76,6 +76,9 @@ source_set("test_support") {
     "//chrome/browser/glic:impl",
     "//chrome/test:test_support",
   ]
+  if (!is_android) {
+    public_deps += [ "//chrome/test/user_education:impl" ]
+  }
 
   # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

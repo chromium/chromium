@@ -391,6 +391,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/user_education:impl",
     "//components/contextual_search:test_support",
     "//components/contextual_search/internal",
     "//components/contextual_tasks/public:test_support",

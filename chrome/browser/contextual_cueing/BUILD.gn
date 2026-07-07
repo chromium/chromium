@@ -125,6 +125,7 @@ if (!is_android) {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/infobars",
       "//chrome/test:test_support",
+      "//chrome/test/user_education:impl",
       "//components/infobars/content",
       "//components/metrics/private_metrics/private_insights",
       "//content/public/browser",

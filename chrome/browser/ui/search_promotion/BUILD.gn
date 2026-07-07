@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":search_promotion",
     "//chrome/browser/segmentation_platform",
     "//chrome/test:test_support",
+    "//chrome/test/user_education",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/segmentation_platform/public",

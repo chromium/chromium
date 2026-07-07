@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("user_education") {
+  testonly = true
+  sources = [
+    "interactive_feature_promo_test.h",
+    "interactive_feature_promo_test_common.h",
+    "interactive_feature_promo_test_internal.h",
+    "mock_browser_user_education_interface.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ui/user_education",
+
+    # TODO(crbug.com/353332589): Replace with
+    # //chrome/test/base:in_process_browser_test once
+    # chrome/test/base/in_process_browser_test.{h,cc} are componentized.
+    # interactive_feature_promo_test.h includes in_process_browser_test.h which
+    # is still compiled inside test_support_ui.
+    "//chrome/test:test_support_ui",
+    "//chrome/test/interaction",
+    "//components/feature_engagement/test:test_support",
+    "//components/user_education/common",
+    "//components/user_education/test",
+  ]
+}
+
+source_set("impl") {
+  testonly = true
+  sources = [
+    "interactive_feature_promo_test.cc",
+    "interactive_feature_promo_test_common.cc",
+    "interactive_feature_promo_test_internal.cc",
+    "mock_browser_user_education_interface.cc",
+  ]
+  public_deps = [ ":user_education" ]
+  deps = [
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/user_education",
+    "//components/keyed_service/content",
+    "//components/user_education/views",
+  ]
+}

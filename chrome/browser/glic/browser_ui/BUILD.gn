@@ -262,6 +262,7 @@ if (!is_android) {
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support_ui",
+      "//chrome/test/user_education:impl",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

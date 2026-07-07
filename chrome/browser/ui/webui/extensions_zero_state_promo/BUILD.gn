@@ -73,6 +73,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/user_education:impl",
     "//components/user_education/common",
     "//components/user_education/views",
     "//content/test:test_support",

@@ -991,6 +991,7 @@ if (!is_android) {
       "//chrome/browser/ui/zoom",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/user_education:impl",
       "//components/optimization_guide/core",
       "//content/test:test_support",
       "//ui/display:test_support",

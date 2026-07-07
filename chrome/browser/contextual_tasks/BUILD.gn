@@ -659,6 +659,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+      "//chrome/test/user_education:impl",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
