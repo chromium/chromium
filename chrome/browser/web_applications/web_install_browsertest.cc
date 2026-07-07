@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -79,13 +80,9 @@ constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 }  // namespace
 
 namespace web_app {
-class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
+class WebInstallCurrentDocumentBrowserTestBase : public WebAppBrowserTestBase {
  public:
-  WebInstallCurrentDocumentBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppInstallation},
-        {features::kWebAppInstallDialog});
-  }
+  WebInstallCurrentDocumentBrowserTestBase() = default;
 
   void SetUpOnMainThread() override {
     WebAppBrowserTestBase::SetUpOnMainThread();
@@ -154,12 +151,23 @@ class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
     }
     return EvalJs(contents, "webInstallError.name").ExtractString();
   }
+};
 
- protected:
+class WebInstallCurrentDocumentBrowserTest
+    : public WebInstallCurrentDocumentBrowserTestBase,
+      public base::test::WithFeatureOverride {
+ public:
+  WebInstallCurrentDocumentBrowserTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppInstallation);
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
@@ -251,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   EXPECT_EQ(0u, ukm_entries.size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        UserDeclinesInstallDialog) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -286,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                                1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        UserAcceptsOpenDialog) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -339,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                                1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        UserCancelsOpenDialog) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -381,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                                1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        IntentPickerAfterTabSwitching) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -448,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 using WebInstallNotSupportedDialogBrowserTest =
     WebInstallCurrentDocumentBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_CurrentDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
@@ -504,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                                1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_BackgroundDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
@@ -582,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
             ukm::SourceIdType::APP_ID);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
@@ -650,7 +658,7 @@ class WebInstallGuestModeTest : public WebInstallCurrentDocumentBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
+IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
                        NotSupportedDialogInGuestMode_CurrentDocument) {
   // Open a new guest mode window.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -713,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
                                1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
+IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
                        NotSupportedDialogInGuestMode_BackgroundDocument) {
   // Open a new guest mode window.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -828,7 +836,7 @@ class WebInstallPolicyDisabledTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebInstallPolicyDisabledTest,
+IN_PROC_BROWSER_TEST_P(WebInstallPolicyDisabledTest,
                        NotSupportedDialogInstallPolicy) {
   // Verify the policy is disabled from startup
   ASSERT_FALSE(
@@ -897,7 +905,7 @@ using WebInstallCurrentDocumentBrowserTestManifestErrors =
 // Test that closing the web contents during manifest retrieval doesn't cause
 // crashes or leaks. The WebInstallServiceImpl and its data retrievers should
 // be cleaned up gracefully.
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTestManifestErrors,
                        WebContentsClosedDuringManifestRetrieval) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -940,14 +948,19 @@ enum class BaseFeatureStatus {
 }  // namespace
 
 // Test suite for navigator.install() availability via Origin Trial.
+// Note: This test suite inherits from
+// `WebInstallCurrentDocumentBrowserTestBase` (rather than
+// `WebInstallCurrentDocumentBrowserTest`) because the latter inherits
+// `base::test::WithFeatureOverride` (`WithParamInterface<bool>`), which
+// conflicts with `WithParamInterface<BaseFeatureStatus>`. Because
+// `WebInstallCurrentDocumentBrowserTestBase` does not initialize or enable a
+// `ScopedFeatureList` by default, `scoped_feature_list_.Reset()` is not needed
+// prior to calling `scoped_feature_list_.InitWithFeatures(...)`.
 class WebInstallOriginTrialBrowserTest
-    : public WebInstallCurrentDocumentBrowserTest,
+    : public WebInstallCurrentDocumentBrowserTestBase,
       public testing::WithParamInterface<BaseFeatureStatus> {
  protected:
   WebInstallOriginTrialBrowserTest() {
-    // The base class enables the WebAppInstallation feature by default;
-    // reset it so we can test Origin Trial enabling it.
-    scoped_feature_list_.Reset();
     switch (GetParam()) {
       case BaseFeatureStatus::kDisabled:
         scoped_feature_list_.InitWithFeatures(
@@ -970,7 +983,7 @@ class WebInstallOriginTrialBrowserTest
   ~WebInstallOriginTrialBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebInstallCurrentDocumentBrowserTest::SetUpCommandLine(command_line);
+    WebInstallCurrentDocumentBrowserTestBase::SetUpCommandLine(command_line);
     // Add the public key following:
     // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
     command_line->AppendSwitchASCII(
@@ -979,7 +992,7 @@ class WebInstallOriginTrialBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    WebInstallCurrentDocumentBrowserTest::SetUpOnMainThread();
+    WebInstallCurrentDocumentBrowserTestBase::SetUpOnMainThread();
     url_loader_interceptor_.emplace(
         base::BindRepeating(&WebInstallOriginTrialBrowserTest::InterceptRequest,
                             base::Unretained(this)));
@@ -1014,6 +1027,7 @@ class WebInstallOriginTrialBrowserTest
     return true;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -1093,7 +1107,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
 // Test that spam-calling navigator.install() while dynamically adding/removing
 // the manifest link tag doesn't cause crashes or unexpected behavior.
 // TODO(crbug.com/479729304): disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        DISABLED_SpamInstallWithDynamicManifest) {
   // Start on a page without a manifest.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
@@ -1149,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
 // Test that spam-calling navigator.install() while navigating between pages
 // with and without manifests doesn't cause crashes or unexpected behavior.
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        SpamInstallWithNavigationBetweenPages) {
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
       web_app::SetPwaInstallationAutoRespondForTesting(
@@ -1205,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 // Regression test for the install_in_progress_ guard. Install #1 sits at
 // the install dialog (no auto-accept), keeping the flag set; install #2
 // hits the early-return guard and rejects with AbortError.
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        ConcurrentInstallsRejected) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -1246,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 // ScopedClosureRunner reset path. If the guard reset, install #2 should be
 // counted as kCanceledByUser; a kInstallInProgress count would indicate the
 // flag was not reset.
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        InstallInProgressResets) {
   GURL current_doc_url = embedded_https_test_server().GetURL(
       "/banners/manifest_with_id_test_page.html");
@@ -1320,5 +1334,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
       kInstallResultUma, web_app::WebInstallServiceResult::kInstallInProgress,
       0);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebInstallCurrentDocumentBrowserTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebInstallNotSupportedDialogBrowserTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebInstallGuestModeTest);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebInstallPolicyDisabledTest);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebInstallCurrentDocumentBrowserTestManifestErrors);
 
 }  // namespace web_app

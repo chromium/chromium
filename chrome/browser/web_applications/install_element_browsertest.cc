@@ -4,16 +4,21 @@
 
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -21,6 +26,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
@@ -38,9 +44,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
+#include "ui/views/controls/progress_bar.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 constexpr char kInstallElementId[] = "install-app";
@@ -67,13 +76,13 @@ constexpr char kElementInstalledAppUkm[] = "ElementResultByInstalledApp";
 
 namespace web_app {
 
-class InstallElementBrowserTest : public WebAppBrowserTestBase {
+class InstallElementBrowserTestBase : public WebAppBrowserTestBase {
  public:
-  InstallElementBrowserTest() {
+  InstallElementBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kInstallElement,
          blink::features::kBypassPepcSecurityForTesting},
-        {features::kWebAppInstallDialog});
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -150,9 +159,51 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
   std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
 };
 
+class InstallElementBrowserTest : public InstallElementBrowserTestBase,
+                                  public base::test::WithFeatureOverride {
+ public:
+  InstallElementBrowserTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {}
+
+  void AcceptInstallDialog(views::Widget* widget) {
+    ASSERT_NE(widget, nullptr);
+    auto* dialog_delegate = widget->widget_delegate()->AsDialogDelegate();
+    ASSERT_NE(dialog_delegate, nullptr);
+
+    views::test::WidgetDestroyedWaiter destroyed(widget);
+    if (!IsParamFeatureEnabled()) {
+      dialog_delegate->AcceptDialog();
+    } else {
+      dialog_delegate->AcceptDialog();
+      if (ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+              WebAppInstallFlowDialogDelegate::kOptionsViewId)) {
+        dialog_delegate->AcceptDialog();
+      }
+      views::View* progress_view =
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              WebAppInstallProgressView::kProgressBarId,
+              views::ElementTrackerViews::GetContextForWidget(widget));
+      if (progress_view) {
+        views::ProgressBar* progress_bar =
+            views::AsViewClass<views::ProgressBar>(progress_view);
+        if (progress_bar) {
+          ASSERT_TRUE(base::test::RunUntil([progress_bar]() -> bool {
+            return (progress_bar->GetValue() >= 0.9);
+          }));
+        }
+      }
+      WebAppProvider::GetForWebApps(browser()->profile())
+          ->command_manager()
+          .AwaitAllCommandsCompleteForTesting();
+      dialog_delegate->AcceptDialog();
+    }
+    destroyed.Wait();
+  }
+};
+
 // Test installing current document (no attributes).
 // <install></install>
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install) {
   // Setup histogram tester before navigation so it captures the WebDX feature
   // counter recorded when the <install> element is parsed on page load.
   base::HistogramTester histograms;
@@ -206,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
 
 // Test installing from a background document (installurl only).
 // <install installurl="..."></install>
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrl) {
   // Setup histogram tester before navigation so it captures the WebDX feature
   // counter recorded when the <install> element is parsed on page load.
   base::HistogramTester histograms;
@@ -283,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
 
 // Test installing from a background document (both installurl and manifestid).
 // <install installurl="..." manifestid="..."></install>
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrlAndId) {
   // Setup histogram tester before navigation so it captures the WebDX feature
   // counter recorded when the <install> element is parsed on page load.
   base::HistogramTester histograms;
@@ -359,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
             ukm::SourceIdType::APP_ID);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -421,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
 
 // Test that current document install succeeds even when permission is denied,
 // since current document installs bypass permission.
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install_DenyPermission) {
   // Navigate to a page with <install> elements.
   const GURL current_document_url =
       embedded_https_test_server().GetURL(kInstallElementPageStartUrl);
@@ -469,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
 
 // Test that when permission is denied for background document install, install
 // still occurs. <install> elements bypass permission.
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
                        InstallWithUrl_IgnoresDeniedPermission) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -543,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
             ukm::SourceIdType::APP_ID);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
                        InstallWithUrl_AlreadyInstalled) {
   // There should be no apps installed initially.
   EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 0u);
@@ -610,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 // Tests the case where an app is already installed on initial page load, then
 // uninstalled, and the element is clicked without reloading the page. We expect
 // this to behave like a fresh install.
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
                        InstallWithUrl_AlreadyInstalledThenUninstalled) {
   // Step 1: Preinstall a background document.
   const GURL background_doc_install_url =
@@ -644,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   // Set up to wait for the install dialog.
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
+      views::test::AnyWidgetTestPasskey{},
+      IsParamFeatureEnabled() ? "WebAppInstallFlowDialog" : kInstallDialogName);
 
   // Click the install element asynchronously so we can wait for the dialog.
   content::ExecuteScriptAsync(
@@ -655,11 +707,11 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
 
-  // Step 6: Accept the dialog.
-  views::test::AcceptDialog(widget);
+  AcceptInstallDialog(widget);
 
-  // Verify promptaction event was fired and the app installed.
+  // Step 6: Verify promptaction event was fired.
   WaitForPromptActionEvent(kInstallElementId);
+
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
@@ -668,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 // Bad input error cases - bad manifests, invalid URLs, etc
 ///////////////////////////////////////////////////////////////////////////////
 
-IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InvalidInstallUrl) {
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InvalidInstallUrl) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -697,11 +749,13 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InvalidInstallUrl) {
 // navigator.install() JS API, so we can test interactions between them on the
 // same document (same WebInstallServiceImpl instance).
 class InstallElementAndApiInteractionBrowserTest
-    : public InstallElementBrowserTest {
+    : public InstallElementBrowserTestBase,
+      public base::test::WithFeatureOverride {
  public:
-  InstallElementAndApiInteractionBrowserTest() {
-    additional_features_.InitWithFeatures(
-        {blink::features::kWebAppInstallation}, {});
+  InstallElementAndApiInteractionBrowserTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {
+    additional_features_.InitAndEnableFeature(
+        blink::features::kWebAppInstallation);
   }
 
  private:
@@ -712,7 +766,7 @@ class InstallElementAndApiInteractionBrowserTest
 // InstallFromElement() but never reset, causing subsequent Install() calls via
 // navigator.install() on the same document to bypass the permissions-policy and
 // permission prompt checks.
-IN_PROC_BROWSER_TEST_F(InstallElementAndApiInteractionBrowserTest,
+IN_PROC_BROWSER_TEST_P(InstallElementAndApiInteractionBrowserTest,
                        InstallApiRespectsPermissionsAfterElementInstall) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -792,7 +846,7 @@ enum class BaseFeatureStatus {
 
 // Test suite for <install> element availability via Origin Trial.
 class InstallElementOriginTrialBrowserTest
-    : public InstallElementBrowserTest,
+    : public InstallElementBrowserTestBase,
       public testing::WithParamInterface<BaseFeatureStatus> {
  protected:
   InstallElementOriginTrialBrowserTest() {
@@ -823,7 +877,7 @@ class InstallElementOriginTrialBrowserTest
   ~InstallElementOriginTrialBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InstallElementBrowserTest::SetUpCommandLine(command_line);
+    InstallElementBrowserTestBase::SetUpCommandLine(command_line);
     // Add the public key following:
     // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
     command_line->AppendSwitchASCII(
@@ -832,7 +886,7 @@ class InstallElementOriginTrialBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    InstallElementBrowserTest::SetUpOnMainThread();
+    InstallElementBrowserTestBase::SetUpOnMainThread();
     url_loader_interceptor_.emplace(base::BindRepeating(
         &InstallElementOriginTrialBrowserTest::InterceptRequest,
         base::Unretained(this)));
@@ -922,5 +976,10 @@ IN_PROC_BROWSER_TEST_P(InstallElementOriginTrialBrowserTest,
       break;
   }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(InstallElementBrowserTest);
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    InstallElementAndApiInteractionBrowserTest);
 
 }  // namespace web_app
