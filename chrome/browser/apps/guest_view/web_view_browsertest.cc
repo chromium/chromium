@@ -48,7 +48,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_ui.h"
-#include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/guest_view/web_view/context_menu_content_type_web_view.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
