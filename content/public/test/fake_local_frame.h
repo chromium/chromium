@@ -94,8 +94,6 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation) override;
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;
-  void OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility visibility) override;
   void PostMessageEvent(
       const std::optional<blink::RemoteFrameToken>& source_frame_token,
       const std::optional<url::Origin>& source_origin,

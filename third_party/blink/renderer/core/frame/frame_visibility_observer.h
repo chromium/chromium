@@ -5,36 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VISIBILITY_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VISIBILITY_OBSERVER_H_
 
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
-class LocalFrame;
-
-// This is an observer to observe changes to the in-viewport visibility of a
-// given frame.
-// TODO(crbug.com/351354996): Remove the GarbageCollectedMixin inheritance after
-// the AudioContext refactor is completed.
+// This is an observer to observe changes to the visibility of a given frame.
+// For example, a frame is hidden when:
+// - The "visibility" property is set to "hidden",
+// - The "display" property is set to "none",
+// - The frame has zero area (width or height is 0).
 class CORE_EXPORT FrameVisibilityObserver : public GarbageCollectedMixin {
  public:
-  // TODO(crbug.com/351354996): Remove this after the refactor is completed.
-  virtual void FrameVisibilityChanged(mojom::blink::FrameVisibility) {}
-
-  // TODO(crbug.com/351354996): Make these methods pure virtual in the follow-up
-  // CL.
-  // Called when the observed frame becomes not rendered - i.e., when the
-  // frame visibility status is `blink::mojom::FrameVisibility::kNotRendered`.
-  virtual void OnFrameHidden() {}
-  virtual void OnFrameShown() {}
-
- protected:
-  // TODO(crbug.com/351354996): Remove these constructors after the AudioContext
-  // refactor is completed.
-  FrameVisibilityObserver() = default;
-  explicit FrameVisibilityObserver(LocalFrame*);
+  virtual void OnFrameHidden() = 0;
+  virtual void OnFrameShown() = 0;
 };
 
 }  // namespace blink

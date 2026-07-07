@@ -4978,13 +4978,6 @@ void RenderFrameImpl::WasShown() {
     observer.WasShown();
 }
 
-void RenderFrameImpl::OnFrameVisibilityChanged(
-    blink::mojom::FrameVisibility render_status) {
-  for (auto& observer : observers_) {
-    observer.OnFrameVisibilityChanged(render_status);
-  }
-}
-
 bool RenderFrameImpl::IsMainFrame() {
   return is_main_frame_;
 }

@@ -4252,18 +4252,6 @@ void LocalFrame::OnStorageAccessCallback(
   std::move(callback).Run(is_allowed);
 }
 
-void LocalFrame::NotifyFrameVisibilityChanged(
-    mojom::blink::FrameVisibility visibility) {
-  // Iterate on a copy of the vector to avoid invalidating the iterator if
-  // `FrameVisibilityChanged` happens to remove the observer from
-  // `frame_visibility_observers_`.
-  HeapVector<Member<FrameVisibilityObserver>>
-      frame_visibility_observers_as_vector(frame_visibility_observers_);
-  for (auto observer : frame_visibility_observers_as_vector) {
-    observer->FrameVisibilityChanged(visibility);
-  }
-}
-
 void LocalFrame::AddVisibilityObserver(FrameVisibilityObserver* observer) {
   frame_visibility_observers_.insert(observer);
 }
@@ -4281,7 +4269,7 @@ void LocalFrame::OnFrameVisibilityChangedForMediaPlayback(bool is_hidden) {
   is_hidden_for_media_playback_ = is_hidden;
 
   // Iterate on a copy of the vector to avoid invalidating the iterator if
-  // `FrameVisibilityChanged` happens to remove the observer from
+  // `OnFrameHidden` or `OnFrameShown` happens to remove the observer from
   // `frame_visibility_observers_`.
   HeapVector<Member<FrameVisibilityObserver>>
       frame_visibility_observers_as_vector(frame_visibility_observers_);

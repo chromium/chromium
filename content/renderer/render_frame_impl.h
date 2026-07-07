@@ -674,8 +674,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void WasHidden() override;
   void WasShown() override;
-  void OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility render_status) override;
 
   blink::WebURL LastCommittedUrlForUKM() override;
   void ScriptedPrint() override;

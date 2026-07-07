@@ -84,10 +84,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void WasHidden() {}
   virtual void WasShown() {}
 
-  // Called when the RenderFrame's visibility status changes.
-  virtual void OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility render_status) {}
-
   // Navigation callbacks.
   //
   // Each navigation starts with a DidStartNavigation call. Then it may be

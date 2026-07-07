@@ -144,7 +144,6 @@ class LocalFrameMojoHandler
   // frame's sandbox flags or container policy. The new policy won't take effect
   // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
-  void OnFrameVisibilityChanged(mojom::blink::FrameVisibility visibility) final;
   void PostMessageEvent(
       const std::optional<RemoteFrameToken>& source_frame_token,
       const scoped_refptr<const SecurityOrigin>& source_origin,

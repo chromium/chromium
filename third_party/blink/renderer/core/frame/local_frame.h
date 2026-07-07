@@ -972,9 +972,6 @@ class CORE_EXPORT LocalFrame final
   bool AllowStorageAccessSyncAndNotify(
       blink::WebContentSettingsClient::StorageType storage_type);
 
-  // TODO(crbug.com/351354996): Remove this after the refactor is completed.
-  void NotifyFrameVisibilityChanged(mojom::blink::FrameVisibility visibility);
-
   void AddVisibilityObserver(FrameVisibilityObserver* observer);
   void RemoveVisibilityObserver(FrameVisibilityObserver* observer);
 
