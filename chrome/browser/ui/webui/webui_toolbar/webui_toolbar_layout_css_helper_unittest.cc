@@ -98,3 +98,18 @@ TEST_F(WebUIToolbarLayoutCssHelperTest, EscapeCssFontName) {
   EXPECT_EQ("\\0A \\0C ",
             WebUIToolbarLayoutCssHelper::EscapeCssFontName("\n\f"));
 }
+
+TEST_F(WebUIToolbarLayoutCssHelperTest,
+       GenerateLayoutConstantsCss_MultipleFonts) {
+  layout_provider_.SetFontDetails(
+      CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY,
+      ui::ResourceBundle::FontDetails("sans, serif",
+                                      /*size_delta=*/0,
+                                      /*weight=*/gfx::Font::Weight::NORMAL));
+
+  std::string css = WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss();
+  EXPECT_TRUE(css.find("--omnibox-primary-font-family:\"sans\",\"serif\";") !=
+              std::string::npos)
+      << "Actual CSS:\n"
+      << css;
+}
