@@ -361,6 +361,10 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDragAndDrop) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxErrorScrim) {
+  RunTest("cr_components/composebox/error_scrim_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileCarousel) {
   RunTest("cr_components/composebox/file_carousel_test.js", "mocha.run()");
 }

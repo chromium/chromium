@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ErrorScrimElement} from 'chrome://new-tab-page/lazy_load.js';
-import type{CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://contextual-tasks/strings.m.js';
+
+import {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-suite('NewTabPageErrorScrimTest', () => {
+suite('ComposeboxErrorScrimTest', () => {
   let errorScrimElement: ErrorScrimElement;
 
   setup(() => {
@@ -44,31 +46,29 @@ suite('NewTabPageErrorScrimTest', () => {
     assertFalse(dismissButton.disabled);
   });
 
-  test(
-      'Error scrim should fire dismiss error scrim event', async () => {
-        // Initial act: display error scrim.
-        const emptyFileErrorMessage =
-            'Can\'t upload. File appears to be empty.';
+  test('Error scrim should fire dismiss error scrim event', async () => {
+    // Initial act: display error scrim.
+    const emptyFileErrorMessage = 'Can\'t upload. File appears to be empty.';
 
-        errorScrimElement.errorMessage = emptyFileErrorMessage;
-        await microtasksFinished();
+    errorScrimElement.errorMessage = emptyFileErrorMessage;
+    await microtasksFinished();
 
-        // Assert Initial state.
-        const initialScrim =
-            errorScrimElement.shadowRoot.querySelector('#errorScrim');
-        assertTrue(!!initialScrim);
+    // Assert Initial state.
+    const initialScrim =
+        errorScrimElement.shadowRoot.querySelector('#errorScrim');
+    assertTrue(!!initialScrim);
 
-        // Act.
-        let dismissEventFired = false;
-        errorScrimElement.addEventListener(
-            'dismiss-error-scrim', () => dismissEventFired = true);
+    // Act.
+    let dismissEventFired = false;
+    errorScrimElement.addEventListener(
+        'dismiss-error-scrim', () => dismissEventFired = true);
 
-        const dismissButton =
-            initialScrim.querySelector<CrButtonElement>('#dismissErrorButton')!;
-        dismissButton.click();
-        await microtasksFinished();
+    const dismissButton =
+        initialScrim.querySelector<CrButtonElement>('#dismissErrorButton')!;
+    dismissButton.click();
+    await microtasksFinished();
 
-        // Event should be fired.
-        assertTrue(dismissEventFired);
-      });
+    // Event should be fired.
+    assertTrue(dismissEventFired);
+  });
 });

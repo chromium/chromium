@@ -13,6 +13,5 @@ composebox_test_files = [
   "composebox/file_carousel_test.ts",
   "composebox/file_thumbnail_test.ts",
   "composebox/test_support.ts",
-  "composebox/error_scrim_test.ts",
   "composebox/threads_rail_test.ts",
 ]

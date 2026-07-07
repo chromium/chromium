@@ -337,9 +337,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
   RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ErrorScrim) {
-  RunTest("new_tab_page/composebox/error_scrim_test.js", "mocha.run()");
-}
 
 using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
 

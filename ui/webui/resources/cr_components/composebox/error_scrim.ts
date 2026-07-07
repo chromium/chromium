@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';

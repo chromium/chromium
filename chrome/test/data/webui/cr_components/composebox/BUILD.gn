@@ -32,6 +32,7 @@ build_webui_tests("build") {
     "contextual_action_menu_test.ts",
     "contextual_entrypoint_and_menu_test.ts",
     "contextual_entrypoint_button_test.ts",
+    "error_scrim_test.ts",
     "file_carousel_test.ts",
     "recent_tab_chip_test.ts",
     "recording_wave_test.ts",
