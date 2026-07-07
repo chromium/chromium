@@ -37,11 +37,6 @@ class NetLog;
 
 namespace network {
 
-// Retries to send a packet after an `ERR_NO_BUFFER_SPACE` result. The retry is
-// on a timer that doubles its interval for each retry iteration until
-// `kMaxSendRetries`.
-COMPONENT_EXPORT(NETWORK_SERVICE) BASE_DECLARE_FEATURE(kP2PSocketSendRetry);
-
 class P2PMessageThrottler;
 class ThrottlingP2PNetworkInterceptor;
 
@@ -146,9 +141,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // operation or a socket error.
   void SendQueuedPackets();
 
-  // Returns true for `ERR_NO_BUFFER_SPACE` result codes when the
-  // `kP2PSocketSendRetry` feature is enabled and `send_retry_count_` is less
-  // than `kMaxSendRetries`.
+  // Returns true for `ERR_NO_BUFFER_SPACE` result codes when
+  // `send_retry_count_` is less than `kMaxSendRetries`.
   bool IsRetryableSendError(int socket_result_code) const;
 
   // Increments `send_retry_count_` and starts `send_retry_timer_` to retry
@@ -204,10 +198,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // Timer set when sending a packet should be retried after
   // `ERR_NO_BUFFER_SPACE`.
   base::OneShotTimer send_retry_timer_;
-
-  // The timestamp for the first retry.  Used to measure the total delay
-  // introduced by all retry attempts.
-  base::Time send_retry_start_time_;
 
   // The number of consecutive retries for a packet.  Retries stop after
   // `kMaxSendRetries`.

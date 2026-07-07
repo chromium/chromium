@@ -1735,9 +1735,6 @@ TEST_F(P2PSocketUdpTest, RetrySendAfterNoBufferSpace) {
   ASSERT_EQ(dest1_, std::get<0>(sent_packets_[0]));
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult", net::OK, 1);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult", net::OK, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    base::Milliseconds(1), 1);
 }
 
 // Verify that queued packets are sent after a retry completes.
@@ -1782,9 +1779,6 @@ TEST_F(P2PSocketUdpTest, RetrySendThenSendQueuedPackets) {
   ASSERT_EQ(std::get<1>(sent_packets_[1]), packet2);
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult", net::OK, 2);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult", net::OK, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    base::Milliseconds(1), 1);
 }
 
 // Verify exponential backoff doubles the delay for each retry.
@@ -1824,9 +1818,6 @@ TEST_F(P2PSocketUdpTest, RetrySendWithExponentialBackoff) {
   ASSERT_EQ(1U, sent_packets_.size());
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult", net::OK, 1);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult", net::OK, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    base::Milliseconds(7), 1);
 }
 
 // Verify that the socket is destroyed and a connection error is reported when
@@ -1865,10 +1856,6 @@ TEST_F(P2PSocketUdpTest, RetrySendWithTimeout) {
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult",
                                 net::ERR_NO_BUFFER_SPACE, 1);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult",
-                                net::ERR_NO_BUFFER_SPACE, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    total_delay, 1);
 }
 
 // Verify that a non-retryable error during a retry attempt causes the
@@ -1910,10 +1897,6 @@ TEST_F(P2PSocketUdpTest, RetrySendWithError) {
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult", net::ERR_FAILED,
                                 1);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult",
-                                net::ERR_FAILED, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    base::Milliseconds(1), 1);
 }
 
 // Verify that a retry followed by an asynchronous send completes successfully.
@@ -1949,9 +1932,6 @@ TEST_F(P2PSocketUdpTest, RetrySendThenAsyncSend) {
   ASSERT_EQ(dest1_, std::get<0>(sent_packets_[0]));
 
   histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult", net::OK, 1);
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendRetryResult", net::OK, 1);
-  histograms.ExpectUniqueTimeSample("WebRTC.P2P.UDP.SendRetryDelay",
-                                    base::Milliseconds(1), 1);
 }
 
 // Verify that a pending send retry is cancelled when a read error destroys the
@@ -1996,41 +1976,6 @@ TEST_F(P2PSocketUdpTest, RetrySendCancelledByReadError) {
   ASSERT_EQ(0U, sent_packets_.size());
 
   histograms.ExpectTotalCount("WebRTC.P2P.UDP.SendResult", 0);
-  histograms.ExpectTotalCount("WebRTC.P2P.UDP.SendRetryResult", 0);
-  histograms.ExpectTotalCount("WebRTC.P2P.UDP.SendRetryDelay", 0);
-}
-
-// Verify that retries are disabled when the feature flag is disabled.
-TEST_F(P2PSocketUdpTest, NoSendRetryWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kP2PSocketSendRetry);
-
-  base::HistogramTester histograms;
-
-  // Simulate a failure.
-  socket_->send_result_queue().push_back(net::ERR_NO_BUFFER_SPACE);
-
-  // Receive packet from `dest1_` to allow sending data.
-  std::vector<uint8_t> request_packet;
-  CreateStunRequest(&request_packet);
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
-  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
-  socket_->ReceivePacket(dest1_, request_packet);
-
-  socket_ = nullptr;
-  auto* socket_impl_ptr = socket_impl_.get();
-  socket_delegate_.ExpectDestruction(std::move(socket_impl_));
-  socket_impl_ptr->Send(request_packet, P2PPacketInfo(dest1_, {}, 0));
-
-  ASSERT_EQ(0U, sent_packets_.size());
-
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return fake_client_->connection_error(); }));
-
-  histograms.ExpectUniqueSample("WebRTC.P2P.UDP.SendResult",
-                                net::ERR_NO_BUFFER_SPACE, 1);
-  histograms.ExpectTotalCount("WebRTC.P2P.UDP.SendRetryResult", 0);
-  histograms.ExpectTotalCount("WebRTC.P2P.UDP.SendRetryDelay", 0);
 }
 
 TEST_F(P2PSocketUdpTest, SendRejectsRestrictedPort) {
