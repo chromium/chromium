@@ -105,6 +105,7 @@ source_set("unit_tests") {
   sources = [
     "auth_session_request_unittest.mm",
     "code_sign_clone_manager_unittest.mm",
+    "dock_unittest.mm",
     "exception_processor_unittest.mm",
     "metrics_unittest.mm",
   ]

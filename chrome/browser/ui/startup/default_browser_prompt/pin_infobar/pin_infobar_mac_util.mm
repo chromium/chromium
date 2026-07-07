@@ -10,7 +10,7 @@
 namespace default_browser {
 
 bool ShouldOfferToPin() {
-  return dock::ChromeIsInTheDock() == dock::ChromeInDockFalse;
+  return dock::ChromeIsInTheDock() == dock::ChromeInDockStatus::kNotPresent;
 }
 
 void PinChromeToDock() {

@@ -261,12 +261,12 @@ std::optional<LaunchMode> GetLaunchModeFast(
       IsAppRunningFromReadOnlyDiskImage(nullptr);
   dock::ChromeInDockStatus dock_launch_status = dock::ChromeIsInTheDock();
 
-  if (dock_launch_status == dock::ChromeInDockFailure &&
+  if (dock_launch_status == dock::ChromeInDockStatus::kFailure &&
       dmg_launch_status == DiskImageStatusFailure) {
     return LaunchMode::kMacDockDMGStatusError;
   }
 
-  if (dock_launch_status == dock::ChromeInDockFailure) {
+  if (dock_launch_status == dock::ChromeInDockStatus::kFailure) {
     return LaunchMode::kMacDockStatusError;
   }
 
@@ -275,7 +275,7 @@ std::optional<LaunchMode> GetLaunchModeFast(
   }
 
   bool dmg_launch = dmg_launch_status == DiskImageStatusTrue;
-  bool dock_launch = dock_launch_status == dock::ChromeInDockTrue;
+  bool dock_launch = dock_launch_status == dock::ChromeInDockStatus::kPresent;
 
   if (dmg_launch && dock_launch) {
     return LaunchMode::kMacDockedDMGLaunch;

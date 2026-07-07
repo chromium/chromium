@@ -6,30 +6,22 @@
 #define CHROME_BROWSER_MAC_DOCK_H_
 
 #if defined(__OBJC__)
-@class NSString;
+#import <Foundation/Foundation.h>
 #endif
 
 namespace dock {
 
-enum ChromeInDockStatus {
-  ChromeInDockFailure,
-  ChromeInDockFalse,
-  ChromeInDockTrue
-};
+enum class ChromeInDockStatus { kFailure, kNotPresent, kPresent };
 
-enum AddIconStatus {
-  IconAddFailure,
-  IconAddSuccess,
-  IconAlreadyPresent
-};
+enum class AddIconStatus { kFailure, kSuccess, kAlreadyPresent };
 
 // Returns info about Chrome's presence in the Dock.
 ChromeInDockStatus ChromeIsInTheDock();
 
 #if defined(__OBJC__)
 
-// Adds an icon to the Dock pointing to |installed_path| if one is not already
-// present. |dmg_app_path| is the path to the install source. Its tile will be
+// Adds an icon to the Dock pointing to `installed_path` if one is not already
+// present. `dmg_app_path` is the path to the install source. Its tile will be
 // removed if present. If any changes are made to the Dock's configuration,
 // the Dock process is restarted so that the changes become visible in the UI.
 //
@@ -65,6 +57,19 @@ ChromeInDockStatus ChromeIsInTheDock();
 // is not done. Upon relaunch, Dock.app will determine the correct values for
 // the properties it requires and add them to its configuration.
 AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path);
+
+struct RewriteDockPlistResult {
+  // The result of the plist rewrite.
+  AddIconStatus status;
+
+  // The resulting rewritten plist. It is set if there was a change made to the
+  // plist (`status == AddIconStatus::kSuccess`), and is nil otherwise.
+  NSDictionary* result_plist;
+};
+
+RewriteDockPlistResult RewriteDockPlistForTesting(NSDictionary* dock_plist,
+                                                  NSString* installed_path,
+                                                  NSString* dmg_app_path);
 
 #endif  // __OBJC__
 
