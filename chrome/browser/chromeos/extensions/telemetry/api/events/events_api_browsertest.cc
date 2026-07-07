@@ -650,26 +650,27 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
   )");
 
   // Check that the UI was correctly open.
-  bool is_diagnostic_app_open = false;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&is_diagnostic_app_open](
-          BrowserWindowInterface* browser_window_interface) {
-        TabStripModel* target_tab_strip =
-            browser_window_interface->GetTabStripModel();
-        for (int i = 0; i < target_tab_strip->count(); ++i) {
-          content::WebContents* const target_contents =
-              target_tab_strip->GetWebContentsAt(i);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    bool is_diagnostic_app_open = false;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&is_diagnostic_app_open](
+            BrowserWindowInterface* browser_window_interface) {
+          TabStripModel* target_tab_strip =
+              browser_window_interface->GetTabStripModel();
+          for (int i = 0; i < target_tab_strip->count(); ++i) {
+            content::WebContents* const target_contents =
+                target_tab_strip->GetWebContentsAt(i);
 
-          if (target_contents->GetLastCommittedURL() ==
-              GURL(kKeyboardDiagnosticsUrl)) {
-            is_diagnostic_app_open = true;
-            return false;
+            if (target_contents->GetLastCommittedURL() ==
+                GURL(kKeyboardDiagnosticsUrl)) {
+              is_diagnostic_app_open = true;
+              return false;
+            }
           }
-        }
-        return true;
-      });
-
-  EXPECT_TRUE(is_diagnostic_app_open);
+          return true;
+        });
+    return is_diagnostic_app_open;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
