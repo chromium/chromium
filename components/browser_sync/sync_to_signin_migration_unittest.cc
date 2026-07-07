@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1531,17 +1532,21 @@ class SyncToSigninMigrationDataTypesTest
   }
 
   base::FilePath GetBookmarksLocalStorePath() const {
-    return fake_profile_dir_.GetPath().AppendASCII("Bookmarks");
+    return fake_profile_dir_.GetPath().Append(
+        bookmarks::kLocalOrSyncableBookmarksFileName);
   }
   base::FilePath GetBookmarksAccountStorePath() const {
-    return fake_profile_dir_.GetPath().AppendASCII("AccountBookmarks");
+    return fake_profile_dir_.GetPath().Append(
+        bookmarks::kAccountBookmarksFileName);
   }
 
   base::FilePath GetEncryptedBookmarksLocalStorePath() const {
-    return fake_profile_dir_.GetPath().AppendASCII("EncryptedBookmarks");
+    return fake_profile_dir_.GetPath().Append(
+        bookmarks::kEncryptedLocalOrSyncableBookmarksFileName);
   }
   base::FilePath GetEncryptedBookmarksAccountStorePath() const {
-    return fake_profile_dir_.GetPath().AppendASCII("EncryptedAccountBookmarks");
+    return fake_profile_dir_.GetPath().Append(
+        bookmarks::kEncryptedAccountBookmarksFileName);
   }
 
   base::FilePath GetPasswordsLocalStorePath() const {
