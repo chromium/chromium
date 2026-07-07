@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 

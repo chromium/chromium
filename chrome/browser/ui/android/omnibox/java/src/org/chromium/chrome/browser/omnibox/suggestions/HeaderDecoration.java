@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.collection.SimpleArrayMap;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +49,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
         mTextPaintIncognito = createTextPaint(tv, true);
     }
 
+    @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
     private TextPaint createTextPaint(TextView tv, boolean isIncognito) {
         tv.setTextAppearance(ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
         TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -61,10 +61,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(
-            @NonNull Rect outRect,
-            @NonNull View view,
-            @NonNull RecyclerView parent,
-            @NonNull RecyclerView.State state) {
+            Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         PropertyModel model = getModel(view, parent);
         if (model != null
                 && !TextUtils.isEmpty(model.get(SuggestionCommonProperties.HEADER_TITLE))) {
@@ -73,10 +70,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(
-            @NonNull Canvas canvas,
-            @NonNull RecyclerView parent,
-            @NonNull RecyclerView.State state) {
+    public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         float headerAvailableWidth =
                 Math.max(
                         0,
@@ -129,7 +123,7 @@ public class HeaderDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    private @Nullable PropertyModel getModel(@NonNull View view, @NonNull RecyclerView parent) {
+    private @Nullable PropertyModel getModel(View view, RecyclerView parent) {
         if (parent.getChildViewHolder(view)
                 instanceof SimpleRecyclerViewAdapter.ViewHolder suggestionViewHolder) {
             return suggestionViewHolder.model;
