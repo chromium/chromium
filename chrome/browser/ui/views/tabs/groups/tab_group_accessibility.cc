@@ -78,6 +78,9 @@ std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data) {
   // Prepare arguments for accessibility string, starting with the tab list.
   static constexpr int kAccessibleTabTitleMaxLength = 50;
   std::vector<std::u16string> formatted_titles;
+  // First put an item to show the number of tabs.
+  formatted_titles.emplace_back(l10n_util::GetPluralStringFUTF16(
+      IDS_TAB_GROUPS_UNNAMED_GROUP_HOVER_CARD_HEADER, num_tabs));
   const int tabs_to_show =
       static_cast<int>(std::min(tab_data.size(), tabs::TabGroupData::kMaxTabs));
   for (int i = 0; i < tabs_to_show; ++i) {

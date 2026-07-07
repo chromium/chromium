@@ -263,8 +263,13 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Tab 1 - Expanded";
+      u" group Group Title - 1 Tab, \u2022  Tab 1 - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u" group Group Title - 1 tab, \u2022  Tab 1 - Expanded";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
@@ -302,9 +307,17 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u" group Group Title - 5 Tabs, \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab "
+      u"3, "
       u"\u2022  Tab 4, \u2022  Tab 5 - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u" group Group Title - 5 tabs, \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab "
+      u"3, "
+      u"\u2022  Tab 4, \u2022  Tab 5 - Expanded";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
@@ -344,11 +357,13 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_ExcessTabs) {
 
 #if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u" group Group Title - 6 Tabs, \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab "
+      u"3, "
       u"\u2022  Tab 4, \u2022  Tab 5, + 1 More - Expanded";
 #else
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab 3, "
+      u" group Group Title - 6 tabs, \u2022  Tab 1, \u2022  Tab 2, \u2022  Tab "
+      u"3, "
       u"\u2022  Tab 4, \u2022  Tab 5, + 1 more - Expanded";
 #endif
 
@@ -394,8 +409,13 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" unnamed group - \u2022  Tab 1, \u2022  Tab 2 - Expanded";
+      u" unnamed group - 2 Tabs, \u2022  Tab 1, \u2022  Tab 2 - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u" unnamed group - 2 tabs, \u2022  Tab 1, \u2022  Tab 2 - Expanded";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
@@ -435,9 +455,15 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Very Long Tab Title "
+      u" group Group Title - 1 Tab, \u2022  Very Long Tab Title "
       u"01234567890123456789012345\u2026 - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u" group Group Title - 1 tab, \u2022  Very Long Tab Title "
+      u"01234567890123456789012345\u2026 - Expanded";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
@@ -474,8 +500,13 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_SharedGroup) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u"Shared group Group Title - \u2022  Tab 1 - Expanded";
+      u"Shared group Group Title - 1 Tab, \u2022  Tab 1 - Expanded";
+#else
+  std::u16string expected_acc_text =
+      u"Shared group Group Title - 1 tab, \u2022  Tab 1 - Expanded";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
@@ -511,8 +542,13 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
       .WillRepeatedly(testing::ReturnRef(data));
   header->OnDataChanged(data);
 
+#if BUILDFLAG(IS_MAC)
   std::u16string expected_acc_text =
-      u" group Group Title - \u2022  Tab 1 - Collapsed";
+      u" group Group Title - 1 Tab, \u2022  Tab 1 - Collapsed";
+#else
+  std::u16string expected_acc_text =
+      u" group Group Title - 1 tab, \u2022  Tab 1 - Collapsed";
+#endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
 }
