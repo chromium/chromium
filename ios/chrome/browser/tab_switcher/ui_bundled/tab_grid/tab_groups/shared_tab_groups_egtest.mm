@@ -256,6 +256,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 - (void)tearDownHelper {
   [super tearDownHelper];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
   // Delete all groups.
   [TabGroupAppInterface cleanup];
 }
