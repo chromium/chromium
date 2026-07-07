@@ -9,8 +9,8 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_enablement_service.h"
 #import "components/personal_context/core/personal_context_service.h"
-#import "ios/chrome/browser/autofill/model/ios_personal_context_enablement_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_personal_context_service_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_enablement_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace autofill {
@@ -32,8 +32,7 @@ IOSPersonalContextAccessManagerFactory::GetInstance() {
 IOSPersonalContextAccessManagerFactory::IOSPersonalContextAccessManagerFactory()
     : ProfileKeyedServiceFactoryIOS("PersonalContextAccessManager",
                                     ProfileSelection::kNoInstanceInIncognito) {
-  DependsOn(personal_context::IOSPersonalContextEnablementServiceFactory::
-                GetInstance());
+  DependsOn(IOSPersonalContextEnablementServiceFactory::GetInstance());
   DependsOn(personal_context::IOSPersonalContextServiceFactory::GetInstance());
 }
 
@@ -51,7 +50,7 @@ IOSPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
       personal_context::IOSPersonalContextServiceFactory::GetForProfile(
           profile);
   personal_context::PersonalContextEnablementService*
-      personal_context_enablement_service = personal_context::
+      personal_context_enablement_service =
           IOSPersonalContextEnablementServiceFactory::GetForProfile(profile);
 
   if (!personal_context_service || !personal_context_enablement_service) {

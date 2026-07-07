@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/personal_context/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/subscription_eligibility/model",
   "+ios/chrome/browser/sync/model",
