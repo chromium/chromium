@@ -603,14 +603,6 @@ bool TabIcon::GetCrashed() const {
 }
 
 void TabIcon::UpdateThrobber() {
-  const gfx::Rect contents_bounds = GetContentsBounds();
-  if (contents_bounds.IsEmpty()) {
-    if (throbber_view_) {
-      RemoveChildViewT(std::exchange(throbber_view_, nullptr));
-    }
-    return;
-  }
-
   // Since the loading animation can run for a long time, paint to a
   // separate layer when possible to reduce repaint overhead.
   bool should_paint_to_layer =
@@ -634,6 +626,14 @@ void TabIcon::UpdateThrobber() {
       GetShowingLoadingAnimation();
 
   if (use_compositor_throbber) {
+    const gfx::Rect contents_bounds = GetContentsBounds();
+    if (contents_bounds.IsEmpty()) {
+      if (throbber_view_) {
+        RemoveChildViewT(std::exchange(throbber_view_, nullptr));
+      }
+      return;
+    }
+
     if (!throbber_view_) {
       throbber_view_ = AddChildView(std::make_unique<ThrobberView>());
     }
