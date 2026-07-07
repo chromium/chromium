@@ -42,7 +42,9 @@ MATCHER_P2(SizeIsInRange, min_size, max_size, "") {
 class IndigoOnboardingDialogBrowserTest : public InteractiveBrowserTest {
  public:
   IndigoOnboardingDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kIndigo);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIndigo,
+        {{features::kIndigoAllowForEnterprise.name, "true"}});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

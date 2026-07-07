@@ -147,7 +147,8 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIndigo,
           {{features::kIndigoGenerateUrl.name,
-            fake_api_.GetGenerateUrl().spec()}}},
+            fake_api_.GetGenerateUrl().spec()},
+           {features::kIndigoAllowForEnterprise.name, "true"}}},
          {blink::features::kImageReplacement, {}}},
         {});
     InteractiveBrowserTest::SetUp();

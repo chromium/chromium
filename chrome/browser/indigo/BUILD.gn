@@ -70,6 +70,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser:global_features",
     "//chrome/browser/component_updater",
+    "//chrome/browser/enterprise",
     "//chrome/browser/extensions",
     "//chrome/browser/glic",
     "//chrome/browser/indigo/onboarding",
@@ -91,6 +92,7 @@ source_set("impl") {
     "//chrome/common:mojo_bindings",
     "//components/application_locale_storage",
     "//components/optimization_guide/core",
+    "//components/policy/core/common",
     "//components/signin/public/identity_manager",
     "//components/skills/public",
     "//content/public/browser",
@@ -100,6 +102,9 @@ source_set("impl") {
     "//services/network/public/mojom",
     "//third_party/blink/public/common",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/install_attributes" ]
+  }
 }
 source_set("test_support") {
   testonly = true
@@ -152,7 +157,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/ash/components/network:test_support" ]
+    deps += [
+      "//chromeos/ash/components/install_attributes:test_support",
+      "//chromeos/ash/components/network:test_support",
+    ]
   }
 }
 

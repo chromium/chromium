@@ -12,7 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/api_client.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -33,9 +36,45 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "base/enterprise_util.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#endif
+
 namespace indigo {
 
 namespace {
+
+// Returns true if there is any enterprise management at the profile, browser,
+// or physical device level.
+bool IsBrowserUnderAnyEnterpriseManagement(Profile* profile) {
+  // 1. Browser / Profile Level: Check if administrative policies (cloud policy,
+  // local machine Group Policy Object, macOS plist, Linux
+  // /etc/opt/chrome/policies, or local device management) are actively managing
+  // this browser or profile.
+  if (profile &&
+      policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged()) {
+    return true;
+  }
+
+  // 2. Physical Device / OS Level: Check if the physical hardware is domain
+  // joined, MDM enrolled, or enterprise cloud managed.
+  // Note: All Linux machine management (via /etc/opt/chrome/policies/ or Chrome
+  // Browser Cloud Management) is fully captured by Step 1 above.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::IsManagedOrEnterpriseDevice()) {
+    return true;
+  }
+#elif BUILDFLAG(IS_CHROMEOS)
+  if (ash::InstallAttributes::IsInitialized() &&
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    return true;
+  }
+#endif
+
+  return false;
+}
 
 base::flat_map<std::string, std::string> LoadPromptsFromDisk(
     const base::FilePath& file_path) {
@@ -239,15 +278,6 @@ void IndigoService::AnchoredMessageShown() {
 }
 
 LocalEligibility IndigoService::ComputeLocalEligibility() const {
-  if (pref_service_) {
-    int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
-    // TODO(b:512247450): Also check kAllowedWithoutModelImprovement when the
-    // alternative disclaimer string is ready.
-    if (policy_val != prefs::Policy::kAllowed) {
-      return LocalEligibility::kDisabledByPolicy;
-    }
-  }
-
   if (!GetScriptPath().has_value()) {
     return LocalEligibility::kMissingScript;
   }
@@ -262,9 +292,28 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
 
   AccountInfo info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  bool is_google_internal_account =
+      gaia::IsGoogleInternalAccountEmail(info.email);
   if (info.IsManaged() == signin::Tribool::kTrue &&
-      !gaia::IsGoogleInternalAccountEmail(info.email)) {
+      !is_google_internal_account) {
     return LocalEligibility::kManagedDomain;
+  }
+
+  if (IsBrowserUnderAnyEnterpriseManagement(profile_) &&
+      !is_google_internal_account) {
+    if (!features::kIndigoAllowForEnterprise.Get()) {
+      // TODO(b:512247450): Use a new enum such as `kEnterpriseDisallowed`.
+      return LocalEligibility::kManagedDomain;
+    } else if (pref_service_) {
+      int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
+      // TODO(b:512247450): Also allow kAllowedWithoutModelImprovement when the
+      // alternative disclaimer string is ready.
+      if (policy_val != prefs::Policy::kAllowed) {
+        return LocalEligibility::kDisabledByPolicy;
+      }
+    }
+    // `prefs::kIndigoPolicy` defaults to kAllowed. So when `pref_service_` is
+    // not available, skip the policy check.
   }
 
   if (info.GetAccountCapabilities().can_use_model_execution_features() !=
