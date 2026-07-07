@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/slot_start.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -196,7 +198,7 @@ bool ClearAddressSpaceLimit() {
 #endif
 }
 
-const size_t kTestSizes[] = {
+const auto kTestSizes = std::to_array<size_t>({
     1,
     17,
     100,
@@ -205,7 +207,7 @@ const size_t kTestSizes[] = {
     partition_alloc::PartitionRoot::GetDirectMapSlotSize(100),
     1 << 20,
     1 << 21,
-};
+});
 constexpr size_t kTestSizesCount = std::size(kTestSizes);
 // A lambda function for unit tests to try Free, FreeWithSize, and
 // FreeWithSizeAndAlignment. It always takes a size_t argument, but ignores it

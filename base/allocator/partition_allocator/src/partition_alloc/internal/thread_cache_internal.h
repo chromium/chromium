@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_INTERNAL_THREAD_CACHE_INTERNAL_H_
 #define PARTITION_ALLOC_INTERNAL_THREAD_CACHE_INTERNAL_H_
 
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include <cstring>
@@ -448,7 +449,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   ThreadAllocStats thread_alloc_stats_;
 
   // Buckets are quite big, though each is only 2 pointers.
-  Bucket buckets_[kBucketCount];
+  std::array<Bucket, kBucketCount> buckets_;
 
   // Cold data below.
   PartitionRoot* const root_;

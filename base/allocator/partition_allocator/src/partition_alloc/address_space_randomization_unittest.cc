@@ -4,6 +4,7 @@
 
 #include "partition_alloc/address_space_randomization.h"
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -144,7 +145,7 @@ void RandomBitCorrelation(int random_bit) {
   constexpr int kRepeats = 10000;
 #endif
   constexpr int kPointerBits = 8 * sizeof(void*);
-  uintptr_t history[kHistory];
+  std::array<uintptr_t, kHistory> history;
   // The predictor bit is either constant 0 or 1, or one of the bits from the
   // history.
   for (int predictor_bit = -2; predictor_bit < kPointerBits; predictor_bit++) {

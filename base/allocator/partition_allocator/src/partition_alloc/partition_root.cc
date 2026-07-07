@@ -1589,7 +1589,8 @@ void PartitionRoot::DumpStats(const char* partition_name,
     direct_map_lengths =
         std::unique_ptr<uint32_t[]>(new uint32_t[kMaxReportableDirectMaps]);
   }
-  PartitionBucketMemoryStats bucket_stats[BucketIndexLookup::kNumBuckets];
+  std::array<PartitionBucketMemoryStats, BucketIndexLookup::kNumBuckets>
+      bucket_stats;
   size_t num_direct_mapped_allocations = 0;
   PartitionMemoryStats stats = {};
 

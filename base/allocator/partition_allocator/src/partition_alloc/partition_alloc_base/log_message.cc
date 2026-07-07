@@ -4,6 +4,8 @@
 
 #include "partition_alloc/partition_alloc_base/log_message.h"
 
+#include <array>
+
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 #if defined(PARTITION_ALLOC_PARTITION_ALLOC_BASE_CHECK_H_) || \
@@ -44,7 +46,8 @@ namespace partition_alloc::internal::logging {
 
 namespace {
 
-const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
+constexpr auto log_severity_names =
+    std::to_array<const char*>({"INFO", "WARNING", "ERROR", "FATAL"});
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
               "Incorrect number of log_severity_names");
 

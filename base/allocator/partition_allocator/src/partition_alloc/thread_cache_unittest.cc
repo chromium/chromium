@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <vector>
 
@@ -1213,7 +1214,7 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
-  void* arr[kFillCountForMediumBucket] = {};
+  std::array<void*, kFillCountForMediumBucket> arr = {};
   auto* tcache = root()->thread_cache_for_testing();
 
   root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |

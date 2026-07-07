@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include <cstring>
@@ -58,8 +59,8 @@ thread_local ThreadCache* g_thread_caches[kMaxThreadCacheIndex];
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
-static std::atomic<PartitionRoot*>
-    g_thread_cache_roots[internal::kMaxThreadCacheIndex];
+static std::array<std::atomic<PartitionRoot*>, internal::kMaxThreadCacheIndex>
+    g_thread_cache_roots;
 
 #if PA_BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
@@ -688,7 +689,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // Use a slightly larger buffer to be safe.
   constexpr size_t kMaxBatchSize = 64;
   count = std::min(count, static_cast<int>(kMaxBatchSize));
-  internal::UntaggedSlotStart slot_starts[kMaxBatchSize];
+  std::array<internal::UntaggedSlotStart, kMaxBatchSize> slot_starts;
 
   {
     // Same as calling RawAlloc() |count| times, but acquires the lock only

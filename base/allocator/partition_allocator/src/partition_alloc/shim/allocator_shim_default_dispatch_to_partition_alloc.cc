@@ -4,6 +4,7 @@
 
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
+#include <array>
 #include <atomic>
 #include <cstddef>
 #include <cstring>
@@ -164,8 +165,10 @@ class MainPartitionConstructor {
   }
 };
 
-LeakySingleton<partition_alloc::PartitionRoot, MainPartitionConstructor>
-    g_roots[kNumPartitions] = {};
+std::array<
+    LeakySingleton<partition_alloc::PartitionRoot, MainPartitionConstructor>,
+    kNumPartitions>
+    g_roots = {};
 
 partition_alloc::PartitionRoot* Allocator(AllocToken alloc_token) {
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
@@ -177,8 +180,8 @@ partition_alloc::PartitionRoot* Allocator(AllocToken alloc_token) {
 }
 
 // Original g_root_ if it was replaced by ConfigurePartitions().
-std::atomic<partition_alloc::PartitionRoot*> g_original_roots[kNumPartitions] =
-    {};
+std::array<std::atomic<partition_alloc::PartitionRoot*>, kNumPartitions>
+    g_original_roots = {};
 
 std::atomic<bool> g_roots_finalized = false;
 
@@ -1054,21 +1057,21 @@ void ConfigurePartitions(
           ? partition_alloc::PartitionOptions::kEnabled
           : partition_alloc::PartitionOptions::kDisabled;
 
-  static partition_alloc::internal::base::NoDestructor<
-      partition_alloc::PartitionAllocator>
-      new_main_allocators[kNumPartitions] = {
-          partition_alloc::internal::base::NoDestructor<
-              partition_alloc::PartitionAllocator>([&opts] {
-            opts.thread_cache_index = 0;
-            return opts;
-          }())
+  static std::array<partition_alloc::internal::base::NoDestructor<
+                        partition_alloc::PartitionAllocator>,
+                    kNumPartitions>
+      new_main_allocators = {partition_alloc::internal::base::NoDestructor<
+                                 partition_alloc::PartitionAllocator>([&opts] {
+                               opts.thread_cache_index = 0;
+                               return opts;
+                             }())
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
-              ,
-          partition_alloc::internal::base::NoDestructor<
-              partition_alloc::PartitionAllocator>([&opts] {
-            opts.thread_cache_index = 1;
-            return opts;
-          }())
+                                 ,
+                             partition_alloc::internal::base::NoDestructor<
+                                 partition_alloc::PartitionAllocator>([&opts] {
+                               opts.thread_cache_index = 1;
+                               return opts;
+                             }())
 #endif
       };
 

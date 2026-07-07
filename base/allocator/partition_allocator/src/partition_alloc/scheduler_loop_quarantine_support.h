@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE_SUPPORT_H_
 #define PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE_SUPPORT_H_
 
+#include <array>
 #include <optional>
 #include <variant>
 
@@ -32,9 +33,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   ~ScopedSchedulerLoopQuarantineExclusion();
 
  private:
-  std::optional<internal::ThreadBoundSchedulerLoopQuarantineBranch::
-                    ScopedQuarantineExclusion>
-      instances_[kNumPartitions];
+  std::array<std::optional<internal::ThreadBoundSchedulerLoopQuarantineBranch::
+                               ScopedQuarantineExclusion>,
+             kNumPartitions>
+      instances_;
 };
 
 // An utility class to update Scheduler-Loop Quarantine's purging strategy for

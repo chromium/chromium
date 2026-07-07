@@ -30,6 +30,7 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
+#include <array>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -330,9 +331,9 @@ class alignas(internal::kPartitionCachelineSize)
   SuperPageExtentEntry* first_extent_ = nullptr;
   DirectMapExtent* direct_map_list_
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
-  SlotSpanMetadata* global_empty_slot_span_ring_
-      [internal::kMaxEmptySlotSpanRingSize] PA_GUARDED_BY(
-          internal::PartitionRootLock(this)) = {};
+  std::array<SlotSpanMetadata*, internal::kMaxEmptySlotSpanRingSize>
+      global_empty_slot_span_ring_
+          PA_GUARDED_BY(internal::PartitionRootLock(this)) = {};
   int16_t global_empty_slot_span_ring_index_
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = 0;
   int16_t global_empty_slot_span_ring_size_
