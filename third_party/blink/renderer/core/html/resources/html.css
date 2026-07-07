@@ -1175,6 +1175,17 @@ input::-internal-email-verification-indicator[data-state="verified"] {
     background-image: url("images/email_verification_verified.svg");
 }
 
+input::-internal-email-verification-indicator[data-state="loading"] {
+    display: inline-block;
+    background-image: url("images/email_verification_loading.svg");
+    animation: -internal-email-verification-spin 1s linear infinite;
+}
+
+@keyframes -internal-email-verification-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 input::-webkit-calendar-picker-indicator {
     display: inline-block;
     inline-size: 0.66em;

@@ -70,6 +70,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/webid/email_verification_state.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -1842,15 +1843,30 @@ void AutofillAgent::SendEmailVerificationToken(FieldRendererId email_field_id,
 
   email_verification_observer_.StoreEmailVerificationToken(
       email_field_id, email, token_field_id, token);
+}
 
+void AutofillAgent::UpdateEmailVerificationState(
+    FieldRendererId email_field_id,
+    mojom::EmailVerificationState state) {
   blink::WebInputElement input_element =
       form_util::GetFormControlByRendererId(email_field_id)
           .DynamicTo<blink::WebInputElement>();
   if (!input_element) {
     return;
   }
-  input_element.SetEmailVerificationState(
-      blink::EmailVerificationState::kVerified);
+  blink::EmailVerificationState blink_state;
+  switch (state) {
+    case mojom::EmailVerificationState::kNone:
+      blink_state = blink::EmailVerificationState::kNone;
+      break;
+    case mojom::EmailVerificationState::kLoading:
+      blink_state = blink::EmailVerificationState::kLoading;
+      break;
+    case mojom::EmailVerificationState::kVerified:
+      blink_state = blink::EmailVerificationState::kVerified;
+      break;
+  }
+  input_element.SetEmailVerificationState(blink_state);
 }
 
 void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,

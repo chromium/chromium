@@ -600,6 +600,14 @@ void ContentAutofillDriver::SendEmailVerificationToken(
                email_field_id, email, token_field_id, token);
 }
 
+void ContentAutofillDriver::UpdateEmailVerificationState(
+    const FieldGlobalId& email_field_id,
+    mojom::EmailVerificationState state) {
+  RouteToAgent(router(), &AutofillDriverRouter::UpdateEmailVerificationState,
+               &mojom::AutofillAgent::UpdateEmailVerificationState,
+               email_field_id, state);
+}
+
 void ContentAutofillDriver::FormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormRendererId>& removed_forms) {

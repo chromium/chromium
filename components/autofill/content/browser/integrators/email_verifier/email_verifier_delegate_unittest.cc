@@ -48,6 +48,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::content::webid::EmailVerifier;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -73,6 +74,11 @@ class MockAutofillDriver : public TestContentAutofillDriver {
                const std::string& email,
                FieldGlobalId token_field_id,
                const std::string& presentation_token),
+              (override));
+  MOCK_METHOD(void,
+              UpdateEmailVerificationState,
+              (const FieldGlobalId& email_field_id,
+               mojom::EmailVerificationState state),
               (override));
 };
 
@@ -212,6 +218,10 @@ class EmailVerifierDelegateTestBase
           AutofillClient::EmailVerificationPermissionUiResult::kAccepted) {
     EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _))
         .WillOnce(RunOnceCallback<1>(CreateVerifiableResult(email)));
+    EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                              form.field(0)->global_id(),
+                              mojom::EmailVerificationState::kLoading))
+        .Times(AnyNumber());
 
     if (popup_result ==
         AutofillClient::EmailVerificationPermissionUiResult::kAccepted) {
@@ -222,9 +232,15 @@ class EmailVerifierDelegateTestBase
       EXPECT_CALL(driver(), SendEmailVerificationToken(
                                 form.field(0)->global_id(), email,
                                 form.field(1)->global_id(), "test_token"));
+      EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                                form.field(0)->global_id(),
+                                mojom::EmailVerificationState::kVerified));
     } else {
       EXPECT_CALL(email_verifier(), Verify).Times(0);
       EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+      EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                                form.field(0)->global_id(),
+                                mojom::EmailVerificationState::kNone));
     }
 
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
@@ -1153,6 +1169,23 @@ TEST_F(EmailVerifierDelegateTest,
 
   // Verify Part 4 completed
   checkpoint.Call(4);
+}
+
+// Verifies that when email verification is triggered on a form fill, the
+// delegate immediately notifies the driver to show a loading state on the email
+// field while verification check is pending.
+TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateLoading) {
+  FormStructure* form = SetUpValidForm();
+
+  SetUpVerificationExpectations(*form);
+
+  EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                            form->field(0)->global_id(),
+                            mojom::EmailVerificationState::kLoading));
+
+  TriggerDefaultFormFill(*form);
+
+  popup_shown_run_loop_.Run();
 }
 
 }  // namespace autofill

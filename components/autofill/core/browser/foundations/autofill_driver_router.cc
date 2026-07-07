@@ -768,6 +768,15 @@ void AutofillDriverRouter::SendEmailVerificationToken(
   }
 }
 
+void AutofillDriverRouter::UpdateEmailVerificationState(
+    RoutedCallback<FieldRendererId, mojom::EmailVerificationState> callback,
+    const FieldGlobalId& email_field_id,
+    mojom::EmailVerificationState state) {
+  if (AutofillDriver* target = DriverOfFrame(email_field_id.frame_token)) {
+    callback(*target, email_field_id.renderer_id, state);
+  }
+}
+
 void AutofillDriverRouter::ExposeDomNodeIdsInAllFrames(
     RoutedCallback<> callback) {
   ForEachFrame(form_forest_, callback);

@@ -212,6 +212,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
                FieldRendererId token_field_id,
                const std::string& token),
               (override));
+  MOCK_METHOD(void,
+              UpdateEmailVerificationState,
+              (FieldRendererId email_field_id,
+               mojom::EmailVerificationState state),
+              (override));
 
  private:
   void CallDone() {

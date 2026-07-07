@@ -613,3 +613,10 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by the inactivity timer.
   kAtMemoryInactivityNudge = 24,
 };
+
+// Represents the visual verification state of an email input element.
+enum EmailVerificationState {
+  kNone,
+  kLoading,
+  kVerified,
+};

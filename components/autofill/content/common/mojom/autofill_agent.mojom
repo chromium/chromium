@@ -129,6 +129,11 @@ interface AutofillAgent {
                              string email,
                              FieldRendererId token_field_id,
                              string token);
+
+  // Notifies the renderer of a change in the email verification state for the
+  // given email field.
+  UpdateEmailVerificationState(FieldRendererId email_field_id,
+                               EmailVerificationState state);
 };
 
 // There is one instance of this interface per render frame in the render

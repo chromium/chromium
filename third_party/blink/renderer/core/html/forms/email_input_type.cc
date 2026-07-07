@@ -386,6 +386,9 @@ void EmailInputType::UpdateEmailVerificationIndicator() {
     case EmailVerificationState::kNone:
       state_str = "none";
       break;
+    case EmailVerificationState::kLoading:
+      state_str = "loading";
+      break;
     case EmailVerificationState::kVerified:
       state_str = "verified";
       break;

@@ -141,6 +141,9 @@ class AutofillDriverIOS final : public AutofillDriver,
       const std::string& email,
       FieldGlobalId token_field_id,
       const std::string& presentation_token) override;
+  void UpdateEmailVerificationState(
+      const FieldGlobalId& email_field_id,
+      mojom::EmailVerificationState state) override;
   bool IsSafeToFill(const FormFieldData& field,
                     FieldType filled_type,
                     const url::Origin& main_origin,

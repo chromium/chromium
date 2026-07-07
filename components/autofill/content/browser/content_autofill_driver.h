@@ -24,7 +24,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace password_manager {
@@ -238,6 +237,9 @@ class ContentAutofillDriver : public AutofillDriver,
                                   const std::string& email,
                                   FieldGlobalId token_field_id,
                                   const std::string& token) override;
+  void UpdateEmailVerificationState(
+      const FieldGlobalId& email_field_id,
+      mojom::EmailVerificationState state) override;
   void ExtractFormWithField(FieldGlobalId field_id,
                             BrowserFormHandler final_handler) override;
   void RendererShouldAcceptDataListSuggestion(

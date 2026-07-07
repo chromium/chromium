@@ -384,6 +384,12 @@ class AutofillDriver {
                                           FieldGlobalId token_field_id,
                                           const std::string& token) = 0;
 
+  // Notifies the renderer of a change in the email verification state (e.g.,
+  // loading spinner, verified icon, or reset to none) for `email_field_id`.
+  virtual void UpdateEmailVerificationState(
+      const FieldGlobalId& email_field_id,
+      mojom::EmailVerificationState state) = 0;
+
   // Scrolls the page containing the field corresponding to `field_id` until it
   // becomes visible on the user's display.
   virtual void ScrollFieldIntoView(FieldGlobalId field_id) = 0;

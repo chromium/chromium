@@ -252,6 +252,9 @@ class AutofillAgent : public content::RenderFrameObserver,
                                   const std::string& email,
                                   FieldRendererId token_field_id,
                                   const std::string& token) override;
+  void UpdateEmailVerificationState(
+      FieldRendererId email_field_id,
+      mojom::EmailVerificationState state) override;
 
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const FormData& form_data,

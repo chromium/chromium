@@ -148,7 +148,15 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       content::webid::EmailVerifier::Result result,
       AutofillClient::EmailVerificationPermissionUiResult ui_result);
 
-  void NotifyFlowCompleted(EvpAutofillFlowResult result);
+  // Notifies `observers_` that an EVP flow finished with `result`. If `manager`
+  // and `field_id` are present and the flow ended in a state other than success
+  // or waiting for renderer response, resets the email verification loading
+  // spinner on the input field (`EmailVerificationState::kNone`).
+  // `field_id` is `std::nullopt` (and `manager` is null) when the flow is
+  // cancelled due to a page navigation or manager destruction.
+  void NotifyFlowCompleted(AutofillManager* manager,
+                           const std::optional<FieldGlobalId>& field_id,
+                           EvpAutofillFlowResult result);
 
   void OnFieldLostFocus(AutofillManager& manager,
                         const FieldGlobalId& field_id);

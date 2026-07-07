@@ -9,6 +9,7 @@ namespace blink {
 
 enum class EmailVerificationState {
   kNone,
+  kLoading,
   kVerified,
 };
 
