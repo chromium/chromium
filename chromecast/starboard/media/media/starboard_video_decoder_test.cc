@@ -246,7 +246,7 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
   VideoConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCbc;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);
@@ -336,7 +336,7 @@ TEST_F(StarboardVideoDecoderTest, DoesNotPushToStarboardIfDrmKeyIsUnavailable) {
   VideoConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCtr;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);
@@ -379,7 +379,7 @@ TEST_F(StarboardVideoDecoderTest,
   VideoConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCbc;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);

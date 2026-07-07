@@ -124,6 +124,10 @@ std::optional<EncryptionScheme> StarboardAudioDecoder::GetEncryptionScheme() {
 bool StarboardAudioDecoder::SetConfig(const AudioConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!IsValidConfig(config)) {
+    return false;
+  }
+
   if ((config.codec == kCodecPCM || config.codec == kCodecPCM_S16BE) &&
       config.channel_number > 8) {
     LOG(ERROR) << "Config channels exceeds 8, which is not supported.";
@@ -132,7 +136,7 @@ bool StarboardAudioDecoder::SetConfig(const AudioConfig& config) {
 
   config_ = config;
   audio_sample_info_.emplace(ToAudioSampleInfo(config_));
-  return IsValidConfig(config_);
+  return true;
 }
 
 bool StarboardAudioDecoder::SetVolume(float multiplier) {

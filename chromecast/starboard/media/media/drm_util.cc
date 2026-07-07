@@ -59,7 +59,7 @@ bool DrmInfoWrapper::VerifySubsamplesMatchSize(
 
   if (!total_size.IsValid() || total_size.ValueOrDie() != buffer.data_size()) {
     LOG(ERROR) << "Subsample sizes do not equal input size. Total size: "
-               << total_size.ValueOrDefault(0)
+               << size_t{total_size.ValueOrDefault(0)}
                << ", expected size: " << buffer.data_size();
     return false;
   }

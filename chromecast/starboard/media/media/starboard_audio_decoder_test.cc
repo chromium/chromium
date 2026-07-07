@@ -315,7 +315,7 @@ TEST_F(StarboardAudioDecoderTest, PopulatesDrmInfoInSamples) {
   // unencrypted even for encrypted content.
   config.encryption_scheme = EncryptionScheme::kUnencrypted;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);
@@ -406,7 +406,7 @@ TEST_F(StarboardAudioDecoderTest, DoesNotPushToStarboardIfDrmKeyIsUnavailable) {
   AudioConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCtr;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);
@@ -449,7 +449,7 @@ TEST_F(StarboardAudioDecoderTest,
   AudioConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCbc;
 
-  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  const auto encryption_pattern = ::media::EncryptionPattern::Create(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
       ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
                                                encryption_pattern);
@@ -552,6 +552,41 @@ TEST_F(StarboardAudioDecoderTest,
   EXPECT_THAT(decoder.GetAudioSampleInfo(),
               Optional(Field(&StarboardAudioSampleInfo::codec,
                              kStarboardAudioCodecAac)));
+}
+
+TEST_F(StarboardAudioDecoderTest, RejectedConfigDoesNotUpdateSampleInfo) {
+  const AudioConfig good_config = GetBasicConfig();
+
+  AudioConfig bad_config = GetBasicConfig();
+  bad_config.codec = AudioCodec::kCodecAAC;
+  bad_config.channel_number = 64;
+
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  auto buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      ::media::DecoderBuffer::CopyFrom(buffer_data));
+
+  // The buffer pushed after the rejected config change should still use the
+  // last accepted config.
+  EXPECT_CALL(*starboard_,
+              WriteSample(&fake_player_, kStarboardMediaTypeAudio,
+                          ElementsAre(MatchesAudioConfigAndBuffer(good_config,
+                                                                  buffer))))
+      .Times(1);
+
+  StarboardAudioDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+
+  decoder.Initialize(&fake_player_);
+  EXPECT_TRUE(decoder.SetConfig(good_config));
+  decoder.SetDelegate(&delegate);
+
+  EXPECT_FALSE(decoder.SetConfig(bad_config));
+  EXPECT_THAT(decoder.GetAudioSampleInfo(),
+              Optional(Field(&StarboardAudioSampleInfo::number_of_channels,
+                             good_config.channel_number)));
+
+  EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
 }
 
 TEST_F(StarboardAudioDecoderTest,

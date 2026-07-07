@@ -131,9 +131,9 @@ TEST(DrmUtilTest, CreatesCbcsDrmInfo) {
   expected_drm_info.encryption_scheme =
       StarboardDrmEncryptionScheme::kStarboardDrmEncryptionSchemeAesCbc;
   expected_drm_info.encryption_pattern.crypt_byte_block =
-      encryption_pattern.crypt_byte_block();
+      encryption_pattern->crypt_byte_block();
   expected_drm_info.encryption_pattern.skip_byte_block =
-      encryption_pattern.skip_byte_block();
+      encryption_pattern->skip_byte_block();
   base::span<uint8_t>(expected_drm_info.initialization_vector)
       .copy_from_nonoverlapping(base::as_byte_span(kIv));
   expected_drm_info.initialization_vector_size = kIv.size();
