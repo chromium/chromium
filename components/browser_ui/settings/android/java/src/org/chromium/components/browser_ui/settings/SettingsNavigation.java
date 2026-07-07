@@ -22,39 +22,155 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public interface SettingsNavigation {
     @IntDef({
-        SettingsFragment.MAIN,
-        SettingsFragment.CLEAR_BROWSING_DATA,
-        SettingsFragment.PAYMENT_METHODS,
-        SettingsFragment.SAFETY_CHECK,
-        SettingsFragment.SITE,
+        SettingsFragment.ABOUT_CHROME,
         SettingsFragment.ACCESSIBILITY,
-        SettingsFragment.GOOGLE_SERVICES,
-        SettingsFragment.MANAGE_SYNC,
+        SettingsFragment.AD_MEASUREMENT,
+        SettingsFragment.ADAPTIVE_TOOLBAR,
+        SettingsFragment.ADDRESS_BAR,
+        SettingsFragment.ALL_SITES,
+        SettingsFragment.ANDROID_PAYMENT_APPS,
+        SettingsFragment.APPEARANCE,
+        SettingsFragment.AUTOFILL_BUY_NOW_PAY_LATER,
+        SettingsFragment.AUTOFILL_CARD_BENEFITS,
+        SettingsFragment.AUTOFILL_IDENTITY_DOCS,
+        SettingsFragment.AUTOFILL_OPTIONS,
+        SettingsFragment.AUTOFILL_PERSONAL_CONTEXT,
+        SettingsFragment.AUTOFILL_PROFILES,
+        SettingsFragment.AUTOFILL_SHOPPING,
+        SettingsFragment.AUTOFILL_TRAVEL,
+        SettingsFragment.CHOSEN_OBJECT,
+        SettingsFragment.CLEAR_BROWSING_DATA,
+        SettingsFragment.CONTEXTUAL_SEARCH,
+        SettingsFragment.COOKIES,
+        SettingsFragment.DEVELOPER,
+        SettingsFragment.DO_NOT_TRACK,
+        SettingsFragment.DOWNLOADS,
         SettingsFragment.FINANCIAL_ACCOUNTS,
-        SettingsFragment.NON_CARD_PAYMENT_METHODS
+        SettingsFragment.GLIC,
+        SettingsFragment.GLIC_PERMISSIONS,
+        SettingsFragment.GOOGLE_SERVICES,
+        SettingsFragment.GROUPED_WEBSITES,
+        SettingsFragment.HOME_OF_TRANSACTIONS,
+        SettingsFragment.HOMEPAGE,
+        SettingsFragment.HTTPS_FIRST_MODE,
+        SettingsFragment.IMAGE_DESCRIPTIONS,
+        SettingsFragment.LANGUAGE,
+        SettingsFragment.LEGAL_INFORMATION,
+        SettingsFragment.LOCATION_PERMISSION,
+        SettingsFragment.MAIN, // The main settings page.
+        SettingsFragment.MANAGE_SYNC,
+        SettingsFragment.NON_CARD_PAYMENT_METHODS,
+        SettingsFragment.PAGE_INFO_AD_PERSONALIZATION,
+        SettingsFragment.PAGE_INFO_COOKIES,
+        SettingsFragment.PAYMENT_METHODS,
+        SettingsFragment.PERSONALIZE_GOOGLE_SERVICES,
+        SettingsFragment.PRELOAD_PAGES,
+        SettingsFragment.PRELOAD_PAGES_EXTENDED,
+        SettingsFragment.PRELOAD_PAGES_STANDARD,
+        SettingsFragment.PRICE_NOTIFICATION,
+        SettingsFragment.PRIVACY,
+        SettingsFragment.PRIVACY_SANDBOX_FLEDGE,
+        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_ALL_SITES,
+        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_BLOCKED_SITES,
+        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_LEARN_MORE,
+        SettingsFragment.PRIVACY_SANDBOX_SETTINGS,
+        SettingsFragment.PRIVACY_SANDBOX_TOPICS,
+        SettingsFragment.PRIVACY_SANDBOX_TOPICS_BLOCKED,
+        SettingsFragment.PRIVACY_SANDBOX_TOPICS_MANAGE,
+        SettingsFragment.SAFE_BROWSING,
+        SettingsFragment.SAFE_BROWSING_ENHANCED,
+        SettingsFragment.SAFE_BROWSING_STANDARD,
+        SettingsFragment.SAFETY_CHECK,
+        SettingsFragment.SAFETY_CHECK_SETTINGS,
+        SettingsFragment.SEARCH_ENGINE,
+        SettingsFragment.SEARCH_RESULTS,
+        SettingsFragment.SECURE_DNS,
+        SettingsFragment.SINGLE_CATEGORY,
+        SettingsFragment.SINGLE_WEBSITE,
+        SettingsFragment.SITE,
+        SettingsFragment.SITE_SEARCH,
+        SettingsFragment.STORAGE_ACCESS,
+        SettingsFragment.TAB_ARCHIVE,
+        SettingsFragment.TABS,
+        SettingsFragment.THEME,
+        SettingsFragment.TRACING,
+        SettingsFragment.TRACING_CATEGORIES
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface SettingsFragment {
-        /// Main settings page.
-        int MAIN = 0;
-        /// Browsing Data management.
-        int CLEAR_BROWSING_DATA = 1;
-        /// Payment methods and autofill settings.
-        int PAYMENT_METHODS = 2;
-        /// Safety check, automatically running the action.
-        int SAFETY_CHECK = 3;
-        /// Site settings and permissions.
-        int SITE = 4;
-        /// Accessibility settings.
-        int ACCESSIBILITY = 5;
-        /// Google services.
-        int GOOGLE_SERVICES = 6;
-        /// Manage sync.
-        int MANAGE_SYNC = 7;
-        /// Financial accounts.
-        int FINANCIAL_ACCOUNTS = 8;
-        /// Non-card payment methods.
-        int NON_CARD_PAYMENT_METHODS = 9;
+        int ABOUT_CHROME = 0;
+        int ACCESSIBILITY = 1;
+        int AD_MEASUREMENT = 2;
+        int ADAPTIVE_TOOLBAR = 3;
+        int ADDRESS_BAR = 4;
+        int ALL_SITES = 5;
+        int ANDROID_PAYMENT_APPS = 6;
+        int APPEARANCE = 7;
+        int AUTOFILL_BUY_NOW_PAY_LATER = 8;
+        int AUTOFILL_CARD_BENEFITS = 9;
+        int AUTOFILL_IDENTITY_DOCS = 10;
+        int AUTOFILL_OPTIONS = 11;
+        int AUTOFILL_PERSONAL_CONTEXT = 12;
+        int AUTOFILL_PROFILES = 13;
+        int AUTOFILL_SHOPPING = 14;
+        int AUTOFILL_TRAVEL = 15;
+        int CHOSEN_OBJECT = 16;
+        int CLEAR_BROWSING_DATA = 17;
+        int CONTEXTUAL_SEARCH = 18;
+        int COOKIES = 19;
+        int DEVELOPER = 20;
+        int DO_NOT_TRACK = 21;
+        int DOWNLOADS = 22;
+        int FINANCIAL_ACCOUNTS = 23;
+        int GLIC = 24;
+        int GLIC_PERMISSIONS = 25;
+        int GOOGLE_SERVICES = 26;
+        int GROUPED_WEBSITES = 27;
+        int HOME_OF_TRANSACTIONS = 28;
+        int HOMEPAGE = 29;
+        int HTTPS_FIRST_MODE = 30;
+        int IMAGE_DESCRIPTIONS = 31;
+        int LANGUAGE = 32;
+        int LEGAL_INFORMATION = 33;
+        int LOCATION_PERMISSION = 34;
+        int MAIN = 35; // The main settings page.
+        int MANAGE_SYNC = 36;
+        int NON_CARD_PAYMENT_METHODS = 37;
+        int PAGE_INFO_AD_PERSONALIZATION = 38;
+        int PAGE_INFO_COOKIES = 39;
+        int PAYMENT_METHODS = 40;
+        int PERSONALIZE_GOOGLE_SERVICES = 41;
+        int PRELOAD_PAGES = 42;
+        int PRELOAD_PAGES_EXTENDED = 43;
+        int PRELOAD_PAGES_STANDARD = 44;
+        int PRICE_NOTIFICATION = 45;
+        int PRIVACY = 46;
+        int PRIVACY_SANDBOX_FLEDGE = 47;
+        int PRIVACY_SANDBOX_FLEDGE_ALL_SITES = 48;
+        int PRIVACY_SANDBOX_FLEDGE_BLOCKED_SITES = 49;
+        int PRIVACY_SANDBOX_FLEDGE_LEARN_MORE = 50;
+        int PRIVACY_SANDBOX_SETTINGS = 51;
+        int PRIVACY_SANDBOX_TOPICS = 52;
+        int PRIVACY_SANDBOX_TOPICS_BLOCKED = 53;
+        int PRIVACY_SANDBOX_TOPICS_MANAGE = 54;
+        int SAFE_BROWSING = 55;
+        int SAFE_BROWSING_ENHANCED = 56;
+        int SAFE_BROWSING_STANDARD = 57;
+        int SAFETY_CHECK = 58;
+        int SAFETY_CHECK_SETTINGS = 59;
+        int SEARCH_ENGINE = 60;
+        int SEARCH_RESULTS = 61;
+        int SECURE_DNS = 62;
+        int SINGLE_CATEGORY = 63;
+        int SINGLE_WEBSITE = 64;
+        int SITE = 65; // Site settings.
+        int SITE_SEARCH = 66;
+        int STORAGE_ACCESS = 67;
+        int TAB_ARCHIVE = 68;
+        int TABS = 69;
+        int THEME = 70;
+        int TRACING = 71;
+        int TRACING_CATEGORIES = 72;
     }
 
     /**
