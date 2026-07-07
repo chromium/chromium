@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom.h"
 
@@ -77,7 +78,7 @@ class DeclarativePerformanceObserverTest : public RenderViewHostTestHarness {
  public:
   DeclarativePerformanceObserverTest() {
     feature_list_.InitAndEnableFeature(
-        network::features::kDeclarativePerformanceObserver);
+        blink::features::kDeclarativePerformanceObserver);
   }
   ~DeclarativePerformanceObserverTest() override = default;
 
@@ -804,10 +805,9 @@ class DeclarativePerformanceObserverOriginTrialTest
 TEST_F(DeclarativePerformanceObserverOriginTrialTest, OriginTrialGated) {
   const GURL kPageURL("https://example.com/index.html");
 
-  // 1. Disable the feature flag globally.
+  // 1. Reset explicit override to test default Origin Trial gated behavior.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      network::features::kDeclarativePerformanceObserver);
+  feature_list.InitWithEmptyFeatureAndFieldTrialLists();
 
   // 2. Try to navigate WITH the Performance-Observer header but WITHOUT the OT
   // token.
@@ -824,8 +824,7 @@ TEST_F(DeclarativePerformanceObserverOriginTrialTest, OriginTrialGated) {
     simulator->SetResponseHeaders(headers);
     simulator->Commit();
 
-    // Verify that the observer was NOT created (because OT is missing and flag
-    // is off).
+    // Verify that the observer was NOT created (because OT is missing).
     auto* observer =
         DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
     EXPECT_FALSE(observer);
@@ -911,6 +910,72 @@ TEST_F(DeclarativePerformanceObserverOriginTrialTest, OriginTrialGated) {
         DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
     EXPECT_TRUE(observer);
   }
+}
+
+TEST_F(DeclarativePerformanceObserverOriginTrialTest, KillSwitchGated) {
+  const GURL kPageURL("https://example.com/index.html");
+
+  // Disable via killswitch.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kDeclarativePerformanceObserver);
+
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(kPageURL, web_contents());
+  simulator->Start();
+
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  headers->AddHeader("Performance-Observer",
+                     "report-to=\"telemetry\", capture-early-failures=true, "
+                     "entry-types=(\"navigation\")");
+  // Valid token for https://example.com and DeclarativePerformanceObserver
+  headers->AddHeader(
+      "Origin-Trial",
+      "A6umeji0ZeijjMlMf+9BwGsWirfa1RScCpY7xKTExl1kdyzXKLwnYfdCIgFv4FoVaBDUzX"
+      "z15kxM/25jT7kN/gwAAABoeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDM"
+      "iLCAiZmVhdHVyZSI6ICJEZWNsYXJhdGl2ZVBlcmZvcm1hbmNlT2JzZXJ2ZXIiLCAiZXhw"
+      "aXJ5IjogMjAwMDAwMDAwMH0=");
+
+  simulator->SetResponseHeaders(headers);
+  simulator->Commit();
+
+  // Verify that even with a valid OT token, the observer is NOT created when
+  // killswitch is active.
+  auto* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  EXPECT_FALSE(observer);
+}
+
+TEST_F(DeclarativePerformanceObserverOriginTrialTest,
+       ExplicitFlagOverrideEnablesWithoutOriginTrial) {
+  const GURL kPageURL("https://example.com/index.html");
+
+  // Enable explicitly via commandline/Finch override
+  // (`override_state.has_value() && override_state.value()`).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kDeclarativePerformanceObserver);
+
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(kPageURL, web_contents());
+  simulator->Start();
+
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  headers->AddHeader("Performance-Observer",
+                     "report-to=\"telemetry\", capture-early-failures=true, "
+                     "entry-types=(\"navigation\")");
+  // NOTICE: No Origin-Trial token header is added.
+  simulator->SetResponseHeaders(headers);
+  simulator->Commit();
+
+  // Verify that explicitly overriding the flag enables the feature and
+  // GetDeclarativePerformanceObserverPolicy() activates the observer even
+  // without a valid Origin Trial token.
+  auto* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  EXPECT_TRUE(observer);
 }
 
 }  // namespace

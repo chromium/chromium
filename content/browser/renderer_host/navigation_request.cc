@@ -9984,19 +9984,21 @@ NavigationRequest::GetDeclarativePerformanceObserverPolicy() {
            ->declarative_performance_observer_policy) {
     return nullptr;
   }
-
-  // If globally enabled, return the parsed policy.
-  if (base::FeatureList::IsEnabled(
-          network::features::kDeclarativePerformanceObserver)) {
-    return response_head_->parsed_headers
-        ->declarative_performance_observer_policy.get();
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDeclarativePerformanceObserver)) {
+    return nullptr;
   }
 
-  // Otherwise, check if enabled via Origin Trial.
-  if (response_head_->headers &&
+  CHECK(response_head_->headers);
+  const bool is_enabled_by_origin_trial =
       blink::TrialTokenValidator().RequestEnablesFeature(
           GetURL(), response_head_->headers.get(),
-          "DeclarativePerformanceObserver", base::Time::Now())) {
+          "DeclarativePerformanceObserver", base::Time::Now());
+  std::optional<bool> override_state = base::FeatureList::GetStateIfOverridden(
+      blink::features::kDeclarativePerformanceObserver);
+  const bool is_enabled_by_flag_override =
+      override_state.has_value() && override_state.value();
+  if (is_enabled_by_origin_trial || is_enabled_by_flag_override) {
     return response_head_->parsed_headers
         ->declarative_performance_observer_policy.get();
   }
