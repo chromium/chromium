@@ -1482,8 +1482,7 @@ TEST_F(USBDeviceImplTest, VendorControlTransferToDevice) {
   EXPECT_CALL(mock_handle(), Close());
 }
 
-TEST_F(USBDeviceImplTest,
-       ClassControlTransferToDeviceWithProtectedInterfaceBypass) {
+TEST_F(USBDeviceImplTest, ClassControlTransferBlockedIfProtected) {
   // Block interface class 2.
   mojo::Remote<mojom::UsbDevice> device =
       GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
@@ -1496,8 +1495,13 @@ TEST_F(USBDeviceImplTest,
     EXPECT_TRUE(future.Get()->is_success());
   }
 
+  // Interface 0 has class 3 (allowed).
   // Interface 1 has class 2 (blocked).
   AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/0,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/3, /*subclass_code=*/0,
+                                  /*protocol_code=*/0)
                     .AddInterface(/*interface_number=*/1,
                                   /*alternate_setting=*/0,
                                   /*class_code=*/2, /*subclass_code=*/0,
@@ -1512,10 +1516,9 @@ TEST_F(USBDeviceImplTest,
     EXPECT_TRUE(future.Get());
   }
 
+  // Recipient: DEVICE
+  // Case 1: Invalid index (0xFF).
   {
-    // A CLASS request to the DEVICE with index 0xFF (not matching any
-    // interface) should be BLOCKED because the device has a protected interface
-    // (interface 1).
     auto params = mojom::UsbControlTransferParams::New();
     params->type = UsbControlTransferType::CLASS;
     params->recipient = UsbControlTransferRecipient::DEVICE;
@@ -1526,13 +1529,83 @@ TEST_F(USBDeviceImplTest,
     std::vector<uint8_t> fake_data = {1, 2, 3};
     AddMockInboundData(fake_data);
 
-    base::RunLoop loop;
-    device->ControlTransferIn(
-        std::move(params), static_cast<uint32_t>(fake_data.size()), 0,
-        base::BindOnce(&ExpectTransferInAndThen,
-                       mojom::UsbTransferStatus::PERMISSION_DENIED,
-                       std::vector<uint8_t>(), loop.QuitClosure()));
-    loop.Run();
+    base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+        transfer_future;
+    device->ControlTransferIn(std::move(params),
+                              static_cast<uint32_t>(fake_data.size()), 0,
+                              transfer_future.GetCallback());
+    EXPECT_EQ(mojom::UsbTransferStatus::PERMISSION_DENIED,
+              transfer_future.Get<0>());
+    EXPECT_TRUE(transfer_future.Get<1>().empty());
+  }
+
+  // Recipient: DEVICE
+  // Case 2: Valid index pointing to non-protected interface (0).
+  {
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::CLASS;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 5;
+    params->value = 6;
+    params->index = 0;  // Valid interface 0 (non-protected)
+
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+        transfer_future;
+    device->ControlTransferIn(std::move(params),
+                              static_cast<uint32_t>(fake_data.size()), 0,
+                              transfer_future.GetCallback());
+    EXPECT_EQ(mojom::UsbTransferStatus::PERMISSION_DENIED,
+              transfer_future.Get<0>());
+    EXPECT_TRUE(transfer_future.Get<1>().empty());
+  }
+
+  // Recipient: OTHER
+  // Case 1: Invalid index (0xFF).
+  {
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::CLASS;
+    params->recipient = UsbControlTransferRecipient::OTHER;
+    params->request = 5;
+    params->value = 6;
+    params->index = 0xFF;  // Does not exist
+
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+        transfer_future;
+    device->ControlTransferIn(std::move(params),
+                              static_cast<uint32_t>(fake_data.size()), 0,
+                              transfer_future.GetCallback());
+    EXPECT_EQ(mojom::UsbTransferStatus::PERMISSION_DENIED,
+              transfer_future.Get<0>());
+    EXPECT_TRUE(transfer_future.Get<1>().empty());
+  }
+
+  // Recipient: OTHER
+  // Case 2: Valid index pointing to non-protected interface (0).
+  {
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::CLASS;
+    params->recipient = UsbControlTransferRecipient::OTHER;
+    params->request = 5;
+    params->value = 6;
+    params->index = 0;  // Valid interface 0 (non-protected)
+
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+        transfer_future;
+    device->ControlTransferIn(std::move(params),
+                              static_cast<uint32_t>(fake_data.size()), 0,
+                              transfer_future.GetCallback());
+    EXPECT_EQ(mojom::UsbTransferStatus::PERMISSION_DENIED,
+              transfer_future.Get<0>());
+    EXPECT_TRUE(transfer_future.Get<1>().empty());
   }
 
   EXPECT_CALL(mock_handle(), Close());

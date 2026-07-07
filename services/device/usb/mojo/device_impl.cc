@@ -311,39 +311,34 @@ bool DeviceImpl::HasControlTransferPermission(
   // 2. CLASS Requests
   // ==========================================
   if (type == UsbControlTransferType::CLASS) {
-    const mojom::UsbInterfaceInfo* interface = nullptr;
-    if (recipient == UsbControlTransferRecipient::ENDPOINT) {
-      interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
-    } else {
-      // For CLASS requests, we assume index identifies the interface for all
-      // other recipients (INTERFACE, DEVICE, OTHER).
-      interface = FindInterface(config, index & 0xff);
-    }
+    if (recipient == UsbControlTransferRecipient::INTERFACE ||
+        recipient == UsbControlTransferRecipient::ENDPOINT) {
+      const mojom::UsbInterfaceInfo* interface = nullptr;
+      if (recipient == UsbControlTransferRecipient::ENDPOINT) {
+        interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
+      } else {
+        interface = FindInterface(config, index & 0xff);
+      }
 
-    // Block if the targeted interface is protected.
-    if (interface) {
+      if (!interface) {
+        return BlockAndLog(
+            WebUsbControlTransferPermissionOutcome::kError_InterfaceNotFound);
+      }
+
       auto blocked_class = FindBlockedClass(interface);
       if (blocked_class) {
         LogBlockedControlTransfer(*blocked_class, direction, type);
         return BlockAndLog(WebUsbControlTransferPermissionOutcome::kBlocked);
       }
+
+      return AllowAndLog(WebUsbControlTransferPermissionOutcome::kAllowed);
     }
 
-    // For requests explicitly targeting an INTERFACE or ENDPOINT, the interface
-    // must actually exist in the current configuration.
-    if (recipient == UsbControlTransferRecipient::INTERFACE ||
-        recipient == UsbControlTransferRecipient::ENDPOINT) {
-      return interface ? AllowAndLog(
-                             WebUsbControlTransferPermissionOutcome::kAllowed)
-                       : BlockAndLog(WebUsbControlTransferPermissionOutcome::
-                                         kError_InterfaceNotFound);
-    }
-
-    // For DEVICE and OTHER recipients, if we could not identify the target
-    // interface, we must block it if the device has any protected interfaces.
-    // This prevents bypassing the blocklist by specifying an invalid interface
-    // number (e.g. 0xFF) on a device that ignores the wIndex field.
-    if (!interface && HasProtectedInterface(config)) {
+    // For DEVICE and OTHER recipients, we block the request if the device
+    // has any protected interfaces. This prevents bypassing the blocklist by
+    // specifying a non-protected interface number (or an invalid one) on a
+    // device that ignores the wIndex field.
+    if (HasProtectedInterface(config)) {
       return BlockAndLog(WebUsbControlTransferPermissionOutcome::kBlocked);
     }
 
