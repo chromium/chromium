@@ -10753,14 +10753,13 @@ if (is_linux || is_mac || is_win) {
   test("device_realtarget_browsertests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "../browser/hid/chrome_hid_realtarget_browsertest.cc" ]
     deps = [
       ":browser_tests_runner",
       ":test_support",
       "//chrome:packed_resources",
       "//chrome/browser/bluetooth:device_realtarget_browsertests",
+      "//chrome/browser/hid:device_realtarget_browsertests",
       "//chrome/browser/serial:device_realtarget_browsertests",
-      "//chrome/browser/ui/hid",
       "//chrome/browser/usb:device_realtarget_browsertests",
     ]
   }
