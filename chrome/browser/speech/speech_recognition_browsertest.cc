@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
                                            ->GetProcess()
                                            ->GetID();
 
-  extensions::ProcessMap::Get(browser()->profile())
+  extensions::ProcessMap::Get(browser()->GetProfile())
       ->Insert("fake_extension_id", process_id);
 
   // Call CheckRenderFrameType with a missing frame, which is typical for

@@ -306,7 +306,7 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
 void SpeechRecognitionServiceTest::LaunchService() {
   // Launch the Speech Recognition service.
   auto* browser_context =
-      static_cast<content::BrowserContext*>(browser()->profile());
+      static_cast<content::BrowserContext*>(browser()->GetProfile());
   service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
 
   service_->BindSpeechRecognitionContext(
@@ -338,7 +338,7 @@ void SpeechRecognitionServiceTest::LaunchService() {
 void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
   // Launch the Speech Recognition service.
   auto* browser_context =
-      static_cast<content::BrowserContext*>(browser()->profile());
+      static_cast<content::BrowserContext*>(browser()->GetProfile());
   service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
 
   service_->BindAudioSourceSpeechRecognitionContext(
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
 
   // Launch the Speech Recognition service.
   auto* browser_context =
-      static_cast<content::BrowserContext*>(browser()->profile());
+      static_cast<content::BrowserContext*>(browser()->GetProfile());
   service_ = std::make_unique<ChromeSpeechRecognitionService>(browser_context);
   service_->BindSpeechRecognitionContext(
       speech_recognition_context_.BindNewPipeAndPassReceiver());

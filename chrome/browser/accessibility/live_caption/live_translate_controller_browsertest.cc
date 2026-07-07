@@ -37,22 +37,22 @@ class LiveTranslateControllerTest : public InProcessBrowserTest {
   }
 
   void SetLiveCaptionEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                  enabled);
   }
 
   bool GetLiveCaptionEnabled() {
-    return browser()->profile()->GetPrefs()->GetBoolean(
+    return browser()->GetProfile()->GetPrefs()->GetBoolean(
         prefs::kLiveCaptionEnabled);
   }
 
   void SetLiveTranslateEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                  enabled);
   }
 
   bool GetLiveTranslateEnabled() {
-    return browser()->profile()->GetPrefs()->GetBoolean(
+    return browser()->GetProfile()->GetPrefs()->GetBoolean(
         prefs::kLiveTranslateEnabled);
   }
 

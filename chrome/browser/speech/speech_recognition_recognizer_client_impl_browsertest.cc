@@ -127,7 +127,7 @@ class SpeechRecognitionRecognizerClientImplTest
     // Replaces normal CrosSpeechRecognitionService with a fake one.
     CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
         ->SetTestingFactoryAndUse(
-            browser()->profile(),
+            browser()->GetProfile(),
             base::BindRepeating(&SpeechRecognitionRecognizerClientImplTest::
                                     CreateTestSpeechRecognitionService,
                                 base::Unretained(this)));
@@ -159,7 +159,7 @@ class SpeechRecognitionRecognizerClientImplTest
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit))
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
-        mock_speech_delegate_->GetWeakPtr(), browser()->profile(),
+        mock_speech_delegate_->GetWeakPtr(), browser()->GetProfile(),
         media::AudioDeviceDescription::kDefaultDeviceId,
         media::mojom::SpeechRecognitionOptions::New(
             media::mojom::SpeechRecognitionMode::kIme,

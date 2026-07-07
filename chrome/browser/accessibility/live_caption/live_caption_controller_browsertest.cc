@@ -69,7 +69,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   CaptionBubbleController* GetBubbleController() {
-    return GetBubbleControllerForProfile(browser()->profile());
+    return GetBubbleControllerForProfile(browser()->GetProfile());
   }
 
   CaptionBubbleController* GetBubbleControllerForProfile(Profile* profile) {
@@ -86,7 +86,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   bool DispatchTranscription(std::string text) {
-    return DispatchTranscriptionToProfile(text, browser()->profile());
+    return DispatchTranscriptionToProfile(text, browser()->GetProfile());
   }
 
   bool DispatchTranscriptionToProfile(std::string text, Profile* profile) {
@@ -99,7 +99,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
         media::SpeechRecognitionResult(text, /* is_final */ false));
   }
 
-  void OnError() { OnErrorOnProfile(browser()->profile()); }
+  void OnError() { OnErrorOnProfile(browser()->GetProfile()); }
 
   void OnErrorOnProfile(Profile* profile) {
     GetControllerForProfile(profile)->OnError(
@@ -109,7 +109,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
             [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 
-  void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->profile()); }
+  void OnAudioStreamEnd() { OnAudioStreamEndOnProfile(browser()->GetProfile()); }
 
   void OnAudioStreamEndOnProfile(Profile* profile) {
     GetControllerForProfile(profile)->OnAudioStreamEnd(
@@ -122,13 +122,13 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   void OnToggleFullscreen() {
-    GetControllerForProfile(browser()->profile())
+    GetControllerForProfile(browser()->GetProfile())
         ->OnToggleFullscreen(GetCaptionBubbleContextBrowser());
   }
 #endif
 
   bool HasBubbleController() {
-    return HasBubbleControllerOnProfile(browser()->profile());
+    return HasBubbleControllerOnProfile(browser()->GetProfile());
   }
 
   bool HasBubbleControllerOnProfile(Profile* profile) {
@@ -137,7 +137,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   void ExpectIsWidgetVisible(bool visible) {
-    ExpectIsWidgetVisibleOnProfile(visible, browser()->profile());
+    ExpectIsWidgetVisibleOnProfile(visible, browser()->GetProfile());
   }
 
   void ExpectIsWidgetVisibleOnProfile(bool visible, Profile* profile) {
@@ -149,7 +149,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   void ExpectBubbleLabelTextEquals(std::string text) {
-    ExpectBubbleLabelTextOnProfileEquals(text, browser()->profile());
+    ExpectBubbleLabelTextOnProfileEquals(text, browser()->GetProfile());
   }
 
   void ExpectBubbleLabelTextOnProfileEquals(std::string text,
@@ -167,7 +167,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, ProfilePrefsAreRegistered) {
   EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // These prefs are used for the component updater, but SODA does not use the
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
   // Set live caption enabled on the regular profile.
   SetLiveCaptionEnabled(true);
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 #if !BUILDFLAG(IS_CHROMEOS)
   // These prefs are used for the component updater, but SODA does not use the
   // component updater on Chrome OS.
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
 
   // Ensure that live caption is also enabled in the incognito profile.
   Profile* incognito_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_TRUE(
       incognito_profile->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_FALSE(HasBubbleController());
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
 
   // The UI must be created once SODA is installed, but possibly earlier.
@@ -250,33 +250,33 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DISABLED_OnSodaError) {
   // Live Caption is disabled when there is an error in the SODA download for
   // the language belonging to Live Caption.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(en_us());
   EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
   // Live Caption is disabled when there is an error in the SODA binary
   // download.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
   EXPECT_FALSE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
   // Live Caption is not disabled when there is an error in the SODA download
   // for a language not belonging to Live Caption.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(fr_fr());
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DispatchTranscription) {
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnToggleFullscreen) {
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        LiveCaptionEnabledChanged_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
   Profile* profile2 = CreateProfile();
 
   // The profiles start with no caption bubble controllers.
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        DispatchTranscription_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
   Profile* profile2 = CreateProfile();
 
   // Enable live caption on both profiles.
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
   Profile* profile2 = CreateProfile();
 
   // Enable live caption on both profiles.
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnError_MultipleProfiles) {
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        OnAudioStreamEnd_MultipleProfiles) {
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
   Profile* profile2 = CreateProfile();
 
   // Enable live caption on both profiles.

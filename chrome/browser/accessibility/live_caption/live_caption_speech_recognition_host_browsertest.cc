@@ -100,7 +100,7 @@ std::unique_ptr<KeyedService>
 LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController(
     content::BrowserContext* context) {
   return std::make_unique<testing::NiceMock<MockLiveTranslateController>>(
-      browser()->profile()->GetPrefs(), browser()->profile());
+      browser()->GetProfile()->GetPrefs(), browser()->GetProfile());
 }
 
 void LiveCaptionSpeechRecognitionHostTest::SetUp() {
@@ -112,7 +112,7 @@ void LiveCaptionSpeechRecognitionHostTest::SetUp() {
 
 void LiveCaptionSpeechRecognitionHostTest::SetUpOnMainThread() {
   LiveTranslateControllerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(
           &LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController,
           base::Unretained(this)));
@@ -159,14 +159,14 @@ void LiveCaptionSpeechRecognitionHostTest::OnSpeechRecognitionError(
 }
 
 bool LiveCaptionSpeechRecognitionHostTest::HasBubbleController() {
-  return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+  return LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
              ->caption_bubble_controller_for_testing() != nullptr;
 }
 
 void LiveCaptionSpeechRecognitionHostTest::ExpectIsWidgetVisible(bool visible) {
 #if defined(TOOLKIT_VIEWS)
     CaptionBubbleController* bubble_controller =
-        LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+        LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
             ->caption_bubble_controller_for_testing();
     EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
 #endif
@@ -176,7 +176,7 @@ std::vector<std::string>
 LiveCaptionSpeechRecognitionHostTest::GetTranslationRequests() {
   return static_cast<MockLiveTranslateController*>(
              LiveTranslateControllerFactory::GetForProfile(
-                 browser()->profile()))
+                 browser()->GetProfile()))
       ->GetTranslationRequests();
 }
 
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   SetLiveTranslateEnabled(true);
 
   // Ensure that ideographic to non-ideographic translations are not cached.
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+  browser()->GetProfile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
                                               "ja-JP");
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 

@@ -121,7 +121,7 @@ class SystemLiveCaptionServiceTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    primary_profile_ = browser()->profile();
+    primary_profile_ = browser()->GetProfile();
 
     // Create an additional profile. We will verify that its caption bubble is
     // inactive, since only the primary profile should be processing system
