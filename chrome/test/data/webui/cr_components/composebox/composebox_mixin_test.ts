@@ -1307,4 +1307,38 @@ suite('ComposeboxMixinTest', () => {
         assertEquals('', element.getInputElement().input);
         assertEquals(1, searchboxHandler.getCallCount('clearFiles'));
       });
+
+  test(
+      'clearAllInputs clears restored tabs if querySubmitted is false',
+      async () => {
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Stale Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+        element.hasCachedSubmittedTabsThisTurn = true;
+
+        // Call `clearAllInputs` with `querySubmitted = true`.
+        element.clearAllInputs(
+            /* querySubmitted= */ true,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+
+        // Verify: `aimThreadRestoredTabs` is NOT cleared.
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+        assertTrue(element.hasCachedSubmittedTabsThisTurn);
+
+        // Call `clearAllInputs` with `querySubmitted = false`.
+        element.clearAllInputs(
+            /* querySubmitted= */ false,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+
+        // Verify: `aimThreadRestoredTabs` is cleared.
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+        assertFalse(element.hasCachedSubmittedTabsThisTurn);
+      });
 });

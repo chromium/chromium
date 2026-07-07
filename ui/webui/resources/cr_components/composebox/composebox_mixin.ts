@@ -1578,6 +1578,7 @@ export const ComposeboxEmbedderMixin =
           // clearing, clear input here.
           if (!querySubmitted) {
             this.resetModes();
+            this.resetRestoredTabs();
           }
           const undeletableFiles = querySubmitted ?
               Array.from(this.files.values())
@@ -1712,6 +1713,11 @@ export const ComposeboxEmbedderMixin =
                 this.contextMenuDescriptionEnabled;
             this.handleToolModeUpdate(ToolMode.kUnspecified);
           }
+        }
+
+        resetRestoredTabs() {
+          this.aimThreadRestoredTabs = [];
+          this.hasCachedSubmittedTabsThisTurn = false;
         }
 
         setDefaultModel() {
@@ -2573,6 +2579,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   queryZpsOnLoad: boolean;
   closeOnEscape: boolean;
   clearAllInputsWhenSubmittingQuery: boolean;
+  hasCachedSubmittedTabsThisTurn: boolean;
   contextMenuOpened: boolean;
   eventTracker: EventTracker;
   errorMessage: string;
@@ -2734,6 +2741,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;
   resetModes(): void;
+  resetRestoredTabs(): void;
   setDefaultModel(): void;
   resetToolsAndModels(): void;
   closeDropdown(): void;
