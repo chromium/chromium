@@ -95,6 +95,21 @@
   width: var(--profile-card-avatar-icon-size);
 }
 
+.profile-avatar.with-ai-ring {
+  /* LINT.IfChange(AiRingSpecs) */
+  --ai-ring-gap: 2px;
+  --ai-ring-thickness: 3px;
+  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AiRingSpecs) */
+
+  /* The avatar with AI ring is already cropped as circular image,
+  we remove the border-radius otherwise this crops part of the ring. */
+  border-radius: 0;
+  height: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
+  margin: calc(-1 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
+  width: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
+}
+
+
 @media (prefers-color-scheme: dark) {
   :host {
     --scrollbar-background: var(--google-grey-800);

@@ -14,7 +14,9 @@ export function getHtml(this: ProfileCardElement) {
       ?disabled="${this.disabled}"
       aria-label="${this.profileState.profileCardButtonLabel}">
     <div id="avatarContainer">
-      <img class="profile-avatar" alt="" .src="${this.profileState.avatarIcon}">
+      <img class="profile-avatar ${
+      this.profileState.hasAiRing ? 'with-ai-ring' : ''}"
+          alt="" .src="${this.profileState.avatarIcon}">
       <div id="iconContainer"
           ?hidden="${!this.profileState.avatarBadge.length}">
         <cr-icon icon="${this.profileState.avatarBadge}"></cr-icon>
