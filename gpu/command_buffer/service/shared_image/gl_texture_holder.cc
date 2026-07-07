@@ -120,25 +120,7 @@ GLTextureHolder::GLTextureHolder(viz::SharedImageFormat format,
   CHECK(format_.is_single_plane());
 }
 
-// TODO(kylechar): When `texture_` is removed with validating command decoder
-// move constructor/assignment can be defaulted.
-GLTextureHolder::GLTextureHolder(GLTextureHolder&& other) {
-  operator=(std::move(other));
-}
 
-GLTextureHolder& GLTextureHolder::operator=(GLTextureHolder&& other) {
-  format_ = other.format_;
-  size_ = other.size_;
-  is_passthrough_ = other.is_passthrough_;
-  context_lost_ = other.context_lost_;
-  texture_ = other.texture_;
-  other.texture_ = nullptr;
-  passthrough_texture_ = std::move(other.passthrough_texture_);
-  context_ = std::move(other.context_);
-  format_desc_ = other.format_desc_;
-  progress_reporter_ = other.progress_reporter_;
-  return *this;
-}
 
 GLTextureHolder::~GLTextureHolder() {
   if (is_passthrough_) {

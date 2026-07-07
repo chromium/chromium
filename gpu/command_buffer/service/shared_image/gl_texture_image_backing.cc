@@ -279,7 +279,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
 GLTextureImageBacking::~GLTextureImageBacking() {
   if (!have_context()) {
     for (auto& texture : textures_) {
-      texture.SetContextLost();
+      texture->SetContextLost();
     }
   }
 }
@@ -318,7 +318,7 @@ SharedImageBackingType GLTextureImageBacking::GetType() const {
 
 gfx::Rect GLTextureImageBacking::ClearedRect() const {
   if (!IsPassthrough()) {
-    return textures_[0].GetClearedRect();
+    return textures_[0]->GetClearedRect();
   }
 
   // Use shared image based tracking for passthrough, because we don't always
@@ -328,7 +328,7 @@ gfx::Rect GLTextureImageBacking::ClearedRect() const {
 
 void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   if (!IsPassthrough()) {
-    textures_[0].SetClearedRect(cleared_rect);
+    textures_[0]->SetClearedRect(cleared_rect);
     return;
   }
 
@@ -345,7 +345,7 @@ bool GLTextureImageBacking::UploadFromMemory(
   DCHECK(SupportsPixelUploadWithFormat(format()));
 
   for (size_t i = 0; i < textures_.size(); ++i) {
-    if (!textures_[i].UploadFromMemory(pixmaps[i])) {
+    if (!textures_[i]->UploadFromMemory(pixmaps[i])) {
       return false;
     }
   }
@@ -364,7 +364,7 @@ bool GLTextureImageBacking::ReadbackToMemory(
   }
 
   for (size_t i = 0; i < textures_.size(); ++i) {
-    if (!textures_[i].ReadbackToMemory(pixmaps[i])) {
+    if (!textures_[i]->ReadbackToMemory(pixmaps[i])) {
       return false;
     }
   }
@@ -376,8 +376,9 @@ GLTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {
   std::vector<raw_ptr<gles2::Texture>> gl_textures;
   for (auto& texture : textures_) {
-    DCHECK(texture.texture());
-    gl_textures.push_back(texture.texture());
+    CHECK(texture);
+    CHECK(texture->texture());
+    gl_textures.push_back(texture->texture());
   }
 
   return std::make_unique<GLTextureImageRepresentationImpl>(
@@ -389,8 +390,9 @@ GLTextureImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                    MemoryTypeTracker* tracker) {
   std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures;
   for (auto& texture : textures_) {
-    DCHECK(texture.passthrough_texture());
-    gl_textures.push_back(texture.passthrough_texture());
+    CHECK(texture);
+    CHECK(texture->passthrough_texture());
+    gl_textures.push_back(texture->passthrough_texture());
   }
 
   return std::make_unique<GLTexturePassthroughImageRepresentationImpl>(
@@ -444,7 +446,7 @@ GLTextureImageBacking::ProduceSkiaGanesh(
   if (cached_promise_textures_.empty()) {
     for (auto& texture : textures_) {
       cached_promise_textures_.push_back(
-          texture.GetPromiseImage(context_state.get()));
+          texture->GetPromiseImage(context_state.get()));
     }
   }
 
@@ -485,7 +487,7 @@ std::unique_ptr<VideoImageRepresentation> GLTextureImageBacking::ProduceVideo(
   DCHECK(device);
 
   return D3D11VideoImageCopyRepresentation::CreateFromGL(
-      textures_[0].GetServiceId(), debug_label(), device.Get(), manager, this,
+      textures_[0]->GetServiceId(), debug_label(), device.Get(), manager, this,
       tracker);
 #else
   return nullptr;
@@ -511,11 +513,12 @@ void GLTextureImageBacking::InitializeGLTexture(
   textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
     auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane);
-    textures_.emplace_back(plane_format, format().GetPlaneSize(plane, size()),
-                           is_passthrough_, progress_reporter);
-    textures_[plane].Initialize(format_info[plane],
-                                framebuffer_attachment_angle, pixel_data,
-                                debug_label);
+    textures_.push_back(base::MakeRefCounted<GLTextureHolder>(
+        plane_format, format().GetPlaneSize(plane, size()), is_passthrough_,
+        progress_reporter));
+    textures_[plane]->Initialize(format_info[plane],
+                                 framebuffer_attachment_angle, pixel_data,
+                                 debug_label);
   }
 
   // Update the cleared state for passthrough textures if the pixel data upload

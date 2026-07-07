@@ -73,16 +73,17 @@ TEST_F(GLTextureHolderTest, ReadbackToMemoryRestoresFramebufferBeforeDelete) {
   constexpr GLint kPrevFboId = 33;
   constexpr gfx::Size kSize(4, 4);
 
-  GLTextureHolder holder(viz::SinglePlaneFormat::kRGBA_8888, kSize,
-                         /*is_passthrough=*/true,
-                         /*progress_reporter=*/nullptr);
+  auto holder = base::MakeRefCounted<GLTextureHolder>(
+      viz::SinglePlaneFormat::kRGBA_8888, kSize,
+      /*is_passthrough=*/true,
+      /*progress_reporter=*/nullptr);
   GLFormatDesc format_desc;
   format_desc.data_format = GL_RGBA;
   format_desc.data_type = GL_UNSIGNED_BYTE;
   format_desc.target = GL_TEXTURE_2D;
   auto texture = base::MakeRefCounted<gles2::TexturePassthrough>(kTextureId,
                                                                  GL_TEXTURE_2D);
-  holder.InitializeWithTexture(format_desc, texture);
+  holder->InitializeWithTexture(format_desc, texture);
 
   ON_CALL(*gl_, GetIntegerv(GL_FRAMEBUFFER_BINDING, _))
       .WillByDefault(SetArgPointee<1>(kPrevFboId));
@@ -104,7 +105,7 @@ TEST_F(GLTextureHolderTest, ReadbackToMemoryRestoresFramebufferBeforeDelete) {
   bitmap.allocPixels(SkImageInfo::Make(kSize.width(), kSize.height(),
                                        kRGBA_8888_SkColorType,
                                        kPremul_SkAlphaType));
-  EXPECT_TRUE(holder.ReadbackToMemory(bitmap.pixmap()));
+  EXPECT_TRUE(holder->ReadbackToMemory(bitmap.pixmap()));
 
   texture->MarkContextLost();
 }

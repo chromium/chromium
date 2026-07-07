@@ -5,9 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_PASSTHROUGH_FALLBACK_IMAGE_REPRESENTATION_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_PASSTHROUGH_FALLBACK_IMAGE_REPRESENTATION_H_
 
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
@@ -35,7 +35,7 @@ class GLTexturePassthroughFallbackImageRepresentation
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  std::vector<GLTextureHolder> plane_textures_;
+  std::vector<scoped_refptr<GLTextureHolder>> plane_textures_;
   std::vector<SkBitmap> plane_bitmaps_;
   std::vector<SkPixmap> plane_pixmaps_;
 };

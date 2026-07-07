@@ -111,12 +111,7 @@ class EGLImageBackingFactoryThreadSafeTest
   EGLImageBackingFactoryThreadSafeTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
   ~EGLImageBackingFactoryThreadSafeTest() override {
-    // |context_state_| and |context_state2_| must be destroyed on its own
-    // context.
-    if (context_state2_) {
-      context_state2_->MakeCurrent(surface2_.get(), /*needs_gl=*/true);
-      context_state2_.reset();
-    }
+    // |context_state_| must be destroyed on its own context.
     if (context_state_) {
       context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
       context_state_.reset();
@@ -150,7 +145,6 @@ class EGLImageBackingFactoryThreadSafeTest
         std::make_unique<SharedImageRepresentationFactory>(
             shared_image_manager_.get(), nullptr);
 
-    CreateSharedContext(workarounds, surface2_, context2_, context_state2_);
   }
 
   bool use_passthrough() {
@@ -270,9 +264,6 @@ class EGLImageBackingFactoryThreadSafeTest
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
-  scoped_refptr<gl::GLSurface> surface2_;
-  scoped_refptr<gl::GLContext> context2_;
-  scoped_refptr<SharedContextState> context_state2_;
 };
 
 class CreateAndValidateSharedImageRepresentations {
@@ -379,9 +370,21 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 
   // Launch 2nd thread.
   std::thread second_thread([&]() {
-    // Do ReadPixels() on 2nd SharedContextState |context_state2_|.
-    dst_pixels = ReadPixels(mailbox, size, context_state2_.get(),
+    scoped_refptr<gl::GLSurface> surface2;
+    scoped_refptr<gl::GLContext> context2;
+    scoped_refptr<SharedContextState> context_state2;
+    GpuDriverBugWorkarounds workarounds;
+    CreateSharedContext(workarounds, surface2, context2, context_state2);
+
+    // Do ReadPixels() on 2nd SharedContextState |context_state2|.
+    dst_pixels = ReadPixels(mailbox, size, context_state2.get(),
                             shared_image_representation_factory_.get());
+
+    // Clean up on this thread.
+    context_state2->MakeCurrent(surface2.get(), /*needs_gl=*/true);
+    context_state2.reset();
+    context2.reset();
+    surface2.reset();
   });
 
   // Wait for this thread to be done.

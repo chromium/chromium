@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_HOLDER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_HOLDER_H_
 
+#include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/gpu_gles2_export.h"
@@ -18,7 +19,8 @@ class SharedContextState;
 
 // Helper class that holds a single GL texture, that works with either
 // validating or passthrough command decoder.
-class GPU_GLES2_EXPORT GLTextureHolder {
+class GPU_GLES2_EXPORT GLTextureHolder
+    : public base::RefCounted<GLTextureHolder> {
  public:
   // Returns the equivalent SharedImageFormat for plane specified by
   // `plane_index`.
@@ -30,9 +32,6 @@ class GPU_GLES2_EXPORT GLTextureHolder {
                   const gfx::Size& size,
                   bool is_passthrough,
                   gl::ProgressReporter* progress_reporter);
-  GLTextureHolder(GLTextureHolder&& other);
-  GLTextureHolder& operator=(GLTextureHolder&& other);
-  ~GLTextureHolder();
 
   gles2::Texture* texture() { return texture_; }
   const scoped_refptr<gles2::TexturePassthrough>& passthrough_texture() {
@@ -75,6 +74,9 @@ class GPU_GLES2_EXPORT GLTextureHolder {
   void SetContextLost();
 
  private:
+  friend class base::RefCounted<GLTextureHolder>;
+  ~GLTextureHolder();
+
   viz::SharedImageFormat format_;
   gfx::Size size_;
   bool is_passthrough_;

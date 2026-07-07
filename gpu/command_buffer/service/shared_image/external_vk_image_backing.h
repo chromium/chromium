@@ -238,7 +238,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   bool is_updating_content_ = false;
   uint32_t gl_reads_in_progress_ = 0;
 
-  std::vector<GLTextureHolder> gl_textures_;
+  std::vector<scoped_refptr<GLTextureHolder>> gl_textures_;
 
   enum LatestContent {
     kInVkImage = 1 << 0,

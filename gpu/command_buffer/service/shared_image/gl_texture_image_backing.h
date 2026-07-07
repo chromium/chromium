@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
@@ -76,7 +77,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   const bool is_passthrough_;
 
-  std::vector<GLTextureHolder> textures_;
+  std::vector<scoped_refptr<GLTextureHolder>> textures_;
   std::vector<sk_sp<GrPromiseImageTexture>> cached_promise_textures_;
 };
 

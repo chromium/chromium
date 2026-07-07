@@ -412,7 +412,7 @@ ExternalVkImageBacking::~ExternalVkImageBacking() {
     MakeGLContextCurrent();
     if (!have_context()) {
       for (auto& gl_texture : gl_textures_) {
-        gl_texture.SetContextLost();
+        gl_texture->SetContextLost();
       }
     }
     gl_textures_.clear();
@@ -474,7 +474,7 @@ bool ExternalVkImageBacking::BeginAccess(
 
     std::vector<GLuint> texture_ids;
     for (auto& gl_texture : gl_textures_) {
-      texture_ids.push_back(gl_texture.GetServiceId());
+      texture_ids.push_back(gl_texture->GetServiceId());
     }
 
     MakeGLContextCurrent();
@@ -599,7 +599,7 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
 
     std::vector<GLuint> texture_ids;
     for (auto& gl_texture : gl_textures_) {
-      texture_ids.push_back(gl_texture.GetServiceId());
+      texture_ids.push_back(gl_texture->GetServiceId());
     }
 
     MakeGLContextCurrent();
@@ -811,8 +811,8 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   gfx::Size plane_size = vulkan_image->size();
   auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane_index);
   DCHECK_EQ(gl_textures_.size(), plane_index);
-  auto& gl_texture = gl_textures_.emplace_back(plane_format, plane_size,
-                                               is_passthrough, nullptr);
+  auto gl_texture = base::MakeRefCounted<GLTextureHolder>(
+      plane_format, plane_size, is_passthrough, nullptr);
 
   std::optional<ScopedDedicatedMemoryObject> memory_object;
   if (!use_separate_gl_texture()) {
@@ -898,7 +898,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   if (is_passthrough) {
     auto texture = base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
         texture_service_id, GL_TEXTURE_2D);
-    gl_texture.InitializeWithTexture(format_desc, std::move(texture));
+    gl_texture->InitializeWithTexture(format_desc, std::move(texture));
   } else {
     auto* texture = gles2::CreateGLES2TextureWithLightRef(texture_service_id,
                                                           GL_TEXTURE_2D);
@@ -913,9 +913,10 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
                           format_desc.data_format, format_desc.data_type,
                           cleared_rect);
     texture->SetImmutable(true, true);
-    gl_texture.InitializeWithTexture(format_desc, texture);
+    gl_texture->InitializeWithTexture(format_desc, texture);
   }
 
+  gl_textures_.push_back(std::move(gl_texture));
   return true;
 }
 
@@ -934,7 +935,9 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
   std::vector<raw_ptr<gles2::Texture, VectorExperimental>> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
-    textures.push_back(gl_texture.texture());
+    CHECK(gl_texture);
+    CHECK(gl_texture->texture());
+    textures.push_back(gl_texture->texture());
   }
 
   return std::make_unique<ExternalVkImageGLRepresentation>(
@@ -957,7 +960,9 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
   std::vector<scoped_refptr<gles2::TexturePassthrough>> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
-    textures.push_back(gl_texture.passthrough_texture());
+    CHECK(gl_texture);
+    CHECK(gl_texture->passthrough_texture());
+    textures.push_back(gl_texture->passthrough_texture());
   }
 
   return std::make_unique<ExternalVkImageGLPassthroughRepresentation>(
@@ -1061,7 +1066,7 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
     uint8_t* memory = UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
     pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
 
-    if (!gl_textures_[plane].ReadbackToMemory(pixmaps.back())) {
+    if (!gl_textures_[plane]->ReadbackToMemory(pixmaps.back())) {
       DLOG(ERROR) << "GL readback failed";
       return;
     }
@@ -1223,7 +1228,7 @@ bool ExternalVkImageBacking::UploadToGLTexture(
   }
 
   for (size_t i = 0; i < gl_textures_.size(); ++i) {
-    if (!gl_textures_[i].UploadFromMemory(pixmaps[i])) {
+    if (!gl_textures_[i]->UploadFromMemory(pixmaps[i])) {
       return false;
     }
   }

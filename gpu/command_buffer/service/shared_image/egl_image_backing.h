@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
@@ -72,7 +73,6 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state) final;
 
  private:
-  class TextureHolder;
   class GLRepresentationShared;
   class GLTextureEGLImageRepresentation;
   class GLTexturePassthroughEGLImageRepresentation;
@@ -92,11 +92,11 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   gl::ScopedEGLImage GenEGLImageSibling(base::span<const uint8_t> pixel_data,
                                         std::vector<GLuint>& service_ids,
                                         int plane);
-  std::vector<scoped_refptr<TextureHolder>> GenEGLImageSiblings(
+  std::vector<scoped_refptr<GLTextureHolder>> GenEGLImageSiblings(
       base::span<const uint8_t> pixel_data);
 
   const std::vector<GLCommonImageBackingFactory::FormatInfo> format_info_;
-  std::vector<scoped_refptr<TextureHolder>> source_texture_holders_;
+  std::vector<scoped_refptr<GLTextureHolder>> source_texture_holders_;
   raw_ptr<gl::GLApi> created_on_context_;
 
   std::vector<gl::ScopedEGLImage> egl_images_ GUARDED_BY(lock_);
