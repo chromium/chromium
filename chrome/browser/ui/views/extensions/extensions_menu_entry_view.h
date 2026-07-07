@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_ENTRY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_ENTRY_VIEW_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -12,12 +14,14 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view.h"
 
 class BrowserWindowInterface;
 class HoverButton;
 class ToolbarActionViewModel;
 
 namespace views {
+class Label;
 class ToggleButton;
 }  // namespace views
 
@@ -63,6 +67,9 @@ class ExtensionsMenuEntryView
   HoverButton* site_permissions_button_for_testing() {
     return site_permissions_button_;
   }
+  views::Label* site_permissions_label_for_testing() {
+    return site_permissions_label_;
+  }
   HoverButton* context_menu_button_for_testing() {
     return context_menu_button_;
   }
@@ -90,8 +97,11 @@ class ExtensionsMenuEntryView
   raw_ptr<HoverButton> action_button_ = nullptr;
   raw_ptr<views::ToggleButton> site_access_toggle_ = nullptr;
   raw_ptr<HoverButton> site_permissions_button_ = nullptr;
+  raw_ptr<views::Label> site_permissions_label_ = nullptr;
   raw_ptr<HoverButton> context_menu_button_ = nullptr;
   raw_ptr<HoverButton> pin_button_ = nullptr;
+
+  std::u16string site_permissions_accessible_name_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

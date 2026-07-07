@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -13,18 +14,22 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -190,7 +195,17 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                   std::move(site_permissions_button_callback), is_enterprise,
                   small_icon_size, icon_size, icon_label_spacing,
                   button_icon_label_spacing)
-                  .CopyAddressTo(&site_permissions_button_)))
+                  .CopyAddressTo(&site_permissions_button_),
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&site_permissions_label_)
+                  .SetTextContext(views::style::CONTEXT_BUTTON)
+                  .SetTextStyle(views::style::STYLE_BODY_5)
+                  .SetEnabledColor(kColorExtensionsMenuSecondaryText)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::VH(0, icon_size))
+                  .SetBorder(views::CreateEmptyBorder(
+                      gfx::Insets::VH(0, icon_label_spacing)))))
       .BuildChildren();
 
   SetupContextMenuButton(view_model);
@@ -201,7 +216,12 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
   // accessible name.
   site_access_toggle_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  action_button_->GetViewAccessibility().SetIsLeaf(true);
+  context_menu_button_->GetViewAccessibility().SetIsLeaf(true);
   site_permissions_button_->GetViewAccessibility().SetDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  site_permissions_button_->GetViewAccessibility().SetIsLeaf(true);
+  site_permissions_label_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Add rounded corners to the site permissions button.
@@ -221,30 +241,53 @@ void ExtensionsMenuEntryView::Update(
   site_access_toggle_->SetTooltipText(
       entry_state.site_access_toggle.tooltip_text);
 
-  site_permissions_button_->SetVisible(
+  bool is_permissions_visible =
       entry_state.site_permissions_button.status !=
-      ExtensionsMenuViewModel::ControlState::Status::kHidden);
+      ExtensionsMenuViewModel::ControlState::Status::kHidden;
   bool is_permissions_enabled =
       entry_state.site_permissions_button.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled;
-  site_permissions_button_->SetEnabled(true);
-  site_permissions_button_->SetState(is_permissions_enabled
-                                         ? views::Button::STATE_NORMAL
-                                         : views::Button::STATE_DISABLED);
-  // The site permissions text is not intended to be focusable as it is not
-  // clickable in this view. Ignore the button in accessibility so screen
-  // readers read the label inside it without treating it as a button.
-  site_permissions_button_->GetViewAccessibility().SetIsIgnored(true);
-  site_permissions_button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  site_permissions_button_->SetText(entry_state.site_permissions_button.text);
-  site_permissions_button_->SetTooltipText(
-      entry_state.site_permissions_button.tooltip_text);
-  site_permissions_button_->GetViewAccessibility().SetName(
-      entry_state.site_permissions_button.accessible_name);
 
-  // Update button size after changing its contents so it fits in the menu
-  // entry row.
-  site_permissions_button_->PreferredSizeChanged();
+  if (!is_permissions_visible) {
+    site_permissions_button_->SetVisible(false);
+    site_permissions_label_->SetVisible(false);
+    site_permissions_accessible_name_.clear();
+  } else if (is_permissions_enabled) {
+    site_permissions_button_->SetVisible(true);
+    site_permissions_label_->SetVisible(false);
+    site_permissions_accessible_name_ =
+        entry_state.site_permissions_button.accessible_name;
+
+    site_permissions_button_->SetState(views::Button::STATE_NORMAL);
+    site_permissions_button_->SetText(entry_state.site_permissions_button.text);
+    site_permissions_button_->SetTooltipText(
+        entry_state.site_permissions_button.tooltip_text);
+    site_permissions_button_->GetViewAccessibility().SetName(
+        entry_state.site_permissions_button.accessible_name);
+    site_permissions_button_->GetViewAccessibility().SetIsIgnored(false);
+    site_permissions_button_->GetViewAccessibility().SetIsLeaf(true);
+    site_permissions_button_->SetFocusBehavior(
+        views::View::FocusBehavior::NEVER);
+    site_permissions_button_->PreferredSizeChanged();
+  } else {
+    site_permissions_button_->SetVisible(false);
+    site_permissions_label_->SetVisible(true);
+    site_permissions_accessible_name_ =
+        entry_state.site_permissions_button.accessible_name;
+
+    // Set the label's text to the full accessible name (which includes the
+    // enterprise/policy suffix if applicable). This ensures the text and the
+    // accessible name are identical, completely preventing any AXPosition
+    // text boundary crashes on Linux while providing full info to both visual
+    // and screen reader users.
+    site_permissions_label_->SetText(
+        entry_state.site_permissions_button.accessible_name);
+    site_permissions_label_->SetCustomTooltipText(
+        entry_state.site_permissions_button.tooltip_text);
+    site_permissions_label_->GetViewAccessibility().SetIsIgnored(false);
+    site_permissions_label_->SetFocusBehavior(
+        views::View::FocusBehavior::NEVER);
+  }
 
   UpdateActionButton(entry_state.action_button);
   UpdateContextMenuButton(entry_state.context_menu_button);
@@ -255,7 +298,16 @@ void ExtensionsMenuEntryView::UpdateActionButton(
   action_button_->SetImageModel(views::Button::STATE_NORMAL, button_state.icon);
   action_button_->SetText(button_state.text);
   action_button_->SetTooltipText(button_state.tooltip_text);
-  action_button_->SetAccessibleName(button_state.accessible_name);
+  std::u16string accessible_name = button_state.accessible_name.empty()
+                                       ? button_state.text
+                                       : button_state.accessible_name;
+  if (!site_permissions_accessible_name_.empty()) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, accessible_name,
+        site_permissions_accessible_name_);
+  }
+  action_button_->SetAccessibleName(accessible_name);
+  action_button_->GetViewAccessibility().SetIsLeaf(true);
   bool is_action_enabled =
       button_state.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled;
@@ -299,6 +351,7 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
                                       three_dot_icon);
   context_menu_button_->GetViewAccessibility().SetName(
       button_state.accessible_name);
+  context_menu_button_->GetViewAccessibility().SetIsLeaf(true);
 }
 
 void ExtensionsMenuEntryView::SetupContextMenuButton(
