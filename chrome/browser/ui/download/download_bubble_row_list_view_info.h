@@ -20,7 +20,8 @@ class DownloadBubbleRowListViewInfoObserver : public base::CheckedObserver {
   ~DownloadBubbleRowListViewInfoObserver() override;
 
   // Called when a new row is added.
-  virtual void OnRowAdded(const offline_items_collection::ContentId& id) {}
+  virtual void OnRowAdded(const offline_items_collection::ContentId& id,
+                          size_t index) {}
 
   // Called when a row is about to be removed. At this time, the row info for
   // `id` still exists.
@@ -52,7 +53,8 @@ class DownloadBubbleRowListViewInfo
     return last_completed_time_;
   }
 
-  void AddRow(DownloadUIModel::DownloadUIModelPtr model);
+  void AddRow(DownloadUIModel::DownloadUIModelPtr model,
+              std::optional<size_t> index = std::nullopt);
   void RemoveRow(const offline_items_collection::ContentId& id);
 
  private:

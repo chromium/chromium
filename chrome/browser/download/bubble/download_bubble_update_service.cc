@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -386,6 +387,13 @@ void DownloadBubbleUpdateService::Initialize(
   // with the current profile's downloads. If we get an original manager in the
   // future, we will initialize from scratch at that time.
   InitializeDownloadItemsCache();
+  if (!base::FeatureList::IsEnabled(
+          download::features::kDeferredDownloadHistoryLoading)) {
+    StartInitializeOfflineItemsCache();
+  }
+}
+
+void DownloadBubbleUpdateService::InitializeOfflineItemsIfNecessary() {
   StartInitializeOfflineItemsCache();
 }
 
@@ -1276,9 +1284,10 @@ void DownloadBubbleUpdateService::StartInitializeOfflineItemsCache() {
   if (IsShutDown()) {
     return;
   }
-  if (offline_items_initialized_) {
+  if (offline_items_initialized_ || offline_items_initializing_) {
     return;
   }
+  offline_items_initializing_ = true;
   offline_items_collection::OfflineContentProvider* provider =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
   provider->GetAllItems(
@@ -1294,6 +1303,18 @@ void DownloadBubbleUpdateService::InitializeOfflineItemsCache(
                                            /*maybe_add_alert=*/false);
   }
   offline_items_initialized_ = true;
+  offline_items_initializing_ = false;
+
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        auto* bubble_controller = GetBubbleController(browser);
+        if (bubble_controller &&
+            !web_app::AppBrowserController::IsWebApp(browser)) {
+          bubble_controller->OnOfflineItemsInitialized();
+        }
+        return true;
+      });
+
   for (auto& callback : offline_item_callbacks_) {
     std::move(callback).Run();
   }

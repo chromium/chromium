@@ -469,10 +469,7 @@ DownloadToolbarUIController::DownloadToolbarUIController(
       ProfileBrowserCollection::GetForProfile(browser->profile()));
 }
 
-DownloadToolbarUIController::~DownloadToolbarUIController() {
-  controller_.reset();
-  bubble_controller_.reset();
-}
+DownloadToolbarUIController::~DownloadToolbarUIController() = default;
 
 void DownloadToolbarUIController::TearDownPreBrowserWindowDestruction() {
   immersive_revealed_lock_.reset();
@@ -642,6 +639,12 @@ void DownloadToolbarUIController::HideDetails() {
 bool DownloadToolbarUIController::IsShowingDetails() const {
   return bubble_delegate_ != nullptr &&
          bubble_delegate_->GetWidget()->IsVisible();
+}
+
+void DownloadToolbarUIController::OnOfflineItemsInitialized() {
+  if (bubble_contents_) {
+    bubble_contents_->info().UpdateModels(GetPrimaryViewModels());
+  }
 }
 
 void DownloadToolbarUIController::UpdateIcon() {

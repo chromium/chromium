@@ -85,6 +85,7 @@ class DownloadToolbarUIController
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
   IconState GetIconState() const override;
+  void OnOfflineItemsInitialized() override;
 
   void UpdateIcon();
 
@@ -225,10 +226,10 @@ class DownloadToolbarUIController
   raw_ptr<BrowserView> browser_view_;
   DownloadBubbleMode primary_view_mode_ = DownloadBubbleMode::kComplete;
   raw_ptr<actions::ActionItem> action_item_ = nullptr;
-  // Controller for the DownloadToolbarButton UI.
-  std::unique_ptr<DownloadDisplayController> controller_;
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
+  // Controller for the DownloadToolbarButton UI.
+  std::unique_ptr<DownloadDisplayController> controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
 

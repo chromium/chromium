@@ -26,24 +26,30 @@ DownloadBubbleRowListView::DownloadBubbleRowListView(
       info_(info) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
-  info_->AddObserver(this);
+  observation_.Observe(&info);
 
   for (const DownloadBubbleRowViewInfo& row_info : info_->rows()) {
     AddRow(row_info);
   }
 }
 
-DownloadBubbleRowListView::~DownloadBubbleRowListView() {
-  info_->RemoveObserver(this);
-}
+DownloadBubbleRowListView::~DownloadBubbleRowListView() = default;
 
 void DownloadBubbleRowListView::AddRow(
-    const DownloadBubbleRowViewInfo& row_info) {
+    const DownloadBubbleRowViewInfo& row_info,
+    std::optional<size_t> index) {
   const ContentId& id = row_info.model()->GetContentId();
   CHECK(!rows_by_id_.contains(id));
-  auto* child = AddChildView(std::make_unique<DownloadBubbleRowView>(
-      row_info, bubble_controller_, navigation_handler_, browser_,
-      fixed_width_));
+  std::unique_ptr<DownloadBubbleRowView> row =
+      std::make_unique<DownloadBubbleRowView>(row_info, bubble_controller_,
+                                              navigation_handler_, browser_,
+                                              fixed_width_);
+  DownloadBubbleRowView* child = nullptr;
+  if (index.has_value()) {
+    child = AddChildViewAt(std::move(row), *index);
+  } else {
+    child = AddChildView(std::move(row));
+  }
   rows_by_id_[id] = child;
 }
 
@@ -77,10 +83,11 @@ size_t DownloadBubbleRowListView::NumRows() const {
 }
 
 void DownloadBubbleRowListView::OnRowAdded(
-    const offline_items_collection::ContentId& id) {
+    const offline_items_collection::ContentId& id,
+    size_t index) {
   const DownloadBubbleRowViewInfo* row_info = info_->GetRowInfo(id);
   CHECK(row_info);
-  AddRow(*row_info);
+  AddRow(*row_info, index);
 }
 
 void DownloadBubbleRowListView::OnRowWillBeRemoved(

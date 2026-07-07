@@ -86,6 +86,9 @@ class DownloadDisplay {
   // Returns whether the details are visible.
   virtual bool IsShowingDetails() const = 0;
 
+  // Called when offline items (history) initialization completes.
+  virtual void OnOfflineItemsInitialized() = 0;
+
   // Announces an accessible alert immediately.
   virtual void AnnounceAccessibleAlertNow(const std::u16string& alert_text) = 0;
 

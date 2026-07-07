@@ -117,6 +117,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   int GetAnnouncementCount() const { return announcement_count_; }
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId&) override {}
+  void OnOfflineItemsInitialized() override {}
 
  private:
   bool shown_ = false;

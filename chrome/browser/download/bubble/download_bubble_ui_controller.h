@@ -65,6 +65,7 @@ class DownloadBubbleUIController {
       const OfflineContentProvider::OfflineItemList& items);
   void OnOfflineItemUpdated(const OfflineItem& item);
   void OnOfflineItemRemoved(const ContentId& id);
+  void OnOfflineItemsInitialized();
 
   // Get the entries for the main view of the Download Bubble. The main view
   // contains all the recent downloads (finished within the last 24 hours).

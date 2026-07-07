@@ -193,6 +193,12 @@ void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
   UpdateButtonStateFromUpdateService();
 }
 
+void DownloadDisplayController::OnOfflineItemsInitialized() {
+  if (display_) {
+    display_->OnOfflineItemsInitialized();
+  }
+}
+
 void DownloadDisplayController::OnButtonPressed() {
   DownloadUIController* download_ui_controller =
       DownloadCoreServiceFactory::GetForBrowserContext(

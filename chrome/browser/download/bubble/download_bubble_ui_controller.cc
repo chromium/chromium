@@ -188,6 +188,10 @@ void DownloadBubbleUIController::OnOfflineItemUpdated(const OfflineItem& item) {
   display_controller_->OnUpdatedItem(is_done, may_show_details);
 }
 
+void DownloadBubbleUIController::OnOfflineItemsInitialized() {
+  display_controller_->OnOfflineItemsInitialized();
+}
+
 void DownloadBubbleUIController::OnDownloadItemUpdated(
     download::DownloadItem* item) {
   DownloadItemModel model(item);
@@ -208,9 +212,7 @@ void DownloadBubbleUIController::OnDownloadItemUpdated(
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     bool is_main_view) {
   std::vector<DownloadUIModelPtr> all_items;
-  if (!update_service_->IsInitialized()) {
-    return all_items;
-  }
+  update_service_->InitializeOfflineItemsIfNecessary();
   update_service_->GetAllModelsToDisplay(
       all_items, GetWebAppIdForBrowser(browser_),
       /*force_backfill_download_items=*/true);

@@ -138,6 +138,9 @@ class DownloadBubbleUpdateService
   // Get the DownloadManager that |download_item_notifier_| is listening to.
   content::DownloadManager* GetDownloadManager();
 
+  // Triggers offline items initialization if it hasn't been started yet.
+  void InitializeOfflineItemsIfNecessary();
+
   // Virtual for testing.
   virtual bool IsInitialized() const;
 
@@ -501,6 +504,7 @@ class DownloadBubbleUpdateService
       original_download_item_notifier_;
 
   bool offline_items_initialized_ = false;
+  bool offline_items_initializing_ = false;
   // Holds functions queued up while offline items were being initialized.
   std::vector<base::OnceClosure> offline_item_callbacks_;
 

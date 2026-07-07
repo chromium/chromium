@@ -32,6 +32,10 @@ class DownloadBubbleContentsViewInfo
   void InitializeSecurityView(const ContentId& id);
   void ResetSecurityView();
 
+  // Updates the internal models, adding new ones and removing those no longer
+  // present.
+  void UpdateModels(std::vector<DownloadUIModel::DownloadUIModelPtr> models);
+
  private:
   DownloadBubbleRowListViewInfo row_list_view_info_;
   DownloadBubbleSecurityViewInfo security_view_info_;

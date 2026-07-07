@@ -66,6 +66,9 @@ class DownloadDisplayController : public base::PowerSuspendObserver {
   // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem(const ContentId& id);
 
+  // Called when offline items (history) initialization completes.
+  void OnOfflineItemsInitialized();
+
   // Asks `display_` to hide the toolbar button. Does nothing if the toolbar
   // button is already hidden.
   void HideToolbarButton();

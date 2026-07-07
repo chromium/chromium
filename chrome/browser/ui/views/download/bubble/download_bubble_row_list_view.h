@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -57,12 +58,14 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
 
  private:
   // DownloadBubbleRowListViewInfoObserver implementation:
-  void OnRowAdded(const offline_items_collection::ContentId& id) override;
+  void OnRowAdded(const offline_items_collection::ContentId& id,
+                  size_t index) override;
   void OnRowWillBeRemoved(
       const offline_items_collection::ContentId& id) override;
 
-  // Adds a row to the bottom of the list.
-  void AddRow(const DownloadBubbleRowViewInfo& row_info);
+  // Adds a row at the specified index, or to the bottom if nullopt.
+  void AddRow(const DownloadBubbleRowViewInfo& row_info,
+              std::optional<size_t> index = std::nullopt);
 
   // Map of download item's ID to child view in the row list.
   std::map<offline_items_collection::ContentId,
@@ -76,6 +79,10 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
 
   // This is owned by the DownloadBubbleContentsView owning `this`.
   raw_ref<const DownloadBubbleRowListViewInfo> info_;
+
+  base::ScopedObservation<const DownloadBubbleRowListViewInfo,
+                          DownloadBubbleRowListViewInfoObserver>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_LIST_VIEW_H_

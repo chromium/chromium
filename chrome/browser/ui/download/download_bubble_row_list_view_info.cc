@@ -42,12 +42,22 @@ const DownloadBubbleRowViewInfo* DownloadBubbleRowListViewInfo::GetRowInfo(
 }
 
 void DownloadBubbleRowListViewInfo::AddRow(
-    DownloadUIModel::DownloadUIModelPtr model) {
+    DownloadUIModel::DownloadUIModelPtr model,
+    std::optional<size_t> index) {
   offline_items_collection::ContentId id = model->GetContentId();
-  rows_.emplace_back(std::move(model)).AddObserver(this);
-  auto it = std::prev(rows_.end());
-  row_list_iter_map_.emplace(id, it);
-  NotifyObservers(&DownloadBubbleRowListViewInfoObserver::OnRowAdded, id);
+
+  // Find the insert position.
+  size_t insert_index = index.value_or(rows_.size());
+  CHECK_LE(insert_index, rows_.size());
+  auto it = (insert_index == rows_.size())
+                ? rows_.end()
+                : std::next(rows_.begin(), insert_index);
+
+  auto new_it = rows_.emplace(it, std::move(model));
+  new_it->AddObserver(this);
+  row_list_iter_map_.emplace(id, new_it);
+  NotifyObservers(&DownloadBubbleRowListViewInfoObserver::OnRowAdded, id,
+                  insert_index);
 }
 
 void DownloadBubbleRowListViewInfo::RemoveRow(

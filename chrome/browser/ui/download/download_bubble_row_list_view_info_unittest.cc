@@ -51,7 +51,7 @@ class DownloadBubbleRowListViewInfoTest
   }
 
   void SetRowAddedCallback(
-      base::OnceCallback<void(const ContentId&)> callback) {
+      base::OnceCallback<void(const ContentId&, size_t)> callback) {
     on_row_added_ = std::move(callback);
   }
 
@@ -66,9 +66,10 @@ class DownloadBubbleRowListViewInfoTest
 
  private:
   // DownloadBubbleRowListViewInfoObserver implementation:
-  void OnRowAdded(const offline_items_collection::ContentId& id) override {
+  void OnRowAdded(const offline_items_collection::ContentId& id,
+                  size_t index) override {
     if (on_row_added_) {
-      std::move(on_row_added_).Run(id);
+      std::move(on_row_added_).Run(id, index);
     }
   }
   void OnRowWillBeRemoved(
@@ -86,7 +87,7 @@ class DownloadBubbleRowListViewInfoTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::map<std::string, NiceMock<download::MockDownloadItem>> items_;
-  base::OnceCallback<void(const ContentId&)> on_row_added_;
+  base::OnceCallback<void(const ContentId&, size_t)> on_row_added_;
   base::OnceCallback<void(const ContentId&)> on_row_will_be_removed_;
   base::OnceClosure on_any_row_removed_;
 };
@@ -147,10 +148,12 @@ TEST_F(DownloadBubbleRowListViewInfoTest, NotifyObserverAddRow) {
   info.AddObserver(this);
 
   bool notified = false;
-  SetRowAddedCallback(base::BindLambdaForTesting([&](const ContentId& id) {
-    EXPECT_EQ(id, id2);
-    notified = true;
-  }));
+  SetRowAddedCallback(
+      base::BindLambdaForTesting([&](const ContentId& id, size_t index) {
+        EXPECT_EQ(id, id2);
+        EXPECT_EQ(index, 1u);
+        notified = true;
+      }));
 
   info.AddRow(DownloadItemModel::Wrap(GetItem("item2")));
   EXPECT_TRUE(notified);
@@ -201,6 +204,34 @@ TEST_F(DownloadBubbleRowListViewInfoTest, NotifyObserverAnyRowRemoved) {
   info.RemoveRow(id);
 
   EXPECT_TRUE(notified);
+}
+
+TEST_F(DownloadBubbleRowListViewInfoTest, AddRowAtIndex) {
+  CreateItem("item1");
+  CreateItem("item2");
+  CreateItem("item3");
+
+  ContentId id1 = GetContentId("item1");
+  ContentId id2 = GetContentId("item2");
+  ContentId id3 = GetContentId("item3");
+
+  std::vector<DownloadUIModel::DownloadUIModelPtr> models;
+  models.push_back(DownloadItemModel::Wrap(GetItem("item1")));
+  models.push_back(DownloadItemModel::Wrap(GetItem("item3")));
+  DownloadBubbleRowListViewInfo info(std::move(models));
+
+  // Current: item1, item3
+
+  // Insert item2 at index 1
+  info.AddRow(DownloadItemModel::Wrap(GetItem("item2")), 1);
+
+  // Verify order: item1, item2, item3
+  auto it = info.rows().begin();
+  EXPECT_EQ(it->model()->GetContentId(), id1);
+  ++it;
+  EXPECT_EQ(it->model()->GetContentId(), id2);
+  ++it;
+  EXPECT_EQ(it->model()->GetContentId(), id3);
 }
 
 }  // namespace
