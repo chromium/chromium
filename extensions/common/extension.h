@@ -94,10 +94,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
     WAS_INSTALLED_BY_DEFAULT = 1 << 7,
 
     // Unused - was part of an abandoned experiment.
-    REQUIRE_PERMISSIONS_CONSENT = 1 << 8,
+    // REQUIRE_PERMISSIONS_CONSENT = 1 << 8,
 
     // Unused - this flag has been moved to ExtensionPrefs.
-    IS_EPHEMERAL = 1 << 9,
+    // IS_EPHEMERAL = 1 << 9,
 
     // `WAS_INSTALLED_BY_OEM` installed by an OEM (e.g on Chrome OS) and should
     // be placed in a special OEM folder in the App Launcher. Note: OEM apps are

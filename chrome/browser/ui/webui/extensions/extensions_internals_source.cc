@@ -138,12 +138,6 @@ base::ListValue CreationFlagsToList(int creation_flags) {
   if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT) {
     flags_value.Append("WAS_INSTALLED_BY_DEFAULT");
   }
-  if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT) {
-    flags_value.Append("REQUIRE_PERMISSIONS_CONSENT");
-  }
-  if (creation_flags & extensions::Extension::IS_EPHEMERAL) {
-    flags_value.Append("IS_EPHEMERAL");
-  }
   if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM) {
     flags_value.Append("WAS_INSTALLED_BY_OEM");
   }
