@@ -4907,8 +4907,10 @@ if (!is_android) {
     }
 
     if (enable_spellcheck) {
-      sources +=
-          [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
+      # Other browser_tests in this target (e.g. the mac
+      # render_view_context_menu browsertest) include spellchecker headers,
+      # and spellchecker:browser_tests contributes its own browser test files
+      # to this binary.
       deps += [
         "//chrome/browser/spellchecker",
         "//chrome/browser/spellchecker:browser_tests",
