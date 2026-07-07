@@ -924,8 +924,8 @@ class WebUIOmniboxSimplificationInteractiveTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/512352908): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/512348269): Flaky on Mac and Windows ASAN.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_HasBackgroundApplied DISABLED_HasBackgroundApplied
 #else
 #define MAYBE_HasBackgroundApplied HasBackgroundApplied
@@ -948,8 +948,8 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
           true)));
 }
 
-// TODO(crbug.com/512348269): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/512348269): Flaky on Mac and Windows ASAN.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OblongShapeApplied DISABLED_OblongShapeApplied
 #else
 #define MAYBE_OblongShapeApplied OblongShapeApplied
