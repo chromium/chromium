@@ -81,10 +81,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
@@ -94,7 +90,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -116,7 +111,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -138,7 +132,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -164,6 +157,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     AppMenuDelegate mAppMenuDelegate;
     ModalDialogManager mModalDialogManager;
     SnackbarManager mSnackbarManager;
+    private final TabGroupItemBuilder mTabGroupItemBuilder;
 
     private boolean mUpdateMenuItemVisible;
 
@@ -232,6 +226,17 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         incognitoReauthController -> {
                             mIncognitoReauthController = incognitoReauthController;
                         }));
+
+        mTabGroupItemBuilder =
+                new TabGroupItemBuilder(
+                        context,
+                        getAppMenuItemTheme(),
+                        tabModelSelector,
+                        isMenuIconAtStart(),
+                        shouldShowIconBeforeItem(),
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        this::getFaviconHelper);
     }
 
     @Override
@@ -369,8 +374,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Add to Group
         boolean shouldShowIconBeforeItem = shouldShowIconBeforeItem();
-        if (shouldShowAddToGroup()) {
-            modelList.add(buildAddToGroupItem(currentTab, shouldShowIconBeforeItem));
+        if (mTabGroupItemBuilder.shouldShowAddToGroup()) {
+            modelList.add(
+                    mTabGroupItemBuilder.buildAddToGroupItem(currentTab, shouldShowIconBeforeItem));
         }
 
         // New Window
@@ -587,8 +593,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Tab groups
-        if (shouldShowTabGroupsParentItem(currentTab)) {
-            modelList.add(buildTabGroupsParentItem(currentTab));
+        if (mTabGroupItemBuilder.shouldShowTabGroupsParentItem(currentTab)) {
+            modelList.add(mTabGroupItemBuilder.buildTabGroupsParentItem(currentTab));
         }
 
         // New Window
@@ -805,7 +811,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildNewWindowItem());
             modelList.add(buildNewIncognitoWindowItem());
         }
-        modelList.add(buildNewTabGroupItem());
+        modelList.add(mTabGroupItemBuilder.buildNewTabGroupItemWithoutTab());
         modelList.add(buildCloseAllTabsItem());
         if (shouldShowSelectTabsItem()) modelList.add(buildSelectTabsItem());
         if (shouldShowQuickDeleteItem()) modelList.add(buildQuickDeleteItem());
@@ -920,182 +926,33 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
     }
 
-    private boolean shouldShowAddToGroup() {
-        return mTabModelSelector.isTabStateInitialized();
-    }
-
-    private ListItem buildAddToGroupItem(@Nullable Tab currentTab, boolean showIcon) {
-        assert shouldShowAddToGroup();
-        PropertyModel model =
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.add_to_group_menu_id,
-                        R.string.menu_add_tab_to_group,
-                        showIcon ? R.drawable.ic_widgets : Resources.ID_NULL,
-                        isMenuIconAtStart());
-        model.set(
-                AppMenuItemProperties.TITLE,
-                mContext.getString(
-                        getAddToGroupMenuItemString(
-                                currentTab != null ? currentTab.getTabGroupId() : null)));
-        return AppMenuItemUtils.createStandardListItem(model, showIcon);
-    }
-
-    private boolean shouldShowTabGroupsParentItem(@Nullable Tab currentTab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
-            return false;
-        }
-
-        return shouldShowAddToGroup() || currentTab != null;
-    }
-
-    private ListItem buildCreateNewTabGroupItem(boolean showIcon) {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.create_new_tab_group_menu_id,
-                        R.string.menu_create_new_tab_group,
-                        showIcon ? R.drawable.ic_library_add_24dp : Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                showIcon);
-    }
-
-    private ListItem buildTabGroupsParentItem(@Nullable Tab currentTab) {
-        assert shouldShowTabGroupsParentItem(currentTab);
-
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.tab_groups_parent_menu_id,
-                        R.string.menu_tab_groups,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
-                        () -> getTabGroupsSubmenuItems(currentTab, shouldShowIconBeforeItem()),
-                        isMenuIconAtStart()));
-    }
-
-    private Drawable getTabGroupDrawable(@TabGroupColorId int color) {
-        int circleSize =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size);
-        int iconSize =
-                mContext.getResources()
-                        .getDimensionPixelSize(org.chromium.ui.R.dimen.list_menu_item_icon_size);
-        Drawable colorDrawable =
-                TabGroupUtils.createColorDrawableForMenu(
-                        mContext, color, isIncognitoShowing(), circleSize);
-        int inset = (iconSize - circleSize) / 2;
-        return new InsetDrawable(
-                colorDrawable, /* leftInset= */ 0, inset, /* rightInset= */ 0, inset);
-    }
-
-    private List<ListItem> getTabGroupsSubmenuItems(@Nullable Tab currentTab, boolean showIcons) {
-        List<ListItem> submenuItems = new ArrayList<>();
-        if (currentTab != null) {
-            submenuItems.add(buildCreateNewTabGroupItem(/* showIcon= */ false));
-        }
-
-        if (shouldShowAddToGroup()) {
-            submenuItems.add(buildAddToGroupItem(currentTab, /* showIcon= */ false));
-        }
-
-        TabModel tabModel = mTabModelSelector.getCurrentModel();
-        Set<Token> groupIds = tabModel.getAllTabGroupIds();
-        if (groupIds.isEmpty()) {
-            return submenuItems;
-        }
-
-        submenuItems.add(
-                new ListItem(
-                        AppMenuHandler.AppMenuItemType.DIVIDER,
-                        AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
-        submenuItems.add(
-                AppMenuItemUtils.buildHeaderItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.tab_groups_header_menu_id,
-                        R.string.menu_tab_groups,
-                        isMenuIconAtStart()));
-
-        // TODO(crbug.com/509065807): Observe TabModel to update this while the menu is open.
-        for (Token groupId : groupIds) {
-            String title = tabModel.getTabGroupTitle(groupId);
-            if (TextUtils.isEmpty(title)) {
-                title =
-                        TabGroupTitleUtils.getDefaultTitle(
-                                mContext, tabModel.getTabCountForGroup(groupId));
-            }
-
-            PropertyModel model =
-                    AppMenuItemUtils.buildModelForMenuItemWithSubmenu(
-                            mContext,
-                            getAppMenuItemTheme(),
-                            R.id.tab_group_menu_item_id,
-                            title,
-                            showIcons
-                                    ? getTabGroupDrawable(
-                                            tabModel.getTabGroupColorWithFallback(groupId))
-                                    : null,
-                            () -> getTabsSubmenuItems(groupId, tabModel),
-                            isMenuIconAtStart());
-            model.set(AppMenuItemProperties.ICON_NO_TINT, true);
-
-            submenuItems.add(AppMenuItemUtils.createMenuItemWithSubmenuListItem(model, showIcons));
-        }
-
-        return submenuItems;
-    }
-
-    private List<ListItem> getTabsSubmenuItems(Token groupId, TabModel tabModel) {
-        List<ListItem> submenuItems = new ArrayList<>();
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
-        for (Tab tab : tabs) {
-            PropertyModel model =
-                    AppMenuItemUtils.populateBaseModelForTextItem(
-                                    new PropertyModel.Builder(AppMenuTabItemProperties.ALL_KEYS),
-                                    getAppMenuItemTheme(),
-                                    R.id.tab_group_tab_menu_item,
-                                    isMenuIconAtStart())
-                            .with(AppMenuItemProperties.TITLE, tab.getTitle())
-                            .with(AppMenuTabItemProperties.TAB_ID, tab.getId())
-                            .with(
-                                    AppMenuItemProperties.ICON_SUPPLIER,
-                                    createIconSupplierForTab(
-                                            tab.getUrl(),
-                                            tab.getTabGroupId(),
-                                            tab.isOffTheRecord(),
-                                            TabFavicon.getBitmap(tab),
-                                            /* fallbackToHost= */ false))
-                            .build();
-            submenuItems.add(new ListItem(AppMenuHandler.AppMenuItemType.TAB, model));
-        }
-        return submenuItems;
-    }
-
-    private LazyOneshotSupplier<Drawable> createIconSupplierForTab(
+    /* package */ static LazyOneshotSupplier<Drawable> createIconSupplierForTab(
+            Context context,
             GURL faviconUrl,
             @Nullable Token tabGroupId,
             boolean isOffTheRecord,
             @Nullable Bitmap cachedFavicon,
-            boolean fallbackToHost) {
+            boolean fallbackToHost,
+            RoundedIconGenerator roundedIconGenerator,
+            FaviconHelper.DefaultFaviconHelper defaultFaviconHelper,
+            FaviconHelper faviconHelper,
+            Profile profile) {
         return new LazyOneshotSupplierImpl<>() {
             @Override
             public void doSet() {
                 int faviconDisplaySize =
-                        mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+                        context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
 
                 if (cachedFavicon != null) {
                     set(
                             createInsetFaviconDrawable(
+                                    context,
                                     FaviconUtils.getIconDrawableWithFilter(
                                             cachedFavicon,
                                             faviconUrl,
-                                            mRoundedIconGenerator,
-                                            mDefaultFaviconHelper,
-                                            mContext,
+                                            roundedIconGenerator,
+                                            defaultFaviconHelper,
+                                            context,
                                             faviconDisplaySize)));
                     return;
                 }
@@ -1104,41 +961,40 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         (image, iconUrl) -> {
                             set(
                                     createInsetFaviconDrawable(
+                                            context,
                                             FaviconUtils.getIconDrawableWithFilter(
                                                     image,
                                                     faviconUrl,
-                                                    mRoundedIconGenerator,
-                                                    mDefaultFaviconHelper,
-                                                    mContext,
+                                                    roundedIconGenerator,
+                                                    defaultFaviconHelper,
+                                                    context,
                                                     faviconDisplaySize)));
                         };
 
-                Profile profile = getProfileFromTabModel();
+                assumeNonNull(profile);
                 if (tabGroupId != null && !isOffTheRecord) {
-                    getFaviconHelper()
-                            .getForeignFaviconImageForURL(
-                                    profile,
-                                    faviconUrl,
-                                    faviconDisplaySize,
-                                    fallbackToHost,
-                                    faviconCallback);
+                    faviconHelper.getForeignFaviconImageForURL(
+                            profile,
+                            faviconUrl,
+                            faviconDisplaySize,
+                            fallbackToHost,
+                            faviconCallback);
                 } else {
-                    getFaviconHelper()
-                            .getLocalFaviconImageForURL(
-                                    profile,
-                                    faviconUrl,
-                                    faviconDisplaySize,
-                                    fallbackToHost,
-                                    faviconCallback);
+                    faviconHelper.getLocalFaviconImageForURL(
+                            profile,
+                            faviconUrl,
+                            faviconDisplaySize,
+                            fallbackToHost,
+                            faviconCallback);
                 }
             }
         };
     }
 
-    private Drawable createInsetFaviconDrawable(Drawable icon) {
-        int menuItemIconSize = AttrUtils.getDimensionPixelSize(mContext, R.attr.listItemIconSize);
+    /* package */ static Drawable createInsetFaviconDrawable(Context context, Drawable icon) {
+        int menuItemIconSize = AttrUtils.getDimensionPixelSize(context, R.attr.listItemIconSize);
         int faviconDisplaySize =
-                mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+                context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         int inset = (menuItemIconSize - faviconDisplaySize) / 2;
         if (inset <= 0) {
             return icon;
@@ -1341,7 +1197,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         isMenuIconAtStart()));
     }
 
-    private static ListItem buildEmptySubmenuItem() {
+    /* package */ static ListItem buildEmptySubmenuItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.EMPTY,
                 new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
@@ -1447,11 +1303,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         .with(
                                 AppMenuItemProperties.ICON_SUPPLIER,
                                 createIconSupplierForTab(
+                                        mContext,
                                         /* faviconUrl= */ tab.url,
                                         /* tabGroupId= */ null,
                                         /* isOffTheRecord= */ false,
                                         /* cachedFavicon= */ null,
-                                        /* fallbackToHost= */ false))
+                                        /* fallbackToHost= */ false,
+                                        mRoundedIconGenerator,
+                                        mDefaultFaviconHelper,
+                                        getFaviconHelper(),
+                                        getProfileFromTabModel()))
                         .with(AppMenuItemProperties.ICON_NO_TINT, true)
                         .with(AppMenuItemProperties.ENABLED, true)
                         .with(AppMenuRecentEntryItemProperties.FOREIGN_SESSION_TAB, tab)
@@ -1555,11 +1416,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         .with(
                                 AppMenuItemProperties.ICON_SUPPLIER,
                                 createIconSupplierForTab(
+                                        mContext,
                                         tab.getUrl(),
                                         /* tabGroupId= */ null,
                                         /* isOffTheRecord= */ false,
                                         /* cachedFavicon= */ null,
-                                        /* fallbackToHost= */ false))
+                                        /* fallbackToHost= */ false,
+                                        mRoundedIconGenerator,
+                                        mDefaultFaviconHelper,
+                                        getFaviconHelper(),
+                                        getProfileFromTabModel()))
                         .with(AppMenuItemProperties.ICON_NO_TINT, true)
                         .with(
                                 AppMenuItemProperties.ENABLED,
@@ -1596,7 +1462,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         getAppMenuItemTheme(),
                         R.id.recent_entry_menu_item,
                         getRecentEntrySubmenuTitle(group.getTitle(), group.getTabs().size()),
-                        shouldShowIconBeforeItem() ? getTabGroupDrawable(group.getColor()) : null,
+                        shouldShowIconBeforeItem()
+                                ? TabGroupItemBuilder.getTabGroupDrawable(
+                                        mContext,
+                                        getProfileFromTabModel().isOffTheRecord(),
+                                        group.getColor())
+                                : null,
                         submenuItemsSupplier,
                         isMenuIconAtStart());
         model.set(AppMenuItemProperties.ICON_NO_TINT, true);
@@ -1635,13 +1506,18 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 tab,
                 TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl()),
                 createIconSupplierForTab(
+                        mContext,
                         tab.getUrl(),
                         tab.getTabGroupId(),
                         // Recently closed tabs are not tracked for incognito.
                         /* isOffTheRecord= */ false,
                         // No live Tab object is available to get a cached favicon.
                         /* cachedFavicon= */ null,
-                        /* fallbackToHost= */ false));
+                        /* fallbackToHost= */ false,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        getFaviconHelper(),
+                        getProfileFromTabModel()));
     }
 
     private ListItem buildRecentEntryMenuItem(
@@ -1959,7 +1835,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             public void doSet() {
                 getImageFetcher()
                         .fetchFaviconForBookmark(
-                                item, icon -> set(createInsetFaviconDrawable(icon)));
+                                item, icon -> set(createInsetFaviconDrawable(mContext, icon)));
             }
         };
     }
@@ -2515,18 +2391,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_image_descriptions
                                 : Resources.ID_NULL,
-                        isMenuIconAtStart()));
-    }
-
-    private ListItem buildNewTabGroupItem() {
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.new_tab_group_menu_id,
-                        R.string.menu_new_tab_group,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
                         isMenuIconAtStart()));
     }
 

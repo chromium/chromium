@@ -29,10 +29,8 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
-import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -50,7 +48,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -59,7 +56,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -72,7 +68,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -139,7 +134,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -170,7 +164,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -194,7 +187,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
@@ -4665,210 +4657,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testTabGroupsSubmenu_WithGroups() {
-        TabModel tabModel = Mockito.mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-
-        Token token1 = new Token(1L, 1L);
-        when(tabModel.getTabGroupCount()).thenReturn(1);
-        when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
-        when(tabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
-
-        Tab tab1 = Mockito.mock(Tab.class);
-        when(tab1.getId()).thenReturn(101);
-        when(tab1.getTitle()).thenReturn("Tab 1");
-        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-
-        Tab tab2 = Mockito.mock(Tab.class);
-        when(tab2.getId()).thenReturn(102);
-        when(tab2.getTitle()).thenReturn("Tab 2");
-        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
-
-        when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab1, tab2));
-
+    public void testTabGroupsItem_Present() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
         ListItem tabGroupsParent =
                 findItemById(
                         mTabbedAppMenuPropertiesDelegate.getMenuItems(),
                         R.id.tab_groups_parent_menu_id);
         assertNotNull(tabGroupsParent);
-
-        List<ListItem> tabGroupsSubmenuItems =
-                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        List<MenuItem> expectedItems =
-                Arrays.asList(
-                        item(R.id.create_new_tab_group_menu_id),
-                        item(R.id.add_to_group_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.tab_groups_header_menu_id),
-                        item(
-                                R.id.tab_group_menu_item_id,
-                                item(R.id.tab_group_tab_menu_item),
-                                item(R.id.tab_group_tab_menu_item)));
-        assertMenuItemsAreEqual(tabGroupsSubmenuItems, expectedItems);
-
-        List<MenuItem> expectedTitles =
-                Arrays.asList(
-                        item(R.string.menu_create_new_tab_group),
-                        item(R.string.menu_add_tab_to_group),
-                        item(0),
-                        item(R.string.menu_tab_groups),
-                        item("Group 1", item("Tab 1"), item("Tab 2")));
-        assertMenuTitlesAreEqual(tabGroupsSubmenuItems, expectedTitles);
-
-        ListItem groupItem = tabGroupsSubmenuItems.get(4);
-        List<ListItem> tabsSubmenuItems =
-                groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        ListItem tabItem1 = tabsSubmenuItems.get(0);
-        assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem1.type);
-        assertEquals(AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU, groupItem.type);
-        assertEquals(101, tabItem1.model.get(AppMenuTabItemProperties.TAB_ID));
-        Bundle bundle1 = mTabbedAppMenuPropertiesDelegate.getBundleForMenuItem(tabItem1.model);
-        assertNotNull("Bundle 1 should not be null", bundle1);
-        assertEquals(101, bundle1.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY));
-
-        ListItem tabItem2 = tabsSubmenuItems.get(1);
-        assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem2.type);
-        assertEquals(102, tabItem2.model.get(AppMenuTabItemProperties.TAB_ID));
-        Bundle bundle2 = mTabbedAppMenuPropertiesDelegate.getBundleForMenuItem(tabItem2.model);
-        assertNotNull("Bundle 2 should not be null", bundle2);
-        assertEquals(102, bundle2.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY));
-    }
-
-    private Tab setUpMockTabGroup(TabModel tabModel, boolean isIncognito, boolean hasGroupId) {
-        Token token1 = new Token(1L, 1L);
-        when(tabModel.getTabGroupCount()).thenReturn(1);
-        when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
-        when(tabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
-
-        Tab tab = Mockito.mock(Tab.class);
-        when(tab.getId()).thenReturn(101);
-        when(tab.getTitle()).thenReturn("Tab 1");
-        when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(tab.getTabGroupId()).thenReturn(hasGroupId ? token1 : null);
-        when(tab.isOffTheRecord()).thenReturn(isIncognito);
-        when(tab.isInitialized()).thenReturn(true);
-        when(tab.isDestroyed()).thenReturn(false);
-        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
-
-        when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab));
-
-        return tab;
-    }
-
-    @Test
-    public void testTabGroupsSubmenu_Favicons_GroupedNonIncognito() {
-        // Configure an non-incognito TabModel.
-        TabModel tabModel = Mockito.mock(TabModel.class);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        setUpMockTabGroup(tabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
-        GURL tabUrl = JUnitTestGURLs.URL_1;
-
-        setUpMocksForPageMenu();
-
-        // Intercept the JNI callback and invoke it synchronously with a mock favicon bitmap.
-        Answer<Boolean> faviconCallbackAnswer =
-                invocation -> {
-                    FaviconHelper.FaviconImageCallback callback = invocation.getArgument(5);
-                    callback.onFaviconAvailable(
-                            Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888), tabUrl);
-                    return true;
-                };
-
-        // Should call {@code getForeignFaviconImageForURL()} because it is not incognito.
-        doAnswer(faviconCallbackAnswer)
-                .when(mFaviconHelperJniMock)
-                .getForeignFaviconImageForURL(
-                        eq(1L), eq(mProfile), eq(tabUrl), anyInt(), eq(false), any());
-
-        // Get the first tab group item in the menu.
-        ListItem tabGroupItem =
-                findItemById(
-                        findItemById(
-                                        mTabbedAppMenuPropertiesDelegate.getMenuItems(),
-                                        R.id.tab_groups_parent_menu_id)
-                                .model
-                                .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                                .get(),
-                        R.id.tab_group_menu_item_id);
-        assertNotNull(tabGroupItem);
-
-        // Get the first tab item in that group.
-        LazyOneshotSupplier<Drawable> iconSupplier =
-                tabGroupItem
-                        .model
-                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                        .get()
-                        .get(0)
-                        .model
-                        .get(AppMenuItemProperties.ICON_SUPPLIER);
-
-        Drawable drawable = iconSupplier.get();
-        assertNotNull(drawable);
-    }
-
-    @Test
-    public void testTabGroupsSubmenu_Favicons_GroupedIncognito() {
-        // Configure an incognito TabModel.
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
-        setUpMockTabGroup(mIncognitoTabModel, /* isIncognito= */ true, /* hasGroupId= */ true);
-        GURL tabUrl = JUnitTestGURLs.URL_1;
-
-        setUpMocksForPageMenu();
-        when(mTab.isIncognito()).thenReturn(true);
-
-        // Intercept the JNI callback and invoke it synchronously with a mock favicon bitmap.
-        Answer<Boolean> faviconCallbackAnswer =
-                invocation -> {
-                    FaviconHelper.FaviconImageCallback callback = invocation.getArgument(5);
-                    callback.onFaviconAvailable(
-                            Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888), tabUrl);
-                    return true;
-                };
-
-        // Should call {@code getLocalFaviconImageForURL()} because it is incognito.
-        doAnswer(faviconCallbackAnswer)
-                .when(mFaviconHelperJniMock)
-                .getLocalFaviconImageForURL(
-                        eq(1L), eq(mProfile), eq(tabUrl), anyInt(), eq(false), any());
-
-        // Get the first tab group item in the menu.
-        ListItem tabGroupItem =
-                findItemById(
-                        findItemById(
-                                        mTabbedAppMenuPropertiesDelegate.getMenuItems(),
-                                        R.id.tab_groups_parent_menu_id)
-                                .model
-                                .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                                .get(),
-                        R.id.tab_group_menu_item_id);
-        assertNotNull(tabGroupItem);
-
-        // Get the first tab item in that group.
-        LazyOneshotSupplier<Drawable> iconSupplier =
-                tabGroupItem
-                        .model
-                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                        .get()
-                        .get(0)
-                        .model
-                        .get(AppMenuItemProperties.ICON_SUPPLIER);
-
-        Drawable drawable = iconSupplier.get();
-        assertNotNull(drawable);
     }
 
     @Test

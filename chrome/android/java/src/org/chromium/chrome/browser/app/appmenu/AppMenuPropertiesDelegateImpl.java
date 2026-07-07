@@ -16,7 +16,6 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -27,7 +26,6 @@ import com.google.common.primitives.UnsignedLongs;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -60,7 +58,6 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
@@ -1163,13 +1160,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             default:
                 // Intentional noop.
         }
-    }
-
-    public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
-        TabModel tabModel = mTabModelSelector.getCurrentModel();
-        if (currentTabGroupId != null) return R.string.menu_move_tab_to_group;
-        boolean hasGroups = tabModel.getTabGroupCount() != 0;
-        return hasGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
     }
 
     /** Returns whether to show the open in app menu item. */
