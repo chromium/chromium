@@ -51,7 +51,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.NullUtil;
@@ -278,15 +277,10 @@ public class AutofillLocalCardEditorTest {
         TextInputLayout cvcMaterialLabel =
                 mSettingsActivity.findViewById(R.id.credit_card_security_code_label_material);
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            cvcLegacyContainer.setVisibility(View.GONE);
-            cvcMaterialLabel.setVisibility(View.VISIBLE);
-            mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
-        } else {
-            cvcLegacyContainer.setVisibility(View.VISIBLE);
-            cvcMaterialLabel.setVisibility(View.GONE);
-            mCvc = mSettingsActivity.findViewById(R.id.cvc);
-        }
+        cvcLegacyContainer.setVisibility(View.GONE);
+        cvcMaterialLabel.setVisibility(View.VISIBLE);
+        mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+
         mCvcHintImage = mSettingsActivity.findViewById(R.id.cvc_hint_image);
         mNumberText = mSettingsActivity.findViewById(R.id.credit_card_number_edit);
         mExpirationDateInvalidError =
@@ -1009,30 +1003,7 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
-    public void saveCard_withBillingAddress_SettingsContainmentDisabled() {
-        CreditCard card = getSampleLocalCard();
-        List<AutofillProfile> profiles = setupBillingAddressProfiles();
-        initFragment(card);
-
-        mCardEditor.mBillingAddressSpinner.setSelection(
-                2); // 0 is "Select", 1 is address1, 2 is address2
-        mDoneButton.performClick();
-
-        verify(mMockPersonalDataManager)
-                .setCreditCard(
-                        argThat(
-                                c -> {
-                                    assertThat(c.getBillingAddressId())
-                                            .isEqualTo(profiles.get(1).getGUID());
-                                    return true;
-                                }));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
-    public void saveCard_withBillingAddress_SettingsContainmentEnabled() {
+    public void saveCard_withBillingAddress() {
         CreditCard card = getSampleLocalCard();
         List<AutofillProfile> profiles = setupBillingAddressProfiles();
         initFragment(card);
@@ -1056,8 +1027,7 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
-    public void saveCard_noBillingAddressSelected_SettingsContainmentEnabled() {
+    public void saveCard_noBillingAddressSelected() {
         CreditCard card = getSampleLocalCard();
         setupBillingAddressProfiles();
         initFragment(card);

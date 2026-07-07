@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
@@ -94,7 +93,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     /** Returns whether the divider should be shown. */
     @Override
     public boolean hasDivider() {
-        return !ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+        return false;
     }
 
     /**

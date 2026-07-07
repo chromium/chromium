@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -83,11 +82,9 @@ public class WideDisplayPadding {
                 // TODO(crbug.com/454247949): Short term workaround until margin for views are
                 // updated.
                 int defaultPadding =
-                        ChromeFeatureList.sAndroidSettingsContainment.isEnabled()
-                                ? mContext.getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.settings_single_column_layout_margin)
-                                : 0;
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.settings_single_column_layout_margin);
                 ViewResizer.createAndAttach(
                         paddedView, mUiConfig, defaultPadding, mMinWidePaddingPixels);
             }

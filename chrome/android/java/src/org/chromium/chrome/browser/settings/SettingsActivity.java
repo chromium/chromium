@@ -283,9 +283,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new SettingsMetricsReporter(MAIN_FRAGMENT_TAG), /* recursive= */ true);
 
-        if (isContainmentEnabled()) {
-            mContainmentHelper.registerCallbacks(fragmentManager);
-        }
+        mContainmentHelper.registerCallbacks(fragmentManager);
 
         super.onCreate(savedInstanceState);
 
@@ -357,16 +355,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         getInsetObserver(),
                         /* occlusionTrackingAllowed= */ true));
 
-        if (isContainmentEnabled()) {
-            int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
-            findViewById(R.id.content).setBackgroundColor(backgroundColor);
-            findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
-        }
-        if (isContainmentEnabled() || isMultiColumnSettingEnabled()) {
-            AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
-            appBarLayout.setElevation(0);
-            appBarLayout.setStateListAnimator(null);
-        }
+        int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
+        findViewById(R.id.content).setBackgroundColor(backgroundColor);
+        findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
+        AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
+        appBarLayout.setElevation(0);
+        appBarLayout.setStateListAnimator(null);
 
         mStartTime = 0;
         if (savedInstanceState != null) {
@@ -534,11 +528,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     /** Returns true if the AndroidSettingsContainment feature is enabled. */
-    private static boolean isContainmentEnabled() {
-        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
-    }
-
-    /** Returns true if the AndroidSettingsContainment feature is enabled. */
     private static boolean isMultiColumnSettingEnabled() {
         return ChromeFeatureList.sSettingsMultiColumn.isEnabled();
     }
@@ -558,9 +547,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public void applyThemeOverlays() {
-        if (isContainmentEnabled()) {
-            applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_Settings_Containment);
-        }
+        applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_Settings_Containment);
         super.applyThemeOverlays();
     }
 
