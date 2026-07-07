@@ -30,6 +30,8 @@ source_set("util") {
 
 source_set("core") {
   sources = [
+    "filter_tab_controller.cc",
+    "filter_tab_controller.h",
     "multistep_filter_service.cc",
     "multistep_filter_service.h",
     "multistep_filter_ui_delegate.h",
@@ -60,7 +62,10 @@ source_set("core") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "multistep_filter_service_test_api.h" ]
+  sources = [
+    "filter_tab_controller_test_api.h",
+    "multistep_filter_service_test_api.h",
+  ]
   public_deps =
       [ "//components/multistep_filter/core/annotation_index:test_support" ]
   deps = [
@@ -72,6 +77,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "filter_tab_controller_unittest.cc",
     "multistep_filter_service_unittest.cc",
     "multistep_filter_util_unittest.cc",
   ]

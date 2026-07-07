@@ -472,4 +472,58 @@ TEST_F(MultistepFilterServiceTest, RecordSuggestionOutcomesUpdatesPrefs) {
   EXPECT_TRUE(acceptance_state.is_last_suggestion_accepted);
 }
 
+// Tests that when URL-keyed anonymized data collection (MSBB) is explicitly
+// disabled in preferences, consent evaluates to false.
+TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_MsbbDisabled) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  CreateService();
+  EXPECT_FALSE(service_->HasUserProvidedConsent(1, "example.com"));
+}
+
+// Tests that when Chrome History Sync is explicitly disabled by the user,
+// consent evaluates to false.
+TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_HistorySyncDisabled) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {});
+
+  CreateService();
+  EXPECT_FALSE(service_->HasUserProvidedConsent(2, "example.com"));
+}
+
+// Tests that when the user is not signed in to a Chrome account, consent
+// evaluates to false.
+TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_NotSignedIn) {
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
+
+  CreateService(nullptr);
+  EXPECT_FALSE(service_->HasUserProvidedConsent(3, "example.com"));
+}
+
+// Tests that when the user is signed in, has MSBB enabled, and has History Sync
+// enabled, consent evaluates to true.
+TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_FullyConsented) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
+
+  CreateService();
+  EXPECT_TRUE(service_->HasUserProvidedConsent(4, "example.com"));
+}
+
 }  // namespace multistep_filter

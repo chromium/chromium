@@ -106,6 +106,12 @@ class MultistepFilterService : public KeyedService,
       int net_error_code,
       int http_response_code);
 
+  // Checks if the user has provided consent (signed in, URL-keyed data
+  // collection enabled, and history sync enabled), and logs the eligibility
+  // check.
+  virtual bool HasUserProvidedConsent(int64_t navigation_id,
+                                      std::string_view host);
+
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Results are returned via the
   // `callback`. `GenerateFilterSuggestions` is guaranteed to call
@@ -163,11 +169,6 @@ class MultistepFilterService : public KeyedService,
   void OnSuggestionGenerated(
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       std::optional<UrlFilterSuggestion> suggestion);
-
-  // Checks if the user has provided consent (signed in, URL-keyed data
-  // collection enabled, and history sync enabled), and logs the eligibility
-  // check.
-  bool HasUserProvidedConsent(int64_t navigation_id, std::string_view host);
 
   // Asynchronously retrieves the supported task types for `url` via the
   // annotation index client and returns them via `callback`.
