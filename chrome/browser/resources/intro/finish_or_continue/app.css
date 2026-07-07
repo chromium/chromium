@@ -12,6 +12,10 @@
   --product-logo-size: 72px;
   --title-font-size: 60px;
   --content-width: 732px;
+  --color-button-background-prominent: var(--color-sys-primary);
+  --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-button-foreground: var(--color-sys-primary);
+  --color-button-border: var(--color-sys-tonal-outline);
 
   align-items: center;
   color: var(--cr-primary-text-color);
@@ -28,6 +32,7 @@
 }
 
 .title {
+  color: var(--color-sys-on-surface);
   font-size: var(--title-font-size);
   margin: 0;
   max-width: var(--content-width);
