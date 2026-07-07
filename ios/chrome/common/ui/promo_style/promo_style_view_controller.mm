@@ -10,7 +10,6 @@
 #import "base/i18n/rtl.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
-#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/constants.h"
@@ -49,6 +48,7 @@ constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kShortBannerMultiplier = 0.2;
 constexpr CGFloat kExtraShortBannerMultiplier = 0.15;
+
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
@@ -114,21 +114,16 @@ UIImage* ArrowDownImage() {
   // Vertical constraints for banner; used to deactivate these constraints when
   // the banner is hidden.
   NSArray<NSLayoutConstraint*>* _bannerConstraints;
+  // Aspect ratio constraint for banner image view when not filling top space.
+  NSLayoutConstraint* _bannerAspectRatioConstraint;
 
-  // Whether banner is light or dark mode.
-  UIUserInterfaceStyle _bannerStyle;
   // YES if the views can be updated on scroll updates (e.g., change the text
   // label string of the primary button) which corresponds to the moment where
   // the layout reflects the latest updates.
   BOOL _canUpdateViewsOnScroll;
-  // Whether the image is currently being calculated; used to prevent infinite
-  // recursions caused by `viewDidLayoutSubviews`.
-  BOOL _calculatingImageSize;
   // Indicate that the view should scroll to the bottom at the end of the next
   // layout.
   BOOL _shouldScrollToBottom;
-  // Task runner to resize banner image off the UI thread.
-  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
   // Backup of the primary action string to restore it after "Read More" state.
   NSString* _originalPrimaryActionString;
 }
@@ -139,6 +134,8 @@ UIImage* ArrowDownImage() {
 
 #pragma mark - Public
 
+// TODO(crbug.com/531600312): Remove SequencedTaskRunner and
+// initWithTaskRunner:.
 - (instancetype)initWithTaskRunner:
     (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
   ButtonStackConfiguration* configuration =
@@ -152,19 +149,13 @@ UIImage* ArrowDownImage() {
     _headerImageBottomMargin = kButtonStackMargin;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
-    _taskRunner = taskRunner;
-    _bannerStyle = UIUserInterfaceStyleUnspecified;
   }
 
   return self;
 }
 
 - (instancetype)init {
-  scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  return [self initWithTaskRunner:taskRunner];
+  return [self initWithTaskRunner:nil];
 }
 
 - (UIFontTextStyle)titleLabelFontTextStyle {
@@ -472,17 +463,6 @@ UIImage* ArrowDownImage() {
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // Prevents potential recursive calls to `viewDidLayoutSubviews`.
-  if (_calculatingImageSize) {
-    return;
-  }
-  // Rescale image here as on iPad the view height isn't correctly set before
-  // subviews are laid out.
-  _calculatingImageSize = YES;
-  [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                             toSize:[self computeBannerImageSize]];
-  _calculatingImageSize = NO;
-
   // Re-evaluate the scroll position after a layout pass to ensure the button
   // state matches the actual layout.
   [self updateViewsOnScrollViewUpdate];
@@ -557,26 +537,33 @@ UIImage* ArrowDownImage() {
 
 #pragma mark - Accessors
 
+- (void)setBannerName:(NSString*)bannerName {
+  if ([_bannerName isEqualToString:bannerName]) {
+    return;
+  }
+  _bannerName = [bannerName copy];
+  [self updateBannerImage];
+}
+
 - (void)setShouldBannerFillTopSpace:(BOOL)shouldBannerFillTopSpace {
   _shouldBannerFillTopSpace = shouldBannerFillTopSpace;
   [self setupBannerConstraints];
-  [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                             toSize:[self computeBannerImageSize]];
+  [self updateBannerImage];
 }
 
 - (void)setShouldHideBanner:(BOOL)shouldHideBanner {
   _shouldHideBanner = shouldHideBanner;
   [self setupBannerConstraints];
-  [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                             toSize:[self computeBannerImageSize]];
+  [self updateBannerImage];
 }
 
 - (UIImageView*)bannerImageView {
   if (!_bannerImageView) {
     _bannerImageView = [[UIImageView alloc] init];
-    [self scaleBannerWithCurrentImage:nil toSize:[self computeBannerImageSize]];
     _bannerImageView.clipsToBounds = YES;
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self updateBannerImage];
   }
   return _bannerImageView;
 }
@@ -757,6 +744,38 @@ UIImage* ArrowDownImage() {
 
 #pragma mark - Private
 
+// Updates the aspect ratio constraint for `_bannerImageView` when it does not
+// fill the top space.
+- (void)updateBannerAspectRatioConstraint {
+  if (_bannerAspectRatioConstraint) {
+    _bannerAspectRatioConstraint.active = NO;
+    _bannerAspectRatioConstraint = nil;
+  }
+  if (self.shouldHideBanner || self.shouldBannerFillTopSpace) {
+    return;
+  }
+  UIImage* image = [self bannerImage];
+  if (!image || image.size.width <= 0 || image.size.height <= 0) {
+    return;
+  }
+
+  CGFloat aspectRatio = image.size.width / image.size.height;
+  _bannerAspectRatioConstraint = [_bannerImageView.widthAnchor
+      constraintEqualToAnchor:_bannerImageView.heightAnchor
+                   multiplier:aspectRatio];
+  _bannerAspectRatioConstraint.priority = UILayoutPriorityDefaultHigh;
+  _bannerAspectRatioConstraint.active = YES;
+}
+
+// Updates `_bannerImageView.image` and its aspect ratio constraint.
+- (void)updateBannerImage {
+  if (!_bannerImageView) {
+    return;
+  }
+  _bannerImageView.image = [self bannerImage];
+  [self updateBannerAspectRatioConstraint];
+}
+
 // Sets the button styles based on `actionButtonsVisibility`.
 - (void)updateButtonStyles {
   switch (self.actionButtonsVisibility) {
@@ -874,6 +893,10 @@ UIImage* ArrowDownImage() {
     // Constrain bottom of banner to top of view + C * height of view
     // where C = isTallBanner ? tallMultiplier : defaultMultiplier.
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
+      [self.bannerImageView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor],
+      [self.bannerImageView.widthAnchor
+          constraintEqualToAnchor:self.view.widthAnchor],
       [dimFromToOfViewToBottomOfBanner
           constraintEqualToAnchor:self.view.heightAnchor
                        multiplier:[self bannerMultiplier]]
@@ -882,10 +905,15 @@ UIImage* ArrowDownImage() {
     // bar.
     contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
   } else {
-    // Default.
+    // Cap width and lower aspect ratio priority to prevent overflow.
     _bannerConstraints = [_bannerConstraints arrayByAddingObjectsFromArray:@[
       [self.bannerImageView.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor],
+      [self.bannerImageView.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.view.widthAnchor],
+      [self.bannerImageView.heightAnchor
+          constraintEqualToAnchor:self.view.heightAnchor
+                       multiplier:[self bannerMultiplier]]
     ]];
   }
   self.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior;
@@ -899,33 +927,6 @@ UIImage* ArrowDownImage() {
     return [[UIImage alloc] init];
   }
   return [UIImage imageNamed:self.bannerName];
-}
-
-// Computes banner's image size.
-- (CGSize)computeBannerImageSize {
-  if (self.shouldHideBanner) {
-    return CGSizeZero;
-  }
-  CGFloat bannerMultiplier = [self bannerMultiplier];
-  CGFloat bannerAspectRatio =
-      [self bannerImage].size.width / [self bannerImage].size.height;
-
-  CGFloat destinationHeight = 0;
-  CGFloat destinationWidth = 0;
-
-  if (!self.shouldBannerFillTopSpace) {
-    destinationHeight = roundf(self.view.bounds.size.height * bannerMultiplier);
-    destinationWidth = roundf(bannerAspectRatio * destinationHeight);
-  } else {
-    CGFloat minBannerWidth = self.view.bounds.size.width;
-    CGFloat minBannerHeight = self.view.bounds.size.height * bannerMultiplier;
-    destinationWidth =
-        roundf(fmax(minBannerWidth, bannerAspectRatio * minBannerHeight));
-    destinationHeight = roundf(bannerAspectRatio * destinationWidth);
-  }
-
-  CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
-  return newSize;
 }
 
 // Returns the multiplier for the banner height based on the `bannerSize`.
@@ -942,47 +943,6 @@ UIImage* ArrowDownImage() {
     case BannerImageSizeType::kExtraTall:
       return kExtraTallBannerMultiplier;
   }
-}
-
-// Asynchronously updates `self.bannerImageView.image` to `[self bannerImage]`
-// resized to `newSize`. If `currentImage` is already the correct size then
-// `self.bannerImageView.image` is instead set to `currentImage` synchronously.
-// If there is no task runner, then `self.bannerImageView.image` is updated
-// synchronously.
-- (void)scaleBannerWithCurrentImage:(UIImage*)currentImage
-                             toSize:(CGSize)newSize {
-  UIUserInterfaceStyle currentStyle =
-      UITraitCollection.currentTraitCollection.userInterfaceStyle;
-  if (CGSizeEqualToSize(newSize, currentImage.size) &&
-      _bannerStyle == currentStyle) {
-    self.bannerImageView.image = currentImage;
-    return;
-  }
-
-  _bannerStyle = currentStyle;
-
-  // Resize on the UI thread if there is no TaskRunner (this can happen in
-  // application extensions).
-  if (!_taskRunner) {
-    self.bannerImageView.image =
-        ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
-    return;
-  }
-
-  // Otherwise, resize image off the UI thread.
-  _taskRunner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](UIImage* bannerImage, CGSize newSize) {
-            return ResizeImage(bannerImage, newSize,
-                               ProjectionMode::kAspectFit);
-          },
-          [self bannerImage], newSize),
-      base::BindOnce(
-          [](UIImageView* bannerImageView, UIImage* resizedBannerImage) {
-            bannerImageView.image = resizedBannerImage;
-          },
-          self.bannerImageView));
 }
 
 // Sets or resets the "Read More" text label when the bottom has not been
