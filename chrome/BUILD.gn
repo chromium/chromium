@@ -1767,7 +1767,10 @@ if (is_linux || is_chromeos) {
         symbol_file = "$root_out_dir/angle_libegl.breakpad.$current_cpu"
       }
 
-      if (use_static_angle) {
+      # On ChromeOS, system services require real ANGLE shared libraries, so we
+      # depend on the actual libraries (rather than dummy stubs) even when
+      # use_static_angle is true.
+      if (use_static_angle && !is_chromeos) {
         deps = [ "//ui/gl:dummy_libEGL" ]
       } else {
         deps = [ "//third_party/angle:libEGL" ]
@@ -1783,7 +1786,7 @@ if (is_linux || is_chromeos) {
         symbol_file = "$root_out_dir/angle_libgles.breakpad.$current_cpu"
       }
 
-      if (use_static_angle) {
+      if (use_static_angle && !is_chromeos) {
         deps = [ "//ui/gl:dummy_libGLESv2" ]
       } else {
         deps = [ "//third_party/angle:libGLESv2" ]

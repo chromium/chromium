@@ -31,6 +31,10 @@ angle_dawn_dir = "//third_party/dawn"
 # (libEGL.so/libGLESv2.so) for official build infra. To allow ANGLE standalone
 # tests to still link dynamically, we build the real shared libraries with a
 # "_test" suffix to avoid name collisions in the output directory.
-if (angle_use_static_angle && !is_android) {
+#
+# Note: On ChromeOS we generate the real dylibs as system services (such as
+# cros_camera) require real libEGL.so and libGLESv2.so shared libraries with
+# their expected production names.
+if (angle_use_static_angle && !is_android && !is_chromeos) {
   angle_libs_suffix = "_test"
 }

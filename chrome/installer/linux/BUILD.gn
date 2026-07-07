@@ -218,9 +218,12 @@ strip_binary("strip_chrome_sandbox") {
   deps = [ "//sandbox/linux:chrome_sandbox" ]
 }
 
+# On ChromeOS, system services depend on real ANGLE libraries rather than dummy
+# stubs, so we route strip_binary dependencies to //third_party/angle even when
+# use_static_angle is true.
 strip_binary("strip_libEGL_shlib") {
   binary_input = "$root_out_dir/libEGL.so"
-  if (use_static_angle) {
+  if (use_static_angle && !is_chromeos) {
     deps = [ "//ui/gl:dummy_libEGL" ]
   } else {
     deps = [ "//third_party/angle:libEGL" ]
@@ -229,7 +232,7 @@ strip_binary("strip_libEGL_shlib") {
 
 strip_binary("strip_libGLESv2_shlib") {
   binary_input = "$root_out_dir/libGLESv2.so"
-  if (use_static_angle) {
+  if (use_static_angle && !is_chromeos) {
     deps = [ "//ui/gl:dummy_libGLESv2" ]
   } else {
     deps = [ "//third_party/angle:libGLESv2" ]
