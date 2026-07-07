@@ -19,8 +19,6 @@ constexpr int kDefaultWindowSeconds = 60;
 constexpr int kDefaultMaxRequestsShort = 2;
 // Default time window (in seconds) for the immediate request short rate limit.
 constexpr int kDefaultWindowSecondsShort = 5;
-// Default timeout for immediate mediation requests (in milliseconds).
-constexpr int kDefaultImmediateMediationTimeoutMs = 500;
 // Default ttl (in seconds) for keeping the cached opportunistically retrieved
 // key in case its Gaia Id doesn't match to primary signed-in account.
 constexpr int kDefaultOpportunisticRetrievalTimeToKeepCachedKeySeconds = 300;
@@ -150,8 +148,7 @@ BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled by default as part of the WebAuthenticationImmediateGet feature. Do
-// not remove before WebAuthenticationImmediateGet is removed.
+// Enabled by default for immediate get() requests.
 BASE_FEATURE(kWebAuthnImmediateRequestRateLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -181,17 +178,6 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enabled in M148. Remove in or after M151.
-BASE_FEATURE(kWebAuthnImmediateGet,
-             "WebAuthenticationImmediateGet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kWebAuthnImmediateMediationTimeoutMilliseconds,
-                   &kWebAuthnImmediateGet,
-                   "timeout_ms",
-                   kDefaultImmediateMediationTimeoutMs);
 
 // Enabled by default in M149. Remove in or after M152.
 BASE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,

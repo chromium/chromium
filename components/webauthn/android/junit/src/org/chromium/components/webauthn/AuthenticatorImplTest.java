@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetCredentialOptions;
@@ -46,7 +45,6 @@ import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -55,9 +53,6 @@ import org.chromium.url.Origin;
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
-@EnableFeatures({
-    DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET,
-})
 public class AuthenticatorImplTest {
     private AuthenticatorImpl mAuthenticator;
     private Origin mOrigin;

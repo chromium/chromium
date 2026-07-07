@@ -11320,11 +11320,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockCrossPartitionBlobUrlFetchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockCrossPartitionBlobUrlFetching)},
 
-    {"web-authentication-immediate-get",
-     flag_descriptions::kWebAuthnImmediateGetName,
-     flag_descriptions::kWebAuthnImmediateGetDescription, kOsAll,
-     FEATURE_VALUE_TYPE(device::kWebAuthnImmediateGet)},
-
     {"web-authentication-cross-device-fallback-url",
      flag_descriptions::kWebAuthnCrossDeviceFallbackUrlName,
      flag_descriptions::kWebAuthnCrossDeviceFallbackUrlDescription, kOsDesktop,

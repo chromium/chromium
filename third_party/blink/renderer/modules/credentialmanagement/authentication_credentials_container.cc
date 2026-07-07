@@ -1088,14 +1088,9 @@ void EmitImmediateUiModeUseCounters(ExecutionContext* context,
   }
 }
 
-bool IsImmediateGetRequest(const ExecutionContext& context,
-                           const CredentialRequestOptions& options) {
-  if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(&context) &&
-      options.hasUiMode() &&
-      options.uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate) {
-    return true;
-  }
-  return false;
+bool IsImmediateGetRequest(const CredentialRequestOptions& options) {
+  return options.hasUiMode() &&
+         options.uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate;
 }
 
 enum class WebAuthenticationResidentKeyRequirement {
@@ -1579,7 +1574,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
         "Conditional mediation is not supported for this credential type"));
     return promise;
   }
-  if (IsImmediateGetRequest(*context, *options)) {
+  if (IsImmediateGetRequest(*options)) {
     if (options->password()) {
       ForwardRequestToAuthenticator(script_state, resolver, options);
       return promise;
@@ -2098,7 +2093,7 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     mediation = Mediation::AMBIENT;
   } else if (options->mediation() ==
              V8CredentialMediationRequirement::Enum::kConditional) {
-    if (IsImmediateGetRequest(*context, *options)) {
+    if (IsImmediateGetRequest(*options)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Immediate uiMode is not compatible with conditional mediation"));
@@ -2107,7 +2102,7 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
     CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
     mediation = Mediation::CONDITIONAL;
-  } else if (IsImmediateGetRequest(*context, *options)) {
+  } else if (IsImmediateGetRequest(*options)) {
     mediation = Mediation::IMMEDIATE;
     EmitImmediateUiModeUseCounters(context, options);
   }

@@ -4648,11 +4648,8 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
       "WebAuthentication.AutomaticPasskeyUpgrade.Result", 1);
 }
 
-class EnclaveAuthenticatorImmediateMediationBrowserTest
-    : public EnclaveAuthenticatorBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnImmediateGet};
-};
+using EnclaveAuthenticatorImmediateMediationBrowserTest =
+    EnclaveAuthenticatorBrowserTest;
 
 #if BUILDFLAG(IS_MAC)
 

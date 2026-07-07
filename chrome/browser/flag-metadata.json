@@ -9933,14 +9933,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "web-authentication-immediate-get",
-    "owners": [
-      "derinel@google.com",
-      "kenrb@chromium.org"
-    ],
-    "expiry_milestone": 151
-  },
-  {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
     // This flag lets end users enroll security keys with an enterprise that

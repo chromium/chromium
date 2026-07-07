@@ -137,15 +137,6 @@ BASE_DECLARE_FEATURE_PARAM(
     int,
     kWebAuthnImmediateRequestShortRateLimitWindowSeconds);
 
-// Enables the immediate mediation for `navigator.credentials.get` requests.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnImmediateGet);
-
-// Parameter controlling the duration (in milliseconds) for the immediate
-// mediation timeout.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateMediationTimeoutMilliseconds);
-
 // Enables support for the WebAuthenticationRemoteDesktopAllowedOrigins
 // enterprise policy for Isolated Web Apps.
 COMPONENT_EXPORT(FIDO_PUBLIC)

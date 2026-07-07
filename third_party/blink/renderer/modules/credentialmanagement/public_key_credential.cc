@@ -99,17 +99,6 @@ void OnGetClientCapabilitiesComplete(
         return CodeUnitCompare(a.first, b.first) < 0;
       });
 
-  // TODO(crbug.com/393055190): Remove this when the feature is graduated from
-  // origin trials.
-  if (!RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
-          resolver->GetExecutionContext())) {
-    for (wtf_size_t i = 0; i < results.size(); ++i) {
-      if (results[i].first == "immediateGet") {
-        results.EraseAt(i);
-        break;
-      }
-    }
-  }
   if (!RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled(
           resolver->GetExecutionContext())) {
     for (wtf_size_t i = 0; i < results.size(); ++i) {

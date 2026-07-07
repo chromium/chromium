@@ -1196,10 +1196,7 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
 
  public:
   WebAuthnAmbientUITest() {
-    // kWebAuthnImmediateGet is necessary because the uiMode attribute is not
-    // supported without it.
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnAmbientSignin, device::kWebAuthnImmediateGet}, {});
+    scoped_feature_list_.InitAndEnableFeature(device::kWebAuthnAmbientSignin);
   }
 
   class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
@@ -1475,14 +1472,7 @@ class WebAuthnAmbientUIAnchoredMessageTest : public WebAuthnAmbientUITest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         device::kWebAuthnAmbientSignin, {{"display", "anchored_message"}});
-    // kWebAuthnImmediateGet is necessary because the uiMode attribute is not
-    // supported without it.
-    scoped_feature_list_immediate_.InitAndEnableFeature(
-        device::kWebAuthnImmediateGet);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_immediate_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUIAnchoredMessageTest,
@@ -1538,9 +1528,6 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
     }}).then(c => 'webauthn: OK', e => 'error ' + e);
   )";
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnImmediateGet};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, NoCreds_NotFoundError) {

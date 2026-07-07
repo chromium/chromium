@@ -57,7 +57,6 @@ import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.Origin;
@@ -1873,9 +1872,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     }
 
     private void startImmediateTimer() {
-        mImmediateTimer.startTimer(
-                DeviceFeatureList.sWebAuthnImmmediateTimeoutMs.getValue(),
-                this::onImmediateTimeout);
+        mImmediateTimer.startTimer(500, this::onImmediateTimeout);
     }
 
     private void stopImmediateTimer() {

@@ -1998,8 +1998,6 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   auto completion_callback =
       base::BindOnce(&InsertIsPPAACapability).Then(std::move(callback));
 
-  bool immediate_get_enabled =
-      base::FeatureList::IsEnabled(device::kWebAuthnImmediateGet);
   bool ambient_get_enabled =
       base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin);
   // IMPORTANT: If you add or remove a capability check below (and expect to
@@ -2007,7 +2005,7 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
   const size_t kNumberOfComputedCapabilities =
-      8 + (immediate_get_enabled ? 1 : 0) + (ambient_get_enabled ? 1 : 0);
+      9 + (ambient_get_enabled ? 1 : 0);
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
@@ -2031,10 +2029,8 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       caller_origin,
       base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
           .Then(barrier_callback));
-  if (immediate_get_enabled) {
-    barrier_callback.Run(
-        MakeCapability(client_capabilities::kImmediateGet, true));
-  }
+  barrier_callback.Run(
+      MakeCapability(client_capabilities::kImmediateGet, true));
   if (ambient_get_enabled) {
     barrier_callback.Run(
         MakeCapability(client_capabilities::kAmbientGet, true));
@@ -2781,13 +2777,8 @@ void AuthenticatorCommonImpl::OnTimeout() {
 }
 
 void AuthenticatorCommonImpl::BeginImmediateRequestTimeout() {
-  base::TimeDelta timeout_duration = base::Milliseconds(
-      device::kWebAuthnImmediateMediationTimeoutMilliseconds.Get());
-  if (timeout_duration.is_negative()) {
-    return;
-  }
   req_state_->immediate_timer->Start(
-      FROM_HERE, timeout_duration,
+      FROM_HERE, base::Milliseconds(500),
       base::BindOnce(&AuthenticatorCommonImpl::OnImmediateTimeout,
                      weak_factory_.GetWeakPtr()));
 }

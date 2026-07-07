@@ -4841,14 +4841,6 @@ inline constexpr char kWebAuthnAmbientSigninDescription[] =
     "navigator.credentials.get() request. This is similar to conditional UI "
     "with the main difference being it does not use autofill UI.";
 
-inline constexpr char kWebAuthnImmediateGetName[] =
-    "Enable immediate mediation for WebAuthn get requests";
-inline constexpr char kWebAuthnImmediateGetDescription[] =
-    "Enables immediate mediation for WebAuthn and passwords for a "
-    "navigator.credentials.get() request. This will return a NotAllowedError "
-    "if there are no credentials for a given get request. The request can also "
-    "request passwords.";
-
 inline constexpr char kWebAuthnCrossDeviceFallbackUrlName[] =
     "WebAuthn Cross-device fallback URL extension";
 inline constexpr char kWebAuthnCrossDeviceFallbackUrlDescription[] =

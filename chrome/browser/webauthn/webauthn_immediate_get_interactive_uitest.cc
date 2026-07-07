@@ -68,9 +68,8 @@ using Fixture = InteractiveBrowserTestMixin<EnclaveAuthenticatorTestBase>;
 class WebAuthnImmediateGetTest : public Fixture {
  public:
   WebAuthnImmediateGetTest() {
-    feature_list_.InitWithFeatures(
-        {device::kWebAuthnImmediateGet},
-        {device::kWebAuthnImmediateRequestRateLimit});
+    feature_list_.InitAndDisableFeature(
+        device::kWebAuthnImmediateRequestRateLimit);
   }
 
   ~WebAuthnImmediateGetTest() override = default;

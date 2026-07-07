@@ -799,8 +799,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{device::kWebAuthnImmediateGet,
-                             device::kWebAuthnAmbientSignin});
+      /*disabled_features=*/{device::kWebAuthnAmbientSignin});
 
   NavigateAndCommit(GURL(kTestOrigin1));
 
@@ -821,6 +820,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
       client_capabilities::kSignalAllAcceptedCredentials,
       client_capabilities::kSignalCurrentUserDetails,
       client_capabilities::kSignalUnknownCredential,
+      client_capabilities::kImmediateGet,
   };
 
   // Ensure no extra capabilities
@@ -868,17 +868,6 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
   NavigateAndCommit(GURL(kTestOrigin1));
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities, client_capabilities::kConditionalCreate, true);
-}
-
-TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {
-  for (const bool enabled : {false, true}) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(device::kWebAuthnImmediateGet, enabled);
-    NavigateAndCommit(GURL(kTestOrigin1));
-    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
-    ExpectCapability(capabilities, client_capabilities::kImmediateGet,
-                     enabled ? std::optional<bool>(true) : std::nullopt);
-  }
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities_AmbientGet) {
@@ -9399,13 +9388,7 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, PRFOnGet) {
 TEST_F(ResidentKeyAuthenticatorImplTest,
        GetAssertionImmediateMediationTimeout_NoUI) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(10);
-  feature_params["timeout_ms"] =
-      base::NumberToString(kImmediateTimeout.InMilliseconds());
-  feature_list.InitAndEnableFeatureWithParameters(device::kWebAuthnImmediateGet,
-                                                  feature_params);
+  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(500);
 
   ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
 
@@ -9435,13 +9418,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest,
        GetAssertionImmediateMediationTimeout_WithUiThenNoImmediateTimeout) {
   base::HistogramTester histogram_tester;
   test_client_.delegate_config.run_cancel_ui_timeout_callback = true;
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(10);
-  feature_params["timeout_ms"] =
-      base::NumberToString(kImmediateTimeout.InMilliseconds());
-  feature_list.InitAndEnableFeatureWithParameters(device::kWebAuthnImmediateGet,
-                                                  feature_params);
+  constexpr base::TimeDelta kImmediateTimeout = base::Milliseconds(500);
 
   ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
 

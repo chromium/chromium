@@ -849,7 +849,6 @@ TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
 TEST(AuthenticationCredentialsContainerTest,
      WebAuthenticationUiModeImmediateRequiresUserActivation) {
   test::TaskEnvironment task_environment;
-  ScopedWebAuthenticationImmediateGetForTest webauthn_immediate_get(true);
 
   MockAuthenticatorInterface mock_authenticator;
   CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
@@ -886,7 +885,6 @@ TEST(AuthenticationCredentialsContainerTest,
 TEST(AuthenticationCredentialsContainerTest,
      WebAuthenticationUiModeImmediateWithUserActivation) {
   test::TaskEnvironment task_environment;
-  ScopedWebAuthenticationImmediateGetForTest webauthn_immediate_get(true);
 
   MockAuthenticatorInterface mock_authenticator;
   CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
@@ -927,7 +925,6 @@ TEST(AuthenticationCredentialsContainerTest,
 TEST(AuthenticationCredentialsContainerTest,
      WebAuthenticationUiModeImmediateIncompatibleWithConditionalMediation) {
   test::TaskEnvironment task_environment;
-  ScopedWebAuthenticationImmediateGetForTest webauthn_immediate_get(true);
 
   MockAuthenticatorInterface mock_authenticator;
   CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
@@ -965,7 +962,6 @@ TEST(AuthenticationCredentialsContainerTest,
 TEST(AuthenticationCredentialsContainerTest,
      WebAuthenticationUiModeImmediateIncompatibleWithAllowCredentials) {
   test::TaskEnvironment task_environment;
-  ScopedWebAuthenticationImmediateGetForTest webauthn_immediate_get(true);
 
   MockAuthenticatorInterface mock_authenticator;
   CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
@@ -1003,47 +999,6 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_EQ(exception->name(), "NotAllowedError");
   EXPECT_EQ(exception->message(),
             "An allowCredentials is not allowed with immediate mediation.");
-}
-
-TEST(AuthenticationCredentialsContainerTest,
-     WebAuthenticationImmediateGetDisabledIgnoresUiMode) {
-  test::TaskEnvironment task_environment;
-  ScopedWebAuthenticationImmediateGetForTest webauthn_immediate_get(false);
-
-  MockAuthenticatorInterface mock_authenticator;
-  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
-                                          &mock_authenticator);
-
-  auto* request_options = CredentialRequestOptions::Create();
-  request_options->setUiMode(V8CredentialUiModeRequirement::Enum::kImmediate);
-  auto* public_key_request_options =
-      PublicKeyCredentialRequestOptions::Create();
-  public_key_request_options->setRpId("https://www.example.com");
-  const Vector<uint8_t> challenge = {1, 2, 3, 4};
-  public_key_request_options->setChallenge(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(challenge)));
-  request_options->setPublicKey(public_key_request_options);
-
-  // Since the feature is disabled, uiMode should be ignored and the request
-  // should proceed as a normal (modal) request.
-  auto promise = AuthenticationCredentialsContainer::credentials(
-                     *context.DomWindow().navigator())
-                     ->get(context.GetScriptState(), request_options,
-                           IGNORE_EXCEPTION_FOR_TESTING);
-
-  mock_authenticator.WaitForCallToGet();
-  EXPECT_EQ(mock_authenticator.last_mediation(),
-            mojom::blink::Mediation::MODAL);
-  mock_authenticator.InvokeGetCallback();
-
-  ScriptPromiseTester tester(context.GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
-  auto* exception = V8DOMException::ToWrappable(
-      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
-  ASSERT_TRUE(exception);
-  EXPECT_EQ(exception->name(), "NotAllowedError");
 }
 
 TEST(AuthenticationCredentialsContainerTest, PublicKeyCspMetric) {

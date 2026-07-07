@@ -6874,12 +6874,6 @@
     // and `get()` requests with `uiMode: 'immediate'`.
     // See https://github.com/w3c/webauthn/issues/2228.
     {
-      name: "WebAuthenticationImmediateGet",
-      status: "experimental",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
       public: true,
