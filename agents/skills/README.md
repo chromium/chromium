@@ -3,24 +3,38 @@
 This directory contains specialized Agent Skills for Chromium development.
 
 Unlike general context files, skills are shared, "on-demand" expertise that
-multiple AI agents (such as Gemini CLI, Claude, GitHub Copilot, etc.) can
-activate when relevant to your request.
+multiple AI agents (such as Antigravity, Claude, etc.) can activate when
+relevant to your request.
 
 See https://agentskills.io/ for general information about the agent skills.
 
 ## How to Use
 
-To use a skill, you must first install it into your workspace. Creating a
-symlink is preferred so that the skill stays up-to-date when you sync your local
-checkout:
+To use these skills with Antigravity, register them in your workspace's
+`.agents/skills.json` file (created at your project root). To add all skills:
 
-```bash
-gemini skills link agents/skills/<skill-name> --scope workspace
+```json
+{
+  "entries": [
+    {"path": "agents/skills"}
+  ]
+}
 ```
 
-Once installed, your agent (e.g. the Gemini CLI when using `.gemini/skills`)
-will automatically detect when a skill is relevant to your request and ask for
-permission to activate it.
+Or to only add individual skills:
+
+```json
+{
+  "entries": [
+    {"path": "agents/skills/chromium-docs"},
+    {"path": "agents/skills/histograms"}
+  ]
+}
+```
+
+Once registered, Antigravity 2.0 and `agy` will automatically discover and load
+the skills inside this folder. The agent will detect when a skill is relevant to
+your request and prompt for permission to activate it.
 
 ## Contributing
 
@@ -28,5 +42,4 @@ New skills should be self-contained within their own directory under
 `agents/skills/`. Each skill requires a `SKILL.md` file at its root with a name
 and description in the YAML frontmatter.
 
-Note that gemini-cli comes preloaded with a "skill creator" skill. Most skills
-can be written or improved by asking gemini to do so.
+Most skills can be written or improved by asking the Antigravity agent to do so.
