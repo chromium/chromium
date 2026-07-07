@@ -16,6 +16,10 @@
   --cr-composebox-submit-default-icon-size: 16px;
   --submit-timing-and-function: 100ms ease-in-out;
   --voice-search-fade-transition: opacity var(--submit-timing-and-function);
+  /* Minimum height used for error modes, etc., where 'composebox_voice_search'
+   * determines the composebox height. In normal voice search mode, 'search-animated-glow'
+   * determines the composebox height and min-height is ignored.
+   */
   --voice-search-minimum-height: 121px;
 }
 

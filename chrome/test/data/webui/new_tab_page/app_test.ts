@@ -3080,6 +3080,54 @@ suite('NewTabPageAppTest', () => {
           assertFalse(!!closeButton);
         });
 
+    test('voice search dialog styling matches composebox specs', async () => {
+      loadTimeData.overrideValues({
+        voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+      });
+      await recreateApp();
+
+      // Open voice search dialog.
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+      await microtasksFinished();
+
+      const dialog =
+          app.shadowRoot.querySelector<HTMLDialogElement>('#voiceSearchDialog');
+      assertTrue(!!dialog);
+      assertTrue(dialog.open);
+
+      // Verify dialog height and box-shadow match Composebox specs.
+      const dialogStyle = window.getComputedStyle(dialog);
+      assertEquals('128px', dialogStyle.height);
+      assertEquals(
+          'rgba(0, 0, 0, 0.1) 2px 10px 18px -5px', dialogStyle.boxShadow);
+
+      // Verify voice search element and bottom actions CSS variables.
+      const voiceSearch = app.shadowRoot.querySelector<HTMLElement>(
+          'cr-composebox-voice-search');
+      assertTrue(!!voiceSearch);
+
+      const voiceSearchStyle = window.getComputedStyle(voiceSearch);
+      assertEquals(
+          '12px',
+          voiceSearchStyle.getPropertyValue('--voice-bottom-actions-bottom')
+              .trim());
+      assertEquals(
+          '12px',
+          voiceSearchStyle.getPropertyValue(
+              '--voice-bottom-actions-inset-inline-end')
+              .trim());
+
+      // Verify action buttons rendering and button dimensions.
+      const stopButton = $$(voiceSearch, '#stopButton');
+      assertTrue(!!stopButton);
+      const submitButton = $$(voiceSearch, '#submitButton');
+      assertTrue(!!submitButton);
+
+      const stopButtonStyle = window.getComputedStyle(stopButton);
+      assertEquals('relative', stopButtonStyle.position);
+      assertEquals('36px', stopButtonStyle.height);
+    });
+
     test(
         'With Transcript: updates live transcript textarea and handles stop',
         async () => {

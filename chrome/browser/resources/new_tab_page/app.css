@@ -424,8 +424,8 @@ ntp-lens-upload-dialog {
   background: var(--color-composebox-background);
   border: none;
   border-radius: 28px;
-  box-shadow: var(--ntp-menu-shadow);
-  height: 112px;
+  box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
+  height: 128px;
   inset-inline-start: anchor(start);
   margin: 0;
   overflow: hidden;
@@ -452,8 +452,13 @@ ntp-lens-upload-dialog {
   width: 100%;
   --composebox-voice-search-top-padding: 9px;
   --composebox-cancel-button-top: 10px;
-  --voice-bottom-actions-bottom: 14px;
-  --voice-bottom-actions-inset-inline-end: 14px;
+  --voice-bottom-actions-bottom: 12px;
+  --voice-bottom-actions-inset-inline-end: 12px;
+  /* Minimum height used for error modes, etc., where 'composebox_voice_search'
+   * determines the composebox height. In normal voice search mode, 'search-animated-glow'
+   * determines the composebox height and min-height is ignored.
+   */
+  --voice-search-minimum-height: 121px;
 }
 
 #voiceSearch::part(voice-stop-button) {
