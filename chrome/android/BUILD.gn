@@ -77,7 +77,6 @@ if (_is_default_toolchain) {
                                "assert_no_deps",
                                "expected_android_manifest",
                                "is_64_bit_browser",
-                               "is_monochrome",
                                "is_trichrome",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -109,7 +108,6 @@ if (_is_default_toolchain) {
                                "include_32_bit_webview",
                                "include_64_bit_webview",
                                "is_64_bit_browser",
-                               "is_monochrome",
                                "is_trichrome",
                                "static_library_provider",
                                "expected_android_manifest_template",
@@ -1845,17 +1843,15 @@ if (_is_default_toolchain) {
   # resources. The generated target names are derived from input variables.
   #
   # Variables:
-  #    is_monochrome: If true, generate Monochrome targets rather than Chrome.
   #    is_trichrome: (Optional) Generate Trichrome targets that use monochrome
   #      library targets but don't include webview resources.
   #    is_bundle_module: (Optional) If true, generate targets for base bundle
   #      module.
   template("resource_packaging") {
-    _is_monochrome = invoker.is_monochrome
+    not_needed([ "invoker" ])
     _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
     _is_bundle_module =
         defined(invoker.is_bundle_module) && invoker.is_bundle_module
-    assert(!_is_monochrome, "Monochrome is an unsupported configuration")
 
     if (_is_trichrome) {
       _variant = "trichrome_chrome"
@@ -1948,14 +1944,11 @@ if (_is_default_toolchain) {
   # Resource packaging varies with bundles because the pak resource allowlist is
   # derived from the native library.
   resource_packaging("chrome_apk_pak_assets") {
-    is_monochrome = false
   }
   resource_packaging("chrome_bundle_module_pak_assets") {
-    is_monochrome = false
     is_bundle_module = true
   }
   resource_packaging("trichrome_chrome_bundle_module_pak_assets") {
-    is_monochrome = false
     is_trichrome = true
     is_bundle_module = true
   }

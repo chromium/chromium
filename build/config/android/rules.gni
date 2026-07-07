@@ -2144,11 +2144,10 @@ if (!is_robolectric && enable_java_templates) {
   #   resource_values_filter_rules: List of "source_path:name_regex" used to
   #     filter out unwanted values/ resources.
 
-  #   app_as_shared_lib: This is now obsolete. True if this is a regular
-  #     application apk that can also serve as a runtime shared library, like
-  #     the (obsolete) monochrome_public_apk target. Ensures that the resources
-  #     are usable both by the APK running as an application, or by another
-  #     process that loads it at runtime.
+  #   app_as_shared_lib: True if this is a regular application apk that can also
+  #     serve as a runtime shared library. Ensures that the resources are usable
+  #     both by the APK running as an application, or by another process that
+  #     loads it at runtime.
 
   #   uncompress_dex: Store final .dex files uncompressed in the apk.
   #   omit_dex: If true, do not build or include classes.dex.

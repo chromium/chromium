@@ -49,9 +49,6 @@ default_chrome_public_jinja_variables = [
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
-monochrome_android_manifest_jinja_variables =
-    [ "sandboxed_service_exported=true" ]
-
 # Generates an AndroidManifest.xml along with an optional second manifest
 # dependent on the original.
 #
@@ -113,8 +110,6 @@ template("split_manifest_template") {
 #   apk_name: For APK target types, the final APK name without a suffix.
 #   shared_libraries: List of native shared libraries targets to include in
 #     the final target (e.g. [ ":libchrome" ]).
-#   is_monochrome: Indicates that this target contains chrome and webview
-#     packaged together and can only run on Android N+.
 #   is_trichrome: Indicates this target relies on a trichrome static library
 #     target and can only run on Android P+.
 #   png_to_webp: Optional. If true, convert image resources to webp format.
@@ -132,11 +127,9 @@ template("chrome_common_apk_or_module_tmpl") {
          _target_type == "android_app_bundle_module" ||
          _target_type == "instrumentation_test_apk")
 
-  _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_bundle = _target_type == "android_app_bundle_module"
   _is_test = _target_type == "instrumentation_test_apk"
-  assert(!_is_monochrome, "Monochrome is an unsupported configuration")
   assert(!(_is_test && _is_trichrome), "Unsupported configuration")
 
   if (_is_test) {

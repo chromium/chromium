@@ -2125,9 +2125,7 @@ if (enable_java_templates) {
   #   app_as_shared_lib: (optional)
   #     If true, same effect as shared_resources, but also ensures that the
   #     resources can be used by the APK when it is loaded as a regular
-  #     application as well. Previously used for the monochrome_public_apk
-  #     target (now obsolete) which is both an application and a shared runtime
-  #     library that implements the system webview feature.
+  #     application as well.
   #
 
   #   aapt_locale_allowlist: (optional)

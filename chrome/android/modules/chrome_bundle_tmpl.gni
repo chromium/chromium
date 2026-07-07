@@ -24,11 +24,9 @@ template("chrome_bundle") {
   _package_id = 126  # == 0x7e.
   _extra_modules = []
   _module_descs = invoker.module_descs
-  _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
 
   assert(_is_trichrome == defined(invoker.static_library_provider))
-  assert(!_is_monochrome, "Monochrome is an unsupported configuration")
 
   # Put //chrome Java code and resources into a dedicated split to isolate
   # renderer processes from needing to load it.
@@ -127,7 +125,6 @@ template("chrome_bundle") {
                                "target_sdk_version",
                                "override_target_sdk",
                              ])
-      is_monochrome = _is_monochrome
       is_trichrome = _is_trichrome
       module_desc = _module_desc
       version_name = chrome_version_name
