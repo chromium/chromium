@@ -98,6 +98,37 @@ source_set("unittests") {
     "//testing/gtest",
     "//third_party/blink/public/common",
   ]
+
+  if (is_win) {
+    sources += [
+      "cdm_document_service_impl_test.cc",
+      "media_foundation_service_monitor_unittest.cc",
+    ]
+    deps += [
+      ":impl",
+      "//chrome/browser/profiles:profile",
+      "//components/sync_preferences:test_support",
+      "//components/user_prefs",
+      "//content/test:test_support",
+      "//media",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "platform_verification_chromeos_unittest.cc" ]
+    deps += [
+      ":impl",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//components/content_settings/core/browser",
+      "//components/permissions:test_support",
+      "//content/test:test_support",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "cast_mirroring_service_host_unittest.cc" ]
+    deps += [ ":impl" ]
+  }
 }
 
 source_set("browser_tests") {

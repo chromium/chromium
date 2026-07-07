@@ -6285,8 +6285,6 @@ test("unit_tests") {
     sources += [
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
-      "../browser/media/cdm_document_service_impl_test.cc",
-      "../browser/media/media_foundation_service_monitor_unittest.cc",
       "../browser/process_singleton_win_unittest.cc",
       "../browser/shell_integration_win_unittest.cc",
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
@@ -7368,7 +7366,6 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
-      "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_ash_unittest.cc",
       "../browser/media/webrtc/desktop_media_list_ash_unittest.cc",
       "../browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
@@ -7758,7 +7755,6 @@ test("unit_tests") {
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
     sources += [
-      "../browser/media/cast_mirroring_service_host_unittest.cc",
       "../browser/safe_browsing/test_extension_event_observer.cc",
       "../browser/safe_browsing/test_extension_event_observer.h",
     ]
