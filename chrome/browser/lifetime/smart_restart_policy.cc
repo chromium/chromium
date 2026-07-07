@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -57,12 +56,6 @@ ExtendedExecutionOutcome SmartRestartPolicy::ShouldRestart(
 // static
 ExtendedExecutionOutcome SmartRestartPolicy::CanLockScreenRestartProceed(
     const ExtendedRestartabilityState& state) {
-  // Exclude managed enterprise environments to respect administrative update
-  // controls.
-  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-    return ExtendedExecutionOutcome::kBlockedByPolicy;
-  }
-
   // Ensure the browser isn't in a delicate startup or profile-picking state.
   if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
     return ExtendedExecutionOutcome::kBlockedByPolicy;
@@ -90,12 +83,6 @@ ExtendedExecutionOutcome SmartRestartPolicy::CanLockScreenRestartProceed(
 #if BUILDFLAG(IS_MAC)
 // static
 bool SmartRestartPolicy::CanZeroWindowRestartProceed() {
-  // Exclude managed enterprise environments to respect administrative update
-  // controls.
-  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-    return false;
-  }
-
   // 1. Ensure the browser isn't in a delicate startup or profile-picking state.
   if (StartupBrowserCreator::InSynchronousProfileLaunch() ||
       ProfilePicker::IsOpen()) {

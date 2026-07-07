@@ -10,7 +10,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -32,7 +31,6 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/test/browser_test.h"
@@ -159,40 +157,6 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   browser_shutdown::SetTryingToQuit(false);
   local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
   local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
-}
-
-IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
-                       BlocksRestartOnZeroWindowWhenManaged) {
-  base::HistogramTester histogram_tester;
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  // 1. Setup: Pending update.
-  fake_upgrade_detector_.SetUpgradeAvailable();
-
-  // 2. Action: Close all windows.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
-
-  CloseBrowserSynchronously(browser());
-
-  // 3. Verification: Manager should not start zero-window timer or set prefs
-  // when managed. Wait brief duration to ensure no timer fires or background
-  // restart is triggered.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
-  run_loop.Run();
-
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
-
-  histogram_tester.ExpectTotalCount(
-      "Session.SmartRestart.ZeroWindow.ExecutionOutcome", 0);
-
-  // Cleanup to prevent actual restart during teardown.
-  browser_shutdown::SetTryingToQuit(false);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
@@ -347,34 +311,6 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   browser_shutdown::SetTryingToQuit(false);
   local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
   local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
-}
-
-IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
-                       BlocksRestartOnLockScreenWhenManaged) {
-  base::HistogramTester histogram_tester;
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  // 1. Setup: Pending update.
-  fake_upgrade_detector_.SetUpgradeAvailable();
-
-  // 2. Action: Simulate Lock.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
-
-  manager_->SetLockedStateForTesting(true);
-
-  // 3. Verification: Wait for timer to execute and verify outcome is blocked by
-  // policy.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount(
-               "Session.SmartRestart.Lock.ExecutionOutcome",
-               static_cast<int>(ExtendedExecutionOutcome::kBlockedByPolicy)) ==
-           1;
-  }));
-
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
