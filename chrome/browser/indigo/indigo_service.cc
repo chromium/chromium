@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -289,10 +292,31 @@ IndigoService::RegisterLocalEligibilityChangedCallback(
 }
 
 bool IndigoService::CanShowContextualCue() const {
-  // TODO(b/519267141): This should also be guarded by the contextual cueing
-  // pref, which gets changed when the user changes the setting.
-  return base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2) &&
-         base::TimeTicks::Now() >= contextual_cue_not_before_;
+  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
+    return false;
+  }
+
+  if (pref_service_) {
+    // Check if the user has opted out of contextual cues.
+    auto opt_in_state = static_cast<
+        optimization_guide::prefs::FeatureOptInState>(pref_service_->GetInteger(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::UserVisibleFeatureKey::kContextualCueing)));
+    if (opt_in_state ==
+        optimization_guide::prefs::FeatureOptInState::kDisabled) {
+      return false;
+    }
+
+    // Check enterprise policy.
+    if (pref_service_->GetInteger(
+            optimization_guide::prefs::kChromeSuggestionsSettings) ==
+        static_cast<int>(
+            contextual_cueing::ChromeSuggestionsSettingsValue::kDisabled)) {
+      return false;
+    }
+  }
+
+  return base::TimeTicks::Now() >= contextual_cue_not_before_;
 }
 
 void IndigoService::ContextualCueShown() {
