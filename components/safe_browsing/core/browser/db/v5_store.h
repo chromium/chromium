@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/safe_browsing/core/browser/db/hash_prefix_list.h"
 #include "components/safe_browsing/core/browser/db/sb_store.h"

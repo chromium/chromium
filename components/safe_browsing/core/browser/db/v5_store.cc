@@ -136,6 +136,32 @@ void CleanupExtraFiles(const base::FilePath& store_path,
   }
 }
 
+// Used for displaying on debugging page.
+std::string V5ApplyUpdateResultToDebuggingString(V5ApplyUpdateResult result) {
+  switch (result) {
+    case V5ApplyUpdateResult::kUnknown:
+      return "kUnknown";
+    case V5ApplyUpdateResult::kSuccess:
+      return "kSuccess";
+    case V5ApplyUpdateResult::kMmapFailure:
+      return "kMmapFailure";
+    case V5ApplyUpdateResult::kFileSizeNotMultipleOfPrefixSize:
+      return "kFileSizeNotMultipleOfPrefixSize";
+    case V5ApplyUpdateResult::kChecksumMismatchFailure:
+      return "kChecksumMismatchFailure";
+    case V5ApplyUpdateResult::kRiceDecodingAdditionsFailure:
+      return "kRiceDecodingAdditionsFailure";
+    case V5ApplyUpdateResult::kRiceDecodingRemovalsFailure:
+      return "kRiceDecodingRemovalsFailure";
+    case V5ApplyUpdateResult::kAdditionsHasExistingPrefixFailure:
+      return "kAdditionsHasExistingPrefixFailure";
+    case V5ApplyUpdateResult::kRemovalsIndexTooLargeFailure:
+      return "kRemovalsIndexTooLargeFailure";
+    case V5ApplyUpdateResult::kWriteFailure:
+      return "kWriteFailure";
+  }
+}
+
 }  // namespace
 
 V5Store::V5Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -497,6 +523,9 @@ bool V5Store::VerifyChecksum() {
     return true;
   }
   bool checksum_matches = VerifyChecksumInternal();
+  if (!checksum_matches) {
+    last_apply_update_result_ = V5ApplyUpdateResult::kChecksumMismatchFailure;
+  }
   RecordApplyUpdateResult("SafeBrowsing.V5ReadFromDisk",
                           checksum_matches
                               ? V5ApplyUpdateResult::kSuccess
@@ -524,8 +553,11 @@ bool V5Store::VerifyChecksumInternal() {
 
 void V5Store::CollectStoreInfo(
     DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
+  SBStore::CollectStoreInfo(store_info);
+  store_info->set_v5_update_status(
+      V5ApplyUpdateResultToDebuggingString(last_apply_update_result_));
+  // TODO(crbug.com/362791941): report back checks_attempted_ once added.
+  hash_prefix_list_->GetPrefixInfo(store_info->mutable_prefix_sets());
 }
 
 HashPrefixStr V5Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
@@ -604,6 +636,7 @@ base::expected<SBStorePtr, V5ApplyUpdateResult> V5Store::ApplyUpdateInternal(
 
   new_store->has_valid_data_ = true;
   new_store->last_apply_update_result_ = apply_update_result;
+  new_store->last_apply_update_time_millis_ = base::Time::Now();
 
   return std::move(new_store);
 }

@@ -45,9 +45,10 @@ message DatabaseManagerInfo {
       optional int64 file_size_bytes = 2;
 
       // The status of applying the updates fetched from the server to the
-      // store. The values of update_status corresponds to the enum
+      // store. The values of v4_update_status corresponds to the enum
       // ApplyUpdateResult in V4Store.
-      optional int32 update_status = 3;
+      // TODO(crbug.com/372395685): Remove upon deprecation.
+      optional int32 v4_update_status = 3;
 
       // The time, since epoch, of applying the updates to the store.
       optional uint64 last_apply_update_time_millis = 4;
@@ -71,6 +72,10 @@ message DatabaseManagerInfo {
       // Has an entry for each prefix size found within the store as well as the
       // corresponding count of prefixes of that size.
       repeated PrefixSet prefix_sets = 7;
+
+      // The status of applying the updates fetched from the server to the
+      // store for V5, represented as a string.
+      optional string v5_update_status = 8;
     }
 
     // Information about each of the stores managed by the database.

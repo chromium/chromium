@@ -85,10 +85,12 @@ void AddStoreInfo(
         base::UTF16ToUTF8(base::FormatNumber(store_info.file_size_bytes())));
   }
 
-  if (store_info.has_update_status()) {
+  if (store_info.has_v4_update_status()) {
     store_info_list.Append(
         "Update status: " +
-        base::UTF16ToUTF8(base::FormatNumber(store_info.update_status())));
+        base::UTF16ToUTF8(base::FormatNumber(store_info.v4_update_status())));
+  } else if (store_info.has_v5_update_status()) {
+    store_info_list.Append("Update status: " + store_info.v5_update_status());
   }
 
   if (store_info.has_last_apply_update_time_millis()) {

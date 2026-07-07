@@ -40,6 +40,18 @@ SBStore::SBStore(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
 
 SBStore::~SBStore() = default;
 
+void SBStore::CollectStoreInfo(
+    DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) {
+  store_info->set_file_name(GetUmaSuffixForStore(store_path_)
+                                .substr(1));  // Strip the '.' off the front
+  store_info->set_file_size_bytes(file_size_);
+  store_info->set_state(GetStoreState());
+  if (last_apply_update_time_millis_.InMillisecondsSinceUnixEpoch()) {
+    store_info->set_last_apply_update_time_millis(
+        last_apply_update_time_millis_.InMillisecondsSinceUnixEpoch());
+  }
+}
+
 bool SBStore::HasValidData() {
   // Record every 256th time (`record_has_valid_data_counter_` is 8-bit).
   if (++record_has_valid_data_counter_ == 1) {

@@ -1550,6 +1550,10 @@ TEST_F(V5StoreTest, TestVerifyChecksumInvalid) {
   EXPECT_FALSE(store.VerifyChecksum());
   EXPECT_EQ(wrong_checksum, GetExpectedChecksum(store));
   ExpectChecksumHistograms(V5ApplyUpdateResult::kChecksumMismatchFailure);
+
+  DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info;
+  store.CollectStoreInfo(&store_info);
+  EXPECT_EQ("kChecksumMismatchFailure", store_info.v5_update_status());
 }
 
 TEST_F(V5StoreTest, TestVerifyChecksumEmptyStore) {
@@ -2424,6 +2428,52 @@ TEST_F(V5StoreTest, TestReset) {
   EXPECT_TRUE(GetExpectedChecksum(store).empty());
   EXPECT_TRUE(GetHashPrefixList(store).view().empty());
   EXPECT_EQ(0, GetFileSize(store));
+}
+
+TEST_F(V5StoreTest, TestCollectStoreInfo) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  store.Initialize();
+
+  // Initially, metrics should be default.
+  DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info;
+  store.CollectStoreInfo(&store_info);
+  EXPECT_EQ("V5StoreTest", store_info.file_name());
+  EXPECT_EQ(0, store_info.file_size_bytes());
+  EXPECT_EQ("kUnknown", store_info.v5_update_status());
+  EXPECT_TRUE(store_info.state().empty());
+  EXPECT_FALSE(store_info.has_last_apply_update_time_millis());
+
+  // Simulate successful update.
+  auto hash_list = std::make_unique<V5::HashList>();
+  hash_list->set_version("new_version");
+  std::string expected_data = std::string("\x11\x22\x33\x44", 4);
+  std::array<uint8_t, crypto::hash::kSha256Size> expected_checksum;
+  crypto::hash::Hash(crypto::hash::HashKind::kSha256,
+                     base::as_byte_span(expected_data), expected_checksum);
+  hash_list->set_sha256_checksum(
+      std::string(reinterpret_cast<char*>(expected_checksum.data()),
+                  expected_checksum.size()));
+
+  V5::RiceDeltaEncoded32Bit* additions =
+      hash_list->mutable_additions_four_bytes();
+  additions->set_entries_count(0);
+  additions->set_first_value(0x11223344);
+  additions->set_rice_parameter(3);
+
+  SBStorePtr updated_store = RunApplyUpdateTest(store, std::move(hash_list));
+  ASSERT_TRUE(updated_store);
+
+  // Now verify that the updated store collects info correctly.
+  DatabaseManagerInfo::DatabaseInfo::StoreInfo updated_store_info;
+  updated_store->CollectStoreInfo(&updated_store_info);
+
+  EXPECT_EQ("V5StoreTest", updated_store_info.file_name());
+  EXPECT_GT(updated_store_info.file_size_bytes(), 0);
+  EXPECT_EQ("kSuccess", updated_store_info.v5_update_status());
+  EXPECT_EQ("new_version", updated_store_info.state());
+  EXPECT_TRUE(updated_store_info.has_last_apply_update_time_millis());
 }
 
 }  // namespace safe_browsing

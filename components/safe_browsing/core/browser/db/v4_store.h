@@ -524,9 +524,6 @@ class V4Store : public SBStore {
   // Records the status of the update being applied to the database.
   ApplyUpdateResult last_apply_update_result_ = APPLY_UPDATE_RESULT_MAX;
 
-  // Records the time when the store was last updated.
-  base::Time last_apply_update_time_millis_;
-
   // The checksum value as read from the disk, until it is verified. Once
   // verified, it is cleared.
   std::string expected_checksum_;

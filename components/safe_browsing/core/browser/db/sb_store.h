@@ -318,7 +318,7 @@ class SBStore {
 
   // Populates the DatabaseInfo message.
   virtual void CollectStoreInfo(
-      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info) = 0;
+      DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info);
 
   // Updates the SBStore with the response received from the SafeBrowsing
   // service. `response` contains the protocol-specific update payload. `runner`
@@ -429,6 +429,9 @@ class SBStore {
   // True if the file was successfully read+parsed or was populated from
   // a full update.
   bool has_valid_data_;
+
+  // Records the time when the store was last updated.
+  base::Time last_apply_update_time_millis_;
 
   const base::FilePath store_path_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
