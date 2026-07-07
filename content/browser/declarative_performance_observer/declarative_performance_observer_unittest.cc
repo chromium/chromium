@@ -978,5 +978,101 @@ TEST_F(DeclarativePerformanceObserverOriginTrialTest,
   EXPECT_TRUE(observer);
 }
 
+TEST_F(DeclarativePerformanceObserverOriginTrialTest,
+       EarlyFailuresParamDisabledPreventsPolicyRegistration) {
+  const GURL kPageURL("https://example.com/index.html");
+
+  // Enable kDeclarativePerformanceObserver but disable
+  // kDeclarativePerformanceObserverCaptureEarlyFailures param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kDeclarativePerformanceObserver,
+      {{"DeclarativePerformanceObserverSupportCaptureEarlyFailures", "false"}});
+
+  // 1. Navigate with the Performance-Observer header containing
+  // capture-early-failures=true, and a valid Origin-Trial token.
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(kPageURL, web_contents());
+  simulator->Start();
+
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  headers->AddHeader("Performance-Observer",
+                     "report-to=\"telemetry\", capture-early-failures=true, "
+                     "entry-types=(\"navigation\")");
+  headers->AddHeader(
+      "Origin-Trial",
+      "A6umeji0ZeijjMlMf+9BwGsWirfa1RScCpY7xKTExl1kdyzXKLwnYfdCIgFv4FoVaBDUzX"
+      "z15kxM/25jT7kN/gwAAABoeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDM"
+      "iLCAiZmVhdHVyZSI6ICJEZWNsYXJhdGl2ZVBlcmZvcm1hbmNlT2JzZXJ2ZXIiLCAiZXhw"
+      "aXJ5IjogMjAwMDAwMDAwMH0=");
+
+  simulator->SetResponseHeaders(headers);
+  simulator->Commit();
+
+  // 2. Verify DPO observer is created.
+  auto* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  EXPECT_TRUE(observer);
+
+  // 3. Since the database did not register a true early failure policy,
+  // early failures should NOT be recorded.
+  auto* partition = main_rfh()->GetStoragePartition();
+  auto* partition_impl = static_cast<StoragePartitionImpl*>(partition);
+  auto* store = partition_impl->GetDeclarativePerformanceObserverStore();
+  ASSERT_TRUE(store);
+
+  // Wait for database tasks to finish to be sure.
+  base::RunLoop run_loop;
+  store->SetEarlyFailurePolicy(url::Origin::Create(kPageURL), false,
+                               run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(store->HasEarlyFailurePolicy(url::Origin::Create(kPageURL)));
+}
+
+TEST_F(DeclarativePerformanceObserverTest,
+       EarlyFailuresParamDisabledPreventsRecordingEvenIfPreviouslyOptedIn) {
+  const GURL kPageURL("https://example.com/index.html");
+  const url::Origin kOrigin = url::Origin::Create(kPageURL);
+  auto* partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  ASSERT_TRUE(partition);
+
+  // Disable kDeclarativePerformanceObserverCaptureEarlyFailures param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kDeclarativePerformanceObserver,
+      {{"DeclarativePerformanceObserverSupportCaptureEarlyFailures", "false"}});
+
+  // Force opt-in to simulate previous registration.
+  partition->GetDeclarativePerformanceObserverStore()->SetEarlyFailurePolicy(
+      kOrigin, true);
+
+  NavigationHandleTiming default_timing;
+  testing::NiceMock<MockNavigationHandle> failed_handle(kPageURL, main_rfh());
+  ON_CALL(failed_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(default_timing));
+
+  // Try to record early failure.
+  DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
+      &failed_handle, partition, net::ERR_CONNECTION_REFUSED);
+
+  // Take reports to verify no reports were saved.
+  base::RunLoop run_loop;
+  base::ListValue reports;
+  partition->GetDeclarativePerformanceObserverStore()->TakeEarlyFailureReports(
+      kOrigin,
+      base::BindOnce(
+          [](base::RunLoop* loop, base::ListValue* out, base::ListValue list) {
+            *out = std::move(list);
+            loop->Quit();
+          },
+          &run_loop, &reports));
+  run_loop.Run();
+
+  EXPECT_EQ(reports.size(), 0u);
+}
+
 }  // namespace
 }  // namespace content

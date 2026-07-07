@@ -302,6 +302,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCreateImageBitmapOrientationNone);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeclarativeCSSModulesUseDataURI);
 
+// Controls whether capture-early-failures is supported/used for Declarative
+// Performance Observers.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDeclarativePerformanceObserverSupportCaptureEarlyFailures);
+
 // When enabled, dedicated workers and shared workers created from data: URLs
 // will have an opaque origin, as required by the HTML spec.
 // See https://crbug.com/40051700.

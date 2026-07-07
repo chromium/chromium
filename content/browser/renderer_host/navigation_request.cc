@@ -9998,12 +9998,21 @@ NavigationRequest::GetDeclarativePerformanceObserverPolicy() {
       blink::features::kDeclarativePerformanceObserver);
   const bool is_enabled_by_flag_override =
       override_state.has_value() && override_state.value();
-  if (is_enabled_by_origin_trial || is_enabled_by_flag_override) {
-    return response_head_->parsed_headers
-        ->declarative_performance_observer_policy.get();
+  if (!is_enabled_by_origin_trial && !is_enabled_by_flag_override) {
+    return nullptr;
   }
 
-  return nullptr;
+  auto* policy = response_head_->parsed_headers
+                     ->declarative_performance_observer_policy.get();
+  if (!policy) {
+    return nullptr;
+  }
+
+  if (!blink::features::
+           kDeclarativePerformanceObserverSupportCaptureEarlyFailures.Get()) {
+    policy->capture_early_failures = false;
+  }
+  return policy;
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr
