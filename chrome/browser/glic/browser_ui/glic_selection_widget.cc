@@ -67,10 +67,7 @@ namespace {
 constexpr size_t kMaxSelectionLengthForTooltip = 50;
 constexpr int kIconSize = 14;
 
-constexpr int kCornerRadius = 12;
-// The two pills are visually grouped together by having a smaller border radius
-// on the sides where they meet.
-constexpr int kCornerRadiusInner = 4;
+constexpr int kCornerRadius = 10;
 constexpr int kMenuVerticalMargin = 4;
 constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(250);
 
@@ -248,7 +245,7 @@ class GlicSelectionContentsView : public views::View,
     ask_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
     ask_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     ask_pill_->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
-    ask_pill_->SetBetweenChildSpacing(4);
+    ask_pill_->SetBetweenChildSpacing(2);
     ask_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     ask_pill_->SetBackground(
@@ -278,11 +275,13 @@ class GlicSelectionContentsView : public views::View,
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
     ask_gemini_btn->SetImageLabelSpacing(4);
-    ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurfaceVariant);
+    ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurface);
     ask_gemini_btn->SetTextColor(views::Button::STATE_DISABLED,
                                  ui::kColorLabelForegroundDisabled);
-    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_5_MEDIUM);
-    ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(0, 2, 0, 6));
+    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_2_MEDIUM);
+    ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(0, 4, 0, 6));
+    ask_gemini_btn->SetBgColorOverrideDeprecated(SK_ColorTRANSPARENT);
+    ask_gemini_btn->SetInstallFocusRingOnFocus(false);
 
     ask_gemini_btn_ = ask_gemini_btn;
 
@@ -292,7 +291,6 @@ class GlicSelectionContentsView : public views::View,
     gfx::ImageSkia resized_icon = gfx::ImageSkiaOperations::CreateResizedImage(
         *icon_skia, skia::ImageOperations::RESIZE_BEST,
         gfx::Size(kIconSize, kIconSize));
-
     auto active_generator = base::BindRepeating(
         [](gfx::ImageSkia icon, const ui::ColorProvider* color_provider) {
           if (!color_provider) {
@@ -343,14 +341,6 @@ class GlicSelectionContentsView : public views::View,
     ask_gemini_btn->SetShowInkDropWhenHotTracked(true);
     views::InstallRoundRectHighlightPathGenerator(ask_gemini_btn, gfx::Insets(),
                                                   kCornerRadius);
-    views::InkDrop::Get(ask_gemini_btn)
-        ->SetBaseColorCallback(base::BindRepeating(
-            [](views::View* host) {
-              return host->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
-            },
-            base::Unretained(ask_gemini_btn)));
-    CreateToolbarInkdropCallbacks(ask_gemini_btn, kColorToolbarInkDropHover,
-                                  kColorToolbarInkDropRipple);
 
     if (features::kGlicSelectionShowCopyButtons.Get()) {
       // Copy Button
@@ -367,8 +357,8 @@ class GlicSelectionContentsView : public views::View,
               copy_tooltip));
       copy_btn->SetTooltipText(copy_tooltip);
       copy_btn->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-      copy_btn->SetBorder(
-          views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
+      copy_btn->SetBorder(views::CreateEmptyBorder(
+          views::LayoutProvider::Get()->GetInsetsMetric(
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
           copy_btn,
@@ -394,14 +384,16 @@ class GlicSelectionContentsView : public views::View,
                   : omnibox::kShareChromeRefreshOldIcon,
               copy_link_tooltip));
       copy_link_btn_->SetTooltipText(copy_link_tooltip);
-      copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-      copy_link_btn_->SetBorder(
-          views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
+      copy_link_btn_->SetImageVerticalAlignment(
+          views::ImageButton::ALIGN_MIDDLE);
+      copy_link_btn_->SetBorder(views::CreateEmptyBorder(
+          views::LayoutProvider::Get()->GetInsetsMetric(
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
           copy_link_btn_,
-          features::IsRoundedIconsEnabled() ? omnibox::kShareIcon
-                                            : omnibox::kShareChromeRefreshOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? omnibox::kShareIcon
+              : omnibox::kShareChromeRefreshOldIcon,
           kIconSize,
           views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
@@ -411,20 +403,15 @@ class GlicSelectionContentsView : public views::View,
       copy_link_btn_->SetEnabled(false);
     }
 
-    // Pill 2
-    control_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+    // Integrated Options Section (instead of separate pill)
+    control_pill_ =
+        ask_pill_->AddChildView(std::make_unique<views::BoxLayoutView>());
     control_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    control_pill_->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
+    // Extra space on the left to show the division from the CTA buttons.
+    control_pill_->SetInsideBorderInsets(gfx::Insets(0));
+    control_pill_->SetBetweenChildSpacing(2);
     control_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    auto border2 = std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-    border2->SetColor(ui::kColorSysSurface);
-    border2->set_rounded_corners(gfx::RoundedCornersF(
-        kCornerRadiusInner, kCornerRadius, kCornerRadius, kCornerRadiusInner));
-    control_pill_->SetBackground(
-        std::make_unique<views::BubbleBackground>(border2.get()));
-    control_pill_->SetBorder(std::move(border2));
 
     // Pin/Unpin Toggle Button or Dismiss Button
     if (features::kGlicSelectionPromptEnablePinning.Get()) {
@@ -442,6 +429,9 @@ class GlicSelectionContentsView : public views::View,
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       CreateToolbarInkdropCallbacks(pin_btn_, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
+      pin_btn_subscription_ = pin_btn_->AddStateChangedCallback(
+          base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
+                              base::Unretained(this)));
       SetPinned(initial_pinned_state);
     } else {
       auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
@@ -468,58 +458,41 @@ class GlicSelectionContentsView : public views::View,
                             ui::kColorSysOnSurfaceVariant));
       CreateToolbarInkdropCallbacks(menu_btn_, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
+      menu_btn_subscription_ = menu_btn_->AddStateChangedCallback(
+          base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
+                              base::Unretained(this)));
     }
 
     control_pill_->SetPaintToLayer();
     control_pill_->layer()->SetFillsBoundsOpaquely(false);
-    control_pill_->layer()->SetOpacity(0.0f);
+  }
+
+  void RefreshAskGeminiState() {
+    if (!ask_gemini_btn_) {
+      return;
+    }
+    bool settings_active =
+        (menu_btn_ && (menu_btn_->GetState() == views::Button::STATE_HOVERED ||
+                       menu_btn_->HasFocus())) ||
+        (pin_btn_ && (pin_btn_->GetState() == views::Button::STATE_HOVERED ||
+                      pin_btn_->HasFocus()));
+    UpdateAskGeminiIcon(IsMouseHovered() && !settings_active);
   }
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
-    UpdateAskGeminiIcon(true);
-    if (control_pill_) {
-      control_pill_->layer()->SetOpacity(1.0f);
-    }
-    if (ask_pill_) {
-      auto* bubble_border =
-          static_cast<views::BubbleBorder*>(ask_pill_->GetBorder());
-      if (bubble_border) {
-        bubble_border->set_rounded_corners(
-            gfx::RoundedCornersF(kCornerRadius, kCornerRadiusInner,
-                                 kCornerRadiusInner, kCornerRadius));
-        ask_pill_->SchedulePaint();
-      }
-    }
+    RefreshAskGeminiState();
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    UpdateAskGeminiIcon(false);
-    if (control_pill_) {
-      control_pill_->layer()->SetOpacity(0.0f);
-    }
-    if (ask_pill_) {
-      auto* bubble_border =
-          static_cast<views::BubbleBorder*>(ask_pill_->GetBorder());
-      if (bubble_border) {
-        bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
-        ask_pill_->SchedulePaint();
-      }
-    }
+    RefreshAskGeminiState();
   }
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    if (GetWidget() && GetWidget()->widget_delegate()) {
+    if (widget_delegate_) {
       // During a theme change, the OS-level native window background is
-      // automatically reset to opaque defaults without updating
-      // BubbleDialogDelegate's internal C++ state variable (which still holds
-      // SK_ColorTRANSPARENT).
-      // Force a background color update by temporarily clearing it, then
-      // restoring it, which bypasses the color variant equality check.
-      auto* bubble_delegate =
-          GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
-      bubble_delegate->SetBackgroundColor(ui::ColorVariant());
-      bubble_delegate->SetBackgroundColor(
+      // automatically reset to opaque defaults without updating.
+      widget_delegate_->SetBackgroundColor(
           ui::ColorVariant(SK_ColorTRANSPARENT));
     }
   }
@@ -626,6 +599,9 @@ class GlicSelectionContentsView : public views::View,
   raw_ptr<views::ImageButton> menu_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::BoxLayoutView> control_pill_ = nullptr;
+
+  base::CallbackListSubscription pin_btn_subscription_;
+  base::CallbackListSubscription menu_btn_subscription_;
 
   std::unique_ptr<GlicSelectionMenuModel> menu_model_;
   // Destruction order matters: `menu_runner_` must be destroyed before
@@ -748,8 +724,21 @@ void GlicSelectionWidgetDelegate::UpdatePosition() {
     int pinned_y = window_bounds_.y() - 8 - top_inset - 4;
     SetAnchorRect(gfx::Rect(pinned_x, pinned_y, 0, 0));
   } else {
-    // Unpinned: anchored inline near selection.
-    SetAnchorRect(original_anchor_rect_);
+    // Unpinned: anchored inline near selection. Account for the invisible
+    // shadow inset and half the visible width so the center of the popup pill
+    // aligns exactly with the right edge of the selection.
+    int right_inset = 0;
+    int visible_width = total_width;
+    if (auto* contents_view = GetContentsView()) {
+      if (!contents_view->children().empty()) {
+        views::View* pill_view = contents_view->children()[0];
+        right_inset = pill_view->GetInsets().right();
+        visible_width = pill_view->GetPreferredSize().width();
+      }
+    }
+    gfx::Rect adjusted_anchor = original_anchor_rect_;
+    adjusted_anchor.Offset(right_inset + (visible_width / 2), 0);
+    SetAnchorRect(adjusted_anchor);
   }
 }
 
