@@ -4,92 +4,28 @@
 
 #include "remoting/host/terminal_session_manager.h"
 
-#include <map>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
-#include "remoting/host/terminal_session.h"
+#include "remoting/host/fake_terminal_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Invoke;
-using testing::Return;
-
 namespace remoting {
-
-namespace {
-
-using CreateMockSessionCallback =
-    base::RepeatingCallback<std::unique_ptr<TerminalSession>(
-        TerminalSessionManager::OutputCallback,
-        TerminalSessionManager::ExitCallback,
-        int32_t)>;
-
-CreateMockSessionCallback* g_mock_session_creator = nullptr;
-
-class MockTerminalSession : public TerminalSession {
- public:
-  MockTerminalSession() = default;
-  ~MockTerminalSession() override = default;
-
-  MOCK_METHOD(bool, Start, (), (override));
-  MOCK_METHOD(void, Write, (const std::string& data), (override));
-  MOCK_METHOD(void, Resize, (uint32_t width, uint32_t height), (override));
-  MOCK_METHOD(void, Terminate, (), (override));
-
-  base::WeakPtr<MockTerminalSession> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockTerminalSession> weak_factory_{this};
-};
-
-}  // namespace
-
-// static
-std::unique_ptr<TerminalSession> TerminalSession::Create(
-    TerminalSessionManager::OutputCallback output_cb,
-    TerminalSessionManager::ExitCallback exit_cb,
-    int32_t id) {
-  if (g_mock_session_creator) {
-    return g_mock_session_creator->Run(std::move(output_cb), std::move(exit_cb),
-                                       id);
-  }
-  return nullptr;
-}
 
 class TerminalSessionManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    creator_callback_ = base::BindRepeating(
-        &TerminalSessionManagerTest::CreateMockSession, base::Unretained(this));
-    g_mock_session_creator = &creator_callback_;
-  }
+  TerminalSessionManagerTest() = default;
+  ~TerminalSessionManagerTest() override = default;
 
-  void TearDown() override { g_mock_session_creator = nullptr; }
-
-  std::unique_ptr<TerminalSession> CreateMockSession(
-      TerminalSessionManager::OutputCallback output_cb,
-      TerminalSessionManager::ExitCallback exit_cb,
-      int32_t id) {
-    auto session = std::make_unique<MockTerminalSession>();
-    EXPECT_CALL(*session, Start()).WillOnce(Return(true));
-    last_mock_session_ = session->GetWeakPtr();
-    mock_sessions_[id] = last_mock_session_;
-    return session;
-  }
+  // Resets the static state of FakeTerminalSession.
+  void SetUp() override { FakeTerminalSession::ResetStaticState(); }
 
   TerminalSessionManager manager_;
-  base::WeakPtr<MockTerminalSession> last_mock_session_;
-  std::map<int32_t, base::WeakPtr<MockTerminalSession>> mock_sessions_;
-  CreateMockSessionCallback creator_callback_;
   base::MockCallback<TerminalSessionManager::OutputCallback> output_callback_;
   base::MockCallback<TerminalSessionManager::ExitCallback> exit_callback_;
 };
@@ -104,25 +40,20 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
   ASSERT_EQ(id, 1);
   ASSERT_EQ(id2, 2);
   ASSERT_EQ(id3, 3);
-  ASSERT_NE(mock_sessions_[id], nullptr);
-  ASSERT_NE(mock_sessions_[id2], nullptr);
-  ASSERT_NE(mock_sessions_[id3], nullptr);
-  EXPECT_EQ(manager_.GetTerminalSession(id), mock_sessions_[id].get());
-  EXPECT_EQ(manager_.GetTerminalSession(id2), mock_sessions_[id2].get());
-  EXPECT_EQ(manager_.GetTerminalSession(id3), mock_sessions_[id3].get());
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 3u);
+  ASSERT_NE(sessions[0], nullptr);
+  ASSERT_NE(sessions[1], nullptr);
+  ASSERT_NE(sessions[2], nullptr);
+
+  EXPECT_EQ(manager_.GetTerminalSession(id), sessions[0].get());
+  EXPECT_EQ(manager_.GetTerminalSession(id2), sessions[1].get());
+  EXPECT_EQ(manager_.GetTerminalSession(id3), sessions[2].get());
 }
 
 TEST_F(TerminalSessionManagerTest, StartFailureReturnsMinusOne) {
-  auto local_creator =
-      base::BindRepeating([](TerminalSessionManager::OutputCallback output_cb,
-                             TerminalSessionManager::ExitCallback exit_cb,
-                             int32_t id) -> std::unique_ptr<TerminalSession> {
-        auto mock = std::make_unique<MockTerminalSession>();
-        EXPECT_CALL(*mock, Start()).WillOnce(Return(false));
-        return mock;
-      });
-  g_mock_session_creator = &local_creator;
-
+  FakeTerminalSession::SetNextStartFail(true);
   int32_t id =
       manager_.CreateTerminal(output_callback_.Get(), exit_callback_.Get());
   EXPECT_EQ(id, -1);
@@ -132,32 +63,43 @@ TEST_F(TerminalSessionManagerTest, WriteTerminalRoutesCorrectly) {
   int32_t id =
       manager_.CreateTerminal(output_callback_.Get(), exit_callback_.Get());
   ASSERT_EQ(id, 1);
-  ASSERT_NE(last_mock_session_, nullptr);
 
-  EXPECT_CALL(*last_mock_session_, Write("hello")).Times(1);
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_NE(sessions[0], nullptr);
+
   manager_.WriteTerminal(id, "hello");
+  EXPECT_EQ(sessions[0]->inputs().size(), 1u);
+  EXPECT_EQ(sessions[0]->inputs()[0], "hello");
 }
 
 TEST_F(TerminalSessionManagerTest, ResizeTerminalRoutesCorrectly) {
   int32_t id =
       manager_.CreateTerminal(output_callback_.Get(), exit_callback_.Get());
   ASSERT_EQ(id, 1);
-  ASSERT_NE(last_mock_session_, nullptr);
 
-  EXPECT_CALL(*last_mock_session_, Resize(80, 24)).Times(1);
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_NE(sessions[0], nullptr);
+
   manager_.ResizeTerminal(id, 80, 24);
+  EXPECT_EQ(sessions[0]->resizes().size(), 1u);
+  EXPECT_EQ(sessions[0]->resizes()[0].first, 80u);
+  EXPECT_EQ(sessions[0]->resizes()[0].second, 24u);
 }
 
 TEST_F(TerminalSessionManagerTest, CloseTerminalDestroysAndTerminates) {
   int32_t id =
       manager_.CreateTerminal(output_callback_.Get(), exit_callback_.Get());
   ASSERT_EQ(id, 1);
-  ASSERT_NE(last_mock_session_, nullptr);
 
-  EXPECT_CALL(*last_mock_session_, Terminate()).Times(1);
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_NE(sessions[0], nullptr);
+
   manager_.CloseTerminal(id);
-
-  EXPECT_EQ(last_mock_session_, nullptr);
+  EXPECT_TRUE(FakeTerminalSession::WasTerminated(id));
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
   EXPECT_EQ(manager_.GetTerminalSession(id), nullptr);
 }
 

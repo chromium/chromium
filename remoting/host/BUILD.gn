@@ -842,6 +842,8 @@ static_library("test_support") {
     "fake_keyboard_layout_monitor.h",
     "fake_mouse_cursor_monitor.cc",
     "fake_mouse_cursor_monitor.h",
+    "fake_terminal_session.cc",
+    "fake_terminal_session.h",
     "host_mock_objects.cc",
     "host_mock_objects.h",
   ]
