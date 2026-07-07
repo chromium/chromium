@@ -1300,15 +1300,16 @@ if (!is_ios) {
   }
 }
 
-fuzzer_test("image_operations_resize_fuzzer") {
+test("image_operations_resize_fuzzer") {
   sources = [ "ext/image_operations_resize_fuzzer.cc" ]
 
   deps = [
     ":skia",
     "//base",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 
-  libfuzzer_options = [ "max_len=48" ]
+  fuzztests = [ "ImageOperationsResize.ResizeFuzzTest" ]
 }
 
 group("fuzzers") {

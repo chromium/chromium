@@ -2,98 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include "base/check.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+namespace {
 
-template <typename T>
-static bool read(const uint8_t** data, size_t* size, T* value) {
-  if (*size < sizeof(T)) {
-    return false;
+void ResizeFuzzTest(skia::ImageOperations::ResizeMethod method,
+                    int src_w,
+                    int src_h,
+                    int dst_w,
+                    int dst_h,
+                    int subset_x,
+                    int subset_y,
+                    int subset_r,
+                    int subset_b) {
+  // Relational guards. Simple bounds are enforced by FuzzTest domains.
+  if (dst_w > src_w || dst_h > src_h) {
+    return;
   }
-
-  *value = *reinterpret_cast<const T*>(*data);
-  *data += sizeof(T);
-  *size -= sizeof(T);
-  return true;
-}
-
-#define READ_INT(output)                 \
-  if (!read<int>(&data, &size, &output)) \
-    return 0;
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  int iMethod, srcW, srcH, dstW, dstH, subsetX, subsetY, subsetR, subsetB;
-  READ_INT(iMethod)
-  READ_INT(srcW)
-  READ_INT(srcH)
-  READ_INT(dstW)
-  READ_INT(dstH)
-  READ_INT(subsetX)
-  READ_INT(subsetY)
-  READ_INT(subsetR)
-  READ_INT(subsetB)
-
-  skia::ImageOperations::ResizeMethod method =
-      skia::ImageOperations::RESIZE_GOOD;
-  switch (iMethod) {
-    case 1:
-      method = skia::ImageOperations::RESIZE_BETTER;
-      break;
-    case 2:
-      method = skia::ImageOperations::RESIZE_BEST;
-      break;
-    case 3:
-      method = skia::ImageOperations::RESIZE_BOX;
-      break;
-    case 4:
-      method = skia::ImageOperations::RESIZE_HAMMING1;
-      break;
-    case 5:
-      method = skia::ImageOperations::RESIZE_LANCZOS3;
-      break;
-    default:
-      break;  // RESIZE_GOOD
-  }
-  if (srcW < 0 || srcH < 0 || srcW > 300 || srcH > 300) {
-    return 0;
-  }
-  if (dstW <= 0 || dstH <= 0 || dstW > srcW || dstH > srcH) {
-    return 0;
-  }
-  if (dstW == 0 && dstH == 0) {
-    return 0;
-  }
-  SkIRect subset = SkIRect{subsetX, subsetY, subsetR, subsetB};
+  SkIRect subset = SkIRect{subset_x, subset_y, subset_r, subset_b};
   if (subset.isEmpty()) {
-    return 0;
+    return;
   }
-  SkIRect dest = {0, 0, dstW, dstH};
+  SkIRect dest = {0, 0, dst_w, dst_h};
   if (!dest.contains(subset)) {
-    return 0;
+    return;
   }
-  sk_sp<SkSurface> surface =
-      SkSurfaces::Raster(SkImageInfo::MakeN32(srcW, srcH, kOpaque_SkAlphaType));
+
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(
+      SkImageInfo::MakeN32(src_w, src_h, kOpaque_SkAlphaType));
   if (!surface) {
-    return 0;
+    return;
   }
   SkPixmap input;
   if (!surface->peekPixels(&input)) {
-    return 0;
+    return;
   }
 
   SkBitmap bitmap =
-      skia::ImageOperations::Resize(input, method, dstW, dstH, subset);
-  return 0;
+      skia::ImageOperations::Resize(input, method, dst_w, dst_h, subset);
 }
+
+}  // namespace
+
+FUZZ_TEST(ImageOperationsResize, ResizeFuzzTest)
+    .WithDomains(
+        /*method=*/fuzztest::ElementOf<skia::ImageOperations::ResizeMethod>({
+            skia::ImageOperations::RESIZE_GOOD,
+            skia::ImageOperations::RESIZE_BETTER,
+            skia::ImageOperations::RESIZE_BEST,
+            skia::ImageOperations::RESIZE_BOX,
+            skia::ImageOperations::RESIZE_HAMMING1,
+            skia::ImageOperations::RESIZE_LANCZOS3,
+        }),
+        /*src_w=*/fuzztest::InRange(0, 300),
+        /*src_h=*/fuzztest::InRange(0, 300),
+        /*dst_w=*/fuzztest::InRange(1, 300),
+        /*dst_h=*/fuzztest::InRange(1, 300),
+        /*subset_x=*/fuzztest::InRange(0, 300),
+        /*subset_y=*/fuzztest::InRange(0, 300),
+        /*subset_r=*/fuzztest::InRange(0, 300),
+        /*subset_b=*/fuzztest::InRange(0, 300));
