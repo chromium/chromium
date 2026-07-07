@@ -205,13 +205,6 @@ void Request::OnConnectionError() {
                            /*should_delay_callback=*/false);
 }
 
-void Request::ReportBadMessage(const char* message) {
-  if (!is_mojo_) {
-    return;
-  }
-  mojo::ReportBadMessage(message);
-}
-
 std::vector<IdentityProviderRequestOptionsPtr>
 Request::MaybeAddRegisteredProviders(
     std::vector<IdentityProviderRequestOptionsPtr>& providers) {
@@ -255,15 +248,7 @@ bool Request::RequestToken(
     NavigationHandle* navigation_handle,
     const GURL& intercepted_url,
     RequestTokenCallback callback) {
-  is_mojo_ = (navigation_handle == nullptr);
-  if (ShouldTerminateRequest(idp_get_params_ptrs, requirement,
-                             navigation_handle)) {
-    std::move(callback).Run(RequestTokenStatus::kError, std::nullopt,
-                            std::nullopt,
-                            /*error=*/nullptr,
-                            /*is_auto_selected=*/false);
-    return false;
-  }
+  CHECK(!HasPendingRequest());
   bool intercept = false;
   bool should_complete_request_immediately = false;
   devtools_instrumentation::WillSendFedCmRequest(
@@ -328,24 +313,11 @@ bool Request::RequestToken(
     intercepted_url_ = intercepted_url;
   }
 
-  // Store the previous `idp_order_` value from this class. Note that this is {}
-  // unless there is a pending request from the same RFH. In particular, this is
-  // still {} if there is a pending request but from a different RFH.
-  std::vector<GURL> old_idp_order = std::move(idp_order_);
   idp_order_ = {};
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       idp_order_.push_back(idp_ptr->config->config_url);
     }
-  }
-
-  if (HasPendingRequest() &&
-      HandlePendingRequestAndCancelNewRequest(
-          old_idp_order, idp_get_params_ptrs, requirement)) {
-    std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                            std::nullopt, std::nullopt, /*error=*/nullptr,
-                            /*is_auto_selected=*/false);
-    return false;
   }
 
   // From here on out, all failures go through CompleteRequest, so this is
@@ -2513,140 +2485,6 @@ bool Request::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
   // Exclude filtered out accounts so they are not shown at the top.
   return !account.is_filtered_out &&
          !account_ids_before_login_.contains(account.id);
-}
-
-bool Request::ShouldTerminateRequest(
-    const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
-    const MediationRequirement& requirement,
-    NavigationHandle* navigation_handle) {
-  // Enforce identity-credentials-get Permissions Policy browser-side.
-  // The renderer checks this, but a compromised renderer can bypass it.
-  // Navigation interception calls pass a non-null navigation_handle and are
-  // browser-initiated, so the check only applies to Mojo calls.
-  if (!navigation_handle &&
-      !render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
-    ReportBadMessage("identity-credentials-get permissions policy not enabled");
-    return true;
-  }
-
-  // idp_get_params_ptrs sent from the renderer should be of size 1.
-  if (idp_get_params_ptrs.size() != 1u) {
-    ReportBadMessage("idp_get_params_ptrs should be of size 1.");
-    return true;
-  }
-  // This could only happen with a compromised renderer process. We ensure that
-  // the provider list size is > 0 on the renderer side at the beginning of
-  // parsing |IdentityCredentialRequestOptions|.
-  for (const auto& idp_get_params_ptr : idp_get_params_ptrs) {
-    if (idp_get_params_ptr->providers.size() == 0) {
-      ReportBadMessage("The provider list should not be empty.");
-      return true;
-    }
-    if (idp_get_params_ptr->providers.size() > 10u) {
-      ReportBadMessage("The provider list should not be greater than 10.");
-      return true;
-    }
-    if (idp_get_params_ptr->mode == RpMode::kActive &&
-        requirement == MediationRequirement::kSilent) {
-      ReportBadMessage("mediation: silent is not supported in active mode.");
-      return true;
-    }
-  }
-
-  if (requirement == MediationRequirement::kConditional &&
-      !IsAutofillEnabled()) {
-    // The conditional mediation parameter can only be used when delegation
-    // is enabled while it is under development.
-    //
-    // TODO(crbug.com/380367784): handle all of the many cases in which a
-    // conditional mediation may interact with other features.
-    ReportBadMessage(
-        "Conditional mediation is not supported when both autofill and "
-        "delegation are disabled.");
-    return true;
-  }
-
-  if (render_frame_host().IsNestedWithinFencedFrame()) {
-    ReportBadMessage("FedCM should not be allowed in fenced frame trees.");
-    return true;
-  }
-
-  return false;
-}
-
-bool Request::HandlePendingRequestAndCancelNewRequest(
-    const std::vector<GURL>& old_idp_order,
-    const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
-    const MediationRequirement& requirement) {
-  Request* pending_request =
-      GetPageData(render_frame_host().GetPage())->PendingWebIdentityRequest();
-
-  std::unique_ptr<Metrics> new_request_metrics = CreateFedCmMetrics();
-  RpMode pending_request_rp_mode = pending_request->GetRpMode();
-  RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
-  new_request_metrics->RecordMultipleRequestsRpMode(
-      pending_request_rp_mode, new_request_rp_mode, idp_order_);
-
-  bool can_replace_pending_request = had_transient_user_activation_ &&
-                                     new_request_rp_mode == RpMode::kActive &&
-                                     pending_request_rp_mode != RpMode::kActive;
-  if (!can_replace_pending_request) {
-    // Cancel this new request.
-    new_request_metrics->RecordRequestTokenStatus(
-        TokenStatus::kTooManyRequests, requirement, idp_order_,
-        /*num_idps_mismatch=*/0,
-        /*selected_idp_config_url=*/std::nullopt,
-        (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive)
-            ? RpMode::kActive
-            : RpMode::kPassive,
-        /*use_other_account_result=*/std::nullopt,
-        /*verifying_dialog_result=*/std::nullopt,
-        api_permission_delegate()->AreThirdPartyCookiesEnabledInSettings()
-            ? ThirdPartyCookiesStatus::kEnabledInSettings
-            : ThirdPartyCookiesStatus::kDisabledInSettings,
-        ComputeRequesterFrameType(render_frame_host(), origin(),
-                                  GetEmbeddingOrigin()),
-        /*has_signin_account=*/std::nullopt, /*did_show_ui=*/false);
-
-    AddDevToolsIssue(
-        blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
-    AddConsoleErrorMessage(
-        blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
-
-    // Since multiple `get` calls is not yet supported, if one IdP invokes the
-    // API while another request from different IdPs is in-flight, the new API
-    // call will be rejected. The two requests may be from different RFHs so
-    // we should calculate properly.
-    if (old_idp_order.empty()) {
-      new_request_metrics->RecordMultipleRequestsFromDifferentIdPs(
-          idp_order_ != pending_request->idp_order_);
-    } else {
-      new_request_metrics->RecordMultipleRequestsFromDifferentIdPs(
-          idp_order_ != old_idp_order);
-    }
-    idp_order_ = std::move(old_idp_order);
-    return true;
-  }
-
-  // Cancel the pending request before starting the new active flow request.
-  // Set the old values before completing in case the pending request
-  // corresponds to one in this object.
-  std::vector<GURL> new_idp_order = std::move(idp_order_);
-  idp_order_ = std::move(old_idp_order);
-  pending_request->CompleteRequestWithError(
-      FederatedAuthRequestResult::kReplacedByActiveMode,
-      TokenStatus::kReplacedByActiveMode,
-      /*should_delay_callback=*/false);
-  CHECK(!auth_request_token_callback_);
-
-  // Some members were reset to false during CleanUp when replacing a passive
-  // flow from the same frame so we need to set them again.
-  had_transient_user_activation_ = true;
-  fedcm_metrics_ = std::move(new_request_metrics);
-  idp_order_ = std::move(new_idp_order);
-
-  return false;
 }
 
 bool Request::IsUsingAmbient() const {

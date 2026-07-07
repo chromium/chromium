@@ -177,7 +177,6 @@ class CONTENT_EXPORT RequestService
                                blink::mojom::RequestUserInfoResultPtr result);
   void CompleteDisconnectRequest(DisconnectCallback callback,
                                  blink::mojom::DisconnectStatus status);
-
   bool InitiateTokenRequest(
       std::unique_ptr<Request> new_request,
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
@@ -196,6 +195,12 @@ class CONTENT_EXPORT RequestService
       bool is_auto_selected);
   void CleanUpCompletedRequest(Request* request);
   void CleanUpActiveRequest(Request* request);
+  bool ShouldCancelNewRequest(
+      Request* new_request,
+      const std::vector<blink::mojom::IdentityProviderGetParametersPtr>&
+          idp_get_params,
+      MediationRequirement requirement,
+      NavigationHandle* navigation_handle);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
   void MaybeDestroyDialogController();

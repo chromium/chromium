@@ -93,9 +93,6 @@ class CONTENT_EXPORT Request
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::FederatedRequest> pending_receiver);
 
-  void ReportBadMessage(const char* message);
-
-
   // Starts the token request. Returns true if the request started successfully
   // and is now pending. Returns false if the request was terminated immediately
   // (e.g. due to permissions policy, invalid parameters, or being rejected in
@@ -105,9 +102,6 @@ class CONTENT_EXPORT Request
   // interception, so that we can use this handle for user activation checking
   // and setting up parameters for a later redirect. This is virtual so that it
   // can be mocked.
-  // TODO(crbug.com/519217823): Consider moving request
-  // deduplication/replacement logic to RequestService once the service fully
-  // manages all request lifecycles.
   virtual bool RequestToken(
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
           idp_get_params_ptrs,
@@ -253,6 +247,7 @@ class CONTENT_EXPORT Request
   url::Origin GetEmbeddingOrigin() const;
 
   GURL login_url() { return login_url_; }
+  const std::vector<GURL>& idp_order() const { return idp_order_; }
   bool HadAccountIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
   }
@@ -374,22 +369,6 @@ class CONTENT_EXPORT Request
   // from IdentityProvider.resolve) to update our various permissions.
   void MarkUserAsSignedIn(const GURL& idp_config_url,
                           const std::string& account_id);
-
-  // Validates the input from the renderer and signals to terminate the request
-  // if needed.
-  bool ShouldTerminateRequest(
-      const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
-      const MediationRequirement& requirement,
-      NavigationHandle* navigation_handle);
-
-  // If a new request is associated with active mode, it can replace the pending
-  // request with passive mode. Otherwise a new request will be cancelled when
-  // there's a pending request. Returns `true` if the new request needs to be
-  // cancelled.
-  bool HandlePendingRequestAndCancelNewRequest(
-      const std::vector<GURL>& old_idp_order,
-      const std::vector<IdentityProviderGetParametersPtr>& idps,
-      const MediationRequirement& requirement);
 
   void OnConnectionError();
 
@@ -628,8 +607,6 @@ class CONTENT_EXPORT Request
   bool in_redirect_to_{false};
 
   bool did_show_ui_{false};
-
-  bool is_mojo_{true};
 
   mojo::ReceiverSet<blink::mojom::FederatedRequest> receivers_;
 
