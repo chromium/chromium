@@ -33,14 +33,15 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "components/account_id/account_id.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -157,7 +158,7 @@ void VerifyNetworkDataErrorBucketCounts(
 
 class NetworkHealthProviderTest : public AshTestBase {
  public:
-  NetworkHealthProviderTest() = default;
+  NetworkHealthProviderTest() { set_start_session(false); }
 
   NetworkHealthProviderTest(const NetworkHealthProviderTest&) = delete;
   NetworkHealthProviderTest& operator=(const NetworkHealthProviderTest&) =
@@ -168,11 +169,19 @@ class NetworkHealthProviderTest : public AshTestBase {
   void SetUp() override {
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
-    AshTestBase::SetUp();
+
+    user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
+    user_manager::User* user =
+        user_session_manager_->AddRegularUser(account_id);
+    ASSERT_TRUE(user);
+
     SystemTokenCertDbStorage::Initialize();
 
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>(local_state()));
+    AshTestBase::SetUp();
+    user_session_manager_->LogIn(account_id);
 
     // NetworkHandler has pieces that depend on NetworkCertLoader so it's better
     // to initialize NetworkHandlerTestHelper after
@@ -188,6 +197,10 @@ class NetworkHealthProviderTest : public AshTestBase {
 
     network_handler_test_helper_->InitializePrefs(&user_prefs_, local_state());
     ClearDevicesAndServices();
+
+    NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+        ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(), base::ListValue(),
+        base::DictValue());
 
     cros_network_config_ =
         std::make_unique<network_config::CrosNetworkConfig>();
@@ -221,9 +234,9 @@ class NetworkHealthProviderTest : public AshTestBase {
     cros_network_config_.reset();
     network_handler_test_helper_.reset();
     NetworkCertLoader::Shutdown();
-    scoped_user_manager_.reset();
-    SystemTokenCertDbStorage::Shutdown();
     AshTestBase::TearDown();
+    SystemTokenCertDbStorage::Shutdown();
+    user_session_manager_.reset();
   }
 
  protected:
@@ -538,7 +551,7 @@ class NetworkHealthProviderTest : public AshTestBase {
   }
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;
