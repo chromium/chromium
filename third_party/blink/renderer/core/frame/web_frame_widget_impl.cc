@@ -150,7 +150,6 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -5383,12 +5382,13 @@ void WebFrameWidgetImpl::NotifyInputObservers(
   if (!frame)
     return;
 
-  LocalFrameView* frame_view = frame->View();
-  if (!frame_view)
+  Document* document = frame->GetDocument();
+  if (!document) {
     return;
+  }
 
   const WebInputEvent& input_event = coalesced_event.Event();
-  frame_view->GetPaintTimingDetector().NotifyInputEvent(input_event.GetType());
+  PaintTimingDetector::From(*document).NotifyInputEvent(input_event.GetType());
 }
 
 Frame* WebFrameWidgetImpl::FocusedCoreFrame() const {

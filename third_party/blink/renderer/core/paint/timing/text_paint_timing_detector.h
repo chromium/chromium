@@ -18,17 +18,17 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-class LayoutBoxModelObject;
-class LocalFrameView;
-class PropertyTreeStateOrAlias;
 struct DOMPaintTimingInfo;
+class LayoutBoxModelObject;
+class PaintTimingDetector;
+class PropertyTreeStateOrAlias;
 class SoftNavigationContext;
 
 class CORE_EXPORT LargestTextPaintManager final {
   DISALLOW_NEW();
 
  public:
-  explicit LargestTextPaintManager(LocalFrameView*);
+  LargestTextPaintManager();
   LargestTextPaintManager(const LargestTextPaintManager&) = delete;
   LargestTextPaintManager& operator=(const LargestTextPaintManager&) = delete;
 
@@ -70,8 +70,6 @@ class CORE_EXPORT LargestTextPaintManager final {
   // anything if the largest content was removed.
   EphemeronPair<const LayoutObject, TextRecord> largest_ignored_text_{nullptr,
                                                                       nullptr};
-
-  Member<const LocalFrameView> frame_view_;
 };
 
 // TextPaintTimingDetector contains Largest Text Paint and support for Text
@@ -90,7 +88,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   friend class TextPaintTimingDetectorTest;
 
  public:
-  TextPaintTimingDetector(LocalFrameView*, PaintTimingDetector*);
+  explicit TextPaintTimingDetector(PaintTimingDetector*);
   TextPaintTimingDetector(const TextPaintTimingDetector&) = delete;
   TextPaintTimingDetector& operator=(const TextPaintTimingDetector&) = delete;
 
@@ -148,7 +146,6 @@ class CORE_EXPORT TextPaintTimingDetector final
   // Text records queued for paint time.
   HeapDeque<Member<TextRecord>> texts_queued_for_paint_time_;
 
-  Member<LocalFrameView> frame_view_;
   Member<PaintTimingDetector> paint_timing_detector_;
 
   LargestTextPaintManager ltp_manager_;

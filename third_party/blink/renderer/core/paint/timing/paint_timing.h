@@ -29,6 +29,7 @@ class TickClock;
 namespace blink {
 struct DOMPaintTimingInfo;
 class LocalFrame;
+class PaintTimingDetector;
 class TextElementTiming;
 
 // PaintTiming is responsible for tracking paint-related timings for a given
@@ -97,7 +98,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       base::TimeTicks presentation_time,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
-  void NotifyPaintFinished() { MarkPaintTimingInternal(); }
+  void NotifyPaintFinished();
 
   // The getters below return monotonically-increasing seconds, or zero if the
   // given paint event has not yet occurred. See the comments for
@@ -176,6 +177,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return *fmp_detector_;
   }
 
+  Document* GetDocument() { return GetSupplementable(); }
+
   void RegisterNotifyPresentationTime(ReportTimeCallback);
   void ReportPresentationTime(PaintEvent,
                               base::TimeTicks rendering_update_end_time,
@@ -198,6 +201,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // unit tests.
   void SetCallbackManagerForTest(CallbackManager* manager) {
     callback_manager_ = manager;
+  }
+
+  // TODO(crbug.com/503420427): Consider removing this and proxying through
+  // PaintTiming.
+  PaintTimingDetector& GetPaintTimingDetector() {
+    return *paint_timing_detector_.Get();
   }
 
  private:
@@ -273,6 +282,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 
+  Member<PaintTimingDetector> paint_timing_detector_;
   Member<TextElementTiming> text_element_timing_;
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
   // The callback ID for requestAnimationFrame to record its time after the page

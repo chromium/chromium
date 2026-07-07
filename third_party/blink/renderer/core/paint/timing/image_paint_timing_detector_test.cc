@@ -98,14 +98,13 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
  protected:
   LocalFrameView& GetFrameView() { return *GetFrame()->View(); }
-  LocalFrameView& GetChildFrameView() { return *GetChildFrame()->View(); }
   Document& GetDocument() { return *GetFrame()->GetDocument(); }
   Document* GetChildDocument() { return GetChildFrame()->GetDocument(); }
   PaintTimingDetector& GetPaintTimingDetector() {
-    return GetFrameView().GetPaintTimingDetector();
+    return PaintTimingDetector::From(GetDocument());
   }
   PaintTimingDetector& GetChildPaintTimingDetector() {
-    return GetChildFrameView().GetPaintTimingDetector();
+    return PaintTimingDetector::From(*GetChildDocument());
   }
 
   const PerformanceTimingForReporting& GetPerformanceTimingForReporting() {
@@ -134,8 +133,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   ImageRecord* ChildFrameLargestImage() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
+    return GetChildPaintTimingDetector()
         .GetLargestContentfulPaintCalculator()
         ->LargestPaintedOrPendingImageForTest();
   }

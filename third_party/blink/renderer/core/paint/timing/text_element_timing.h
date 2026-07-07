@@ -20,7 +20,6 @@ class RectF;
 namespace blink {
 
 class LayoutObject;
-class LocalFrameView;
 class PropertyTreeStateOrAlias;
 class TextRecord;
 
@@ -44,8 +43,7 @@ class CORE_EXPORT TextElementTiming final
   static gfx::RectF ComputeIntersectionRect(
       const LayoutObject&,
       const gfx::Rect& aggregated_visual_rect,
-      const PropertyTreeStateOrAlias&,
-      const LocalFrameView*);
+      const PropertyTreeStateOrAlias&);
 
   bool CanReportToElementTiming() const;
   bool CanReportToContainerTiming();

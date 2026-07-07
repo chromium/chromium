@@ -3350,9 +3350,7 @@ void LayoutObject::StyleDidChange(
 
   if (diff.opacity_changed && IsDocumentElement() &&
       old_style->Opacity() == 0.f && style_->Opacity() != 0.f) {
-    if (const LocalFrameView* frame_view = GetFrameView()) {
-      frame_view->GetPaintTimingDetector().ReportIgnoredContent();
-    }
+    PaintTimingDetector::From(GetDocument()).ReportIgnoredContent();
   }
 
   // Don't check for paint invalidation here; we need to wait until the layer
@@ -4557,10 +4555,10 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->ImageLoaded(this);
 
-  if (LocalDOMWindow* window = GetDocument().domWindow())
+  if (LocalDOMWindow* window = GetDocument().domWindow()) {
     ImageElementTiming::From(*window).NotifyImageFinished(*this, image);
-  if (LocalFrameView* frame_view = GetFrameView())
-    frame_view->GetPaintTimingDetector().NotifyImageFinished(*this, image);
+    PaintTimingDetector::From(GetDocument()).NotifyImageFinished(*this, image);
+  }
 
   if (!image->ErrorOccurred()) {
     if (const std::optional<AdProvenance>& ad_provenance =
@@ -4710,10 +4708,10 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
 
 void LayoutObject::NotifyImageFullyRemoved(ImageResourceContent* image) {
   NOT_DESTROYED();
-  if (LocalDOMWindow* window = GetDocument().domWindow())
+  if (LocalDOMWindow* window = GetDocument().domWindow()) {
     ImageElementTiming::From(*window).NotifyImageRemoved(this, image);
-  if (LocalFrameView* frame_view = GetFrameView())
-    frame_view->GetPaintTimingDetector().NotifyImageRemoved(*this, image);
+    PaintTimingDetector::From(GetDocument()).NotifyImageRemoved(*this, image);
+  }
 }
 
 PositionWithAffinity LayoutObject::CreatePositionWithAffinity(

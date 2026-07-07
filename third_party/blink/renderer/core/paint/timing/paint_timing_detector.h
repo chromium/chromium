@@ -21,14 +21,15 @@
 
 namespace blink {
 
+class Document;
 class Image;
 class ImagePaintTimingDetector;
 class ImageRecord;
 class ImageResourceContent;
 class LayoutBoxModelObject;
 class LayoutObject;
-class LocalFrameView;
 class Node;
+class PaintTiming;
 class PropertyTreeStateOrAlias;
 class MediaTiming;
 class TextPaintTimingDetector;
@@ -52,7 +53,9 @@ class CORE_EXPORT PaintTimingDetector
   friend class TextPaintTimingDetectorTest;
 
  public:
-  PaintTimingDetector(LocalFrameView*);
+  static PaintTimingDetector& From(Document&);
+
+  explicit PaintTimingDetector(PaintTiming*);
 
   // Returns true if the image might ultimately be a candidate for largest
   // paint, otherwise false. When this method is called we do not know the
@@ -119,6 +122,8 @@ class CORE_EXPORT PaintTimingDetector
     DCHECK(image_paint_timing_detector_);
     return *image_paint_timing_detector_;
   }
+  PaintTiming& GetPaintTiming() { return *paint_timing_; }
+
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
   void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
@@ -137,14 +142,22 @@ class CORE_EXPORT PaintTimingDetector
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
 
+  // Returns the `LocalDOMWindow` associated with the relevant document, or
+  // nullptr if the associated frame is detached.
   LocalDOMWindow* DomWindow() const;
 
-  Member<LocalFrameView> frame_view_;
+  // Returns the `LocalFrame` associated with the relevant document. Must not be
+  // called after frame detach.
+  LocalFrame& GetFrame() const;
+
+  // The `PaintTiming` that this detector belongs to.
+  const Member<PaintTiming> paint_timing_;
+
   // This member lives forever because it is also used for Text Element
   // Timing.
-  Member<TextPaintTimingDetector> text_paint_timing_detector_;
+  const Member<TextPaintTimingDetector> text_paint_timing_detector_;
   // This member lives forever, to detect LCP entries for soft navigations.
-  Member<ImagePaintTimingDetector> image_paint_timing_detector_;
+  const Member<ImagePaintTimingDetector> image_paint_timing_detector_;
 
   // This member lives for as long as the largest contentful paint is being
   // computed. However, it is initialized lazily, so it may be nullptr because

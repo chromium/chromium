@@ -34,7 +34,7 @@ namespace blink {
 
 class LargestContentfulPaintCalculator;
 class LayoutObject;
-class LocalFrameView;
+class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
 class Image;
 class StyleImage;
@@ -52,15 +52,15 @@ class CORE_EXPORT ImageRecordsManager {
   DISALLOW_NEW();
   friend class ImagePaintTimingDetector;
   friend class ImagePaintTimingDetectorTest;
-  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
-                           LargestImagePaint_Detached_Frame);
+
+  ImageRecordsManager(const ImageRecordsManager&) = delete;
+  ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
 
   void Trace(Visitor* visitor) const;
 
  private:
-  explicit ImageRecordsManager(LocalFrameView*);
-  ImageRecordsManager(const ImageRecordsManager&) = delete;
-  ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
+  explicit ImageRecordsManager(Document*);
+
   ImageRecord* LargestImage() const;
 
   inline ImageRecord* RemoveRecord(MediaRecordIdHash record_id_hash) {
@@ -173,7 +173,7 @@ class CORE_EXPORT ImageRecordsManager {
   // first called.
   HashMap<MediaRecordIdHash, base::TimeTicks> image_finished_times_;
 
-  Member<LocalFrameView> frame_view_;
+  Member<Document> document_;
 
   // Image paints are ignored when they (or an ancestor) have opacity 0. This
   // can be a problem later on if the opacity changes to nonzero but this change
@@ -207,7 +207,8 @@ class CORE_EXPORT ImageRecordsManager {
 class CORE_EXPORT ImagePaintTimingDetector final
     : public GarbageCollected<ImagePaintTimingDetector> {
  public:
-  explicit ImagePaintTimingDetector(LocalFrameView*);
+  explicit ImagePaintTimingDetector(PaintTimingDetector*);
+
   // Record an image paint. This method covers both img and background image. In
   // the case of a normal img, the last parameter will be nullptr. This
   // parameter is needed only for the purposes of plumbing the correct loadTime
@@ -289,7 +290,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   bool recording_largest_image_paint_ = true;
 
   ImageRecordsManager records_manager_;
-  Member<LocalFrameView> frame_view_;
+  Member<PaintTimingDetector> paint_timing_detector_;
 };
 }  // namespace blink
 

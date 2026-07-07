@@ -92,18 +92,23 @@ bool ShouldIgnoreMediaEntropy(const MediaTiming& media_timing,
 
 }  // namespace
 
-ImagePaintTimingDetector::ImagePaintTimingDetector(LocalFrameView* frame_view)
-    : records_manager_(frame_view), frame_view_(frame_view) {}
+ImagePaintTimingDetector::ImagePaintTimingDetector(
+    PaintTimingDetector* detector)
+    : records_manager_(detector->GetPaintTiming().GetDocument()),
+      paint_timing_detector_(detector) {}
 
 void ImagePaintTimingDetector::SendRectsToHud() {
+  LocalFrameView* frame_view =
+      paint_timing_detector_->GetPaintTiming().GetDocument()->View();
+  CHECK(frame_view);
   auto* hud_layer =
-      paint_timing::GetHUDLayerIfContentfulPaintRectsEnabled(frame_view_);
+      paint_timing::GetHUDLayerIfContentfulPaintRectsEnabled(frame_view);
 
   if (!hud_layer) {
     return;
   }
 
-  LocalFrame& main_frame = frame_view_->GetFrame().LocalFrameRoot();
+  LocalFrame& main_frame = frame_view->GetFrame().LocalFrameRoot();
   FrameWidget* widget = main_frame.GetWidgetForLocalRoot();
   if (!widget) {
     return;
@@ -174,8 +179,11 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   // Clear the records queued for presentation callback to ensure no new updates
   // occur.
   records_manager_.ClearImagesQueuedForPaintTime();
-  if (frame_view_->GetFrame().IsOutermostMainFrame()) {
-    auto* document = frame_view_->GetFrame().GetDocument();
+
+  Document* document = paint_timing_detector_->GetPaintTiming().GetDocument();
+  LocalFrame* frame = document->GetFrame();
+  CHECK(frame);
+  if (frame->IsOutermostMainFrame()) {
     ukm::builders::Blink_PaintTiming(document->UkmSourceID())
         .SetLCPDebugging_HasViewportImage(contains_full_viewport_image_)
         .Record(document->UkmRecorder());
@@ -272,9 +280,8 @@ bool ImagePaintTimingDetector::RecordImage(
   MediaRecordIdHash record_id_hash = record_id.GetHash();
   ImageRecord* record = nullptr;
 
-  gfx::RectF mapped_visual_rect =
-      frame_view_->GetPaintTimingDetector().CalculateVisualRect(
-          image_border, current_paint_chunk_properties);
+  gfx::RectF mapped_visual_rect = paint_timing_detector_->CalculateVisualRect(
+      image_border, current_paint_chunk_properties);
   uint64_t visual_size = ComputeImageRectSize(
       image_border, mapped_visual_rect, intrinsic_size,
       current_paint_chunk_properties, object, media_timing);
@@ -311,11 +318,11 @@ bool ImagePaintTimingDetector::RecordImage(
   }
 
   SoftNavigationContext* context = nullptr;
-  if (LocalDOMWindow* window = frame_view_->GetFrame().DomWindow()) {
-    if (SoftNavigationHeuristics* heuristics =
-            window->GetSoftNavigationHeuristics()) {
-      context = heuristics->MaybeGetSoftNavigationContextForTiming(node);
-    }
+  LocalDOMWindow* window = object.GetDocument().domWindow();
+  CHECK(window);
+  if (SoftNavigationHeuristics* heuristics =
+          window->GetSoftNavigationHeuristics()) {
+    context = heuristics->MaybeGetSoftNavigationContextForTiming(node);
   }
 
   // RecordImage is called whenever an image is painted, which may happen many
@@ -382,7 +389,7 @@ bool ImagePaintTimingDetector::RecordImage(
     added_entry_in_latest_frame_ = true;
 
     if (PaintTimingVisualizer* visualizer =
-            frame_view_->GetPaintTimingDetector().Visualizer()) {
+            paint_timing_detector_->Visualizer()) {
       visualizer->DumpImageDebuggingRect(
           object, mapped_visual_rect,
           media_timing.IsSufficientContentLoadedForPaint(), media_timing.Url());
@@ -404,7 +411,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     const LayoutObject& object,
     const MediaTiming& media_timing) {
   if (PaintTimingVisualizer* visualizer =
-          frame_view_->GetPaintTimingDetector().Visualizer()) {
+          paint_timing_detector_->Visualizer()) {
     visualizer->DumpImageDebuggingRect(
         object, mapped_visual_rect,
         media_timing.IsSufficientContentLoadedForPaint(), media_timing.Url());
@@ -412,18 +419,17 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
   uint64_t rect_size = mapped_visual_rect.size().GetArea();
   // Transform visual rect to window before calling downscale.
   gfx::RectF float_visual_rect =
-      frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
-          gfx::RectF(image_border));
+      paint_timing_detector_->BlinkSpaceToDIPs(gfx::RectF(image_border));
   if (!viewport_size_.has_value()) {
     // Use the page viewport (aka the main frame viewport) for all frames,
     // including iframes. This prevents us from discarding images with size
     // equal to the size of its embedding iframe.
+    Page* page =
+        paint_timing_detector_->GetPaintTiming().GetDocument()->GetPage();
     gfx::Rect viewport_int_rect =
-        frame_view_->GetPage()->GetVisualViewport().VisibleContentRect(
-            kExcludeScrollbars);
+        page->GetVisualViewport().VisibleContentRect(kExcludeScrollbars);
     gfx::RectF viewport =
-        frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
-            gfx::RectF(viewport_int_rect));
+        paint_timing_detector_->BlinkSpaceToDIPs(gfx::RectF(viewport_int_rect));
     viewport_size_ = viewport.size().GetArea();
   }
   // An SVG image size is computed with respect to the virtual viewport of the
@@ -457,8 +463,8 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
   }
 }
 
-ImageRecordsManager::ImageRecordsManager(LocalFrameView* frame_view)
-    : frame_view_(frame_view) {}
+ImageRecordsManager::ImageRecordsManager(Document* document)
+    : document_(document) {}
 
 bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     MediaRecordIdHash record_id_hash,
@@ -477,8 +483,7 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
       // TODO(crbug.com/383568320): this timestamp it not specified, and it's
       // not clear how it should be coarsened.
       DOMHighResTimeStamp dom_timestamp =
-          DOMWindowPerformance::performance(
-              *frame_view_->GetFrame().GetDocument()->domWindow())
+          DOMWindowPerformance::performance(*document_->domWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
       record->SetPaintTime(paint_time,
                            DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
@@ -505,11 +510,9 @@ void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
       DCHECK(record->HasLoadTime());
     }
   } else {
-    Document* document = frame_view_->GetFrame().GetDocument();
-    if (document && document->domWindow()) {
-      record->SetLoadTime(ImageElementTiming::From(*document->domWindow())
-                              .GetBackgroundImageLoadTime(style_image));
-    }
+    CHECK(document_->domWindow());
+    record->SetLoadTime(ImageElementTiming::From(*document_->domWindow())
+                            .GetBackgroundImageLoadTime(style_image));
   }
   OnImageLoadedInternal(record, current_frame_index);
 }
@@ -528,9 +531,7 @@ ImageRecord* ImageRecordsManager::ReportLargestIgnoredImage(
   }
 
   // Trigger FCP if it's not already set.
-  Document* document = frame_view_->GetFrame().GetDocument();
-  DCHECK(document);
-  PaintTiming::From(*document).MarkFirstImagePaint();
+  PaintTiming::From(*document_.Get()).MarkFirstImagePaint();
 
   // Ignore this image altogether if LCP is no longer being recorded.
   //
@@ -580,7 +581,7 @@ void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
 }
 
 void ImageRecordsManager::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_view_);
+  visitor->Trace(document_);
   visitor->Trace(pending_images_);
   visitor->Trace(images_queued_for_paint_time_);
   visitor->Trace(largest_ignored_image_);
@@ -588,7 +589,7 @@ void ImageRecordsManager::Trace(Visitor* visitor) const {
 
 void ImagePaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(records_manager_);
-  visitor->Trace(frame_view_);
+  visitor->Trace(paint_timing_detector_);
 }
 
 LargestContentfulPaintCalculator*
@@ -596,8 +597,7 @@ ImagePaintTimingDetector::GetLargestContentfulPaintCalculator() const {
   if (!IsRecordingLargestImagePaint()) {
     return nullptr;
   }
-  return frame_view_->GetPaintTimingDetector()
-      .GetLargestContentfulPaintCalculator();
+  return paint_timing_detector_->GetLargestContentfulPaintCalculator();
 }
 
 }  // namespace blink

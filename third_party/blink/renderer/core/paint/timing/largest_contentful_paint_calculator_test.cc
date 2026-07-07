@@ -136,9 +136,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   Element* CurrentLcpCandidate() { return test_delegate_->CurrentCandidate(); }
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() {
-    return GetFrame()
-        .View()
-        ->GetPaintTimingDetector()
+    return PaintTimingDetector::From(GetDocument())
         .GetLargestContentfulPaintCalculator();
   }
 

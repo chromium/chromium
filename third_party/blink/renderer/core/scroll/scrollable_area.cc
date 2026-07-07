@@ -653,14 +653,9 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
     GetMacScrollbarAnimator()->DidChangeUserVisibleScrollOffset(delta);
   }
 
-  if (GetLayoutBox()) {
-    if (offset_changed && GetLayoutBox()->GetFrameView()) {
-      GetLayoutBox()->GetFrameView()->GetPaintTimingDetector().NotifyScroll(
-          scroll_type);
-    }
-  }
-
   if (offset_changed && GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
+    PaintTimingDetector::From(GetLayoutBox()->GetDocument())
+        .NotifyScroll(scroll_type);
     GetLayoutBox()->GetFrameView()->GetLayoutShiftTracker().NotifyScroll(
         scroll_type, delta);
     // FrameSelection caches visual selection information which needs to be

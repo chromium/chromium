@@ -122,7 +122,6 @@ class PaintController;
 class PaintControllerPersistentData;
 class PaintLayer;
 class PaintLayerScrollableArea;
-class PaintTimingDetector;
 class RemoteFrameView;
 class RootFrameViewport;
 class ScrollableArea;
@@ -786,9 +785,6 @@ class CORE_EXPORT LocalFrameView final
   cc::AnimationTimeline* GetScrollAnimationTimeline() const;
 
   LayoutShiftTracker& GetLayoutShiftTracker() { return *layout_shift_tracker_; }
-  PaintTimingDetector& GetPaintTimingDetector() const {
-    return *paint_timing_detector_;
-  }
 
   MobileFriendlinessChecker* GetMobileFriendlinessChecker() const {
     return mobile_friendliness_checker_.Get();
@@ -1331,7 +1327,6 @@ class CORE_EXPORT LocalFrameView final
 
   UniqueObjectId unique_id_;
   Member<LayoutShiftTracker> layout_shift_tracker_;
-  Member<PaintTimingDetector> paint_timing_detector_;
 
   // Non-null in the outermost main frame of an ordinary page only.
   Member<MobileFriendlinessChecker> mobile_friendliness_checker_;

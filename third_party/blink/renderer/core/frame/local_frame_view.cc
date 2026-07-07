@@ -158,6 +158,7 @@
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -299,7 +300,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       paint_frame_count_(0),
       unique_id_(NewUniqueObjectId()),
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
-      paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
       mobile_friendliness_checker_(MobileFriendlinessChecker::Create(*this)),
       tap_friendliness_checker_(TapFriendlinessChecker::CreateIfMobile(*this))
 #if DCHECK_IS_ON()
@@ -342,7 +342,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(paint_controller_persistent_data_);
   visitor->Trace(paint_artifact_compositor_);
   visitor->Trace(layout_shift_tracker_);
-  visitor->Trace(paint_timing_detector_);
   visitor->Trace(mobile_friendliness_checker_);
   visitor->Trace(tap_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
@@ -1379,8 +1378,13 @@ void LocalFrameView::ViewportSizeChanged() {
     InvalidateLayoutForViewportConstrainedObjects();
   }
 
-  if (GetPaintTimingDetector().Visualizer())
-    GetPaintTimingDetector().Visualizer()->OnViewportChanged();
+  if (Document* document = GetFrame().GetDocument();
+      document && document->domWindow()) {
+    if (PaintTimingVisualizer* visualizer =
+            PaintTimingDetector::From(*document).Visualizer()) {
+      visualizer->OnViewportChanged();
+    }
+  }
 }
 
 void LocalFrameView::InvalidateLayoutForViewportConstrainedObjects() {
@@ -3197,7 +3201,8 @@ void LocalFrameView::PaintTree(
           if (auto* layout_view = frame_view.GetLayoutView())
             layout_view->Layer()->ClearNeedsRepaintRecursively();
         }
-        frame_view.GetPaintTimingDetector().NotifyPaintFinished();
+        PaintTiming::From(*frame_view.GetFrame().GetDocument())
+            .NotifyPaintFinished();
       });
 }
 

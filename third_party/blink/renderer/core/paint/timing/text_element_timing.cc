@@ -25,12 +25,11 @@ TextElementTiming::TextElementTiming(LocalDOMWindow& window)
 gfx::RectF TextElementTiming::ComputeIntersectionRect(
     const LayoutObject& object,
     const gfx::Rect& aggregated_visual_rect,
-    const PropertyTreeStateOrAlias& property_tree_state,
-    const LocalFrameView* frame_view) {
+    const PropertyTreeStateOrAlias& property_tree_state) {
   Node* node = object.GetNode();
   DCHECK(node);
   return ElementTimingUtils::ComputeIntersectionRect(
-      &frame_view->GetFrame(), aggregated_visual_rect, property_tree_state);
+      object.GetFrame(), aggregated_visual_rect, property_tree_state);
 }
 
 bool TextElementTiming::CanReportToElementTiming() const {

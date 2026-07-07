@@ -189,10 +189,10 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
     : window_(window),
       task_attribution_tracker_(
           scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
-  LocalFrame* frame = window->GetFrame();
-  CHECK(frame && frame->View());
+  CHECK(window->document());
   TextPaintTimingDetector* detector =
-      &frame->View()->GetPaintTimingDetector().GetTextPaintTimingDetector();
+      &PaintTimingDetector::From(*window->document())
+           .GetTextPaintTimingDetector();
   paint_attribution_tracker_ =
       MakeGarbageCollected<SoftNavigationPaintAttributionTracker>(detector);
 }
