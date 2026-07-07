@@ -5,12 +5,16 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './feature_showcase_stepper.css.js';
 import {getHtml} from './feature_showcase_stepper.html.js';
 
-export class FeatureShowcaseStepperElement extends CrLitElement {
+const FeatureShowcaseStepperElementBase = I18nMixinLit(CrLitElement);
+
+export class FeatureShowcaseStepperElement extends
+    FeatureShowcaseStepperElementBase {
   static get is() {
     return 'feature-showcase-stepper';
   }

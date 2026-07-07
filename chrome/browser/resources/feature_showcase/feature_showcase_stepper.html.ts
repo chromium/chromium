@@ -12,7 +12,10 @@ export function getHtml(this: FeatureShowcaseStepperElement) {
 <div id="container" role="progressbar"
     aria-valuemin="1"
     aria-valuemax="${this.steps.length}"
-    aria-valuenow="${this.activeIndex + 1}">
+    aria-valuenow="${this.activeIndex + 1}"
+    aria-label="${this.i18n('stepperA11yLabel',
+                                this.activeIndex + 1,
+                                this.steps.length)}">
   ${this.steps.length < 3 ? html`
     <div class="step">
       <img src="/images/product-logo.svg" alt="">

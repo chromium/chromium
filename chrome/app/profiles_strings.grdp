@@ -1257,6 +1257,11 @@
       Yes, I'm in
     </message>
 
+    <!-- Feature Showcase - Stepper -->
+    <message name="IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="The accessible text for the feature showcase progress stepper, conveying the current step and total steps.">
+      Step <ph name="STEP_NUMBER">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>3</ex></ph>
+    </message>
+
     <!-- Feature Showcase - Themes and Customization -->
     <message name="IDS_FEATURE_SHOWCASE_THEMES_SUBTITLE" desc="This is the subtitle for the customization screen, listing examples like 'themes' and 'dark mode'. (CHAR LIMIT = 60)">
       Customize your browser with options like themes and dark mode.
