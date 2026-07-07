@@ -530,14 +530,14 @@ ci_builder(
     android_config_name = "base_config",
     chromium_config_name = "main_builder",
     clusterfuzz_archive = builder_config.clusterfuzz_archive(
+        # TODO(https://crbug.com/527836546): Remove `archive_name_prefix` once
+        # `builder_config.clusterfuzz_archive()` does not require its presence.
         archive_name_prefix = "asan",
-
-        # TODO(https://crbug.com/525381517): Replace this with
-        # "android-release-desktop-x64/asan-android-release".
-        archive_path = "linux-release-desktop-x64/asan-linux-release",
-        archive_subdir = "desktop-x64",
+        archive_path = "android-release-desktop-x64/asan-android-release",
         gs_acl = "public-read",
         gs_bucket = "chromium-browser-asan",
+
+        # TODO(https://crbug.com/527836546): Flip default to true and remove.
         use_archive_path = True,
     ),
     console_category = "android",

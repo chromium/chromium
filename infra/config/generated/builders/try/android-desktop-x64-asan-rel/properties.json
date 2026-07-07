@@ -16,8 +16,7 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "asan",
-                "archive_path": "linux-release-desktop-x64/asan-linux-release",
-                "archive_subdir": "desktop-x64",
+                "archive_path": "android-release-desktop-x64/asan-android-release",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
                 "use_archive_path": true
