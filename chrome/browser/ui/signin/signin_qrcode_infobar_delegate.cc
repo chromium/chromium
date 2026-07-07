@@ -25,6 +25,8 @@ SigninQRCodeInfoBarDelegate::~SigninQRCodeInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SigninQRCodeInfoBarDelegate::GetIdentifier() const {
+  // TODO(crbug.com/507711973): Use a dedicated identifier instead of
+  // TEST_INFOBAR.
   return infobars::InfoBarDelegate::TEST_INFOBAR;
 }
 

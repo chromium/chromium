@@ -14628,6 +14628,12 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL" desc="Label of the confirmation button in the web signin interception bubble">
           Ok
         </message>
+        <message name="IDS_SIGNIN_QRCODE_BANNER_TITLE" desc="Title of the C++ Views banner on the Chrome Sign-in page encouraging the user to sign in using a QR code and their phone.">
+          Sign in faster with a QR code
+        </message>
+        <message name="IDS_SIGNIN_QRCODE_BANNER_DESCRIPTION" desc="Description of the C++ Views banner on the Chrome Sign-in page explaining how the user can scan the QR code with their phone camera to sign in using their passkey for google.com.">
+          Scan this QR code with the camera on the device that has your passkey for google.com
+        </message>
 
         <if expr="use_titlecase">
           <then>
