@@ -39,6 +39,17 @@ user_manager::User* TestUserSessionManager::AddRegularUser(
       .AddRegularUser(account_id);
 }
 
+user_manager::User* TestUserSessionManager::AddChildUser(
+    const AccountId& account_id) {
+  CHECK(session_manager_->sessions().empty());
+  return user_manager::TestHelper(user_manager_.Get()).AddChildUser(account_id);
+}
+
+user_manager::User* TestUserSessionManager::AddGuestUser() {
+  CHECK(session_manager_->sessions().empty());
+  return user_manager::TestHelper(user_manager_.Get()).AddGuestUser();
+}
+
 user_manager::User* TestUserSessionManager::AddPublicAccountUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());

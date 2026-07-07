@@ -30,9 +30,9 @@
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -48,11 +48,14 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,6 +129,13 @@ class StorageHandlerTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("1234567890"));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
 
     // Initialize storage handler.
@@ -178,6 +188,7 @@ class StorageHandlerTest : public testing::Test {
     drive_offline_size_test_api_.reset();
     crostini_size_test_api_.reset();
     other_users_size_test_api_.reset();
+    test_user_session_manager_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
@@ -301,6 +312,7 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
   MockUserDataAuthClient userdataauth_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
@@ -562,11 +574,10 @@ TEST_F(StorageHandlerTest, CrostiniSize) {
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 
   // Enable Borealis.
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  borealis::AllowBorealis(profile_, &features_,
-                          static_cast<ash::FakeChromeUserManager*>(
-                              user_manager::UserManager::Get()),
-                          /*also_enable=*/true);
+  features_.InitWithFeatures(
+      {::features::kBorealis, ash::features::kBorealisPermitted}, {});
+  profile_->GetPrefs()->SetBoolean(borealis::prefs::kBorealisInstalledOnDevice,
+                                   /*also_enable=*/true);
 
   // Simulate crostini size callback which should now exclude the borealis VM.
   crostini_size_test_api_->SimulateOnGetCrostiniSize(true, listvm_response);
@@ -589,11 +600,10 @@ TEST_F(StorageHandlerTest, SystemSize) {
   const int64_t TB = 1024 * GB;
 
   // Enable Borealis.
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  borealis::AllowBorealis(profile_, &features_,
-                          static_cast<ash::FakeChromeUserManager*>(
-                              user_manager::UserManager::Get()),
-                          /*also_enable=*/true);
+  features_.InitWithFeatures(
+      {::features::kBorealis, ash::features::kBorealisPermitted}, {});
+  profile_->GetPrefs()->SetBoolean(borealis::prefs::kBorealisInstalledOnDevice,
+                                   /*also_enable=*/true);
 
   // Simulate size stat callback.
   int64_t total_size = TB;

@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/magic_boost/test:fake_magic_boost_state",
     "//chromeos/components/quick_answers:test_support",
+    "//components/session_manager/test:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//content/test:test_support",

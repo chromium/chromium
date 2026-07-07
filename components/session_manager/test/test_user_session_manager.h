@@ -40,6 +40,8 @@ class TestUserSessionManager {
   // Following methods add a user. They must be called *ANY* of LogIn call.
   // Returns nullptr on error, so callers should check it always.
   [[nodiscard]] user_manager::User* AddRegularUser(const AccountId& account_id);
+  [[nodiscard]] user_manager::User* AddChildUser(const AccountId& account_id);
+  [[nodiscard]] user_manager::User* AddGuestUser();
   [[nodiscard]] user_manager::User* AddPublicAccountUser(
       std::string_view user_id);
   [[nodiscard]] user_manager::User* AddKioskChromeAppUser(

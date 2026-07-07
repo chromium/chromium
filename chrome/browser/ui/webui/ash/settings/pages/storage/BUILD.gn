@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/session",
     "//components/account_id",
+    "//components/session_manager/test:test_support",
     "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",

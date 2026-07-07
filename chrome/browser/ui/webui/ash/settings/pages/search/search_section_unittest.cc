@@ -20,11 +20,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/lobster/mock_lobster_system_state_provider.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
@@ -32,7 +32,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/test_web_ui_data_source.h"
@@ -143,6 +143,9 @@ TEST_F(SearchSectionTest,
 class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
  public:
   void SetUp() override {
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     SearchSectionTest::SetUp();
     magic_boost_state_.SetAvailability(true);
     feature_list_.InitWithFeatures(
@@ -159,6 +162,7 @@ class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
   void TearDown() override {
     magic_boost_state_.RemoveObserver(search_section_.get());
     SearchSectionTest::TearDown();
+    test_user_session_manager_.reset();
   }
 
   content::TestWebUIDataSource* html_source() { return html_source_.get(); }
@@ -176,14 +180,14 @@ class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
 
  private:
   void AnnotateAccount() {
-    auto* user = fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user->GetAccountId());
-    ash::AnnotatedAccountId::Set(profile(), user->GetAccountId());
+    const AccountId account_id = user_manager::StubAccountId();
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
+    ash::AnnotatedAccountId::Set(profile(), account_id);
   }
 
   base::test::ScopedFeatureList feature_list_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<content::TestWebUIDataSource> html_source_;
   chromeos::test::FakeMagicBoostState magic_boost_state_;
 };

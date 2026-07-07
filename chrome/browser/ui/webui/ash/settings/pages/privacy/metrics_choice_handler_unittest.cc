@@ -7,7 +7,6 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
@@ -31,8 +30,11 @@
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -120,25 +122,26 @@ class MetricsChoiceHandlerTest : public testing::Test {
   MetricsChoiceHandlerTest& operator=(const MetricsChoiceHandlerTest&) = delete;
   ~MetricsChoiceHandlerTest() override = default;
 
-  std::unique_ptr<TestingProfile> RegisterOwner(const AccountId& account_id) {
+  void RegisterOwner(const AccountId& account_id,
+                     std::unique_ptr<TestingProfile>& owner) {
     DeviceSettingsService::Get()->StartProcessing(
         TestingBrowserProcess::GetGlobal()->local_state(),
         &fake_session_manager_client_, owner_keys);
-    std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, owner_keys);
-    test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false, user_manager::UserType::kRegular, owner.get());
-    test_user_manager_->SetOwnerId(account_id);
+    owner = CreateUser(kOwner, owner_keys);
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    user_manager::TestHelper::RegisterOwner(
+        *TestingBrowserProcess::GetGlobal()->local_state(),
+        account_id.GetUserEmail());
+    user_manager::UserManager::Get()->SetOwnerId(account_id);
 
     EXPECT_THAT(DeviceSettingsService::Get()->GetOwnershipStatus(),
                 Eq(DeviceSettingsService::OwnershipStatus::kOwnershipTaken));
-
-    return owner;
   }
 
   void InitializeTestHandler(Profile* profile) {
     // Create the handler with given profile.
     handler_ = std::make_unique<TestMetricsChoiceHandler>(
-        profile, test_metrics_service_.get(), test_user_manager_.get(),
+        profile, test_metrics_service_.get(), user_manager::UserManager::Get(),
         web_ui_.get());
 
     // Enable javascript.
@@ -165,9 +168,7 @@ class MetricsChoiceHandlerTest : public testing::Test {
   }
 
   void LoginUser(const AccountId& account_id) {
-    test_user_manager_->LoginUser(account_id);
-    test_user_manager_->SwitchActiveUser(account_id);
-    test_user_manager_->SimulateUserProfileLoad(account_id);
+    test_user_session_manager_->LogIn(account_id);
   }
 
  protected:
@@ -185,7 +186,9 @@ class MetricsChoiceHandlerTest : public testing::Test {
 
     StatsReportingController::Initialize(&pref_service_);
 
-    test_user_manager_ = std::make_unique<FakeChromeUserManager>();
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     web_ui_ = std::make_unique<content::TestWebUI>();
 
     test_enabled_state_provider_ =
@@ -204,7 +207,10 @@ class MetricsChoiceHandlerTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
   }
 
-  void TearDown() override { handler_->DisallowJavascript(); }
+  void TearDown() override {
+    handler_->DisallowJavascript();
+    test_user_session_manager_.reset();
+  }
 
   bool GetMetricsChoiceStateMessage(std::string* pref_name,
                                     bool* is_configurable) {
@@ -262,7 +268,7 @@ class MetricsChoiceHandlerTest : public testing::Test {
                                            RegisterPrefs(&pref_service_)};
 
   std::unique_ptr<TestMetricsChoiceHandler> handler_;
-  std::unique_ptr<FakeChromeUserManager> test_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 
   // MetricsService.
@@ -284,13 +290,14 @@ class MetricsChoiceHandlerTest : public testing::Test {
 
 TEST_F(MetricsChoiceHandlerTest, OwnerCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
-  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+  std::unique_ptr<TestingProfile> owner;
+  RegisterOwner(owner_id, owner);
 
   // Owner should not use user choice, but local pref.
   test_metrics_service_client_->SetShouldUseUserConsent(false);
 
   LoginUser(owner_id);
-  EXPECT_TRUE(test_user_manager_->IsCurrentUserOwner());
+  EXPECT_TRUE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
   InitializeTestHandler(owner.get());
   handler_->GetMetricsChoiceState();
@@ -320,19 +327,19 @@ TEST_F(MetricsChoiceHandlerTest, OwnerCanToggle) {
 
 TEST_F(MetricsChoiceHandlerTest, NonOwnerWithUserConsentCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
-  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+  std::unique_ptr<TestingProfile> owner;
+  RegisterOwner(owner_id, owner);
 
   auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
-  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      non_owner_id, false, user_manager::UserType::kRegular, non_owner.get());
+  ASSERT_TRUE(test_user_session_manager_->AddRegularUser(non_owner_id));
 
   // User should use user choice pref.
   test_metrics_service_client_->SetShouldUseUserConsent(true);
 
   LoginUser(non_owner_id);
-  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+  EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
   InitializeTestHandler(non_owner.get());
   handler_->GetMetricsChoiceState();
@@ -361,19 +368,19 @@ TEST_F(MetricsChoiceHandlerTest, NonOwnerWithUserConsentCanToggle) {
 
 TEST_F(MetricsChoiceHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
-  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+  std::unique_ptr<TestingProfile> owner;
+  RegisterOwner(owner_id, owner);
 
   auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
-  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      non_owner_id, false, user_manager::UserType::kRegular, non_owner.get());
+  ASSERT_TRUE(test_user_session_manager_->AddRegularUser(non_owner_id));
 
   // User cannot use user choice. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(false);
 
   LoginUser(non_owner_id);
-  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+  EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
   InitializeTestHandler(non_owner.get());
   handler_->GetMetricsChoiceState();
@@ -402,20 +409,19 @@ TEST_F(MetricsChoiceHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 
 TEST_F(MetricsChoiceHandlerTest, ChildUserCannotToggleAsNonOwner) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
-  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+  std::unique_ptr<TestingProfile> owner;
+  RegisterOwner(owner_id, owner);
 
   auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", GaiaId("3"));
   std::unique_ptr<TestingProfile> child =
       CreateUser("child@user.com", non_owner_keys);
-  test_user_manager_->set_current_user_child(true);
-  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      child_id, false, user_manager::UserType::kChild, child.get());
+  ASSERT_TRUE(test_user_session_manager_->AddChildUser(child_id));
 
   // User cannot use user choice. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(true);
 
   LoginUser(child_id);
-  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+  EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
   // Set the javascript message object for metrics choice state.
   InitializeTestHandler(child.get());
