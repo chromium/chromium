@@ -930,9 +930,6 @@
   if (self.isOffTheRecord) {
     return self.incognitoViewController;
   }
-  if (IsNTPRedesignEnabled()) {
-    return self.NTPRedesignViewController;
-  }
   return self.containerViewController;
 }
 
