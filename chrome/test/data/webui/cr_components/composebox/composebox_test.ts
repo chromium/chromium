@@ -77,7 +77,6 @@ suite('ComposeboxTest', () => {
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
       composeboxDeleteFileTitle: 'Delete',
-      contextManagementInComposeboxEnabled: false,
       tabFaviconChipsToCoinsEnabled: false,
       maxFilesReachedError: 'Max files reached',
       composeboxFileUploadInvalidTooLarge: 'File too large',
@@ -627,7 +626,6 @@ suite('composeboxSharedMountAutoRepositionDefault', () => {
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
       voiceStop: 'Stop',
-      contextManagementInComposeboxEnabled: false,
       tabFaviconChipsToCoinsEnabled: false,
       removeToolChipAriaLabel: 'Remove $1',
     });

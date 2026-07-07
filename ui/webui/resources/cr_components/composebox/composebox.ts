@@ -134,7 +134,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       glifAnimationState: {type: String, reflect: true},
       isSidePanel: {type: Boolean},
       inputPlaceholderOverride: {type: String},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
       // Must be property so can pass it down to children.
       searchboxCallbackRouter_: {type: Object},
       applyContextButtonBackground: {
@@ -178,9 +177,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';
-
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
-      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
 
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';

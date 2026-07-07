@@ -40,6 +40,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       disableVoiceSearchAnimation_: {type: Boolean},
       usePecApi_: {type: Boolean},
       isOblongShape_: {type: Boolean},
+      contextManagementInComposeboxEnabled_: {type: Boolean},
       composeboxState_: {type: Object},
     };
   }
@@ -59,6 +60,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
+  protected accessor contextManagementInComposeboxEnabled_: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor composeboxState_: ComposeboxState|null = null;
 
   private isDebug_: boolean =

@@ -42,6 +42,7 @@ export function getHtml(this: ComposeboxElement) {
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .smartTabSharingVisible="${this.smartTabSharingVisible}"
         .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
+        .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
         .tabSuggestionsState="${this.tabSuggestionsState}"

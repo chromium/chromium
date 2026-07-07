@@ -119,6 +119,7 @@ suite('ContextualTasksComposeboxTest', () => {
       useContextualTasksComposeboxFork: false,
       contextualMenuUsePecApi: false,
       composeboxSmartTabSharingVisible: false,
+      contextManagementInComposeboxEnabled: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
       composeboxShowZps: true,

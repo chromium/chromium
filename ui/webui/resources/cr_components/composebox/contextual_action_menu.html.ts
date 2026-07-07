@@ -15,7 +15,7 @@ export function getHtml(this: ContextualActionMenuElement) {
       ?auto-reposition="${!this.disableAutoReposition}">
       ${(this.tabSuggestions?.length > 0 || this.smartTabSharingActive) &&
         this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
-        ${this.contextManagementInComposeboxEnabled_ ? html`
+        ${this.contextManagementInComposeboxEnabled ? html`
           <div class="share-tabs-container">
             ${this.smartTabSharingVisible && this.smartTabSharingActive ? html`
               <button class="dropdown-item"

@@ -82,6 +82,7 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
       'composeboxAttachmentFileTypes': '.pdf,application/pdf',
       'contextualMenuUsePecApi': false,
       'composeboxSmartTabSharingVisible': false,
+      'contextManagementInComposeboxEnabled': false,
       'searchboxComposePlaceholder': 'Placeholder',
       'lensSendRawFileMediaTypesEnabled': false,
     });
@@ -130,6 +131,8 @@ createComposeboxElement<T extends ComposeboxUnionElement = ComposeboxElement>(
     usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
     smartTabSharingVisible:
         loadTimeData.getBoolean('composeboxSmartTabSharingVisible'),
+    contextManagementInComposeboxEnabled:
+        loadTimeData.getBoolean('contextManagementInComposeboxEnabled'),
     ...properties,
   });
   document.body.appendChild(testProxy.element);

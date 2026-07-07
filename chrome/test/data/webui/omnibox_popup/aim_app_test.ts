@@ -53,6 +53,7 @@ suite('AimAppTest', function() {
       contextButtonShapeIsOblong: false,
       webuiOmniboxSimplificationEnabled: false,
       composeboxSmartTabSharingVisible: false,
+      contextManagementInComposeboxEnabled: false,
       contextualMenuUsePecApi: false,
     });
   });

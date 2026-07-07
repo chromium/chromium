@@ -63,6 +63,7 @@ suite('ContextualTasksAppTest', function() {
       composeboxSmartTabSharingVisible: false,
       isAimEligible: true,
       isZeroState: false,
+      contextManagementInComposeboxEnabled: false,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');

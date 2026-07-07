@@ -1987,7 +1987,6 @@ suite('OmniboxComposeboxTest', () => {
 
     test('Favicon group rendered in contextual entrypoint button', async () => {
       loadTimeData.overrideValues({
-        contextManagementInComposeboxEnabled: true,
         contextManagementInOmniboxEnabled: true,
         tabFaviconChipsToCoinsEnabled: true,
       });
@@ -1995,6 +1994,7 @@ suite('OmniboxComposeboxTest', () => {
       omniboxComposebox.remove();
       omniboxComposebox = document.createElement('cr-omnibox-composebox');
       omniboxComposebox.contextMenuEnabled = true;
+      omniboxComposebox.contextManagementInComposeboxEnabled = true;
       document.body.appendChild(omniboxComposebox);
       await microtasksFinished();
 

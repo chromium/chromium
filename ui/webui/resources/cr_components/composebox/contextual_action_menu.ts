@@ -122,7 +122,7 @@ export class ContextualActionMenuElement extends
       tabPreviewsEnabled_: {type: Boolean},
       showContextMenuHeaders_: {type: Boolean},
       disableAutoReposition: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {
+      contextManagementInComposeboxEnabled: {
         reflect: true,
         type: Boolean,
         attribute: 'context-management-enabled',
@@ -145,6 +145,7 @@ export class ContextualActionMenuElement extends
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
   accessor smartTabSharingVisible: boolean = false;
+  accessor contextManagementInComposeboxEnabled: boolean = false;
   accessor disableAutoReposition: boolean = false;
   accessor uploadButtonDisabled: boolean = false;
   accessor isSidePanel: boolean = false;
@@ -180,8 +181,6 @@ export class ContextualActionMenuElement extends
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
   protected accessor showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
-      getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
   protected accessor shareTabsFlyoutPosition_: string = 'right';
   protected accessor sharingTabsText_: string = '';
   protected closeMenuOnSelect: boolean =
@@ -297,7 +296,7 @@ export class ContextualActionMenuElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (this.contextManagementInComposeboxEnabled_) {
+    if (this.contextManagementInComposeboxEnabled) {
       if (changedProperties.has('disabledTabIds') ||
           changedProperties.has('aimThreadRestoredTabs')) {
         this.updateSharingTabsText_();
@@ -370,7 +369,7 @@ export class ContextualActionMenuElement extends
   }
 
   private computeMenuWidth_(): number {
-    return this.contextManagementInComposeboxEnabled_ ?
+    return this.contextManagementInComposeboxEnabled ?
         SHARE_TABS_MENU_WIDTH_PX :
         MENU_WIDTH_PX;
   }
@@ -533,7 +532,7 @@ export class ContextualActionMenuElement extends
     });
     this.layoutResizeObserver_.observe(document.body);
 
-    if (this.contextManagementInComposeboxEnabled_) {
+    if (this.contextManagementInComposeboxEnabled) {
       this.updateSharingTabsText_();
       if (this.shareTabsFlyoutOpen) {
         this.updateFlyoutPosition_();
@@ -571,7 +570,7 @@ export class ContextualActionMenuElement extends
         this.aimThreadRestoredTabs.length :
         0;
     const totalTabs = this.disabledTabIds.size + restoredCount;
-    if (!this.contextManagementInComposeboxEnabled_ || totalTabs === 0) {
+    if (!this.contextManagementInComposeboxEnabled || totalTabs === 0) {
       this.sharingTabsText_ = this.i18n('shareTabs');
       return;
     }

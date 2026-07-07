@@ -94,6 +94,7 @@ export class OmniboxEverywhereOmniboxElement extends
       tabSuggestions_: {type: Array},
       searchboxLayoutMode: {type: String},
       tabSuggestionsState_: {type: Number},
+      contextManagementInComposeboxEnabled: {type: Boolean},
     };
   }
 
@@ -102,6 +103,7 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
+  accessor contextManagementInComposeboxEnabled: boolean = false;
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =

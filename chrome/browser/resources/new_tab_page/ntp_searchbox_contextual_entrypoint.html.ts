@@ -32,6 +32,7 @@ export function getHtml(this: NtpSearchboxElement) {
         .tabSuggestions="${this.tabSuggestions_}"
         .tabSuggestionsState="${this.tabSuggestionsState_}"
         .recentTabId="${this.recentTabId_}"
+        .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
         ?show-context-menu-description="${!this.useCompactLayout_()}"
         .glifAnimationState="${this.contextMenuGlifAnimationState}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">

@@ -61,6 +61,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+        .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
         ?multi-line-enabled="${this.multiLineEnabled_}">
     </ntp-searchbox>
     <div id="dialogAnchor"></div>
@@ -75,6 +76,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .usePecApi="${this.usePecApi_}"
               .showVoiceSearch="${true}"
               .smartTabSharingVisible="${this.smartTabSharingVisible_}"
+              .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
               @close-composebox="${this.onCloseComposebox_}"
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
@@ -100,6 +102,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
               .usePecApi="${this.usePecApi_}"
               .smartTabSharingVisible="${this.smartTabSharingVisible_}"
+              .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               searchbox-layout-mode="${this.ntpRealboxNextEnabled_ ? 'Compact' : ''}">
           </cr-composebox>

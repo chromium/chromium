@@ -201,6 +201,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       energyEffectAnimationEnabled: {type: Boolean},
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
+      contextManagementInComposeboxEnabled: {type: Boolean},
     };
   }
 
@@ -211,6 +212,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected accessor showComposeButton_: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   accessor isDraggingFile: boolean = false;
+  accessor contextManagementInComposeboxEnabled: boolean = false;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;

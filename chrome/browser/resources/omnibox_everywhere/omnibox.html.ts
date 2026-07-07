@@ -41,6 +41,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   .searchboxLayoutMode="${this.searchboxLayoutMode}"
                   .tabSuggestions="${this.tabSuggestions_}"
                   .tabSuggestionsState="${this.tabSuggestionsState_}"
+                  .contextManagementInComposeboxEnabled="${
+      this.contextManagementInComposeboxEnabled}"
                   @context-menu-entrypoint-click="${
       this.onContextMenuEntrypointClick_}"
                   @context-menu-opened="${this.onContextMenuOpened_}"

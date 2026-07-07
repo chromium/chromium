@@ -96,6 +96,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                       .inputState="${this.inputState}"
                       .usePecApi="${this.usePecApi}"
                       .smartTabSharingActive="${this.smartTabSharingActive}"
+                      .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
                       .searchboxLayoutMode="${this.searchboxLayoutMode}"
                       .tabSuggestions="${this.tabSuggestions}"
                       .recentTabId="${this.recentTabId}"

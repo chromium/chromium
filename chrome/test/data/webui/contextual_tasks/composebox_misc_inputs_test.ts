@@ -178,6 +178,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       useContextualTasksComposeboxFork: false,
       contextualMenuUsePecApi: false,
       composeboxSmartTabSharingVisible: false,
+      contextManagementInComposeboxEnabled: false,
       composeboxShowTypedSuggest: true,
       composeboxShowZps: true,
       enableBasicModeZOrder: true,

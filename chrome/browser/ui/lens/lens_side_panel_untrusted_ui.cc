@@ -197,10 +197,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kLens));
 
-  // Pass the feature flag state to the WebUI to determine if context
-  // management should be handled within the composebox.
-  // Hardcoded to false because the old side panel composebox lacks a context menu.
-  html_source->AddBoolean("contextManagementInComposeboxEnabled", false);
+  // Disabled tab favicon chips because the old side panel composebox lacks a
+  // context menu.
   html_source->AddBoolean("tabFaviconChipsToCoinsEnabled", false);
 
   // Add strings for post message communication with the remote UI.

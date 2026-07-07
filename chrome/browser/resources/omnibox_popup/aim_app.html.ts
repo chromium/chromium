@@ -17,6 +17,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .showMenuOnClick="${false}"
       .shouldShowGhostFiles="${true}"
       .usePecApi="${this.usePecApi_}"
+      .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
       .smartComposeEnabled="${this.smartComposeEnabled_}"
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       .isOblongShape="${this.isOblongShape_}"
