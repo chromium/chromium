@@ -27058,6 +27058,21 @@
             ]
         }
     ],
+    "WebViewProfileStoreNotTriggerStartup": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewProfileStoreNotTriggerStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewRecordAppCacheHistograms": [
         {
             "platforms": [
