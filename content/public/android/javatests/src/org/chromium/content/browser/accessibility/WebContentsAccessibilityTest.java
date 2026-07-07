@@ -3280,6 +3280,10 @@ public class WebContentsAccessibilityTest {
                 imageIndex + 1,
                 OFFSET_TYPE_CHILD);
 
+        // Image, using text offset. Text offset 0 points to the beginning of the non-text nodes.
+        setAndAssertExtendedSelection(
+                rootVvid, imageVvid, 0, OFFSET_TYPE_TEXT, buttonVvid, 0, OFFSET_TYPE_TEXT);
+
         // Button, although it is a non-text node, selecting by text offset as it
         // is a leaf.
         setAndAssertExtendedSelection(
