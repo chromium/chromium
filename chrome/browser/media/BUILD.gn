@@ -164,6 +164,11 @@ source_set("unittests") {
 
 source_set("browser_tests") {
   testonly = true
+
+  # Several media browser tests have file-scope statics of non-trivial-
+  # destructor types, which -Wexit-time-destructors rejects.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = [ "audio_process_ml_model_forwarder_browsertest.cc" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
@@ -179,6 +184,39 @@ source_set("browser_tests") {
     "//media",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [
+      "audio_ducker_browsertest.cc",
+      "autoplay_metrics_browsertest.cc",
+      "cast_mirroring_service_host_browsertest.cc",
+      "defer_background_media_browsertest.cc",
+      "encrypted_media_supported_types_browsertest.cc",
+      "media_engagement_autoplay_browsertest.cc",
+      "media_session_browsertest.cc",
+      "unified_autoplay_browsertest.cc",
+    ]
+    deps += [
+      ":impl",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/speech",
+      "//chrome/browser/tab_group_sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//components/cdm/common:buildflags",
+      "//components/prefs",
+      "//media:test_support",
+      "//media/capture/mojom:video_capture",
+      "//media/mojo/mojom",
+      "//services/media_session/public/cpp/test:test_support",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
+  }
 }
 
 source_set("media") {
