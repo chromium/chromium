@@ -305,22 +305,24 @@ void AnchoredMessageBubbleView::UpdateContent(
           0, add_padding_before_chip ? kAnchoredMessageSpaceLeftOfChip : 0, 0,
           0));
 
-  const auto& expandable_content = model.GetAnchoredMessageExpandableContent();
-  if (expandable_content) {
-    std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
-    for (const auto& item : expandable_content->items) {
-      if (item.icon) {
-        icons.emplace_back(*item.icon);
+  expandable_content_ = model.GetAnchoredMessageExpandableContent();
+  if (expandable_content_) {
+    if (expandable_content_->expand_button_style ==
+        ExpandButtonStyle::kChevron) {
+      UpdateExpandButtonIcon();
+    } else {
+      std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
+      for (const auto& item : expandable_content_->items) {
+        if (item.icon) {
+          icons.emplace_back(*item.icon);
+        }
       }
+      expand_button_->Update(icons);
     }
-    expand_button_->Update(icons);
-    expand_button_tooltip_override_ = expandable_content->expand_button_tooltip;
-    collapse_button_tooltip_override_ =
-        expandable_content->collapse_button_tooltip;
 
-    if (expandable_content->expand_button_accessible_name) {
+    if (expandable_content_->expand_button_accessible_name) {
       expand_button_->GetViewAccessibility().SetName(
-          *expandable_content->expand_button_accessible_name);
+          *expandable_content_->expand_button_accessible_name);
     }
     UpdateExpandButtonTooltip();
     expand_button_->SetVisible(true);
@@ -337,7 +339,7 @@ void AnchoredMessageBubbleView::UpdateContent(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets::TLBR(0, kAnchoredMessageLeftInset, 8, 12), 0));
 
-    if (expandable_content->heading) {
+    if (expandable_content_->heading) {
       auto* heading_row =
           items_container->AddChildView(std::make_unique<views::View>());
       auto* heading_layout =
@@ -348,7 +350,7 @@ void AnchoredMessageBubbleView::UpdateContent(
       heading_layout->set_minimum_cross_axis_size(32);
 
       auto* title_label = heading_row->AddChildView(
-          std::make_unique<views::Label>(*expandable_content->heading));
+          std::make_unique<views::Label>(*expandable_content_->heading));
       title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
       title_label->SetEnabledColor(ui::kColorSysOnSurface);
@@ -360,7 +362,7 @@ void AnchoredMessageBubbleView::UpdateContent(
       heading_layout->SetFlexForView(title_label, 1);
     }
 
-    for (const auto& item : expandable_content->items) {
+    for (const auto& item : expandable_content_->items) {
       auto* item_row =
           items_container->AddChildView(std::make_unique<views::View>());
       auto* item_layout =
@@ -458,6 +460,10 @@ void AnchoredMessageBubbleView::OnExpandButtonPressed() {
   expanded_ = !expanded_;
   bottom_container_->SetVisible(expanded_);
   UpdateExpandButtonTooltip();
+  if (expandable_content_ &&
+      expandable_content_->expand_button_style == ExpandButtonStyle::kChevron) {
+    UpdateExpandButtonIcon();
+  }
   SizeToContents();
   if (expanded_) {
     delegate_->AnchoredMessageExpanded();
@@ -499,21 +505,40 @@ void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegate::OnWidgetDestroying(widget);
 }
 
+void AnchoredMessageBubbleView::UpdateExpandButtonIcon() {
+  if (!expand_button_) {
+    return;
+  }
+  CHECK(expandable_content_ && expandable_content_->expand_button_style ==
+                                   ExpandButtonStyle::kChevron);
+  const gfx::VectorIcon& icon = expanded_
+                                    ? vector_icons::kKeyboardArrowUpIcon
+                                    : vector_icons::kKeyboardArrowDownIcon;
+  ui::ImageModel image_model =
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorSysOnSurfaceVariant, 16);
+
+  std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
+  icons.emplace_back(image_model);
+  expand_button_->Update(icons);
+}
+
 void AnchoredMessageBubbleView::UpdateExpandButtonTooltip() {
   if (!expand_button_) {
     return;
   }
   std::u16string tooltip_text;
   if (expanded_) {
-    tooltip_text = collapse_button_tooltip_override_
-                       ? *collapse_button_tooltip_override_
-                       : l10n_util::GetStringUTF16(
-                             IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP);
+    tooltip_text =
+        expandable_content_ && expandable_content_->collapse_button_tooltip
+            ? *expandable_content_->collapse_button_tooltip
+            : l10n_util::GetStringUTF16(
+                  IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP);
   } else {
-    tooltip_text = expand_button_tooltip_override_
-                       ? *expand_button_tooltip_override_
-                       : l10n_util::GetStringUTF16(
-                             IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP);
+    tooltip_text =
+        expandable_content_ && expandable_content_->expand_button_tooltip
+            ? *expandable_content_->expand_button_tooltip
+            : l10n_util::GetStringUTF16(
+                  IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP);
   }
   expand_button_->SetTooltipText(tooltip_text);
 

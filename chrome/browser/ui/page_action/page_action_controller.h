@@ -117,6 +117,13 @@ struct AnchoredMessageExpandableItem {
   bool operator==(const AnchoredMessageExpandableItem&) const = default;
 };
 
+enum class ExpandButtonStyle {
+  // Uses the icons of the items within the expandable content.
+  kItemIcons,
+  // Uses a generic chevron icon.
+  kChevron,
+};
+
 // The content specific to the expanded section of an anchored message.
 struct AnchoredMessageExpandableContent {
   std::optional<std::u16string> heading;
@@ -128,6 +135,8 @@ struct AnchoredMessageExpandableContent {
   std::optional<std::u16string> collapse_button_tooltip;
   // If set, overrides the default accessible name on the expand button.
   std::optional<std::u16string> expand_button_accessible_name;
+  // The style of the expand button.
+  ExpandButtonStyle expand_button_style = ExpandButtonStyle::kItemIcons;
 
   bool operator==(const AnchoredMessageExpandableContent&) const = default;
 };
