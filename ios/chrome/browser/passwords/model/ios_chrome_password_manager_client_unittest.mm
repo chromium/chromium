@@ -11,6 +11,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/device_reauth/device_authenticator.h"
+#import "components/device_reauth/mock_device_authenticator.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -263,4 +265,38 @@ TEST_F(IOSChromePasswordManagerClientTest, OnPasswordBreachInvoked) {
               OnPasswordBreach(_, testing::Eq(expected_data)))
       .Times(1);
   client->MaybeReportEnterprisePasswordBreachEvent(expected_data);
+}
+
+// Tests that `IsReauthBeforeFillingRequired` returns true when the
+// authenticator can authenticate with biometric or screen lock.
+TEST_F(IOSChromePasswordManagerClientTest,
+       IsReauthBeforeFillingRequired_ReauthRequired) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(client->IsReauthBeforeFillingRequired(authenticator.get()));
+}
+
+// Tests that `IsReauthBeforeFillingRequired` returns false when the
+// authenticator cannot authenticate with biometric or screen lock.
+TEST_F(IOSChromePasswordManagerClientTest,
+       IsReauthBeforeFillingRequired_ReauthNotRequired) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(client->IsReauthBeforeFillingRequired(authenticator.get()));
+}
+
+// Tests that `GetDeviceAuthenticator` returns a valid device authenticator.
+TEST_F(IOSChromePasswordManagerClientTest, GetDeviceAuthenticator) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      client->GetDeviceAuthenticator();
+  EXPECT_TRUE(authenticator);
 }

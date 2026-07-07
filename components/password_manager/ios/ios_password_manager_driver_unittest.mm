@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -275,6 +276,53 @@ TEST_F(IOSPasswordManagerDriverTest,
                                       forFrameId:""]);
 
   driver_->FormEligibleForGenerationFound(form);
+
+  EXPECT_OCMOCK_VERIFY(password_controller_);
+}
+
+// Tests that FillField on the driver correctly forwards to the bridge.
+TEST_F(IOSPasswordManagerDriverTest, FillField) {
+  autofill::FieldRendererId field_id(42);
+  std::u16string value = u"test_password";
+  std::string frame_id = driver_->web_frame_id();
+
+  OCMExpect([password_controller_ fillField:field_id
+                                  withValue:value
+                                 forFrameId:frame_id
+                          completionHandler:[OCMArg any]])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation* invocation) {
+        std::remove_reference_t<decltype(field_id)> param;
+        [invocation getArgument:&param atIndex:2];
+        EXPECT_EQ(param, field_id);
+      })
+      .andCompareObjectAtIndex(value, 1)
+      .andCompareObjectAtIndex(frame_id, 2);
+
+  driver_->FillField(field_id, value, autofill::FieldPropertiesFlags::kNoFlags,
+                     base::DoNothing());
+
+  EXPECT_OCMOCK_VERIFY(password_controller_);
+}
+
+// Tests that CheckViewAreaVisible on the driver correctly forwards to the
+// bridge.
+TEST_F(IOSPasswordManagerDriverTest, CheckViewAreaVisible) {
+  autofill::FieldRendererId field_id(42);
+  std::string frame_id = driver_->web_frame_id();
+
+  OCMExpect([password_controller_ scrollAndCheckViewAreaVisible:field_id
+                                                     forFrameId:frame_id
+                                              completionHandler:[OCMArg any]])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation* invocation) {
+        std::remove_reference_t<decltype(field_id)> param;
+        [invocation getArgument:&param atIndex:2];
+        EXPECT_EQ(param, field_id);
+      })
+      .andCompareObjectAtIndex(frame_id, 1);
+
+  driver_->CheckViewAreaVisible(field_id, base::DoNothing());
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }

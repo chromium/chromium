@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/functional/callback_helpers.h"
 #import "base/hash/hash.h"
 #include "base/notimplemented.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
@@ -13,7 +14,6 @@
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
-#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 using password_manager::PasswordAutofillManager;
@@ -111,6 +111,17 @@ void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
   NOTIMPLEMENTED();
 }
 
+void IOSPasswordManagerDriver::FillField(
+    autofill::FieldRendererId triggering_field_id,
+    const std::u16string& value,
+    autofill::FieldPropertiesFlags field_flags,
+    base::OnceCallback<void(bool)> success_callback) {
+  [bridge_ fillField:triggering_field_id
+              withValue:value
+             forFrameId:frame_id_
+      completionHandler:base::CallbackToBlock(std::move(success_callback))];
+}
+
 void IOSPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password,
@@ -187,7 +198,8 @@ bool IOSPasswordManagerDriver::IsInPrimaryMainFrame() const {
 }
 
 bool IOSPasswordManagerDriver::IsNestedWithinFencedFrame() const {
-  NOTREACHED();
+  // Not yet supported by WebKit.
+  return false;
 }
 
 bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
@@ -218,8 +230,11 @@ gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
 
 void IOSPasswordManagerDriver::CheckViewAreaVisible(
     autofill::FieldRendererId field_id,
-    base::OnceCallback<void(bool)>) {
-  NOTREACHED();
+    base::OnceCallback<void(bool)> callback) {
+  [bridge_
+      scrollAndCheckViewAreaVisible:field_id
+                         forFrameId:frame_id_
+                  completionHandler:base::CallbackToBlock(std::move(callback))];
 }
 
 bool IOSPasswordManagerDriver::HasValidURL(bool may_kill_renderer) {

@@ -3,6 +3,7 @@ include_rules = [
   "+components/trusted_vault",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/enterprise/connectors/reporting",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/optimization_guide/model",

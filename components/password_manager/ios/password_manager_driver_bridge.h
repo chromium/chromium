@@ -44,6 +44,18 @@ class GURL;
             (const autofill::PasswordFormGenerationData&)form
                                         forFrameId:(const std::string&)frameId;
 
+// Scrolls the field into view and checks if its view area is visible in the
+// frame.
+- (void)scrollAndCheckViewAreaVisible:(autofill::FieldRendererId)fieldId
+                           forFrameId:(const std::string&)frameId
+                    completionHandler:(void (^)(BOOL visible))completionHandler;
+
+// Fills the triggering field with the given value in the specified frame.
+- (void)fillField:(autofill::FieldRendererId)fieldId
+            withValue:(const std::u16string&)value
+           forFrameId:(const std::string&)frameId
+    completionHandler:(void (^)(BOOL success))completionHandler;
+
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_DRIVER_BRIDGE_H_

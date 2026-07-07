@@ -9,6 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -232,6 +233,33 @@ void PasswordManagerJavaScriptFeature::FocusElement(
   CallJavaScriptFunction(
       frame, "passwords.focusElement",
       base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      autofill::CreateBoolCallback(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::ScrollAndCheckViewAreaVisible(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.scrollAndCheckViewAreaVisible",
+      base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      autofill::CreateBoolCallback(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::FillField(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    const std::u16string& value,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.fillField",
+      base::ListValue()
+          .Append(FieldRendererIdToJsParameter(field_identifier))
+          .Append(base::UTF16ToUTF8(value)),
       autofill::CreateBoolCallback(std::move(callback)),
       kJavaScriptExecutionTimeout);
 }

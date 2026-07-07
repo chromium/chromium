@@ -830,6 +830,43 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   [self detachListenersForBottomSheet:frameId];
 }
 
+- (void)scrollAndCheckViewAreaVisible:(autofill::FieldRendererId)fieldId
+                           forFrameId:(const std::string&)frameId
+                    completionHandler:
+                        (void (^)(BOOL visible))completionHandler {
+  web::WebFrame* webFrame = [self webFramesManager]->GetFrameWithId(frameId);
+  if (!webFrame) {
+    completionHandler(NO);
+    return;
+  }
+
+  auto boolCallback = base::BindOnce(
+      [](void (^handler)(BOOL), BOOL visible) { handler(visible); },
+      completionHandler);
+
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->ScrollAndCheckViewAreaVisible(webFrame, fieldId,
+                                      std::move(boolCallback));
+}
+
+- (void)fillField:(autofill::FieldRendererId)fieldId
+            withValue:(const std::u16string&)value
+           forFrameId:(const std::string&)frameId
+    completionHandler:(void (^)(BOOL success))completionHandler {
+  web::WebFrame* webFrame = [self webFramesManager]->GetFrameWithId(frameId);
+  if (!webFrame) {
+    completionHandler(NO);
+    return;
+  }
+
+  auto boolCallback = base::BindOnce(
+      [](void (^handler)(BOOL), BOOL success) { handler(success); },
+      completionHandler);
+
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()->FillField(
+      webFrame, fieldId, value, std::move(boolCallback));
+}
+
 - (void)formEligibleForGenerationFound:(const PasswordFormGenerationData&)form {
   _formGenerationData[form.form_renderer_id] = form;
 }

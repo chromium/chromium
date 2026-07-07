@@ -422,12 +422,14 @@ bool ActorLoginCredentialFiller::IsReauthBeforeFillingRequired() {
 void ActorLoginCredentialFiller::ReauthenticateAndFill(
     base::OnceClosure fill_form_cb) {
   std::u16string message;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
   const std::u16string origin =
       base::UTF8ToUTF16(password_manager::GetShownOrigin(origin_));
   message =
       l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_IOS)
   auto on_reauth_completed =
       base::BindOnce(&ActorLoginCredentialFiller::OnDeviceReauthCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(fill_form_cb));

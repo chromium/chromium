@@ -640,6 +640,41 @@ function fillPasswordFormAndSubmit(
   return result;
 }
 
+/**
+ * Checks if the view area of the field is visible.
+ * @param fieldIdentifier The unique ID of the field.
+ * @return Whether the field is visible in the viewport.
+ */
+function scrollAndCheckViewAreaVisible(fieldIdentifier: number): boolean {
+  const element = getElementByUniqueID(fieldIdentifier) as HTMLElement;
+  if (!element) {
+    return false;
+  }
+
+  if ((element as any).scrollIntoViewIfNeeded) {
+    (element as any).scrollIntoViewIfNeeded();
+  } else {
+    element.scrollIntoView();
+  }
+  // TODO(crbug.com/472291829): Fully match the implementation in Blink's
+  // `VisibleBoundsInWidget` by taking into accoung clipping on parent elements.
+  return true;
+}
+
+/**
+ * Fills the value into the specified field.
+ * @param fieldIdentifier The unique ID of the field.
+ * @param value The value to fill.
+ * @return Whether the field was successfully filled.
+ */
+function fillField(fieldIdentifier: number, value: string): boolean {
+  const element = getElementByUniqueID(fieldIdentifier) as HTMLInputElement;
+  if (!element) {
+    return false;
+  }
+  return fillUtil.setInputElementValue(value, element);
+}
+
 const passwordsApi = new CrWebApi('passwords');
 
 passwordsApi.addFunction('findPasswordForms', findPasswordForms);
@@ -660,5 +695,8 @@ passwordsApi.addFunction(
 passwordsApi.addFunction(
     'removeRendererKeystrokeShield', removeRendererKeystrokeShield);
 passwordsApi.addFunction('focusElement', focusElement);
+passwordsApi.addFunction(
+    'scrollAndCheckViewAreaVisible', scrollAndCheckViewAreaVisible);
+passwordsApi.addFunction('fillField', fillField);
 
 gCrWeb.registerApi(passwordsApi);
