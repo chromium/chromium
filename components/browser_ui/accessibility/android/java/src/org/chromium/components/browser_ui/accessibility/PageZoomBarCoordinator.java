@@ -313,19 +313,19 @@ public class PageZoomBarCoordinator {
 
         // Both the 'Reset' button and current zoom value text have wrap_content LayoutParams,
         // and we want to set them each to the max of the two to maintain symmetry.
-        LayoutParams text_params =
+        LayoutParams textParams =
                 (LinearLayout.LayoutParams)
                         mView.findViewById(R.id.page_zoom_current_zoom_level).getLayoutParams();
-        LayoutParams reset_params =
+        LayoutParams resetParams =
                 (LinearLayout.LayoutParams)
                         mView.findViewById(R.id.page_zoom_reset_zoom_button).getLayoutParams();
 
-        LayoutParams bounding_params =
+        LayoutParams boundingParams =
                 new LayoutParams(
-                        Math.max(text_params.width, reset_params.width),
-                        Math.max(text_params.height, reset_params.height));
+                        Math.max(textParams.width, resetParams.width),
+                        Math.max(textParams.height, resetParams.height));
 
-        mView.findViewById(R.id.page_zoom_current_zoom_level).setLayoutParams(bounding_params);
-        mView.findViewById(R.id.page_zoom_reset_zoom_button).setLayoutParams(bounding_params);
+        mView.findViewById(R.id.page_zoom_current_zoom_level).setLayoutParams(boundingParams);
+        mView.findViewById(R.id.page_zoom_reset_zoom_button).setLayoutParams(boundingParams);
     }
 }

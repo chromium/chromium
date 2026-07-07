@@ -6,14 +6,12 @@ package org.chromium.components.browser_ui.notifications;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 
 /** Helper methods for dealing with Bitmaps. */
 @NullMarked
 public class BitmapUtils {
-    public static @NonNull Bitmap resizeBitmap(@NonNull Bitmap bitmap, int desiredSizeInKb) {
+    public static Bitmap resizeBitmap(Bitmap bitmap, int desiredSizeInKb) {
         int imageSizeInKb = bitmap.getAllocationByteCount() / 1000;
         double ratio = Math.sqrt((double) desiredSizeInKb / (double) imageSizeInKb);
         int newWidth = (int) (bitmap.getWidth() * ratio);

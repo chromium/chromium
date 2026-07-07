@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.slider.Slider;
@@ -57,10 +56,10 @@ public class PageZoomSliderPreference extends PageZoomPreference implements Cont
         mSlider.addOnSliderTouchListener(
                 new Slider.OnSliderTouchListener() {
                     @Override
-                    public void onStartTrackingTouch(@NonNull Slider slider) {}
+                    public void onStartTrackingTouch(Slider slider) {}
 
                     @Override
-                    public void onStopTrackingTouch(@NonNull Slider slider) {
+                    public void onStopTrackingTouch(Slider slider) {
                         callChangeListener((int) slider.getValue());
                     }
                 });
@@ -89,10 +88,10 @@ public class PageZoomSliderPreference extends PageZoomPreference implements Cont
         mTextSizeContrastSlider.addOnSliderTouchListener(
                 new Slider.OnSliderTouchListener() {
                     @Override
-                    public void onStartTrackingTouch(@NonNull Slider slider) {}
+                    public void onStartTrackingTouch(Slider slider) {}
 
                     @Override
-                    public void onStopTrackingTouch(@NonNull Slider slider) {
+                    public void onStopTrackingTouch(Slider slider) {
                         saveTextSizeContrastValueToPreferences();
                     }
                 });

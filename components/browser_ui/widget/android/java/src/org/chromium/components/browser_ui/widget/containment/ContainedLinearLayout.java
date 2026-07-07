@@ -11,9 +11,9 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A LinearLayout that can be styled by the {@link

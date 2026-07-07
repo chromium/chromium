@@ -5,10 +5,9 @@
 package org.chromium.components.browser_ui.widget;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Data model for a selectable item to be displayed by a {@link RichRadioButton} component,
@@ -16,9 +15,9 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class RichRadioButtonData {
-    public final @NonNull String id;
+    public final String id;
     public final @DrawableRes int iconResId;
-    public final @NonNull String title;
+    public final String title;
     public final @Nullable String description;
 
     private RichRadioButtonData(Builder builder) {
@@ -29,13 +28,13 @@ public class RichRadioButtonData {
     }
 
     public static class Builder {
-        private final @NonNull String mId;
-        private final @NonNull String mTitle;
+        private final String mId;
+        private final String mTitle;
 
         private @DrawableRes int mIconResId;
         private @Nullable String mDescription;
 
-        public Builder(@NonNull String id, @NonNull String title) {
+        public Builder(String id, String title) {
             this.mId = id;
             this.mTitle = title;
         }
@@ -50,7 +49,7 @@ public class RichRadioButtonData {
             return this;
         }
 
-        public @NonNull RichRadioButtonData build() {
+        public RichRadioButtonData build() {
             return new RichRadioButtonData(this);
         }
     }

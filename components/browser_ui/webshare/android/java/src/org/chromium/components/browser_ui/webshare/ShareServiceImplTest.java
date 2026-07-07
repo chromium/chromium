@@ -159,7 +159,7 @@ public class ShareServiceImplTest {
                 });
 
         Assert.assertEquals(ShareError.PERMISSION_DENIED, shareError[0]);
-        Assert.assertEquals(11 /* RFH_INVALID_WEB_FRAME_URL */, badMessageReason[0]);
+        Assert.assertEquals(11, badMessageReason[0]); // RFH_INVALID_WEB_FRAME_URL
     }
 
     @Test

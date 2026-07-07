@@ -4,10 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The base interface for embeddable settings page fragments.

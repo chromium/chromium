@@ -8,11 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -59,10 +58,7 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(
-            @NonNull Rect outRect,
-            @NonNull View view,
-            @NonNull RecyclerView parent,
-            @NonNull RecyclerView.State state) {
+            Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         mUpdateBackgrounds = true;
 
@@ -77,8 +73,7 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(
-            @NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         if (!mUpdateBackgrounds || mPreferenceStyles == null) return;
 
         for (int i = 0; i < parent.getChildCount(); i++) {

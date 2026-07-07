@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -117,7 +116,7 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder setContent(RemoteViews views);
 
     NotificationWrapperBuilder setBigPictureStyle(
-            @NonNull Bitmap bigPicture, @Nullable CharSequence summaryText);
+            Bitmap bigPicture, @Nullable CharSequence summaryText);
 
     NotificationWrapperBuilder setBigTextStyle(@Nullable CharSequence bigText);
 

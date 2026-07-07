@@ -176,7 +176,7 @@ public class ShareServiceImpl implements ShareService {
                             || UrlConstants.HTTP_SCHEME.equals(shareUrl.getScheme());
             if (GURL.isEmptyOrInvalid(shareUrl) || !hasAllowedSchemes) {
                 callback.call(ShareError.PERMISSION_DENIED);
-                mDelegate.terminateRendererDueToBadMessage(11 /* RFH_INVALID_WEB_FRAME_URL */);
+                mDelegate.terminateRendererDueToBadMessage(11); // RFH_INVALID_WEB_FRAME_URL
                 return;
             }
         }
