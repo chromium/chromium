@@ -2168,12 +2168,10 @@ int HTMLInputElement::scrollWidth() {
     return TextControlElement::scrollWidth();
   // Adjust scrollWidth to include input element horizontal paddings and
   // decoration width.
-  LayoutUnit adjustment = box->ClientWidth() - editor_box->ClientWidth();
-  int snapped_scroll_width =
-      SnapSizeToPixel(editor_box->ScrollWidth() + adjustment,
-                      box->PhysicalLocation().left + box->ClientLeft());
+  LayoutUnit adjustment = box->PhysicalPaddingBoxRect().Width() -
+                          editor_box->PhysicalPaddingBoxRect().Width();
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-             LayoutUnit(snapped_scroll_width), box->StyleRef())
+             editor_box->ScrollWidth() + adjustment, box->StyleRef())
       .Round();
 }
 
@@ -2195,7 +2193,8 @@ int HTMLInputElement::scrollHeight() {
     return TextControlElement::scrollHeight();
   // Adjust scrollHeight to include input element vertical paddings and
   // decoration height.
-  LayoutUnit adjustment = box->ClientHeight() - editor_box->ClientHeight();
+  LayoutUnit adjustment = box->PhysicalPaddingBoxRect().Height() -
+                          editor_box->PhysicalPaddingBoxRect().Height();
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(
              editor_box->ScrollHeight() + adjustment, box->StyleRef())
       .Round();

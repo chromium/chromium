@@ -2543,8 +2543,9 @@ int Element::clientTop() {
 
 int Element::ClientLeftNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientLeft(),
-                                                   layout_object->StyleRef())
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->PhysicalPaddingBoxRect().offset.left,
+               layout_object->StyleRef())
         .Round();
   }
   return 0;
@@ -2552,8 +2553,9 @@ int Element::ClientLeftNoLayout() const {
 
 int Element::ClientTopNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientTop(),
-                                                   layout_object->StyleRef())
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->PhysicalPaddingBoxRect().offset.top,
+               layout_object->StyleRef())
         .Round();
   }
   return 0;

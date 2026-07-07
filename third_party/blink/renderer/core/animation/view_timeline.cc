@@ -527,17 +527,14 @@ std::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   gfx::PointF subject_pos = subject_layout_object->LocalToAncestorPoint(
       gfx::PointF(), scroll_container, flags);
 
-  // We call LayoutObject::ClientLeft/Top directly and avoid
-  // Element::clientLeft/Top because:
-  //
-  // - We may reach this function during style resolution,
-  //   and clientLeft/Top also attempt to update style/layout.
-  // - Those functions return the unzoomed values, and we require the zoomed
-  //   values.
-
-  return gfx::PointF(
-      subject_pos.x() - scroll_container->ClientLeft().ToDouble(),
-      subject_pos.y() - scroll_container->ClientTop().ToDouble());
+  // We call LayoutObject::PhysicalPaddingBoxRect directly and avoid
+  // Element::clientLeft, Element::clientTop because:
+  //  - We may reach this function during style resolution, and
+  //    clientLeft/clientTop also attempt to update style/layout.
+  //  - Those functions return the unzoomed values, and we require
+  //    the zoomed values.
+  return subject_pos -
+         gfx::Vector2dF(scroll_container->PhysicalPaddingBoxRect().offset);
 }
 
 // https://www.w3.org/TR/scroll-animations-1/#named-range-getTime

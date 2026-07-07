@@ -393,12 +393,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool UsesOverlayScrollbars() const;
 
-  // Physical client rect (a.k.a. PhysicalPaddingBoxRect(), defined by
-  // ClientLeft, ClientTop, ClientWidth and ClientHeight) represents the
+  // Physical client rect (a.k.a. PhysicalPaddingBoxRect()) represents the
   // interior of an object excluding borders and scrollbars.
   // Clamps the left scrollbar size so it is not wider than the content box.
-  LayoutUnit ClientLeft() const;
-  LayoutUnit ClientTop() const;
   LayoutUnit ClientWidth() const;
   LayoutUnit ClientHeight() const;
   DISABLE_CFI_PERF LayoutUnit ClientLogicalWidth() const {

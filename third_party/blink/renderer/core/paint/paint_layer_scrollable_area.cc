@@ -694,12 +694,11 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
 }
 
 gfx::Size PaintLayerScrollableArea::ContentsSize() const {
-  // We need to take into account of ClientLeft and ClientTop  for
+  // We need to take into account of the border/scrollbar/padding for
   // PaintLayerScrollableAreaTest.NotScrollsOverflowWithScrollableScrollbar.
-  PhysicalOffset offset(GetLayoutBox()->ClientLeft(),
-                        GetLayoutBox()->ClientTop());
   // TODO(crbug.com/962299): The pixel snapping is incorrect in some cases.
-  return PixelSnappedContentsSize(offset);
+  return PixelSnappedContentsSize(
+      GetLayoutBox()->PhysicalPaddingBoxRect().offset);
 }
 
 gfx::Size PaintLayerScrollableArea::PixelSnappedContentsSize(

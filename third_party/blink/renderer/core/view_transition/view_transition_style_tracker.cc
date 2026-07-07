@@ -1869,7 +1869,8 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
 
   if (!scope_box->IsLayoutView()) {
     // Adjust for the scope element's borders and scrollbars.
-    transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
+    transform.Translate(
+        -gfx::Vector2dF(scope_box->PhysicalPaddingBoxRect().offset));
   }
 
   return transform;

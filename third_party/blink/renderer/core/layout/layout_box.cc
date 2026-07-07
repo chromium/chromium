@@ -1010,20 +1010,6 @@ void LayoutBox::LayoutSubtreeRoot() {
 }
 
 DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ClientLeft() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToPaddingEdge).X();
-}
-
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ClientTop() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToPaddingEdge).Y();
-}
-
-// ClientWidth and ClientHeight represent the interior of an object excluding
-// border and scrollbar.
-DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientWidth() const {
   NOT_DESTROYED();
   return PhysicalContractedBoxRect(kContractToPaddingEdge).Width();
