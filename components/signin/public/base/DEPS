@@ -10,5 +10,6 @@ include_rules = [
   # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
   "+components/wallet/core/common/wallet_features.h",
   "+components/unexportable_keys",
+  "+extensions/buildflags",
   "+third_party/boringssl/src/include",
 ]

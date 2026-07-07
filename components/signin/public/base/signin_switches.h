@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 
 class PrefService;
 

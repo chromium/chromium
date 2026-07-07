@@ -304,8 +304,16 @@ BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.
+// Extensions are not shipped on Android yet. The flow is newly implemented. We
+// enable activityless signin by default on this new userless entrypoint to
+// avoid implementing the legacy flow which will never be shipped.
 BASE_FEATURE(kEnableActivitylessSigninAllEntryPoint,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

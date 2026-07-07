@@ -361,11 +361,7 @@ final class SigninBridge {
         AccountPickerBottomSheetStrings strings =
                 buildAccountPickerBottomSheetStrings(context, extensionName);
 
-        // We add the {@code !isWebSignin} check to "force" the newly implemented extensions flow to
-        // use the activityless signin.
-        // When cleaning up legacy code, both checks can be removed.
-        if (!isWebSignin
-                || SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
             BottomSheetSigninAndHistorySyncConfig.Builder builder =
                     new BottomSheetSigninAndHistorySyncConfig.Builder(
                             strings,
