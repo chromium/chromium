@@ -322,9 +322,11 @@ public class FuseboxCoordinatorUnitTest {
     @Config(qualifiers = "sw400dp")
     public void viewportRectProvider() {
         Activity activity = mActivityController.get();
-        ViewportRectProvider viewportRectProvider = new ViewportRectProvider(activity);
+        View view = new View(activity);
+        ViewportRectProvider viewportRectProvider = new ViewportRectProvider(activity, view);
         viewportRectProvider.startObserving(mRectProviderObserver);
 
+        org.robolectric.RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
         viewportRectProvider.onConfigurationChanged(new Configuration());
         var windowMetrics =
                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
@@ -332,6 +334,7 @@ public class FuseboxCoordinatorUnitTest {
         assertEquals(
                 new Rect(0, 0, bounds.width(), bounds.height()), viewportRectProvider.getRect());
         verify(mRectProviderObserver).onRectChanged();
+        org.robolectric.shadows.ShadowLooper.idleMainLooper();
     }
 
     @Test

@@ -11,6 +11,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -29,6 +30,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -243,7 +246,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         DynamicRectProvider dynamicRectProvider =
                 new DynamicRectProvider(floatingViewRectProvider, mBottomSheetRectProvider);
-        mViewportRectProvider = new ViewportRectProvider(mActivity);
+        mViewportRectProvider = new ViewportRectProvider(mActivity, mParent);
 
         var popupWindowBuilder =
                 new AnchoredPopupWindow.Builder(
@@ -579,26 +582,47 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * window as available, ignoring e.g. ime insets which can reduce the available height to a very
      * small quantity using PopupWindow's default viewport rect.
      */
-    static class ViewportRectProvider extends RectProvider implements ComponentCallbacks {
+    static class ViewportRectProvider extends RectProvider
+            implements ComponentCallbacks, View.OnLayoutChangeListener {
         private final Activity mActivity;
+        private final View mView;
 
-        public ViewportRectProvider(Activity activity) {
+        public ViewportRectProvider(Activity activity, View view) {
             mActivity = activity;
+            mView = view;
             mActivity.registerComponentCallbacks(this);
+            mView.addOnLayoutChangeListener(this);
             updateRect();
         }
 
         @Override
         public void onConfigurationChanged(Configuration configuration) {
             updateRect();
-            notifyRectChanged();
+        }
+
+        @Override
+        public void onLayoutChange(
+                View v,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                int oldLeft,
+                int oldTop,
+                int oldRight,
+                int oldBottom) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateRect);
         }
 
         private void updateRect() {
             var windowMetrics =
                     WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
             var bounds = windowMetrics.getBounds();
-            mRect.set(0, 0, bounds.width(), bounds.height());
+            Rect newRect = new Rect(0, 0, bounds.width(), bounds.height());
+            if (!newRect.equals(mRect)) {
+                mRect.set(newRect);
+                notifyRectChanged();
+            }
         }
 
         @Override
@@ -606,6 +630,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         public void destroy() {
             mActivity.unregisterComponentCallbacks(this);
+            mView.removeOnLayoutChangeListener(this);
         }
     }
 }
