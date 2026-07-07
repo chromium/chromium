@@ -9163,8 +9163,11 @@
   },
   {
     "name": "tab-group-home",
-    "owners": [ "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 146
+    "owners": [
+      "mcadelago@chromium.org",
+      "chrome-ai-productivity-eng@google.com"
+    ],
+    "expiry_milestone": 160
   },
   {
     "name": "tab-group-hover-cards",

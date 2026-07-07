@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -70,6 +71,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/vector_icons/vector_icons.h"
 #include "tab_group_editor_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -105,6 +107,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/ash_element_identifiers.h"
@@ -558,6 +561,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
   if (!CanSaveGroups()) {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
+    if (base::FeatureList::IsEnabled(tabs::kTabGroupHome)) {
+      simple_menu_items_.push_back(AddChildView(BuildHomeButton()));
+    }
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
     AddChildView(BuildSeparator());
@@ -565,6 +571,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     simple_menu_items_.push_back(AddChildView(BuildCloseGroupButton()));
   } else {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
+    if (base::FeatureList::IsEnabled(tabs::kTabGroupHome)) {
+      simple_menu_items_.push_back(AddChildView(BuildHomeButton()));
+    }
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
 
@@ -686,6 +695,18 @@ TabGroupEditorBubbleView::BuildNewTabInGroupButton() {
 
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleNewTabInGroupButtonId);
+  return menu_item;
+}
+
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildHomeButton() {
+  std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_HOME,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_HOME),
+      base::BindRepeating(&TabGroupEditorBubbleView::HomePressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(vector_icons::kHomeIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
   return menu_item;
 }
 
@@ -887,6 +908,12 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
   model->delegate()->AddTabAt(GURL(), tabs.end(), true, group_);
   // Close the widget to allow users to continue their work in their newly
   // created tab.
+  GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::HomePressed() {
+  chrome::AddSelectedTabWithURL(browser_, GURL("chrome://tab-group-home/"),
+                                ui::PAGE_TRANSITION_TYPED);
   GetWidget()->Close();
 }
 
