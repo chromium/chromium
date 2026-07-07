@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileDescriptors.Count" units="count"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>keiichiw@google.com</owner>
   <owner>uekawa@google.com</owner>
   <summary>
@@ -2107,7 +2107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SafetyService.ClassifySafetyLatency.{Ruleset}"
-    units="ms" expires_after="2026-10-25">
+    units="ms" expires_after="2027-01-03">
   <owner>chensa@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SafetyService.ClassifySafetyResult.{Ruleset}"
-    enum="SafetyServiceVerdict" expires_after="2026-10-25">
+    enum="SafetyServiceVerdict" expires_after="2027-01-03">
   <owner>chensa@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>

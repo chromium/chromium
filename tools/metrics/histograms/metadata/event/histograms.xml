@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.DragDrop.Surface" enum="DragAndDropSurface"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>mustaq@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.{InteractionType}.PredictionJitter"
-    units="pixels" expires_after="2026-10-25">
+    units="pixels" expires_after="2027-01-03">
   <owner>amanvr@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.{InteractionType}.VisualJitter"
-    units="pixels" expires_after="2026-10-25">
+    units="pixels" expires_after="2027-01-03">
   <owner>amanvr@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Scroll.{ScrollInputType}" units="ms"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>

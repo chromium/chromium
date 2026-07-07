@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.ActiveRegionalProgram3{Profile}"
-    enum="ActiveRegionalProgram" expires_after="2026-10-25">
+    enum="ActiveRegionalProgram" expires_after="2027-01-03">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.AndroidProgramResolution"
-    enum="AndroidProgramResolution" expires_after="2026-11-01">
+    enum="AndroidProgramResolution" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
-    enum="Boolean" expires_after="2026-11-01">
+    enum="Boolean" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.ProgramSpecificExclusion"
-    enum="RegionalProgramSpecificExclusion" expires_after="2026-11-01">
+    enum="RegionalProgramSpecificExclusion" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="RegionalCapabilities.Debug.TriggeringEligibility.{SessionType}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-11-01">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Eligibility) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Eligibility{Profile}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-10-25">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>

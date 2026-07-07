@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebNN.Operator" enum="MLGraphOperatorUma"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebNN.ORT.WinAppRuntimeInstallState"
-    enum="WinAppRuntimeInstallStateUma" expires_after="2026-11-01">
+    enum="WinAppRuntimeInstallStateUma" expires_after="2027-01-03">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>

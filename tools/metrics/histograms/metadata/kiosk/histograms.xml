@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchDuration.{KioskType}" units="ms"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>Records the total duration it takes to launch a kiosk app.</summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>aghuie@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>

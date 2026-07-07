@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.AutoDeElevateResult" enum="Hresult"
-    expires_after="2026-11-01">
+    expires_after="2027-01-03">
   <owner>wfh@chromium.org</owner>
   <owner>ssmole@microsoft.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Windows.Experimental.Pdh.ProcessV2.{Counter}.{ProcessType}{StartupState}"
-    units="counter value" expires_after="2026-10-25">
+    units="counter value" expires_after="2027-01-03">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -579,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.Win11HardwareRequirements.{Type}Check"
-    enum="BooleanEnabled" expires_after="2026-10-25">
+    enum="BooleanEnabled" expires_after="2027-01-03">
   <owner>estalin@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

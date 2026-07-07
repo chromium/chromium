@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.ThreadPriority.Browser.{ThreadName}" units="int"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.ThreadPriority.GPUProcess.{ThreadName}" units="int"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.ThreadPriority.Renderer.{ThreadName}" units="int"
-    expires_after="2026-10-25">
+    expires_after="2027-01-03">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>

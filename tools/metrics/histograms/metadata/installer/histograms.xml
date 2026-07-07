@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Setup.Install.SCM.{Operation}.Result" enum="WinGetLastError"
-    expires_after="2026-10-30">
+    expires_after="2027-01-03">
   <owner>grt@chromium.org</owner>
   <owner>ganesh@chromium.org</owner>
   <summary>

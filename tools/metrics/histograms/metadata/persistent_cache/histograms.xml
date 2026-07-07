@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SandboxedVfs.LockStateOnAbandon.{VfsClient}" enum="LockState"
-    expires_after="2026-11-04">
+    expires_after="2027-01-03">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
