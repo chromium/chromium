@@ -28,12 +28,14 @@ using chrome_test_util::StaticTextWithAccessibilityLabelId;
 
 namespace {
 
+constexpr char kCrossDeviceSigninUrl[] =
+    "https://www.google.com/chrome/go-mobile";
+
 // Returns the deep link URL for the given `email`.
 NSURL* GetDeepLinkURLForEmail(NSString* email) {
-  NSString* urlString = [NSString
-      stringWithFormat:
-          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
-          email];
+  NSString* urlString =
+      [NSString stringWithFormat:@"%s?email=%@&entry_point_id=1",
+                                 kCrossDeviceSigninUrl, email];
   return [NSURL URLWithString:urlString];
 }
 
@@ -107,8 +109,7 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
       {switches::kCrossDeviceSignin,
-       {{switches::kCrossDeviceSigninUrl.name,
-         "https://www.google.com/chrome/go-mobile"}}});
+       {{switches::kCrossDeviceSigninUrl.name, kCrossDeviceSigninUrl}}});
   return config;
 }
 
@@ -289,6 +290,99 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
                                                fakeIdentity2.userEmail)];
 
   CheckAccountSwitch(fakeIdentity1, fakeIdentity2);
+}
+
+// Tests that opening a cross-device sign-in deep link and cancelling the "Add
+// Account" flow does not show the sign-in UI.
+- (void)testCrossDeviceSigninCancelAddAccount {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
+
+  // Verify that the "Add Account" flow is shown.
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthAddAccountButtonIdentifier)];
+
+  // Cancel the add account flow.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the sign-in screen is not presented.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that opening a cross-device sign-in deep link with a managed account
+// shows the management notice.
+- (void)testCrossDeviceSigninEnterprise {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity.userEmail)];
+
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SigninScreenPromoMatcher()];
+
+  id<GREYMatcher> primaryButton =
+      FullscreenSigninPrimaryButtonMatcher(fakeIdentity);
+  [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
+
+  // Verify that the management notice is shown.
+  [ChromeEarlGrey
+      waitForMatcher:StaticTextWithAccessibilityLabelId(
+                         IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE)];
+}
+
+// Tests that visiting the cross-device sign-in URL without any parameters does
+// not trigger the sign-in UI.
+- (void)testCrossDeviceSigninNoParameters {
+  NSURL* url = [NSURL
+      URLWithString:[NSString stringWithUTF8String:kCrossDeviceSigninUrl]];
+  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+
+  // Verify that the sign-in screen is not presented.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that opening a cross-device sign-in deep link in incognito mode
+// does not trigger the sign-in UI.
+- (void)testCrossDeviceSigninInIncognito {
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Load the URL in the incognito tab.
+  NSURL* url = GetDeepLinkURLForEmail(fakeIdentity.userEmail);
+  [ChromeEarlGrey loadURL:GURL(base::SysNSStringToUTF8(url.absoluteString))
+        waitForCompletion:NO];
+
+  // Dismiss the dialog warning that url will be opened in another app after
+  // exiting incognito mode.
+  id<GREYMatcher> dialogMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FROM_INCOGNITO));
+  [ChromeEarlGrey waitForMatcher:dialogMatcher];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_OPEN_ANOTHER_APP_BLOCK)]
+      performAction:grey_tap()];
+
+  // Verify that the sign-in screen is not presented.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
