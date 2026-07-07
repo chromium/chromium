@@ -374,6 +374,17 @@ class HostResolverServiceEndpointRequestTest
     PopulateCache(key, std::move(endpoints));
   }
 
+  void PopulateCacheWithNegativeEntryForUrl(std::string_view host) {
+    HostCache::Key key = HostCache::Key(
+        url::SchemeHostPort(GURL(host)), DnsQueryType::UNSPECIFIED,
+        /*host_resolver_flags=*/0, HostResolverSource::ANY,
+        NetworkAnonymizationKey(), handles::kInvalidNetworkHandle);
+    resolve_context_->host_cache()->Set(
+        key,
+        HostCache::Entry(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS),
+        base::TimeTicks::Now(), kDefaultTtl);
+  }
+
   void AdvanceTickClockToExpirePopulatedCacheEntries() {
     // PopulateCache() uses kDefaultTtl for TTL.
     FastForwardBy(kDefaultTtl);
@@ -1380,6 +1391,9 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   int rv = requester.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  EXPECT_FALSE(requester.request()->IsStaleWhileRefreshing());
+  EXPECT_FALSE(requester.request()->GetStaleInfo());
+
   mock_dns_client_->CompleteDelayedTransactions();
   requester.WaitForFinished();
   EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
@@ -1516,6 +1530,44 @@ TEST_F(HostResolverServiceEndpointRequestTest, AllowStaleWhileRefreshing) {
   EXPECT_FALSE(requester.finished_result());
 
   // Wait for completion. The request should provide fresh results now.
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(ElementsAre(fresh_endpoint1),
+                                                ElementsAre(fresh_endpoint2))));
+  EXPECT_FALSE(requester.request()->IsStaleWhileRefreshing());
+  EXPECT_FALSE(requester.request()->GetStaleInfo());
+}
+
+// Tests that a stale negative cache entry is not treated as the final result.
+// The request should refresh without providing the stale error as an
+// intermediate result.
+TEST_F(HostResolverServiceEndpointRequestTest,
+       AllowStaleWhileRefreshingStaleNegative) {
+  UseNonDelayedDnsRules("ok");
+
+  IPEndPoint fresh_endpoint1 = MakeIPEndPoint("127.0.0.1", 443);
+  IPEndPoint fresh_endpoint2 = MakeIPEndPoint("::1", 443);
+
+  PopulateCacheWithNegativeEntryForUrl("https://ok");
+  AdvanceTickClockToExpirePopulatedCacheEntries();
+
+  ResolveHostParameters parameters;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
+  Requester requester = CreateRequester("https://ok", std::move(parameters));
+
+  // The stale negative result should not finish the request synchronously.
+  int rv = requester.Start();
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // The stale negative result should not be provided as an intermediate
+  // result.
+  EXPECT_THAT(requester.request()->GetEndpointResults(), IsEmpty());
+  EXPECT_FALSE(requester.request()->IsStaleWhileRefreshing());
+  EXPECT_FALSE(requester.request()->GetStaleInfo());
+
+  // Wait for completion. The request should provide fresh results.
   requester.WaitForFinished();
   EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
   EXPECT_THAT(requester.finished_endpoints(),

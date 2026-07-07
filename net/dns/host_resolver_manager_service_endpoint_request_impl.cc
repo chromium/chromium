@@ -364,8 +364,7 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
       only_ipv6_reachable, *job_key_, ip_address, cache_usage,
       parameters_.secure_dns_policy, parameters_.source, net_log_, host_cache(),
       &tasks_, &stale_info_);
-  bool is_stale = results.error() == OK && stale_info_.has_value() &&
-                  stale_info_->is_stale();
+  bool is_stale = stale_info_.has_value() && stale_info_->is_stale();
 
   if (is_stale && stale_allowed_while_refreshing) {
     // When a stale result is found, ResolveLocally() returns the stale result
@@ -395,14 +394,20 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
   }
 
   if (is_stale && stale_allowed_while_refreshing) {
-    // Allow using stale results only when there is no network change.
-    // TODO(crbug.com/383174960): This also exclude results that are obtained
-    // from the same network but the device got disconnected/connected events.
-    // Ideally we should be able to use such results.
-    if (results.network_changes() == host_cache()->network_changes()) {
+    if (results.error() == OK &&
+        results.network_changes() == host_cache()->network_changes()) {
+      // Allow using stale results only when there is no network change.
+      // TODO(crbug.com/383174960): This also excludes results that are obtained
+      // from the same network but the device got disconnected/connected
+      // events. Ideally we should be able to use such results.
       // TODO(crbug.com/485672648): Consider setting resolution details for
       // stale endpoints.
       stale_endpoints_ = results.ConvertToServiceEndpoints(host_.GetPort());
+    } else {
+      // A stale negative result or a stale result from a different network
+      // isn't useful as an intermediate result. Clear the stale info so that
+      // `this` isn't considered to be serving stale results while refreshing.
+      stale_info_.reset();
     }
     if (!stale_endpoints_.empty()) {
       net_log_.AddEvent(
