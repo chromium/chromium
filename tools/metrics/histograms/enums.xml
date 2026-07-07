@@ -5170,6 +5170,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024362" label="DRM_E_ARITHMETIC_OVERFLOW (0x80070216)"/>
   <int value="-2147024319" label="ERROR_INVALID_IMAGE_HASH (0x80070241)"/>
   <int value="-2147024110" label="ERROR_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
+  <int value="-2147023901" label="ERROR_OPERATION_ABORTED"/>
   <int value="-2147023843" label="ERROR_SERVICE_REQUEST_TIMEOUT"/>
   <int value="-2147023838" label="ERROR_SERVICE_DISABLED"/>
   <int value="-2147023836" label="ERROR_SERVICE_DOES_NOT_EXIST"/>
@@ -5194,6 +5195,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023156" label="RPC_S_DUPLICATE_ENDPOINT"/>
   <int value="-2147023143" label="EPT_S_NOT_REGISTERED"/>
   <int value="-2147023113" label="RPC_X_BAD_STUB_DATA"/>
+  <int value="-2147022646" label="ERROR_NOT_CONNECTED"/>
   <int value="-2147019873" label="E_NOT_VALID_STATE (0x8007139F)"/>
   <int value="-2147012894" label="WININET_E_TIMEOUT"/>
   <int value="-2147012889" label="WININET_E_NAME_NOT_RESOLVED"/>
