@@ -191,6 +191,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const scoped_refptr<PolicyContainerHost> policy_container_host() const {
     return policy_container_host_;
   }
+  void FlushRemotesForTesting();
 
   static const char* ResultToString(Result result);
 
