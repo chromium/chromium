@@ -1584,9 +1584,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (ChromeFeatureList.sGestureUserEducationBackSwipe.isEnabled()
                     && !DeviceInfo.isAutomotive()
                     && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                    && UiUtils.isGestureNavigationMode(mActivity.getWindow())
                     && TrackerFactory.getTrackerForProfile(profile)
-                            .wouldTriggerHelpUi(FeatureConstants.GESTURE_USER_EDUCATION)) {
+                            .wouldTriggerHelpUi(FeatureConstants.GESTURE_USER_EDUCATION)
+                    && UiUtils.isGestureNavigationMode(mActivity.getWindow())) {
                 mGestureUserEducationIphController =
                         new GestureUserEducationIphController(
                                 mActivity.findViewById(R.id.compositor_view_holder),

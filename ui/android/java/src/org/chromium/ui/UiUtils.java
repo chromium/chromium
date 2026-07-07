@@ -7,7 +7,12 @@ package org.chromium.ui;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -64,6 +69,7 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /** Utility functions for common Android UI tasks. This class is not supposed to be instantiated. */
 @NullMarked
@@ -80,6 +86,14 @@ public class UiUtils {
 
     // Font feature setting to disable ligature rendering.
     private static final String NO_LIGATURES = "\"liga\" 0, \"clig\" 0";
+
+    /**
+     * Cache for window metrics per Activity. Cache this because getMaximumWindowMetrics() triggers
+     * an IPC. The value is cleared when a configuration change happens that affects window sizes.
+     * The WeakHashMap ensures there are no memory leaks when an Activity is destroyed.
+     */
+    private static final WeakHashMap<Activity, GestureNavMetrics> sActivityGestureNavMetrics =
+            new WeakHashMap<>();
 
     /** Guards this class from being instantiated. */
     private UiUtils() {}
@@ -459,18 +473,79 @@ public class UiUtils {
                 != Configuration.KEYBOARD_NOKEYS;
     }
 
+    private static class GestureNavMetrics implements ComponentCallbacks {
+        public @Nullable WindowInsetsCompat windowInsets;
+        private @Nullable Configuration mLastConfig;
+
+        public void updateConfig(Configuration config) {
+            if (mLastConfig == null) {
+                mLastConfig = new Configuration(config);
+            } else {
+                mLastConfig.setTo(config);
+            }
+        }
+
+        @Override
+        public void onConfigurationChanged(Configuration newConfig) {
+            boolean shouldUpdate = true;
+            if (mLastConfig != null) {
+                int diff = mLastConfig.diff(newConfig);
+                int mask =
+                        ActivityInfo.CONFIG_SCREEN_SIZE
+                                | ActivityInfo.CONFIG_ORIENTATION
+                                | ActivityInfo.CONFIG_SCREEN_LAYOUT
+                                | ActivityInfo.CONFIG_SMALLEST_SCREEN_SIZE
+                                | ActivityInfo.CONFIG_DENSITY
+                                | ActivityInfo.CONFIG_UI_MODE;
+                shouldUpdate = (diff & mask) != 0;
+            }
+            if (shouldUpdate) {
+                windowInsets = null;
+            }
+            updateConfig(newConfig);
+        }
+
+        @Override
+        public void onLowMemory() {}
+    }
+
     /**
      * @param window The application window which includes the decor view.
      * @return True if gesture navigation mode is on.
      */
     public static boolean isGestureNavigationMode(Window window) {
         WindowInsetsCompat windowInsets;
+        boolean isMultiWindow = false;
+        Activity activity = ContextUtils.activityFromContext(window.getContext());
+        if (activity != null) {
+            isMultiWindow = activity.isInMultiWindowMode();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && isMultiWindow
                 && UiAndroidFeatureMap.isEnabled(
                         UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION)) {
-            WindowMetrics maxMetrics = window.getWindowManager().getMaximumWindowMetrics();
-            windowInsets = WindowInsetsCompat.toWindowInsetsCompat(maxMetrics.getWindowInsets());
+            if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.CACHED_GESTURE_NAV_METRICS)) {
+                assertNonNull(activity);
+                GestureNavMetrics cached = sActivityGestureNavMetrics.get(activity);
+                if (cached == null) {
+                    cached = new GestureNavMetrics();
+                    activity.registerComponentCallbacks(cached);
+                    sActivityGestureNavMetrics.put(activity, cached);
+                }
+                if (cached.windowInsets == null) {
+                    WindowMetrics maxMetrics = window.getWindowManager().getMaximumWindowMetrics();
+                    cached.windowInsets =
+                            WindowInsetsCompat.toWindowInsetsCompat(maxMetrics.getWindowInsets());
+                    cached.updateConfig(activity.getResources().getConfiguration());
+                }
+                windowInsets = cached.windowInsets;
+            } else {
+                WindowMetrics maxMetrics = window.getWindowManager().getMaximumWindowMetrics();
+                windowInsets =
+                        WindowInsetsCompat.toWindowInsetsCompat(maxMetrics.getWindowInsets());
+            }
         } else {
+            // This is not reliable in desktop mode.
             // https://stackoverflow.com/a/70514883
             windowInsets =
                     WindowInsetsCompat.toWindowInsetsCompat(
