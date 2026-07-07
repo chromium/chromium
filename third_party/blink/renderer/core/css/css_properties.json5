@@ -4827,6 +4827,10 @@
         "dashed", "solid", "double"
       ],
       typedom_types: ["Keyword"],
+      typedom_keywords: [
+        "none", "hidden", "inset", "groove", "outset", "ridge", "dotted",
+        "dashed", "solid", "double", "auto"
+      ],
       default_value: "none",
       type_name: "EBorderStyle",
       style_builder_custom_functions: ["initial", "inherit", "value"],
