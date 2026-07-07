@@ -8601,6 +8601,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "semantic-embedder-api",
+    "owners": [
+      "//chrome/browser/ai/OWNERS",
+      "builtin-ai-team@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "send-tab-to-self-enhanced-handoff",
     "owners": ["mastiz@chromium.org", "treib@chromium.org"],
     "expiry_milestone": 160

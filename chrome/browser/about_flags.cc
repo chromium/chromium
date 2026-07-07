@@ -4611,6 +4611,12 @@ const FeatureEntry::Choice kAISummarizationPerformancePreferenceChoices[] = {
      "AISummarizationPerformancePreference,OnDeviceModelLitertLmBackend,"
      "OptimizationGuideManifestBroker"}};
 
+// Semantic Embedder. Enables the API for both Window and Worker contexts.
+const FeatureEntry::Choice kAISemanticEmbedderChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "AIEmbeddingsAPI,AIEmbeddingsAPIForWorkers"}};
+
 // Classifier requires LiteRT-LM.
 const FeatureEntry::Choice kAIClassifierChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -10275,6 +10281,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"proofreader-api", flag_descriptions::kProofreaderAPIName,
      flag_descriptions::kProofreaderAPIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kAIProofreaderChoices), flag_descriptions::kAIAPIsLinks},
+
+    {"semantic-embedder-api", flag_descriptions::kSemanticEmbedderAPIName,
+     flag_descriptions::kSemanticEmbedderAPIDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kAISemanticEmbedderChoices),
+     flag_descriptions::kAIAPIsLinks},
 
     {"classifier-api", flag_descriptions::kClassifierAPIName,
      flag_descriptions::kClassifierAPIDescription, kOsDesktop,

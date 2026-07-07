@@ -5132,6 +5132,13 @@ inline constexpr char kProofreaderAPIDescription[] =
     "The API may be subject to changes including the supported options. "
     "Please refer to the built-in AI documentation [1] for details.";
 
+inline constexpr char kSemanticEmbedderAPIName[] = "Semantic Embedder API";
+inline constexpr char kSemanticEmbedderAPIDescription[] =
+    "Enables the Semantic Embedder API, allowing you to generate semantic "
+    "embeddings with a built-in model in Chrome. "
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI documentation [1] for details.";
+
 inline constexpr char kClassifierAPIName[] = "Classifier API";
 inline constexpr char kClassifierAPIDescription[] =
     "Enables the Classifier API, allowing you to classify a piece of text "
