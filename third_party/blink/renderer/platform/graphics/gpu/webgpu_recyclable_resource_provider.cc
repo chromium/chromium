@@ -160,12 +160,8 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
               ? std::make_optional(
                     Canvas2DResourceProvider::kUnusedResourceExpirationTime)
               : std::nullopt;
-      bool is_single_buffered = shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceRaster",
-          is_single_buffered ? 0 : kMaxRecycledCanvasResources,
+          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
           expiration_time);
     }
   }
@@ -206,8 +202,6 @@ WebGpuRecyclableResourceProvider::NewOrRecycledResource() {
     return nullptr;
   }
 
-  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
-
   if (!resource->IsInitialized()) {
     resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
                          hdr_metadata_, /*is_accelerated=*/true);
@@ -226,7 +220,7 @@ bool WebGpuRecyclableResourceProvider::IsValid() const {
 
 void WebGpuRecyclableResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered())
+  DCHECK(resource_->HasOneRef())
       << "Write access requires exclusive access to the resource";
   DCHECK(!resource()->is_cross_thread())
       << "Write access is only allowed on the owning thread";
@@ -281,11 +275,6 @@ void WebGpuRecyclableResourceProvider::ClearUnusedResources() {
   }
 }
 
-bool WebGpuRecyclableResourceProvider::IsSingleBuffered() const {
-  return image_pool_ && image_pool_->GetImageInfo().usage.Has(
-                            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-}
-
 void WebGpuRecyclableResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
@@ -308,14 +297,6 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
 }
 
 bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
-  // If the canvas is single buffered, concurrent read/writes to the resource
-  // are allowed. Note that we ignore the resource lost case as well since
-  // that only indicates that we did not get a sync token for read/write
-  // synchronization which is not a requirement for single buffered canvas.
-  if (IsSingleBuffered()) {
-    return false;
-  }
-
   // If the resource was lost, we can not use it for writes again.
   if (resource()->IsLost()) {
     return true;

@@ -130,7 +130,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   void ClearUnusedResources();
-  bool IsSingleBuffered() const;
   bool IsGpuContextLost() const;
   CanvasImageProvider* GetOrCreateImageProvider();
 
