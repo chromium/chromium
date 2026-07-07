@@ -33,6 +33,7 @@ import com.google.android.material.shape.ShapeAppearance;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.drawable.BorderDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -42,6 +43,9 @@ import org.chromium.ui.util.AttrUtils;
 /** A binder class for color items on the color picker view. */
 @NullMarked
 public class ColorPickerItemViewBinder {
+    private static final int[] CHECKED_STATE_SET =
+            new int[] {android.R.attr.state_checkable, android.R.attr.state_checked};
+
     // When a color picker item is not selected, a full circle of color is shown. But when an item
     // becomes selected, the desire is to show a UI element mimicking a radio button. This consists
     // of a full circle of color with a ring cut out inside that is transparent to the background
@@ -91,29 +95,35 @@ public class ColorPickerItemViewBinder {
         colorIcon.setRippleColor(
                 TabGroupColorPickerUtils.buildTabGroupColorPickerRippleColorStateList(
                         context, isIncognito));
+        view.setOnFocusChangeListener((v, hasFocus) -> refreshColorIconOnSelection(model, v));
     }
 
     private static void refreshColorIconOnSelection(PropertyModel model, View view) {
         boolean isSelected = model.get(IS_SELECTED);
+        boolean isFocused = view.isFocused();
 
         var button = (MaterialButton) view;
         button.setToggleCheckedStateOnClick(false);
         button.setChecked(isSelected);
 
         ViewOverlay overlay = view.getOverlay();
+        overlay.clear();
 
         if (isSelected) {
-            BorderDrawable borderDrawable = getBorderDrawable(model, button);
+            BorderDrawable borderDrawable = getSelectedBorderDrawable(model, button);
             overlay.add(borderDrawable);
-        } else {
-            overlay.clear();
+        }
+        if (isFocused) {
+            BorderDrawable focusDrawable = getFocusBorderDrawable(button, isSelected);
+            overlay.add(focusDrawable);
         }
 
         // Refresh the color item view.
         view.invalidate();
     }
 
-    private static BorderDrawable getBorderDrawable(PropertyModel model, MaterialButton button) {
+    private static BorderDrawable getSelectedBorderDrawable(
+            PropertyModel model, MaterialButton button) {
         Resources res = button.getResources();
 
         // Background drawable size.
@@ -128,9 +138,7 @@ public class ColorPickerItemViewBinder {
             assert false : "Expected shape appearance tag to be present";
             shapeAppearance = button.getShapeAppearance();
         }
-        var shapeAppearanceModel =
-                shapeAppearance.getShapeForState(
-                        new int[] {android.R.attr.state_checkable, android.R.attr.state_checked});
+        var shapeAppearanceModel = shapeAppearance.getShapeForState(CHECKED_STATE_SET);
         // Corner size of the checked (rounded rect) background. The reason we pass a RectF to
         // #getCornerSize is because the corner size is calculated based on the bounds of the
         // drawable, e.g. it could be a percentage.
@@ -156,6 +164,44 @@ public class ColorPickerItemViewBinder {
                         borderCornerSizePx);
 
         // Set the bounds of the drawable to match the color button view.
+        borderDrawable.setBounds(0, 0, sizePx, sizePx);
+        return borderDrawable;
+    }
+
+    private static BorderDrawable getFocusBorderDrawable(
+            MaterialButton button, boolean isSelected) {
+        Resources res = button.getResources();
+        Context context = button.getContext();
+
+        int sizePx = AttrUtils.getDimensionPixelSize(context, R.attr.minInteractTargetSize);
+        int insetPx = button.getInsetTop();
+
+        int borderWidthPx = res.getDimensionPixelSize(R.dimen.color_picker_button_stroke_width);
+        int offsetPx = res.getDimensionPixelSize(R.dimen.color_picker_button_focus_ring_offset);
+
+        int focusInsetPx = insetPx - offsetPx - (borderWidthPx / 2);
+        float focusRadiusPx;
+        if (isSelected) {
+            ShapeAppearance shapeAppearance =
+                    (ShapeAppearance) button.getTag(R.id.tag_original_shape_appearance);
+            if (shapeAppearance == null) {
+                assert false : "Expected shape appearance tag to be present";
+                shapeAppearance = button.getShapeAppearance();
+            }
+            var shapeAppearanceModel = shapeAppearance.getShapeForState(CHECKED_STATE_SET);
+            float cornerSize =
+                    shapeAppearanceModel
+                            .getTopLeftCornerSize()
+                            .getCornerSize(new RectF(0, 0, sizePx, sizePx));
+            focusRadiusPx = cornerSize + offsetPx + (borderWidthPx / 2.0f);
+        } else {
+            focusRadiusPx = sizePx / 2.0f;
+        }
+
+        int focusColor = SemanticColorUtils.getColorPrimary(context);
+
+        BorderDrawable borderDrawable =
+                new BorderDrawable(borderWidthPx, focusInsetPx, focusColor, focusRadiusPx);
         borderDrawable.setBounds(0, 0, sizePx, sizePx);
         return borderDrawable;
     }
