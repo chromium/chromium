@@ -379,11 +379,6 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
     FlushForImageListener::Get()->RemoveObserver(this);
   }
 
-  // Last chance for outstanding GPU timers to record metrics.
-  if (RasterInterface()) {
-    CheckGpuTimers(RasterInterface());
-  }
-
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }

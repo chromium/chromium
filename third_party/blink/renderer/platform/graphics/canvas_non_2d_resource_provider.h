@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -61,7 +60,6 @@ class CanvasImageProvider;
 class CanvasResourceProviderDelegate;
 class WebGraphicsSharedImageInterfaceProvider;
 
-
 class PLATFORM_EXPORT CanvasNon2DResourceProvider
     : public CanvasMemoryDumpClient,
       public MemoryManagedPaintRecorder::Client,
@@ -69,8 +67,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
-      public BitmapGpuChannelLostObserver,
-      public ScopedRasterTimer::Host {
+      public BitmapGpuChannelLostObserver {
  public:
   static std::unique_ptr<CanvasNon2DResourceProvider> Create(
       gfx::Size size,
