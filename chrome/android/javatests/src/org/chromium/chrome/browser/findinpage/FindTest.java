@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -235,18 +238,14 @@ public class FindTest {
     /** Verify Find In Page Next button. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/515428606")
     @Feature({"FindInPage"})
     public void testFindNext() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
-        // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+        onView(withId(R.id.find_next_button)).perform(click());
         waitForFindResults("2/7");
         for (int i = 2; i <= 7; i++) {
-            TouchCommon.singleClickView(
-                    mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+            onView(withId(R.id.find_next_button)).perform(click());
         }
         waitForFindResults("1/7");
     }
@@ -254,17 +253,13 @@ public class FindTest {
     /** Verify Find In Page Next/Previous button. */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/515428606")
     @Feature({"FindInPage"})
     public void testFindNextPrevious() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
-        // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+        onView(withId(R.id.find_next_button)).perform(click());
         waitForFindResults("2/7");
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
+        onView(withId(R.id.find_prev_button)).perform(click());
         waitForFindResults("1/7");
     }
 
