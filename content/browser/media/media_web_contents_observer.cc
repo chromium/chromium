@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <set>
 #include <tuple>
 
 #include "base/debug/crash_logging.h"
@@ -655,6 +654,14 @@ void MediaWebContentsObserver::OnMediaPlaying() {
   has_played_before_ = true;
 }
 
+void MediaWebContentsObserver::OnAudibilityBypassRevoked(
+    const MediaPlayerId& id) {
+  auto it = media_player_observer_hosts_.find(id);
+  if (it != media_player_observer_hosts_.end()) {
+    it->second->NotifyAudioStreamMonitorIfNeeded();
+  }
+}
+
 void MediaWebContentsObserver::OnAudioOutputSinkChangedWithRawDeviceId(
     const MediaPlayerId& player_id,
     const std::string& raw_device_id) {
@@ -821,10 +828,16 @@ AudibilityBypassTracker::AudibilityBypassTracker(RenderFrameHost* rfh)
 AudibilityBypassTracker::~AudibilityBypassTracker() = default;
 
 // static
-void AudibilityBypassTracker::AddGrant(RenderFrameHost* rfh) {
+AudibilityBypassTracker::ScopedGrant AudibilityBypassTracker::AddGrant(
+    RenderFrameHost* rfh) {
   if (rfh) {
-    GetOrCreateForCurrentDocument(rfh)->pending_grants_++;
+    auto* tracker = GetOrCreateForCurrentDocument(rfh);
+    int grant_id = ++tracker->next_grant_id_;
+    tracker->pending_grants_.insert(grant_id);
+    return ScopedGrant(base::BindOnce(&AudibilityBypassTracker::RevokeGrant,
+                                      rfh->GetGlobalId(), grant_id));
   }
+  return ScopedGrant();
 }
 
 // static
@@ -834,12 +847,13 @@ bool AudibilityBypassTracker::ClaimGrant(const MediaPlayerId& id) {
     return false;
   }
   auto* tracker = GetForCurrentDocument(rfh);
-  if (tracker && tracker->authorized_players_.contains(id)) {
+  if (tracker && tracker->active_grants_.contains(id)) {
     return true;
   }
-  if (tracker && tracker->pending_grants_ > 0) {
-    tracker->pending_grants_--;
-    tracker->authorized_players_.insert(id);
+  if (tracker && !tracker->pending_grants_.empty()) {
+    int grant_id = *tracker->pending_grants_.begin();
+    tracker->pending_grants_.erase(tracker->pending_grants_.begin());
+    tracker->active_grants_[id] = grant_id;
     return true;
   }
   return false;
@@ -853,7 +867,37 @@ void AudibilityBypassTracker::ReleaseGrant(const MediaPlayerId& id) {
   }
   auto* tracker = GetForCurrentDocument(rfh);
   if (tracker) {
-    tracker->authorized_players_.erase(id);
+    tracker->active_grants_.erase(id);
+  }
+}
+
+// static
+void AudibilityBypassTracker::RevokeGrant(GlobalRenderFrameHostId rfh_id,
+                                          int grant_id) {
+  auto* rfh = RenderFrameHost::FromID(rfh_id);
+  if (!rfh) {
+    return;
+  }
+  auto* tracker = GetForCurrentDocument(rfh);
+  if (!tracker) {
+    return;
+  }
+  if (tracker->pending_grants_.erase(grant_id)) {
+    return;
+  }
+  for (auto it = tracker->active_grants_.begin();
+       it != tracker->active_grants_.end(); ++it) {
+    if (it->second == grant_id) {
+      MediaPlayerId id = it->first;
+      tracker->active_grants_.erase(it);
+      auto* web_contents =
+          static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+      if (web_contents && web_contents->media_web_contents_observer()) {
+        web_contents->media_web_contents_observer()->OnAudibilityBypassRevoked(
+            id);
+      }
+      break;
+    }
   }
 }
 

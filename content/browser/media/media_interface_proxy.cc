@@ -38,6 +38,7 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -294,6 +295,50 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 #endif  // BUILDFLAG(IS_WIN)
 };
 
+#if BUILDFLAG(IS_WIN)
+// Proxies the MediaFoundationRendererExtension to observe the lifetime of the
+// MediaFoundationRenderer in the utility process. When either the renderer
+// or the utility process disconnects, the audibility bypass grant is revoked.
+class MediaFoundationRendererExtensionProxy
+    : public media::mojom::MediaFoundationRendererExtension {
+ public:
+  MediaFoundationRendererExtensionProxy(
+      mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
+          target_remote,
+      AudibilityBypassTracker::ScopedGrant grant)
+      : target_remote_(std::move(target_remote)), grant_(std::move(grant)) {
+    target_remote_.set_disconnect_handler(base::BindOnce(
+        &MediaFoundationRendererExtensionProxy::OnTargetDisconnect,
+        base::Unretained(this)));
+  }
+
+  ~MediaFoundationRendererExtensionProxy() override = default;
+
+  // media::mojom::MediaFoundationRendererExtension implementation.
+  void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override {
+    target_remote_->GetDCOMPSurface(std::move(callback));
+  }
+  void SetVideoStreamEnabled(bool enabled) override {
+    target_remote_->SetVideoStreamEnabled(enabled);
+  }
+  void SetOutputRect(const gfx::Rect& rect,
+                     SetOutputRectCallback callback) override {
+    target_remote_->SetOutputRect(rect, std::move(callback));
+  }
+
+ private:
+  void OnTargetDisconnect() {
+    // The utility process disconnected (MediaFoundationRenderer destroyed).
+    // Revoke the grant by resetting it.
+    grant_.RunAndReset();
+    target_remote_.reset();
+  }
+
+  mojo::Remote<media::mojom::MediaFoundationRendererExtension> target_remote_;
+  AudibilityBypassTracker::ScopedGrant grant_;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
@@ -439,13 +484,24 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   // with a CDM path in CreateCdm().
   auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
-    factory->CreateMediaFoundationRenderer(
-        std::move(media_log_remote), std::move(receiver),
-        std::move(renderer_extension_receiver));
-
     // `MediaFoundationRenderer` bypasses the browser's audio service.
     // Authorize the frame for audibility bypass claims.
-    AudibilityBypassTracker::AddGrant(&render_frame_host());
+    AudibilityBypassTracker::ScopedGrant grant =
+        AudibilityBypassTracker::AddGrant(&render_frame_host());
+
+    mojo::PendingRemote<media::mojom::MediaFoundationRendererExtension>
+        utility_extension_remote;
+    auto utility_extension_receiver =
+        utility_extension_remote.InitWithNewPipeAndPassReceiver();
+
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<MediaFoundationRendererExtensionProxy>(
+            std::move(utility_extension_remote), std::move(grant)),
+        std::move(renderer_extension_receiver));
+
+    factory->CreateMediaFoundationRenderer(
+        std::move(media_log_remote), std::move(receiver),
+        std::move(utility_extension_receiver));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

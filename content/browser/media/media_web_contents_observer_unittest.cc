@@ -363,7 +363,8 @@ TEST_F(MediaWebContentsObserverTest, AuthorizedBypassAllowed) {
   auto player = CreateAndAddPlayer(player_host);
 
   // Simulate audibility bypass authorization for the document.
-  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+  auto grant =
+      AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
 
   SetMediaMetadata(player.observer, /*has_audio=*/true, /*has_video=*/false);
 
@@ -395,7 +396,7 @@ TEST_F(MediaWebContentsObserverTest, AuthorizationIsFrameScoped) {
   auto child_player = CreateAndAddPlayer(child_player_host);
 
   // Authorize only the main frame.
-  AudibilityBypassTracker::AddGrant(main_rfh);
+  auto grant = AudibilityBypassTracker::AddGrant(main_rfh);
 
   // Child frame attempts bypass.
   SetMediaMetadata(child_player.observer, /*has_audio=*/true,
@@ -422,7 +423,8 @@ TEST_F(MediaWebContentsObserverTest,
   auto original_player = CreateAndAddPlayer(player_host);
 
   // Simulate MediaFoundationRenderer creation grant.
-  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+  auto grant =
+      AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
 
   // Original player claims the grant successfully.
   SetMediaMetadata(original_player.observer, true, false);
@@ -456,8 +458,10 @@ TEST_F(MediaWebContentsObserverTest,
   auto player_host = SetupPlayerHost();
 
   // Simulate two MediaFoundationRenderer creation grants.
-  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
-  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+  auto grant1 =
+      AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+  auto grant2 =
+      AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
 
   auto player1 = CreateAndAddPlayer(player_host);
   auto player2 = CreateAndAddPlayer(player_host);
@@ -487,6 +491,31 @@ TEST_F(MediaWebContentsObserverTest,
   SetUseAudioService(player3.observer, false);
   PlayMedia(player3.observer);
   EXPECT_FALSE(IsWebContentsAudible());
+}
+
+// This test reproduces the issue where an attacker can mint bypass grants.
+// By creating grants and then disconnecting the pipe, the grant should be
+// automatically revoked, preventing the bypass from being exploited.
+TEST_F(MediaWebContentsObserverTest, GrantRevokedOnDisconnect) {
+  RenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  MediaPlayerId player_id(rfh->GetGlobalId(), 1);
+
+  // Simulate a compromised renderer requesting MediaFoundationRenderer
+  // creation, which mints a new bypass grant.
+  auto grant = AudibilityBypassTracker::AddGrant(rfh);
+
+  // The player can successfully claim the grant.
+  EXPECT_TRUE(AudibilityBypassTracker::ClaimGrant(player_id));
+
+  // In the exploit scenario, the attacker disconnects the dummy Mojo pipe
+  // but attempts to continue using the grant.
+  // With the fix, the disconnection automatically calls RevokeGrant.
+  grant.RunAndReset();
+
+  // After revocation, the player should be unregistered from the bypass
+  // authorization. Next time it tries to claim, it should fail.
+  AudibilityBypassTracker::ReleaseGrant(player_id);
+  EXPECT_FALSE(AudibilityBypassTracker::ClaimGrant(player_id));
 }
 
 }  // namespace
