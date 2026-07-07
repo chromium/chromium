@@ -205,13 +205,16 @@ void ComposeDialogView::OnBuildMenuComplete(
   }
   // Remove everything that is not copy, paste, or cut or spellcheck
   // suggestions.
+  constexpr int kMaxSpellingSuggestionsLimit = 5;
+  constexpr int kSpellcheckSuggestionLast =
+      IDC_SPELLCHECK_SUGGESTION_0 + kMaxSpellingSuggestionsLimit - 1;
   std::vector<int> command_ids;
   for (size_t index = 0; index < menu->menu_model().GetItemCount(); index++) {
     int command_id = menu->menu_model().GetCommandIdAt(index);
     if ((command_id < IDC_CONTENT_CONTEXT_COPY ||
          command_id > IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE) &&
         (command_id < IDC_SPELLCHECK_SUGGESTION_0 ||
-         command_id > IDC_SPELLCHECK_SUGGESTION_LAST) &&
+         command_id > kSpellcheckSuggestionLast) &&
         command_id != IDC_CONTENT_CONTEXT_INSPECTELEMENT && command_id > 0) {
       command_ids.push_back(command_id);
     }

@@ -15,7 +15,7 @@ namespace extensions {
 // that require items in hotdog menu.
 //
 // The generated ids lie within the interval:
-// [IDC_EXTENSION_INSTALL_ERROR_FIRST, IDC_EXTENSIONS_CONTEXT_CUSTOM_LAST].
+// [IDC_EXTENSION_INSTALL_ERROR_FIRST, IDC_EXTENSION_INSTALL_ERROR_FIRST + 100].
 class ExtensionInstallErrorMenuItemIdProvider {
  public:
   ExtensionInstallErrorMenuItemIdProvider();

@@ -20,6 +20,11 @@ namespace arc {
 
 const int OpenWithMenu::kNumMainMenuCommands = 4;
 const int OpenWithMenu::kNumSubMenuCommands = 10;
+namespace {
+constexpr int kMaxOpenWithCommands = 14;
+constexpr int IDC_CONTENT_CONTEXT_OPEN_WITH_LAST =
+    IDC_CONTENT_CONTEXT_OPEN_WITH1 + kMaxOpenWithCommands - 1;
+}  // namespace
 
 bool OpenWithMenu::SubMenuDelegate::IsCommandIdChecked(int command_id) const {
   return false;

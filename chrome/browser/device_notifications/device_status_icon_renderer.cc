@@ -25,6 +25,10 @@
 
 namespace {
 
+constexpr int kMaxDeviceStatusTrayIcons = 40;
+constexpr int IDC_DEVICE_SYSTEM_TRAY_ICON_LAST =
+    IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + kMaxDeviceStatusTrayIcons - 1;
+
 // Returns profile username.
 std::u16string GetProfileUserName(Profile* profile) {
   ProfileAttributesEntry* profile_attributes =

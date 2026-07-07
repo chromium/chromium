@@ -31,6 +31,10 @@ using base::ASCIIToUTF16;
 
 // All tests in this file assume that 4 and 10 IDC command IDs are reserved
 // for the main and sub menus, respectively.
+constexpr int kNumOpenWithCommands = 14;
+constexpr int IDC_CONTENT_CONTEXT_OPEN_WITH_LAST =
+    IDC_CONTENT_CONTEXT_OPEN_WITH1 + kNumOpenWithCommands - 1;
+
 const int kFirstMainMenuId = IDC_CONTENT_CONTEXT_OPEN_WITH1;
 const int kFirstSubMenuId = kFirstMainMenuId + 4;
 const int kNumCommandIds =

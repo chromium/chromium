@@ -30,6 +30,10 @@
 
 namespace {
 
+constexpr int kMaxDeviceStatusTrayIcons = 40;
+constexpr int IDC_DEVICE_SYSTEM_TRAY_ICON_LAST =
+    IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + kMaxDeviceStatusTrayIcons - 1;
+
 std::u16string GetExpectedOriginConnectionCountLabel(Profile* profile,
                                                      const url::Origin& origin,
                                                      const std::string& name,

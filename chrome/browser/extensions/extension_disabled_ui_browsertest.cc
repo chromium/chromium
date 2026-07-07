@@ -357,6 +357,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
 }
 
 namespace {
+
+constexpr int kMaxExtensionInstallErrors = 101;
+constexpr int IDC_EXTENSION_INSTALL_ERROR_LAST =
+    IDC_EXTENSION_INSTALL_ERROR_FIRST + kMaxExtensionInstallErrors - 1;
+
 int GetExtensionDisabledErrorCount(GlobalErrorService* service,
                                    const std::u16string_view extension_name) {
   DCHECK(!extension_name.empty());

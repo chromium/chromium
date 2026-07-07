@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "ui/menus/simple_menu_model.h"
@@ -19,6 +20,11 @@ class WebContents;
 }
 
 namespace send_tab_to_self {
+
+// The maximum number of target devices to show.
+inline constexpr size_t kMaxDevices = 5;
+inline constexpr int IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST =
+    IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 + kMaxDevices - 1;
 
 // A delegate class to manage Send Tab to Self items in context menus.
 // Acts as the ui::SimpleMenuModel::Delegate for the submenu.

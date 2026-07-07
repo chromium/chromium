@@ -60,6 +60,11 @@ using content::WebContents;
 
 namespace {
 
+constexpr int kMaxMediaStreamCaptureListItems = 100;
+constexpr int IDC_MEDIA_CONTEXT_MEDIA_STREAM_CAPTURE_LIST_LAST =
+    IDC_MEDIA_CONTEXT_MEDIA_STREAM_CAPTURE_LIST_FIRST +
+    kMaxMediaStreamCaptureListItems - 1;
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const extensions::Extension* GetExtension(WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -24,6 +24,10 @@
 
 using content::BrowserThread;
 
+constexpr int kMaxLanguages = 100;
+constexpr int IDC_SPELLCHECK_LANGUAGES_LAST =
+    IDC_SPELLCHECK_LANGUAGES_FIRST + kMaxLanguages - 1;
+
 SpellingOptionsSubMenuObserver::SpellingOptionsSubMenuObserver(
     RenderViewContextMenuProxy* proxy,
     ui::SimpleMenuModel::Delegate* delegate,
@@ -50,8 +54,7 @@ void SpellingOptionsSubMenuObserver::InitMenu(
   content::BrowserContext* browser_context = proxy_->GetBrowserContext();
   DCHECK(browser_context);
   SpellcheckService::GetDictionaries(browser_context, &dictionaries_);
-  DCHECK(dictionaries_.size() <
-         IDC_SPELLCHECK_LANGUAGES_LAST - IDC_SPELLCHECK_LANGUAGES_FIRST);
+  DCHECK(dictionaries_.size() < kMaxLanguages);
   const std::string app_locale = g_browser_process->GetApplicationLocale();
 
   if (dictionaries_.size() > 1) {
@@ -60,9 +63,9 @@ void SpellingOptionsSubMenuObserver::InitMenu(
         IDS_CONTENT_CONTEXT_SPELLCHECK_MULTI_LINGUAL, language_group_id_);
   }
 
-  const size_t kMaxLanguages = static_cast<size_t>(
-      IDC_SPELLCHECK_LANGUAGES_FIRST - IDC_SPELLCHECK_LANGUAGES_LAST);
-  for (size_t i = 0; i < dictionaries_.size() && i < kMaxLanguages; ++i) {
+  for (size_t i = 0;
+       i < dictionaries_.size() && i < static_cast<size_t>(kMaxLanguages);
+       ++i) {
     submenu_model_.AddRadioItem(
         IDC_SPELLCHECK_LANGUAGES_FIRST + i,
         l10n_util::GetDisplayNameForLocale(dictionaries_[i].language,
@@ -103,7 +106,7 @@ void SpellingOptionsSubMenuObserver::InitMenu(
 bool SpellingOptionsSubMenuObserver::IsCommandIdSupported(int command_id) {
   // Allow Spell Check language items on sub menu for text area context menu.
   if (command_id >= IDC_SPELLCHECK_LANGUAGES_FIRST &&
-      command_id < IDC_SPELLCHECK_LANGUAGES_LAST) {
+      command_id <= IDC_SPELLCHECK_LANGUAGES_LAST) {
     DCHECK_GT(IDC_SPELLCHECK_LANGUAGES_FIRST + dictionaries_.size(),
               static_cast<size_t>(command_id));
     return true;
@@ -126,7 +129,7 @@ bool SpellingOptionsSubMenuObserver::IsCommandIdChecked(int command_id) {
     return num_selected_dictionaries_ == dictionaries_.size();
 
   if (command_id >= IDC_SPELLCHECK_LANGUAGES_FIRST &&
-      command_id < IDC_SPELLCHECK_LANGUAGES_LAST) {
+      command_id <= IDC_SPELLCHECK_LANGUAGES_LAST) {
     if (num_selected_dictionaries_ == dictionaries_.size())
       return dictionaries_.size() == 1;
 
@@ -154,7 +157,7 @@ bool SpellingOptionsSubMenuObserver::IsCommandIdEnabled(int command_id) {
   DCHECK(profile);
   const PrefService* pref = profile->GetPrefs();
   if ((command_id >= IDC_SPELLCHECK_LANGUAGES_FIRST &&
-       command_id < IDC_SPELLCHECK_LANGUAGES_LAST) ||
+       command_id <= IDC_SPELLCHECK_LANGUAGES_LAST) ||
       command_id == IDC_SPELLCHECK_MULTI_LINGUAL) {
     return pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
   }

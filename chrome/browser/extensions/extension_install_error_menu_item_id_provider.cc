@@ -17,6 +17,10 @@ namespace extensions {
 
 namespace {
 
+constexpr int kMaxExtensionInstallErrors = 101;
+constexpr int IDC_EXTENSION_INSTALL_ERROR_LAST =
+    IDC_EXTENSION_INSTALL_ERROR_FIRST + kMaxExtensionInstallErrors - 1;
+
 base::LazyInstance<std::bitset<IDC_EXTENSION_INSTALL_ERROR_LAST -
                                IDC_EXTENSION_INSTALL_ERROR_FIRST +
                                1>>::DestructorAtExit menu_command_ids =

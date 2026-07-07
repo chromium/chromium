@@ -58,6 +58,9 @@ apps::IntentPtr CreateIntent(
 
 // The maximum number of smart actions to show.
 constexpr size_t kMaxMainMenuCommands = 5;
+constexpr int IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION_LAST =
+    IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1 + kMaxMainMenuCommands -
+    1;
 
 StartSmartSelectionActionMenu::StartSmartSelectionActionMenu(
     content::BrowserContext* context,

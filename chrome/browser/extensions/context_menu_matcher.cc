@@ -29,6 +29,10 @@ namespace {
 
 // The range of command IDs reserved for extension's custom menus.
 // TODO(oshima): These values will be injected by embedders.
+constexpr int kMaxExtensionCustomCommands = 1000;
+constexpr int IDC_EXTENSIONS_CONTEXT_CUSTOM_LAST =
+    IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST + kMaxExtensionCustomCommands;
+
 int extensions_context_custom_first = IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST;
 int extensions_context_custom_last = IDC_EXTENSIONS_CONTEXT_CUSTOM_LAST;
 

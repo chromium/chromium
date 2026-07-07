@@ -44,6 +44,9 @@
 using content::BrowserThread;
 
 const int kMaxSpellingSuggestions = 3;
+constexpr int kMaxSpellingSuggestionsLimit = 5;
+constexpr int IDC_SPELLCHECK_SUGGESTION_LAST =
+    IDC_SPELLCHECK_SUGGESTION_0 + kMaxSpellingSuggestionsLimit - 1;
 
 SpellingMenuObserver::SpellingMenuObserver(RenderViewContextMenuProxy* proxy)
     : proxy_(proxy),
