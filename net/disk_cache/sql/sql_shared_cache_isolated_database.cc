@@ -372,4 +372,8 @@ SqlSharedCacheIsolatedDatabase::Read(const CacheEntryKey& entry_key,
   return read_result;
 }
 
+void SqlSharedCacheIsolatedDatabase::Cleanup() {
+  db_assets_.reset();
+}
+
 }  // namespace disk_cache

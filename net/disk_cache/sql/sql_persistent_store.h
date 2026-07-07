@@ -638,6 +638,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Returns the shard ID for a given cache key hash.
   ShardId GetShardIdForHash(CacheEntryKey::Hash key_hash) const;
 
+  SqlAsyncTaskManager& GetAsyncTaskManager() const {
+    return async_task_manager_.get();
+  }
+
   // Enables a strict corruption checking mode for testing purposes.
   void EnableStrictCorruptionCheckForTesting();
 
@@ -741,6 +745,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   const std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
+  const raw_ref<SqlAsyncTaskManager> async_task_manager_;
   const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
   const int64_t user_max_bytes_;
 

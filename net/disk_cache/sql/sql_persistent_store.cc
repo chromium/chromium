@@ -127,6 +127,7 @@ SqlPersistentStore::SqlPersistentStore(
         background_task_runners,
     SqlAsyncTaskManager& async_task_manager)
     : background_task_runners_(std::move(background_task_runners)),
+      async_task_manager_(async_task_manager),
       backend_shards_(CreateBackendShards(path,
                                           type,
                                           background_task_runners_,

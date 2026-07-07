@@ -111,6 +111,9 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
                          int offset,
                          scoped_refptr<net::IOBuffer> buffer);
 
+  // Releases `db_assets_`.
+  void Cleanup();
+
   void SetSimulateDbFailureForTesting(bool fail);
 
  private:
