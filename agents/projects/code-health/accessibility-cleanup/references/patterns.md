@@ -143,6 +143,36 @@ speaking before announcing the update.
 statusTextView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 ```
 
+### Bad pattern (Live Region State Leaks - Missing NONE Reset)
+
+In this pattern, a developer sets a view's live region to `polite` (or
+`assertive`) to announce a one-off temporary state change (such as an animation
+or a refresh). However, they never reset the live region when the action
+finishes. This leaves the view permanently flagged as a live region, which can
+cause unexpected and out-of-context announcements if the view's properties
+change later for an unrelated reason.
+
+```java
+// Bad: Setting the live region for a temporary action but failing to reset it
+iconView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+iconView.animate().rotation(360f).start();
+```
+
+### Good pattern (Resetting temporary live regions)
+
+If a view is not permanently intended to be a live region, it must be reset to
+`NONE` as soon as the temporary event finishes (e.g., inside an animation's
+`withEndAction` or `onAnimationEnd` callback). This strictly bounds the screen
+reader's announcements to only the specific event that was intended.
+
+```java
+// Good: Resetting the live region after the temporary action completes
+iconView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+iconView.animate().rotation(360f).withEndAction(() -> {
+    iconView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
+}).start();
+```
+
 ______________________________________________________________________
 
 ## Pattern: heading or paragraph semantics
@@ -246,9 +276,10 @@ ______________________________________________________________________
 ### Bad pattern (Moving the user's cursor arbitrarily)
 
 Unless it is to restore focus to a previously focused element (e.g. after
-dismissing a menu) or transition to an explicitly opened screen, do not
-proactively call `requestFocus()` or send `AccessibilityEvent.TYPE_VIEW_FOCUSED`
-to move the user's focus cursor.
+dismissing a menu) or transitioning to an explicitly opened screen,
+`requestFocus()` should never be proactively called, and an `AccessibilityEvent`
+of type `AccessibilityEvent.TYPE_VIEW_FOCUSED` should never be sent to move the
+user's focus cursor.
 
 ```java
 // Bad: Grabbing focus automatically on page load or state change without user interaction
@@ -329,8 +360,8 @@ public boolean performAccessibilityAction(View host, int action, Bundle argument
    (e.g. `BottomSheetContent#getSheetClosedAccessibilityStringId()`). These are
    correct API contracts and should not be removed.
 
-2. **Always Handle the Action:** If an action is added (e.g.,
-   `AccessibilityActionCompat.ACTION_EXPAND`), ensure
+2. **Always Handle the Action:** If a specific action is enabled or invoked
+   (e.g., `AccessibilityActionCompat.ACTION_EXPAND`), ensure
    `performAccessibilityAction` actually implements the logic to invoke the
    corresponding change (e.g., calling `performClick()` or running a state
    transition).
