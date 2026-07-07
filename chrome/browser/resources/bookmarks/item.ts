@@ -59,6 +59,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       isFolder_: {type: Boolean},
       lastTouchPoints_: {type: Number},
       canUploadAsAccountBookmark_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -71,6 +72,8 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   private accessor lastTouchPoints_: number = -1;
   // This is always false if `SyncEnableBookmarksInTransportMode` is disabled.
   protected accessor canUploadAsAccountBookmark_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {
     super.connectedCallback();

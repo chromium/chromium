@@ -24,7 +24,9 @@ export function getHtml(this: BookmarksItemElement) {
   ${this.canUploadAsAccountBookmark_ ? html`
     <cr-icon-button id="account-upload-button"
         class="no-overlap"
-        iron-icon="bookmarks:bookmark-cloud-upload"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'bookmarks:cloud-upload'
+            : 'bookmarks:bookmark-cloud-upload-old'}"
         title="$i18n{uploadBookmarkButtonTitle}"
         aria-label="$i18n{uploadBookmarkButtonTitle}"
         @click="${this.onUploadButtonClick_}">
