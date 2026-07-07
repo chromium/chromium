@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
-import org.chromium.chrome.browser.omnibox.HintTextUpdater;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
@@ -488,8 +487,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     public void onSearchBoxHintTextChanged() {
         if (mNtpSearchBox != null) {
-            mNtpSearchBox.setSearchBoxHintText(
-                    HintTextUpdater.getNtpHintText(mActivity, mSearchEngineService));
+            mNtpSearchBox.setSearchBoxHintText(mSearchEngineService.getNtpHintText(mActivity));
         }
     }
 

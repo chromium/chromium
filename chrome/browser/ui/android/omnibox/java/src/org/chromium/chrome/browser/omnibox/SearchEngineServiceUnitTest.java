@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -487,5 +489,65 @@ public class SearchEngineServiceUnitTest {
 
         verify(mStarterPackCallback).onResult(mStatusIconCaptor.capture());
         assertEquals(expectedDrawableRes, mStatusIconCaptor.getValue().getIconRes());
+    }
+
+    @Test
+    public void testGetNtpHintText_UseShortAskHint_onDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+
+        assertEquals("Ask Google", searchEngineService.getNtpHintText(mContext));
+    }
+
+    @Test
+    public void testGetNtpHintText_UseLongAskHint_onMobile() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+
+        assertEquals("Ask Google or type URL", searchEngineService.getNtpHintText(mContext));
+    }
+
+    @Test
+    public void testGetNtpHintText_UseEmptyHint() {
+        configureSearchEngine("engine", "");
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+
+        assertEquals("Search or type URL", searchEngineService.getNtpHintText(mContext));
+    }
+
+    @Test
+    public void testGetOmniboxHintString_Default() {
+        configureSearchEngine("google", "Google");
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        assertEquals("Search Google or type URL", searchEngineService.getOmniboxHintString());
+    }
+
+    @Test
+    public void testGetOmniboxHintString_AskHint() {
+        configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        assertEquals("Ask Google or type URL", searchEngineService.getOmniboxHintString());
+    }
+
+    @Test
+    public void testGetOmniboxHintString_AskHint_onDesktop_stillLong() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        assertEquals("Ask Google or type URL", searchEngineService.getOmniboxHintString());
+    }
+
+    @Test
+    public void testGetOmniboxHintString_NonGoogle() {
+        configureSearchEngine("yahoo", "Yahoo");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        assertEquals("Search Yahoo or type URL", searchEngineService.getOmniboxHintString());
     }
 }

@@ -194,6 +194,9 @@
     <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
       Search the web in Chrome
     </message>
+    <message name="IDS_OMNIBOX_EMPTY_ASK_HINT_SHORT_WITH_DSE_NAME" desc="Alternative text displayed in the omnibox when it is empty, prompting the user to ask. Includes Default Search Engine name." formatter_data="android_java">
+      Ask <ph name="ENGINE_NAME">$1<ex>Google</ex></ph>
+    </message>
   </if>
   <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
     <ph name="TRADITIONAL_TEXT">$1</ph> - <ph name="ADDITIONAL_TEXT">$2</ph>

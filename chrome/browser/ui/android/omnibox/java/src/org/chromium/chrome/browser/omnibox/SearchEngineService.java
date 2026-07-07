@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -23,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,6 +36,8 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -359,5 +363,35 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     public static void setInstanceForTesting(SearchEngineService instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    /** Returns the hint text to be used on fakebox/searchbox on the New Tab Page. */
+    public String getNtpHintText(Context context) {
+        if (TextUtils.isEmpty(mSearchEngineName)) {
+            return OmniboxResourceProvider.getString(context, R.string.omnibox_empty_hint);
+        }
+
+        @StringRes int hintId = getHintStringRes(/* isNtpSearchBox= */ true);
+        return OmniboxResourceProvider.getString(context, hintId, mSearchEngineName);
+    }
+
+    /** Returns the hint text string to be used on the omnibox for Hint Text Updater. */
+    public String getOmniboxHintString() {
+        // Hint text updater checks for empty search engine name and returns the empty hint in that
+        // case so this should never be null.
+        assert mSearchEngineName != null;
+
+        @StringRes int hintId = getHintStringRes(/* isNtpSearchBox= */ false);
+        return OmniboxResourceProvider.getString(mContext, hintId, mSearchEngineName);
+    }
+
+    private @StringRes int getHintStringRes(boolean isNtpSearchBox) {
+        if (OmniboxFeatures.sUseAskHintForNtp.getValue() && isDefaultSearchEngineGoogle()) {
+            return OmniboxCapabilities.isDesktopPlatform() && isNtpSearchBox
+                    ? R.string.omnibox_empty_ask_hint_short_with_dse_name
+                    : R.string.omnibox_empty_ask_hint_with_dse_name;
+        }
+
+        return R.string.omnibox_empty_hint_with_dse_name;
     }
 }

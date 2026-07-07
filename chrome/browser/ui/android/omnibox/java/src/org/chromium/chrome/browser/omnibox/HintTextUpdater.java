@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -115,20 +113,6 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         endInput();
     }
 
-    /**
-     * Returns the hint text to be used on the New Tab Page.
-     *
-     * @param context The Android context used to load resources.
-     * @param searchEngineService The SearchEngineService to get the search engine name and info.
-     * @return The hint text string.
-     */
-    public static String getNtpHintText(Context context, SearchEngineService searchEngineService) {
-        return getOmniboxHintText(
-                context,
-                AutocompleteRequestType.SEARCH,
-                /* fuseboxSessionState= */ null,
-                searchEngineService);
-    }
 
     /**
      * Begins a new input session.
@@ -200,16 +184,13 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
 
         FuseboxSessionState fuseboxSession = FuseboxSessionState.from(mLocationBarDataProvider);
-        String hint =
-                getOmniboxHintText(mContext, requestType, fuseboxSession, mSearchEngineService);
+        String hint = getOmniboxHintText(requestType, fuseboxSession);
         mUpdateHintTextCallback.onResult(hint);
     }
 
-    private static String getOmniboxHintText(
-            Context context,
-            @AutocompleteRequestType int type,
-            @Nullable FuseboxSessionState fuseboxSessionState,
-            SearchEngineService searchEngineService) {
+    private String getOmniboxHintText(
+            @AutocompleteRequestType int requestType,
+            @Nullable FuseboxSessionState fuseboxSessionState) {
         if (fuseboxSessionState != null) {
             var input = fuseboxSessionState.getAutocompleteInput();
             if (input != null) {
@@ -221,37 +202,36 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             }
         }
 
-        String searchEngineName = searchEngineService.getSearchEngineName();
+        assert mSearchEngineService != null;
+        String searchEngineName = mSearchEngineService.getSearchEngineName();
         if (TextUtils.isEmpty(searchEngineName)) {
-            return OmniboxResourceProvider.getString(context, R.string.omnibox_empty_hint);
+            return OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
         }
 
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            if (ToolModeUtils.isAimRequest(type)) {
-                String toolHint = getToolHintFromInputState(type, fuseboxSessionState);
-                if (!TextUtils.isEmpty(toolHint)) {
-                    return toolHint;
-                }
+        if (OmniboxFeatures.sShowModelPicker.getValue()
+                && ToolModeUtils.isAimRequest(requestType)) {
+            String toolHint = getToolHintFromInputState(requestType, fuseboxSessionState);
+            if (!TextUtils.isEmpty(toolHint)) {
+                return toolHint;
             }
         }
 
-        @StringRes
-        int res =
-                switch (type) {
-                    case AutocompleteRequestType.AI_MODE ->
-                            R.string.omnibox_ai_mode_scope_placeholder_text;
-                    case AutocompleteRequestType.IMAGE_GENERATION ->
-                            R.string.omnibox_empty_hint_for_image_generation;
-                    default ->
-                            OmniboxFeatures.sUseAskHintForNtp.getValue()
-                                            && searchEngineService.isDefaultSearchEngineGoogle()
-                                    ? R.string.omnibox_empty_ask_hint_with_dse_name
-                                    : R.string.omnibox_empty_hint_with_dse_name;
-                };
-        return OmniboxResourceProvider.getString(context, res, searchEngineName);
+        switch (requestType) {
+            case AutocompleteRequestType.AI_MODE:
+                return OmniboxResourceProvider.getString(
+                        mContext,
+                        R.string.omnibox_ai_mode_scope_placeholder_text,
+                        searchEngineName);
+            case AutocompleteRequestType.IMAGE_GENERATION:
+                return OmniboxResourceProvider.getString(
+                        mContext,
+                        R.string.omnibox_empty_hint_for_image_generation,
+                        searchEngineName);
+        }
+        return mSearchEngineService.getOmniboxHintString();
     }
 
-    private static @Nullable String getToolHintFromInputState(
+    private @Nullable String getToolHintFromInputState(
             @AutocompleteRequestType int requestType,
             @Nullable FuseboxSessionState fuseboxSessionState) {
         if (fuseboxSessionState == null) return null;

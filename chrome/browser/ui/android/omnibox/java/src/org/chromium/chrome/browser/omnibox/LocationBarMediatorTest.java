@@ -311,6 +311,10 @@ public class LocationBarMediatorTest {
         lenient().doReturn(true).when(mSearchEngineService).shouldShowSearchEngineLogo();
         lenient().doReturn(true).when(mSearchEngineService).isDefaultSearchEngineGoogle();
         lenient().doReturn("Google").when(mSearchEngineService).getSearchEngineName();
+        lenient()
+                .doReturn("Search Google or type URL")
+                .when(mSearchEngineService)
+                .getOmniboxHintString();
         SearchEngineService.setInstanceForTesting(mSearchEngineService);
         lenient().doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         lenient()
@@ -2957,6 +2961,7 @@ public class LocationBarMediatorTest {
         clearInvocations(mUrlCoordinator);
         doReturn("Yahoo").when(mSearchEngineService).getSearchEngineName();
         doReturn(false).when(mSearchEngineService).isDefaultSearchEngineGoogle();
+        doReturn("Search Yahoo or type URL").when(mSearchEngineService).getOmniboxHintString();
         observer.onSearchEngineNameChanged();
         verify(mUrlCoordinator).setUrlBarHintText(eq("Search Yahoo or type URL"));
     }
