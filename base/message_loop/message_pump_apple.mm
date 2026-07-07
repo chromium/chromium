@@ -103,7 +103,7 @@ class OptionalAutoreleasePool {
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  public:
-  ScopedModeEnabler(MessagePumpCFRunLoopBase* owner, int mode_index)
+  ScopedModeEnabler(MessagePumpCFRunLoopBase* owner, size_t mode_index)
       : owner_(owner), mode_index_(mode_index) {
     CFRunLoopRef loop = owner_->run_loop_.get();
     CFRunLoopAddTimer(loop, owner_->delayed_work_timer_.get(), mode());
@@ -153,12 +153,12 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     static_assert((1 << kNumModes) - 1 == kAllModesMask,
                   "kAllModesMask not large enough");
 
-    return modes[static_cast<size_t>(mode_index_)];
+    return modes[mode_index_];
   }
 
  private:
   const raw_ptr<MessagePumpCFRunLoopBase> owner_;  // Weak. Owns this.
-  const int mode_index_;
+  const size_t mode_index_;
 };
 
 // Must be called on the run loop thread.
