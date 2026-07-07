@@ -15,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
-#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -49,11 +48,9 @@ namespace indigo {
 class IndigoServiceTest : public testing::Test {
  public:
   IndigoServiceTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIndigo,
-          {{features::kIndigoSkipEnterpriseCheck.name, "true"}}},
-         {contextual_cueing::kContextualCueingV2, {}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIndigo,
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"}});
   }
 
   void SetUp() override {
@@ -246,13 +243,13 @@ TEST_F(IndigoServiceTest, AnchoredMessageTrigger) {
 #endif
   CreateService();
 
-  EXPECT_TRUE(service_->CanShowContextualCue());
-  service_->ContextualCueShown();
-  EXPECT_FALSE(service_->CanShowContextualCue());
+  EXPECT_TRUE(service_->CanShowAnchoredMessage());
+  service_->AnchoredMessageShown();
+  EXPECT_FALSE(service_->CanShowAnchoredMessage());
 
   task_environment_.FastForwardBy(
       features::kIndigoAnchoredMessageResetDuration.Get());
-  EXPECT_TRUE(service_->CanShowContextualCue());
+  EXPECT_TRUE(service_->CanShowAnchoredMessage());
 }
 
 TEST_F(IndigoServiceTest, RemoteEligibilityUnsupported) {
@@ -599,12 +596,10 @@ class IndigoServiceManagementPolicyDefaultEnabledTest
  public:
   IndigoServiceManagementPolicyDefaultEnabledTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIndigo,
-          {{features::kIndigoAllowForEnterprise.name,
-            IsIndigoAllowedForEnterprise() ? "true" : "false"}}},
-         {contextual_cueing::kContextualCueingV2, {}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIndigo,
+        {{features::kIndigoAllowForEnterprise.name,
+          IsIndigoAllowedForEnterprise() ? "true" : "false"}});
   }
 
   bool IsIndigoAllowedForEnterprise() const { return GetParam(); }
