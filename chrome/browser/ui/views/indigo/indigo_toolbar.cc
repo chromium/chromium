@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -24,6 +25,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -201,6 +203,12 @@ class IndigoExpandButton : public HoverButton {
                                                  ? IDS_INDIGO_TOOLBAR_COLLAPSE
                                                  : IDS_INDIGO_TOOLBAR_EXPAND));
 
+    if (is_expanded_) {
+      GetViewAccessibility().SetIsExpanded();
+    } else {
+      GetViewAccessibility().SetIsCollapsed();
+    }
+
     if (chevron_) {
       chevron_->SetImage(GetChevronImageModel(is_expanded_));
     }
@@ -257,6 +265,9 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
           .CustomConfigure(base::BindOnce([](views::View* view) {
             view->layer()->SetFillsBoundsOpaquely(false);
             view->layer()->SetName("IndigoToolbar");
+            view->GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+            view->GetViewAccessibility().SetName(
+                l10n_util::GetStringUTF16(IDS_INDIGO_TOOLBAR_CAPTION));
           }))
           .SetBackground(
               std::make_unique<views::BubbleBackground>(bubble_border.get()))
