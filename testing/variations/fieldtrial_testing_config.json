@@ -8725,6 +8725,29 @@
             ]
         }
     ],
+    "DesktopNtpSimplificationBookmarkBar": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BookmarkBarCountThreshold": "15",
+                        "BookmarkBarMinStalenessTimeInterval": "1d"
+                    },
+                    "enable_features": [
+                        "IPH_BookmarkBarSimplified",
+                        "NtpSimplificationBookmarkBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpTabResumption": [
         {
             "platforms": [
