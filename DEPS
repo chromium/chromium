@@ -2236,7 +2236,7 @@ deps = {
   },
 
   'src/third_party/gvdb/src': {
-      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gvdb.git' + '@' + '2b42fc75f09dbe1cd1057580b5782b08f2dcb400',
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/gvdb.git' + '@' + 'c6f2359cc1d00f16e0a0e2527fa0bc1882b8b5ab',
       'condition': 'checkout_linux and checkout_mutter',
   },
 

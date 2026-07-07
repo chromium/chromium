@@ -571,7 +571,7 @@ shared_library("gio") {
     ":glib",
     ":gmodule",
     ":gobject",
-    "//third_party/gvdb",
+    "//third_party/gvdb:gvdb_reader",
     "//third_party/zlib",
   ]
 }
@@ -594,7 +594,7 @@ if (current_toolchain == host_toolchain) {
       ":glib",
       ":gmodule",
       ":gobject",
-      "//third_party/gvdb",
+      "//third_party/gvdb:gvdb_builder",
     ]
 
     ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
