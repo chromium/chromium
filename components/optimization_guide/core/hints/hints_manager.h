@@ -249,6 +249,15 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types);
 
+  // Add hints to the cache for the provided optimization types and metadata.
+  // For testing only.
+  void AddHintWithMultipleOptimizationsForTesting(
+      const GURL& url,
+      const std::vector<
+          std::pair<optimization_guide::proto::OptimizationType,
+                    std::optional<optimization_guide::OptimizationMetadata>>>&
+          optimization_types_and_metadata);
+
   // Add hints to be returned for on-demand hints requests.
   void AddOnDemandHintForTesting(
       const GURL& url,

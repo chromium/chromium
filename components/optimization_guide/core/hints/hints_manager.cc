@@ -1971,28 +1971,8 @@ void HintsManager::AddHintForTesting(
     const GURL& url,
     proto::OptimizationType optimization_type,
     const std::optional<OptimizationMetadata>& metadata) {
-  std::unique_ptr<proto::Hint> hint = std::make_unique<proto::Hint>();
-  hint->set_key(url.spec());
-  proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern("*");
-  proto::Optimization* optimization =
-      page_hint->add_allowlisted_optimizations();
-  optimization->set_optimization_type(optimization_type);
-  if (!metadata) {
-    hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
-    PrepareToInvokeRegisteredCallbacks(url);
-    return;
-  }
-  if (metadata->loading_predictor_metadata()) {
-    *optimization->mutable_loading_predictor_metadata() =
-        *metadata->loading_predictor_metadata();
-  } else if (metadata->any_metadata()) {
-    *optimization->mutable_any_metadata() = *metadata->any_metadata();
-  } else {
-    NOTREACHED();
-  }
-  hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
-  PrepareToInvokeRegisteredCallbacks(url);
+  AddHintWithMultipleOptimizationsForTesting(
+      url, {{optimization_type, metadata}});
 }
 
 void HintsManager::AddHintWithMultipleOptimizationsForTesting(
@@ -2007,6 +1987,37 @@ void HintsManager::AddHintWithMultipleOptimizationsForTesting(
     proto::Optimization* optimization =
         page_hint->add_allowlisted_optimizations();
     optimization->set_optimization_type(optimization_type);
+  }
+  hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
+  PrepareToInvokeRegisteredCallbacks(url);
+}
+
+void HintsManager::AddHintWithMultipleOptimizationsForTesting(
+    const GURL& url,
+    const std::vector<
+        std::pair<optimization_guide::proto::OptimizationType,
+                  std::optional<optimization_guide::OptimizationMetadata>>>&
+        optimization_types_and_metadata) {
+  std::unique_ptr<proto::Hint> hint = std::make_unique<proto::Hint>();
+  hint->set_key(url.spec());
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("*");
+  for (const auto& [optimization_type, metadata] :
+       optimization_types_and_metadata) {
+    proto::Optimization* optimization =
+        page_hint->add_allowlisted_optimizations();
+    optimization->set_optimization_type(optimization_type);
+    if (!metadata) {
+      continue;
+    }
+    if (metadata->loading_predictor_metadata()) {
+      *optimization->mutable_loading_predictor_metadata() =
+          *metadata->loading_predictor_metadata();
+    } else if (metadata->any_metadata()) {
+      *optimization->mutable_any_metadata() = *metadata->any_metadata();
+    } else {
+      NOTREACHED();
+    }
   }
   hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
   PrepareToInvokeRegisteredCallbacks(url);
