@@ -30,7 +30,7 @@ class FakeAutocompleteControllerObserver
 class FakeAutocompleteController : public AutocompleteController {
  public:
   FakeAutocompleteController(
-      raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment);
+      raw_ptr<base::test::TaskEnvironment> task_environment);
   ~FakeAutocompleteController() override;
 
   // Getter for `providers_`.
@@ -120,7 +120,7 @@ class FakeAutocompleteController : public AutocompleteController {
   // Used to verify the correct number of notifications occur.
   std::unique_ptr<FakeAutocompleteControllerObserver> observer_;
   // Used to simulate time passing.
-  raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  raw_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_CONTROLLER_H_

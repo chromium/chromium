@@ -20,6 +20,8 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -256,9 +258,17 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   mojo::Remote<searchbox::mojom::Page> page_;
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 
-  void OpenMatch(AutocompleteMatch match,
+  void OpenMatch(OmniboxPopupSelection selection,
+                 AutocompleteMatch match,
                  WindowOpenDisposition disposition,
                  base::TimeTicks match_selection_timestamp);
+
+  void OnDefaultSearchExtensionDialogDone(
+      OmniboxPopupSelection selection,
+      AutocompleteMatch match,
+      WindowOpenDisposition disposition,
+      base::TimeTicks match_selection_timestamp,
+      OmniboxClient::ExtensionControlledDialogResult dialog_result);
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       int32_t query_id,
