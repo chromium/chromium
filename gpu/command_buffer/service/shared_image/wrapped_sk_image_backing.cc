@@ -28,6 +28,7 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -346,6 +347,35 @@ bool WrappedSkImageBacking::UploadFromMemory(
   }
 
   return updated;
+}
+
+bool WrappedSkImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), textures_.size());
+
+  if (context_state_->context_lost()) {
+    return false;
+  }
+
+  DCHECK(context_state_->IsCurrent(nullptr));
+
+  bool read = true;
+  for (size_t i = 0; i < textures_.size(); ++i) {
+    auto sk_image = SkImages::BorrowTextureFrom(
+        context_state_->gr_context(), textures_[i].backend_texture,
+        surface_origin(), GetSkColorType(i), alpha_type(),
+        color_space().ToSkColorSpace());
+    if (!sk_image) {
+      read = false;
+      break;
+    }
+    if (!sk_image->readPixels(context_state_->gr_context(), pixmaps[i], 0, 0)) {
+      read = false;
+      break;
+    }
+  }
+
+  return read;
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>

@@ -195,6 +195,48 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   VerifyPixelsWithReadback(mailbox, bitmaps);
 }
 
+TEST_P(WrappedSkImageBackingFactoryTest, UploadAndReadback) {
+  auto format = GetFormat();
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(100, 100);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+
+  std::vector<SkBitmap> upload_bitmaps = AllocateRedBitmaps(format, size);
+  std::vector<SkPixmap> upload_pixmaps = GetSkPixmaps(upload_bitmaps);
+
+  // Upload.
+  ASSERT_TRUE(backing->UploadFromMemory(upload_pixmaps));
+  backing->SetCleared();
+
+  // Allocate destination bitmaps.
+  int num_planes = format.NumberOfPlanes();
+  std::vector<SkBitmap> readback_bitmaps(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType plane_color_type = viz::ToClosestSkColorType(format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    readback_bitmaps[plane].allocPixels(SkImageInfo::Make(
+        plane_size.width(), plane_size.height(), plane_color_type, kAlphaType));
+  }
+  std::vector<SkPixmap> readback_pixmaps = GetSkPixmaps(readback_bitmaps);
+
+  // Readback.
+  ASSERT_TRUE(backing->ReadbackToMemory(readback_pixmaps));
+
+  // Verify.
+  for (int plane = 0; plane < num_planes; ++plane) {
+    EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane],
+                                  upload_bitmaps[plane],
+                                  cc::ExactPixelComparator()))
+        << "plane=" << plane;
+  }
+}
+
 std::string TestParamToString(
     const testing::TestParamInfo<
         std::tuple<viz::SharedImageFormat, GrContextType>>& param_info) {
