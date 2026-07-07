@@ -201,7 +201,11 @@ ClientSession::~ClientSession() {
 void ClientSession::NotifyClientResolution(
     const protocol::ClientResolution& resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(resolution.width_pixels() >= 0 && resolution.height_pixels() >= 0);
+  if (resolution.width_pixels() < 0 || resolution.height_pixels() < 0) {
+    LOG(ERROR) << "Bad ClientResolution: " << resolution.width_pixels() << "x"
+               << resolution.height_pixels();
+    return;
+  }
   HOST_LOG << "Received ClientResolution (width=" << resolution.width_pixels()
            << ", height=" << resolution.height_pixels()
            << ", x_dpi=" << resolution.x_dpi()
@@ -516,6 +520,14 @@ void ClientSession::ControlPeerConnection(
 }
 
 void ClientSession::SetVideoLayout(const protocol::VideoLayout& video_layout) {
+  for (int i = 0; i < video_layout.video_track_size(); i++) {
+    const auto& track = video_layout.video_track(i);
+    if (track.width() < 0 || track.height() < 0) {
+      LOG(ERROR) << "Bad VideoLayout for track " << track.screen_id() << ": "
+                 << track.width() << "x" << track.height();
+      return;
+    }
+  }
   HOST_LOG << "Received VideoLayout ("
            << PixelTypeToString(video_layout.pixel_type()) << ", primary_id="
            << (video_layout.has_primary_screen_id()

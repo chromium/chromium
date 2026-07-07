@@ -1011,4 +1011,73 @@ TEST_F(ClientSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return !pipe->HasWrappers(); }));
 }
 
+TEST_F(ClientSessionTest, NotifyClientResolution_Bad) {
+  CreateClientSession();
+  ConnectClientSession();
+  SetupSingleDisplay();
+
+  FakeScreenControls* screen_controls =
+      desktop_environment_factory_->last_desktop_environment()
+          ->last_screen_controls()
+          .get();
+  ASSERT_TRUE(screen_controls);
+
+  // Send invalid resolution with negative width.
+  protocol::ClientResolution invalid_resolution;
+  invalid_resolution.set_width_pixels(-800);
+  invalid_resolution.set_height_pixels(600);
+  invalid_resolution.set_x_dpi(96);
+  invalid_resolution.set_y_dpi(96);
+  client_session_->NotifyClientResolution(invalid_resolution);
+  EXPECT_FALSE(screen_controls->set_resolution_called());
+
+  // Reset state on mock controls.
+  screen_controls->reset();
+
+  // Send invalid resolution with negative height.
+  invalid_resolution.set_width_pixels(800);
+  invalid_resolution.set_height_pixels(-600);
+  client_session_->NotifyClientResolution(invalid_resolution);
+  EXPECT_FALSE(screen_controls->set_resolution_called());
+}
+
+TEST_F(ClientSessionTest, SetVideoLayout_Bad) {
+  CreateClientSession();
+  ConnectClientSession();
+  SetupSingleDisplay();
+
+  FakeScreenControls* screen_controls =
+      desktop_environment_factory_->last_desktop_environment()
+          ->last_screen_controls()
+          .get();
+  ASSERT_TRUE(screen_controls);
+
+  // Send layout with negative track width.
+  protocol::VideoLayout invalid_layout_width;
+  protocol::VideoTrackLayout* invalid_track_width =
+      invalid_layout_width.add_video_track();
+  invalid_track_width->set_width(-800);
+  invalid_track_width->set_height(600);
+  invalid_track_width->set_x_dpi(96);
+  invalid_track_width->set_y_dpi(96);
+  invalid_track_width->set_screen_id(kDisplay1Id);
+  client_session_->SetVideoLayout(invalid_layout_width);
+  EXPECT_FALSE(screen_controls->set_video_layout_called());
+
+  // Reset state.
+  screen_controls->reset();
+
+  // Send layout with negative track height.
+  protocol::VideoLayout invalid_layout_height;
+  protocol::VideoTrackLayout* invalid_track_height =
+      invalid_layout_height.add_video_track();
+  invalid_track_height->set_width(800);
+  invalid_track_height->set_height(-600);
+  invalid_track_height->set_x_dpi(96);
+  invalid_track_height->set_y_dpi(96);
+  invalid_track_height->set_screen_id(kDisplay1Id);
+  client_session_->SetVideoLayout(invalid_layout_height);
+  EXPECT_FALSE(screen_controls->set_video_layout_called());
+}
+
 }  // namespace remoting

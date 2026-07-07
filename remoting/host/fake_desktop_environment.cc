@@ -83,10 +83,16 @@ FakeScreenControls::~FakeScreenControls() = default;
 
 void FakeScreenControls::SetScreenResolution(
     const ScreenResolution& resolution,
-    std::optional<webrtc::ScreenId> screen_id) {}
+    std::optional<webrtc::ScreenId> screen_id) {
+  last_resolution_ = resolution;
+  set_resolution_called_ = true;
+}
 
 void FakeScreenControls::SetVideoLayout(
-    const protocol::VideoLayout& video_layout) {}
+    const protocol::VideoLayout& video_layout) {
+  last_video_layout_ = video_layout;
+  set_video_layout_called_ = true;
+}
 
 FakeDesktopEnvironment::FakeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> capture_thread,
@@ -111,7 +117,9 @@ std::unique_ptr<InputInjector> FakeDesktopEnvironment::CreateInputInjector() {
 }
 
 std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
-  return std::make_unique<FakeScreenControls>();
+  auto result = std::make_unique<FakeScreenControls>();
+  last_screen_controls_ = result->GetWeakPtr();
+  return result;
 }
 
 std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(

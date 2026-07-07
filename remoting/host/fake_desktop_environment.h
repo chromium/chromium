@@ -20,9 +20,11 @@
 #include "remoting/host/action_executor.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_active_display_monitor.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/proto/control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
@@ -89,6 +91,32 @@ class FakeScreenControls : public ScreenControls {
   void SetScreenResolution(const ScreenResolution& resolution,
                            std::optional<webrtc::ScreenId> screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
+
+  const ScreenResolution& last_resolution() const { return last_resolution_; }
+  bool set_resolution_called() const { return set_resolution_called_; }
+  const protocol::VideoLayout& last_video_layout() const {
+    return last_video_layout_;
+  }
+  bool set_video_layout_called() const { return set_video_layout_called_; }
+
+  base::WeakPtr<FakeScreenControls> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  void reset() {
+    last_resolution_ = ScreenResolution();
+    set_resolution_called_ = false;
+    last_video_layout_ = protocol::VideoLayout();
+    set_video_layout_called_ = false;
+  }
+
+ private:
+  ScreenResolution last_resolution_;
+  bool set_resolution_called_ = false;
+  protocol::VideoLayout last_video_layout_;
+  bool set_video_layout_called_ = false;
+
+  base::WeakPtrFactory<FakeScreenControls> weak_factory_{this};
 };
 
 class FakeDesktopEnvironment : public DesktopEnvironment {
@@ -142,6 +170,10 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
     return last_active_display_monitor_;
   }
 
+  base::WeakPtr<FakeScreenControls> last_screen_controls() {
+    return last_screen_controls_;
+  }
+
  private:
   friend class FakeDesktopEnvironmentFactory;
 
@@ -150,6 +182,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
 
   base::WeakPtr<FakeInputInjector> last_input_injector_;
   base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor_;
+  base::WeakPtr<FakeScreenControls> last_screen_controls_;
 
   const DesktopEnvironmentOptions options_;
 
