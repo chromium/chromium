@@ -5,14 +5,16 @@ found in the LICENSE file. -->
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
-    <title>$i18n{crossDeviceSigninTitle}</title>
+    <title>$i18n{title}</title>
     <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+    <link rel="stylesheet" href="cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.css">
   </head>
   <body>
-    <div id="container">
-      <h1>$i18n{crossDeviceSigninTitle}</h1>
-      <!-- WebUI empty stub -->
-    </div>
+    <cross-device-signin-qr-bubble-app></cross-device-signin-qr-bubble-app>
+    <script type="module"
+      src="cross_device_signin_qr_bubble/cross_device_signin_qr_bubble_app.js">
+    </script>
   </body>
 </html>

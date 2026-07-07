@@ -11,6 +11,9 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "signin"
 
+  mojo_files_deps = [ "//chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.mojom-webui.ts" ]
+
   static_files = [
     "images/profile_picker_dark_background.svg",
     "images/profile_picker_light_background.svg",
@@ -50,6 +53,7 @@ build_webui("build") {
   }
   if (enable_dice_support) {
     static_files += [
+      "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.css",
       "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.html",
       "dice_web_signin_intercept/chrome_signin/chrome_signin.html",
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
@@ -100,6 +104,8 @@ build_webui("build") {
   }
   if (enable_dice_support) {
     ts_files += [
+      "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble_app.html.ts",
+      "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble_app.ts",
       "dice_web_signin_intercept/chrome_signin/chrome_signin_app.html.ts",
       "dice_web_signin_intercept/chrome_signin/chrome_signin_app.ts",
       "dice_web_signin_intercept/dice_web_signin_intercept_app.html.ts",
@@ -137,6 +143,7 @@ build_webui("build") {
   }
   if (enable_dice_support) {
     css_files += [
+      "cross_device_signin_qr_bubble/cross_device_signin_qr_bubble_app.css",
       "dice_web_signin_intercept/chrome_signin/chrome_signin_app.css",
       "dice_web_signin_intercept/dice_web_signin_intercept_app.css",
       "signin_qrcode_bar/signin_qrcode_bar_app.css",
@@ -152,6 +159,7 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   ts_path_mappings = [

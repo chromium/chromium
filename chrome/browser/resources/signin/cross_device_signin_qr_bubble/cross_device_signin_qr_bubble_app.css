@@ -1,0 +1,94 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  justify-content: center;
+  width: 100%;
+}
+
+#bubble-container {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+#subtitle {
+  color: var(--cr-secondary-text-color, #474747);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 8px 0 16px 0;
+}
+
+#card-container {
+  align-items: center;
+  align-self: stretch;
+  background-color: var(--cr-fallback-color-surface4, #EDF2FA);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  justify-content: center;
+  margin: 0;
+  min-height: 260px;
+  padding: 20px;
+  width: auto;
+}
+
+#qr-wrapper {
+  align-items: center;
+  background-color: white;
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  height: 160px;
+  justify-content: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  position: relative;
+  width: 160px;
+}
+
+#qr-code {
+  width: 100%;
+}
+
+
+
+#user-details {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+#full-name {
+  color: var(--cr-primary-text-color);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+#email {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 18px;
+  word-break: break-all;
+}

@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cross_device_signin.mojom;
+
+struct CrossDeviceSigninQrBubbleData {
+  string full_name;
+  string email;
+  // Note: Passed as a generic string rather than url.mojom.Url because this is
+  // a base64-encoded data URI meant purely for visual rendering (an img src),
+  // not a functional, routable URL used for network requests.
+  string qr_code_data_uri;
+};
+
+// Used by the WebUI page to bootstrap communication.
+// Messages sent from WebUI to C++.
+[EnableIf=is_linux|is_mac|is_win]
+interface PageHandlerFactory {
+  // Creates a PageHandler to enable communication with the C++ backend.
+  // |handler|: A pending receiver that will be bound to the C++ implementation.
+  CreateCrossDeviceSigninQrBubbleHandler(
+      pending_receiver<PageHandler> handler);
+};
+
+// Messages sent from WebUI to C++.
+[EnableIf=is_linux|is_mac|is_win]
+interface PageHandler {
+  // Fetches the user's current account information and a generated QR code.
+  // This is called once by the frontend to populate the UI when it loads.
+  // Returns |data|, a struct containing the user's full name, email, and a
+  // base64-encoded data URI for the generated QR code.
+  GetRegistrationData() => (CrossDeviceSigninQrBubbleData? data);
+};
+
