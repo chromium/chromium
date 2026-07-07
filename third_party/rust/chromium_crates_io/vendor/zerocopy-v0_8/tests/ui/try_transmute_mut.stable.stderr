@@ -28,6 +28,8 @@ note: required by a bound in `Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mu
 ...
 837 |         Dst: TryFromBytes + IntoBytes,
     |              ^^^^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy: IntoBytes` is not satisfied
@@ -89,6 +91,8 @@ note: required by a bound in `ValidityError`
     |
 590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
    --> $DIR/try_transmute_mut.rs:18:63
@@ -117,6 +121,8 @@ note: required by a bound in `ValidityError`
     |
 590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `SrcA: FromBytes` is not satisfied
@@ -149,6 +155,8 @@ note: required by a bound in `Wrap::<&'a mut Src, &'a mut Dst>::try_transmute_mu
 835 |     where
 836 |         Src: FromBytes + IntoBytes,
     |              ^^^^^^^^^ required by this bound in `Wrap::<&mut Src, &mut Dst>::try_transmute_mut`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `DstA: IntoBytes` is not satisfied

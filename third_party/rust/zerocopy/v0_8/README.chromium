@@ -1,7 +1,7 @@
 Name: zerocopy
 URL: https://crates.io/crates/zerocopy
-Version: 0.8.52
-Revision: 8beb48b32e5b57dab67a4cb2bf2baca22792a605
+Version: 0.8.53
+Revision: c8fb1ca16968099ef7c032db4e65c0a45830d188
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/LICENSE-APACHE

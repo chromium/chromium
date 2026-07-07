@@ -45,6 +45,8 @@ note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a Src, &'a Ds
 ...
 757 |         Dst: TryFromBytes + Immutable,
     |              ^^^^^^^^^^^^ required by this bound in `Wrap::<&Src, &Dst>::try_transmute_ref`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy: Immutable` is not satisfied
@@ -77,6 +79,8 @@ note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a Src, &'a Ds
 ...
 757 |         Dst: TryFromBytes + Immutable,
     |                             ^^^^^^^^^ required by this bound in `Wrap::<&Src, &Dst>::try_transmute_ref`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
@@ -106,6 +110,8 @@ note: required by a bound in `ValidityError`
     |
 590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: TryFromBytes` is not satisfied
    --> $DIR/try_transmute_ref.rs:25:59
@@ -134,6 +140,8 @@ note: required by a bound in `ValidityError`
     |
 590 | pub struct ValidityError<Src, Dst: ?Sized + TryFromBytes> {
     |                                             ^^^^^^^^^^^^ required by this bound in `ValidityError`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `NotZerocopy<AU16>: IntoBytes` is not satisfied
@@ -198,6 +206,8 @@ note: required by a bound in `zerocopy::util::macro_util::Wrap::<&'a Src, &'a Ds
 755 |     where
 756 |         Src: IntoBytes + Immutable,
     |                          ^^^^^^^^^ required by this bound in `Wrap::<&Src, &Dst>::try_transmute_ref`
+    = note: the full name for the type has been written to '/long-type-HASH.txt'
+    = note: consider using `--verbose` to print the full type name to the console
     = note: this error originates in the macro `try_transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: aborting due to 8 previous errors

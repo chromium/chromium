@@ -25,6 +25,8 @@ note: required by a bound in `takes_from_bytes`
    |
 77 | fn takes_from_bytes<T: FromBytes>() {}
    |                        ^^^^^^^^^ required by this bound in `takes_from_bytes`
+   = note: the full name for the type has been written to '/long-type-HASH.txt'
+   = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: FromZeros` is not satisfied
   --> $DIR/diagnostic-not-implemented.rs:18:24
@@ -53,6 +55,8 @@ note: required by a bound in `takes_from_zeros`
    |
 78 | fn takes_from_zeros<T: FromZeros>() {}
    |                        ^^^^^^^^^ required by this bound in `takes_from_zeros`
+   = note: the full name for the type has been written to '/long-type-HASH.txt'
+   = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: Immutable` is not satisfied
   --> $DIR/diagnostic-not-implemented.rs:20:23
@@ -81,6 +85,8 @@ note: required by a bound in `takes_immutable`
    |
 79 | fn takes_immutable<T: Immutable>() {}
    |                       ^^^^^^^^^ required by this bound in `takes_immutable`
+   = note: the full name for the type has been written to '/long-type-HASH.txt'
+   = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: IntoBytes` is not satisfied
   --> $DIR/diagnostic-not-implemented.rs:22:24
@@ -165,6 +171,8 @@ note: required by a bound in `takes_try_from_bytes`
    |
 82 | fn takes_try_from_bytes<T: TryFromBytes>() {}
    |                            ^^^^^^^^^^^^ required by this bound in `takes_try_from_bytes`
+   = note: the full name for the type has been written to '/long-type-HASH.txt'
+   = note: consider using `--verbose` to print the full type name to the console
 
 error[E0277]: the trait bound `NotZerocopy: zerocopy::Unaligned` is not satisfied
   --> $DIR/diagnostic-not-implemented.rs:28:23
