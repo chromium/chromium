@@ -19,20 +19,13 @@ TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
               testing::ElementsAre(DecisionSource::kAllowSameOrigin));
 }
 
-class OriginGatingConfigurationInvalidPredicateTest
-    : public ::testing::TestWithParam<DecisionSource> {};
-
-TEST_P(OriginGatingConfigurationInvalidPredicateTest, CheckFails) {
+TEST(OriginGatingConfigurationTest, CheckFails_NoVerdict) {
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        OriginGatingConfiguration config({GetParam()},
+        OriginGatingConfiguration config({DecisionSource::kNoVerdict},
                                          /*use_site_keyed_cache=*/false);
       },
       "");
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OriginGatingConfigurationInvalidPredicateTest,
-                         ::testing::Values(DecisionSource::kNoVerdict));
 
 }  // namespace origin_gating
