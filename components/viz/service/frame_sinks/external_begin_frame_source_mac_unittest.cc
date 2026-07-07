@@ -415,6 +415,8 @@ TEST_F(ExternalBeginFrameSourceMacTimerTest, SetPreferredInterval) {
 TEST_F(ExternalBeginFrameSourceMacTimerTest, SetZeroInterval) {
   source_->SetPreferredInterval(base::TimeDelta());
   EXPECT_FALSE(source_->preferred_interval().is_zero());
+  EXPECT_EQ(source_->preferred_interval(),
+            source_->GetTimerDefaultFrameInterval());
 }
 
 // Verifies that supported frame intervals in timer mode map to valid discrete

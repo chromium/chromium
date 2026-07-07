@@ -12,6 +12,17 @@
 
 namespace display {
 
+// Returns the display's current refresh interval using CoreGraphics APIs.
+// Unlike NSScreen APIs, this is safe to call from non-browser helper processes
+// (such as the GPU process) because it does not require an initialized
+// NSApplication instance.
+base::TimeDelta GetCGRefreshInterval(CGDirectDisplayID display_id);
+
+// Only call the following NSScreen utility functions in the Browser process,
+// as they require an initialized `NSApplication` instance.
+// See Apple's documentation on NSScreen:
+// "Create the application object before you use the methods in this class."
+
 // Returns the NSScreen object pointer for the caller to retrieve information
 // about a screen.
 NSScreen* GetNSScreenFromDisplayID(CGDirectDisplayID display_id);
