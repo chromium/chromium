@@ -1,8 +1,0 @@
-Test passes if the two columns are the same, ignoring the suffix.
-
-To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
-
-PASS list marker is 負十一.
-PASS list marker is 負十.
-PASS list marker is 負九.
-

@@ -1,8 +1,0 @@
-Test fails if the two columns of the first line are NOT the same. Otherwise, test passes only if the left column of the 2nd and 3rd lines is NOT decimal digits and is NOT the same as the right side. Score as Partial if the columns of the 2nd and 3rd lines are the same (ie. fallback was used). In all this IGNORE the suffix.
-
-To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
-
-PASS list marker is 玖仟玖佰玖拾玖.
-PASS list marker is 壹万.
-PASS list marker is 壹万零壹.
-
