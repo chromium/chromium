@@ -508,6 +508,9 @@ static_library("common") {
     "session_policies_from_dict.h",
     "shutdown_watchdog.cc",
     "shutdown_watchdog.h",
+    "terminal_session.h",
+    "terminal_session_manager.cc",
+    "terminal_session_manager.h",
     "test_echo_extension.cc",
     "test_echo_extension.h",
     "test_echo_extension_session.cc",
@@ -665,11 +668,14 @@ static_library("common") {
       "daemon_process_linux.cc",
       "host_wtmpdb_logger.cc",
       "host_wtmpdb_logger.h",
+      "terminal_session_linux.cc",
     ]
 
     libs += [ "util" ]
 
     deps += [ "//sql" ]
+  } else {
+    sources += [ "terminal_session_null.cc" ]
   }
 
   if (is_linux) {
@@ -916,6 +922,7 @@ source_set("unit_tests") {
     "setup/host_starter_oauth_helper_unittest.cc",
     "setup/me2me_native_messaging_host_unittest.cc",
     "setup/pin_validator_unittest.cc",
+    "terminal_session_manager_unittest.cc",
     "webrtc_mouse_cursor_monitor_adaptor_unittest.cc",
     "zombie_host_detector_unittest.cc",
   ]
