@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,8 +32,6 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -56,12 +53,10 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -141,7 +136,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -4316,255 +4310,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testToggleBookmarksBarMenuItemString() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        setUpMocksForPageMenu();
-
-        // Bookmark bar is visible.
-        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        assertNotNull(bookmarksParent);
-        List<ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        ListItem toggleItem = null;
-        for (ListItem item : subItems) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
-                    == R.id.toggle_bookmarks_bar_menu_id) {
-                toggleItem = item;
-                break;
-            }
-        }
-        assertNotNull(toggleItem);
-        assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.menu_hide_bookmarks_bar),
-                toggleItem.model.get(AppMenuItemProperties.TITLE));
-
-        // Bookmark bar is hidden.
-        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
-        modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        toggleItem = null;
-        for (ListItem item : subItems) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
-                    == R.id.toggle_bookmarks_bar_menu_id) {
-                toggleItem = item;
-                break;
-            }
-        }
-        assertNotNull(toggleItem);
-        assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.menu_show_bookmarks_bar),
-                toggleItem.model.get(AppMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testBookmarkMenu_NoBookmarks() {
-        mBookmarkModel.removeAllUserBookmarks();
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        assertNotNull(bookmarksParent);
-
-        List<ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        List<MenuItem> expectedSubItems =
-                Arrays.asList(
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
-
-        assertMenuItemsAreEqual(subItems, expectedSubItems);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testBookmarkMenu_NestedFolders() {
-        BookmarkId folderId =
-                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder 2");
-        mBookmarkModel.addBookmark(folderId, 0, "Bookmark 1", JUnitTestGURLs.URL_1);
-        BookmarkId nestedFolderId = mBookmarkModel.addFolder(folderId, 1, "Nested Folder");
-        mBookmarkModel.addBookmark(nestedFolderId, 0, "Nested Bookmark", JUnitTestGURLs.URL_2);
-
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        assertNotNull(bookmarksParent);
-
-        List<ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        List<MenuItem> expectedSubItems =
-                Arrays.asList(
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_folder_menu_id, item(R.id.bookmark_menu_id))),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
-
-        assertMenuItemsAreEqual(subItems, expectedSubItems);
-
-        List<MenuItem> expectedTitles =
-                Arrays.asList(
-                        item(R.string.menu_bookmark_this_page),
-                        item(0),
-                        item(R.string.menu_bookmarks),
-                        item(
-                                R.string.menu_reading_list,
-                                item(R.string.menu_show_reading_list),
-                                item(R.string.menu_add_to_reading_list)),
-                        item(0),
-                        item(R.string.menu_show_bookmarks_bar),
-                        item(0),
-                        item(R.string.bookmarks),
-                        item("Bookmark 1"),
-                        item("Bookmark 2"),
-                        item(
-                                "Folder 1",
-                                item("Bookmark in folder 1"),
-                                item("Bookmark in folder 2")),
-                        item(
-                                "Folder 2",
-                                item("Bookmark 1"),
-                                item("Nested Folder", item("Nested Bookmark"))),
-                        item(0),
-                        item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
-                        item(R.string.menu_other_bookmarks, item(0)));
-        assertMenuTitlesAreEqual(subItems, expectedTitles);
-
-        // Confirm we are using the correct item type.
-        ListItem bookmarkItem = subItems.get(8);
-        assertEquals(AppMenuHandler.AppMenuItemType.BOOKMARK, bookmarkItem.type);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testBookmarkMenu_EmptyFolder() {
-        mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
-
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        assertNotNull(bookmarksParent);
-
-        List<ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        List<MenuItem> expectedSubItems =
-                Arrays.asList(
-                        item(R.id.bookmark_this_page_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.all_bookmarks_menu_id),
-                        item(
-                                R.id.reading_list_parent_menu_id,
-                                item(R.id.show_reading_list_menu_id),
-                                item(R.id.add_to_reading_list_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(R.id.toggle_bookmarks_bar_menu_id),
-                        item(R.id.divider_line_id),
-                        item(R.id.bookmarks_header_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(R.id.bookmark_menu_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_menu_id),
-                                item(R.id.bookmark_menu_id)),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)),
-                        item(R.id.divider_line_id),
-                        item(
-                                R.id.bookmark_folder_menu_id,
-                                item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id))),
-                        item(R.id.bookmark_folder_menu_id, item(R.id.empty_item_menu_id)));
-
-        assertMenuItemsAreEqual(subItems, expectedSubItems);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    @SuppressWarnings("unchecked")
-    public void testBookmarkMenu_Favicons() {
-        BookmarkId bookmarkId = mBookmarkModel.getChildAt(mBookmarkModel.getDesktopFolderId(), 0);
-        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        List<ListItem> subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-
-        ListItem bookmarkListItem = findItemById(subItems, R.id.bookmark_menu_id);
-        assertNotNull(bookmarkListItem);
-
-        LazyOneshotSupplier<Drawable> iconSupplier =
-                bookmarkListItem.model.get(AppMenuItemProperties.ICON_SUPPLIER);
-        assertNotNull(iconSupplier);
-
-        Drawable mockFavicon = mock(Drawable.class);
-        doAnswer(
-                        invocation -> {
-                            ((Callback<Drawable>) invocation.getArgument(1)).onResult(mockFavicon);
-                            return null;
-                        })
-                .when(mBookmarkImageFetcher)
-                .fetchFaviconForBookmark(eq(bookmarkItem), any());
-
-        // Accessing the supplier should trigger the fetch.
-        iconSupplier.get();
-
-        verify(mBookmarkImageFetcher).fetchFaviconForBookmark(eq(bookmarkItem), any());
-        Drawable actualIcon = iconSupplier.get();
-        if (actualIcon instanceof InsetDrawable insetDrawable) {
-            actualIcon = insetDrawable.getDrawable();
-        }
-        assertEquals(mockFavicon, actualIcon);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
     public void testTabGroupsItem_Present() {
         setUpMocksForPageMenu();
         ListItem tabGroupsParent =
@@ -4598,49 +4343,5 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem homepageItem = findItemById(modelList, R.id.homepage_menu_id);
         assertNull("Homepage menu item should not be visible", homepageItem);
-    }
-
-    @Test
-    public void testReadingListMenuItem_Supported() {
-        setUpMocksForPageMenu();
-        BookmarkUtils.setReadingListSupportedForTesting(true);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        List<ListItem> bookmarksSubItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        ListItem readingListParent =
-                findItemById(bookmarksSubItems, R.id.reading_list_parent_menu_id);
-        List<ListItem> subItems =
-                readingListParent
-                        .model
-                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                        .get();
-        assertNotNull(findItemById(subItems, R.id.add_to_reading_list_menu_id));
-        BookmarkUtils.setReadingListSupportedForTesting(null);
-    }
-
-    @Test
-    public void testReadingListMenuItem_NotSupported() {
-        setUpMocksForPageMenu();
-        BookmarkUtils.setReadingListSupportedForTesting(false);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        ListItem bookmarksParent = findItemById(modelList, R.id.bookmarks_parent_menu_id);
-        List<ListItem> bookmarksSubItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        ListItem readingListParent =
-                findItemById(bookmarksSubItems, R.id.reading_list_parent_menu_id);
-        List<ListItem> subItems =
-                readingListParent
-                        .model
-                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                        .get();
-        assertNull(findItemById(subItems, R.id.add_to_reading_list_menu_id));
-        BookmarkUtils.setReadingListSupportedForTesting(null);
     }
 }

@@ -1240,6 +1240,7 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.tabbed_mode") {
     sources = [
       "src/org/chromium/chrome/browser/tabbed_mode/AppMenuUnitTestUtils.java",
+      "src/org/chromium/chrome/browser/tabbed_mode/BookmarksItemBuilderUnitTest.java",
       "src/org/chromium/chrome/browser/tabbed_mode/BottomAttachedUiObserverTest.java",
       "src/org/chromium/chrome/browser/tabbed_mode/HistoryItemBuilderUnitTest.java",
       "src/org/chromium/chrome/browser/tabbed_mode/TabGroupItemBuilderUnitTest.java",
@@ -1250,6 +1251,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//base:supplier_java",
       "//chrome/browser/glic/android:java",
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/tab_group_suggestion:toolbar_java",

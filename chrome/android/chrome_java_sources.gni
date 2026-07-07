@@ -1207,6 +1207,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabModelObserver.java",
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaver.java",
   "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
+  "java/src/org/chromium/chrome/browser/tabbed_mode/BookmarksItemBuilder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/BottomAttachedUiObserver.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/HistoryItemBuilder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/IncognitoMenuItemViewBinder.java",
