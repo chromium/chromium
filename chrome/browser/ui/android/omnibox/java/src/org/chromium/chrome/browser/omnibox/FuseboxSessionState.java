@@ -179,7 +179,9 @@ public class FuseboxSessionState implements UserData {
                 && mAutocompleteInput.getPageClassification()
                         != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
                 && mAutocompleteInput.getPageClassification()
-                        != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE) {
+                        != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE
+                && mAutocompleteInput.getPageClassification()
+                        != PageClassification.ANDROID_HUB_VALUE) {
             mAutocompleteInput
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(

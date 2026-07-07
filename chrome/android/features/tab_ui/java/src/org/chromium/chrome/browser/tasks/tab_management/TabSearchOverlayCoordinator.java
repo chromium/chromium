@@ -148,6 +148,9 @@ public class TabSearchOverlayCoordinator {
         mParentContainer.addView(panelContainer);
 
         if (mSearchUiCoordinator == null) {
+            boolean isIncognito =
+                    mProfileSupplier.get() != null && mProfileSupplier.get().isOffTheRecord();
+            mSearchBoxDataProvider.initialize(mActivity, isIncognito);
             mSearchUiCoordinator = new SearchUiCoordinator(mActivity, mSearchBoxDataProvider);
         }
 
@@ -233,9 +236,11 @@ public class TabSearchOverlayCoordinator {
      */
     public void show() {
         ensureInitialized();
+        if (mModel.get(TabSearchOverlayProperties.VISIBLE)) return;
+
         mModel.set(TabSearchOverlayProperties.VISIBLE, true);
         assumeNonNull(mSearchUiCoordinator)
-                .beginQuery(IntentOrigin.HUB, SearchType.TEXT, "", mWindowAndroid);
+                .beginQuery(IntentOrigin.HUB, SearchType.TEXT, /* query= */ null, mWindowAndroid);
     }
 
     /** Hides the tab search overlay and clears the focus from the search box. */

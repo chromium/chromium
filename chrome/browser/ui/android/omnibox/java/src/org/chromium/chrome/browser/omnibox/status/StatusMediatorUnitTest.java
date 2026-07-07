@@ -441,6 +441,17 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testWideIconTrue_hubSearch() {
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+
+        mMediator.beginInput(mFuseboxSessionState);
+        assertTrue(mModel.get(StatusProperties.USE_WIDE_STATUS_ICON));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
     public void testSetTooltipText() {
         doReturn(PageClassification.NTP_VALUE)

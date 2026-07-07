@@ -402,7 +402,9 @@ public class StatusMediator
                         && UrlUtilities.isNtpUrl(url)
                         && !mLocationBarDataProvider.isIncognitoBranded();
 
-        mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, mUrlHasFocus || isRegularNtpUrl);
+        mModel.set(
+                StatusProperties.USE_WIDE_STATUS_ICON,
+                mUrlHasFocus || isRegularNtpUrl || isHubSearch());
     }
 
     public void setUseSmallWidget(boolean useSmallWidget) {

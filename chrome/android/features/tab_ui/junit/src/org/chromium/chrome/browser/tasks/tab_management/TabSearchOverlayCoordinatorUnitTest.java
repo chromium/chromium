@@ -149,7 +149,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         verify(mSearchUiCoordinator)
                 .setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
         verify(mSearchUiCoordinator)
-                .beginQuery(eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(""), eq(mWindowAndroid));
+                .beginQuery(
+                        eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(null), eq(mWindowAndroid));
     }
 
     @Test
