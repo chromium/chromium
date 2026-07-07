@@ -209,7 +209,17 @@ void MediaPipelineImpl::StartPlayingFrom(base::TimeDelta time) {
   LOG(INFO) << __FUNCTION__ << " t0=" << time.InMilliseconds();
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(audio_pipeline_ || video_pipeline_);
-  DCHECK(!pending_flush_task_);
+
+  // The backend is only stopped once every per-stream flush has completed,
+  // so a flush that is still pending means the backend may still be using a
+  // previously pushed buffer (see AvPipelineImpl::Flush). Restarting any AV
+  // pipeline before the backend has been stopped would release that buffer
+  // while it is still in use.
+  if (pending_flush_task_) {
+    LOG(ERROR) << __FUNCTION__ << " called while a flush is still pending";
+    OnError(::media::PIPELINE_ERROR_ABORT);
+    return;
+  }
 
   // Lazy initialize.
   if (backend_state_ == BACKEND_STATE_UNINITIALIZED) {
