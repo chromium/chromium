@@ -85,6 +85,7 @@
 /llvm-bootstrap-install
 /llvm-build-tools
 /llvm-build/
+/llvm-libclang
 /mesa/src
 /microsoft_dxheaders/src
 /webauthn/src
