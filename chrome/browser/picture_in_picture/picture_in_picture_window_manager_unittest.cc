@@ -679,4 +679,33 @@ TEST_F(PictureInPictureWindowManagerTest,
   EXPECT_EQ(1, samples->GetCount(3000));
 }
 
+TEST_F(PictureInPictureWindowManagerTest,
+       UpdateCachedBounds_IgnoredWhenControllerIsNull) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->ExitPictureInPicture();
+  EXPECT_EQ(nullptr, picture_in_picture_window_manager->GetWebContents());
+
+  // Verify that `UpdateCachedBounds()` does not crash when
+  // `pip_window_controller_` is null.
+  picture_in_picture_window_manager->UpdateCachedBounds(
+      gfx::Rect(10, 20, 100, 100), display::Display(1));
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       UpdateCachedBounds_IgnoredWhenNotInDocumentPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+
+  picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
+  EXPECT_NE(nullptr, picture_in_picture_window_manager->GetWebContents());
+  EXPECT_EQ(nullptr, picture_in_picture_window_manager->GetChildWebContents());
+
+  // Verify that `UpdateCachedBounds()` does not crash when called while in
+  // Video PiP (where `GetChildWebContents()` is null).
+  picture_in_picture_window_manager->UpdateCachedBounds(
+      gfx::Rect(10, 20, 100, 100), display::Display(1));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -545,6 +545,13 @@ void PictureInPictureWindowManager::UpdateCachedBounds(
     return;
   }
 
+  // `UpdateCachedBounds()` is currently only used by Document PiP. If the
+  // window manager has switched to Video PiP (where `GetChildWebContents()`
+  // returns null), return early and ignore bound updates.
+  if (!GetChildWebContents()) {
+    return;
+  }
+
   auto* const web_contents = pip_window_controller_->GetWebContents();
   if (!web_contents) {
     return;
