@@ -772,6 +772,8 @@ BASE_FEATURE_PARAM(size_t,
                    "mtu",
                    quic::kDefaultMaxPacketSize);
 
+BASE_FEATURE(kQuicUseReadMultiple, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConfigureQuicHints, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kQuicHintHostPortPairs,

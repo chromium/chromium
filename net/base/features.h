@@ -799,6 +799,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kQuicLongerIdleConnectionTimeout);
 NET_EXPORT BASE_DECLARE_FEATURE(kLowerQuicMaxPacketSize);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);
 
+// If enabled, QuicChromiumPacketReader will use ReadMultiple API.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicUseReadMultiple);
+
 // When enabled, races QUIC connection attempts for the specified hostnames
 // even when there is no available ALPN information.
 NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);

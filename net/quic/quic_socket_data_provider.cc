@@ -414,6 +414,38 @@ void QuicSocketDataProvider::CancelPendingRead() {
   read_pending_ = false;
 }
 
+// Returns true if the next read expectation is asynchronous, a pause, or
+// is currently blocked by unsatisfied dependencies (which will cause the
+// next read to block and return ERR_IO_PENDING).
+//
+// This is required for MockUDPClientSocket::ReadMultiple() to decide when to
+// yield. Unlike the single-packet Read() which naturally returns control to
+// the QUIC session after every packet, ReadMultiple() runs a loop to batch
+// reads. Without this yielding check, ReadMultiple() would eagerly call
+// OnRead() for the next packet in the test sequence even if that packet is
+// not yet ready (e.g., waiting for the client to write an ACK or a ping).
+//
+// Eagerly calling OnRead() on a blocked expectation returns ERR_IO_PENDING
+// and causes the mock socket to postpone the blocked state. In the next
+// ReadMultiple() call, the socket will erroneously invoke the reader's
+// callback with ERR_IO_PENDING, causing a premature connection closure.
+// Eagerly calling OnRead() on a Pause expectation would also trigger the
+// pause prematurely before the session has processed the current batch.
+//
+// By yielding when the next read is not ready, we allow the QUIC session
+// to process the current batch of packets (and write any dependent packets)
+// before the next read is attempted, accurately mimicking a real-world
+// non-blocking socket.
+bool QuicSocketDataProvider::IsNextReadAsyncOrPause() const {
+  std::optional<size_t> ready = FindReadyExpectations(Expectation::Type::READ);
+  if (!ready.has_value()) {
+    // If there are no ready read expectations (e.g. we are waiting for a write
+    // to trigger the read), the next read will block and return ERR_IO_PENDING.
+    return true;
+  }
+  return expectations_[*ready].mode() == ASYNC;
+}
+
 void QuicSocketDataProvider::Reset() {
   // Note that `Reset` is a parent-class method with a confusing name. It is
   // used to initialize the socket data provider before it is used.
@@ -454,7 +486,7 @@ void QuicSocketDataProvider::Reset() {
 }
 
 std::optional<size_t> QuicSocketDataProvider::FindReadyExpectations(
-    Expectation::Type type) {
+    Expectation::Type type) const {
   std::vector<size_t> matches;
   for (size_t i = 0; i < expectations_.size(); i++) {
     const Expectation& expectation = expectations_[i];
@@ -462,10 +494,13 @@ std::optional<size_t> QuicSocketDataProvider::FindReadyExpectations(
       continue;
     }
     bool found_unconsumed = false;
-    for (auto dep : dependencies_[i]) {
-      if (!expectations_[dep].consumed_) {
-        found_unconsumed = true;
-        break;
+    auto it = dependencies_.find(i);
+    if (it != dependencies_.end()) {
+      for (auto dep : it->second) {
+        if (!expectations_[dep].consumed_) {
+          found_unconsumed = true;
+          break;
+        }
       }
     }
     if (!found_unconsumed) {
@@ -604,7 +639,7 @@ bool QuicSocketDataProvider::VerifyWriteData(
 }
 
 std::string QuicSocketDataProvider::ExpectationList(
-    const std::vector<size_t>& indices) {
+    const std::vector<size_t>& indices) const {
   std::ostringstream names;
   bool first = true;
   for (auto i : indices) {

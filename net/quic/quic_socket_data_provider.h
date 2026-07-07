@@ -214,11 +214,14 @@ class QuicSocketDataProvider : public SocketDataProvider {
   bool AllReadDataConsumed() const override;
   bool AllWriteDataConsumed() const override;
   void CancelPendingRead() override;
+
+  // Returns true if the next read expectation is asynchronous or a pause.
+  bool IsNextReadAsyncOrPause() const override;
   void Reset() override;
 
  private:
   // Find indexes of expectations of the given type that are ready to consume.
-  std::optional<size_t> FindReadyExpectations(Expectation::Type type);
+  std::optional<size_t> FindReadyExpectations(Expectation::Type type) const;
 
   // Find a single ready operation, if any. Fails if multiple expectations of
   // the given type are ready. The corresponding expectation is marked as
@@ -239,7 +242,7 @@ class QuicSocketDataProvider : public SocketDataProvider {
   bool VerifyWriteData(QuicSocketDataProvider::Expectation& expectation);
 
   // Generate a comma-separated list of expectation names.
-  std::string ExpectationList(const std::vector<size_t>& indices);
+  std::string ExpectationList(const std::vector<size_t>& indices) const;
 
   // Generate a `QuicSimpleServerSession` for decrypting HTTP packets.
   std::unique_ptr<quic::QuicSimpleServerSession> GenSimpleServerSession();
