@@ -161,6 +161,25 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
                                     : -1;
     base::UmaHistogramSparse(
         "Autofill.AtMemory.AcceptedSuggestionSecondaryIndex", secondary_index);
+
+    if (pending_log_entry_) {
+      optimization_guide::proto::AtMemoryQuality* quality =
+          pending_log_entry_->log_ai_data_request()
+              ->mutable_at_memory()
+              ->mutable_quality();
+      if (metadata->multi_index[0] >=
+          static_cast<size_t>(quality->suggestions_size())) {
+        // This should never happen, but if it does, we should not crash.
+        return;
+      }
+      auto* accepted_suggestion =
+          quality->mutable_suggestions(metadata->multi_index[0]);
+      accepted_suggestion->set_action(
+          secondary_index == -1
+              ? optimization_guide::proto::AT_MEMORY_SUGGESTION_ACTION_ACCEPTED
+              : optimization_guide::proto::
+                    AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_ATTRIBUTE_ACCEPTED);
+    }
   }
 }
 
