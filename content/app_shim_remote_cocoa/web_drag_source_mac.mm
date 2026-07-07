@@ -109,6 +109,10 @@
   if (!_dropData.url_infos.empty()) {
     [writableTypes addObject:NSPasteboardTypeURL];
     [writableTypes addObject:ui::kUTTypeUrlName];
+    // Advertise kUTTypeWebKitWebUrlsWithTitles so Chromium/WebKit receivers can
+    // recover the complete URL/title list via ReadWebURLsWithTitlesPboardType.
+    // NSPasteboardTypeURL exposes only the first URL on the primary item.
+    [writableTypes addObject:ui::kUTTypeWebKitWebUrlsWithTitles];
   }
 
   // File.
@@ -235,6 +239,26 @@
   if ([type isEqualToString:ui::kUTTypeUrlName]) {
     DCHECK(!_dropData.url_infos.empty());
     return base::SysUTF16ToNSString(_dropData.url_infos.front().title);
+  }
+
+  // Return the legacy WebKit property-list format expected by
+  // ReadWebURLsWithTitlesPboardType:
+  //
+  // @[ @[ url0, url1, ... ],
+  //    @[ title0, title1, ... ] ]
+  //
+  // Keep this property-list format compatible with WebKit for interoperability.
+  if ([type isEqualToString:ui::kUTTypeWebKitWebUrlsWithTitles]) {
+    DCHECK(!_dropData.url_infos.empty());
+    NSMutableArray<NSString*>* urls =
+        [NSMutableArray arrayWithCapacity:_dropData.url_infos.size()];
+    NSMutableArray<NSString*>* titles =
+        [NSMutableArray arrayWithCapacity:_dropData.url_infos.size()];
+    for (const auto& url_info : _dropData.url_infos) {
+      [urls addObject:base::SysUTF8ToNSString(url_info.url.spec())];
+      [titles addObject:base::SysUTF16ToNSString(url_info.title)];
+    }
+    return @[ urls, titles ];
   }
 
   // Content-Disposition (carries the original filename for file contents).

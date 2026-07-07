@@ -9,6 +9,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest_mac.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "url/origin.h"
 
 namespace content {
@@ -32,6 +33,42 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
   id result = [source pasteboardPropertyListForType:NSPasteboardTypeURL];
   NSString* result_string = base::apple::ObjCCast<NSString>(result);
   EXPECT_NSEQ(@"javascript:%25", result_string);
+}
+
+// The primary source (created via the full initializer) exposes the first URL
+// through the standard URL type and the complete URL/title list through the
+// WebKit-compatible flavor, so Chromium/WebKit readers can recover every URL.
+TEST_F(WebDragSourceMacTest, MultipleURLsPrimaryItemCarriesFullList) {
+  DropData drop_data;
+  drop_data.url_infos = {
+      ui::ClipboardUrlInfo{GURL("https://www.chromium.org/"), u"Chromium"},
+      ui::ClipboardUrlInfo{GURL("https://www.mozilla.org/"), u"Mozilla"},
+      ui::ClipboardUrlInfo{GURL("https://webkit.org/"), u"WebKit"},
+  };
+
+  WebDragSource* primary =
+      [[WebDragSource alloc] initWithHost:nullptr
+                          renderProcessId:content::ChildProcessId()
+                            documentToken:blink::DocumentToken()
+                             sourceOrigin:url::Origin()
+                                 dropData:drop_data
+                             isPrivileged:NO];
+
+  // The standard URL type exposes only the first URL.
+  EXPECT_NSEQ(@"https://www.chromium.org/",
+              [primary pasteboardPropertyListForType:NSPasteboardTypeURL]);
+
+  // The WebKit flavor carries all URLs and titles as @[ urls, titles ].
+  id plist = [primary
+      pasteboardPropertyListForType:ui::kUTTypeWebKitWebUrlsWithTitles];
+  NSArray* array = base::apple::ObjCCast<NSArray>(plist);
+  ASSERT_EQ(2u, array.count);
+  EXPECT_NSEQ((@[
+                @"https://www.chromium.org/", @"https://www.mozilla.org/",
+                @"https://webkit.org/"
+              ]),
+              array[0]);
+  EXPECT_NSEQ((@[ @"Chromium", @"Mozilla", @"WebKit" ]), array[1]);
 }
 
 }  // namespace content

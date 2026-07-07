@@ -189,8 +189,10 @@ void OSExchangeDataProviderMac::SetURLs(
   if (url_infos.empty()) {
     return;
   }
-  // TODO(http://crbug.com/41011768): we should support multiple URLs,
-  // but currently only the first one is used.
+
+  // Currently, SetURLs is only used for single-URL Views drags (for example,
+  // the omnibox/location-bar site icon). Web-content and bookmark drags use
+  // different code paths, so only the first URL is written here.
   const auto& url_info = url_infos.front();
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url_info.url.spec()) ],

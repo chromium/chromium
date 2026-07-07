@@ -271,10 +271,39 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   imageRect.origin.y -= image.size.height - offset.y;
   [draggingItem setDraggingFrame:imageRect contents:image];
 
+  // Expose each URL as its own dragging item so native apps can read every URL
+  // from a multi-URL drag. The primary dragging item (a WebDragSource) exposes
+  // the first URL and any other drag data present in DropData, including the
+  // full WebKit-compatible URL/title list. The remaining URLs are represented
+  // by URL-only NSPasteboardItems that expose only the standard URL and title
+  // types.
+  NSMutableArray<NSDraggingItem*>* draggingItems =
+      [NSMutableArray arrayWithObject:draggingItem];
+  for (size_t i = 1; i < dropData.url_infos.size(); ++i) {
+    const auto& url_info = dropData.url_infos[i];
+    NSPasteboardItem* pasteboardItem = [[NSPasteboardItem alloc] init];
+    [pasteboardItem setString:base::SysUTF8ToNSString(url_info.url.spec())
+                      forType:NSPasteboardTypeURL];
+    if (!url_info.title.empty()) {
+      [pasteboardItem setString:base::SysUTF16ToNSString(url_info.title)
+                        forType:ui::kUTTypeUrlName];
+    }
+    NSDraggingItem* urlItem =
+        [[NSDraggingItem alloc] initWithPasteboardWriter:pasteboardItem];
+    [urlItem setDraggingFrame:imageRect contents:image];
+    [draggingItems addObject:urlItem];
+  }
+
   _dragOperation = operationMask;
 
-  // Run the drag operation.
-  [self beginDraggingSessionWithItems:@[ draggingItem ]
+  // Start the drag session. This hands control to AppKit, which queries each
+  // item's pasteboard writer (the primary WebDragSource and the URL-only
+  // NSPasteboardItems) via the NSPasteboardWriting protocol. AppKit calls
+  // -writableTypesForPasteboard: to learn the declared types, then calls
+  // -pasteboardPropertyListForType: to pull the actual data, lazily when
+  // needed. See web_drag_source_mac.mm for WebDragSource's implementation of
+  // those methods.
+  [self beginDraggingSessionWithItems:draggingItems
                                 event:dragEvent
                                source:self];
 }
