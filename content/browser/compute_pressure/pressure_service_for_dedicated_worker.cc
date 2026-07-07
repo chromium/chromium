@@ -25,9 +25,7 @@ bool PressureServiceForDedicatedWorker::ShouldDeliverUpdate() const {
 
   // https://www.w3.org/TR/compute-pressure/#dfn-owning-document-set
   // https://www.w3.org/TR/compute-pressure/#dfn-may-receive-data
-  auto* rfh =
-      RenderFrameHostImpl::FromID(worker_host_->GetAncestorRenderFrameHostId());
-  return HasImplicitFocus(rfh);
+  return HasImplicitFocus(worker_host_->GetAncestorRenderFrameHost());
 }
 
 std::optional<base::UnguessableToken>
@@ -35,9 +33,8 @@ PressureServiceForDedicatedWorker::GetTokenFor(
     device::mojom::PressureSource source) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto* web_contents =
-      WebContents::FromRenderFrameHost(RenderFrameHostImpl::FromID(
-          worker_host_->GetAncestorRenderFrameHostId()));
+  const auto* web_contents = WebContents::FromRenderFrameHost(
+      worker_host_->GetAncestorRenderFrameHost());
   if (const auto* pressure_manager_proxy =
           WebContentsPressureManagerProxy::FromWebContents(web_contents)) {
     return pressure_manager_proxy->GetTokenFor(source);
@@ -48,8 +45,7 @@ PressureServiceForDedicatedWorker::GetTokenFor(
 RenderFrameHost* PressureServiceForDedicatedWorker::GetRenderFrameHost() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return RenderFrameHostImpl::FromID(
-      worker_host_->GetAncestorRenderFrameHostId());
+  return worker_host_->GetAncestorRenderFrameHost();
 }
 
 }  // namespace content

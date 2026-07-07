@@ -20,6 +20,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/shared_worker_instance.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -147,9 +148,10 @@ class PressureServiceForDedicatedWorkerTest
     CHECK_EQ(rfh->GetLastCommittedOrigin(), rfh->GetStorageKey().origin());
     worker_host_ = std::make_unique<DedicatedWorkerHost>(
         &worker_service_, blink::DedicatedWorkerToken(), rfh->GetProcess(),
-        rfh->GetGlobalId(), rfh->GetGlobalId(), rfh->GetStorageKey().origin(),
-        rfh->GetStorageKey(), rfh->GetStorageKey().origin(),
-        rfh->GetIsolationInfoForSubresources(), rfh->BuildClientSecurityState(),
+        rfh->GetGlobalId(), rfh->GetWeakDocumentPtr(),
+        rfh->GetStorageKey().origin(), rfh->GetStorageKey(),
+        rfh->GetStorageKey().origin(), rfh->GetIsolationInfoForSubresources(),
+        rfh->BuildClientSecurityState(),
         rfh->policy_container_host()->policies(),
         /*creator_coep_reporter=*/nullptr,
         network::GetTestNetworkRestrictionsId(),

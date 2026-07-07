@@ -329,8 +329,7 @@ void BindWebNNContextProviderForRenderFrame(
 template <typename WorkerHost>
 bool IsWebNNPermissionsPolicyBlocked(WorkerHost* host) {
   if constexpr (std::is_same_v<WorkerHost, DedicatedWorkerHost>) {
-    auto* ancestor_render_frame_host =
-        RenderFrameHostImpl::FromID(host->GetAncestorRenderFrameHostId());
+    auto* ancestor_render_frame_host = host->GetAncestorRenderFrameHost();
     return !ancestor_render_frame_host ||
            !ancestor_render_frame_host->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kWebNN);

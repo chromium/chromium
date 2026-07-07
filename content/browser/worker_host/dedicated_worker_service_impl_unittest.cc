@@ -11,14 +11,19 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/render_document_feature.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,7 +65,9 @@ class MockDedicatedWorker
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, /*creator=*/render_frame_host_id,
-            render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
+            RenderFrameHostImpl::FromID(render_frame_host_id)
+                ->GetWeakDocumentPtr(),
+            blink::StorageKey::CreateFirstParty(origin),
             net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
             network::mojom::ClientSecurityState::New(),
             PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
@@ -290,6 +297,71 @@ TEST_F(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   EXPECT_TRUE(observer.dedicated_worker_infos().empty());
 }
 
+class DedicatedWorkerHostNavigationTest
+    : public DedicatedWorkerServiceImplTest {
+ public:
+  DedicatedWorkerHostNavigationTest() {
+    // Allow same-site navigations to reuse the RenderFrameHost so that the
+    // ancestor frame id can resolve to a different document.
+    InitAndEnableRenderDocumentFeature(
+        &feature_list_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kCrashedFrame));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DedicatedWorkerHostNavigationTest,
+       AncestorLookupAfterSameSiteNavigation) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrlA("http://example.com/a.html");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrlA);
+  RenderFrameHostImpl* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const blink::DocumentToken creator_document_token =
+      render_frame_host->GetDocumentToken();
+
+  // Create a dedicated worker for the current document.
+  auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
+      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetGlobalId(), url::Origin::Create(kUrlA));
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  const blink::DedicatedWorkerToken worker_token =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host =
+      static_cast<DedicatedWorkerServiceImpl*>(GetDedicatedWorkerService())
+          ->GetDedicatedWorkerHostFromToken(worker_token);
+  ASSERT_TRUE(host);
+  EXPECT_EQ(host->GetAncestorRenderFrameHost(), render_frame_host);
+  EXPECT_EQ(host->GetBucketClientInfo().document_token, creator_document_token);
+
+  // Commit a same-site navigation that reuses the RenderFrameHost so that it
+  // hosts a different document.
+  DisableProactiveBrowsingInstanceSwapFor(render_frame_host);
+  const GURL kUrlB("http://example.com/b.html");
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, render_frame_host);
+  ASSERT_EQ(web_contents->GetPrimaryMainFrame(), render_frame_host);
+  ASSERT_NE(render_frame_host->GetDocumentToken(), creator_document_token);
+  ASSERT_TRUE(
+      static_cast<DedicatedWorkerServiceImpl*>(GetDedicatedWorkerService())
+          ->GetDedicatedWorkerHostFromToken(worker_token));
+
+  // The worker host must not resolve its ancestor to the document that
+  // replaced its creator.
+  EXPECT_FALSE(host->GetAncestorRenderFrameHost());
+  EXPECT_NE(host->GetBucketClientInfo().document_token,
+            render_frame_host->GetDocumentToken());
+
+  mock_dedicated_worker = nullptr;
+  observer.RunUntilWorkerEvent();
+}
+
 class DedicatedWorkerHostFactoryImplTest
     : public RenderViewHostImplTestHarness {
  public:
@@ -332,7 +404,8 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         return std::make_unique<DedicatedWorkerHostFactoryImpl>(
             creator_rfh->GetProcess()->GetID(),
             static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
-            static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
+            static_cast<RenderFrameHostImpl*>(creator_rfh)
+                ->GetWeakDocumentPtr(),
             blink::StorageKey::CreateFirstParty(creator_origin),
             net::IsolationInfo::CreateTransient(std::nullopt),
             network::mojom::ClientSecurityState::New(),
@@ -483,7 +556,8 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
           return std::make_unique<DedicatedWorkerHostFactoryImpl>(
               opaque_rfh->GetProcess()->GetID(),
               static_cast<RenderFrameHostImpl*>(opaque_rfh)->GetGlobalId(),
-              static_cast<RenderFrameHostImpl*>(opaque_rfh)->GetGlobalId(),
+              static_cast<RenderFrameHostImpl*>(opaque_rfh)
+                  ->GetWeakDocumentPtr(),
               blink::StorageKey::CreateFirstParty(kOpaqueOrigin),
               net::IsolationInfo::CreateTransient(std::nullopt),
               network::mojom::ClientSecurityState::New(),

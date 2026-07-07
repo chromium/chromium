@@ -14877,8 +14877,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_id,
-          /*creator=*/GetGlobalId(),
-          /*ancestor_render_frame_host_id=*/GetGlobalId(), GetStorageKey(),
+          /*creator=*/GetGlobalId(), GetWeakDocumentPtr(), GetStorageKey(),
           isolation_info_, BuildClientSecurityState(),
           policy_container_host()->policies(),
           /*creator_coep_reporter=*/coep_reporter, GetNetworkRestrictionsID()),
