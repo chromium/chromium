@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -102,6 +101,9 @@ class TabVerticalViewBinder {
      * @param propertyKey the specific property key to bind, or null to bind all properties.
      */
     public static void bindPinnedTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+        if (view.getId() == R.id.hidden_pinned_tab) {
+            return;
+        }
         bindCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey) {
@@ -383,7 +385,7 @@ class TabVerticalViewBinder {
                 new View.AccessibilityDelegate() {
                     @Override
                     public void onInitializeAccessibilityNodeInfo(
-                            @NonNull View host, @NonNull AccessibilityNodeInfo info) {
+                            View host, AccessibilityNodeInfo info) {
                         super.onInitializeAccessibilityNodeInfo(host, info);
                         boolean isCollapsed = model.get(TabProperties.IS_COLLAPSED);
                         String actionLabel =

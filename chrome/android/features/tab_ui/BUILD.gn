@@ -133,6 +133,7 @@ android_resources("java_resources") {
     "java/res/layout/vertical_tab_item.xml",
     "java/res/layout/vertical_tab_layout.xml",
     "java/res/layout/vertical_tab_pinned_item.xml",
+    "java/res/layout/vertical_tab_pinned_item_hidden.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values-sw600dp/values.xml",
     "java/res/values/attrs.xml",

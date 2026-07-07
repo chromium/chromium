@@ -1190,6 +1190,17 @@ public class TabListMediator implements TabListNotificationHandler {
 
                         mModelList.removeAt(index);
                     }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        int index = mModelList.indexFromTabId(tab.getId());
+                        if (index != TabModel.INVALID_TAB_INDEX) {
+                            mModelList
+                                    .get(index)
+                                    .model
+                                    .set(TabProperties.IS_PINNED, tab.getIsPinned());
+                        }
+                    }
                 };
 
         mTabClosedListener =
@@ -2396,6 +2407,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         .with(CARD_TYPE, cardType)
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .with(TabProperties.ACTOR_UI_STATE, null)
+                        .with(TabProperties.IS_PINNED, tab.getIsPinned())
                         .build();
 
         ActorUiTabController controller = ActorUiTabController.from(tab);
@@ -2445,7 +2457,6 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, tabInfo, /* useDefault= */ false));
         tabInfo.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, tabInfo));
-        tabInfo.set(TabProperties.IS_PINNED, tab.getIsPinned());
         tabInfo.set(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab, tabInfo));
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         tabInfo.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);

@@ -256,7 +256,7 @@ public class VerticalTabListCoordinatorUnitTest {
         ViewGroup container = (ViewGroup) mCoordinator.getView();
         TabListRecyclerView realRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
 
-        // Populate the real UI list dataset with a dummy tab item data properties bundle.
+        // Populate the real UI list dataset with a placeholder tab item data properties bundle.
         SimpleRecyclerViewAdapter adapter =
                 (SimpleRecyclerViewAdapter) realRecyclerView.getAdapter();
         PropertyModel tabPropertyModel = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
@@ -283,8 +283,52 @@ public class VerticalTabListCoordinatorUnitTest {
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
         assertEquals(4, layoutManager.getSpanCount());
 
+        // Verify the pinned tabs RecyclerView is initialized but hidden when empty.
+        TabListRecyclerView pinnedRecyclerView = view.findViewById(R.id.pinned_tabs_recycler_view);
+        assertNotNull(pinnedRecyclerView);
+        assertNotNull(pinnedRecyclerView.getAdapter());
+        assertNotNull(pinnedRecyclerView.getLayoutManager());
+        assertEquals(View.GONE, pinnedRecyclerView.getVisibility());
+
+        GridLayoutManager pinnedLayoutManager =
+                (GridLayoutManager) pinnedRecyclerView.getLayoutManager();
+        assertEquals(4, pinnedLayoutManager.getSpanCount());
+
         assertNotNull(mSelectorObserverCaptor.getValue());
         verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsVisibility() {
+        // Set up the tab model with a pinned tab.
+        Tab pinnedTab = prepareMockTab(123);
+        when(pinnedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(pinnedTab));
+        when(mTabModel.iterator()).thenReturn(List.of(pinnedTab).iterator());
+        when(mTabModel.getTabById(123)).thenReturn(pinnedTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(pinnedTab);
+
+        createCoordinator();
+
+        // Verify the pinned tabs RecyclerView becomes visible when it contains elements.
+        ViewGroup view = (ViewGroup) mCoordinator.getView();
+        TabListRecyclerView pinnedRecyclerView = view.findViewById(R.id.pinned_tabs_recycler_view);
+        assertNotNull(pinnedRecyclerView);
+        assertEquals(View.VISIBLE, pinnedRecyclerView.getVisibility());
+
+        // Swap to an empty tab model.
+        TabModel emptyTabModel = mock(TabModel.class);
+        when(emptyTabModel.getProfile()).thenReturn(mProfile);
+        when(emptyTabModel.isTabModelRestored()).thenReturn(true);
+        when(emptyTabModel.getRepresentativeTabList()).thenReturn(Collections.emptyList());
+        when(emptyTabModel.iterator()).thenReturn(Collections.emptyIterator());
+
+        mCurrentTabModelSupplier.set(emptyTabModel);
+
+        // Verify the pinned tabs RecyclerView becomes hidden when empty.
+        assertEquals(View.GONE, pinnedRecyclerView.getVisibility());
     }
 
     @Test

@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/toolbar_height_no_shadow"
         android:visibility="gone" />
 
-    <!-- Header Container: Socket for future search/toolbar buttons -->
+    <!-- Header Container -->
     <LinearLayout
         android:id="@+id/vertical_tab_header_container"
         android:layout_width="match_parent"
@@ -51,6 +51,13 @@ found in the LICENSE file.
             android:scaleType="center"
             android:padding="@dimen/vertical_tabs_header_button_padding"/>
     </LinearLayout>
+
+    <!-- Pinned Tabs Recycler View -->
+    <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
+        android:id="@+id/pinned_tabs_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never" />
 
     <!-- Tab List Recycler View -->
     <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
