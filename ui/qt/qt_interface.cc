@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/qt/qt_interface.h"
 
 #include <cstdlib>
 #include <cstring>
+
+#include "base/compiler_specific.h"
 
 namespace qt {
 
 String::String() = default;
 
 String::String(const char* str) {
-  if (str)
-    str_ = strdup(str);
+  if (str) {
+    UNSAFE_TODO(str_ = strdup(str));
+  }
 }
 
 String::String(String&& other) {
@@ -39,9 +37,9 @@ String::~String() {
 
 Buffer::Buffer() = default;
 
-Buffer::Buffer(const uint8_t* data, size_t size)
-    : data_(static_cast<uint8_t*>(malloc(size))), size_(size) {
-  memcpy(data_, data, size);
+Buffer::Buffer(const uint8_t* data, size_t size) : size_(size) {
+  UNSAFE_TODO(data_ = static_cast<uint8_t*>(malloc(size)));
+  UNSAFE_TODO(memcpy(data_, data, size));
 }
 
 Buffer::Buffer(Buffer&& other) {

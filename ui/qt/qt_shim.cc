@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // IMPORTANT NOTE: All QtShim members that use `delegate_` must be decorated
 // with DISABLE_CFI_VCALL.
 
 #include "ui/qt/qt_shim.h"
-
-#include <cmath>
 
 #include <QApplication>
 #include <QFont>
@@ -24,6 +17,9 @@
 #include <QScreen>
 #include <QStyle>
 #include <QStyleOptionTitleBar>
+#include <cmath>
+
+#include "base/compiler_specific.h"
 
 namespace qt {
 
@@ -107,7 +103,7 @@ SkColor TextureColor(QImage image) {
   size_t b = 0;
   const auto* pixels = reinterpret_cast<QRgb*>(image.bits());
   for (size_t i = 0; i < size; i++) {
-    auto color = QColor::fromRgba(pixels[i]);
+    auto color = QColor::fromRgba(UNSAFE_TODO(pixels[i]));
     a += color.alpha();
     r += color.red();
     g += color.green();

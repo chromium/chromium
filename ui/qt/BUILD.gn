@@ -40,6 +40,8 @@ source_set("qt_interface") {
   public = [ "qt_interface.h" ]
   sources = [ "qt_interface.cc" ]
 
+  deps = [ "//base:compiler_specific" ]
+
   # Don't use libc++ modules as this depends on libstdc++.
   use_libcxx_modules = false
 }
@@ -82,7 +84,10 @@ template("qt_shim") {
       "//base",
       "//buildtools/third_party/libc++",
     ]
-    deps = [ ":qt_interface" ]
+    deps = [
+      ":qt_interface",
+      "//base:compiler_specific",
+    ]
 
     configs -= [ "//build/config/compiler:runtime_library" ]
     configs += [
