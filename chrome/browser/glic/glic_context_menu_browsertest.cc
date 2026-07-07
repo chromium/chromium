@@ -594,4 +594,25 @@ IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
                                        u"valid text"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
+                       GlicItemSanitizesSelectionText) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"line1\u2028line2\u2029line3\r\nline4";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  ASSERT_TRUE(glic_index.has_value());
+  EXPECT_EQ(glic_index->first->GetLabelAt(glic_index->second),
+            l10n_util::GetStringFUTF16(IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT,
+                                       u"line1 line2 line3  line4"));
+}
 }  // namespace glic

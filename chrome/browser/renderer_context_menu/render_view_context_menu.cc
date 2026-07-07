@@ -5388,6 +5388,8 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile(),
                                                       params_.selection_text) &&
       !IsGlicWindow(this, browser_context_)) {
+    base::ReplaceChars(params_.selection_text, AutocompleteInput::kInvalidChars,
+                       u" ", &params_.selection_text);
     base::TrimWhitespace(params_.selection_text, base::TRIM_ALL,
                          &params_.selection_text);
     const bool show_text_selection_menu_item =
