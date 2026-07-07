@@ -185,7 +185,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
       blink::LocalFrameToken initiator_frame_token,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       base::TimeTicks actual_navigation_start);
 
@@ -717,7 +717,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameTreeNode* frame,
       ReloadType reload_type,
       const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
@@ -796,7 +796,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_same_document_history_load,
       bool is_history_navigation_in_new_child_frame,
       const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId>

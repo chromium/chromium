@@ -85,7 +85,7 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
 bool VerifyNavigationInitiator(
     RenderFrameHostImpl* current_rfh,
     const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-    int initiator_process_id);
+    ChildProcessId initiator_process_id);
 
 // Verifies that |headers| are valid for a navigation request initiated by
 // |process|. For now, this always returns true, indicating that the |headers|

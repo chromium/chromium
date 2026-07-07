@@ -58,10 +58,10 @@ bool IsValidRendererDisposition(WindowOpenDisposition disposition) {
 
 // Validates that |received_token| is non-null iff associated with a blob: URL.
 bool VerifyBlobToken(
-    int process_id,
+    ChildProcessId process_id,
     const mojo::PendingRemote<blink::mojom::BlobURLToken>& received_token,
     const GURL& received_url) {
-  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
+  DCHECK(process_id);
 
   if (received_token.is_valid()) {
     if (!received_url.SchemeIsBlob()) {
@@ -75,7 +75,7 @@ bool VerifyBlobToken(
 }
 
 bool VerifyInitiatorOrigin(
-    int process_id,
+    ChildProcessId process_id,
     const url::Origin& initiator_origin,
     const RenderFrameHostImpl* current_rfh = nullptr,
     GURL* navigation_url = nullptr,
@@ -114,7 +114,8 @@ bool VerifyInitiatorOrigin(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->HostsOrigin(process_id, initiator_origin)) {
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  if (!policy->HostsOrigin(process_id.GetUnsafeValue(), initiator_origin)) {
     if (navigation_url) {
       static auto* const navigation_url_key =
           base::debug::AllocateCrashKeyString(
@@ -203,7 +204,7 @@ bool VerifyDownloadUrlParams(RenderProcessHost* process,
                              const blink::mojom::DownloadURLParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(process);
-  int process_id = process->GetDeprecatedID();
+  ChildProcessId process_id = process->GetID();
 
   // Verifies |params.blob_url_token| is appropriately set.
   if (!VerifyBlobToken(process_id, params.blob_url_token, params.url))
@@ -234,7 +235,7 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
   DCHECK(process);
   DCHECK(out_validated_url);
   DCHECK(out_blob_url_loader_factory);
-  int process_id = process->GetDeprecatedID();
+  ChildProcessId process_id = process->GetID();
 
   // Verify |params.url| and populate |out_validated_url|.
   *out_validated_url = params->url;
@@ -314,7 +315,7 @@ bool VerifyBeginNavigationCommonParams(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(common_params);
   RenderProcessHost* process = current_rfh.GetProcess();
-  int process_id = process->GetDeprecatedID();
+  ChildProcessId process_id = process->GetID();
 
   // Verify (and possibly rewrite) |url|.
   process->FilterURL(false, &common_params->url);
@@ -407,7 +408,7 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
 bool VerifyNavigationInitiator(
     RenderFrameHostImpl* current_rfh,
     const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-    int initiator_process_id) {
+    ChildProcessId initiator_process_id) {
   // Verify that a frame inside a fenced frame cannot navigate its ancestors,
   // unless the frame being navigated is the outermost main frame.
   if (current_rfh->IsOutermostMainFrame())
