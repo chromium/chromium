@@ -11,6 +11,8 @@ import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_componen
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {createFile} from './composebox_test_utils.js';
+
 suite('FileCarouselTest', function() {
   let fileCarousel: ComposeboxFileCarouselElement;
   let resizeObserverCallback: ResizeObserverCallback;
@@ -39,23 +41,6 @@ suite('FileCarouselTest', function() {
 
   function getFileCarouselContainer(): HTMLElement {
     return fileCarousel.shadowRoot.querySelector('.file-carousel-container')!;
-  }
-
-  function createFile(n: number): ComposeboxFile {
-    return {
-      uuid: {high: 0n, low: BigInt(n)} as any,
-      name: `file${n}.txt`,
-      dataUrl: null,
-      objectUrl: null,
-      type: 'text/plain',
-      inputType: InputType.kLensFile,
-      status: ContextUploadStatus.kUploadStarted,
-      url: null,
-      tabId: null,
-      isDeletable: true,
-      iconName: null,
-      supportsUnimodal: true,
-    };
   }
 
   test('renders files', async () => {

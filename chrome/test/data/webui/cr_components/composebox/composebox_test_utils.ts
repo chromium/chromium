@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import type {ComposeboxVoiceSearchElement, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -242,4 +244,24 @@ export function disableTransitionsRecursively(
       }
     }
   }
+}
+
+export function createFile(
+    index: number, override: Partial<ComposeboxFile> = {}): ComposeboxFile {
+  return Object.assign(
+      {
+        name: `file${index}.txt`,
+        type: 'text/plain',
+        inputType: InputType.kLensFile,
+        objectUrl: null,
+        dataUrl: null,
+        uuid: {high: 0n, low: BigInt(index)} as unknown as UnguessableToken,
+        status: ContextUploadStatus.kUploadSuccessful,
+        url: null,
+        tabId: null,
+        isDeletable: true,
+        iconName: null,
+        supportsUnimodal: true,
+      },
+      override);
 }

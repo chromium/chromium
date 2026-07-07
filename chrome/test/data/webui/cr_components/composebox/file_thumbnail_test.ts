@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxFileThumbnailElement} from 'chrome://new-tab-page/lazy_load.js';
-import type {CrIconElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import 'chrome://contextual-tasks/strings.m.js';
+
+import type {TabFaviconElement} from 'chrome://resources/cr_components/composebox/composebox_tab_favicon.js';
+import {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ContextUploadStatus} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createComposeboxFile} from './test_support.js';
+import {createFile} from './composebox_test_utils.js';
 
-suite('NewTabPageComposeboxFileThumbnailTest', () => {
+suite('ComposeboxFileThumbnailTest', () => {
   let fileThumbnailElement: ComposeboxFileThumbnailElement;
 
   setup(() => {
@@ -22,7 +25,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('display loading spinner', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(1, {
+    fileThumbnailElement.file = createFile(1, {
       type: 'image/jpeg',
       objectUrl: 'data:foo',
       status: ContextUploadStatus.kUploadStarted,
@@ -37,7 +40,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('display image file', async () => {
     // Arrange.
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
     await microtasksFinished();
 
     // Assert one image file.
@@ -53,7 +56,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('display image file from dataUrl', async () => {
     // Arrange.
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', dataUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', dataUrl: 'data:foo'});
     await microtasksFinished();
 
     // Assert one image file.
@@ -72,7 +75,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(0);
+    fileThumbnailElement.file = createFile(0);
     await microtasksFinished();
 
     // Assert one document file.
@@ -96,7 +99,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(0, {type: 'text/plain'});
+    fileThumbnailElement.file = createFile(0, {type: 'text/plain'});
     await microtasksFinished();
 
     // Assert one document file.
@@ -120,8 +123,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
-    fileThumbnailElement.file =
-        createComposeboxFile(0, {type: 'application/pdf'});
+    fileThumbnailElement.file = createFile(0, {type: 'application/pdf'});
     await microtasksFinished();
 
     // Assert one document file.
@@ -147,8 +149,10 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     // Arrange.
     const iconUrl =
         'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document';
-    fileThumbnailElement.file = createComposeboxFile(
-        0, {type: 'application/vnd.google-apps.document', iconUrl: iconUrl});
+    fileThumbnailElement.file = createFile(0, {
+      type: 'application/vnd.google-apps.document',
+      iconUrl: iconUrl,
+    });
     await microtasksFinished();
 
     // Assert one document file.
@@ -168,7 +172,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('display tab file', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(2, {
+    fileThumbnailElement.file = createFile(2, {
       url: 'https://example.com/some/path',
       name: 'some tab',
     });
@@ -181,8 +185,9 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector<HTMLElement>('.title');
     assertTrue(!!title);
     assertEquals(title.innerText, 'some tab');
-    const favicon = fileThumbnailElement.shadowRoot.querySelector(
-        'cr-composebox-tab-favicon');
+    const favicon =
+        fileThumbnailElement.shadowRoot.querySelector<TabFaviconElement>(
+            'cr-composebox-tab-favicon')!;
     assertTrue(!!favicon);
     assertEquals(favicon.url, 'https://example.com/some/path');
   });
@@ -190,7 +195,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('clicking image delete button sends event', async () => {
     // Arrange.
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
     await microtasksFinished();
 
     // Act.
@@ -201,12 +206,12 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert.
     const deleteEvent = await deleteEventPromise;
-    assertEquals(deleteEvent.detail.uuid, '1');
+    assertEquals(deleteEvent.detail.uuid, fileThumbnailElement.file.uuid);
   });
 
   test('hides image delete button when not deletable', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(1, {
+    fileThumbnailElement.file = createFile(1, {
       type: 'image/jpeg',
       objectUrl: 'data:foo',
       isDeletable: false,
@@ -221,7 +226,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('clicking document delete button sends event', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(0);
+    fileThumbnailElement.file = createFile(0);
     await microtasksFinished();
 
     // Act.
@@ -232,12 +237,12 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert.
     const deleteEvent = await deleteEventPromise;
-    assertEquals(deleteEvent.detail.uuid, '0');
+    assertEquals(deleteEvent.detail.uuid, fileThumbnailElement.file.uuid);
   });
 
   test('hides document delete button when not deletable', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(0, {isDeletable: false});
+    fileThumbnailElement.file = createFile(0, {isDeletable: false});
     await microtasksFinished();
 
     // Assert.
@@ -248,7 +253,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('clicking tab delete button sends event', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(2, {
+    fileThumbnailElement.file = createFile(2, {
       url: 'https://example.com/some/path',
       name: 'some tab',
     });
@@ -262,12 +267,12 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert.
     const deleteEvent = await deleteEventPromise;
-    assertEquals(deleteEvent.detail.uuid, '2');
+    assertEquals(deleteEvent.detail.uuid, fileThumbnailElement.file.uuid);
   });
 
   test('hides tab delete button when not deletable', async () => {
     // Arrange.
-    fileThumbnailElement.file = createComposeboxFile(2, {
+    fileThumbnailElement.file = createFile(2, {
       url: 'https://example.com/some/path',
       name: 'some tab',
       isDeletable: false,
@@ -291,7 +296,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     };
 
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
     await microtasksFinished();
 
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -306,7 +311,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('shows animation for exiting attachment', async () => {
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
     await microtasksFinished();
     // Ensure the entering is completed before setting up the exiting mock.
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -336,7 +341,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
   test('ignores delete button clicks while already exiting', async () => {
     fileThumbnailElement.file =
-        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+        createFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
     await microtasksFinished();
     // Ensure the entering is completed before setting up the exiting mock.
     await new Promise(resolve => requestAnimationFrame(resolve));

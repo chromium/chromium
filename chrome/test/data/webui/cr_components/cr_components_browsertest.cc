@@ -369,6 +369,10 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileCarousel) {
   RunTest("cr_components/composebox/file_carousel_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileThumbnail) {
+  RunTest("cr_components/composebox/file_thumbnail_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxInput) {
   RunTest("cr_components/composebox/composebox_input_test.js", "mocha.run()");
 }

@@ -302,9 +302,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxDragAndDrop) {
 }
 
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
-  RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
-}
 
 class NewTabPageFileInputsTest : public NewTabPageTest {
  public:

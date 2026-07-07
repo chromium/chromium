@@ -10,7 +10,6 @@ composebox_test_files = [
   "composebox/composebox_submit_test.ts",
   "composebox/composebox_test.ts",
   "composebox/composebox_upload_test.ts",
-  "composebox/file_thumbnail_test.ts",
   "composebox/test_support.ts",
   "composebox/threads_rail_test.ts",
 ]
