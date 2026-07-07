@@ -1777,6 +1777,11 @@ public class StripLayoutHelper
         }
     }
 
+    /** Returns whether Glic IPH is currently showing on the tab strip. */
+    public boolean isGlicIphShowing() {
+        return mTabStripIphController != null && mTabStripIphController.isGlicIphShowing();
+    }
+
     void setLastSyncedGroupIdForTesting(@Nullable Token tabGroupId) {
         mLastSyncedGroupIdForIph = tabGroupId;
     }

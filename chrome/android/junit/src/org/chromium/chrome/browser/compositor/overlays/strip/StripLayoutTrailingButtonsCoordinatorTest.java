@@ -114,6 +114,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private static final float BUTTON_WIDTH = 42.0f;
     private final long mBwiPtr = 123L;
     private boolean mIsIncognito;
+    private boolean mGlicIphShowing;
 
     @Before
     public void setUp() {
@@ -165,6 +166,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         () -> null,
                         mSideUiStateProviderSupplier,
                         mModelSelectorButton,
+                        () -> mGlicIphShowing,
                         mObserver);
         ShadowLooper.idleMainLooper();
         mCoordinator.onProfileAvailable(mProfile);

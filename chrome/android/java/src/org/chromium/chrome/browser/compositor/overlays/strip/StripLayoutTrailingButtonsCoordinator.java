@@ -74,6 +74,7 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Coordinator for the trailing buttons on the tab strip. */
@@ -133,7 +134,6 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final WindowAndroid mWindowAndroid;
 
     // Configuration & Delegates
-    private final StripLayoutTrailingButtonsObserver mObserver;
     private final float mDensity;
     private final GlicButtonDelegate mGlicClickHandler;
     private final GlobalShowHideObserver mGlicUiObserver;
@@ -143,6 +143,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean mIsIncognito;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private final BooleanSupplier mGlicIphShowingSupplier;
+    private final StripLayoutTrailingButtonsObserver mObserver;
     private @Nullable SideUiStateProvider mSideUiStateProvider;
     private final SideUiObserver mSideUiObserver =
             new SideUiObserver() {
@@ -181,6 +183,12 @@ public class StripLayoutTrailingButtonsCoordinator {
                 @Override
                 public void onTriggerGlicNudgeUi(
                         String label, String anchoredMessageText, String promptSuggestion) {
+                    if (mGlicIphShowingSupplier.getAsBoolean()) {
+                        GlicNudgeDelegateBridge.onNudgeActivity(
+                                mWindowAndroid,
+                                GlicNudgeActivity.NUDGE_NOT_SHOWN_WINDOW_CALL_TO_ACTION_UI);
+                        return;
+                    }
                     mNudgeLabel = label;
                     updateTrailingButtonsState(
                             /* animate= */ true, /* forceLayoutChanged= */ false);
@@ -293,6 +301,13 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param isAppInDesktopWindow Whether the app is in a desktop window.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
      * @param taskTracker The {@link ChromeAndroidTaskTracker} for tracking tasks.
+     * @param isIncognito Whether the tab strip is incognito.
+     * @param tabModelSelectorSupplier The supplier for the {@link TabModelSelector}.
+     * @param sideUiStateProviderSupplier The supplier for the {@link SideUiStateProvider}.
+     * @param modelSelectorButton The model selector button used to toggle between regular /
+     *     incognito.
+     * @param glicIphShowingSupplier The supplier returning whether the tab strip Glic IPH is
+     *     showing.
      * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout state changes.
      */
     public StripLayoutTrailingButtonsCoordinator(
@@ -311,6 +326,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             @Nullable TintedCompositorButton modelSelectorButton,
+            BooleanSupplier glicIphShowingSupplier,
             StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
         mUpdateHost = updateHost;
@@ -322,6 +338,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mModelSelectorButton = modelSelectorButton;
+        mGlicIphShowingSupplier = glicIphShowingSupplier;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;

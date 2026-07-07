@@ -634,6 +634,7 @@ public class StripLayoutHelperManager
                         () -> mTabModelSelector,
                         sideUiStateProviderSupplier,
                         mModelSelectorButton,
+                        this::isNormalHelperGlicIphShowing,
                         this::updateButtonMargins);
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
@@ -798,6 +799,10 @@ public class StripLayoutHelperManager
     private boolean isAppInDesktopWindow() {
         return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
                 && mDesktopWindowStateManager != null;
+    }
+
+    private boolean isNormalHelperGlicIphShowing() {
+        return mNormalHelper != null && mNormalHelper.isGlicIphShowing();
     }
 
     private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {

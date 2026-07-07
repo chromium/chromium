@@ -15,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -69,6 +68,7 @@ public class TabStripIphController {
     private final Resources mResources;
     private final UserEducationHelper mUserEducationHelper;
     private final Tracker mTracker;
+    private boolean mGlicIphShowing;
 
     /**
      * Constructs the controller.
@@ -133,7 +133,7 @@ public class TabStripIphController {
 
     private void showIph(
             View anchorView, Rect anchorRect, @IphType int iphType, boolean enableSnoozeMode) {
-        IphCommand iphCommand =
+        IphCommandBuilder iphCommandBuilder =
                 new IphCommandBuilder(
                                 mResources,
                                 getIphFeature(iphType),
@@ -143,9 +143,15 @@ public class TabStripIphController {
                         .setAnchorRect(anchorRect)
                         .setDismissOnTouch(true)
                         .setAutoDismissTimeout(IPH_AUTO_DISMISS_WAIT_TIME_MS)
-                        .setEnableSnoozeMode(enableSnoozeMode)
-                        .build();
-        mUserEducationHelper.requestShowIph(iphCommand);
+                        .setEnableSnoozeMode(enableSnoozeMode);
+
+        if (iphType == IphType.GLIC_PROMO) {
+            iphCommandBuilder
+                    .setOnShowCallback(() -> mGlicIphShowing = true)
+                    .setOnDismissCallback(() -> mGlicIphShowing = false);
+        }
+
+        mUserEducationHelper.requestShowIph(iphCommandBuilder.build());
     }
 
     /** Dismisses any currently visible IPH text bubble. */
@@ -163,6 +169,11 @@ public class TabStripIphController {
      */
     public boolean wouldTriggerIph(@IphType int iphType) {
         return mTracker != null && mTracker.wouldTriggerHelpUi(getIphFeature(iphType));
+    }
+
+    /** Returns whether Glic IPH is currently showing on the tab strip. */
+    public boolean isGlicIphShowing() {
+        return mGlicIphShowing;
     }
 
     /**
