@@ -139,8 +139,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   FontFallbackPriority fallback_priority_with_emoji_text = fallback_priority;
 
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      fallback_priority == FontFallbackPriority::kText &&
+  if (fallback_priority == FontFallbackPriority::kText &&
       Character::IsEmoji(c)) {
     fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
   }
@@ -170,8 +169,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // try to get monochromatic font by searching for the font without emoji
   // locales "Zsym" or "Zsye", see
   // https://unicode.org/reports/tr51/#Emoji_Script.
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
+  if (IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
       is_color(font_platform_data)) {
     font_platform_data = CreateFontPlatformDataForCharacter(
         fm.get(), c, font_description, generic_family_name,

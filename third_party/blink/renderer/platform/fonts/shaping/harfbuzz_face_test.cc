@@ -62,17 +62,6 @@ hb_codepoint_t GetGlyphForEmojiVSFromFontWithVS16(
       font, character, variation_selector, variation_selector_mode);
 }
 
-hb_codepoint_t GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-    UChar32 character,
-    UChar32 variation_selector,
-    VariationSelectorMode variation_selector_mode) {
-  Font* font = test::CreateTestFont(
-      AtomicString("Noto Emoji Without VS"),
-      WPTFontPath("NotoEmoji-Regular_without-cmap14-subset.ttf"), 11);
-  return GetGlyphForVariationSequenceFromFont(
-      font, character, variation_selector, variation_selector_mode);
-}
-
 hb_codepoint_t GetGlyphForStandardizedVSFromFontWithBaseCharOnly(
     VariationSelectorMode variation_selector_mode) {
   UChar32 character = uchar::kMongolianLetterA;
@@ -152,13 +141,6 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
       character, variation_selector, kForceVariationSelector16);
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
-
-  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    hb_codepoint_t glyph_from_font_without_vs =
-        GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-            character, variation_selector, kForceVariationSelector16);
-    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
-  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
@@ -173,13 +155,6 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
   hb_codepoint_t glyph_from_font_with_vs16 = GetGlyphForEmojiVSFromFontWithVS16(
       character, variation_selector, kForceVariationSelector15);
   EXPECT_EQ(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
-
-  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    hb_codepoint_t glyph_from_font_without_vs =
-        GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-            character, variation_selector, kForceVariationSelector15);
-    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
-  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
@@ -194,13 +169,6 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
       character, variation_selector, kUseUnicodeDefaultPresentation);
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
-
-  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    hb_codepoint_t glyph_from_font_without_vs =
-        GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-            character, variation_selector, kUseUnicodeDefaultPresentation);
-    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
-  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
@@ -215,22 +183,12 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
   hb_codepoint_t glyph_from_font_with_vs16 = GetGlyphForEmojiVSFromFontWithVS16(
       character, variation_selector, kForceVariationSelector16);
   EXPECT_EQ(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
-
-  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
-    hb_codepoint_t glyph_from_font_without_vs =
-        GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-            character, variation_selector, kForceVariationSelector16);
-    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
-  }
 }
 
 // Test emoji variation selectors support in system fallback. We are only
 // enabling this feature on Windows, Android and Mac platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVS) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_system_emoji_vs_feature(
-      true);
-
   UChar32 character = uchar::kShakingFaceEmoji;
 
   hb_codepoint_t glyph_from_font_with_vs15 = GetGlyphForEmojiVSFromFontWithVS15(
@@ -242,12 +200,6 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVS) {
       character, uchar::kVariationSelector16, kUseSpecifiedVariationSelector);
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
-
-  hb_codepoint_t glyph_from_font_without_vs =
-      GetGlyphForEmojiVSFromFontWithBaseCharOnly(
-          character, 0, kUseSpecifiedVariationSelector);
-  EXPECT_TRUE(glyph_from_font_without_vs);
-  EXPECT_NE(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
 }
 #endif
 

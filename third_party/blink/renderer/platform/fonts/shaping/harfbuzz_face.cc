@@ -115,18 +115,20 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   bool consider_variation_selector = false;
   bool is_variation_sequence = false;
 
+  // TODO(https://crbug.com/396607232): The special casing for system fonts
+  // below can be removed if we ship our own emoji fonts.
   // Emoji System Fonts on Mac, Win and Android either do not have cmap 14
   // subtable or it does not include all emojis from their cmap table. We use
   // cmap 14 subtable to identify whether there is a colored (emoji
-  // presentation) or a monochromatic (text presentation) glyph in the font.
-  // This may lead to the cases when we will not be able to get the glyph ID
-  // for the requested variation sequence using fallback system font and will
-  // continue the second shaping fallback list pass ignoring variation
-  // selectors and may end up using web font with wrong emoji presentation
-  // instead of using system font with the correct presentation. To prevent that
-  // once we reached system fallback fonts, we can ignore emoji variation
-  // selectors since we will get the font with the correct presentation relying
-  // on FontFallbackPriority in `FontCache::PlatformFallbackFontForCharacter`.
+  // presentation) or a monochromatic (text presentation) glyph in the
+  // font. This may lead to the cases when we will not be able to get the glyph
+  // ID for the requested variation sequence using fallback system font and will
+  // continue the second shaping fallback list pass ignoring variation selectors
+  // and may end up using web font with wrong emoji presentation instead of
+  // using system font with the correct presentation. To prevent that once we
+  // reached system fallback fonts, we can ignore emoji variation selectors
+  // since we will get the font with the correct presentation relying on
+  // FontFallbackPriority in `FontCache::PlatformFallbackFontForCharacter`.
   VariationSelectorMode variation_selector_mode =
       hb_font_data->GetVariationSelectorMode();
   if (!ShouldIgnoreVariationSelector(variation_selector_mode) &&
@@ -188,8 +190,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     // has a colored or monochromatic glyph for base character from variation
     // sequence. We set `glyph` to `kUnmatchedVSGlyphId` only when font has a
     // wrong presentation for base character.
-    if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-        (text_presentation_requested || emoji_presentation_requested)) {
+    if (text_presentation_requested || emoji_presentation_requested) {
       SkTypeface* typeface = hb_font_data->font_.getTypeface();
       // TODO(https://bugs.skia.org/374078818): Ideally we also want to check
       // weather the base codepoint is present in the found color table,

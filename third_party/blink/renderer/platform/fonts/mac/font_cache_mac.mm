@@ -160,8 +160,7 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   // (text) presentation of emoji. To do that we will replace colored emoji font
   // with the "Apple Symbols" monochromatic emoji font with the color emoji
   // cascade list since it has better glyph coverage.
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      IsAppleColorEmojiFont(substitute_font.get()) &&
+  if (IsAppleColorEmojiFont(substitute_font.get()) &&
       Character::IsEmoji(character)) {
     NSArray* lang_list = @[ @"en" ];
     NSArray* cascade_list =

@@ -95,8 +95,7 @@ const LayoutLocale* FallbackLocaleForCharacter(
     const UChar32 codepoint) {
   if (IsEmojiPresentationEmoji(fallback_priority)) {
     return LayoutLocale::Get(AtomicString(kColorEmojiLocale));
-  } else if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-             IsTextPresentationEmoji(fallback_priority)) {
+  } else if (IsTextPresentationEmoji(fallback_priority)) {
     return LayoutLocale::Get(AtomicString(kMonoEmojiLocale));
   }
 
@@ -277,8 +276,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   }
 
   FontFallbackPriority fallback_priority_with_emoji_text = fallback_priority;
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      fallback_priority == FontFallbackPriority::kText &&
+  if (fallback_priority == FontFallbackPriority::kText &&
       Character::IsEmoji(character)) {
     fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
   }

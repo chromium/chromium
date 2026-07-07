@@ -802,8 +802,6 @@ TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
-      true);
 
   Font* mono_font = CreateNotoEmoji();
   Font* color_font = CreateNotoColorEmoji();
@@ -829,8 +827,6 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
 }
 
 TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
-      true);
 
   Font* mono_font = CreateNotoEmoji();
   Font* color_font = CreateNotoColorEmoji();
@@ -861,8 +857,6 @@ INSTANTIATE_TEST_SUITE_P(HarfBuzzShaperTest,
                          testing::ValuesIn(variant_emoji_values));
 
 TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
-      true);
 
   const FontVariantEmoji variant_emoji = GetParam();
 
@@ -899,8 +893,6 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
 }
 
 TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
-      true);
 
   String text(u"\u2603\u2614\ufe0e\u2603\ufe0f");
   Font* font = blink::test::CreateTestFont(
@@ -921,8 +913,6 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
 }
 
 TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
-  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
-      true);
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSVersion() < 13'00'00) {
     GTEST_SKIP();
