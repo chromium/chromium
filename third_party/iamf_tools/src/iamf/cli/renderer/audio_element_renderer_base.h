@@ -20,7 +20,7 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/types/span.h"
 #include "iamf/cli/channel_label.h"
-#include "iamf/cli/demixing_module.h"
+#include "iamf/cli/labeled_frame.h"
 #include "iamf/obu/types.h"
 
 namespace iamf_tools {

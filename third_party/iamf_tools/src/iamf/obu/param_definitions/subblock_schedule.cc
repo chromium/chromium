@@ -156,7 +156,7 @@ absl::Status SubblockSchedule::Write(
   RETURN_IF_NOT_OK(wb.WriteUleb128(constant_subblock_duration_));
   if (constant_subblock_duration_ != 0) {
     if (parameter_data.has_value()) {
-      for (int i = 0; i < num_subblocks_; ++i) {
+      for (DecodedUleb128 i = 0; i < num_subblocks_; ++i) {
         RETURN_IF_NOT_OK((*parameter_data)[i]->Write(wb));
       }
     }
@@ -164,7 +164,7 @@ absl::Status SubblockSchedule::Write(
   }
 
   RETURN_IF_NOT_OK(wb.WriteUleb128(num_subblocks_));
-  for (int i = 0; i < num_subblocks_; ++i) {
+  for (DecodedUleb128 i = 0; i < num_subblocks_; ++i) {
     RETURN_IF_NOT_OK(wb.WriteUleb128(subblock_durations_[i]));
     if (parameter_data.has_value()) {
       RETURN_IF_NOT_OK((*parameter_data)[i]->Write(wb));

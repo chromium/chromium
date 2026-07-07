@@ -27,6 +27,7 @@ iamf_tools_sources = [
   "src/iamf/cli/obu_processor.cc",
   "src/iamf/cli/obu_processor_utils.cc",
   "src/iamf/cli/obu_with_data_generator.cc",
+  "src/iamf/cli/labeled_frame.cc",
   "src/iamf/cli/parameters_manager.cc",
   "src/iamf/cli/profile_filter.cc",
   "src/iamf/cli/recon_gain_generator.cc",
@@ -41,6 +42,7 @@ iamf_tools_sources = [
   "src/iamf/cli/renderer/renderer_utils.cc",
   "src/iamf/cli/renderer_factory.cc",
   "src/iamf/cli/rendering_mix_presentation_finalizer.cc",
+  "src/iamf/cli/sample_processing_utils.cc",
   "src/iamf/cli/sample_processor_base.cc",
   "src/iamf/cli/temporal_unit_view.cc",
 
@@ -51,7 +53,6 @@ iamf_tools_sources = [
 
   # common/utils sources
   "src/iamf/common/utils/numeric_utils.cc",
-  "src/iamf/common/utils/sample_processing_utils.cc",
   "src/iamf/common/write_bit_buffer.cc",
 
   ## include sources
@@ -97,6 +98,7 @@ iamf_tools_sources = [
   "src/iamf/obu/param_definitions/param_definition_base.cc",
   "src/iamf/obu/param_definitions/polar_param_definition.cc",
   "src/iamf/obu/param_definitions/recon_gain_param_definition.cc",
+  "src/iamf/obu/param_definitions/subblock_schedule.cc",
   "src/iamf/obu/parameter_block.cc",
   "src/iamf/obu/polar_parameter_data.cc",
   "src/iamf/obu/recon_gain_info_parameter_data.cc",
@@ -130,6 +132,7 @@ iamf_tools_headers = [
   "src/iamf/cli/obu_processor_utils.h",
   "src/iamf/cli/obu_with_data_generator.h",
   "src/iamf/cli/parameters_manager.h",
+  "src/iamf/cli/labeled_frame.h",
   "src/iamf/cli/profile_filter.h",
   "src/iamf/cli/recon_gain_generator.h",
   "src/iamf/cli/renderer_factory.h",
@@ -144,6 +147,7 @@ iamf_tools_headers = [
   "src/iamf/cli/renderer/gains/precomputed_compressed_gains_decoder.h",
   "src/iamf/cli/renderer/gains/precomputed_compressed_gains.h",
   "src/iamf/cli/rendering_mix_presentation_finalizer.h",
+  "src/iamf/cli/sample_processing_utils.h",
   "src/iamf/cli/sample_processor_base.h",
   "src/iamf/cli/substream_frames.h",
   "src/iamf/cli/temporal_unit_view.h",
@@ -164,7 +168,6 @@ iamf_tools_headers = [
   "src/iamf/common/utils/map_utils.h",
   "src/iamf/common/utils/numeric_utils.h",
   "src/iamf/common/utils/obu_util.h",
-  "src/iamf/common/utils/sample_processing_utils.h",
   "src/iamf/common/utils/validation_utils.h",
 
   ## include headers
@@ -173,14 +176,17 @@ iamf_tools_headers = [
   "src/iamf/include/iamf_tools/iamf_tools_api_types.h",
 
   ## obu headers
+  "src/iamf/obu/ambisonics_config.h",
   "src/iamf/obu/arbitrary_obu.h",
   "src/iamf/obu/audio_element.h",
   "src/iamf/obu/audio_frame.h",
   "src/iamf/obu/codec_config.h",
   "src/iamf/obu/demixing_info_parameter_data.h",
+  "src/iamf/obu/element_gain_offset_config.h",
   "src/iamf/obu/param_definitions/demixing_param_definition.h",
   "src/iamf/obu/extension_parameter_data.h",
   "src/iamf/obu/ia_sequence_header.h",
+  "src/iamf/obu/metadata_obu.h",
   "src/iamf/obu/mix_gain_parameter_data.h",
   "src/iamf/obu/mix_presentation.h",
   "src/iamf/obu/obu_base.h",
@@ -190,6 +196,8 @@ iamf_tools_headers = [
   "src/iamf/obu/parameter_block.h",
   "src/iamf/obu/parameter_data.h",
   "src/iamf/obu/recon_gain_info_parameter_data.h",
+  "src/iamf/obu/rendering_config.h",
+  "src/iamf/obu/substream_channel_count.h",
   "src/iamf/obu/temporal_delimiter.h",
   "src/iamf/obu/types.h",
 
@@ -199,7 +207,11 @@ iamf_tools_headers = [
   "src/iamf/obu/param_definitions/dual_cart16_param_definition.h",
   "src/iamf/obu/param_definitions/dual_cart8_param_definition.h",
   "src/iamf/obu/param_definitions/dual_polar_param_definition.h",
+  "src/iamf/obu/param_definitions/extended_param_definition.h",
+  "src/iamf/obu/param_definitions/mix_gain_param_definition.h",
   "src/iamf/obu/param_definitions/polar_param_definition.h",
+  "src/iamf/obu/param_definitions/recon_gain_param_definition.h",
+  "src/iamf/obu/param_definitions/subblock_schedule.h",
   "src/iamf/obu/cart16_parameter_data.h",
   "src/iamf/obu/cart8_parameter_data.h",
   "src/iamf/obu/dual_cart16_parameter_data.h",

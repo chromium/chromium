@@ -18,8 +18,8 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/types/span.h"
 #include "iamf/cli/channel_label.h"
-#include "iamf/cli/demixing_module.h"
-#include "iamf/cli/renderer/renderer_utils.h"
+#include "iamf/cli/labeled_frame.h"
+#include "iamf/cli/sample_processing_utils.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/obu/types.h"
 
@@ -42,7 +42,7 @@ absl::StatusOr<size_t> AudioElementRendererBase::RenderLabeledFrame(
   absl::MutexLock lock(mutex_);
 
   size_t num_valid_samples = 0;
-  RETURN_IF_NOT_OK(iamf_tools::ArrangeSamplesToRender(
+  RETURN_IF_NOT_OK(iamf_tools::ArrangeSamples(
       labeled_frame, ordered_labels_, kEmptyChannel, trimming_settings_,
       samples_to_render_, num_valid_samples));
 

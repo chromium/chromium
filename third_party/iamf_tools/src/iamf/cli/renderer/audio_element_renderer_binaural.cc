@@ -27,6 +27,7 @@
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/span.h"
 #include "iamf/cli/audio_element_with_data.h"
@@ -47,7 +48,8 @@ namespace iamf_tools {
 namespace {
 
 constexpr size_t kNumBinauralChannels = 2;
-constexpr size_t kObrMinimalFrameSize = 9;
+constexpr size_t kObrMinFftSize = 32;
+constexpr size_t kObrMaxSupportedNumFrames = 16384;
 
 absl::StatusOr<obr::AudioElementType>
 LookupObrAudioElementTypeFromLoudspeakerLayout(
@@ -137,16 +139,38 @@ void CopySamples(size_t num_channels, const SourceBufferType& source_buffer,
   }
 }
 
+absl::Status ValidateObrArguments(size_t num_samples_per_frame,
+                                  size_t sample_rate) {
+  if (num_samples_per_frame < kObrMinFftSize) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "OBR does not support `num_samples_per_frame` less than ",
+        kObrMinFftSize, " samples. (got ", num_samples_per_frame, ")"));
+  }
+
+  if (num_samples_per_frame > kObrMaxSupportedNumFrames) {
+    return absl::InvalidArgumentError(
+        absl::StrCat("Only frame lengths up to ", kObrMaxSupportedNumFrames,
+                     " are supported. (got ", num_samples_per_frame, ")"));
+  }
+
+  if (sample_rate <= 0) {
+    return absl::InvalidArgumentError(absl::StrCat(
+        "Sampling rate must be greater than 0. (got ", sample_rate, ")"));
+  }
+
+  return absl::OkStatus();
+}
+
 }  // namespace
 
 std::unique_ptr<AudioElementRendererBinaural>
 AudioElementRendererBinaural::CreateFromScalableChannelLayoutConfig(
     const ScalableChannelLayoutConfig& scalable_channel_layout_config,
     size_t num_samples_per_frame, size_t sample_rate) {
-  if (num_samples_per_frame < kObrMinimalFrameSize) {
-    ABSL_LOG(ERROR) << "OBR does not support `num_samples_per_frame` <= "
-                    << kObrMinimalFrameSize << " (got " << num_samples_per_frame
-                    << ")";
+  if (const auto status =
+          ValidateObrArguments(num_samples_per_frame, sample_rate);
+      !status.ok()) {
+    ABSL_LOG(ERROR) << status;
     return nullptr;
   }
 
@@ -189,10 +213,10 @@ AudioElementRendererBinaural::CreateFromAmbisonicsConfig(
     const std::vector<DecodedUleb128>& audio_substream_ids,
     const SubstreamIdLabelsMap& substream_id_to_labels,
     size_t num_samples_per_frame, size_t sample_rate) {
-  if (num_samples_per_frame < kObrMinimalFrameSize) {
-    ABSL_LOG(ERROR) << "OBR does not support `num_samples_per_frame` <= "
-                    << kObrMinimalFrameSize << " (got " << num_samples_per_frame
-                    << ")";
+  if (const auto status =
+          ValidateObrArguments(num_samples_per_frame, sample_rate);
+      !status.ok()) {
+    ABSL_LOG(ERROR) << status;
     return nullptr;
   }
 

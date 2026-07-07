@@ -29,10 +29,10 @@
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/types/span.h"
+#include "iamf/cli/sample_processing_utils.h"
 #include "iamf/cli/sample_processor_base.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/utils/numeric_utils.h"
-#include "iamf/common/utils/sample_processing_utils.h"
 #include "iamf/obu/types.h"
 #include "src/dsp/write_wav_file.h"
 

@@ -13,7 +13,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -26,10 +25,8 @@
 #include "absl/types/span.h"
 #include "iamf/cli/audio_element_with_data.h"
 #include "iamf/cli/channel_label.h"
-#include "iamf/cli/labeled_frame.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/utils/map_utils.h"
-#include "iamf/common/utils/numeric_utils.h"
 #include "iamf/common/utils/validation_utils.h"
 #include "iamf/obu/ambisonics_config.h"
 #include "iamf/obu/mix_presentation.h"
@@ -38,64 +35,6 @@
 namespace iamf_tools {
 
 namespace {
-
-// Returns the common number of time ticks to be rendered for the requested
-// labels or associated demixed label in `labeled_frame`. This represents the
-// number of time ticks in the rendered audio after trimming.
-absl::StatusOr<size_t> GetCommonNumTrimmedTimeTicks(
-    const LabeledFrame& labeled_frame,
-    const std::vector<ChannelLabel::Label>& ordered_labels,
-    const std::vector<InternalSampleType>& empty_channel,
-    TrimmingSettings trimming_settings) {
-  std::optional<size_t> num_raw_time_ticks;
-  for (const auto& label : ordered_labels) {
-    if (label == ChannelLabel::kOmitted) {
-      continue;
-    }
-
-    absl::Span<const InternalSampleType> samples_to_render;
-    RETURN_IF_NOT_OK(FindSamplesOrDemixedSamples(
-        label, labeled_frame.label_to_samples, samples_to_render));
-
-    if (!num_raw_time_ticks.has_value()) {
-      num_raw_time_ticks = samples_to_render.size();
-    } else if (*num_raw_time_ticks != samples_to_render.size()) {
-      return absl::InvalidArgumentError(absl::StrCat(
-          "All labels must have the same number of samples ", label, " (",
-          samples_to_render.size(), " vs. ", *num_raw_time_ticks, ")"));
-    }
-  }
-  if (!num_raw_time_ticks.has_value()) {
-    return absl::InvalidArgumentError("No matching channels found.");
-  }
-
-  if (empty_channel.size() < *num_raw_time_ticks) {
-    return absl::InvalidArgumentError(absl::StrCat(
-        "`empty_channel` should contain at least as many samples as other "
-        "labels: (",
-        empty_channel.size(), " < ", *num_raw_time_ticks, ")"));
-  }
-
-  const uint32_t samples_to_trim_at_start =
-      trimming_settings.trim_beginning ? labeled_frame.samples_to_trim_at_start
-                                       : 0;
-  const uint32_t samples_to_trim_at_end =
-      trimming_settings.trim_end ? labeled_frame.samples_to_trim_at_end : 0;
-
-  uint32_t total_samples_to_trim;
-  RETURN_IF_NOT_OK(AddUint32CheckOverflow(
-      samples_to_trim_at_start, samples_to_trim_at_end, total_samples_to_trim));
-  if (*num_raw_time_ticks < total_samples_to_trim) {
-    return absl::InvalidArgumentError(
-        absl::StrCat("Not enough samples to render samples",
-                     ". #Raw samples: ", *num_raw_time_ticks,
-                     ", samples to trim at start: ", samples_to_trim_at_start,
-                     ", samples to trim at end: ", samples_to_trim_at_end));
-  }
-
-  return *num_raw_time_ticks - samples_to_trim_at_start -
-         samples_to_trim_at_end;
-}
 
 struct GetChannelLabelsFromAmbisonicsMonoConfig {
   AmbisonicsConfig::AmbisonicsMode mode_;
@@ -189,50 +128,6 @@ double Q15ToSignedDouble(const int16_t input) {
 }
 
 }  // namespace
-
-absl::Status ArrangeSamplesToRender(
-    const LabeledFrame& labeled_frame,
-    const std::vector<ChannelLabel::Label>& ordered_labels,
-    const std::vector<InternalSampleType>& empty_channel,
-    TrimmingSettings trimming_settings,
-    std::vector<absl::Span<const InternalSampleType>>& samples_to_render,
-    size_t& num_valid_ticks) {
-  if (ordered_labels.empty()) {
-    return absl::OkStatus();
-  }
-
-  const auto common_num_trimmed_time_ticks = GetCommonNumTrimmedTimeTicks(
-      labeled_frame, ordered_labels, empty_channel, trimming_settings);
-  if (!common_num_trimmed_time_ticks.ok()) {
-    return common_num_trimmed_time_ticks.status();
-  }
-  num_valid_ticks = *common_num_trimmed_time_ticks;
-
-  const uint32_t samples_to_trim_at_start =
-      trimming_settings.trim_beginning ? labeled_frame.samples_to_trim_at_start
-                                       : 0;
-
-  const auto num_channels = ordered_labels.size();
-  for (size_t c = 0; c < num_channels; ++c) {
-    const auto& channel_label = ordered_labels[c];
-    absl::Span<const InternalSampleType> channel_samples;
-
-    if (channel_label == ChannelLabel::kOmitted) {
-      // Missing channels for mixed-order ambisonics representation will not be
-      // updated. Point to the passed-in empty channel.
-      channel_samples = absl::MakeConstSpan(empty_channel);
-    } else {
-      RETURN_IF_NOT_OK(FindSamplesOrDemixedSamples(
-          channel_label, labeled_frame.label_to_samples, channel_samples));
-    }
-
-    // Return the valid portion after trimming.
-    samples_to_render[c] =
-        channel_samples.subspan(samples_to_trim_at_start, num_valid_ticks);
-  }
-
-  return absl::OkStatus();
-}
 
 absl::StatusOr<std::string> LookupOutputKeyFromPlaybackLayout(
     const Layout& output_layout) {

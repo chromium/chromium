@@ -12,7 +12,6 @@
 #ifndef CLI_RENDERER_RENDERER_UTILS_H_
 #define CLI_RENDERER_RENDERER_UTILS_H_
 
-#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -22,35 +21,11 @@
 #include "absl/types/span.h"
 #include "iamf/cli/audio_element_with_data.h"
 #include "iamf/cli/channel_label.h"
-#include "iamf/cli/demixing_module.h"
 #include "iamf/obu/ambisonics_config.h"
 #include "iamf/obu/mix_presentation.h"
 #include "iamf/obu/types.h"
 
 namespace iamf_tools {
-
-/*!\brief Arranges the samples to be rendered in (channel, time) axes.
- *
- * \param labeled_frame Labeled frame determine which original or demixed
- *        samples to trim and render.
- * \param ordered_labels Ordered list of original labels.
- * \param empty_channel Vector of an all-zero channel. All output spans of
- *        channels corresponding to missing labels
- *        (`ChannelLabel::Label::kOmitted`) will point to this vector.
- * \param trimming_settings Settings to enable/disable trimming at start/end.
- * \param samples_to_render Output samples to render in (channel, time) axes.
- *        Samples which should be trimmed are omitted from the output.
- * \param num_valid_ticks Number of valid time ticks in the returned
- *        `samples_to_render`, which is the length of the time-axis.
- * \return `absl::OkStatus()` on success. A specific status on failure.
- */
-absl::Status ArrangeSamplesToRender(
-    const LabeledFrame& labeled_frame,
-    const std::vector<ChannelLabel::Label>& ordered_labels,
-    const std::vector<InternalSampleType>& empty_channel,
-    TrimmingSettings trimming_settings,
-    std::vector<absl::Span<const InternalSampleType>>& samples_to_render,
-    size_t& num_valid_ticks);
 
 /*!\brief Gets a key associated with the playback layout.
  *
