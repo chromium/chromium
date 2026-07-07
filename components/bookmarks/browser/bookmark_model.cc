@@ -250,6 +250,7 @@ BookmarkModel::~BookmarkModel() {
 }
 
 void BookmarkModel::Load(const base::FilePath& profile_path) {
+  model_loader_ = ModelLoader::Create();
   if (base::FeatureList::IsEnabled(kEncryptBookmarks)) {
     client_->GetEncryptor(base::BindOnce(
         [](base::WeakPtr<BookmarkModel> model,
@@ -301,8 +302,8 @@ void BookmarkModel::ContinueLoadWithEncryptor(
         account_file_path, encrypted_account_file_path);
   }
 
-  // Creating ModelLoader schedules the load on a backend task runner.
-  model_loader_ = ModelLoader::Create(
+  // Loading the ModelLoader schedules the load on a backend task runner.
+  model_loader_->Load(
       std::move(encryptor), local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path, account_file_path,
       encrypted_account_file_path, client_->GetLoadManagedNodeCallback(),

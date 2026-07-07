@@ -497,7 +497,13 @@ void RecordLoadMetrics(
 }  // namespace
 
 // static
-scoped_refptr<ModelLoader> ModelLoader::Create(
+scoped_refptr<ModelLoader> ModelLoader::Create() {
+  // Note: base::MakeRefCounted is not available here, as ModelLoader's
+  // constructor is private.
+  return base::WrapRefCounted(new ModelLoader());
+}
+
+void ModelLoader::Load(
     scoped_refptr<const os_crypt_async::Encryptor> encryptor,
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& encrypted_local_or_syncable_file_path,
@@ -507,17 +513,15 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
     SaveSingleFileCallback save_local_or_syncable_single_file_callback,
     SaveSingleFileCallback save_account_single_file_callback,
     LoadCallback callback) {
+  CHECK(!started_load_);
+  started_load_ = true;
   CHECK(!local_or_syncable_file_path.empty());
   // TODO(crbug.com/435317726): Consider asserting existence of other encrypted
   // paths after the launch of bookmark encryption.
 
-  // Note: base::MakeRefCounted is not available here, as ModelLoader's
-  // constructor is private.
-  auto model_loader = base::WrapRefCounted(new ModelLoader());
-  model_loader->backend_task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   auto save_local_or_syncable_single_file_callback_on_main_sequence =
       base::BindPostTaskToCurrentDefault(
           std::move(save_local_or_syncable_single_file_callback));
@@ -525,10 +529,10 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
       base::BindPostTaskToCurrentDefault(
           std::move(save_account_single_file_callback));
 
-  model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
+  backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &ModelLoader::DoLoadOnBackgroundThread, model_loader, encryptor,
+          &ModelLoader::DoLoadOnBackgroundThread, this, encryptor,
           local_or_syncable_file_path, encrypted_local_or_syncable_file_path,
           account_file_path, encrypted_account_file_path,
           std::move(
@@ -536,7 +540,6 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
           std::move(save_account_single_file_callback_on_main_sequence),
           std::move(load_managed_node_callback)),
       std::move(callback));
-  return model_loader;
 }
 
 void ModelLoader::BlockTillLoaded() {

@@ -108,7 +108,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -2102,24 +2101,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFaviconsForever) {
   EXPECT_FALSE(favicon_tester.HasFaviconForPageURL(page_url));
 }
 
-// TODO(crbug.com/435317726): There appears to be a race issue between the
-// history service and bookmark model here, it should be cleaned up as part of
-// the removal of kEncryptBookmarks.
-class ChromeBrowsingDataRemoverDelegateCleartextBookmarks
-    : public ChromeBrowsingDataRemoverDelegateTest {
- public:
-  ChromeBrowsingDataRemoverDelegateCleartextBookmarks() {
-    feature_list_.InitWithFeatures({}, {bookmarks::kEncryptBookmarks});
-  }
-};
-
 // Test that a bookmark's favicon is expired and not deleted when clearing
 // history. Expiring the favicon causes the bookmark's favicon to be updated
 // when the user next visits the bookmarked page. Expiring the bookmark's
 // favicon is useful when the bookmark's favicon becomes incorrect (See
 // crbug.com/40412723 for a sample bug which causes this).
-TEST_F(ChromeBrowsingDataRemoverDelegateCleartextBookmarks,
-       ExpireBookmarkFavicons) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ExpireBookmarkFavicons) {
   GURL bookmarked_page("http://a");
 
   TestingProfile* profile = GetProfile();
