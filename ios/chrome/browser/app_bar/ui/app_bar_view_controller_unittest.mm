@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
@@ -537,6 +538,32 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonAccessibilityLabel) {
   EXPECT_EQ(button.configuration.title, nil);
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI));
+}
+
+// Tests that when kAppBarHideLabels is enabled, viewWillLayoutSubviews does not
+// cause infinite re-entrancy or crashes due to title updaters repeatedly
+// modifying button configurations.
+TEST_F(AppBarViewControllerTest, TestIdempotentTitleUpdatesWithHiddenLabels) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAppBarHideLabels);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  // Trigger multiple layout passes to verify idempotency and absence of
+  // infinite recursion.
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+
+  UIButton* assistantButton = [view_controller_ valueForKey:@"assistantButton"];
+  EXPECT_EQ(assistantButton.configuration.title, nil);
+
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(assistantButton.configuration.title, nil);
 }
 
 using AppBarViewControllerTestManual = PlatformTest;

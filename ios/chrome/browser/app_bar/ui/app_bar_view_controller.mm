@@ -659,7 +659,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Returns the title for the assistant button based on current state and size.
 - (NSString*)assistantButtonTitleForCurrentState {
-  if (_isRotated) {
+  if (_isRotated || IsAppBarLabelsHidden()) {
     return nil;
   }
   switch (_assistantButtonState) {
@@ -688,7 +688,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   NSString* title = [self assistantButtonTitleForCurrentState];
-  if (![_assistantButton.configuration.title isEqualToString:title]) {
+  if (_assistantButton.configuration.title != title &&
+      ![_assistantButton.configuration.title isEqualToString:title]) {
     UIButtonConfiguration* configuration = _assistantButton.configuration;
     configuration.title = title;
     _assistantButton.configuration = configuration;
@@ -698,7 +699,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Returns the title for the Tab Grid button based on size.
 - (NSString*)tabGridButtonTitleForCurrentState {
-  if (_isRotated) {
+  if (_isRotated || IsAppBarLabelsHidden()) {
     return nil;
   }
   return [self
@@ -712,7 +713,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   NSString* title = [self tabGridButtonTitleForCurrentState];
-  if (![_tabGridButton.configuration.title isEqualToString:title]) {
+  if (_tabGridButton.configuration.title != title &&
+      ![_tabGridButton.configuration.title isEqualToString:title]) {
     UIButtonConfiguration* configuration = _tabGridButton.configuration;
     configuration.title = title;
     _tabGridButton.configuration = configuration;
@@ -722,7 +724,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Returns the title for the Open New Tab button based on size.
 - (NSString*)openNewTabButtonTitleForCurrentState {
-  if (_isRotated) {
+  if (_isRotated || IsAppBarLabelsHidden()) {
     return nil;
   }
   return [self
@@ -737,7 +739,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   NSString* title = [self openNewTabButtonTitleForCurrentState];
-  if (![_openNewTabButton.configuration.title isEqualToString:title]) {
+  if (_openNewTabButton.configuration.title != title &&
+      ![_openNewTabButton.configuration.title isEqualToString:title]) {
     UIButtonConfiguration* configuration = _openNewTabButton.configuration;
     configuration.title = title;
     _openNewTabButton.configuration = configuration;
