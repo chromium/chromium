@@ -445,8 +445,9 @@ TEST_F(Canvas2DResourceProviderTest, ImageCacheOnContextLost) {
   provider->GetCanvasForTesting().drawImage(images[0].paint_image(), 0u, 0u,
                                             SkSamplingOptions(), nullptr);
 
-  // Lose the context and ensure that the image provider is not used.
-  provider->OnContextDestroyed();
+  static_cast<WebGraphicsContext3DProviderWrapper::DestructionObserver*>(
+      provider.get())
+      ->OnContextDestroyed();
   // We should unref all images on the cache when the context is destroyed.
   EXPECT_EQ(image_decode_cache_.num_locked_images(), 0);
   image_decode_cache_.set_disallow_cache_use(true);

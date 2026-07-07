@@ -202,25 +202,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
         shared_image_interface_provider, delegate);
   }
 
-  Canvas2DResourceProvider(gfx::Size,
-                           viz::SharedImageFormat,
-                           SkAlphaType,
-                           const gfx::ColorSpace&,
-                           const gfx::HDRMetadata&,
-                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                           bool is_accelerated,
-                           gpu::SharedImageUsageSet shared_image_usage_flags,
-                           CanvasResourceProviderDelegate*);
-  Canvas2DResourceProvider(gfx::Size,
-                           viz::SharedImageFormat,
-                           SkAlphaType,
-                           const gfx::ColorSpace&,
-                           const gfx::HDRMetadata&,
-                           WebGraphicsSharedImageInterfaceProvider*,
-                           CanvasResourceProviderDelegate*);
   ~Canvas2DResourceProvider() override;
 
-  void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
   bool HasUnusedResourcesForTesting() const;
@@ -228,7 +211,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   bool IsAccelerated() const { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
-  bool IsGpuContextLost() const;
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }
@@ -244,26 +226,11 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
   bool clear_frame() const { return clear_frame_; }
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
-  // CanvasMemoryDumpClient implementation.
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
-  size_t GetSize() const override;
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource();
 
-  void EnsureWriteAccess();
-  void EndWriteAccess();
-
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-  virtual void RasterRecord(cc::PaintRecord last_recording);
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
@@ -282,9 +249,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
   void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
-  // MemoryManagedPaintRecorder::Client implementation.
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-  void RecordingCleared() override;
 
   void SetResourceRecyclingEnabled(bool value);
 
@@ -298,14 +262,58 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void AlwaysEnableRasterTimersForTesting(bool value) {
     always_enable_raster_timers_for_testing_ = value;
   }
-  ScopedRasterTimer CreateScopedRasterTimer();
+  virtual void RasterRecord(cc::PaintRecord last_recording);
   MemoryManagedPaintCanvas& GetCanvasForTesting();
   void RestoreBackBuffer(const cc::PaintImage&);
-  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
 
  protected:
+  Canvas2DResourceProvider(gfx::Size,
+                           viz::SharedImageFormat,
+                           SkAlphaType,
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&,
+                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                           bool is_accelerated,
+                           gpu::SharedImageUsageSet shared_image_usage_flags,
+                           CanvasResourceProviderDelegate*);
+  Canvas2DResourceProvider(gfx::Size,
+                           viz::SharedImageFormat,
+                           SkAlphaType,
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&,
+                           WebGraphicsSharedImageInterfaceProvider*,
+                           CanvasResourceProviderDelegate*);
+
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);
+
+ private:
+  void ClearUnusedResources();
+  bool IsGpuContextLost() const;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+  // CanvasMemoryDumpClient implementation.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
+
+  void EnsureWriteAccess();
+  void EndWriteAccess();
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
+
+  // MemoryManagedPaintRecorder::Client implementation.
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
+  void RecordingCleared() override;
+
+  ScopedRasterTimer CreateScopedRasterTimer();
+  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
+
   SkSurface* GetSkSurface() const;
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
