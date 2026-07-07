@@ -248,6 +248,34 @@ IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
   EXPECT_FALSE(future.Get());
 }
 
+// If `IsPasswordProtected()` returns `true`, `CheckIfPdfIsTranslatable()`
+// returns `false`.
+IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
+                       FalseWhenIsPasswordProtected) {
+  auto client = std::make_unique<DummyPDFDocumentHelperClient>();
+  pdf::PDFDocumentHelper::CreateForCurrentDocument(
+      web_contents()->GetPrimaryMainFrame(), std::move(client));
+
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::GetForCurrentDocument(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pdf_helper, nullptr);
+
+  FakePdfListener listener;
+  listener.set_has_meaningful_text(true);
+  listener.set_has_javascript(false);
+  listener.set_is_password_protected(true);
+  mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
+  pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
+
+  base::test::TestFuture<bool> future;
+  chrome_translate_client()->CheckIfPdfIsTranslatable(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  pdf_helper->OnDocumentLoadComplete();
+  EXPECT_FALSE(future.Get());
+}
+
 // If the document is destroyed during a pending load, it should not crash.
 IN_PROC_BROWSER_TEST_F(ChromeTranslateClientPdfEnabledBrowsertest,
                        NoCrashWhenDestroyed) {

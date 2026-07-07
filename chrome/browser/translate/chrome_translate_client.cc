@@ -131,18 +131,19 @@ void OnPdfDocumentLoadComplete(
     return;
   }
 
-  enum class PdfCheckType { kMeaningfulText, kJavaScript };
+  enum class PdfCheckType { kMeaningfulText, kJavaScript, kPasswordProtected };
   using PdfCheckResult = std::pair<PdfCheckType, bool>;
 
-  // The first parameter (2) is the number of times `pdf_checks_barrier` must
-  // be called (once for `HasMeaningfulText` and once for `HasJavaScript`)
-  // before executing `completion_callback`.
+  // The first parameter (3) is the number of times `pdf_checks_barrier` must
+  // be called (once for `HasMeaningfulText`, once for `HasJavaScript`, and
+  // once for `IsPasswordProtected`) before executing `completion_callback`.
   auto pdf_checks_barrier = base::BarrierCallback<PdfCheckResult>(
-      2, base::BindOnce(
+      3, base::BindOnce(
              [](base::OnceCallback<void(bool)> completion_callback,
                 std::vector<PdfCheckResult> results) {
                bool has_meaningful_text = false;
                bool has_javascript = true;
+               bool is_password_protected = true;
                for (const auto& [type, value] : results) {
                  switch (type) {
                    case PdfCheckType::kMeaningfulText:
@@ -151,10 +152,14 @@ void OnPdfDocumentLoadComplete(
                    case PdfCheckType::kJavaScript:
                      has_javascript = value;
                      break;
+                   case PdfCheckType::kPasswordProtected:
+                     is_password_protected = value;
+                     break;
                  }
                }
                std::move(completion_callback)
-                   .Run(has_meaningful_text && !has_javascript);
+                   .Run(has_meaningful_text && !has_javascript &&
+                        !is_password_protected);
              },
              std::move(completion_callback)));
 
@@ -167,6 +172,12 @@ void OnPdfDocumentLoadComplete(
   pdf_helper->HasJavaScript(base::BindOnce(
       [](base::RepeatingCallback<void(PdfCheckResult)> barrier, bool result) {
         barrier.Run({PdfCheckType::kJavaScript, result});
+      },
+      pdf_checks_barrier));
+
+  pdf_helper->IsPasswordProtected(base::BindOnce(
+      [](base::RepeatingCallback<void(PdfCheckResult)> barrier, bool result) {
+        barrier.Run({PdfCheckType::kPasswordProtected, result});
       },
       pdf_checks_barrier));
 }
