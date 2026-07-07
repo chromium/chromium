@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kToolTimeout);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpRetrievalError);
   EXPECT_THAT(
       JournalEntries(),
       testing::Contains(testing::ContainsRegex(
@@ -432,8 +432,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
   EXPECT_THAT(JournalEntries(),
               testing::Contains(testing::ContainsRegex(
                   "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
@@ -606,8 +605,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -686,8 +684,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -769,8 +766,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",

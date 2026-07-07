@@ -475,6 +475,51 @@ enum ActionResultCode {
   kActorUiError = 1300,
 
   // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1400-1499: Errors for OTP filling.
+
+  // No OTP was received within the expected time limit.
+  kOtpRetrievalTimeout = 1400,
+
+  // An error occurred while attempting to retrieve the OTP.
+  kOtpRetrievalError = 1401,
+
+  // The OTP was received but could not be automatically filled into the
+  // target fields.
+  kOtpFillFailure = 1402,
+
+  // An OTP was received, but it does not appear to be a match for the
+  // current webpage.
+  kOtpRetrievalMismatch = 1403,
+
+  // Gmail Smart Features must be enabled to automatically retrieve OTPs.
+  kOtpGmailConsentRequired = 1404,
+
+  // Google Smart Features must be enabled to automatically retrieve OTPs.
+  kOtpGoogleConsentRequired = 1405,
+
+  // DMA cross-product sharing must be enabled to automatically retrieve OTPs.
+  kOtpDmaConsentRequired = 1406,
+
+  // We found the Gmail OTP email, but could not extract the verification code.
+  kOtpNoCodeFound = 1407,
+
+  // The verification code has expired.
+  kOtpExpired = 1408,
+
+  // OTP auto-filling is not available in Guest/Incognito or disabled by
+  // policy/flag.
+  kOtpServiceUnavailable = 1409,
+
+  // Security checks failed because page navigated or origins mismatched
+  // since start.
+  kOtpSigninContextMismatch = 1410,
+
+  // OTP filling is not allowed on insecure (non-HTTPS) pages.
+  kOtpInsecureContext = 1411,
+
+  // Please see the comment above about adding new values.
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)

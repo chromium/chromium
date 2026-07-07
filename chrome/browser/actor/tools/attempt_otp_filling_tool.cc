@@ -283,9 +283,8 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
     // No recent login, origin mismatch, untracked frame, or sequence broken
     // by too many navigations: require confirmation UI (Post-MVP).
     // TODO(crbug.com/504573041): Implement confirmation UI.
-    // TODO(crbug.com/502908360): Add meaningful error message.
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+        MakeResult(mojom::ActionResultCode::kOtpSigninContextMismatch,
                    /*requires_page_stabilization=*/false,
                    "Silent OTP filling is only allowed in the context of actor "
                    "login flows."));
@@ -300,14 +299,41 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
       JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpRetrieved",
       JournalDetailsBuilder().Add("otp_received", result.has_value()).Build());
 
-  // TODO(b/502907994): There might be other errors happening, not just a
-  // timeout. If we want to treat them less generically, we need to change the
-  // API of the service to also return more detailed error codes.
   if (!result.has_value()) {
+    mojom::ActionResultCode code = mojom::ActionResultCode::kOtpRetrievalError;
+    std::string message = "An error occurred during OTP retrieval.";
+    using enum one_time_tokens::OneTimeTokenRetrievalError;
+    switch (result.error()) {
+      case kGmailOtpBackendSmartFeaturesInGmailConsentRequired:
+        code = mojom::ActionResultCode::kOtpGmailConsentRequired;
+        message = "Gmail Smart Features consent is required.";
+        break;
+      case kGmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired:
+        code = mojom::ActionResultCode::kOtpGoogleConsentRequired;
+        message = "Google Smart Features consent is required.";
+        break;
+      case kGmailOtpBackendDmaCrossProductSharingConsentRequired:
+        code = mojom::ActionResultCode::kOtpDmaConsentRequired;
+        message = "DMA cross-product sharing consent is required.";
+        break;
+      case kGmailOtpBackendOtpAttributeNotFound:
+        code = mojom::ActionResultCode::kOtpNoCodeFound;
+        message = "Failed to extract verification code from the OTP email.";
+        break;
+      case kGmailOtpBackendOneTimeTokenExpired:
+        code = mojom::ActionResultCode::kOtpExpired;
+        message = "The retrieved OTP has expired.";
+        break;
+      case kGmailOtpBackendApiNotAvailable:
+      case kGmailOtpBackendInitializationFailed:
+        code = mojom::ActionResultCode::kOtpServiceUnavailable;
+        message = "OTP filling service is not available.";
+        break;
+      default:
+        break;
+    }
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kToolTimeout,
-                   /*requires_page_stabilization=*/false,
-                   "Failed to retrieve OTP within timeout."));
+        MakeResult(code, /*requires_page_stabilization=*/false, message));
     return;
   }
 
@@ -337,9 +363,9 @@ void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
   if (success) {
     std::move(callback).Run(MakeOkResult());
   } else {
-    std::move(callback).Run(MakeResult(
-        mojom::ActionResultCode::kFormFillingUnknownAutofillError,
-        /*requires_page_stabilization=*/false, "Failed to fill OTP."));
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kOtpFillFailure,
+                                       /*requires_page_stabilization=*/false,
+                                       "Failed to fill OTP."));
   }
 }
 

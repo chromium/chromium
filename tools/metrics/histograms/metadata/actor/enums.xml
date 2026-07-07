@@ -146,6 +146,18 @@ chromium-metrics-reviews@google.com.
   <int value="1208" label="ScriptToolNavigationCommittedErrorPage"/>
   <int value="1209" label="ScriptToolNavigationFailedLoad"/>
   <int value="1300" label="ActorUiError"/>
+  <int value="1400" label="OtpRetrievalTimeout"/>
+  <int value="1401" label="OtpRetrievalError"/>
+  <int value="1402" label="OtpFillFailure"/>
+  <int value="1403" label="OtpRetrievalMismatch"/>
+  <int value="1404" label="OtpGmailConsentRequired"/>
+  <int value="1405" label="OtpGoogleConsentRequired"/>
+  <int value="1406" label="OtpDmaConsentRequired"/>
+  <int value="1407" label="OtpNoCodeFound"/>
+  <int value="1408" label="OtpExpired"/>
+  <int value="1409" label="OtpServiceUnavailable"/>
+  <int value="1410" label="OtpSigninContextMismatch"/>
+  <int value="1411" label="OtpInsecureContext"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->
