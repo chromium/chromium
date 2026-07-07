@@ -25,6 +25,9 @@
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
@@ -1005,6 +1008,14 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   EXPECT_CALL(closing_callback, Run()).Times(1);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+  // Before showing, there should be no explicit state.
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+
   browser()
       ->GetFeatures()
       .signin_view_controller()
@@ -1012,6 +1023,9 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   run_loop.Run();
   ASSERT_TRUE(bubble_widget);
+
+  // After showing, the explicit state should be set.
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
 
   // Verify that the WebUI URL loaded successfully.
   views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
@@ -1034,8 +1048,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
             GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
 
   views::test::WidgetDestroyedWaiter waiter(bubble_widget);
-  browser()->GetFeatures().signin_view_controller()->CloseBubbleSignin();
+  // Simulating a click on the avatar button should close the bubble because of
+  // the explicit action.
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
   waiter.Wait();
+
+  // After closing, wait until the explicit state is cleared (reverted).
+  EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
