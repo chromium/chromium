@@ -75,3 +75,23 @@ if (is_mac) {
     ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "render_process_host_chrome_browsertest.cc" ]
+    deps = [
+      "//chrome/browser/devtools",
+      "//chrome/browser/extensions",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/search",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/performance_manager",
+      "//content/test:test_support",
+    ]
+  }
+}
