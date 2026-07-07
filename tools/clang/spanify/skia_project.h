@@ -50,8 +50,11 @@ class SkiaProject : public Project {
   std::string_view GetSafeConversionsIncludePath() const override {
     return "include/private/SkTo.h";
   }
-  std::string_view GetCheckedCastSizeTOpener() const override {
-    return "SkTo<size_t>(";
+  CheckedCastReplacement GetCheckedCastReplacement(
+      clang::SourceRange range) const override {
+    return CheckedCastReplacement{
+        .opener = {.range = range.getBegin(), .text = "SkTo<size_t>("},
+        .closer = {.range = range.getEnd(), .text = ")"}};
   }
   std::string_view GetRawSpanIncludePath() const override {
     return "PATH_TO_RAW_SPAN_H_NOT_AVAILABLE";

@@ -5,12 +5,26 @@
 #ifndef TOOLS_CLANG_SPANIFY_PROJECT_H_
 #define TOOLS_CLANG_SPANIFY_PROJECT_H_
 
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "RawPtrHelpers.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/Basic/SourceLocation.h"
+
+struct RangedReplacement {
+  clang::SourceRange range;
+  std::string text;
+};
+
+// Specifies a checked cast edit, such as `base::checked_cast<size_t>(...)` or
+// `SkTo<size_t>(...)`.
+struct CheckedCastReplacement {
+  RangedReplacement opener;
+  RangedReplacement closer;
+};
 
 struct FuncMapping {
   const std::string function_name;
@@ -33,8 +47,12 @@ class Project {
   virtual std::string_view GetAsWritableByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result) const = 0;
   virtual std::string_view GetSafeConversionsIncludePath() const = 0;
-  virtual std::string_view GetCheckedCastSizeTOpener() const {
-    return "base::checked_cast<size_t>(";
+  virtual CheckedCastReplacement GetCheckedCastReplacement(
+      clang::SourceRange range) const {
+    return CheckedCastReplacement{
+        .opener = {.range = range.getBegin(),
+                   .text = "base::checked_cast<size_t>("},
+        .closer = {.range = range.getEnd(), .text = ")"}};
   }
   virtual std::string_view GetRawSpanIncludePath() const = 0;
   virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;

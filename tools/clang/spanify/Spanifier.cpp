@@ -1255,17 +1255,6 @@ clang::SourceLocation GetBinaryOperationOperatorLoc(
   assert(false && "Unexpected binaryOperation Node");
 }
 
-struct RangedReplacement {
-  clang::SourceRange range;
-  std::string text;
-};
-
-// Specifies an edit: `base::checked_cast<size_t>(...)`
-struct CheckedCastReplacement {
-  RangedReplacement opener;
-  RangedReplacement closer;
-};
-
 // There are three possible subspan expr replacements, respectively:
 // 1. No replacement (leave as is)
 // 2. Append a `u` to an integer literal.
@@ -1314,11 +1303,7 @@ SubspanExprReplacement GetSubspanExprReplacement(
       key, GetIncludeDirective(range, source_manager,
                                GetProject()->GetSafeConversionsIncludePath()));
   EmitReplacement(key, GetIncludeDirective(range, source_manager, "<cstdint>"));
-  return CheckedCastReplacement{
-      .opener = {.range = range.getBegin(),
-                 .text =
-                     std::string(GetProject()->GetCheckedCastSizeTOpener())},
-      .closer = {.range = range.getEnd(), .text = ")"}};
+  return GetProject()->GetCheckedCastReplacement(range);
 }
 
 // When a binary operation and rhs expr appear inside a macro expansion,
