@@ -270,6 +270,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   // Setup trailing button.
   _trailingButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  _trailingButton.hidden = IsChromeNextIaEnabled();
   _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
   _trailingButton.pointerInteractionEnabled = YES;
   // Make the pointer shape fit the location bar's semi-circle end shape.
@@ -641,6 +642,13 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   [self updateAccessibility];
 }
 
+- (void)setTrailingButtonHidden:(BOOL)hidden {
+  self.trailingButton.hidden = hidden;
+  if (IsChromeNextIaEnabled()) {
+    [self updateAccessibility];
+  }
+}
+
 - (void)setCentered:(BOOL)centered {
   if (centered) {
     _xStickToLeadingSideConstraint.active = NO;
@@ -761,7 +769,9 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
       addObjectsFromArray:self.badgesContainerView.accessibilityElements];
 
   if (self.trailingButton && self.trailingButton.enabled) {
-    [self.accessibleElements addObject:self.trailingButton];
+    if (!IsChromeNextIaEnabled() || !self.trailingButton.hidden) {
+      [self.accessibleElements addObject:self.trailingButton];
+    }
   }
 }
 
