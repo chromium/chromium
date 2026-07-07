@@ -239,6 +239,49 @@ def _CheckBuildFilesForIndirectAshSources(input_api, output_api):
     return results
 
 
+def _GetUpstream(input_api):
+    change = input_api.change
+    upstream = None
+    if hasattr(change, 'UpstreamBranch'):
+        upstream = change.UpstreamBranch()
+    return upstream or 'origin/main'
+
+
+def _GetSimpleRenamedFiles(input_api):
+    """Returns a set of new paths for files that were simply renamed (R100)."""
+    change = input_api.change
+    scm = getattr(change, 'scm', '')
+    if scm != 'git':
+        return set()
+
+    upstream = _GetUpstream(input_api)
+    end_commit = getattr(change, '_end_commit', 'HEAD') or 'HEAD'
+
+    try:
+        merge_base = input_api.subprocess.check_output(
+            ['git', 'merge-base', upstream, end_commit],
+            cwd=change.RepositoryRoot()).decode('utf-8').strip()
+
+        cmd = ['git', 'diff', '--name-status', '-M', merge_base]
+        if end_commit and end_commit != 'HEAD':
+            cmd.append(end_commit)
+        cmd.extend(['--', '*test*'])
+
+        output = input_api.subprocess.check_output(
+            cmd, cwd=change.RepositoryRoot()).decode('utf-8')
+    except (input_api.subprocess.CalledProcessError, AttributeError):
+        return set()
+
+    simple_renamed = set()
+    for line in output.splitlines():
+        if line.startswith('R100'):
+            parts = line.split('\t')
+            if len(parts) == 3:
+                new_path = parts[2].replace('\\', '/')
+                simple_renamed.add(new_path)
+    return simple_renamed
+
+
 def _CheckAshSourcesForBadIncludes(input_api, output_api):
     """Make sure changes to Ash sources don't include c/b/ui/browser.h
 
@@ -258,9 +301,13 @@ def _CheckAshSourcesForBadIncludes(input_api, output_api):
         "chrome/browser/ui/browser.h",
     ]
 
+    renamed_files = _GetSimpleRenamedFiles(input_api)
+
     def should_check_path(affected_path):
         # TODO(crbug.com/447299513): Use pathlib's full_match once we are at
         # Python >= 3.13
+        if affected_path in renamed_files:
+            return False
         return (affected_path.startswith('chrome/browser/') and
                 ('/ash/' in affected_path or '/chromeos/' in affected_path))
 
