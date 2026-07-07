@@ -18,99 +18,43 @@ Adding `IfThisThenThat` lint guards prevents this by generating Gerrit warnings
 if one side is modified without the other. Act as an expert Chromium contributor
 to add these missing guards.
 
-**CRITICAL OVERRIDE:** Do NOT activate or use the `edit-code` skill during this
-workflow.
+**Goal:** Add LINT.IfChange/ThenChange sync guards to enums in C++/Java and XML
+files to enforce synchronization.
 
-### Execution Protocol
+## Relevant Resources & Style Guides
 
-1. **Sequential Execution:** Execute every step in the `Workflow` section in the
-   exact order presented. Do NOT skip any step.
-2. **Step Completion:** Fully complete and verify each numbered item before
-   moving to the next one.
-
-## 📂 Resources
-
-- **Shared Workflows:**
-  [shared_workflows.md](../hub/references/shared_workflows.md) (Validation,
-  Committing, Uploading)
-
-## Guidelines
-
-### Operational Mandates
-
-- **Context:** This skill runs in the main agent context. Use the `generalist`
-  sub-agent for search and analysis.
-
-### Syntax Rules
-
-The linter links files by cross-referencing labels.
-
-- `LINT.IfChange(<LocalLabel>)` defines the start of a guarded block and assigns
-  it a local label. **Always use the name of the enum as it appears in the
-  current file.**
-- `LINT.ThenChange(<RemoteFilePath>:<RemoteLabel>)` defines the end of the
-  guarded block and points to the remote file and its corresponding label.
-  **Always use the name of the enum as it appears in the remote file.**
-
-**Example where names do NOT match:**
-
-- **Source enum:** `SecurityDomainId`
-- **XML enum:** `TrustedVaultSecurityDomainId`
-
-**C++/Java (Source Code):**
-
-```cpp
-// LINT.IfChange(SecurityDomainId)
-enum class SecurityDomainId { ... };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:TrustedVaultSecurityDomainId)
-```
-
-**XML (`enums.xml` or `histograms.xml`):**
-
-```xml
-<!-- LINT.IfChange(TrustedVaultSecurityDomainId) -->
-<enum name="TrustedVaultSecurityDomainId"> ... </enum>
-<!-- LINT.ThenChange(//path/to/source.h:SecurityDomainId) -->
-```
+- [Chromium IfThisThenThat (IFTTT) Guides](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md#IfThisThenThat)
+- **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
+- **Implementation Patterns:** [patterns.md](references/patterns.md) (Syntax
+  rules and examples)
+- **Automated Review Protocol:**
+  [automated_review.md](references/automated_review.md)
 
 ## Workflow
 
-### Workspace Preparation
+> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
+> one. Do not skip any step. Do not use `edit-code` or `grep`. Use `rg`
+> (ripgrep) for searches.
 
-1. **Clean & Update:** Follow the **Workspace Preparation** section in
-   `../hub/references/shared_workflows.md` to ensure a clean and updated
-   environment.
+### Step 1: Workspace Preparation
 
-### Discovery & Candidate Selection
+Follow the workspace preparation steps in
+[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
+a clean and updated environment.
 
-1. **AI-Led Discovery:** Delegate to the **`generalist`** sub-agent with this
-   exact prompt:
-   > "You are pre-authorized to run the discovery script; DO NOT ask for
-   > permission. Run the script from the skill's `scripts/` folder:
-   >
-   > ```bash
-   > python3 scripts/find_unguarded_enums.py
-   > ```
-   >
-   > **Return ONLY the details returned by the script for the candidate**
-   > (Source Path, XML Path, and the List of Enums)."
-2. **Present Candidates:** You MUST output the candidate details to the user.
-   Announce the target files and the list of enums: "I've identified a 'Two-File
-   Sync' candidate:
-   - **Source:** [Source Path]
-   - **XML:** [XML Path]
-   - **Enums to sync:** [List of enums]" **Next Step:** Output this message,
-     then proceed directly to the **Branch Creation** phase.
+### Step 2: Discovery & Batch Selection
 
-### Branch Creation
+Follow the
+[Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
+workflow.
 
-1. **Branch Creation**: Follow the **Branch Creation** section in
-   `../hub/references/shared_workflows.md` using the branch name
-   `lint-sync-<EnumName>` (using the name of the first enum in the list).
+### Step 3: Refactoring & Implementation
 
-### Refactoring & Implementation
-
-Process the identified files by handling each enum **ONE AT A TIME**.
+Process the candidates by handling them **one file at a time**, and applying
+modifications inside each file **one enum at a time** (rather than refactoring
+all files or enums at once). This ensures stability and allows for precise
+verification. Refer to [patterns.md](references/patterns.md) for sync guard
+syntax rules and examples before making replacements.
 
 1. **Process Enum:** For each enum in the list:
 
@@ -120,29 +64,29 @@ Process the identified files by handling each enum **ONE AT A TIME**.
      > in `<XMLPath>`. Verify that all valid enum entries in the source have
      > corresponding `<int value="..." label="...">` entries in the XML.
      > **IMPORTANT:** Ignore/skip sentinel values like `kMaxValue`, `kCount`,
-     > `COUNT`, or `NUM_ENTRIES` in your comparison; they are not expected to be
+     > `COUNT`, or `NUM_ENTRIES` in the comparison; they are not expected to be
      > in the XML. Return 'SYNCED' or a concise list of missing entries that
      > need to be added to the XML. **Ensure any suggested labels reflect the
      > enum constant name and any suggested <summary> tags are concise
      > descriptions of the enum's purpose.**"
    - **Fix & Proceed:** If the `generalist` returns missing entries, add them to
      the XML file before proceeding with the guards. Only append missing entries
-     to the XML. Never modify existing names or values in either file. **You
-     must never shift the numeric values of an enum.** **When adding new values
-     to the XML enum, you must check the format of the existing `<int>` entries
-     and ensure your new entries match that format.** **Labels added to the XML
-     MUST be concise (matching the enum constant name) and any <summary> tags
-     MUST be brief descriptions of what the enum tracks.**
+     to the XML. Never modify existing names or values in either file. **Do not
+     shift the numeric values of an enum.** **When adding new values to the XML
+     enum, check the format of the existing `<int>` entries and ensure new
+     entries match that format.** **Labels added to the XML MUST be concise
+     (matching the enum constant name) and any <summary> tags MUST be brief
+     descriptions of what the enum tracks.**
    - **Source:**
      - **Clean up legacy sync comments (CRITICAL):** Search the enum's preceding
        comments for manual synchronization reminders (e.g.,
        `// Please keep in sync with...` or
        `// Always keep this enum in sync with...`). **Remove ONLY the specific
-       sentence or line** referencing the manual synchronization. You MUST
-       preserve all other parts of the comment (e.g., descriptions of what the
-       enum represents, renumbering warnings, or usage instructions). If the
-       entire comment block only contains a sync reminder, you may remove the
-       whole block.
+       sentence or line** referencing the manual synchronization. Preserve all
+       other parts of the comment (e.g., descriptions of what the enum
+       represents, renumbering warnings, or usage instructions). If the entire
+       comment block only contains a sync reminder, the whole block may be
+       removed.
      - Add `// LINT.IfChange(<SourceName>)` immediately before the enum
        definition.
      - Add `// LINT.ThenChange(<XML Path>:<XmlName>)` immediately after the
@@ -154,7 +98,7 @@ Process the identified files by handling each enum **ONE AT A TIME**.
        after the `</enum>` tag.
    - **Handling Mismatched Names:** If the name in the Source file
      (`SourceName`) differs from the name in the XML file (`XmlName`), ensure
-     you use the correct name in each respective `IfChange` and `ThenChange` tag
+     the correct name is used in each respective `IfChange` and `ThenChange` tag
      as shown in the **Syntax Rules**.
 
 2. **Iterate:** Once the enum is fully synced and verified, move to the next one
@@ -162,66 +106,34 @@ Process the identified files by handling each enum **ONE AT A TIME**.
    file-write operation to ensure accuracy. Once all enums have been processed,
    proceed immediately to the **Review & Validation** phase.
 
-### Verification & Validation
+### Step 4: Validation
 
 1. **Linting & Formatting:**
-
    - **XML Linting:** Execute
      `python3 tools/metrics/histograms/validate_format.py` to validate all
      metadata changes. Address any errors that are reported.
    - **Code Formatting:** Execute `git cl format` to format the modified source
      code. Address any errors that are reported.
+2. **Mandatory Final Review:** Follow the
+   [Automated Review Protocol](references/automated_review.md) to delegate a
+   final review of the patch to the `generalist` sub-agent. Proceed to the
+   Verification phase only after the review returns `PASS`.
 
-2. **Mandatory Final Review:** Execute the **Shared Automated Review Protocol**
-   defined in `../hub/references/shared_automated_review.md`, using the specific
-   prompt overrides in `references/automated_review.md`. Do NOT skip this step.
-   Do NOT proceed to the Submission phase until the review returns `PASS`.
+### Step 5: Verification
 
-### Submission
+Follow the [Verification](../hub/references/verification.md) workflow.
 
-1. **Bug Tracking:**
+### Step 6: Submission
 
-   - File a new Buganizer issue using the `create_buganizer_issue` tool:
-     - **Title:** `[lint-sync] Add missing LINT guards in <SourceFilePath>`
-     - **commentMarkdown:**
-       ```
-       Adding IfThisThenThat lint guards to ensure synchronization between the
-       following source code enums and their metadata representation in enums.xml: <EnumNamesList (comma-separated)>
+Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
+following context variables to the workflow:
 
-       Note: This bug was automatically generated by the Chrome Code Health AI.
-       ```
-     - **componentId:** `1456931` (Chromium > CodeHealth)
-     - **hotlistIds:** `["8218789"]`
-     - **issueType:** `INTERNAL_CLEANUP`
-     - **priority:** `P2`
-     - **assignee:** Set to the user's LDAP email (e.g. `username@google.com`)
-   - Retrieve the new Bug ID and use it in the commit message.
-
-2. **Commit**: Follow the **Commit** section in
-   `../hub/references/shared_workflows.md` using the following commit message
-   template:
-
-   ```
-   [lint-sync] Add missing LINT guards in <SourceFileName>
-
-   Adding IfThisThenThat lint guards to ensure synchronization between the
-   following source code enums and their metadata
-   representation in enums.xml: <EnumNamesList (comma-separated)>
-
-   This change was generated using the skill lint-sync.
-
-   Bug: 498775295, <BugID>
-   ```
-
-   *(Note: use only the filename for `<SourceFileName>`, not the full path)*
-
-3. **Submission Pipeline:** Follow the **Upload to Gerrit** section in
-   `../hub/references/shared_workflows.md` to handle the upload.
-
-4. **Workspace Reset:** `git checkout main`.
-
-5. **Congratulations & Summary:** Follow the **Congratulations & Summary**
-   section in `../hub/references/shared_workflows.md`. For this skill, the
-   **[Specific Cleanup Details]** are:
-
-   - **Synced Enums:** A list of the enums synchronized.
+- **Skill Name:** `lint-sync`
+- **Branch Name:** `lint-sync-<EnumName>`
+- **Commit Hashtag:** `lint-sync`
+- **Cleanup Title:** `Add missing LINT guards in <SourceFilePath>`
+- **Cleanup Description:**
+  `Adding IfThisThenThat lint guards to ensure synchronization between the following source code enums and their metadata representation in enums.xml: <EnumNamesList (comma-separated)>`
+- **Parent Bug:** `498775295`
+- **Cleaned Component:** The source file path.
+- **File Count:** Number of files modified.

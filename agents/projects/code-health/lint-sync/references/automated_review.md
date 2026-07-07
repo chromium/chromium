@@ -8,7 +8,7 @@ Use this prompt when delegating a final review of a lint-sync patch to the
 Delegate the review to the **`generalist`** sub-agent with this exact prompt:
 
 > "Follow the **Shared Automated Review Protocol** in
-> `../../hub/references/shared_automated_review.md`.
+> `../../hub/references/automated_review.md`.
 >
 > In addition to the generic checks, you MUST evaluate the patch against these
 > **Specific Cleanup Rules** for Lint Sync Guards:

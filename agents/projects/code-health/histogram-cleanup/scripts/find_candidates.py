@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -50,7 +51,7 @@ def find_expired_histograms(date_limit, m_limit):
 
 def main():
     parser = argparse.ArgumentParser(description="Find expired histograms.")
-    parser.add_argument("--count", type=int, default=3)
+    parser.add_argument("--count", type=int, default=1)
     args = parser.parse_args()
 
     # Thresholds: 1 year ago or milestone - 12 (approx 1 year of milestones)

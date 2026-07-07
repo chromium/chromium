@@ -1,6 +1,6 @@
 # Accessibility Implementation Patterns
 
-Use these patterns to guide your refactoring of custom accessibility
+Use these patterns to guide the refactoring of custom accessibility
 announcements and text-based state updates.
 
 The following are a list of potential patterns (non-exhaustive) that may help
@@ -224,7 +224,7 @@ event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED
 popupView.sendAccessibilityEventUnchecked(event);
 ```
 
-> [!NOTE] While you should not proactively call `requestFocus()` when opening a
+> [!NOTE] While `requestFocus()` should not be proactively called when opening a
 > popup, it is still a best practice to **restore** focus to the triggering
 > element once the popup is dismissed so that the user is returned to their
 > previous context:
@@ -246,9 +246,9 @@ ______________________________________________________________________
 ### Bad pattern (Moving the user's cursor arbitrarily)
 
 Unless it is to restore focus to a previously focused element (e.g. after
-dismissing a menu) or transition to an explicitly opened screen, you should
-never proactively call `requestFocus()` or send
-`AccessibilityEvent.TYPE_VIEW_FOCUSED` to move the user's focus cursor.
+dismissing a menu) or transition to an explicitly opened screen, do not
+proactively call `requestFocus()` or send `AccessibilityEvent.TYPE_VIEW_FOCUSED`
+to move the user's focus cursor.
 
 ```java
 // Bad: Grabbing focus automatically on page load or state change without user interaction
@@ -329,7 +329,7 @@ public boolean performAccessibilityAction(View host, int action, Bundle argument
    (e.g. `BottomSheetContent#getSheetClosedAccessibilityStringId()`). These are
    correct API contracts and should not be removed.
 
-2. **Always Handle the Action:** If you add an action (e.g.,
+2. **Always Handle the Action:** If an action is added (e.g.,
    `AccessibilityActionCompat.ACTION_EXPAND`), ensure
    `performAccessibilityAction` actually implements the logic to invoke the
    corresponding change (e.g., calling `performClick()` or running a state

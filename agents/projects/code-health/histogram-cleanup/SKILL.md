@@ -15,19 +15,12 @@ Expired histograms that are not intentionally kept for diagnostics represent
 technical debt. Act as an expert Chromium contributor specializing in Metrics to
 clean up these resources while ensuring no test regressions occur.
 
-**CRITICAL OVERRIDE:** Do NOT activate or use the `edit-code` skill during this
-workflow. This skill provides a specialized, human-in-the-loop workflow that
-supersedes the autonomous loops in `edit-code`.
+**Goal:** Remove expired Chromium histograms (dead metrics) from XML files and
+all code recording sites.
 
-### Execution Protocol
+## Relevant Resources & Style Guides
 
-1. **Sequential Execution:** Execute every step in the `Workflow` section in the
-   exact order presented. Do NOT skip any step.
-2. **Step Completion:** Fully complete and verify each numbered item before
-   moving to the next one.
-
-## 📂 Resources
-
+- [Chromium Metrics - Histograms Guide](https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/histograms/README.md)
 - **Implementation Patterns:** [patterns.md](references/patterns.md) (C++, Java,
   XML examples)
 - **Analysis Guidelines:**
@@ -35,26 +28,12 @@ supersedes the autonomous loops in `edit-code`.
   effort estimation)
 - **Bug Discovery:** [bug_discovery.md](references/bug_discovery.md) (Finding
   existing trackers)
-- **Pre-authorized Operations:**
-  [pre_authorized_ops.md](references/pre_authorized_ops.md) (Authorized commands
-  and discovery tools)
-- **Shared Workflows:**
-  [shared_workflows.md](../hub/references/shared_workflows.md) (Validation,
-  Committing, Uploading)
+- **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
+  (Identify expired histograms)
+- **Automated Review Protocol:**
+  [automated_review.md](references/automated_review.md)
 
-## Guidelines
-
-### Operational Mandates
-
-- **Context:** This skill runs in the main agent context. Use the `generalist`
-  sub-agent only for the specific tasks defined in the workflow.
-- **Read references/pre_authorized_ops.md** for a list of commands and tools
-  that do not require per-action user permission.
-- **Modification Consent:** Explicit user permission is **STILL REQUIRED** for
-  any operation that modifies the source code (e.g., `replace`, `write_file`) or
-  commits changes (`git commit`).
-
-### Scope & Proactivity
+## Scope & Proactivity
 
 - **Primary Scope:** Focus exclusively on the identified histogram by default.
   Do NOT suggest removing random additional histograms across the file or
@@ -64,69 +43,55 @@ supersedes the autonomous loops in `edit-code`.
   variables (e.g., co-located in the same helper function or branching from the
   same condition) as the target histogram, you MAY bundle their removal into the
   same cleanup plan IF AND ONLY IF:
-  1. **Expiry Verification:** You confirm in `histograms.xml` that the co-located
-     histograms are also expired and lack the `<expired_intentionally>` tag.
+  1. **Expiry Verification:** You confirm in `histograms.xml` that the
+     co-located histograms are also expired and lack the
+     `<expired_intentionally>` tag.
   2. **Safety Verification:** You perform the same safety checks (no test
      dependencies, no external repo references) for each bundled histogram.
-  3. **Atomic Benefit:** Removing them together cleanly eliminates shared boilerplate
-     (e.g., timer calculations, string building, parameter passing) that would
-     otherwise be left as dead or awkward code.
+  3. **Atomic Benefit:** Removing them together cleanly eliminates shared
+     boilerplate (e.g., timer calculations, string building, parameter passing)
+     that would otherwise be left as dead or awkward code.
 - **Related Dead Code:** If you find dead code (e.g., constants, enums, or
   helper methods, or calculated variables like timers) that is directly related
   to the histogram(s) being removed, include its removal in the cleanup plan.
-  Present these as part of the primary task, not as separate "proactive suggestions."
+  Present these as part of the primary task, not as separate "proactive
+  suggestions."
 
 ## Workflow
 
-### Workspace Preparation
+> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
+> one. Do not skip any step. Do not use `edit-code` or `grep`. Use `rg`
+> (ripgrep) for searches.
 
-1. **Clean & Update:** Follow the **Workspace Preparation** section in
-   `../hub/references/shared_workflows.md` to ensure a clean and updated
-   environment.
+### Step 1: Workspace Preparation
 
-### Discovery & Candidate Selection (Delegated)
+Follow the workspace preparation steps in
+[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
+a clean and updated environment.
 
-1. **AI-Led Discovery & Analysis:** Delegate to the **`generalist`** sub-agent
-   with this exact prompt:
+### Step 2: Discovery & Batch Selection
 
-   > "You are pre-authorized to run the discovery script and read-only search
-   > tools; DO NOT ask for permission. Run the discovery script from the skill's
-   > `scripts/` folder:
-   >
-   > ```bash
-   > python3 scripts/find_expired.py --count 1
-   > ```
-   >
-   > **Return ONLY the details returned by the script for this candidate**
-   > (Name, Owners, Expiry, and Summary)."
+Follow the
+[Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
+workflow.
 
-2. **Present Candidate:** You MUST output the candidate details to the user.
-   Announce the candidate with exactly this message format (replace the
-   bracketed details with the findings) before moving to the next step: "I've
-   identified an expired histogram for cleanup today:
-
-   - **Name:** [Name]
-   - **Owners:** [Owners]
-   - **Expiry:** [Expiry]
-   - **Summary:** [Summary]"
-
-### Deep Dive & Safety Analysis (Delegated)
+### Step 3: Deep Dive & Safety Analysis
 
 1. **Comprehensive Analysis:** Delegate the entire deep dive to the
    **`generalist`** sub-agent with this exact prompt:
 
    > "Read `references/analysis_guidelines.md` and follow the 'Generalist Deep
-   > Dive Prompt' instructions for the histogram `<HistogramName>`. You are
-   > pre-authorized for ALL read-only discovery (including `rg` and `cs`); DO
-   > NOT ask for permission. Assume `rg` is available in the environment."
+   > Dive Prompt' instructions for the histogram `<HistogramName>`. ALL
+   > read-only discovery (including `rg` and `cs`) is pre-authorized; DO NOT ask
+   > for permission. Assume `rg` is available in the environment."
 
 2. **Present Findings & Evaluate Confidence:** Evaluate the Confidence Score
    returned by the `generalist`.
 
-   - **If Confidence >= 9:** You MUST inform the user: "Confidence is high
-     ([X]/10). Proceeding with cleanup based on this plan: \[Removal Plan
-     Summary\]." Output this message, then proceed directly to the **Branch
-     Creation** phase. Do NOT ask for permission.
+   - **If Confidence >= 9:** Inform the user: "Confidence is high ([X]/10).
+     Proceeding with cleanup based on this plan: [Removal Plan Summary]." Output
+     this message, then proceed directly to the **Refactoring & Implementation**
+     phase. Do NOT ask for permission.
    - **If Confidence is between 1 and 8:** Present the findings and prompt the
      user using `ask_user` (`type='choice'`):
      - `header`: "Confidence Check"
@@ -138,48 +103,49 @@ supersedes the autonomous loops in `edit-code`.
          cleanup changes"
        - `label`: "Discard", `description`: "Discard this candidate and stop."
      - **Action based on selection:**
-       - If "Proceed with Diff": Proceed to the **Branch Creation** phase.
+       - If "Proceed with Diff": Proceed to the **Refactoring & Implementation**
+         phase.
        - If "Discard": Stop the workflow.
    - **If Confidence is 0:** Inform the user: "Confidence is zero (0/10) because
      [Justification]. I will find an alternate expired histogram for you."
-     Immediately restart the workflow from the **Discovery & Candidate
-     Selection** phase to identify a different candidate. Ensure you do not
-     select the same histogram again in this session.
+     Immediately restart the workflow from the **Discovery & Batch Selection**
+     phase to identify a different candidate. Ensure the same histogram is not
+     selected again in this session.
 
-### Branch Creation
+### Step 4: Refactoring & Implementation
 
-1. **Branch Creation**: Follow the **Branch Creation** section in
-   `../hub/references/shared_workflows.md` using the branch name
-   `cleanup-<HistogramName>`.
+Process the changes **file by file**, and apply modifications inside each file
+**one recording call at a time** (rather than refactoring all files or recording
+calls at once). This ensures stability and allows for precise verification.
 
-### Refactoring & Implementation
+1. **Apply Changes:** Make the changes directly. Apply the code modifications
+   for the candidate histogram. When removing recording calls, carefully check
+   if the string literal spans multiple lines and ensure the entire multi-line
+   statement is cleanly removed. Search for dot-less versions of the name to
+   ensure related constants are also removed. Check for and update any
+   references to the histogram in code comments as well. For each removal,
+   ensure no orphaned references (e.g., unused variables or methods) remain in
+   the codebase. Each individual change must have a corresponding 'What & Why'
+   explanation provided to the user.
 
-1. **Apply Changes:** Make the changes directly (do NOT delegate). Apply the
-   code modifications for the candidate histogram. When removing recording
-   calls, carefully check if the string literal spans multiple lines and ensure
-   the entire multi-line statement is cleanly removed. Search for dot-less
-   versions of the name to ensure related constants are also removed. Check for
-   and update any references to the histogram in code comments as well. For each
-   removal, ensure no orphaned references (e.g., unused variables or methods)
-   remain in the codebase. Each individual change must have a corresponding
-   'What & Why' explanation provided to the user.
-
-### Verification & Validation
+### Step 5: Validation
 
 1. **Linting & Formatting:**
-
    - **XML Linting:** Execute
      `python3 tools/metrics/histograms/validate_format.py` to validate all
      metadata changes. Address any errors that are reported.
    - **Code Formatting:** Execute `git cl format` to format the modified source
      code. Address any errors that are reported.
+2. **Mandatory Final Review:** Follow the
+   [Automated Review Protocol](references/automated_review.md) to delegate a
+   final review of the patch to the `generalist` sub-agent. Proceed to the
+   Verification phase only after the review returns `PASS`.
 
-2. **Mandatory Final Review:** Execute the **Shared Automated Review Protocol**
-   defined in `../hub/references/shared_automated_review.md`, using the specific
-   prompt overrides in `references/automated_review.md`. Do NOT skip this step.
-   Do NOT proceed to the Submission phase until the review returns `PASS`.
+### Step 6: Verification
 
-### Submission
+Follow the [Verification](../hub/references/verification.md) workflow.
+
+### Step 7: Submission
 
 1. **Bug Tracking:**
 
@@ -187,31 +153,19 @@ supersedes the autonomous loops in `edit-code`.
      `references/bug_discovery.md` using the `<HistogramName>` and
      `<ExpiryDate>` from the candidate.
    - **Interactive Pause:** Do NOT proceed until the bug handling is resolved
-     and you have a Bug ID (or the user has chosen to skip).
+     and a Bug ID is resolved (or the user has chosen to skip).
 
-2. **Commit**: Follow the **Commit** section in
-   `../hub/references/shared_workflows.md` using the following commit message
-   template:
+2. **Upload Pipeline:**
 
-   ```
-   [histogram-cleanup] Remove expired histogram: <HistogramName>
-
-   This histogram expired on <ExpiryDate>.
-
-   This change was generated using the skill histogram-cleanup.
-
-   Bug: 499059525, <BugID>
-   ```
-
-3. **Submission Pipeline:** Follow the **Upload to Gerrit** section in
-   `../hub/references/shared_workflows.md` to handle the upload.
-
-4. **Workspace Reset:** Immediately switch back to `main` to start fresh for the
-   next cleanup: `git checkout main`.
-
-5. **Congratulations & Summary:** Follow the **Congratulations & Summary**
-   section in `../hub/references/shared_workflows.md`. For this skill, the
-   **[Specific Cleanup Details]** are:
-
-   - **Removed Histogram:** The name of the removed histogram and its expiry
-     year.
+   - Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
+     following context variables to the workflow:
+     - **Skill Name:** `histogram-cleanup`
+     - **Branch Name:** `cleanup-<HistogramName>`
+     - **Commit Hashtag:** `histogram-cleanup`
+     - **Cleanup Title:** `Remove expired histogram: <HistogramName>`
+     - **Cleanup Description:**
+       `Remove expired histogram <HistogramName> which expired on <ExpiryDate> and has no recording sites.`
+     - **Parent Bug:** `499059525`
+     - **Bug ID:** The resolved `<Bug ID>` from the Bug Tracking step.
+     - **Cleaned Component:** `histograms.xml`
+     - **File Count:** Number of files modified during this cleanup.

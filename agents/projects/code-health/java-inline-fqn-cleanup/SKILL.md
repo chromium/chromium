@@ -16,121 +16,62 @@ instead of importing them makes code harder to read and breaks standard style
 conventions. This skill helps automate the discovery, safety analysis, and
 clean-up of these inline qualifiers in Chromium's first-party Java files.
 
-## 📂 Resources
+**Goal:** Clean up inline fully qualified names (FQNs) in first-party Java files
+and replace them with standard imports.
 
+## Relevant Resources & Style Guides
+
+- [Chromium Java Style Guide - Imports](https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#imports)
+- **Implementation Patterns:** [patterns.md](references/patterns.md)
 - **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
 - **Automated Review Protocol:**
   [automated_review.md](references/automated_review.md)
-- **Shared Workflows:**
-  [shared_workflows.md](../hub/references/shared_workflows.md) (Validation,
-  Uploading, CL Creation)
-
-## 📋 Examples & Patterns
-
-### 1. Variables & Types
-
-- **Before:** `android.view.View view = ...`
-- **After:** `View view = ...` (with `import android.view.View;` added at top)
-
-### 2. Static Methods & Constants
-
-- **Before:** `org.chromium.build.BuildConfig.IS_CHROME_BRANDED`
-- **After:** `BuildConfig.IS_CHROME_BRANDED` (with
-  `import org.chromium.build.BuildConfig;` added at top)
-
-### 3. Annotation Markers
-
-- **Before:**
-  `@OptIn(markerClass = org.chromium.net.QuicOptions.Experimental.class)`
-- **After:** `@OptIn(markerClass = QuicOptions.Experimental.class)` (with
-  `import org.chromium.net.QuicOptions;` added at top)
-
-### 4. Method Parameters
-
-- **Before:** `void foo(org.chromium.base.Callback<T> callback)`
-- **After:** `void foo(Callback<T> callback)` (with
-  `import org.chromium.base.Callback;` added at top)
-
-### 5. Implicitly Imported Classes (java.lang.\*)
-
-- **Before:** `java.lang.String text = ...`
-- **After:** `String text = ...` (**DO NOT** add an import statement since
-  `java.lang.*` is implicitly imported by Java. Adding it will cause a
-  RedundantImport linter error.)
-
-### 6. Resource Classes (*.R.*)
-
-- **Rule:** **DO NOT** modify any FQN containing `.R.` (e.g., `android.R.attr`
-  or `org.chromium.chrome.R.id`).
-- **Why:** Local `R` classes are almost always imported (e.g.,
-  `import org.chromium.chrome.R;`). Importing a secondary `R` class (like
-  `android.R`) creates an unresolvable naming collision that breaks the build.
-  These MUST remain fully qualified.
 
 ## Workflow
 
-### Workspace Preparation
+> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
+> one. Do not skip any step. Do not use `edit-code` or `grep`. Use `rg`
+> (ripgrep) for searches.
 
-- **Clean & Update:** Follow the **Workspace Preparation** section in
-  `../hub/references/shared_workflows.md` to ensure a clean and updated
-  environment.
+### Step 1: Workspace Preparation
 
-### Discovery & Batch Selection
+Follow the workspace preparation steps in
+[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
+a clean and updated environment.
 
-1. **Discovery:** Run the candidate discovery script from the skill's `scripts/`
-   folder:
+### Step 2: Discovery & Batch Selection
 
-   ```bash
-   python3 scripts/find_candidates.py
-   ```
+Follow the
+[Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
+workflow. When presenting the batch, include the **Imports Found** and **Banned
+FQNs** details.
 
-2. **Present Candidate Batch:** You MUST output the candidate batch details to
-   the user and request confirmation to proceed. Announce the batch with exactly
-   this format (replace with details):
+### Step 3: Refactoring & Implementation
 
-   - **Batch Directory:** [Directory]
-   - **File Count:** [File Count]
-   - **Files:**
-     - [File 1]
-     - [File 2]
-     - ...
-   - **Imports Found:**
-     - [Import 1]
-     - [Import 2]
-     - ...
-   - **Banned FQNs:** (If applicable)
-     - [Banned 1]
-     - [Banned 2]
-     - ...
-   - **Proceed Confirmation**: Prompt the user using standard text asking if you
-     should proceed with cleaning up this batch.
+**CRITICAL RULE:** Standard file editing tools (like `replace_file_content` or
+`multi_replace_file_content`) must be used to apply the cleanups directly to the
+Java files. **DO NOT** create, write, or execute any custom python or bash
+scripts to perform the text replacements.
 
-### Branch Creation
+- **References:** Refer to [patterns.md](references/patterns.md) for concrete
+  examples and exceptions (e.g., handling java.lang.\* and Local R classes)
+  before applying replacements.
 
-- Follow the **Branch Creation** section in
-  `../hub/references/shared_workflows.md` using the branch name
-  `cleanup-inline-imports-[component-name]` (e.g.
-  `cleanup-inline-imports-tab-ui`).
-
-### Refactoring & Implementation
-
-**CRITICAL RULE:** You MUST use your standard file editing tools (like
-`replace_file_content` or `multi_replace_file_content`) to apply the cleanups
-directly to the Java files. **DO NOT** create, write, or execute any custom
-python or bash scripts to perform the text replacements.
-
-For each file in the batch, apply the following cleanup rules:
+Process the candidates by handling them **one file at a time**, and applying
+modifications inside each file **one FQN at a time** (rather than refactoring
+all files or FQNs at once). This ensures stability and allows for precise
+verification. For each file in the batch, apply the following cleanup rules:
 
 1. **Avoid Name Collisions & Shadowing:** Check if the simple class name of the
    FQN is already imported, defined, or implicitly resolved in that file (e.g.,
    via wildcard imports, implicit package-private classes, or other imported
    annotations with the same name). If there is a collision or shadowing risk,
    **do not modify the line** (the FQN must remain inline).
-2. **Banned FQNs:** If the discovery script outputted a `Banned FQNs` list, you
-   must completely ignore those specific FQNs. They are either raw package paths
-   or invalid classes, and attempting to import them will break the build.
-3. **First-Party Code Only:** Ensure you do not modify any files in
-   `third_party/` or auto-generated directories.
+2. **Banned FQNs:** If the discovery script outputted a `Banned FQNs` list,
+   completely ignore those specific FQNs. They are either raw package paths or
+   invalid classes, and attempting to import them will break the build.
+3. **First-Party Code Only:** Do not modify any files in `third_party/` or
+   auto-generated directories.
 4. **Import Strategy for Static Members:** When cleaning up inline FQNs for
    static constants, properties (e.g. `TabProperties`), feature flags
    (`ChromeFeatureList`), or enums (`TabLaunchType`), **prefer importing the
@@ -160,60 +101,30 @@ For each file in the batch, apply the following cleanup rules:
    - Replace the inline FQN with its simple class name.
    - Add the corresponding `import` statement at the top of the file.
 
-### Verification & Validation
+### Step 4: Validation
 
 1. **Code Formatting:** Execute `git cl format` to format the modified source
    code and organize imports. Address any errors that are reported.
-2. **Build & Test Verification:**
-   - Proactively request the user to compile and run tests on the affected
-     module/targets to ensure no regressions or ambiguities.
-3. **Mandatory Final Review:** Execute the **Shared Automated Review Protocol**
-   defined in `../hub/references/shared_automated_review.md`, using the specific
-   prompt overrides in `references/automated_review.md`. Do NOT skip this step.
-   Do NOT proceed to the Submission phase until the review returns `PASS`.
+2. **Mandatory Final Review:** Follow the
+   [Automated Review Protocol](references/automated_review.md) to delegate a
+   final review of the patch to the `generalist` sub-agent. Proceed to the
+   Verification phase only after the review returns `PASS`.
 
-### Submission
+### Step 5: Verification
 
-1. **Bug Tracking:**
+Follow the [Verification](../hub/references/verification.md) workflow.
 
-   - File a new Buganizer issue using the `create_buganizer_issue` tool with the
-     following properties:
-     - **Title:** Clean up inline fully qualified Java names in
-       [Component/Directory]
-     - **commentMarkdown:** Automated cleanup of inline fully qualified Java
-       class names (replacing them with standard imports) in the
-       `[Component/Directory]` directory.
-     - **componentId:** `1456931` (Chromium > CodeHealth)
-     - **hotlistIds:** `["8218789"]`
-     - **issueType:** `INTERNAL_CLEANUP`
-     - **priority:** `P2`
-     - **assignee:** Set to the user's LDAP email (e.g. `username@google.com`)
-   - Retrieve the new Bug ID from the created issue and use it in the commit
-     message.
+### Step 6: Submission
 
-2. **Commit**: Follow the **Commit** section in
-   `../hub/references/shared_workflows.md` using the following commit message
-   template:
+Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
+following context variables to the workflow:
 
-   ```
-   [code-health] Clean up inline FQNs in [Component/Directory]
-
-   Remove inline fully qualified class names and replace them with
-   standard imports.
-
-   This change was generated using the skill java-inline-fqn-cleanup.
-
-   Bug: 528570333, <BugID>
-   ```
-
-3. **Submission Pipeline:** Follow the **Upload to Gerrit** section in
-   `../hub/references/shared_workflows.md` to handle the upload.
-
-4. **Workspace Reset:** Switch back to `main`: `git checkout main`.
-
-5. **Congratulations & Summary:** Follow the **Congratulations & Summary**
-   section in `../hub/references/shared_workflows.md`. For this skill, the
-   **[Specific Cleanup Details]** are:
-
-   - **Cleaned Component/Directory:** The parent directory of the batch.
-   - **File Count:** Number of files cleaned up.
+- **Skill Name:** `java-inline-fqn-cleanup`
+- **Branch Name:** `cleanup-fqns-[component-name]`
+- **Commit Hashtag:** `Code Health`
+- **Cleanup Title:** `Clean up inline FQNs in [Component/Directory]`
+- **Cleanup Description:**
+  `Remove inline fully qualified class names and replace them with standard imports in the [Component/Directory] directory.`
+- **Parent Bug:** `528570333`
+- **Cleaned Component:** The parent directory of the batch.
+- **File Count:** Number of files cleaned up.

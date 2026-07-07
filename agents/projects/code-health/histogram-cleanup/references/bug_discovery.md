@@ -5,10 +5,10 @@ to create a new tracking bug.
 
 ## The Discovery Query
 
-**CRITICAL MANDATE:** You MUST use the `mcp_Coding_internal_search` tool (Moma)
-for ALL discovery and verification. **NEVER use `mcp_Buganizer_get_bugs` or
-`get_bugs`** for this process, as they redact Chromium issues and return
-unrelated internal bugs.
+**CRITICAL MANDATE:** Use the `mcp_Coding_internal_search` tool (Moma) for ALL
+discovery and verification. **NEVER use `mcp_Buganizer_get_bugs` or `get_bugs`**
+for this process, as they redact Chromium issues and return unrelated internal
+bugs.
 
 Use this exact pattern in Moma:
 `"Check expiry of your histograms" "<HistogramName>" "<ExpiryDate>" status:open`
@@ -34,7 +34,7 @@ closed.
      Use the extracted ID.
 2. **Prioritize the lowest Buganizer ID:** After extracting or resolving the
    Buganizer IDs from all the Moma links, compare them and use the **lowest
-   numeric ID** in the `Bug:` footer to ensure you link to the oldest tracker.
+   numeric ID** in the `Bug:` footer to ensure linking to the oldest tracker.
 3. **Verify Status:** Only use the ID if the Moma snippet suggests it is
    `status:open` or actively tracking expiry. Do **not** use Buganizer tools
    (`render_issue`, etc.) to verify the bug, as they will fail on restricted

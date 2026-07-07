@@ -29,10 +29,16 @@ By delegating, the main chat context remains lean.
 
 ## 📂 Shared Resources
 
-Generic instructions for validation, bug tracking, and submission are available
-in:
+Generic instructions for workspace preparation, review, validation, and
+submission are available in:
 
-- **Shared Workflows:** [shared_workflows.md](references/shared_workflows.md)
+- **Workspace Preparation:**
+  [workspace_preparation.md](references/workspace_preparation.md)
+- **Discovery & Batch Selection:**
+  [discovery_and_batch_selection.md](references/discovery_and_batch_selection.md)
+- **Automated Review:** [automated_review.md](references/automated_review.md)
+- **Verification:** [verification.md](references/verification.md)
+- **Submission:** [submission.md](references/submission.md)
 
 ## Workflow
 

@@ -5,8 +5,8 @@ cleanup tasks.
 
 ## The Discovery Query
 
-**CRITICAL MANDATE:** You MUST use the `mcp_Coding_internal_search` tool (Moma)
-for ALL discovery and verification. **NEVER use `mcp_Buganizer_get_bugs` or
+**CRITICAL MANDATE:** The `mcp_Coding_internal_search` tool (Moma) must be used
+for all discovery and verification. **NEVER use `mcp_Buganizer_get_bugs` or
 `get_bugs`** for this process, as they redact Chromium issues and return
 unrelated internal bugs.
 

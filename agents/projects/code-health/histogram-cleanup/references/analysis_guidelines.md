@@ -42,35 +42,34 @@ following exact workflow for the histogram `<HistogramName>`:
 
 1. **Search:** Find ALL occurrences of this histogram string (including any
    expanded `<token>` or `<variants>` generated names) in the codebase.
-   - **Fast Fail:** If your initial `cs` search returns a massive number of
+   - **Fast Fail:** If the initial `cs` search returns a massive number of
      results (e.g., > 20) or immediately shows external references (e.g., Chrome
      OS `platform2`), STOP searching. Assign a Confidence Score of 0
      immediately.
-   - You MUST use `cs` (CodeSearch) to check for external references (e.g.,
-     Chrome OS `platform2` or internal repos). If external references exist, the
-     removal is UNSAFE.
+   - Use `cs` (CodeSearch) to check for external references (e.g., Chrome OS
+     `platform2` or internal repos). If external references exist, the removal
+     is UNSAFE.
    - **Multi-line & Split Strings:** Be aware that in C++, histogram names are
      often split across multiple lines (e.g., `"My.Hist"` on one line and
      `"ogram.Name"` on the next). Search for chunks of the name rather than just
-     the full string or the last dot-separated segment to ensure you find all
+     the full string or the last dot-separated segment to ensure finding all
      call sites.
    - **Dot-less & Constants:** Search for the name with dots removed (e.g.,
      `MyExpiredHistogram`) to catch occurrences in constant names, variable
      identifiers, or Java resource IDs.
-   - Use `rg` (ripgrep) for fast local discovery of the files you will need to
-     edit.
+   - Use `rg` (ripgrep) for fast local discovery of the files that need to edit.
 2. **Safety Verification:** Strictly follow the 'Safety Checks' section in this
    document to identify test dependencies, shared enums, intentional expiry
    tags, and cross-repo dependencies. If the histogram has recording sites in
    external repositories, its Confidence Score MUST be 0.
-3. **Scoring:** Based on your findings and the guidelines, calculate a
-   Confidence Score (1-10) for its safe removal. (10/10 = 1-2 places, no complex
-   test dependencies (HistogramTester is fine); < 7/10 = multiple sites, complex
+3. **Scoring:** Based on the findings and the guidelines, calculate a Confidence
+   Score (1-10) for its safe removal. (10/10 = 1-2 places, no complex test
+   dependencies (HistogramTester is fine); < 7/10 = multiple sites, complex
    mocks; 0/10 = external repository dependencies).
 4. **Removal Plan:** Formulate a concise plan for removal (e.g., 'Files to edit:
-   X, Y; Entry to remove: Z'). If co-located histograms sharing the same recording
-   code are identified and verified as expired and safe to remove, include them in
-   the bundled Removal Plan.
+   X, Y; Entry to remove: Z'). If co-located histograms sharing the same
+   recording code are identified and verified as expired and safe to remove,
+   include them in the bundled Removal Plan.
 
 **Return ONLY a concise summary of the affected files and tests, any identified
 risks, the final Confidence Score, a brief justification, and the Removal
