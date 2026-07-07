@@ -140,7 +140,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OnboardingTooltip) {
   RunTest("contextual_tasks/onboarding_tooltip_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WebView) {
+// TODO(crbug.com/529817776): Re-enable when the timeouts get fixed.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_WebView DISABLED_WebView
+#else
+#define MAYBE_WebView WebView
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_WebView) {
   RunTest("contextual_tasks/contextual_tasks_webview_browsertest.js",
           "mocha.run();");
 }
