@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+
+<title>texElementImage2D colorspace</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="match" href="webgl-colorspace-ref.html">
+<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+<meta name="fuzzy" content="maxDifference=0-4; totalPixels=0-40000" />
+<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+<script src="/common/reftest-wait.js"></script>
+
+<style>
+  body {
+    display: grid;
+    grid: 120px / 120px 120px;
+    align-items: start;
+  }
+  color-grid, color-grid-p3 {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<canvas id="canvas_srgb" width=100 height=100 layoutsubtree>
+  <div class="draw-element-wrapper">
+    <color-grid></color-grid>
+  </div>
+</canvas>
+
+<canvas id="canvas_p3" width=100 height=100 layoutsubtree>
+  <div class="draw-element-wrapper">
+    <color-grid-p3></color-grid-p3>
+  </div>
+</canvas>
+
+<script type="module">
+import { SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+Promise.all([
+  new Promise((resolve, reject) => {
+    const cvs = canvas_srgb;
+    cvs.addEventListener("paint", () => {
+      const gl = cvs.getContext("webgl2");
+      gl.drawingBufferColorSpace = "srgb";
+      gl.unpackColorSpace = "srgb";
+      const prog = new SimpleGLProgram(gl);
+      prog.render(cvs.firstElementChild);
+      resolve();
+    }, {once:true});
+    cvs.requestPaint();
+  }),
+  new Promise((resolve, reject) => {
+    const cvs = canvas_p3;
+    cvs.addEventListener("paint", () => {
+      const gl = cvs.getContext("webgl2");
+      gl.drawingBufferColorSpace = "display-p3";
+      gl.unpackColorSpace = "display-p3";
+      const prog = new SimpleGLProgram(gl);
+      prog.render(cvs.firstElementChild);
+      resolve();
+    }, {once:true});
+    cvs.requestPaint();
+  })
+]).then(takeScreenshot);
+</script>
+</html>

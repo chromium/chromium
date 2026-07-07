@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<title>drawElementImage colorspace ref</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+
+<style>
+  body {
+    display: grid;
+    grid: 120px / 120px 120px;
+    align-items: start;
+  }
+  color-grid, color-grid-p3 {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<div class="draw-element-wrapper">
+  <color-grid></color-grid>
+</div>
+
+<div class="draw-element-wrapper">
+  <color-grid-p3></color-grid-p3>
+</div>
