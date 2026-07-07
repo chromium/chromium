@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/ui/webui/omnibox/aim_eligibility/extension/aim_eligibility_extension_bridge_factory.h"  // nogncheck
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -106,7 +105,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::TabGroupsEventRouterFactory::GetInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();
-  extensions::AimEligibilityExtensionBridgeFactory::GetInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ActivityLogAPI::GetFactoryInstance();

@@ -527,7 +527,6 @@ template("chrome_extra_paks") {
 
     if (enable_extensions_core) {
       sources += [
-        "$root_gen_dir/chrome/aim_eligibility_extension_resources.pak",
         "$root_gen_dir/chrome/extensions_resources.pak",
         "$root_gen_dir/extensions/extensions_renderer_generated_resources.pak",
         "$root_gen_dir/extensions/extensions_renderer_resources.pak",
@@ -535,7 +534,6 @@ template("chrome_extra_paks") {
       ]
       deps += [
         "//chrome/browser/resources/extensions:resources",
-        "//chrome/browser/resources/omnibox/aim_eligibility_extension:resources",
         "//extensions:extensions_resources",
       ]
     } else if (is_android) {

@@ -854,10 +854,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
   virtual bool IsTopChromeWebUIURL(const GURL& url);
 
-  // Returns true if the given `site_url` is allowed to use MojoJS bindings.
-  virtual bool ShouldAllowMojoJsBindingsForSite(BrowserContext* browser_context,
-                                                const GURL& site_url);
-
   // Returns whether the application running in the |render_frame_host| is
   // allowed to automatically capture all screens by using the
   // getAllScreensMedia API.

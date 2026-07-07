@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -368,17 +367,6 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id) {
     url = url.ReplaceComponents(replacements);
   }
   return url;
-}
-
-bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
-                                 content::BrowserContext* context) {
-  if (extension_id != extension_misc::kAimEligibilityExtensionId) {
-    return false;
-  }
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-          extension_id);
-  return extension && Manifest::IsComponentLocation(extension->location());
 }
 
 } // namespace extensions::util

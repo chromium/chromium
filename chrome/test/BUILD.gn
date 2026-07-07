@@ -1905,7 +1905,6 @@ if (is_android) {
         "//chrome/browser/ui/browser_window:browser_tests",
         "//chrome/browser/ui/browser_window/internal:android_browsertests",
         "//chrome/browser/ui/browser_window/test:android_browser_test_support",
-        "//chrome/browser/ui/webui/omnibox/aim_eligibility:browser_tests",
       ]
     }
 
@@ -2668,7 +2667,6 @@ if (!is_android) {
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:impl",
       "//chrome/browser/ui/webui/ntp:browser_tests",
-      "//chrome/browser/ui/webui/omnibox/aim_eligibility:browser_tests",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/searchbox:browser_tests",
       "//chrome/browser/ui/webui/side_panel/read_anything:browser_tests",

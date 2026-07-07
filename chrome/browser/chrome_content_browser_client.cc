@@ -644,7 +644,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
@@ -679,6 +678,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -2250,18 +2250,6 @@ bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
     const url::Origin& origin) {
   return ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
       origin);
-}
-
-bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForSite(
-    content::BrowserContext* browser_context,
-    const GURL& site_url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (site_url.SchemeIs(extensions::kExtensionScheme)) {
-    return extensions::util::IsMojoJsEnabledForExtension(
-        extensions::ExtensionId(site_url.host()), browser_context);
-  }
-#endif
-  return false;
 }
 
 bool ChromeContentBrowserClient::IsHandledURL(const GURL& url) {
@@ -4982,6 +4970,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+
   web_prefs->preferred_contrast = GetPreferredContrast();
 
   std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
@@ -5127,6 +5116,7 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
         WebPreferences::kShrinksViewportContentsToFit;
   }
 #endif
+
 
   return prefs_changed;
 }
@@ -7856,6 +7846,7 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
 #if BUILDFLAG(IS_ANDROID)
 content::ContentBrowserClient::WideColorGamutHeuristic
 ChromeContentBrowserClient::GetWideColorGamutHeuristic() {
+
   if (display::HasForceDisplayColorProfile() &&
       display::GetForcedDisplayColorProfile() ==
           gfx::ColorSpace::CreateDisplayP3D65()) {

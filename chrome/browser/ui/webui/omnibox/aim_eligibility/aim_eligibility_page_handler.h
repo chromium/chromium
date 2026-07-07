@@ -44,10 +44,6 @@ class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
       const std::string& base64_encoded_response,
       SetEligibilityResponseForDebuggingCallback callback) override;
 
-  void set_disconnect_handler(base::OnceClosure callback) {
-    receiver_.set_disconnect_handler(std::move(callback));
-  }
-
  private:
   // Called when the eligibility state changes.
   void OnEligibilityChanged();
@@ -71,7 +67,7 @@ class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
   bool disclaimer_check_started_ = false;
 #endif
 
-  mojo::Receiver<aim_eligibility::mojom::PageHandler> receiver_;
+  const mojo::Receiver<aim_eligibility::mojom::PageHandler> receiver_;
   const mojo::Remote<aim_eligibility::mojom::Page> page_;
   // Subscription to `AimEligibilityService` eligibility changed callbacks.
   base::CallbackListSubscription eligibility_changed_subscription_;

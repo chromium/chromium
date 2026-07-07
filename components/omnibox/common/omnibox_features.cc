@@ -178,9 +178,6 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
-// Enables the AIM eligibility diagnostic component extension.
-BASE_FEATURE(kAimEligibilityComponentExtension, DISABLED);
-
 // Whether the aim button should dynamically change to portray the submission
 // type.
 BASE_FEATURE(kDynamicAimSubmit, DISABLED);
@@ -476,6 +473,7 @@ BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
 
 // Force the realbox on Android regardless of platform/configuration checks.
 BASE_FEATURE(kForceAndroidRealbox, DISABLED);
+
 
 // If enabled, disables ligatures in the URL bar on Android.
 BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
