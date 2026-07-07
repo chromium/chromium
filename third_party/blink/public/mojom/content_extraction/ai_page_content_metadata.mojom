@@ -6,21 +6,26 @@ module blink.mojom;
 
 import "url/mojom/url.mojom";
 
-// A meta tag.
+// @generate glic_api
+// Meta tag name and content taken from the <head> element of a frame.
 struct MetaTag {
   string name;
   string content;
 };
 
-// Metadata about a frame.
+// @generate glic_api
+// Metadata about a frame. Number of MetaTags is limited by the
+// maxMetaTags option.
 struct FrameMetadata {
   url.mojom.Url url;
   array<MetaTag> meta_tags;
+  // Whether chrome has audio/video transcripts for this frame.
+  // @glic_optional
   bool has_media_transcripts;
 };
 
-// Metadata about the page content. Includes metadata for each local frame
-// descendant.
+// @generate glic_api
+// Metadata about the page. Includes URL and meta tags for each frame.
 struct PageMetadata {
   // The local frame where the traversal starts is the first entry in the array.
   array<FrameMetadata> frame_metadata;

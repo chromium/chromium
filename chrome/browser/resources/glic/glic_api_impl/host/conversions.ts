@@ -19,9 +19,9 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, CounterAbuseVerdict as CounterAbuseVerdictMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, ImageBytesResult as ImageBytesResultMojo, ImageInfo as ImageInfoMojo, InvocationPayload as InvocationPayloadMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, SkillPreview as SkillPreviewMojo, SubscriberObservationType as SubscriberObservationTypeMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo, ZssConfig as ZssConfigMojo} from '../../glic.mojom-webui.js';
 import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
-import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, GetPinCandidatesOptions, HostCapability, InvocationPayload, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, TabContextOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
+import type {CaptureRegionResult, ConversationInfo, CounterAbuseVerdict, GetPinCandidatesOptions, HostCapability, InvocationPayload, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, SkillPreview, TabContextOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2, ZssConfig} from '../../glic_api/glic_api.js';
 import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import type {ResponseExtras} from '../transport/messaging.js';
@@ -254,6 +254,18 @@ export function tabDataToClient(
   };
 }
 
+export function skillPreviewToClient(s: SkillPreviewMojo): SkillPreview {
+  return {
+    id: s.id,
+    name: s.name,
+    icon: s.icon,
+    source: enumToClient(s.source),
+    description: s.description,
+    curatedBy: s.curatedBy || undefined,
+    imageUrl: urlToClient(s.imageUrl),
+  };
+}
+
 export function focusedTabDataToClient(
     focusedTabData: FocusedTabDataMojo,
     extras: ResponseExtras): FocusedTabDataPrivate {
@@ -355,11 +367,11 @@ export function conversationInfoFromClient(conversationInfo: ConversationInfo):
 export function counterAbuseVerdictFromClient(verdict: CounterAbuseVerdict):
     CounterAbuseVerdictMojo {
   return {
-    sbVerdictResult: verdict.sbVerdictResult ? {
+    sbVerdictResult: {
       url: verdict.sbVerdictResult.url,
       threatType: enumFromClient(verdict.sbVerdictResult.threatType),
       showInterstitial: verdict.sbVerdictResult.showInterstitial,
-    } : null,
+    },
   };
 }
 

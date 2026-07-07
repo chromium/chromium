@@ -28,6 +28,7 @@ import "url/mojom/url.mojom";
 // chrome/browser/resources/glic/glic_api_impl/generate.py
 
 // @generate glic_api
+// Settings for Gemini Enterprise.
 struct GeminiEnterpriseSettings {
   string project_id;
   string app_id;
@@ -509,9 +510,10 @@ struct SafeBrowsingVerdictResult {
   bool show_interstitial;
 };
 
-// The safety signals for determining user treatments and enforcements.
+// @generate glic_api
+// The type of counter abuse verdict that was received.
 struct CounterAbuseVerdict {
-  SafeBrowsingVerdictResult? sb_verdict_result;
+  SafeBrowsingVerdictResult sb_verdict_result;
 };
 
 // @generate glic_api
@@ -635,20 +637,28 @@ enum ScreenshotCompressionQuality {
   kHigh = 3,
 };
 
+// @generate glic_api
+// Options for screenshot collection.
 struct ScreenshotCollectionOptions {
   // Screenshot will be scaled to fit the max width and height while
   // maintaining the aspect ratio.
-  // If set to 0, the screenshot will be captured without limiting the width
-  // (so long as the height is not limited).
+  // If not set or set to 0, the screenshot will be captured without limiting
+  // the width (so long as the height is not limited).
+  // @glic_optional
   uint32 max_width;
   // Screenshot will be scaled to fit the max width and height while maintaining
   // the aspect ratio.
-  // If set to 0, the screenshot will be captured without limiting the height
-  // (so long as the width is not limited).
+  // If not set or set to 0, the screenshot will be captured without limiting
+  // the height (so long as the width is not limited).
+  // @glic_optional
   uint32 max_height;
-  // The format of the screenshot.
+  // The format of the screenshot. If not set, the screenshot will be returned
+  // as a jpeg image.
+  // @glic_optional
   ScreenshotImageFormat screenshot_image_format;
-  // The compression quality of the screenshot.
+  // The compression quality of the screenshot. If not set, the screenshot will
+  // be returned with medium compression quality.
+  // @glic_optional
   ScreenshotCompressionQuality screenshot_compression_quality;
 };
 
@@ -678,9 +688,10 @@ struct GetTabContextOptions {
   ScreenshotCollectionOptions screenshot_collection_options;
 };
 
-// Options for requesting pin candidates.
+// @generate glic_api
+// Used for customizing the list of pin candidates.
 struct GetPinCandidatesOptions {
-  // The maximum number of candidates to return. Could be fewer.
+  // The maximum number of candidates to consider. Can return fewer.
   uint32 max_candidates;
   // An optional query string.
   string? query;
@@ -787,9 +798,10 @@ enum ScrollToErrorReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicScrollToErrorReason)
 
-// A single suggestion.
+// @generate glic_api
+// Zero-state suggestion for the current tab.
 struct SuggestionContent {
-  // The suggestion. Always provided.
+  // The suggestion text. Always provided.
   string suggestion;
 };
 
@@ -810,56 +822,64 @@ enum SkillSource {
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource,
 // //components/sync/protocol/skill_specifics.proto:SkillSource)
 
+// @generate glic_api
 // LINT.IfChange(Skill)
-// A single skill preview.
+// Represents a single skill preview.
 struct SkillPreview {
-  // The unique identifier of the skill which is an UUID.
+  // A unique identifier for the skill.
   string id;
-  // The name of the skill.
+  // The user-facing name of the skill.
   string name;
-  // The icon of the skill, which is an emoji.
+  // The icon for the skill.
   string icon;
-  // The source of the skill which can be 1P or user created.
+  // The source of the skill.
   SkillSource source;
   // The description of the skill.
   string description;
-  // The name of the curator for this skill, if any.
+  // The name of the curator for this skill.
   string? curated_by;
-  // The image URL to use when rendering this skill.
+  // The image URL to show when rendering this skill.
   url.mojom.Url? image_url;
 };
 
+// @generate glic_api
 // A single skill.
 struct Skill {
-  // The preview of the skill which contains the basic information of the skill.
+  // A preview of the skill.
   SkillPreview preview;
-  // The prompt of the skill.
+  // The underlying LLM prompt for the skill.
   string prompt;
-  // The id of the source skill this skill is derived from. This is only present
-  // if the SkillSource is kDerivedFromFirstParty.
+  // The id of the source skill this skill is derived from. This is only
+  // present if the SkillSource is DERIVED_FROM_FIRST_PARTY.
   string? source_skill_id;
 };
 
 // LINT.ThenChange(//components/skills/public/skill.mojom:Skill,
-// //components/skills/public/skill.h:Skill,
-// //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
+// //components/skills/public/skill.h:Skill)
 
-// Request to create a skill.
+// @generate glic_api
 struct CreateSkillRequest {
-  // The unique identifier of the skill which is an UUID.
+  // A unique identifier for the skill. This is only available when the user is
+  // trying to remix a 1P skill.
+  // @glic_optional
   string id;
-  // The name of the skill.
+  // The user-facing name of the skill. Only available in 1P remix flow.
+  // @glic_optional
   string name;
-  // The icon of the skill, which is an emoji.
+  // The icon for the skill. Only available in 1P remix flow.
+  // @glic_optional
   string icon;
   // The source of the skill.
+  // @glic_optional
   SkillSource source;
-  // A prompt for the skill which can be an empty string.
+  // A prompt for the skill, which can be empty.
   string prompt;
-  // The description of the skill.
+  // The description of the skill. Only available in 1P remix flow.
+  // @glic_optional
   string description;
 };
 
+// @generate glic_api
 // Request to update a skill.
 struct UpdateSkillRequest {
   // The unique identifier of the skill to be updated.
@@ -949,6 +969,7 @@ struct ZeroStateSuggestionsOptions {
   array<string> supported_tools;
 };
 
+// @generate glic_api
 // A candidate for pinning.
 struct PinCandidate {
   // The tab that is a candidate for pinning.
@@ -977,8 +998,10 @@ enum PinTrigger {
   kActuation = 3,
 };
 
+// @generate glic_api
 // Options for pinning tabs.
 struct PinTabsOptions {
+  // @glic_optional
   PinTrigger pin_trigger;
 };
 
@@ -998,8 +1021,10 @@ enum UnpinTrigger {
   kActuation = 3,
 };
 
+// @generate glic_api
 // Options for unpinning tabs.
 struct UnpinTabsOptions {
+  // @glic_optional
   UnpinTrigger unpin_trigger;
 };
 
@@ -1186,9 +1211,12 @@ enum CancelActionsResult {
   kFailed = 3,
 };
 
+// @generate glic_api
 // Options used to customize region capture.
 struct CaptureRegionParams {
+  // @glic_type string
   int32 tab_id;
+  // @glic_type TabContextOptions
   GetTabContextOptions options;
 };
 
@@ -1204,11 +1232,15 @@ interface AnnotationHandler {
   DropScrollToHighlight();
 };
 
-// Options used to customize ActivateTabWithUrl behavior.
+// @generate glic_api
+// Holds optional parameters for GlicBrowserHost#activateTabWithUrl.
 struct ActivateTabOptions {
-  // Wildcard pattern (using '*' and '?') matched against tab URLs. If empty
-  // (""), wildcard matching is not performed.
+  // Wildcard pattern (using '*' and '?') matched against tab URLs. If empty or
+  // undefined, wildcard matching is not performed.
+  // @glic_type string?
   string pattern = "";
+  // The windowId of the window where the tab should be created if no matching
+  // tab is found.
   int32? fallback_window_id;
 };
 
@@ -1592,18 +1624,19 @@ interface TabFaviconHandler {
   OnTabFaviconChanged(skia.mojom.BitmapN32? favicon);
 };
 
+// @generate glic_api
 // Information about a conversation.
 struct ConversationInfo {
+  // The unique ID of the conversation. This will be stored.
   string conversation_id;
+  // The title of the conversation. This will be stored. It is expected that
+  // titles don't change.
   string conversation_title;
   // Optional client-specific data. This data is not used by Chrome and Chrome
   // will never attempt to deserialize it. It can hold a key for client-side
   // lookup or opaque serialized data.
-  // TODO(crbug.com/370820145): Replace ByteString with a more appropriate type
-  // for opaque binary data once available.
   mojo_base.mojom.ByteString? client_data;
-  // Optional turn ID to open this conversation at. Empty or invalid turn IDs
-  // will result in the conversation being opened at the most recent turn.
+  // Optional turn ID to open this conversation at.
   string? turn_id;
 };
 
@@ -1623,26 +1656,28 @@ enum RegisterConversationErrorReason {
   kInstanceAlreadyHasConversationId = 1,
 };
 
-// Data sent from the browser to the web client with panel opening information.
+// @generate glic_api
+// Data structure sent from the browser to the web client with panel opening
+// information.
 struct PanelOpeningData {
   // The state of the panel as it's being opened.
+  // @glic_optional
   PanelState panel_state;
   // Indicates the entry point used to trigger the opening of the panel.
+  // In the event the web client's page is reloaded, the new web client will
+  // receive a notifyPanelWillOpen call with the same invocation source as
+  // before, even though the user did not, for example, click a button again.
+  // @glic_optional
   InvocationSource invocation_source;
-  // The ID of the conversation to open. If unset, the web client will open a
-  // new conversation. This field is used only when the `MULTI_INSTANCE`
-  // capability is present.
-  // If set, `conversation_id` will be a string with length >0. Empty
-  // conversation IDs are not supported.
 
   // If set, the textbox for user input will be populated with the given string
   // before the panel opens.
   string? prompt_suggestion;
   // If true and prompt_suggestion is set, the prompt will be automatically
-  // submitted after the panel opens. If prompt is null, this will be forced
-  // to false.
+  // submitted after the panel opens.
+  // @glic_optional
   bool auto_send;
-  // An optional Skill object. If provided, the Gemini app should auto-run it.
+  // An optional Skill. If provided, the Gemini app should auto-run it.
   Skill? skill_to_invoke;
   // Up to 3 most recently active conversations, ordered by most recently active
   // first.
@@ -1651,13 +1686,16 @@ struct PanelOpeningData {
   //
   // - The web client will load the requested `conversationInfo.conversationId`.
   // - If `conversationInfo.conversationId` is empty, it indicates a new
-  // conversation is being started.
+  //   conversation is being started.
   // - The object may contain `clientData` if it was provided in the
   //   `registerConversation` or `switchConversation` calls.
   //
+  // @glic_optional
   ConversationInfo conversation_info;
 
-  // The FRE override, if any.
+  // Overrides the First Run Experience. If set, the panel will act as if the
+  // user was or wasn't in a specific FRE state.
+  // @glic_optional
   FreOverride fre_override = kUnspecified;
 };
 
@@ -1672,10 +1710,13 @@ enum PanelStateKind {
   kAttached = 2,
 };
 
-// State of the glic panel.
+// @generate glic_api
+// Information of how the panel is being presented/configured.
 struct PanelState {
+  // The panel's presentation kind/state.
   PanelStateKind kind;
-  // Present when attached, indicates to which window the panel is attached.
+  // Present only when attached to a window, indicating which window it is
+  // attached to.
   int32? window_id;
 };
 
@@ -1788,7 +1829,7 @@ enum InvocationSource {
 
 // LINT.ThenChange(
 //  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
-//  //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
+// //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
 //  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation
 // )
 
@@ -1811,9 +1852,12 @@ enum ActuationTarget {
   [MinVersion=1] kTargetSurface = 4,
 };
 
+// @generate glic_api
+// Payload for Universal Cart invocation.
 struct UniversalCartPayload {
   // This metadata is received from the same Google endpoint we receive the
   // actual invocation prompt from. Opaque to the browser.
+  // @glic_type ArrayBuffer
   array<uint8> serialized_metadata;
 };
 
@@ -1822,7 +1866,7 @@ union InvocationPayload {
 };
 
 // @generate glic_api
-// Options for the Invoke method.
+// Options for invoking Glic.
 struct InvokeOptions {
   // Source that triggered this invocation.
   InvocationSource invocation_source;
@@ -1833,21 +1877,20 @@ struct InvokeOptions {
   // Additional context to attach.
   AdditionalContext? context;
 
-  // Whether to automatically submit the prompt. May be ignored (e.g. if
-  // multiple prompts are provided for an invocation source that requires
-  // user-selection before submission).
+  // Whether to automatically submit the prompt.
   bool auto_submit;
 
-  // Feature mode to use.
+  // Feature mode to switch to.
   FeatureMode feature_mode;
 
   // Target for actuation.
+  // @glic_optional
   ActuationTarget actuation_target;
 
   // Whether to suppress Zero State Suggestions.
   bool disable_zero_state_suggestions;
 
-  // If this invocation is for a skill, the ID of the skill to use.
+  // Skill ID to trigger.
   string? skill_id;
 
   // Configuration to override the default ZSS behavior for the invocation.
@@ -1856,7 +1899,7 @@ struct InvokeOptions {
   // Source-specific payload for the invocation.
   InvocationPayload? payload;
 
-  // The ID of the tab to actuate on, if actuation_target is kTargetSurface.
+  // The ID of the tab to actuate on, if actuationTarget is kTargetSurface.
   [MinVersion=1]
   int32? actuation_tab_id;
 };
@@ -1932,8 +1975,10 @@ enum ResponseStopCause {
   kOther = 2,
 };
 
-// Details of response stop event.
+// @generate glic_api
+// Details for metrics recording purposes.
 struct OnResponseStoppedDetails {
+  // @glic_optional
   ResponseStopCause cause;
 };
 
@@ -1996,17 +2041,22 @@ enum AdditionalContextSource {
   [MinVersion=2] kExperimentalTriggering = 5,
 };
 
-// An additional context object.
+// @generate glic_api
+// Additional context object.
 struct AdditionalContext {
-  // The source of the additional context.
+  // Where the additional context came from.
+  // @glic_optional
   AdditionalContextSource source;
-  // The name of the context.
+  // User facing name of the context. Eg. the filename, or full url.
   string? name;
   // Tab id, if associated with a tab.
+  // Callers may use this to associate context but should not assume this
+  // relationship persists as tab contents change.
+  // @glic_type string
   int32? tab_id;
-  // Origin of the frame the content came from (if it came from a frame).
+  // Origin of the frame where the data came from (if it came from a frame).
   url.mojom.Origin? origin;
-  // url of the frame the content came from (if it came from a frame).
+  // url of the frame where the data came from (if it came from a frame).
   url.mojom.Url? frameUrl;
   // The parts of the context.
   array<AdditionalContextPart> parts;
@@ -2043,6 +2093,7 @@ enum SubscriberObservationType {
   kError = 2,
 };
 
+// @generate glic_api
 // An update event sent to the browser by the web client.
 struct ExperimentalTriggeringUpdate {
   // The type of this update.
@@ -2193,20 +2244,24 @@ struct TabContext {
   AnnotatedPageData? annotated_page_data;
 };
 
+// @generate glic_api
 // Information about a web page being rendered in a tab.
 struct WebPageData {
   // Main document of the page.
   DocumentData main_document;
 };
 
+// @generate glic_api
 // Text information about a web document.
 struct DocumentData {
   // Origin of the document.
   url.mojom.Origin origin;
   // The innerText of the document at its current state.
   // Currently includes embedded same-origin iframes.
+  // @glic_optional
   string inner_text;
-  // Whether `inner_text` was truncated due to `inner_text_bytes_limit`.
+  // Whether `innerText` was truncated due to `innerTextBytesLimit`.
+  // @glic_optional
   bool inner_text_truncated;
 };
 
@@ -2230,40 +2285,61 @@ enum LightweightPageFeature {
   kYtAskButtonPresent = 1,
 };
 
-// Data about a browser tab.
+// @generate glic_api
+// Various bits of data about a browser tab. Optional fields may not be
+// available while the page is being loaded or if not provided by the page
+// itself.
 struct TabData {
-  // Unique ID of the tab that owns the page.
+  // Unique ID of the tab that owns the page. These values are unique across
+  // all tabs from all windows, and will not change even if the user moves the
+  // tab to a different window.
   int32 tab_id;
-  // Unique ID of the browser window holding the tab.
+  // Unique ID of the browser window holding the tab. This value may change if
+  // the tab is moved to a different window.
   int32 window_id;
-  // URL of the page.
+  // URL of the page. For a given tab, this value will change if the tab is
+  // navigated to a different URL.
   url.mojom.Url url;
-  // The title of the loaded page. Returned if the page is loaded enough for it
-  // to be available. It may be empty if the page did not define a title.
+  // The title of the loaded page. Returned only if the page is loaded enough
+  // for it to be available. It may be empty if the page did not specify a
+  // title.
   string? title;
   // The favicon for the tab. Null when not available. This will be removed
   // once usages are migrated to `favicon_url`.
+  // @glic_ignore
   skia.mojom.BitmapN32? favicon;
-  // Base64 encded data URL for the favicon.
+  // The favicon URL. Only available if the page is loaded enough and it
+  // specifies a favicon.
+  //
+  // @deprecated Should no longer be used, will be removed in the future.
   url.mojom.Url? favicon_url;
-  // MIME type of the main document in this tab.
+  // MIME type of the main document. Returned only if the page is loaded enough
+  // for it to be available.
+  // @glic_optional
   string document_mime_type;
-  // Whether the tab is observable (i.e., audible or visible).
+  // Whether the tab is audible or visible. Specifically this is the visibility
+  // of the WebContents as returned by: `WebContents::GetVisibility`. If the
+  // visibility is either VISIBLE or OCCLUDED, we consider the web contents to
+  // be visible. @todo: This field is being added as a temporary solution.
+  // b/433995475
   bool? is_observable;
   // Whether the tab has active audio or video playing, used for showing tab UI.
   // This is a best effort signal, and may not be accurate/stale due to not
-  // observing media events directly.
+  // observing media events directly. @todo: This field is being added as a
+  // temporary solution. b/433995475
   bool? is_media_active;
   // Whether the tab content is being captured by another functionality (e.g.,
-  // screen share in video chat).
-  // This is a best effort signal, and may not be accurate/stale due to not
-  // observing tab content capture events directly.
+  // screen share in video chat). This is a best effort signal, and may not be
+  // accurate/stale due to not observing tab content capture events
+  // directly. @todo: This field is being added as a temporary solution.
+  // b/433995475
   bool? is_tab_content_captured;
   // Whether the tab is the active tab in its browser window. Note that this
   // does not consider the state of the window.
   bool? is_active_in_window;
   // Whether the tab's browser window is active. Note that this does not
   // consider whether the tab is active in the window.
+  // WARNING: This is not implemented on Android, and is always true.
   bool? is_window_active;
   // Lightweight page features detected on the page.
   array<LightweightPageFeature>? lightweight_page_features;
@@ -2308,18 +2384,46 @@ struct Journal {
   array<uint8> data;
 };
 
-// The captured shape from the user.
+// @generate glic_api
+// A region captured by the user from a document in a tab.
+//
+// This is a union of different possible region shapes. Currently only
+// rectangular regions are supported, but this may be expanded with other region
+// types like polygons in the future.
 union CapturedRegion {
-  // A rectangular region.
+  // A rectangular region captured from a document in a tab.
+  //
+  // The coordinate system is relative to the top-left corner of the document.
+  // The units are in pixels and match screenshot pixel dimensions.
+  //
+  // - **Position (`x`, `y`):** Coordinates of the top-left corner of the
+  //   rectangle, relative to the document's origin (0,0). Can be negative if
+  //   content is scrolled out of view.
+  // - **Size (`width`, `height`):** Dimensions of the rectangle, expected to be
+  //   non-negative.
+  //
+  // The rectangle can represent an area outside the currently visible viewport
+  // if the page is scrolled. It is not guaranteed to be contained within the
+  // document's bounds.
   gfx.mojom.Rect rect;
-  // A polyline represented by an array of points.
-  // Note the line does not have to be closed.
+
+  // A polyline captured from a document in a tab.
+  //
+  // The coordinate system is relative to the top-left corner of the document.
+  // The units are in pixels and match screenshot pixel dimensions.
+  //
+  // The polyline is represented by an ordered array of points. The line formed
+  // by these points is not required to be closed, and it represents a shape
+  // (path), not necessarily a region.
   array<gfx.mojom.Point> polyline;
 };
 
+// @generate glic_api
 // The captured region with an ID.
 struct PendingCapturedRegion {
+  // The ID of the captured region.
   mojo_base.mojom.UnguessableToken id;
+  // The captured region.
   CapturedRegion region;
 };
 
@@ -2403,10 +2507,12 @@ enum SettingsPageField {
   kOsEntrypointToggle,
 };
 
+// @generate glic_api
 // Optional parameters for the openGlicSettingsPage function.
 struct OpenSettingsOptions {
   // Optionally select a field to be highlighted while opening the Glic settings
   // page.
+  // @glic_optional
   SettingsPageField highlightField;
 };
 

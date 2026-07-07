@@ -43,31 +43,6 @@ export declare interface GlicHostRegistry {
   registerWebClient(webClient: GlicWebClient): Promise<void>;
 }
 
-/** Additional context object. */
-export declare interface AdditionalContext {
-  /** Where the additional context came from */
-  source?: AdditionalContextSource;
-
-  /** User facing name of the context.  Eg. the filename, or full url */
-  name?: string;
-
-  /**
-   * Tab id, if associated with a tab.
-   * Callers may use this to associate context but should not assume this
-   * relationship persists as tab contents change.
-   */
-  tabId?: string;
-
-  /** Origin of the frame where the data came from (if it came from a frame) */
-  origin?: string;
-
-  /** url of the frame where the data came from (if it came from a frame) */
-  frameUrl?: string;
-
-  /** The parts of the context. */
-  parts: AdditionalContextPart[];
-}
-
 /** Part of an additional context object. Only one field will be present. */
 export declare interface AdditionalContextPart {
   /**
@@ -92,66 +67,18 @@ export declare interface AdditionalContextPart {
   parentConversationMetadata?: ParentConversationMetadata;
 }
 
-/** Metadata of the parent conversation. */
-export declare interface ParentConversationMetadata {
-  conversationId?: string;
-  conversationTitle?: string;
-}
-
-/** Payload for Universal Cart invocation. */
-export declare interface UniversalCartPayload {
-  serializedMetadata: ArrayBuffer;
-}
-
 /** Union representing source-specific payloads. */
 export declare interface InvocationPayload {
   universalCart?: UniversalCartPayload;
 }
 
-/** Configuration to override the default ZSS behavior for the invocation. */
-export declare interface ZssConfig {
-  /** Additional content to inject into the body of the ZSS message. */
-  additionalContent?: string;
-}
-
-/** Settings for Gemini Enterprise. */
-export declare interface GeminiEnterpriseSettings {
-  projectId: string;
-  appId: string;
-  location: string;
-}
-
-/** Options for invoking Glic. */
-export declare interface InvokeOptions {
-  /** Source that triggered this invocation. */
-  invocationSource: InvocationSource;
-  /** Prompts to pre-populate or suggest. */
-  prompts?: string[];
-  /** Additional context to attach. */
-  context?: AdditionalContext;
-  /** Whether to automatically submit the prompt. */
-  autoSubmit: boolean;
-  /** Feature mode to switch to. */
-  featureMode: FeatureMode;
-  /** Target for actuation. */
-  actuationTarget?: ActuationTarget;
-  /** Whether to suppress Zero State Suggestions. */
-  disableZeroStateSuggestions: boolean;
-  /** Skill ID to trigger. */
-  skillId?: string;
-  /** Configuration to override the default ZSS behavior for the invocation. */
-  zssConfig?: ZssConfig;
-  /** Source-specific payload for the invocation. */
-  payload?: InvocationPayload;
-  /** The ID of the tab to actuate on, if actuationTarget is kTargetSurface. */
-  actuationTabId?: string;
-}
-
-/** An update sent from the web client to the host. */
-export declare interface ExperimentalTriggeringUpdate {
-  type: ExperimentalTriggeringUpdateType;
-  /** Content associated with an update, such as log data or response text. */
-  data: string;
+/**
+ * Data structure sent from the browser to the web client with panel opening
+ * information.
+ */
+export declare interface PanelOpeningData {
+  /** @deprecated Use `conversationInfo` instead. */
+  conversationId?: string;
 }
 
 /**
@@ -1199,24 +1126,6 @@ export declare interface GlicBrowserHost {
 }
 
 /** Information about a conversation. */
-export declare interface ConversationInfo {
-  /** The unique ID of the conversation. This will be stored. */
-  conversationId: string;
-  /**
-   *  The title of the conversation. This will be stored. It is expected that
-   *  titles don't change.
-   */
-  conversationTitle: string;
-  /**
-   * Optional client-specific data. This data is not used by Chrome and Chrome
-   * will never attempt to deserialize it. It can hold a key for client-side
-   * lookup or opaque serialized data.
-   */
-  clientData?: string;
-  /** Optional turn ID to open this conversation at. */
-  turnId?: string;
-}
-
 /**
  * The type of counter abuse verdict that was received.
  */
@@ -1226,24 +1135,8 @@ export declare interface SafeBrowsingVerdict {
   showInterstitial: boolean;
 }
 
-/**
- * The type of counter abuse verdict that was received.
- */
-export declare interface CounterAbuseVerdict {
-  sbVerdictResult: SafeBrowsingVerdict;
-}
-
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media' | 'geolocation';
-
-/** Optional parameters for the openGlicSettingsPage function. */
-export declare interface OpenSettingsOptions {
-  /**
-   * Optionally select a field to be highlighted while opening the Glic settings
-   * page.
-   */
-  highlightField?: SettingsPageField;
-}
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
 export declare interface ResizeWindowOptions {
@@ -1262,20 +1155,6 @@ export declare interface CreateTabOptions {
   openInBackground?: boolean;
   /** The windowId of the window where the new tab should be created at. */
   windowId?: string;
-}
-
-/** Holds optional parameters for `GlicBrowserHost#activateTabWithUrl`. */
-export declare interface ActivateTabOptions {
-  /**
-   * Wildcard pattern (using '*' and '?') matched against tab URLs. If empty or
-   * undefined, wildcard matching is not performed.
-   */
-  pattern?: string;
-  /**
-   * The windowId of the window where the tab should be created if no matching
-   * tab is found.
-   */
-  fallbackWindowId?: string;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#createActorTab`. */
@@ -1384,11 +1263,6 @@ export enum ResponseStopCause {
   OTHER = 1,
 }
 
-/** Details for metrics recording purposes. */
-export declare interface OnResponseStoppedDetails {
-  cause?: ResponseStopCause;
-}
-
 /**
  * A rectangle with a position and size. All coordinate and size values are in
  * pixels.
@@ -1408,51 +1282,6 @@ export declare interface Point {
   y: number;
 }
 
-/**
- * A region captured by the user from a document in a tab.
- *
- * This is a union of different possible region shapes. Currently only
- * rectangular regions are supported, but this may be expanded with other region
- * types like polygons in the future.
- */
-export declare interface CapturedRegion {
-  /**
-   * A rectangular region captured from a document in a tab.
-   *
-   * The coordinate system is relative to the top-left corner of the document.
-   * The units are in pixels and match screenshot pixel dimensions.
-   *
-   * - **Position (`x`, `y`):** Coordinates of the top-left corner of the
-   *   rectangle, relative to the document's origin (0,0). Can be negative if
-   *   content is scrolled out of view.
-   * - **Size (`width`, `height`):** Dimensions of the rectangle, expected to be
-   *   non-negative.
-   *
-   * The rectangle can represent an area outside the currently visible viewport
-   * if the page is scrolled. It is not guaranteed to be contained within the
-   * document's bounds.
-   */
-  rect?: Rect;
-  /**
-   * A polyline captured from a document in a tab.
-   *
-   * The coordinate system is relative to the top-left corner of the document.
-   * The units are in pixels and match screenshot pixel dimensions.
-   *
-   * The polyline is represented by an ordered array of points. The line formed
-   * by these points is not required to be closed, and it represents a shape
-   * (path), not necessarily a region.
-   */
-  polyline?: Point[];
-}
-
-/** The captured region with an ID. */
-export declare interface PendingCapturedRegion {
-  /** The ID of the captured region. */
-  id: string;
-  /** The captured region. */
-  region: CapturedRegion;
-}
 
 /** The result of a successful region capture. */
 export declare interface CaptureRegionResult {
@@ -1463,11 +1292,6 @@ export declare interface CaptureRegionResult {
    * polygons in the future.
    */
   region?: CapturedRegion;
-}
-
-export declare interface CaptureRegionParams {
-  tabId: string;
-  options: TabContextOptions;
 }
 
 /** An encoded journal. */
@@ -1560,113 +1384,11 @@ export declare interface OpenPanelInfo {
   canUserResize?: boolean;
 }
 
-/**
- * Information of how the panel is being presented/configured.
- */
-export declare interface PanelState {
-  /**
-   * The panel's presentation kind/state.
-   */
-  kind: PanelStateKind;
-  /**
-   * Present only when attached to a window, indicating which window it is
-   * attached to.
-   */
-  windowId?: string;
-}
-
-/**
- * Data structure sent from the browser to the web client with panel opening
- * information.
- */
-export declare interface PanelOpeningData {
-  /**
-   * The state of the panel as it's being opened.
-   */
-  panelState?: PanelState;
-  /**
-   * Indicates the entry point used to trigger the opening of the panel.
-   * In the event the web client's page is reloaded, the new web client will
-   * receive a notifyPanelWillOpen call with the same invocation source as
-   * before, even though the user did not, for example, click a button again.
-   */
-  invocationSource?: InvocationSource;
-  /**
-   * @deprecated Use `conversationInfo` instead. The ID of the conversation to
-   *     open.
-   * If unset, the web client will open a new conversation.
-   * This field is used only when the `MULTI_INSTANCE` capability is present.
-   */
-  conversationId?: string;
-  /**
-   * If set, the textbox for user input will be populated with the given string
-   * before the panel opens.
-   */
-  promptSuggestion?: string;
-  /**
-   * If true and promptSuggestion is set, the prompt will be automatically
-   * submitted after the panel opens.
-   */
-  autoSend?: boolean;
-  /**
-   * An optional Skill. If provided, the Gemini app should auto-run it.
-   */
-  skillToInvoke?: Skill;
-  /**
-   * Up to 3 most recently active conversations, ordered by most recently active
-   * first.
-   */
-  recentlyActiveConversations?: ConversationInfo[];
-  /**
-   * Overrides the First Run Experience. If set, the panel will act as if the
-   * user was or wasn't in a specific FRE state.
-   */
-  freOverride?: FreOverride;
-  /**
-   * Information about the conversation being opened.
-   *
-   * - The web client will load the requested `conversationInfo.conversationId`.
-   * - If `conversationInfo.conversationId` is empty, it indicates a new
-   *   conversation is being started.
-   * - The object may contain `clientData` if it was provided in the
-   *   `registerConversation` or `switchConversation` calls.
-   */
-  conversationInfo?: ConversationInfo;
-}
-
 /** The default value of TabContextOptions.pdfSizeLimit. */
 export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
 
 /** The default value of TabContextOptions.innerTextBytesLimit. */
 export const DEFAULT_INNER_TEXT_BYTES_LIMIT = 20000;
-
-/** Options for screenshot collection. */
-export declare interface ScreenshotCollectionOptions {
-  /**
-   * Screenshot will be scaled to fit the max width and height while
-   * maintaining the aspect ratio.
-   * If not set or set to 0, the screenshot will be captured without limiting
-   * the width (so long as the height is not limited).
-   */
-  maxWidth?: number;
-  /**
-   * Screenshot will be scaled to fit the max width and height while maintaining
-   * the aspect ratio.
-   * If not set or set to 0, the screenshot will be captured without limiting
-   * the height (so long as the width is not limited).
-   */
-  maxHeight?: number;
-  /**
-   * The format of the screenshot. If not set, the screenshot will be returned
-   * as a jpeg image.
-   */
-  screenshotImageFormat?: ScreenshotImageFormat;
-  /**
-   * The compression quality of the screenshot. If not set, the screenshot will
-   * be returned with medium compression quality.
-   */
-  screenshotCompressionQuality?: ScreenshotCompressionQuality;
-}
 
 /** Options for getting context from a tab. */
 export declare interface TabContextOptions {
@@ -1768,35 +1490,6 @@ export declare interface ResumeActorTaskResult extends TabContextResult {
   actionResult?: number;
 }
 
-/**
- * Used for customizing the list of pin candidates.
- */
-export declare interface GetPinCandidatesOptions {
-  /** The maximum number of candidates to consider. Can return fewer. */
-  maxCandidates: number;
-  /** A query string. */
-  query?: string;
-}
-
-/**
- * Options for pinning tabs.
- */
-export declare interface PinTabsOptions {
-  pinTrigger?: PinTrigger;
-}
-
-/**
- * Options for unpinning tabs.
- */
-export declare interface UnpinTabsOptions {
-  unpinTrigger?: UnpinTrigger;
-}
-
-/** Information about a web page being rendered in a tab. */
-export declare interface WebPageData {
-  mainDocument: DocumentData;
-}
-
 /** Information about a PDF document. */
 export declare interface PdfDocumentData {
   /** Origin of the document. */
@@ -1807,20 +1500,6 @@ export declare interface PdfDocumentData {
    * Whether the PDF size limit was exceeded. If true, `pdfData` will be empty.
    */
   pdfSizeLimitExceeded: boolean;
-}
-
-/** Text information about a web document. */
-export declare interface DocumentData {
-  /** Origin of the document. */
-  origin: string;
-  /**
-   * The innerText of the document at its current state. Currently includes
-   * embedded same-origin iframes.
-   */
-  innerText?: string;
-
-  /** Whether `innerText` was truncated due to `innerTextBytesLimit`. */
-  innerTextTruncated?: boolean;
 }
 
 /** Annotated data from a web document. */
@@ -1834,57 +1513,8 @@ export declare interface AnnotatedPageData {
   metadata?: PageMetadata;
 }
 
-/** Meta tag name and content taken from the <head> element of a frame. */
-export declare interface MetaTag {
-  name: string;
-  content: string;
-}
-
-/**
- * Metadata about a frame.  Number of MetaTags is limited by the
- * maxMetaTags option.
- */
-export declare interface FrameMetadata {
-  url: string;
-  metaTags: MetaTag[];
-  /** Whether chrome has audio/video transcripts for this frame. */
-  hasMediaTranscripts?: boolean;
-}
-
-/** Metadata about the page.  Includes URL and meta tags for each frame. */
-export declare interface PageMetadata {
-  frameMetadata: FrameMetadata[];
-}
-
-/**
- * Various bits of data about a browser tab. Optional fields may not be
- * available while the page is being loaded or if not provided by the page
- * itself.
- */
-
+/** WARNING: See additional properties of TabData in the generated section */
 export declare interface TabData {
-  /**
-   * Unique ID of the tab that owns the page. These values are unique across
-   * all tabs from all windows, and will not change even if the user moves the
-   * tab to a different window.
-   */
-  tabId: string;
-  /**
-   * Unique ID of the browser window holding the tab. This value may change if
-   * the tab is moved to a different window.
-   */
-  windowId: string;
-  /**
-   * URL of the page. For a given tab, this value will change if the tab is
-   * navigated to a different URL.
-   */
-  url: string;
-  /**
-   * The title of the loaded page. Returned only if the page is loaded enough
-   * for it to be available. It may be empty if the page did not specify a
-   * title.
-   */
-  title?: string;
   /**
    * Returns the favicon for the tab, encoded as a PNG image. An image is
    * returned only if the page is loaded enough for it to be available and the
@@ -1895,64 +1525,6 @@ export declare interface TabData {
    * `IGNORES_TAB_DATA_FAVICONS` is present on this instance.
    */
   favicon?(): Promise<Blob | undefined>;
-  /**
-   * The favicon URL. Only available if the page is loaded enough and it
-   * specifies a favicon.
-   *
-   * @deprecated Should no longer be used, will be removed in the future.
-   */
-  faviconUrl?: string;
-  /**
-   * MIME type of the main document. Returned only if the page is loaded enough
-   * for it to be available.
-   */
-  documentMimeType?: string;
-  /**
-   * Whether the tab is audible or visible. Specifically this is the visibility
-   * of the WebContents as returned by: `WebContents::GetVisibility`. If the
-   * visibility is either VISIBLE or OCCLUDED, we consider the web contents to
-   * be visible. @todo: This field is being added as a temporary solution.
-   * b/433995475
-   */
-  isObservable?: boolean;
-
-  /**
-   * Whether the tab has active audio or video playing, used for showing tab UI.
-   * This is a best effort signal, and may not be accurate/stale due to not
-   * observing media events directly. @todo: This field is being added as a
-   * temporary solution. b/433995475
-   */
-  isMediaActive?: boolean;
-
-  /**
-   * Whether the tab content is being captured by another functionality (e.g.,
-   * screen share in video chat). This is a best effort signal, and may not be
-   * accurate/stale due to not observing tab content capture events
-   * directly. @todo: This field is being added as a temporary solution.
-   * b/433995475
-   */
-  isTabContentCaptured?: boolean;
-
-  /**
-   * Whether the tab is the active tab in its browser window. Note that this
-   * does not consider the state of the window.
-   */
-  isActiveInWindow?: boolean;
-
-  /**
-   * Whether the tab's browser window is active. Note that this does not
-   * consider whether the tab is active in the window.
-   * WARNING: This is not implemented on Android, and is always true.
-   */
-  isWindowActive?: boolean;
-  /** Lightweight page features detected on the page. */
-  lightweightPageFeatures?: LightweightPageFeature[];
-}
-
-/** A candidate for pinning. */
-export declare interface PinCandidate {
-  /** The tab that is a candidate for pinning. */
-  tabData: TabData;
 }
 
 /**
@@ -2390,68 +1962,10 @@ export declare interface ZeroStateSuggestions {
   url: string;
 }
 
-/** Zero-state suggestion for the current tab.*/
-export declare interface SuggestionContent {
-  /** The suggestion text. Always provided. */
-  suggestion: string;
-}
-
-// LINT.IfChange(Skill)
 /** Represents a single skill preview. */
 export declare interface SkillPreview {
-  /** A unique identifier for the skill. */
-  id: string;
-  /** The user-facing name of the skill. */
-  name: string;
-  /** The icon for the skill. */
-  icon: string;
-  /** The source of the skill. */
-  source: SkillSource;
-  /** The description of the skill. */
-  description: string;
-  /** The image URL to show when rendering this skill. Added M152*/
-  imageUrl?: string;
-  /** The name of the curator for this skill. Added M152*/
-  curatedBy?: string;
   /** Whether the skill is contextually relevant to the current tab. */
   isContextual?: boolean;
-}
-
-/** Represents a single skill. */
-export declare interface Skill {
-  /** A preview of the skill. */
-  preview: SkillPreview;
-  /** The underlying LLM prompt for the skill. */
-  prompt: string;
-  /**
-   * The id of the source skill this skill is derived from. This is only
-   * present if the SkillSource is DERIVED_FROM_FIRST_PARTY.
-   */
-  sourceSkillId?: string;
-}
-// LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:Skill)
-
-export declare interface CreateSkillRequest {
-  /**
-   * A unique identifier for the skill. This is only available when the user is
-   * trying to remix a 1P skill.
-   */
-  id?: string;
-  /** The user-facing name of the skill. Only available in 1P remix flow. */
-  name?: string;
-  /** The icon for the skill. Only available in 1P remix flow. */
-  icon?: string;
-  /** A prompt for the skill, which can be empty. */
-  prompt: string;
-  /** The description of the skill. Only available in 1P remix flow. */
-  description?: string;
-  /** The source of the skill. */
-  source?: SkillSource;
-}
-
-export declare interface UpdateSkillRequest {
-  /** The unique identifier of the skill to be updated. */
-  id: string;
 }
 
 /** Credential selection dialog. */
@@ -3171,10 +2685,6 @@ export enum InvocationSource {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
-//  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
-//  //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
-//  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation
-// )
 // Target for actuation.
 export enum ActuationTarget {
   // Will default to the agent if the target is unknown.
@@ -3355,9 +2865,6 @@ export enum ClientCapabilities {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
-//
-// Place the mojom structs that require Javascript bindings here.
-//
 // Describes the duration of the actions in the task.  This is used by the actor
 // to customize the task UI.
 export enum TaskDuration {
@@ -3408,6 +2915,478 @@ export enum FeatureMode {
   PROMOTION_PAGE = 5,
 }
 
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Settings for Gemini Enterprise.
+export declare interface GeminiEnterpriseSettings {
+  projectId: string;
+  appId: string;
+  location: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Configuration to override the default ZSS behavior for the invocation,
+// only having an impact if ZSS would be shown for the invocation.
+export declare interface ZssConfig {
+  // Additional content to inject into the body of the ZSS message.
+  additionalContent?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The type of counter abuse verdict that was received.
+export declare interface CounterAbuseVerdict {
+  sbVerdictResult: SafeBrowsingVerdict;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for screenshot collection.
+export declare interface ScreenshotCollectionOptions {
+  // Screenshot will be scaled to fit the max width and height while
+  // maintaining the aspect ratio.
+  // If not set or set to 0, the screenshot will be captured without limiting
+  // the width (so long as the height is not limited).
+  maxWidth?: number;
+  // Screenshot will be scaled to fit the max width and height while maintaining
+  // the aspect ratio.
+  // If not set or set to 0, the screenshot will be captured without limiting
+  // the height (so long as the width is not limited).
+  maxHeight?: number;
+  // The format of the screenshot. If not set, the screenshot will be returned
+  // as a jpeg image.
+  screenshotImageFormat?: ScreenshotImageFormat;
+  // The compression quality of the screenshot. If not set, the screenshot will
+  // be returned with medium compression quality.
+  screenshotCompressionQuality?: ScreenshotCompressionQuality;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Used for customizing the list of pin candidates.
+export declare interface GetPinCandidatesOptions {
+  // The maximum number of candidates to consider. Can return fewer.
+  maxCandidates: number;
+  // An optional query string.
+  query?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Zero-state suggestion for the current tab.
+export declare interface SuggestionContent {
+  // The suggestion text. Always provided.
+  suggestion: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Represents a single skill preview.
+export declare interface SkillPreview {
+  // A unique identifier for the skill.
+  id: string;
+  // The user-facing name of the skill.
+  name: string;
+  // The icon for the skill.
+  icon: string;
+  // The source of the skill.
+  source: SkillSource;
+  // The description of the skill.
+  description: string;
+  // The name of the curator for this skill.
+  curatedBy?: string;
+  // The image URL to show when rendering this skill.
+  imageUrl?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// A single skill.
+export declare interface Skill {
+  // A preview of the skill.
+  preview: SkillPreview;
+  // The underlying LLM prompt for the skill.
+  prompt: string;
+  // The id of the source skill this skill is derived from. This is only
+  // present if the SkillSource is DERIVED_FROM_FIRST_PARTY.
+  sourceSkillId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+export declare interface CreateSkillRequest {
+  // A unique identifier for the skill. This is only available when the user is
+  // trying to remix a 1P skill.
+  id?: string;
+  // The user-facing name of the skill. Only available in 1P remix flow.
+  name?: string;
+  // The icon for the skill. Only available in 1P remix flow.
+  icon?: string;
+  // The source of the skill.
+  source?: SkillSource;
+  // A prompt for the skill, which can be empty.
+  prompt: string;
+  // The description of the skill. Only available in 1P remix flow.
+  description?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Request to update a skill.
+export declare interface UpdateSkillRequest {
+  // The unique identifier of the skill to be updated.
+  id: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// A candidate for pinning.
+export declare interface PinCandidate {
+  // The tab that is a candidate for pinning.
+  tabData: TabData;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for pinning tabs.
+export declare interface PinTabsOptions {
+  pinTrigger?: PinTrigger;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for unpinning tabs.
+export declare interface UnpinTabsOptions {
+  unpinTrigger?: UnpinTrigger;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options used to customize region capture.
+export declare interface CaptureRegionParams {
+  tabId: string;
+  options: TabContextOptions;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Holds optional parameters for GlicBrowserHost#activateTabWithUrl.
+export declare interface ActivateTabOptions {
+  // Wildcard pattern (using '*' and '?') matched against tab URLs. If empty or
+  // undefined, wildcard matching is not performed.
+  pattern?: string;
+  // The windowId of the window where the tab should be created if no matching
+  // tab is found.
+  fallbackWindowId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information about a conversation.
+export declare interface ConversationInfo {
+  // The unique ID of the conversation. This will be stored.
+  conversationId: string;
+  // The title of the conversation. This will be stored. It is expected that
+  // titles don't change.
+  conversationTitle: string;
+  // Optional client-specific data. This data is not used by Chrome and Chrome
+  // will never attempt to deserialize it. It can hold a key for client-side
+  // lookup or opaque serialized data.
+  clientData?: string;
+  // Optional turn ID to open this conversation at.
+  turnId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Data structure sent from the browser to the web client with panel opening
+// information.
+export declare interface PanelOpeningData {
+  // The state of the panel as it's being opened.
+  panelState?: PanelState;
+  // Indicates the entry point used to trigger the opening of the panel.
+  // In the event the web client's page is reloaded, the new web client will
+  // receive a notifyPanelWillOpen call with the same invocation source as
+  // before, even though the user did not, for example, click a button again.
+  invocationSource?: InvocationSource;
+  // If set, the textbox for user input will be populated with the given string
+  // before the panel opens.
+  promptSuggestion?: string;
+  // If true and prompt_suggestion is set, the prompt will be automatically
+  // submitted after the panel opens.
+  autoSend?: boolean;
+  // An optional Skill. If provided, the Gemini app should auto-run it.
+  skillToInvoke?: Skill;
+  // Up to 3 most recently active conversations, ordered by most recently active
+  // first.
+  recentlyActiveConversations?: ConversationInfo[];
+  // Information about the conversation being opened.
+  //
+  // - The web client will load the requested `conversationInfo.conversationId`.
+  // - If `conversationInfo.conversationId` is empty, it indicates a new
+  //   conversation is being started.
+  // - The object may contain `clientData` if it was provided in the
+  //   `registerConversation` or `switchConversation` calls.
+  //
+  conversationInfo?: ConversationInfo;
+  // Overrides the First Run Experience. If set, the panel will act as if the
+  // user was or wasn't in a specific FRE state.
+  freOverride?: FreOverride;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information of how the panel is being presented/configured.
+export declare interface PanelState {
+  // The panel's presentation kind/state.
+  kind: PanelStateKind;
+  // Present only when attached to a window, indicating which window it is
+  // attached to.
+  windowId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Payload for Universal Cart invocation.
+export declare interface UniversalCartPayload {
+  // This metadata is received from the same Google endpoint we receive the
+  // actual invocation prompt from. Opaque to the browser.
+  serializedMetadata: ArrayBuffer;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for invoking Glic.
+export declare interface InvokeOptions {
+  // Source that triggered this invocation.
+  invocationSource: InvocationSource;
+  // Prompts to pre-populate or suggest.
+  prompts?: string[];
+  // Additional context to attach.
+  context?: AdditionalContext;
+  // Whether to automatically submit the prompt.
+  autoSubmit: boolean;
+  // Feature mode to switch to.
+  featureMode: FeatureMode;
+  // Target for actuation.
+  actuationTarget?: ActuationTarget;
+  // Whether to suppress Zero State Suggestions.
+  disableZeroStateSuggestions: boolean;
+  // Skill ID to trigger.
+  skillId?: string;
+  // Configuration to override the default ZSS behavior for the invocation.
+  zssConfig?: ZssConfig;
+  // Source-specific payload for the invocation.
+  payload?: InvocationPayload;
+  // The ID of the tab to actuate on, if actuationTarget is kTargetSurface.
+  actuationTabId?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Details for metrics recording purposes.
+export declare interface OnResponseStoppedDetails {
+  cause?: ResponseStopCause;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Metadata of the parent conversation. Some, all, or none, of this information
+// may be available, depending on what context information was available from
+// the server when the parent conversation was initiated.
+export declare interface ParentConversationMetadata {
+  conversationId?: string;
+  conversationTitle?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Additional context object.
+export declare interface AdditionalContext {
+  // Where the additional context came from.
+  source?: AdditionalContextSource;
+  // User facing name of the context. Eg. the filename, or full url.
+  name?: string;
+  // Tab id, if associated with a tab.
+  // Callers may use this to associate context but should not assume this
+  // relationship persists as tab contents change.
+  tabId?: string;
+  // Origin of the frame where the data came from (if it came from a frame).
+  origin?: string;
+  // url of the frame where the data came from (if it came from a frame).
+  frameUrl?: string;
+  // The parts of the context.
+  parts: AdditionalContextPart[];
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// An update event sent to the browser by the web client.
+export declare interface ExperimentalTriggeringUpdate {
+  // The type of this update.
+  type: ExperimentalTriggeringUpdateType;
+  // The human-readable text associated with the update, such as response text
+  // or status message.
+  data: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information about a web page being rendered in a tab.
+export declare interface WebPageData {
+  // Main document of the page.
+  mainDocument: DocumentData;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Text information about a web document.
+export declare interface DocumentData {
+  // Origin of the document.
+  origin: string;
+  // The innerText of the document at its current state.
+  // Currently includes embedded same-origin iframes.
+  innerText?: string;
+  // Whether `innerText` was truncated due to `innerTextBytesLimit`.
+  innerTextTruncated?: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Various bits of data about a browser tab. Optional fields may not be
+// available while the page is being loaded or if not provided by the page
+// itself.
+export declare interface TabData {
+  // Unique ID of the tab that owns the page. These values are unique across
+  // all tabs from all windows, and will not change even if the user moves the
+  // tab to a different window.
+  tabId: string;
+  // Unique ID of the browser window holding the tab. This value may change if
+  // the tab is moved to a different window.
+  windowId: string;
+  // URL of the page. For a given tab, this value will change if the tab is
+  // navigated to a different URL.
+  url: string;
+  // The title of the loaded page. Returned only if the page is loaded enough
+  // for it to be available. It may be empty if the page did not specify a
+  // title.
+  title?: string;
+  // The favicon URL. Only available if the page is loaded enough and it
+  // specifies a favicon.
+  //
+  // @deprecated Should no longer be used, will be removed in the future.
+  faviconUrl?: string;
+  // MIME type of the main document. Returned only if the page is loaded enough
+  // for it to be available.
+  documentMimeType?: string;
+  // Whether the tab is audible or visible. Specifically this is the visibility
+  // of the WebContents as returned by: `WebContents::GetVisibility`. If the
+  // visibility is either VISIBLE or OCCLUDED, we consider the web contents to
+  // be visible. @todo: This field is being added as a temporary solution.
+  // b/433995475
+  isObservable?: boolean;
+  // Whether the tab has active audio or video playing, used for showing tab UI.
+  // This is a best effort signal, and may not be accurate/stale due to not
+  // observing media events directly. @todo: This field is being added as a
+  // temporary solution. b/433995475
+  isMediaActive?: boolean;
+  // Whether the tab content is being captured by another functionality (e.g.,
+  // screen share in video chat). This is a best effort signal, and may not be
+  // accurate/stale due to not observing tab content capture events
+  // directly. @todo: This field is being added as a temporary solution.
+  // b/433995475
+  isTabContentCaptured?: boolean;
+  // Whether the tab is the active tab in its browser window. Note that this
+  // does not consider the state of the window.
+  isActiveInWindow?: boolean;
+  // Whether the tab's browser window is active. Note that this does not
+  // consider whether the tab is active in the window.
+  // WARNING: This is not implemented on Android, and is always true.
+  isWindowActive?: boolean;
+  // Lightweight page features detected on the page.
+  lightweightPageFeatures?: LightweightPageFeature[];
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The captured region with an ID.
+export declare interface PendingCapturedRegion {
+  // The ID of the captured region.
+  id: string;
+  // The captured region.
+  region: CapturedRegion;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Optional parameters for the openGlicSettingsPage function.
+export declare interface OpenSettingsOptions {
+  // Optionally select a field to be highlighted while opening the Glic settings
+  // page.
+  highlightField?: SettingsPageField;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Meta tag name and content taken from the <head> element of a frame.
+export declare interface MetaTag {
+  name: string;
+  content: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Metadata about a frame. Number of MetaTags is limited by the
+// maxMetaTags option.
+export declare interface FrameMetadata {
+  url: string;
+  metaTags: MetaTag[];
+  // Whether chrome has audio/video transcripts for this frame.
+  hasMediaTranscripts?: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Metadata about the page. Includes URL and meta tags for each frame.
+export declare interface PageMetadata {
+  // The local frame where the traversal starts is the first entry in the array.
+  frameMetadata: FrameMetadata[];
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// A region captured by the user from a document in a tab.
+//
+// This is a union of different possible region shapes. Currently only
+// rectangular regions are supported, but this may be expanded with other region
+// types like polygons in the future.
+export declare interface CapturedRegion {
+  // A rectangular region captured from a document in a tab.
+  //
+  // The coordinate system is relative to the top-left corner of the document.
+  // The units are in pixels and match screenshot pixel dimensions.
+  //
+  // - **Position (`x`, `y`):** Coordinates of the top-left corner of the
+  //   rectangle, relative to the document's origin (0,0). Can be negative if
+  //   content is scrolled out of view.
+  // - **Size (`width`, `height`):** Dimensions of the rectangle, expected to be
+  //   non-negative.
+  //
+  // The rectangle can represent an area outside the currently visible viewport
+  // if the page is scrolled. It is not guaranteed to be contained within the
+  // document's bounds.
+  rect?: Rect;
+  // A polyline captured from a document in a tab.
+  //
+  // The coordinate system is relative to the top-left corner of the document.
+  // The units are in pixels and match screenshot pixel dimensions.
+  //
+  // The polyline is represented by an ordered array of points. The line formed
+  // by these points is not required to be closed, and it represents a shape
+  // (path), not necessarily a region.
+  polyline?: Point[];
+}
 
 /// END_GENERATED - DO NOT MODIFY ABOVE
 ///////////////////////////////////////////////////////////////////////////////

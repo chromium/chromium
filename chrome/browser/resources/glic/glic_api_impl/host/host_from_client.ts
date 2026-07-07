@@ -346,7 +346,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     return {effectiveMax};
   }
 
-
   activateTab(request: {tabId: string}): void {
     this.handler.activateTab(idFromClient(request.tabId));
   }
