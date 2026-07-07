@@ -182,7 +182,10 @@ class DexDisassemblyTest(unittest.TestCase):
 
     mock_delta_size_info = mock.MagicMock()
     mock_sorted_symbols = mock.MagicMock()
-    mock_sorted_symbols.Sorted.return_value = [mock_delta_symbol]
+    mock_group = mock.MagicMock()
+    mock_group.name = mock_delta_symbol.diff_status
+    mock_group.__iter__.return_value = [mock_delta_symbol]
+    mock_sorted_symbols.GroupedByDiffStatus.return_value = [mock_group]
     mock_delta_size_info.raw_symbols.Filter.return_value = mock_sorted_symbols
 
     def dummy_path_resolver(path):

@@ -1579,6 +1579,9 @@ class DeltaSymbolGroup(SymbolGroup):
       ret[sym.diff_status] += 1
     return tuple(ret)
 
+  def GroupedByDiffStatus(self):
+    return self.GroupedBy(lambda s: s.diff_status)
+
   def CountUniqueSymbols(self):
     """Returns (num_unique_before_symbols, num_unique_after_symbols)."""
     syms_iter = (s.before_symbol for s in self.IterLeafSymbols()

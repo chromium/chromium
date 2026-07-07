@@ -495,6 +495,10 @@ def main():
       '--local-test',
       action='store_true',
       help='Allow input directories to be diagnose_bloat.py ones.')
+  parser.add_argument('--changed-file',
+                      action='append',
+                      dest='changed_files',
+                      help='List of changed files in the commit')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.INFO,
@@ -627,12 +631,14 @@ def main():
   dex_disassembly.AddDisassembly(delta_size_info,
                                  before_path_resolver,
                                  after_path_resolver,
-                                 normalize=True)
+                                 normalize=True,
+                                 changed_files=args.changed_files)
   logging.info('Adding disassembly to native symbols')
   native_disassembly.AddDisassembly(delta_size_info,
                                     before_path_resolver,
                                     after_path_resolver,
-                                    normalize=True)
+                                    normalize=True,
+                                    changed_files=args.changed_files)
 
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')

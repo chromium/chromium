@@ -6,7 +6,6 @@
 
 import argparse
 import code
-import difflib
 import functools
 import io
 import logging
@@ -18,6 +17,7 @@ import sys
 import tempfile
 import zipfile
 
+import disassembly_util
 import r8_disassembly
 import path_util
 import zip_util
@@ -165,73 +165,58 @@ def Disassemble(symbol, path_resolver, apk_disassembler_cache):
   return _ExtractDisassemblyForMethod(class_obj_map, symbol.full_name)
 
 
-def _CreateUnifiedDiff(name, before, after):
-  unified_diff = difflib.unified_diff(before,
-                                      after,
-                                      fromfile=name,
-                                      tofile=name,
-                                      n=10)
-  # Strip new line characters as difflib.unified_diff adds extra newline
-  # characters to the first few lines which we do not want.
-  #unified_diff = [x.strip() for x in unified_diff]
-  return ''.join(unified_diff)
-
-
 def _AddUnifiedDiff(top_changed_symbols,
                     before_path_resolver,
                     after_path_resolver,
                     normalize=False):
-  # Counter used to skip over symbols where we couldn't find the disassembly.
-  counter = _DISASSEMBLED_METHOD_QUOTA
-  before = None
-  after = None
   after_apk_disassembler_cache = _CachedApkDisassembler()
   before_apk_disassembler_cache = _CachedApkDisassembler()
   for symbol in top_changed_symbols:
-    logging.debug('Symbols to go: %d', counter)
-    after = Disassemble(symbol.after_symbol, after_path_resolver,
-                        after_apk_disassembler_cache)
-    if after is None:
-      continue
+    after = None
+    if symbol.after_symbol:
+      after = Disassemble(symbol.after_symbol, after_path_resolver,
+                          after_apk_disassembler_cache)
+    before = None
     if symbol.before_symbol:
       before = Disassemble(symbol.before_symbol, before_path_resolver,
                            before_apk_disassembler_cache)
-    else:
-      before = None
+
     logging.info('Adding disassembly for: %s', symbol.full_name)
     if normalize:
-      after = NormalizeLines(after)
-      if before:
-        before = NormalizeLines(before)
-    symbol.after_symbol.disassembly = _CreateUnifiedDiff(
-        symbol.full_name, before or [], after)
-    counter -= 1
-    if counter == 0:
-      break
+      after = after and NormalizeLines(after)
+      before = before and NormalizeLines(before)
+
+    target_symbol = symbol.after_symbol or symbol.before_symbol
+    target_symbol.disassembly = disassembly_util.CreateUnifiedDiff(
+        symbol.full_name, before or [], after or [])
 
 
-def _GetTopChangedSymbols(delta_size_info):
+def _GetTopChangedSymbols(delta_size_info, changed_files=None):
   def filter_symbol(symbol):
-    # We are only looking for symbols where the after_symbol exists, as
-    # if it does not exist it does not provide much value in a side
-    # by side code breakdown.
-    if not symbol.after_symbol:
+    if symbol.name.startswith('*'):
       return False
     # Currently restricting the symbols to .dex.method symbols only.
     if not symbol.section_name.endswith('dex.method'):
       return False
     # Symbols which have changed under 10 bytes do not add much value.
-    if abs(symbol.pss) < 10:
+    if abs(symbol.size_without_padding) < 10:
+      return False
+    # Giant symbols also rarely add value.
+    if symbol.after_symbol and symbol.after_symbol.size > 10000:
+      return False
+    if symbol.before_symbol and symbol.before_symbol.size > 10000:
       return False
     return True
 
-  return delta_size_info.raw_symbols.Filter(filter_symbol).Sorted()
+  candidates = delta_size_info.raw_symbols.Filter(filter_symbol)
+  return disassembly_util.SampleSymbols(candidates, changed_files=changed_files)
 
 
 def AddDisassembly(delta_size_info,
                    before_path_resolver,
                    after_path_resolver,
-                   normalize=False):
+                   normalize=False,
+                   changed_files=None):
   """Adds disassembly diffs to top changed dex symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
@@ -244,7 +229,8 @@ def AddDisassembly(delta_size_info,
       normalize: Whether to normalize the disassembly.
   """
   logging.info('Computing top changed symbols')
-  top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
+  top_changed_symbols = _GetTopChangedSymbols(delta_size_info,
+                                              changed_files=changed_files)
   logging.info('Adding disassembly to top %d changed dex symbols',
                _DISASSEMBLED_METHOD_QUOTA)
   _AddUnifiedDiff(top_changed_symbols,

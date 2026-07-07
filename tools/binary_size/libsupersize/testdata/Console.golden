@@ -8,7 +8,7 @@ SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAl
 
 DeltaSizeInfo: ContainerForName, MakeSparse, MergeDeltaSizeInfo, added_sources, after, before, containers, is_sparse, native_symbols, pak_symbols, raw_symbols, removed_sources, section_sizes, symbols
 DeltaSymbol (extends Symbol): after_symbol, before_symbol, diff_status
-DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, GetEntireAddOrRemoveSources, WhereDiffStatusIs, diff_status
+DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, GetEntireAddOrRemoveSources, GroupedByDiffStatus, WhereDiffStatusIs, diff_status
 
 canned_queries: CategorizeByChromeComponent, CategorizeGenerated, LargeFiles, PakByPath, StaticInitializers, TemplatesByName
 

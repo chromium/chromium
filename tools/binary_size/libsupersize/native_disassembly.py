@@ -4,7 +4,6 @@
 """Class to get the native disassembly for symbols."""
 
 import contextlib
-import difflib
 import itertools
 import logging
 import os
@@ -13,6 +12,7 @@ import shlex
 import subprocess
 
 import dex_disassembly
+import disassembly_util
 import models
 import path_util
 import readelf
@@ -134,17 +134,6 @@ def Disassemble(symbol,
     proc.kill()
 
 
-def _CreateUnifiedDiff(name, before, after):
-  unified_diff = difflib.unified_diff(before,
-                                      after,
-                                      fromfile=name,
-                                      tofile=name,
-                                      n=10)
-  # Strip new line characters as difflib.unified_diff adds extra newline
-  # characters to the first few lines which we do not want.
-  return ''.join(unified_diff)
-
-
 def _ResolveElfPath(elf_path):
   if os.path.exists(elf_path):
     return elf_path
@@ -157,29 +146,22 @@ def _AddUnifiedDiff(top_changed_symbols,
                     after_path_resolver,
                     delta_size_info,
                     normalize=False):
-  # Counter used to skip over symbols where we couldn't find the disassembly.
-  counter = 10
-  before = None
-  after = None
   for symbol in top_changed_symbols:
-    before_symbol = symbol.before_symbol
-    after_symbol = symbol.after_symbol
-    logging.debug('Symbols to go: %d', counter)
-    elf_name = after_symbol.container.metadata['elf_file_name']
-    elf_path = _ResolveElfPath(after_path_resolver(elf_name))
-    if elf_path is None:
-      # Do not continue trying symbols since we'll likely hit the same issue.
-      break
-
-    out_directory = delta_size_info.after.build_config.get('out_directory')
-    if out_directory and not os.path.exists(out_directory):
-      out_directory = None
-    with Disassemble(after_symbol, out_directory, elf_path) as lines:
-      if not lines:
-        continue
-      after = list(lines)
-
     before = None
+    before_symbol = symbol.before_symbol
+    after = None
+    after_symbol = symbol.after_symbol
+
+    if after_symbol:
+      elf_name = after_symbol.container.metadata['elf_file_name']
+      elf_path = _ResolveElfPath(after_path_resolver(elf_name))
+      if elf_path:
+        out_directory = delta_size_info.after.build_config.get('out_directory')
+        if out_directory and not os.path.exists(out_directory):
+          out_directory = None
+        with Disassemble(after_symbol, out_directory, elf_path) as lines:
+          after = list(lines) if lines else None
+
     if before_symbol:
       elf_name = before_symbol.container.metadata['elf_file_name']
       elf_path = _ResolveElfPath(before_path_resolver(elf_name))
@@ -188,45 +170,51 @@ def _AddUnifiedDiff(top_changed_symbols,
         # better to not include source lines than to include incorrect ones.
         out_directory = None
         with Disassemble(before_symbol, out_directory, elf_path) as lines:
-          before = list(lines)
+          before = list(lines) if lines else None
+
+    if after is None and before is None:
+      continue
 
     logging.info('Creating unified diff')
     if normalize:
-      after = _NormalizeLines(after)
-      if before:
-        before = _NormalizeLines(before)
-    after_symbol.disassembly = _CreateUnifiedDiff(symbol.full_name, before
-                                                  or [], after)
-    counter -= 1
-    if counter == 0:
-      break
+      after = after and _NormalizeLines(after)
+      before = before and _NormalizeLines(before)
+
+    target_symbol = after_symbol or before_symbol
+    target_symbol.disassembly = disassembly_util.CreateUnifiedDiff(
+        symbol.full_name, before or [], after or [])
 
 
-def _GetTopChangedSymbols(delta_size_info):
+def _GetTopChangedSymbols(delta_size_info, changed_files=None):
   def filter_symbol(symbol):
-    # We are only looking for symbols where the after_symbol exists, as
-    # if it does not exist it does not provide much value in a side
-    # by side code breakdown.
-    if not symbol.after_symbol:
+    # Don't want "** Thunk".
+    if symbol.name.startswith('*'):
+      return False
+    # "aggregate padding" symbols.
+    if not symbol.address:
       return False
     # Currently restricting the symbols to .text symbols only.
     if not symbol.section_name.endswith('.text'):
       return False
     # Symbols which have changed under 10 bytes do not add much value.
-    if abs(symbol.pss_without_padding) < 10:
+    if abs(symbol.size_without_padding) < 10:
       return False
-    if not symbol.address:
-      # "aggregate padding" symbols.
+    # Giant symbols also rarely add value.
+    if symbol.after_symbol and symbol.after_symbol.size > 10000:
+      return False
+    if symbol.before_symbol and symbol.before_symbol.size > 10000:
       return False
     return True
 
-  return delta_size_info.raw_symbols.Filter(filter_symbol).Sorted()
+  candidates = delta_size_info.raw_symbols.Filter(filter_symbol)
+  return disassembly_util.SampleSymbols(candidates, changed_files=changed_files)
 
 
 def AddDisassembly(delta_size_info,
                    before_path_resolver,
                    after_path_resolver,
-                   normalize=False):
+                   normalize=False,
+                   changed_files=None):
   """Adds disassembly diffs to top changed native symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
@@ -239,7 +227,8 @@ def AddDisassembly(delta_size_info,
       normalize: Whether to normalize the disassembly.
   """
   logging.debug('Computing top changed symbols')
-  top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
+  top_changed_symbols = _GetTopChangedSymbols(delta_size_info,
+                                              changed_files=changed_files)
   logging.debug('Adding disassembly to top 10 changed native symbols')
   _AddUnifiedDiff(top_changed_symbols,
                   before_path_resolver,
