@@ -1393,6 +1393,11 @@ inline constexpr char kSettingsInTabName[] = "Settings in Tab";
 inline constexpr char kSettingsInTabDescription[] =
     "Allows the Chrome Settings UI to appear in a tab on Android.";
 
+inline constexpr char kBottomSheetOnDesktopWindowingName[] =
+    "Bottom Sheet on Desktop Windowing";
+inline constexpr char kBottomSheetOnDesktopWindowingDescription[] =
+    "Enables modifications that improve the bottom sheet experience when in "
+    "desktop mode.";
 
 inline constexpr char kSeparateWebAppShortcutBadgeIconName[] =
     "Separate Web App Shortcut Badge Icon";

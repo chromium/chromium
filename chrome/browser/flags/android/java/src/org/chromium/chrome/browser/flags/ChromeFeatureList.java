@@ -311,6 +311,7 @@ public abstract class ChromeFeatureList {
     public static final String BOOKMARKS_BAR_NTP = "BookmarksBarNTP";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
     public static final String BOTTOM_SHEET_AS_BROWSER_CONTROLS = "BottomSheetAsBrowserControls";
+    public static final String BOTTOM_SHEET_ON_DESKTOP_WINDOWING = "BottomSheetOnDesktopWindowing";
     public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";

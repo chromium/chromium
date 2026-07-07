@@ -13578,6 +13578,7 @@ from previous Chrome versions.
   <int value="-314566497"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
   <int value="-314102877" label="PdfInk2:enabled"/>
+  <int value="-313966893" label="BottomSheetOnDesktopWindowing:enabled"/>
   <int value="-313893599"
       label="DesktopPWAsLinkCapturingWithScopeExtensions:disabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
@@ -14890,6 +14891,7 @@ from previous Chrome versions.
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106789059"
       label="ReduceUserAgentDataLinuxPlatformVersion:disabled"/>
+  <int value="106789396" label="bottom-sheet-on-desktop-windowing:disabled"/>
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
   <int value="107900612" label="ChromeHomePersistentIph:disabled"/>
@@ -15903,6 +15905,7 @@ from previous Chrome versions.
   <int value="425026866"
       label="PageInfoAboutThisSiteImprovedBottomSheet:disabled"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
+  <int value="425545874" label="BottomSheetOnDesktopWindowing:disabled"/>
   <int value="425621232" label="Conch:enabled"/>
   <int value="425658479" label="AutofillUploadCardRequestTimeout:disabled"/>
   <int value="425938961" label="DesksCloseAll:disabled"/>
@@ -17709,6 +17712,7 @@ from previous Chrome versions.
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
   <int value="1019321025" label="FeatureManagement16Desks:disabled"/>
+  <int value="1019465902" label="bottom-sheet-on-desktop-windowing:enabled"/>
   <int value="1019623058" label="ash-enable-shelf-model-synchronization"/>
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>

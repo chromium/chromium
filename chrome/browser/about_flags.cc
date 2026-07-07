@@ -10053,6 +10053,11 @@ const FeatureEntry kFeatureEntries[] = {
          kDisablePartnerHomepageAndroidVariations,
          "DisablePartnerHomepageAndroid")},
 
+    {"bottom-sheet-on-desktop-windowing",
+     flag_descriptions::kBottomSheetOnDesktopWindowingName,
+     flag_descriptions::kBottomSheetOnDesktopWindowingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBottomSheetOnDesktopWindowing)},
+
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
