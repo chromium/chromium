@@ -2376,6 +2376,45 @@ suite('ContextualActionMenu', () => {
         });
 
     test(
+        'Anchors to the right if space above is enough for menu but not for menu + buffer',
+        async () => {
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+            value: 380,
+            configurable: true,
+          });
+          Object.defineProperty(window, 'innerHeight', {
+            value: 500,
+            configurable: true,
+          });
+          Object.defineProperty(window, 'innerWidth', {
+            value: 1000,
+            configurable: true,
+          });
+
+          anchor.getBoundingClientRect = () => {
+            return {
+              bottom: 440,
+              top: 390,
+              left: 100,
+              right: 200,
+              width: 100,
+              height: 50,
+              x: 100,
+              y: 390,
+            } as DOMRect;
+          };
+
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          assertEquals(2, showAtCalls.length);
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentX);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[1].anchorAlignmentY);
+        });
+
+    test(
         'Anchors to the right of the icon even when favicon coins are present',
         async () => {
           Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
@@ -2586,6 +2625,20 @@ suite('ContextualActionMenu', () => {
             } as DOMRect;
           };
 
+          const voiceButton = document.createElement('button');
+          voiceButton.id = 'voiceSearchButton';
+          voiceButton.getBoundingClientRect = () => ({
+            bottom: 410,
+            top: 370,
+            left: 150,
+            right: 200,
+            width: 50,
+            height: 40,
+            x: 150,
+            y: 370,
+          } as DOMRect);
+          document.body.appendChild(voiceButton);
+
           await microtasksFinished();
           actionMenu.showAt(anchor);
           await microtasksFinished();
@@ -2609,6 +2662,7 @@ suite('ContextualActionMenu', () => {
           // button (370px) to prevent overlap.
           const dialogBottom = dialog.getBoundingClientRect().bottom;
           assertTrue(dialogBottom <= 370);
+          voiceButton.remove();
         });
 
     test(
@@ -2653,6 +2707,139 @@ suite('ContextualActionMenu', () => {
           assertEquals(AnchorAlignment.AFTER_START, showAtCalls[showAtCalls.length - 1].anchorAlignmentY);
           assertEquals('', actionMenu.$.menu.style.getPropertyValue('--contextual-menu-max-height'));
         });
+
+    test(
+        'Reposition to right when suggestions load and it no longer fits vertically',
+        async () => {
+          // Mock window innerHeight and document clientHeight.
+          Object.defineProperty(window, 'innerHeight', {
+            value: 600,
+            configurable: true,
+          });
+          Object.defineProperty(document.scrollingElement!, 'clientHeight', {
+            value: 600,
+            configurable: true,
+          });
+
+          // Empty suggestions initially.
+          actionMenu.tabSuggestions = [];
+          // Mock small scrollHeight for empty menu.
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+            value: 100,
+            configurable: true,
+          });
+
+          actionMenu.inputState = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+          });
+
+          // Anchor position: spaceBelow = 600 - 330 = 270. spaceAbove = 300.
+          anchor.getBoundingClientRect = () => ({
+            bottom: 330,
+            top: 300,
+            left: 100,
+            right: 130,
+            width: 30,
+            height: 30,
+            x: 100,
+            y: 300,
+          } as DOMRect);
+
+          await microtasksFinished();
+          // Act: Show the menu.
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          // Assert: It should be positioned below (since 100 + 16 < 270).
+          assertEquals(2, showAtCalls.length);
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentY);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[1].anchorAlignmentX);
+
+          // Simulate suggestions loading.
+          // Mock large scrollHeight and offsetHeight for populated menu.
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+            value: 400,
+            configurable: true,
+          });
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'offsetHeight', {
+            value: 400,
+            configurable: true,
+          });
+
+          // Set suggestions to trigger update.
+          const tab = createTabSuggestion({tabId: 1, title: 'Tab 1'});
+          actionMenu.tabSuggestions = [tab];
+          await actionMenu.updateComplete;
+          await microtasksFinished();
+
+          // Assert: It should have called showAt again.
+          assertEquals(4, showAtCalls.length);
+          // It should now anchor right because 400 + 16 > 270 (below) and 400 +
+          // 16 > 300 (above).
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[3].anchorAlignmentX);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[3].anchorAlignmentY);
+
+          // Verify actual position (shifted up to fit in viewport).
+          const dialog = actionMenu.$.menu.getDialog();
+          assertEquals('184px', dialog.style.top);
+
+          // Restore mocks.
+          Reflect.deleteProperty(document.scrollingElement!, 'clientHeight');
+        });
+
+    test('Positioning is correct when document is scrolled', async () => {
+      const spacer = document.createElement('div');
+      spacer.style.height = '2000px';
+      document.body.appendChild(spacer);
+
+      window.scrollTo(0, 100);
+      assertEquals(100, window.scrollY);
+
+      Object.defineProperty(window, 'innerHeight', {
+        value: 600,
+        configurable: true,
+      });
+      Object.defineProperty(document.scrollingElement!, 'clientHeight', {
+        value: 600,
+        configurable: true,
+      });
+
+      Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+        value: 100,
+        configurable: true,
+      });
+      Object.defineProperty(actionMenu.$.menu.getDialog(), 'offsetHeight', {
+        value: 100,
+        configurable: true,
+      });
+
+      anchor.getBoundingClientRect = () => ({
+        bottom: 330,
+        top: 300,
+        left: 100,
+        right: 200,
+        width: 100,
+        height: 30,
+        x: 100,
+        y: 300,
+      } as DOMRect);
+
+      actionMenu.showAt(anchor);
+      await microtasksFinished();
+
+      const dialog = actionMenu.$.menu.getDialog();
+      const dialogRect = dialog.getBoundingClientRect();
+
+      window.scrollTo(0, 0);
+      spacer.remove();
+      Reflect.deleteProperty(document.scrollingElement!, 'clientHeight');
+
+      assertEquals(330, dialogRect.top);
+    });
   });
 
   suite('ShareTabsFlyoutBehaviors', () => {

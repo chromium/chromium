@@ -177,6 +177,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
       recentTabId_: {type: Number},
+      tabSuggestionsLoading_: {type: Boolean},
+      tabSuggestionsHasLoaded_: {type: Boolean},
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
@@ -234,6 +236,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor isListening: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
+  protected accessor tabSuggestionsLoading_: boolean = false;
+  protected accessor tabSuggestionsHasLoaded_: boolean = false;
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -275,8 +279,13 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
           new DragAndDropHandler(this, this.dragAndDropEnabled_);
     }
     this.onTabStripChangedListenerId_ =
-        this.callbackRouter_.onTabStripChanged.addListener(
-            this.refreshTabSuggestions_.bind(this));
+        this.callbackRouter_.onTabStripChanged.addListener(() => {
+          if (this.contextMenuOpened_) {
+            this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+          } else {
+            this.tabSuggestionsHasLoaded_ = false;
+          }
+        });
     this.inputStateListenerId_ =
         this.callbackRouter_.onInputStateChanged.addListener(
             (inputState: InputState) => {
@@ -543,21 +552,28 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
     // Only refresh tab suggestions if the context menu is opened.
     const requiresRefresh = forceRefresh || this.contextMenuOpened_;
-    if (!requiresRefresh) {
+    if (!requiresRefresh || this.tabSuggestionsLoading_ ||
+        (this.tabSuggestionsHasLoaded_ && !forceRefresh)) {
       return;
     }
-    const {tabs} = await this.pageHandler().getRecentTabs();
-    this.recentTabId_ = tabs[0]?.tabId ?? null;
-    this.tabSuggestions_ = [...tabs];
+    this.tabSuggestionsLoading_ = true;
+    try {
+      const {tabs} = await this.pageHandler().getRecentTabs();
+      this.recentTabId_ = tabs[0]?.tabId ?? null;
+      this.tabSuggestions_ = [...tabs];
+      this.tabSuggestionsHasLoaded_ = true;
 
-    if (this.contextMenuOpened_ && this.inputState_) {
-      const {allowedInputTypes, disabledInputTypes} = this.inputState_;
-      if (allowedInputTypes.includes(InputType.kBrowserTab) &&
-          !disabledInputTypes.includes(InputType.kBrowserTab) &&
-          this.tabSuggestions_.length > 0) {
-        recordInputTypeShown(
-            InputType.kBrowserTab, this.composeboxSource, 'ClassicPopup');
+      if (this.contextMenuOpened_ && this.inputState_) {
+        const {allowedInputTypes, disabledInputTypes} = this.inputState_;
+        if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+            !disabledInputTypes.includes(InputType.kBrowserTab) &&
+            this.tabSuggestions_.length > 0) {
+          recordInputTypeShown(
+              InputType.kBrowserTab, this.composeboxSource, 'ClassicPopup');
+        }
       }
+    } finally {
+      this.tabSuggestionsLoading_ = false;
     }
   }
 
@@ -572,7 +588,12 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected onContextMenuClosed_() {
     this.contextMenuOpened_ = false;
+    this.tabSuggestionsHasLoaded_ = false;
     this.blur();
+  }
+
+  protected onRequestTabSuggestionsLoad() {
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
   protected onContextMenuOpened_() {
@@ -639,6 +660,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected onContextMenuEntrypointClick_() {
     this.pageHandler().activateMetricsFunnel('PlusButton');
+  }
+
+  protected onContextMenuEntrypointHover_() {
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
   protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {

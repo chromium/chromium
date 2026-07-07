@@ -127,6 +127,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     super.connectedCallback();
     this.animationState = GlowAnimationState.EXPANDING;
     this.focusInput();
+    this.refreshTabSuggestions(/*forceRefresh=*/ true);
   }
 
   override disconnectedCallback() {

@@ -221,6 +221,12 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     std::move(callback).Run({});
     return;
   }
+
+  if (!tab_list_observation_.IsObservingSource(tab_list)) {
+    tab_list_observation_.Reset();
+    tab_list_observation_.Observe(tab_list);
+  }
+
   struct TabTime {
     raw_ptr<tabs::TabInterface> tab;
     base::TimeTicks time;

@@ -44,6 +44,24 @@ const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 
 type Constructor<T> = new (...args: any[]) => T;
 
+function getUrlString(url: string|{url: string}|null|undefined): string {
+  if (!url) {
+    return '';
+  }
+  if (typeof url === 'string') {
+    return url;
+  }
+  if (typeof url.url === 'string') {
+    return url.url;
+  }
+  return '';
+}
+
+function dedupeTabs(restoredTabs: TabInfo[], recentTabs: TabInfo[]): TabInfo[] {
+  const restoredUrls = new Set(restoredTabs.map(t => getUrlString(t.url)));
+  return recentTabs.filter(t => !restoredUrls.has(getUrlString(t.url)));
+}
+
 export const ComposeboxEmbedderMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<I18nMixinLitInterface>&
@@ -155,6 +173,8 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             tabSuggestions: {type: Array},
+            tabSuggestionsLoading: {type: Boolean},
+            tabSuggestionsHasLoaded: {type: Boolean},
             aimThreadRestoredTabs: {type: Array},
             transcript: {type: String},
             uploadButtonDisabled: {
@@ -292,6 +312,8 @@ export const ComposeboxEmbedderMixin =
         accessor suggestInventory: SuggestInventory|null = null;
         accessor submitEnabled: boolean = false;
         accessor tabSuggestions: TabInfo[] = [];
+        accessor tabSuggestionsLoading: boolean = false;
+        accessor tabSuggestionsHasLoaded: boolean = false;
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
         showTypedSuggest: boolean =
@@ -318,7 +340,7 @@ export const ComposeboxEmbedderMixin =
                 .onContextualInputStatusChanged.addListener(
                     this.onContextualInputStatusChanged.bind(this)),
             this.getSearchboxCallbackRouter().onTabStripChanged.addListener(
-                this.refreshTabSuggestions.bind(this)),
+                () => this.refreshTabSuggestions(/*forceRefresh=*/ true)),
             this.getSearchboxCallbackRouter().addFileContext.addListener(
                 this.addFileContextFromBrowser.bind(this)),
             this.getSearchboxCallbackRouter().onInputStateChanged.addListener(
@@ -1326,7 +1348,26 @@ export const ComposeboxEmbedderMixin =
         onContextMenuOpened() {
           this.browserTabContextAdded = false;
           this.contextMenuOpened = true;
-          this.refreshTabSuggestions();
+          if (this.tabSuggestionsHasLoaded) {
+            const selectedTabIds = new Set(this.addedTabsIds.keys());
+            this.tabSuggestions = [
+              ...this.tabSuggestions.filter(
+                  tab => selectedTabIds.has(tab.tabId)),
+              ...this.tabSuggestions.filter(
+                  tab => !selectedTabIds.has(tab.tabId)),
+            ];
+            if (this.inputState) {
+              const {allowedInputTypes, disabledInputTypes} = this.inputState;
+              if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+                  !disabledInputTypes.includes(InputType.kBrowserTab) &&
+                  this.tabSuggestions.length > 0) {
+                recordInputTypeShown(
+                    InputType.kBrowserTab, this.composeboxSource, 'AimPopup');
+              }
+            }
+          } else {
+            this.refreshTabSuggestions();
+          }
           this.getPageHandler().onContextMenuOpened();
 
           if (this.inputState) {
@@ -2215,74 +2256,76 @@ export const ComposeboxEmbedderMixin =
           return {file, errorMessage};
         }
 
-        async refreshTabSuggestions() {
-          const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-          this.recentTabId = tabs[0]?.tabId ?? null;
-
-          const openTabIds = new Set(tabs.map(t => t.tabId));
-          // Gather UUIDs in a temporary array to prevent modifying `this.files`
-          // mid-iteration, since `deleteFile()` replaces the Map reference.
-          const uuidsToDelete: UnguessableToken[] = [];
-
-          this.files.forEach((file, uuid) => {
-            if (file.tabId && !openTabIds.has(file.tabId)) {
-              uuidsToDelete.push(uuid);
-            }
-          });
-          uuidsToDelete.forEach(uuid => {
-            this.deleteFile(uuid, /*fromUserAction=*/ false);
-          });
-
-          const restored = this.aimThreadRestoredTabs || [];
-
-          const dedupe =
-              (restoredTabs: TabInfo[], recentTabs: TabInfo[]): TabInfo[] => {
-                const getUrlString =
-                    (url: string|{url: string}|null|undefined): string => {
-                      if (!url) {
-                        return '';
-                      }
-                      if (typeof url === 'string') {
-                        return url;
-                      }
-                      if (typeof url.url === 'string') {
-                        return url.url;
-                      }
-                      return '';
-                    };
-                const restoredUrls =
-                    new Set(restoredTabs.map(t => getUrlString(t.url)));
-                return recentTabs.filter(
-                    t => !restoredUrls.has(getUrlString(t.url)));
-              };
-
-          let processedRecentTabs = dedupe(restored, tabs);
-
-          if (this.contextMenuOpened) {
-            // Order tabs in submenu presubmission: selected tabs are first.
-            const selectedTabIds = new Set(this.addedTabsIds.keys());
-            processedRecentTabs = [
-              ...processedRecentTabs.filter(
-                  tab => selectedTabIds.has(tab.tabId)),
-              ...processedRecentTabs.filter(
-                  tab => !selectedTabIds.has(tab.tabId)),
-            ];
+        /**
+         * Fetches recent tab suggestions from the backend.
+         * @param forceRefresh If true, forces a reload even if suggestions have
+         *     already loaded. This is used when the context menu is opened or
+         *     the tab strip changes while the menu is open, ensuring
+         * suggestions remain fresh. If false, it serves suggestions from the
+         * cache to minimize Mojo overhead.
+         */
+        async refreshTabSuggestions(forceRefresh: boolean = false) {
+          if (this.tabSuggestionsLoading ||
+              (this.tabSuggestionsHasLoaded && !forceRefresh)) {
+            return;
           }
+          this.tabSuggestionsLoading = true;
+          try {
+            const {tabs} = await this.getSearchboxHandler().getRecentTabs();
+            this.recentTabId = tabs[0]?.tabId ?? null;
 
-          this.tabSuggestions = [...restored, ...processedRecentTabs];
+            const openTabIds = new Set(tabs.map(t => t.tabId));
+            // Gather UUIDs in a temporary array to prevent modifying
+            // `this.files` mid-iteration, since `deleteFile()` replaces the Map
+            // reference.
+            const uuidsToDelete: UnguessableToken[] = [];
 
-          if (this.inputState) {
-            const {allowedInputTypes, disabledInputTypes} = this.inputState;
-            if (allowedInputTypes.includes(InputType.kBrowserTab) &&
-                !disabledInputTypes.includes(InputType.kBrowserTab)) {
-              const filteredSuggestions = this.tabSuggestions;
+            this.files.forEach((file, uuid) => {
+              if (file.tabId && !openTabIds.has(file.tabId)) {
+                uuidsToDelete.push(uuid);
+              }
+            });
+            uuidsToDelete.forEach(uuid => {
+              this.deleteFile(uuid, /*fromUserAction=*/ false);
+            });
 
-              if (filteredSuggestions.length > 0) {
-                recordInputTypeShown(
-                    InputType.kBrowserTab, this.composeboxSource, 'AimPopup');
+            const restored = this.aimThreadRestoredTabs || [];
+
+            let processedRecentTabs = dedupeTabs(restored, tabs);
+
+            if (this.contextMenuOpened) {
+              // Order tabs in submenu presubmission: selected tabs are first.
+              const selectedTabIds = new Set(this.addedTabsIds.keys());
+              processedRecentTabs = [
+                ...processedRecentTabs.filter(
+                    tab => selectedTabIds.has(tab.tabId)),
+                ...processedRecentTabs.filter(
+                    tab => !selectedTabIds.has(tab.tabId)),
+              ];
+            }
+
+            this.tabSuggestions = [...restored, ...processedRecentTabs];
+            this.tabSuggestionsHasLoaded = true;
+
+            if (this.inputState) {
+              const {allowedInputTypes, disabledInputTypes} = this.inputState;
+              if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+                  !disabledInputTypes.includes(InputType.kBrowserTab)) {
+                const filteredSuggestions = this.tabSuggestions;
+
+                if (filteredSuggestions.length > 0) {
+                  recordInputTypeShown(
+                      InputType.kBrowserTab, this.composeboxSource, 'AimPopup');
+                }
               }
             }
+          } finally {
+            this.tabSuggestionsLoading = false;
           }
+        }
+
+        onRequestTabSuggestionsLoad() {
+          this.refreshTabSuggestions(/*forceRefresh=*/ true);
         }
 
         async onGetTabPreview(e: CustomEvent<{
@@ -2563,6 +2606,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   submitEnabled: boolean;
   submitButtonIconType: SubmitButtonIconType;
   tabSuggestions: TabInfo[];
+  tabSuggestionsLoading: boolean;
+  tabSuggestionsHasLoaded: boolean;
   transcript: string;
   uploadButtonDisabled: boolean;
   composeboxNoFlickerSuggestionsFix: boolean;
@@ -2625,6 +2670,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   }>): void;
   onContextMenuClosed(): Promise<void>;
   onContextMenuOpened(): void;
+  onRequestTabSuggestionsLoad(): void;
   onVoiceSearchButtonClick(): void;
   onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>): void;
   onFileContextAdded(file: ComposeboxFile): void;
@@ -2711,7 +2757,7 @@ export interface ComposeboxEmbedderMixinInterface extends
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|
       null): {file: ComposeboxFile|null, errorMessage: string|null};
-  refreshTabSuggestions(): Promise<void>;
+  refreshTabSuggestions(forceRefresh?: boolean): Promise<void>;
   onGetTabPreview(e: CustomEvent<{
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,

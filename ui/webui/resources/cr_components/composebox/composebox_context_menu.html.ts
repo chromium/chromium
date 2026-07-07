@@ -36,6 +36,7 @@ export function getHtml(this: ComposeboxElement) {
         @smart-tab-sharing-active-changed="${
             this.onSmartTabSharingActiveChanged}"
         @share-tabs-flyout-open-changed="${this.onShareTabsFlyoutOpenChanged}"
+        @request-tab-suggestions-load="${this.onRequestTabSuggestionsLoad}"
         .inputState="${this.inputState}"
         .usePecApi="${this.usePecApi}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
@@ -43,6 +44,8 @@ export function getHtml(this: ComposeboxElement) {
         .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
+        .tabSuggestionsLoading="${this.tabSuggestionsLoading}"
+        .tabSuggestionsHasLoaded="${this.tabSuggestionsHasLoaded}"
         .recentTabId="${this.recentTabId}"
         .hasImageFiles="${this.hasImageFiles()}"
         .disabledTabIds="${this.addedTabsIds}"

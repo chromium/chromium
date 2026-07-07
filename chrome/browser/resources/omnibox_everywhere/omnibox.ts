@@ -93,6 +93,8 @@ export class OmniboxEverywhereOmniboxElement extends
       inputState_: {type: Object},
       tabSuggestions_: {type: Array},
       searchboxLayoutMode: {type: String},
+      tabSuggestionsLoading_: {type: Boolean},
+      tabSuggestionsHasLoaded_: {type: Boolean},
     };
   }
 
@@ -120,6 +122,8 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor searchboxLayoutMode: string =
       loadTimeData.getString('searchboxLayoutMode');
+  protected accessor tabSuggestionsLoading_: boolean = false;
+  protected accessor tabSuggestionsHasLoaded_: boolean = false;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -274,9 +278,31 @@ export class OmniboxEverywhereOmniboxElement extends
     this.pageHandler().activateMetricsFunnel('PlusButton');
   }
 
-  protected async onContextMenuOpened_() {
-    const {tabs} = await this.pageHandler_.getRecentTabs();
-    this.tabSuggestions_ = [...tabs];
+  protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
+    if (this.tabSuggestionsLoading_ ||
+        (this.tabSuggestionsHasLoaded_ && !forceRefresh)) {
+      return;
+    }
+    this.tabSuggestionsLoading_ = true;
+    try {
+      const {tabs} = await this.pageHandler_.getRecentTabs();
+      this.tabSuggestions_ = [...tabs];
+      this.tabSuggestionsHasLoaded_ = true;
+    } finally {
+      this.tabSuggestionsLoading_ = false;
+    }
+  }
+
+  protected onContextMenuOpened_() {
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+  }
+
+  protected onContextMenuClosed_() {
+    this.tabSuggestionsHasLoaded_ = false;
+  }
+
+  protected onRequestTabSuggestionsLoad() {
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
   protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {

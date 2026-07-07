@@ -94,12 +94,14 @@ suite('NewTabPageRealboxTabsTest', () => {
     });
   });
 
-  setup(() => {
+  setup(async () => {
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
 
     realbox = createAndAppendRealbox(
         {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
+    await microtasksFinished();
+    testProxy.handler.reset();
   });
 
   test('on tab strip change does not trigger getRecentTabs call', async () => {
@@ -879,6 +881,7 @@ suite('NewTabPageRealboxNextTest', () => {
     ];
     testProxy.handler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+    testProxy.handler.reset();
 
     // Open context menu to trigger shown metrics.
     const entrypointAndMenu = realbox.shadowRoot.querySelector(

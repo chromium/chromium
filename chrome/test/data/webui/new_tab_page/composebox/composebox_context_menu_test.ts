@@ -504,7 +504,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           test(
               'selected tabs are displayed at the top of the list',
               async () => {
-                createComposeboxElement(testProxy);
                 const sampleTabs = [
                   {
                     tabId: 1,
@@ -531,6 +530,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
                 testProxy.searchboxHandler.setResultFor(
                     'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+                createComposeboxElement(testProxy);
 
                 // Select tabId 2 by setting it in addedTabsIds.
                 testProxy.element.addedTabsIds = new Map([[2, '1']]);
@@ -563,7 +564,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               });
 
           test('clicking sorted suggestions adds the correct tab', async () => {
-            createComposeboxElement(testProxy);
             const sampleTabs = [
               {
                 tabId: 1,
@@ -583,6 +583,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
             testProxy.searchboxHandler.setResultFor(
                 'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+            createComposeboxElement(testProxy);
             const inputState = new MockInputState({
               allowedInputTypes: [InputType.kBrowserTab],
             });
@@ -650,8 +652,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               keepMenuOpenOnTabSelectForRealbox: true,
               composeboxContextMenuEnableMultiTabSelection: true,
             });
-            createComposeboxElement(testProxy);
-
             const sampleTabs = [{
               tabId: 1,
               title: 'Tab 1',
@@ -661,6 +661,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             }];
             testProxy.searchboxHandler.setResultFor(
                 'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+            createComposeboxElement(testProxy);
 
             const inputState = new MockInputState({
               allowedInputTypes: [InputType.kBrowserTab],

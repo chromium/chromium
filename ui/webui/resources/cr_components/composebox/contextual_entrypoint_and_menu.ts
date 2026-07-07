@@ -64,6 +64,8 @@ export class ContextualEntrypointAndMenuElement extends
       aimThreadRestoredTabs: {type: Array},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
+      tabSuggestionsLoading: {type: Boolean},
+      tabSuggestionsHasLoaded: {type: Boolean},
       glifAnimationState: {type: String},
       searchboxLayoutMode: {type: String},
       uploadButtonDisabled: {type: Boolean},
@@ -101,6 +103,11 @@ export class ContextualEntrypointAndMenuElement extends
   accessor sharedTabs: TabInfo[] = [];
   accessor recentTabId: number|null = null;
   accessor shareTabsFlyoutOpen: boolean = false;
+  accessor tabSuggestionsLoading: boolean = false;
+  accessor tabSuggestionsHasLoaded: boolean = false;
+  menuOpenDelayMs: number = 200;
+
+  private openTimeoutId_: number|null = null;
 
   accessor hasImageFiles: boolean = false;
   accessor searchboxLayoutMode: string = '';
@@ -132,8 +139,26 @@ export class ContextualEntrypointAndMenuElement extends
     return {entrypointButton, entrypoint};
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.openTimeoutId_ !== null) {
+      window.clearTimeout(this.openTimeoutId_);
+      this.openTimeoutId_ = null;
+    }
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('tabSuggestionsLoading')) {
+      if (!this.tabSuggestionsLoading && this.openTimeoutId_ !== null) {
+        window.clearTimeout(this.openTimeoutId_);
+        this.openTimeoutId_ = null;
+        this.$.menu.updateComplete.then(() => {
+          this.showMenuAtEntrypoint_();
+        });
+      }
+    }
 
     if (this.shouldOpenMenuForMultiSelection_) {
       const {entrypointButton, entrypoint} = this.getEntrypointElements_();
@@ -157,7 +182,6 @@ export class ContextualEntrypointAndMenuElement extends
     }
   }
 
-
   closeMenu() {
     const menu =
         this.shadowRoot.querySelector<ContextualActionMenuElement>('#menu');
@@ -175,15 +199,35 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   protected onContextMenuEntrypointClick_() {
-    this.showMenuAtEntrypoint_();
+    if (this.openTimeoutId_ !== null) {
+      return;
+    }
+    if (!this.tabSuggestionsHasLoaded && !this.tabSuggestionsLoading) {
+      this.tabSuggestionsLoading = true;
+      this.fire('request-tab-suggestions-load');
+    }
+    if (this.tabSuggestionsLoading) {
+      this.openTimeoutId_ = window.setTimeout(() => {
+        this.openTimeoutId_ = null;
+        this.showMenuAtEntrypoint_();
+      }, this.menuOpenDelayMs);
+    } else {
+      this.showMenuAtEntrypoint_();
+    }
   }
 
-  private showMenuAtEntrypoint_() {
+  protected onContextMenuEntrypointHover_() {
+    this.fire('context-menu-entrypoint-hover');
+  }
+
+  private async showMenuAtEntrypoint_() {
     const {entrypointButton, entrypoint} = this.getEntrypointElements_();
     if (entrypointButton && entrypoint) {
       entrypointButton.classList.add('menu-open');
-      this.fire('context-menu-opened');
+      await this.updateComplete;
+      await this.$.menu.updateComplete;
       this.$.menu.showAt(entrypoint);
+      this.fire('context-menu-opened');
     }
   }
 }
