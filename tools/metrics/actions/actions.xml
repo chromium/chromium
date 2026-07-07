@@ -6529,6 +6529,8 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
+    (Obsolete) This link row did not launch.
+
     Recorded when the user clicks the Personal Context settings link row.
   </description>
 </action>

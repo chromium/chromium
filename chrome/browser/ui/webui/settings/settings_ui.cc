@@ -703,15 +703,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
               GetForProfile(profile),
           profile->GetPrefs(),
           GoogleGroupsManagerFactory::GetForBrowserContext(profile)));
-  // TODO(b:529788949): The old Personal Context settings linkout got superseded
-  // by another Personal Context presence in settings, see
-  // 'showSuggestionsFromGeminiSettings' above. Remove this old linkout here.
-  html_source->AddBoolean("showPersonalContextSettingsLink", false);
-  html_source->AddLocalizedString("personalContextSettingsTitle",
-                                  IDS_PERSONAL_CONTEXT_SETTINGS_TITLE);
-  html_source->AddLocalizedString(
-      "personalContextSettingsDescription",
-      IDS_PERSONAL_CONTEXT_SETTINGS_DESCRIPTION_DESKTOP);
 
   html_source->AddString(
       "webuiRefresh2026",

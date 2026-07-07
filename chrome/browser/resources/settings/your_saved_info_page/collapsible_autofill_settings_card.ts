@@ -11,7 +11,6 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
@@ -30,7 +29,6 @@ import '../autofill_page/walletable_pass_detection_toggle.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
@@ -38,7 +36,6 @@ import type {EntityDataManagerProxy, EntityInstancesChangedListener} from '../au
 import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './collapsible_autofill_settings_card.html.js';
@@ -140,13 +137,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
           return loadTimeData.getBoolean('autofillAiAvailableByDefault');
         },
       },
-
-      showPersonalContextSettingsLink_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showPersonalContextSettingsLink');
-        },
-      },
     };
   }
 
@@ -167,7 +157,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
-  declare private showPersonalContextSettingsLink_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -214,13 +203,6 @@ export class CollapsibleCardElement extends SettingsViewMixin
       return;
     }
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
-  }
-
-  private onPersonalContextSettingsLinkClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('personalContextSettingsUrl'));
-    MetricsBrowserProxyImpl.getInstance().recordAction(
-        'Autofill.Settings.PersonalContextSettingsLinkRowClick');
   }
 
   /**

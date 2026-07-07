@@ -1988,8 +1988,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAiReauthRequired));
 
-  html_source->AddString("personalContextSettingsUrl",
-                         personal_context::kPersonalContextSettingsURL);
   html_source->AddString("personalContextConnectedAppsUrl",
                          personal_context::kPersonalContextConnectedAppsURL);
 }

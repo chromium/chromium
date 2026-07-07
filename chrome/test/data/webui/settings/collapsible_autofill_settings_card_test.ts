@@ -8,15 +8,13 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
   settingsPrefs.set(
@@ -30,8 +28,6 @@ function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
 
 suite('CollapsibleAutofillSettingsCard', function() {
   let entityDataManager: TestEntityDataManagerProxy;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let openWindowProxy: TestOpenWindowProxy;
   let settingsPrefs: SettingsPrefsElement;
   // Note that authentication is not available on linux.
   // <if expr="is_win or is_macosx or is_chromeos">
@@ -50,12 +46,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
     entityDataManager.setGetOptInStatusResponse(false);
 
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
     setupDefaultPrefs(settingsPrefs);
   });
 
@@ -67,16 +57,14 @@ suite('CollapsibleAutofillSettingsCard', function() {
       eligibleUser: boolean = true,
       autofillSettingsEnterprisePolicyEnabled: boolean = false,
       optInStatusResponse: boolean = true,
-      autofillAiAvailableByDefault: boolean = false,
-      showPersonalContextSettingsLink: boolean =
-          true): Promise<CollapsibleCardElement> {
+      autofillAiAvailableByDefault: boolean =
+          false): Promise<CollapsibleCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
       AutofillSettingsEnterprisePolicyEnabled:
           autofillSettingsEnterprisePolicyEnabled,
       autofillAiAvailableByDefault: autofillAiAvailableByDefault,
-      showPersonalContextSettingsLink: showPersonalContextSettingsLink,
     });
 
     const card: CollapsibleCardElement =
@@ -655,47 +643,4 @@ suite('CollapsibleAutofillSettingsCard', function() {
         0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
   });
   // </if>
-
-  test('PersonalContextSettingsLinkRow', async function() {
-    const card = await createCollapsibleAutofillSettingsCard(
-        /*eligibleUser=*/ true,
-        /*autofillSettingsEnterprisePolicyEnabled=*/ false,
-        /*optInStatusResponse=*/ true,
-        /*autofillAiAvailableByDefault=*/ false,
-        /*showPersonalContextSettingsLink=*/ true);
-
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await flushTasks();
-
-    const link = card.shadowRoot!.querySelector<HTMLElement>(
-        '#personalContextSettingsLink');
-    assertTrue(!!link);
-    assertTrue(isVisible(link));
-
-    link.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(loadTimeData.getString('personalContextSettingsUrl'), url);
-
-    const metric = await testMetricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        'Autofill.Settings.PersonalContextSettingsLinkRowClick', metric);
-  });
-
-  test('PersonalContextSettingsLinkRowNotVisible', async function() {
-    const card = await createCollapsibleAutofillSettingsCard(
-        /*eligibleUser=*/ true,
-        /*autofillSettingsEnterprisePolicyEnabled=*/ false,
-        /*optInStatusResponse=*/ true,
-        /*autofillAiAvailableByDefault=*/ false,
-        /*showPersonalContextSettingsLink=*/ false);
-
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await flushTasks();
-
-    assertFalse(isChildVisible(card, '#personalContextSettingsLink'));
-  });
 });
