@@ -1129,6 +1129,15 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
+  // End write access before sending the result to avoid racing with the
+  // client's subsequent readback.
+  scoped_write.reset();
+
+  // We conditionally move from request (if `should_wait_for_gpu_work` is true),
+  // DCHECK that we don't accidentally enter this codepath after the request was
+  // moved from.
+  DCHECK(request);
+
   if (request->has_blit_request()) {
     request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
         CopyOutputResult::Format::RGBA, geometry.result_selection,
@@ -1538,6 +1547,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     // called.
     return;
   }
+
+  // End write access before sending the result to avoid racing with the
+  // client's subsequent readback.
+  mailbox_access_data.scoped_write.reset();
 
   // We conditionally move from request (if `should_wait_for_gpu_work` is true),
   // DCHECK that we don't accidentally enter this codepath after the request was
