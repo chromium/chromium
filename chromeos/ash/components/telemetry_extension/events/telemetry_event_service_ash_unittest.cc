@@ -68,9 +68,7 @@ class TelemetryEventServiceAshTest : public testing::Test {
   void SetUp() override { cros_healthd::FakeCrosHealthd::Initialize(); }
   void TearDown() override { cros_healthd::FakeCrosHealthd::Shutdown(); }
 
-  crosapi::mojom::TelemetryEventService& event_service() {
-    return event_service_;
-  }
+  ash::TelemetryEventServiceAsh& event_service() { return event_service_; }
 
  protected:
   TestEventObserver& observer() { return observer_; }

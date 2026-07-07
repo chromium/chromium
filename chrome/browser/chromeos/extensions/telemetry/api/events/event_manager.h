@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -69,7 +70,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   // Checks whether a certain event category is supported.
   void IsEventSupported(
       crosapi::mojom::TelemetryEventCategoryEnum category,
-      crosapi::mojom::TelemetryEventService::IsEventSupportedCallback callback);
+      ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback);
 
  private:
   friend class extensions::BrowserContextKeyedAPIFactory<EventManager>;
@@ -80,7 +81,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedInGuestMode = false;
   static const bool kServiceRedirectedInIncognito = true;
 
-  crosapi::mojom::TelemetryEventService& GetEventService();
+  ash::TelemetryEventServiceAsh& GetEventService();
 
   void OnAppUiClosed(extensions::ExtensionId extension_id);
   void OnAppUiFocusChanged(extensions::ExtensionId extension_id,
@@ -93,7 +94,7 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
   base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
       app_ui_observers_;
   EventRouter event_router_;
-  std::unique_ptr<crosapi::mojom::TelemetryEventService> event_service_;
+  std::unique_ptr<ash::TelemetryEventServiceAsh> event_service_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 };

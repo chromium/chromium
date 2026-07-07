@@ -121,11 +121,11 @@ void EventManager::RemoveObservationsForExtensionAndCategory(
 
 void EventManager::IsEventSupported(
     crosapi::TelemetryEventCategoryEnum category,
-    crosapi::TelemetryEventService::IsEventSupportedCallback callback) {
+    ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback) {
   GetEventService().IsEventSupported(category, std::move(callback));
 }
 
-crosapi::TelemetryEventService& EventManager::GetEventService() {
+ash::TelemetryEventServiceAsh& EventManager::GetEventService() {
   if (!event_service_) {
     event_service_ = std::make_unique<ash::TelemetryEventServiceAsh>();
   }

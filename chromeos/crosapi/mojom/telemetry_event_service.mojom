@@ -402,30 +402,3 @@ interface TelemetryEventObserver {
   // Fired when an event happens.
   OnEvent@0(TelemetryEventInfo info);
 };
-
-// Event interface exposed to Lacros.
-//
-// NextMinVersion: 1, NextIndex: 3
-[Uuid="9771fd1b-79b9-4698-b20f-3168d2af3f77"]
-interface TelemetryEventService {
-  // Adds an observer to be notified on events. The caller can remove the
-  // observer created by this call by closing their end of the message pipe.
-  //
-  // The request:
-  // * |category| - Event category.
-  // * |observer| - Event observer to be added to crosapi.
-  AddEventObserver@1(
-      TelemetryEventCategoryEnum category,
-      pending_remote<TelemetryEventObserver> observer);
-
-  // Checks whether an event is supported. It does the same support status check
-  // as in `AddEventObserver()` and returns immediately after the check.
-  //
-  // The request:
-  // * |category| - Event category to check.
-  //
-  // The response:
-  // * |status| - See the documentation of `TelemetryExtensionSupportStatus`.
-  IsEventSupported@2(TelemetryEventCategoryEnum category)
-      => (TelemetryExtensionSupportStatus status);
-};
