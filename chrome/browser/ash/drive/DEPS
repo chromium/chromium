@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/browser.h",
