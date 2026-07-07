@@ -300,10 +300,14 @@ suite('SearchboxTest', () => {
     realbox = await createAndAppendRealbox();
     realbox.$.input.inputElement.dispatchEvent(
         new MouseEvent('mousedown', {button: 0}));
+    await testProxy.handler.whenCalled('queryAutocomplete');
 
     // Voice search button is visible when input is empty.
     realbox.shadowRoot.querySelector<HTMLElement>(
                           '#voiceSearchButton')!.focus();
+    await testProxy.handler.whenCalled('onFocusChanged');
+    await microtasksFinished();
+
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
