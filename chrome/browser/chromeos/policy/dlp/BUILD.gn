@@ -261,8 +261,8 @@ if (!is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "data_transfer_dlp_controller_browsertest.cc",
-      "dlp_content_manager_browsertest.cc",
+      "data_transfer_dlp_controller_interactive_uitest.cc",
+      "dlp_content_manager_interactive_uitest.cc",
       "dlp_scoped_file_access_delegate_interactive_uitest.cc",
     ]
 
