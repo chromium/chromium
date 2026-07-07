@@ -58,6 +58,9 @@ NSString* const kToolsMenuAddTabToGroupId = @"kToolsMenuAddTabToGroupId";
 NSString* const kToolsMenuShareId = @"kToolsMenuShareId";
 NSString* const kToolsMenuIdentityId = @"kToolsMenuIdentityId";
 
+NSString* const kOverflowMenuNTPPreferredHeightDetentId =
+    @"overflow_menu_ntp_preferred_height";
+
 const CGFloat kSelectedItemBackgroundAlpha = 0.05;
 const CGFloat kHighlightAnimationDuration = 0.5;
 

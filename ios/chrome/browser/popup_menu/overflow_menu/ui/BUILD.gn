@@ -71,14 +71,18 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "action_customization_model_unittest.mm",
+    "overflow_menu_hosting_controller_unittest.mm",
     "overflow_menu_metrics_unittest.mm",
   ]
   deps = [
     ":overflow_menu_metrics",
     ":ui_swift",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/popup_menu/public:metrics_protocols",
     "//ios/chrome/browser/shared/ui/symbols",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
