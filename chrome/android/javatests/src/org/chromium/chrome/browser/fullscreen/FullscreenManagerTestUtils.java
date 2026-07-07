@@ -152,10 +152,12 @@ public class FullscreenManagerTestUtils {
                 });
 
         float dragX = 50f;
+        int bottomControlsHeight = browserControlsStateProvider.getBottomControlsHeight();
         float dragStartY =
                 ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab())
                                 .getView()
                                 .getHeight()
+                        - bottomControlsHeight
                         - 50f;
 
         for (int i = 0; i < 10; i++) {

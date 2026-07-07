@@ -34,6 +34,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -80,11 +81,7 @@ public final class ShareButtonControllerTest {
                 mActivityTestRule.getActivityTab(), getOriginalNativeNtpUrl());
 
         View experimentalButton =
-                mActivityTestRule
-                        .getActivity()
-                        .getToolbarManager()
-                        .getToolbarLayoutForTesting()
-                        .getOptionalButtonViewForTesting();
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
         if (experimentalButton != null) {
             String shareString =
                     mActivityTestRule.getActivity().getResources().getString(R.string.share);
@@ -99,11 +96,7 @@ public final class ShareButtonControllerTest {
     @MediumTest
     public void testShareButtonInToolbarIsEnabledOnBlankPage() {
         View experimentalButton =
-                mActivityTestRule
-                        .getActivity()
-                        .getToolbarManager()
-                        .getToolbarLayoutForTesting()
-                        .getOptionalButtonViewForTesting();
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
 
         if (!mButtonExpected) {
             assertTrue(
@@ -123,11 +116,7 @@ public final class ShareButtonControllerTest {
     @DisabledTest(message = "crbug.com/40876865")
     public void testShareButtonInToolbarIsDisabledOnUpdate() {
         View experimentalButton =
-                mActivityTestRule
-                        .getActivity()
-                        .getToolbarManager()
-                        .getToolbarLayoutForTesting()
-                        .getOptionalButtonViewForTesting();
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
 
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {

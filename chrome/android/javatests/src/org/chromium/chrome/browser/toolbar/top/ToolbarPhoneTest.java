@@ -95,6 +95,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -452,13 +453,15 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
 
         CriteriaHelper.pollUiThread(
-                () ->
-                        mToolbar.getOptionalButtonViewForTesting() != null
-                                && mToolbar.getOptionalButtonViewForTesting().getVisibility()
-                                        == View.VISIBLE);
+                () -> {
+                    View button =
+                            BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
+                    return button != null && button.getVisibility() == View.VISIBLE;
+                });
 
         // Replace the coordinator with a mock, and set the button to visible with 0 width.
-        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
+        View optionalButtonView =
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(0);
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);
@@ -495,13 +498,15 @@ public class ToolbarPhoneTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
 
         CriteriaHelper.pollUiThread(
-                () ->
-                        mToolbar.getOptionalButtonViewForTesting() != null
-                                && mToolbar.getOptionalButtonViewForTesting().getVisibility()
-                                        == View.VISIBLE);
+                () -> {
+                    View button =
+                            BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
+                    return button != null && button.getVisibility() == View.VISIBLE;
+                });
 
         // Replace the coordinator with a mock, and set the button to gone with regular width.
-        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
+        View optionalButtonView =
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.GONE);
@@ -537,12 +542,20 @@ public class ToolbarPhoneTest {
         // Show a button, this will inflate the optional button view and create its coordinator.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.updateOptionalButton(buttonData));
 
-        CriteriaHelper.pollUiThread(() -> mToolbar.getOptionalButtonViewForTesting() != null);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity())
+                                != null);
         ViewUtils.onViewWaiting(
-                allOf(equalTo(mToolbar.getOptionalButtonViewForTesting()), isDisplayed()));
+                allOf(
+                        equalTo(
+                                BottomBarTestUtils.findOptionalButton(
+                                        mActivityTestRule.getActivity())),
+                        isDisplayed()));
 
         // Replace the coordinator with a mock, and set the button to visible with regular width.
-        View optionalButtonView = mToolbar.getOptionalButtonViewForTesting();
+        View optionalButtonView =
+                BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
         when(mOptionalButtonCoordinator.getViewForDrawing()).thenReturn(optionalButtonView);
         when(mOptionalButtonCoordinator.getViewWidth()).thenReturn(optionalButtonView.getWidth());
         when(mOptionalButtonCoordinator.getViewVisibility()).thenReturn(View.VISIBLE);

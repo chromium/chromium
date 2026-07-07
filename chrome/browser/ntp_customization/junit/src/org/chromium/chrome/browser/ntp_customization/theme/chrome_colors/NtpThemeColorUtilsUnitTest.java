@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,8 +269,15 @@ public class NtpThemeColorUtilsUnitTest {
                         NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         blueInfo);
+        int expectedColor =
+                BottomBarConfigUtils.isBottomBarEnabled(mContext)
+                        ? (ColorUtils.inNightMode(mContext)
+                                ? SemanticColorUtils.getColorSurface(mContext)
+                                : SemanticColorUtils.getColorSurfaceContainer(mContext))
+                        : SemanticColorUtils.getColorSurfaceContainerHigh(mContext);
+
         assertEquals(
-                SemanticColorUtils.getColorSurfaceContainerHigh(mContext),
+                expectedColor,
                 NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor));
 
         @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);

@@ -50,6 +50,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -106,7 +107,16 @@ public class FindTest {
     /** Find in page by invoking the 'find in page' menu item. */
     private void findInPageFromMenu() {
         CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().findViewById(R.id.menu_button_wrapper)::isShown);
+                () -> {
+                    View menuButtonWrapper =
+                            BottomBarTestUtils.findViewById(
+                                    mActivityTestRule.getActivity(), R.id.menu_button_wrapper);
+                    View menuButton =
+                            BottomBarTestUtils.findViewById(
+                                    mActivityTestRule.getActivity(), R.id.menu_button);
+                    return (menuButtonWrapper != null && menuButtonWrapper.isShown())
+                            || (menuButton != null && menuButton.isShown());
+                });
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -114,7 +115,9 @@ public class PartnerHomepageIntegrationTest {
                     @Override
                     public void run() {
                         View homeButton =
-                                mActivityTestRule.getActivity().findViewById(R.id.home_button);
+                                BottomBarTestUtils.findViewById(
+                                        mActivityTestRule.getActivity(), R.id.home_button);
+                        Assert.assertNotNull("Homepage button should not be null", homeButton);
                         Assert.assertEquals(
                                 "Homepage button is not shown",
                                 View.VISIBLE,
@@ -144,13 +147,13 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertFalse(homepageManager.isHomepageEnabled());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    View homeButton =
+                            BottomBarTestUtils.findViewById(
+                                    mActivityTestRule.getActivity(), R.id.home_button);
                     Assert.assertEquals(
                             "Homepage button is shown",
                             View.GONE,
-                            mActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.home_button)
-                                    .getVisibility());
+                            homeButton != null ? homeButton.getVisibility() : View.GONE);
                 });
 
         // Enable homepage.
@@ -160,13 +163,12 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertTrue(homepageManager.isHomepageEnabled());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    View homeButton =
+                            BottomBarTestUtils.findViewById(
+                                    mActivityTestRule.getActivity(), R.id.home_button);
+                    Assert.assertNotNull("Homepage button should not be null", homeButton);
                     Assert.assertEquals(
-                            "Homepage button is shown",
-                            View.VISIBLE,
-                            mActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.home_button)
-                                    .getVisibility());
+                            "Homepage button is shown", View.VISIBLE, homeButton.getVisibility());
                 });
     }
 

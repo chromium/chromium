@@ -51,6 +51,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -174,7 +175,7 @@ public final class VoiceToolbarButtonControllerTest {
                         withContentDescription(mButtonString)));
 
         // Get a reference to the button before the modal is opened as it's harder to get after.
-        View button = mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button);
+        View button = BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
 
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
