@@ -1,8 +1,4 @@
-afakhry@chromium.org
-hidehiko@chromium.org
-jamescook@chromium.org
-oshima@chromium.org
-tbarzic@chromium.org
+file://chrome/browser/ash/OWNERS
 
 per-file cast_config_controller*=file://chrome/browser/media/router/OWNERS
 per-file chrome_keyboard_ui*=yhanada@chromium.org
