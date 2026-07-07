@@ -2368,6 +2368,7 @@ if (!is_android) {
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:browser_tests",
       "//chrome/browser/persisted_state_db",
+      "//chrome/browser/personal_context:browser_tests",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/picture_in_picture:browser_tests",
       "//chrome/browser/picture_in_picture:test_support_ui",
