@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"

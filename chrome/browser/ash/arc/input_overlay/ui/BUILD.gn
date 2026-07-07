@@ -59,7 +59,6 @@ static_library("ui") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
-    "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/resources:component_extension_resources",
     "//chromeos/ash/experiences/arc",
     "//chromeos/strings:strings_grit",
