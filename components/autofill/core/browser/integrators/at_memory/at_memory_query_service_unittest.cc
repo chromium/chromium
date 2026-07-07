@@ -124,12 +124,21 @@ class AtMemoryQueryServiceTest : public testing::Test {
         .WillOnce(base::test::RunOnceCallback<3>(std::move(result)));
   }
 
+  personal_context::proto::AtMemoryQueryResponse CreateQueryResponse() {
+    personal_context::proto::AtMemoryQueryResponse response;
+    response.set_query_classification(
+        personal_context::proto::AtMemoryQueryResponse::
+            QUERY_CLASSIFICATION_AT_MEMORY);
+    return response;
+  }
+
   personal_context::proto::AtMemoryQueryResponse
   CreateQueryResponseWithSchemafulKey(
       personal_context::proto::MemoryDataType type,
       const std::string& value,
       double relevance_score = 1.0) {
-    personal_context::proto::AtMemoryQueryResponse response;
+    personal_context::proto::AtMemoryQueryResponse response =
+        CreateQueryResponse();
     personal_context::proto::AtMemorySearchResult* result_proto =
         response.add_results();
     result_proto->set_relevance_score(relevance_score);
@@ -144,7 +153,8 @@ class AtMemoryQueryServiceTest : public testing::Test {
   CreateQueryResponseWithSchemalessKey(const std::string& key,
                                        const std::string& value,
                                        double relevance_score = 1.0) {
-    personal_context::proto::AtMemoryQueryResponse response;
+    personal_context::proto::AtMemoryQueryResponse response =
+        CreateQueryResponse();
     personal_context::proto::AtMemorySearchResult* result_proto =
         response.add_results();
     result_proto->set_relevance_score(relevance_score);
@@ -200,7 +210,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_Offline) {
 // Tests that the query service returns remote results even when no local
 // provider is configured.
 TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AtMemorySearchResult* result_proto =
       response.add_results();
   personal_context::proto::Attribute* primary =
@@ -229,7 +240,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
 // Tests that the query service fetches correct local data types based on the
 // `AutofillFetchPlan`.
 TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
@@ -266,7 +278,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
 // sub-types when their parent full type is present.
 TEST_F(AtMemoryQueryServiceTest,
        Query_RationalizesAutofillFetchPlanTypes_FullTypeRemovesSubtypes) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
@@ -295,7 +308,8 @@ TEST_F(AtMemoryQueryServiceTest,
 // before the parent full type in the AutofillFetchPlan.
 TEST_F(AtMemoryQueryServiceTest,
        Query_RationalizesAutofillFetchPlanTypes_SubtypeFirstThenFullType) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_CITY);
@@ -323,7 +337,8 @@ TEST_F(AtMemoryQueryServiceTest,
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_RationalizesAutofillFetchPlanTypes_SubtypesPreservedWithoutFullType) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(
@@ -352,7 +367,8 @@ TEST_F(
 // while preserving order.
 TEST_F(AtMemoryQueryServiceTest,
        Query_RationalizesAutofillFetchPlanTypes_MultipleGroupsAndDuplicates) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE);
@@ -385,7 +401,8 @@ TEST_F(AtMemoryQueryServiceTest,
 // types.
 TEST_F(AtMemoryQueryServiceTest,
        Query_RationalizesAutofillFetchPlanTypes_FiltersUnknownType) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_UNSPECIFIED);
@@ -413,7 +430,8 @@ TEST_F(AtMemoryQueryServiceTest,
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_RationalizesAutofillFetchPlanTypes_CreditCardSubtypesRemovedWhenParentPresent) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(
@@ -445,7 +463,8 @@ TEST_F(
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_RationalizesAutofillFetchPlanTypes_CreditCardSubtypePreservedWithoutParent) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(
@@ -471,7 +490,8 @@ TEST_F(
 // Tests that the query service filters local data using `filter_keywords` in
 // the `AutofillFetchPlan`.
 TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
@@ -504,7 +524,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
 
 // Tests that local Autofill results precede remote results in the final output.
 TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -549,7 +570,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
 // filtered out. Also tests non-ASCII case-folding.
 TEST_F(AtMemoryQueryServiceTest,
        Query_WithFilterWords_HighestMatchCountAndTie) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
@@ -609,7 +631,8 @@ TEST_F(AtMemoryQueryServiceTest,
 // Tests that the query service falls back to returning all results for the
 // classified intent if none of the results match the filter words.
 TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsAll) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
@@ -667,6 +690,9 @@ TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  response.set_query_classification(
+      personal_context::proto::AtMemoryQueryResponse::
+          QUERY_CLASSIFICATION_AT_MEMORY);
 
   personal_context::proto::Any serialized_response1;
   serialized_response1.set_value(response.SerializeAsString());
@@ -729,7 +755,8 @@ TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
 
 // Tests that deduplication preserves the original insertion order.
 TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -767,7 +794,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
 // entry and merges sources.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_RetainsFirstEntryFieldsAndMergesSources) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -816,7 +844,8 @@ TEST_F(AtMemoryQueryServiceTest,
 // Tests that entries with different values or metadata lists are both retained.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_KeepsDifferentEntries) {
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -882,7 +911,8 @@ TEST_F(AtMemoryQueryServiceTest,
 TEST_F(AtMemoryQueryServiceTest, RecordsProviderResultCountMetric) {
   base::HistogramTester histogram_tester;
 
-  personal_context::proto::AtMemoryQueryResponse response;
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
       response.mutable_autofill_fetch_plan();
   plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -1129,6 +1159,53 @@ TEST_F(AtMemoryQueryServiceTest,
                   Field(&MemorySearchResult::value, u"123 Main St"),
                   Field(&MemorySearchResult::value, u"Remote 1Z12345")));
 }
+
+struct QueryClassificationTestCase {
+  personal_context::proto::AtMemoryQueryResponse::QueryClassification
+      classification;
+  MemorySearchStatus expected_status;
+};
+
+class AtMemoryQueryServiceClassificationTest
+    : public AtMemoryQueryServiceTest,
+      public ::testing::WithParamInterface<QueryClassificationTestCase> {};
+
+// Verifies that each query classification is correctly mapped to a search
+// status.
+TEST_P(AtMemoryQueryServiceClassificationTest, MapQueryClassificationToStatus) {
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
+
+  personal_context::proto::AtMemoryQueryResponse response;
+  response.set_query_classification(GetParam().classification);
+  StubFetchContextResponse(std::move(response));
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"query", future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_EQ(result.status, GetParam().expected_status);
+  EXPECT_TRUE(result.entries.empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AtMemoryQueryServiceClassificationTest,
+    ::testing::ValuesIn(std::vector<QueryClassificationTestCase>{
+        {personal_context::proto::AtMemoryQueryResponse::
+             QUERY_CLASSIFICATION_UNSPECIFIED,
+         MemorySearchStatus::kInternalFailure},
+        {personal_context::proto::AtMemoryQueryResponse::
+             QUERY_CLASSIFICATION_AT_MEMORY,
+         MemorySearchStatus::kFinalResponseSuccess},
+        {personal_context::proto::AtMemoryQueryResponse::
+             QUERY_CLASSIFICATION_UNSUPPORTED,
+         MemorySearchStatus::kUnsupportedQuery},
+        {personal_context::proto::AtMemoryQueryResponse::
+             QUERY_CLASSIFICATION_SENSITIVE,
+         MemorySearchStatus::kUnsupportedQuery}}));
 
 }  // namespace
 

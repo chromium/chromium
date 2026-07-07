@@ -45,6 +45,7 @@ using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
 using ::accessibility_annotator::MemorySearchStatus;
+using ::personal_context::proto::AtMemoryQueryResponse;
 
 MemoryDataType ToMemoryDataType(
     personal_context::proto::MemoryDataType data_type) {
@@ -683,10 +684,25 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
     return;
   }
 
-  personal_context::proto::AtMemoryQueryResponse response;
+  AtMemoryQueryResponse response;
   if (!response.ParseFromString(result.response->value())) {
     callback.Run(MemorySearchResults(MemorySearchStatus::kInternalFailure));
     return;
+  }
+
+  switch (response.query_classification()) {
+    case AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY:
+      break;
+    case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSUPPORTED:
+    case AtMemoryQueryResponse::QUERY_CLASSIFICATION_SENSITIVE:
+      // TODO(crbug.com/532082682): Clarify what
+      // `QUERY_CLASSIFICATION_SENSITIVE` should result in.
+      callback.Run(MemorySearchResults(MemorySearchStatus::kUnsupportedQuery));
+      return;
+    case AtMemoryQueryResponse::QUERY_CLASSIFICATION_UNSPECIFIED:
+    default:
+      callback.Run(MemorySearchResults(MemorySearchStatus::kInternalFailure));
+      return;
   }
 
   std::vector<MemorySearchResult> remote_results =
