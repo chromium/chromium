@@ -136,6 +136,7 @@ void ContextHubPageHandler::OnAutoTodosGenerated(
           browser::context_hub::mojom::AutoTodoItem::New();
       mojo_todo->title = todo.title();
       mojo_todo->description = todo.description();
+      mojo_todo->actionable_url = GURL(todo.actionable_url());
       for (const personal_context::proto::SourceReference& ref :
            todo.source_references()) {
         if (ref.has_gmail()) {

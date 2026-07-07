@@ -59,3 +59,20 @@ cr-button cr-icon {
   --cr-icon-size: 16px;
   margin-inline-start: 4px;
 }
+
+.expanded-content {
+  padding: 0 20px 16px 20px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 14px;
+  color: #64748B;
+  text-align: start;
+}
+
+.expanded-content a {
+  color: var(--cr-link-color, #1a73e8);
+  text-decoration: none;
+}
+
+.expanded-content a:hover {
+  text-decoration: underline;
+}

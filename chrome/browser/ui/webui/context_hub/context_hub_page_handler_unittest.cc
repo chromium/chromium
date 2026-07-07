@@ -112,6 +112,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
   personal_context::proto::AutoTodoItem* todo = response.add_todos();
   todo->set_title("Test Title");
   todo->set_description("Test Description");
+  todo->set_actionable_url("https://example.com/action");
 
   personal_context::proto::Any any_response;
   response.SerializeToString(any_response.mutable_value());
@@ -134,6 +135,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
   ASSERT_EQ(result->size(), 1u);
   EXPECT_EQ(result->at(0)->title, "Test Title");
   EXPECT_EQ(result->at(0)->description, "Test Description");
+  EXPECT_EQ(result->at(0)->actionable_url, GURL("https://example.com/action"));
   EXPECT_TRUE(result->at(0)->source_references.empty());
 }
 
@@ -142,6 +144,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_WithSourceReferences) {
   personal_context::proto::AutoTodoItem* todo = response.add_todos();
   todo->set_title("Test Title");
   todo->set_description("Test Description");
+  todo->set_actionable_url("https://example.com/action2");
 
   personal_context::proto::SourceReference* ref_gmail =
       todo->add_source_references();
@@ -174,6 +177,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_WithSourceReferences) {
   ASSERT_EQ(result->size(), 1u);
   EXPECT_EQ(result->at(0)->title, "Test Title");
   EXPECT_EQ(result->at(0)->description, "Test Description");
+  EXPECT_EQ(result->at(0)->actionable_url, GURL("https://example.com/action2"));
 
   ASSERT_EQ(result->at(0)->source_references.size(), 2u);
 
