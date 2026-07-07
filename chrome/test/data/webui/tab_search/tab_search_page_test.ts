@@ -7,9 +7,10 @@ import 'chrome://tab-search.top-chrome/tab_search.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl, tokenToString} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl, TabSearchUserAction, tokenToString} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -603,11 +604,12 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Verify tab switch is called correctly', async () => {
+    const metrics = fakeMetricsPrivate();
     await setupTest(createProfileData());
-    // Make sure that tab data has been recieved.
+    // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
-    // Click the first element with tabId 1.
+    // Click the first element with tabId 1 (current window tab).
     let tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="1"]')!;
     tabSearchItem.click();
@@ -615,16 +617,26 @@ suite('TabSearchAppTest', () => {
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     let [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(1, tabInfo.tabId);
+    assertEquals(
+        1,
+        metrics.count(
+            'Tabs.TabSearch.WebUI.Action',
+            TabSearchUserAction.IN_UNFILTERED_LIST_SWITCHED_TAB));
 
     testProxy.reset();
-    // Click the first element with tabId 6.
+    // Click element with tabId 2 (other window tab).
     tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
-        'tab-search-item[id="6"]')!;
+        'tab-search-item[id="2"]')!;
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     [tabInfo] = await testProxy.whenCalled('switchToTab');
-    assertEquals(6, tabInfo.tabId);
+    assertEquals(2, tabInfo.tabId);
+    assertEquals(
+        1,
+        metrics.count(
+            'Tabs.TabSearch.WebUI.Action',
+            TabSearchUserAction.IN_UNFILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB));
 
     // Force a change to filtered tab data that would result in a
     // re-render.
@@ -633,15 +645,39 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [2]);
 
     testProxy.reset();
-    // Click the only remaining element with tabId 2.
+    // Click the only remaining element with tabId 2 (other window tab, in
+    // filtered list).
     tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="2"]')!;
     tabSearchItem.click();
 
-    // Assert switchToTab() was called appropriately for a tab list fitlered by
+    // Assert switchToTab() was called appropriately for a tab list filtered by
     // the search query.
     [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(2, tabInfo.tabId);
+    assertEquals(
+        1,
+        metrics.count(
+            'Tabs.TabSearch.WebUI.Action',
+            TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB));
+
+    setSearchText('google');
+    await microtasksFinished();
+    verifyTabIds(queryRows(), [1]);
+
+    testProxy.reset();
+    // Click element with tabId 1 (current window tab, in filtered list).
+    tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
+        'tab-search-item[id="1"]')!;
+    tabSearchItem.click();
+
+    [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(1, tabInfo.tabId);
+    assertEquals(
+        1,
+        metrics.count(
+            'Tabs.TabSearch.WebUI.Action',
+            TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_TAB));
   });
 
   test('Verify maybeShowUi() is called correctly', async () => {

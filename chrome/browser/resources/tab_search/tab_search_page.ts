@@ -71,10 +71,13 @@ export enum TabSearchUserAction {
   IN_UNFILTERED_LIST_OPEN_RECENTLY_CLOSED = 3,
   IN_UNFILTERED_LIST_SWITCHED_TAB = 4,
   IN_UNFILTERED_LIST_CLOSED_TAB = 5,
+  IN_FILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB = 6,
+  IN_UNFILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB = 7,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchWebUIAction)
 
-export type TabSearchAction = 'SwitchTab'|'CloseTab'|'OpenRecentlyClosedEntry';
+export type TabSearchAction =
+    'SwitchTab'|'SwitchTabOtherWindow'|'CloseTab'|'OpenRecentlyClosedEntry';
 
 export interface TabSearchPageElement {
   $: {
@@ -508,18 +511,13 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   private recordMetricsForAction(action: TabSearchAction, tabIndex: number) {
     const withSearch = !!this.searchText_;
-    if (action === 'SwitchTab') {
+    if (action === 'SwitchTab' || action === 'SwitchTabOtherWindow') {
       chrome.metricsPrivate.recordEnumerationValue(
           'Tabs.TabSearch.WebUI.TabSwitchAction',
           withSearch ? TabSwitchAction.WITH_SEARCH :
                        TabSwitchAction.WITHOUT_SEARCH,
           Object.keys(TabSwitchAction).length);
     }
-
-    chrome.metricsPrivate.recordSmallCount(
-        withSearch ? `Tabs.TabSearch.WebUI.IndexOf${action}InFilteredList` :
-                     `Tabs.TabSearch.WebUI.IndexOf${action}InUnfilteredList`,
-        tabIndex);
 
     switch (action) {
       case 'OpenRecentlyClosedEntry':
@@ -528,25 +526,42 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
             withSearch ?
                 TabSearchUserAction.IN_FILTERED_LIST_OPEN_RECENTLY_CLOSED :
                 TabSearchUserAction.IN_UNFILTERED_LIST_OPEN_RECENTLY_CLOSED,
-            6);
+            8);
         break;
       case 'SwitchTab':
         chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ? TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_TAB :
                          TabSearchUserAction.IN_UNFILTERED_LIST_SWITCHED_TAB,
-            6);
+            8);
+        break;
+      case 'SwitchTabOtherWindow':
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Tabs.TabSearch.WebUI.Action',
+            withSearch ?
+                TabSearchUserAction.IN_FILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB :
+                TabSearchUserAction
+                    .IN_UNFILTERED_LIST_SWITCHED_OTHER_WINDOW_TAB,
+            8);
         break;
       case 'CloseTab':
         chrome.metricsPrivate.recordEnumerationValue(
             'Tabs.TabSearch.WebUI.Action',
             withSearch ? TabSearchUserAction.IN_FILTERED_LIST_CLOSED_TAB :
                          TabSearchUserAction.IN_UNFILTERED_LIST_CLOSED_TAB,
-            6);
+            8);
         break;
       default:
         assertNotReachedCase(action);
     }
+
+    if (action === 'SwitchTabOtherWindow') {
+      action = 'SwitchTab';
+    }
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ? `Tabs.TabSearch.WebUI.IndexOf${action}InFilteredList` :
+                     `Tabs.TabSearch.WebUI.IndexOf${action}InUnfilteredList`,
+        tabIndex);
   }
 
   /**
@@ -564,12 +579,16 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           this.metricsReporter.mark('SwitchToTab');
         }
 
-        this.recordMetricsForAction('SwitchTab', tabIndex);
+        this.recordMetricsForAction(
+            itemData.inActiveWindow ? 'SwitchTab' : 'SwitchTabOtherWindow',
+            tabIndex);
         this.apiProxy_.switchToTab({tabId: (itemData as TabData).tab.tabId});
         action = 'SwitchTab';
         break;
       case TabItemType.OPEN_SPLIT:
-        this.recordMetricsForAction('SwitchTab', tabIndex);
+        this.recordMetricsForAction(
+            itemData.inActiveWindow ? 'SwitchTab' : 'SwitchTabOtherWindow',
+            tabIndex);
         this.apiProxy_.switchToTab({
           tabId: (itemData as SplitViewData).tabs![0].tabId,
         });
