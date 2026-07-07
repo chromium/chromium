@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -137,7 +138,11 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubColorMixer.registerBlend(
                 new SingleHubViewColorBlend(
                         HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getBackgroundColor(mActivity, colorScheme),
+                        colorScheme -> {
+                            return VerticalTabUtils.isVerticalTabsEnabled(mActivity)
+                                    ? HubColors.getBackgroundColor(mActivity, colorScheme)
+                                    : Color.TRANSPARENT;
+                        },
                         mHubContainerView::setBackgroundColor));
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
         mDefaultPaneId = defaultPaneId;
