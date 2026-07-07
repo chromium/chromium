@@ -13,10 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseArray;
-import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -63,7 +61,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -95,7 +92,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -151,6 +147,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected @Nullable Runnable mReadAloudAppMenuResetter;
     private boolean mHasReadAloudInserted;
     protected final @Nullable OpenInAppMenuItemProvider mOpenInAppMenuItemProvider;
+    private final AppMenuItemTheme mAppMenuItemTheme;
 
     @VisibleForTesting
     @IntDef({
@@ -253,6 +250,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         mPageZoomMenuItemCoordinator =
                 pageZoomManager != null ? new PageZoomMenuItemCoordinator(pageZoomManager) : null;
         mOpenInAppMenuItemProvider = openInAppMenuItemProvider;
+        mAppMenuItemTheme = new AppMenuItemTheme(mContext, mTabModelSelector);
     }
 
     @SuppressWarnings("NullAway")
@@ -369,11 +367,17 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             PropertyModel.Builder builder, @IdRes int id) {
         return builder.with(AppMenuItemProperties.MENU_ITEM_ID, id)
                 .with(AppMenuItemProperties.ENABLED, true)
-                .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
-                .with(AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(id))
+                .with(
+                        AppMenuItemProperties.ICON_COLOR_RES,
+                        mAppMenuItemTheme.getMenuItemIconColorRes(id))
+                .with(
+                        AppMenuItemProperties.ICON_SHOW_BADGE,
+                        mAppMenuItemTheme.shouldShowBadgeOnMenuItemIcon(id))
                 .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                .with(AppMenuItemProperties.TITLE_CONDENSED, getContentDescription(id))
-                .with(AppMenuItemProperties.MANAGED, isMenuItemManaged(id));
+                .with(
+                        AppMenuItemProperties.TITLE_CONDENSED,
+                        mAppMenuItemTheme.getContentDescription(id))
+                .with(AppMenuItemProperties.MANAGED, mAppMenuItemTheme.isMenuItemManaged(id));
     }
 
     /**
@@ -525,15 +529,19 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         .with(AppMenuItemProperties.MENU_ITEM_ID, id)
                         .with(AppMenuItemProperties.TITLE, title)
                         .with(AppMenuItemProperties.ENABLED, true)
-                        .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
+                        .with(
+                                AppMenuItemProperties.ICON_COLOR_RES,
+                                mAppMenuItemTheme.getMenuItemIconColorRes(id))
                         .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                        .with(AppMenuItemProperties.MANAGED, isMenuItemManaged(id))
+                        .with(
+                                AppMenuItemProperties.MANAGED,
+                                mAppMenuItemTheme.isMenuItemManaged(id))
                         .with(
                                 AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER,
                                 submenuItemProvider)
                         .with(
                                 AppMenuItemProperties.ICON_SHOW_BADGE,
-                                shouldShowBadgeOnMenuItemIcon(id))
+                                mAppMenuItemTheme.shouldShowBadgeOnMenuItemIcon(id))
                         .build();
         if (icon != null) {
             model.set(AppMenuItemProperties.ICON, icon);
@@ -1069,48 +1077,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
     }
 
-    /** Return whether the given {@link MenuItem} is managed by policy. */
-    protected boolean isMenuItemManaged(@IdRes int itemId) {
-        if (itemId == R.id.new_incognito_tab_menu_id
-                || itemId == R.id.new_incognito_window_menu_id) {
-            return IncognitoUtils.isIncognitoModeManaged(
-                    assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()));
-        }
-        return false;
-    }
-
-    /** Returns true if a badge (i.e. a red-dot) should be shown on the menu item icon. */
-    protected boolean shouldShowBadgeOnMenuItemIcon(@IdRes int itemId) {
-        if (itemId == R.id.preferences_id) {
-            // Theoretically mTabModelSelector could return a stub model.
-            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-            if (profile == null) {
-                return false;
-            }
-            // Return true if there is any error.
-            return SyncSettingsUtils.getSyncError(profile) != UserActionableError.NONE;
-        }
-        return false;
-    }
-
-    /**
-     * Returns content description for the menu item, if different from the titleCondensed xml
-     * attribute.
-     */
-    protected @Nullable String getContentDescription(@IdRes int itemId) {
-        if (itemId == R.id.preferences_id) {
-            // Theoretically mTabModelSelector could return a stub model.
-            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-            if (profile == null) {
-                return null;
-            }
-            if (SyncSettingsUtils.getSyncError(profile) != UserActionableError.NONE) {
-                return mContext.getString(R.string.menu_settings_account_error);
-            }
-        }
-        return null;
-    }
-
     @Override
     public void loadingStateChanged(boolean isLoading) {
         if (mModelList == null) return;
@@ -1381,16 +1347,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
         ResettersForTesting.register(() -> sItemBookmarkedForTesting = null);
-    }
-
-    /**
-     * @return Whether the menu item's icon need to be tinted to blue.
-     */
-    protected @ColorRes int getMenuItemIconColorRes(@IdRes int itemId) {
-        if (itemId == R.id.disable_price_tracking_menu_id) {
-            return R.color.default_icon_color_accent1_tint_list;
-        }
-        return R.color.default_icon_color_secondary_tint_list;
     }
 
     /**
