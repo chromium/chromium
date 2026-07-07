@@ -52,11 +52,13 @@ void OmniboxPopupHandler::OnManualBlur(uint32_t sequence_number) {
 }
 
 void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
-                                             uint32_t sequence_number) {
+                                             uint32_t sequence_number,
+                                             bool show_full_url) {
   if (sequence_number < current_sequence_number_) {
     return;
   }
   latest_selection_ = selection;
+  show_full_url_ = show_full_url;
 }
 
 void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
@@ -66,7 +68,7 @@ void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
   if (controller_) {
     // TODO(b/527049398): Decouple from the edit model. It might make the most
     // sense to use a delegate interface implemented by the view here.
-    controller_->edit_model()->Revert();
+    controller_->edit_model()->SetUserText(std::u16string());
   }
 }
 
@@ -84,8 +86,10 @@ void OmniboxPopupHandler::SetInputState(
     bool user_input_in_progress,
     const std::string& full_url,
     bool is_focused,
-    const std::string& permanent_display_text) {
+    const std::string& permanent_display_text,
+    bool show_full_url) {
   latest_selection_ = selection;
+  show_full_url_ = show_full_url;
   current_sequence_number_++;
   auto state = omnibox_popup::mojom::OmniboxInputState::New();
   state->sequence_number = current_sequence_number_;
@@ -95,7 +99,7 @@ void OmniboxPopupHandler::SetInputState(
   state->full_url = full_url;
   state->is_focused = is_focused;
   state->permanent_display_text = permanent_display_text;
-
+  state->show_full_url = show_full_url;
   page_->SetInputState(std::move(state));
 }
 

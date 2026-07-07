@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
                                ->GetWebUIController();
   auto* popup_ui = static_cast<OmniboxPopupUI*>(webui_controller);
   if (auto* popup_handler = popup_ui ? popup_ui->popup_handler() : nullptr) {
-    popup_handler->OnSelectionChanged(initial_selection, 10000);
+    popup_handler->OnSelectionChanged(initial_selection, 10000, false);
   }
 
   // Switch to another tab (initial tab).
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
                                ->GetWebUIController();
   auto* popup_ui = static_cast<OmniboxPopupUI*>(webui_controller);
   if (auto* popup_handler = popup_ui ? popup_ui->popup_handler() : nullptr) {
-    popup_handler->OnSelectionChanged(initial_selection, 10000);
+    popup_handler->OnSelectionChanged(initial_selection, 10000, false);
   }
 
   // Clear any saved omnibox state from the initial tab.

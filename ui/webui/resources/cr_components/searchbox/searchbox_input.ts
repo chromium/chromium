@@ -241,6 +241,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
+    this.fire('input-keydown', {key: e.key});
     // Ignore this event if the input does not have any inline autocompletion.
     if (!this.lastInput_.inline) {
       return;
@@ -296,6 +297,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (e && e.button !== 0) {
       return;
     }
+    this.fire('input-mousedown');
     this.fire('input-focus-changed', {value: this.$.input.value});
   }
 

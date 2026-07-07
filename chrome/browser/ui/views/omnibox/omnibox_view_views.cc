@@ -217,10 +217,12 @@ std::u16string AimPlaceholderText(
 // OmniboxState ---------------------------------------------------------------
 OmniboxState::OmniboxState(const OmniboxEditModel::State& model_state,
                            const gfx::Range& selection,
-                           const gfx::Range& saved_selection_for_focus_change)
+                           const gfx::Range& saved_selection_for_focus_change,
+                           const bool show_full_url)
     : model_state(model_state),
       selection(selection),
-      saved_selection_for_focus_change(saved_selection_for_focus_change) {}
+      saved_selection_for_focus_change(saved_selection_for_focus_change),
+      show_full_url(show_full_url) {}
 
 OmniboxState::~OmniboxState() = default;
 

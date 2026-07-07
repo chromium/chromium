@@ -26,6 +26,8 @@ struct OmniboxInputState {
   bool is_focused;
   // The steady-state permanent display text (usually the unelided URL).
   string permanent_display_text;
+  // Whether the full url should be showing.
+  bool show_full_url;
 };
 
 // Browser-side handler for the Omnibox Popup.
@@ -55,7 +57,8 @@ interface PageHandler {
   OnManualBlur(uint32 sequence_number);
 
   // Called when the selection changes in the WebUI.
-  OnSelectionChanged(gfx.mojom.Range selection, uint32 sequence_number);
+  OnSelectionChanged(
+    gfx.mojom.Range selection, uint32 sequence_number, bool show_full_url);
 
   // Reverts the omnibox edit model.
   // Discards the call if `sequence_number` is stale.

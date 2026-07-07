@@ -22,8 +22,11 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           ?input-has-matches="${this.hasMatches()}"
           @focusin="${this.onInputFocusin_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
-          @input-focus-changed="${this.onInputFocusChanged}">
-        ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
+          @input-focus-changed="${this.onInputFocusChanged}"
+          @input-mousedown="${this.onInputMousedown_}"
+          @input-keydown="${this.onInputKeydown_}">
+        ${
+      this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
           <div slot="action-buttons"
               class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
@@ -31,8 +34,10 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </button>
           </div>
-        `: ''}
-        ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
+        ` :
+                                                                     ''}
+        ${
+      this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
           <div slot="action-buttons"
               class="searchbox-icon-button-container lens">
             <button id="lensSearchButton" class="searchbox-icon-button"
@@ -40,7 +45,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>
           </div>
-        ` : ''}
+        ` :
+                                                                    ''}
       </cr-searchbox-input>
       <div class="dropdownContainer">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"

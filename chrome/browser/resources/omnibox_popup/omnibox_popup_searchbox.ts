@@ -132,6 +132,7 @@ export class OmniboxPopupSearchboxElement extends
   private fullUrl_: string = '';
   private pendingFocusSelection_: {start: number, end: number}|null = null;
   private permanentDisplayText_: string = '';
+  private fullUrlShown_: boolean = false;
 
   constructor() {
     super();
@@ -277,6 +278,35 @@ export class OmniboxPopupSearchboxElement extends
     super.onInputFocusChanged(e);
   }
 
+  protected onInputMousedown_() {
+    this.showFullUrlOnDeselect_();
+  }
+
+  protected onInputKeydown_(e: CustomEvent<{key: string}>) {
+    if (e.detail.key === 'ArrowLeft' || e.detail.key === 'ArrowRight') {
+      this.showFullUrlOnDeselect_();
+      const input = this.getInputElement().inputElement;
+      if (e.detail.key === 'ArrowLeft') {
+        input.setSelectionRange(0, 0);
+      } else {
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }
+  }
+
+  protected showFullUrlOnDeselect_() {
+    if (this.userInputInProgress_) {
+      return;
+    }
+    const input = this.getInputElement().inputElement;
+    if (input.selectionEnd === null || input.selectionStart === null) {
+      return;
+    }
+    if (input.selectionEnd - input.selectionStart === input.value.length) {
+      this.showFullUrl_();
+    }
+  }
+
   private isChromeScheme_(): boolean {
     try {
       const url = new URL(this.fullUrl_);
@@ -300,7 +330,7 @@ export class OmniboxPopupSearchboxElement extends
 
     this.popupPageHandler_.onSelectionChanged(
         {start: input.selectionStart || 0, end: input.selectionEnd || 0},
-        this.currentSequenceNum_);
+        this.currentSequenceNum_, this.fullUrlShown_);
   }
 
   /**
@@ -321,9 +351,15 @@ export class OmniboxPopupSearchboxElement extends
       this.$.input.blur();
     }
 
-    // Input gets focused on init which triggers blink UpdateSelectionOnFocus.
-    // Set pendingFocusSelection_ so that this update does not trigger
-    // onSelectionChanged(). See line 348 of
+    if (state.showFullUrl) {
+      this.showFullUrl_();
+    } else {
+      this.fullUrlShown_ = false;
+    }
+
+    // Input gets focused on init which triggers Blink's
+    // `UpdateSelectionOnFocus`. Set `pendingFocusSelection_` so that this
+    // update does not trigger `onSelectionChanged()`. See line 348 of
     // third_party/blink/renderer/core/html/forms/html_input_element.cc.
     this.pendingFocusSelection_ = state.selection;
     this.selectRange(state.selection);
@@ -336,8 +372,10 @@ export class OmniboxPopupSearchboxElement extends
     const input = this.getInputElement().inputElement.value.trim();
     // Selection can come from either direction.
     if (!(start - end === input.length) && !(end - start === input.length)) {
-      if (this.fullUrl_) {
-        this.$.input.setInputText(this.fullUrl_);
+      // Only show the full url if user is on a page with a url and if there is
+      // actually some range selected (i.e. not just moving cursor).
+      if (start !== end && this.fullUrl_) {
+        this.showFullUrl_();
       }
       this.$.input.setSelectionRange(
           Math.min(start, end), Math.max(start, end));
@@ -346,11 +384,20 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  private showFullUrl_() {
+    this.$.input.setInputText(this.fullUrl_);
+    this.fullUrlShown_ = true;
+  }
+
   protected onInputFocusin_() {
     this.searchboxPageHandler_.onFocusChanged(true);
     if (this.pendingFocusSelection_) {
       this.selectRange(this.pendingFocusSelection_);
-      this.pendingFocusSelection_ = null;
+      // Delay clearing pending focus as tab switch sets `pendingFocusSelection`
+      // after `focusin` is called.
+      requestAnimationFrame(() => {
+        this.pendingFocusSelection_ = null;
+      });
     }
   }
 

@@ -44,7 +44,8 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   void CloseUI() override;
   void OnManualBlur(uint32_t sequence_number) override;
   void OnSelectionChanged(const gfx::Range& selection,
-                          uint32_t sequence_number) override;
+                          uint32_t sequence_number,
+                          bool show_full_url) override;
   void Revert(uint32_t sequence_number) override;
   void LogEscapeAction(
       omnibox_popup::mojom::OmniboxEscapeAction action) override;
@@ -57,9 +58,11 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      bool user_input_in_progress,
                      const std::string& full_url,
                      bool is_focused,
-                     const std::string& permanent_display_text);
+                     const std::string& permanent_display_text,
+                     bool show_full_url);
 
   const gfx::Range& latest_selection() const { return latest_selection_; }
+  bool show_full_url() const { return show_full_url_; }
 
  private:
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
@@ -70,6 +73,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   // Caches the latest selection range reported by the WebUI to allow
   // synchronous access on tab switches.
   gfx::Range latest_selection_;
+  bool show_full_url_ = false;
   // Monotonically increasing sequence number sent to the WebUI to reject stale
   // selection reports that arrive asynchronously.
   uint32_t current_sequence_number_ = 0;

@@ -43,6 +43,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: false,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -73,6 +74,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -124,6 +126,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: false,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -141,6 +144,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -157,6 +161,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -175,6 +180,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -211,6 +217,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
     handler.reset();
@@ -255,6 +262,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: full_url,
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
     handler.reset();
@@ -273,6 +281,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -288,6 +297,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: false,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -320,6 +330,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 
@@ -349,6 +360,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       fullUrl: '',
       isFocused: true,
       permanentDisplayText: '',
+      showFullUrl: false,
     });
     await microtasksFinished();
 

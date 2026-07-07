@@ -86,7 +86,7 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI() {
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), controller()->edit_model()->has_focus(),
-        base::UTF16ToUTF8(permanent_display_text));
+        base::UTF16ToUTF8(permanent_display_text), /*show_full_url=*/false);
     last_sent_text_ = text;
   }
 }
@@ -106,8 +106,10 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
   // The text input lives in WebUI, so the native view hierarchy does not
   // track selection. Fetch it from the WebUI handler.
   gfx::Range selection;
+  bool show_full_url = false;
   if (auto* popup_handler = GetPopupHandler()) {
     selection = popup_handler->latest_selection();
+    show_full_url = popup_handler->show_full_url();
   }
 
   if (is_popup_open && logically_focused) {
@@ -129,10 +131,11 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
           default_state.keyword_placeholder, default_state.keyword_state,
           default_state.keyword_mode_entry_method, OMNIBOX_FOCUS_VISIBLE,
           default_state.autocomplete_input);
-
-      // Override the selection to be the full length of the permanent URL.
-      std::u16string permanent_text = edit_model->GetPermanentDisplayText();
-      selection = gfx::Range(0, permanent_text.length());
+      if (edit_model->user_input_in_progress()) {
+        // Override the selection to be the full length of the permanent URL.
+        std::u16string permanent_text = edit_model->GetPermanentDisplayText();
+        selection = gfx::Range(0, permanent_text.length());
+      }
     }
   } else if (edit_model->user_input_in_progress()) {
     // For an active uncommitted draft where the webpage has focus, preserve
@@ -157,7 +160,8 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
       OmniboxTabHelper::kOmniboxStateKey,
       std::make_unique<OmniboxState>(
           *state, selection,
-          /*saved_selection_for_focus_change=*/gfx::Range::InvalidRange()));
+          /*saved_selection_for_focus_change=*/gfx::Range::InvalidRange(),
+          show_full_url));
 }
 
 void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
@@ -222,13 +226,14 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
         controller()->edit_model()->GetPermanentDisplayText();
     std::u16string text = user_input_in_progress ? state->model_state.user_text
                                                  : permanent_display_text;
-    gfx::Range selection = state ? state->selection : gfx::Range(0, 0);
+    bool show_full_url = state ? state->show_full_url : false;
     const std::u16string full_url =
         controller()->client()->GetFormattedFullURL();
+    gfx::Range selection = state ? state->selection : gfx::Range(0, 0);
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), should_focus_popup,
-        base::UTF16ToUTF8(permanent_display_text));
+        base::UTF16ToUTF8(permanent_display_text), show_full_url);
     last_sent_text_ = text;
   }
 }
