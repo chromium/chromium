@@ -274,7 +274,7 @@ void RouteMap::OnNavigationStart(const KURL& previous_url,
   style_engine.UpdateActiveStyle();
 
   if (source_element) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoTriggerLink);
+    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
   }
 }
 
@@ -302,7 +302,7 @@ void RouteMap::OnNavigationDone() {
     return;
   }
   if (Element* source_element = navigation_state_->GetSourceElement()) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoTriggerLink);
+    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
   }
   navigation_state_ = nullptr;
   UpdateActiveRoutes();

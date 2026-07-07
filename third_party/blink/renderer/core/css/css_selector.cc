@@ -538,7 +538,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
-    case kPseudoTriggerLink:
+    case kPseudoNavSource:
     case kPseudoUnknown:
     case kPseudoUnbounded:
     case kPseudoUnparsed:
@@ -696,6 +696,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"marker", CSSSelector::kPseudoMarker},
     {"modal", CSSSelector::kPseudoModal},
     {"muted", CSSSelector::kPseudoMuted},
+    {"nav-source", CSSSelector::kPseudoNavSource},
     {"no-button", CSSSelector::kPseudoNoButton},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
@@ -736,7 +737,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"target-text", CSSSelector::kPseudoTargetText},
     {"tool-form-active", CSSSelector::kPseudoToolFormActive},
     {"tool-submit-active", CSSSelector::kPseudoToolSubmitActive},
-    {"trigger-link", CSSSelector::kPseudoTriggerLink},
     {"unbounded", CSSSelector::kPseudoUnbounded},
     {"user-invalid", CSSSelector::kPseudoUserInvalid},
     {"user-valid", CSSSelector::kPseudoUserValid},
@@ -921,7 +921,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoTriggerLink &&
+  if (match->type == CSSSelector::kPseudoNavSource &&
       !RuntimeEnabledFeatures::RouteMatchingEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -1129,6 +1129,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMuted:
+    case kPseudoNavSource:
     case kPseudoNoButton:
     case kPseudoNot:
     case kPseudoNthChild:
@@ -1167,7 +1168,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoTargetBefore:
     case kPseudoTargetAfter:
     case kPseudoTextField:
-    case kPseudoTriggerLink:
     case kPseudoUnknown:
     case kPseudoUnbounded:
     case kPseudoUnparsed:
@@ -1957,6 +1957,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoIsHtml:
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
+    case kPseudoNavSource:
     case kPseudoOpen:
     case kPseudoPastCue:
     case kPseudoPopoverInTopLayer:
@@ -1969,7 +1970,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
-    case kPseudoTriggerLink:
     case kPseudoUnbounded:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
@@ -2300,6 +2300,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoModal:
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoMuted:
+    case CSSSelector::kPseudoNavSource:
     case CSSSelector::kPseudoNthChild:
     case CSSSelector::kPseudoNthLastChild:
     case CSSSelector::kPseudoNthLastOfType:
@@ -2331,7 +2332,6 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoTextField:
     case CSSSelector::kPseudoToolFormActive:
     case CSSSelector::kPseudoToolSubmitActive:
-    case CSSSelector::kPseudoTriggerLink:
     case CSSSelector::kPseudoUnbounded:
     case CSSSelector::kPseudoUserInvalid:
     case CSSSelector::kPseudoUserValid:

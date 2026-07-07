@@ -293,6 +293,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoLink,
     kPseudoMarker,
     kPseudoModal,
+    kPseudoNavSource,
     kPseudoNoButton,
     kPseudoNot,
     kPseudoNthChild,  // Includes :nth-child(An+B of <selector>)
@@ -332,7 +333,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoStart,
     kPseudoState,
     kPseudoTarget,
-    kPseudoTriggerLink,
     kPseudoTextField,
     kPseudoToolFormActive,
     kPseudoToolSubmitActive,

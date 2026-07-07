@@ -830,7 +830,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoTextField:
     case CSSSelector::kPseudoToolFormActive:
     case CSSSelector::kPseudoToolSubmitActive:
-    case CSSSelector::kPseudoTriggerLink:
+    case CSSSelector::kPseudoNavSource:
     case CSSSelector::kPseudoUnbounded:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
@@ -2933,19 +2933,18 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoActiveNavigation:
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
       return CheckPseudoActiveNavigation(context, result);
-    case CSSSelector::kPseudoTriggerLink:
+    case CSSSelector::kPseudoNavSource:
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
-      if (element.IsLink()) {
-        if (const auto* state = NavigationState::Get(&element.GetDocument())) {
-          return &element == state->GetSourceElement();
+      if (const auto* state = NavigationState::Get(&element.GetDocument())) {
+        if (&element == state->GetSourceElement()) {
+          return true;
         }
-
-        // TODO(crbug.com/436805487) Find a better solution. For now we need a
-        // RouteMap instance in order to trigger style recalc of source elements
-        // for :trigger-link, when navigation starts and ends.
-        RouteMap::Ensure(element.GetDocument())
-            .SetNeedsStyleUpdateOnNavigation();
       }
+
+      // TODO(crbug.com/436805487) Find a better solution. For now we need a
+      // RouteMap instance in order to trigger style recalc of source elements
+      // for :nav-source, when navigation starts and ends.
+      RouteMap::Ensure(element.GetDocument()).SetNeedsStyleUpdateOnNavigation();
       return false;
     case CSSSelector::kPseudoLang: {
       auto* vtt_element = DynamicTo<VTTElement>(element);
