@@ -170,6 +170,13 @@ void AutofillRendererTest::SimulateElementFocusAndWait(
   task_environment_.RunUntilIdle();
 }
 
+void AutofillRendererTest::Focus(std::string_view element_id) {
+  ExecuteJavaScriptForTests(
+      base::StrCat({"document.getElementById('", element_id, "').focus();"}));
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  task_environment_.RunUntilIdle();
+}
+
 void AutofillRendererTest::SimulateScrollingAndWait() {
   ExecuteJavaScriptForTests("window.scrollTo(0, 1000);");
   task_environment_.RunUntilIdle();

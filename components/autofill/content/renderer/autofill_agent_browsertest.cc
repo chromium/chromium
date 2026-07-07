@@ -194,15 +194,6 @@ class AutofillAgentTest : public test::AutofillRendererTest {
         });
   }
 
-  void Focus(const char* id) {
-    ExecuteJavaScriptForTests(base::StringPrintf(R"(
-      document.getElementById('%s').focus();
-    )",
-                                                 id));
-    task_environment_.FastForwardBy(base::Milliseconds(500));
-    task_environment_.RunUntilIdle();
-  }
-
   void Click(std::string_view target) {
     SimulatePointClick(
         GetWebElementById(target).BoundsInWidget().CenterPoint());

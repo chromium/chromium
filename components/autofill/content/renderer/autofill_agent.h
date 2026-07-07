@@ -27,6 +27,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -463,6 +464,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BatchSelectOptionChange(FieldRendererId element_id);
   void BatchDataListOptionChange(FieldRendererId element_id);
 
+  // Called when a custom JavaScript autofill is detected by
+  // `JavaScriptAutofillTracker`.
+  void OnJavaScriptAutofillDetected(
+      FormRendererId form_id,
+      FieldRendererId trigger_field_id,
+      const std::vector<FieldRendererId>& field_ids);
+
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are specific to the client using this agent.
   const Config config_;
@@ -612,6 +620,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   const bool replace_form_element_observer_ = false;
 
   EmailVerificationObserver email_verification_observer_;
+
+  // Tracks when an autofill operation is performed on a form via JavaScript,
+  // and not via regular Chrome Autofill.
+  JavaScriptAutofillTracker javascript_autofill_tracker_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

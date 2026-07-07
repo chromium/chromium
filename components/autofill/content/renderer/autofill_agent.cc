@@ -48,6 +48,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
@@ -529,7 +530,11 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)),
-      email_verification_observer_(this) {
+      email_verification_observer_(this),
+      javascript_autofill_tracker_(
+          render_frame->GetWebFrame(),
+          base::BindRepeating(&AutofillAgent::OnJavaScriptAutofillDetected,
+                              base::Unretained(this))) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   if (password_autofill_agent_) {
     password_autofill_agent_->Init(this);
@@ -584,6 +589,7 @@ void AutofillAgent::Reset() {
   input_warnings_.has_warned = false;
   input_warnings_.remove_listeners.clear();
   email_verification_observer_.Reset();
+  javascript_autofill_tracker_.Reset();
   ResetTokenBucket();
 }
 
@@ -823,6 +829,7 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
 void AutofillAgent::OnDestruct() {
   receiver_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  javascript_autofill_tracker_.Reset();
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
 }
@@ -2296,6 +2303,9 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   if (!element.IsConnected()) {
     return;
   }
+
+  javascript_autofill_tracker_.OnJavaScriptChangedValue(element);
+
   form_tracker_->OnJavaScriptChangedValue(element);
 
   if (!was_autofilled) {
@@ -2351,6 +2361,13 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
         &autofill_driver_);
   }
   return autofill_driver_.get();
+}
+
+void AutofillAgent::OnJavaScriptAutofillDetected(
+    FormRendererId form_id,
+    FieldRendererId trigger_field_id,
+    const std::vector<FieldRendererId>& field_ids) {
+  // TODO(crbug.com/529775544): Notify the browser of the detection.
 }
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 
 namespace autofill {
@@ -73,6 +74,10 @@ class AutofillAgentTestApi {
 
   AutofillAgent::EmailVerificationObserver& email_verification_observer() {
     return agent_->email_verification_observer_;
+  }
+
+  JavaScriptAutofillTracker& javascript_autofill_tracker() {
+    return agent_->javascript_autofill_tracker_;
   }
 
  private:
