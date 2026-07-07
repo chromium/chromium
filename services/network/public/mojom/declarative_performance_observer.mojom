@@ -24,7 +24,7 @@ struct DeclarativePerformanceObserverPolicy {
   // of the same response. The name is an ASCII string.
   //
   // This is defined by the website developer in the
-  // `Declarative-Performance-Observer` header (via the `report-to` parameter).
+  // `Performance-Observer` header (via the `report-to` parameter).
   // It is used by the browser's reporting service to look up the target URL
   // for uploading the collected performance reports.
   //

@@ -46,6 +46,15 @@ TEST(DeclarativePerformanceObserverParserTest, ParseEarlyFailures) {
   EXPECT_TRUE(policy->capture_early_failures);
 }
 
+TEST(DeclarativePerformanceObserverParserTest, ParseEarlyFailuresImplicitTrue) {
+  // In Structured Headers (RFC 8941 Dictionary), a dictionary member with no
+  // value (i.e., just the key name) is implicitly treated as boolean true.
+  std::string header = "report-to=\"default\", capture-early-failures";
+  auto policy = ParseDeclarativePerformanceObserverPolicy(header);
+  ASSERT_TRUE(policy);
+  EXPECT_TRUE(policy->capture_early_failures);
+}
+
 TEST(DeclarativePerformanceObserverParserTest, IgnoreUnknownFields) {
   std::string header = R"(unknown-field="value", report-to="my-endpoint")";
   auto policy = ParseDeclarativePerformanceObserverPolicy(header);
