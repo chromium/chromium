@@ -63,6 +63,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -787,6 +788,9 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
     base::UmaHistogramEnumeration(
         "ProfilePicker.FREFlow.FeatureShowcase.StepShown",
         last_active_step_shown());
+    if (last_active_step_shown() == FeatureShowcaseStep::kGoogleLens) {
+      lens::RecordFirstRunPermissionNoticeToBeShown();
+    }
   }
 
   raw_ptr<Profile> profile_;

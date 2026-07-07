@@ -27,6 +27,7 @@ class GoogleLensHandler
   void SkipGoogleLens() override;
 
  private:
+  bool metrics_recorded_ = false;
   mojo::Receiver<feature_showcase::mojom::GoogleLensPageHandler> receiver_;
   raw_ptr<Profile> profile_;
 };
