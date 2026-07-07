@@ -30,6 +30,8 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_update_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "crypto/sha2.h"
@@ -317,8 +319,8 @@ scoped_refptr<SBLocalDatabaseManager> SBLocalDatabaseManager::Create(
 void SBLocalDatabaseManager::CollectDatabaseManagerInfo(
     DatabaseManagerInfo* database_manager_info,
     FullHashCacheInfo* full_hash_cache_info) const {
-  if (v4_update_protocol_manager_) {
-    v4_update_protocol_manager_->CollectUpdateInfo(
+  if (update_protocol_manager_) {
+    update_protocol_manager_->CollectUpdateInfo(
         database_manager_info->mutable_update_info());
   }
   if (sb_database_) {
@@ -419,7 +421,7 @@ bool SBLocalDatabaseManager::CheckBrowseUrl(
 
   HandleCheck(std::move(check));
   RecordTimeSinceLastUpdateHistograms(
-      v4_update_protocol_manager_->last_response_time());
+      update_protocol_manager_->last_response_time());
   return false;
 }
 
@@ -633,9 +635,9 @@ void SBLocalDatabaseManager::StopOnUIThread(bool shutdown) {
   }
   sb_database_.reset();
 
-  // Delete the V4UpdateProtocolManager.
+  // Delete the SBUpdateProtocolManager.
   // This cancels any in-flight update request.
-  v4_update_protocol_manager_.reset();
+  update_protocol_manager_.reset();
 
   db_updated_callback_.Reset();
 
@@ -657,8 +659,13 @@ void SBLocalDatabaseManager::DatabaseReadyForChecks(
     std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
-  base::UmaHistogramTimes("SafeBrowsing.V4DatabaseInitializationTime",
-                          base::Time::Now() - start_time);
+  base::TimeDelta delta = base::Time::Now() - start_time;
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramTimes("SafeBrowsing.V5DatabaseInitializationTime", delta);
+  } else {
+    base::UmaHistogramTimes("SafeBrowsing.V4DatabaseInitializationTime", delta);
+  }
+  base::UmaHistogramTimes("SafeBrowsing.SBDatabaseInitializationTime", delta);
 
   sb_database->InitializeOnUIThread();
 
@@ -693,13 +700,13 @@ void SBLocalDatabaseManager::DatabaseReadyForUpdates(
     UpdateListClientStates(GetStoreStateMap());
 
     // The database is ready to process updates. Schedule them now.
-    v4_update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
+    update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
   }
 }
 
 void SBLocalDatabaseManager::DatabaseUpdated() {
   if (IsDatabaseReady()) {
-    v4_update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
+    update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
 
     sb_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
@@ -1254,18 +1261,23 @@ void SBLocalDatabaseManager::SetupDatabase() {
 void SBLocalDatabaseManager::SetupUpdateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  V4UpdateCallback update_callback =
-      base::BindRepeating(&SBLocalDatabaseManager::UpdateRequestCompleted,
-                          weak_factory_.GetWeakPtr());
-
-  v4_update_protocol_manager_ = std::make_unique<V4UpdateProtocolManager>(
-      url_loader_factory, config, update_callback,
-      extended_reporting_level_callback_);
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    V5UpdateCallback update_callback =
+        base::BindRepeating(&SBLocalDatabaseManager::V5UpdateRequestCompleted,
+                            weak_factory_.GetWeakPtr());
+    update_protocol_manager_ = std::make_unique<V5UpdateProtocolManager>(
+        url_loader_factory, config, update_callback);
+  } else {
+    V4UpdateCallback update_callback =
+        base::BindRepeating(&SBLocalDatabaseManager::V4UpdateRequestCompleted,
+                            weak_factory_.GetWeakPtr());
+    update_protocol_manager_ = std::make_unique<V4UpdateProtocolManager>(
+        url_loader_factory, config, update_callback,
+        extended_reporting_level_callback_);
+  }
 }
 
-// TODO(crbug.com/362791941): Rename to be v4-specific or make implementation
-// generic and support v5.
-void SBLocalDatabaseManager::UpdateRequestCompleted(
+void SBLocalDatabaseManager::V4UpdateRequestCompleted(
     std::unique_ptr<ParsedServerResponse> parsed_server_response) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   auto update_map = std::make_unique<SBUpdateResponseMap>();
@@ -1273,6 +1285,26 @@ void SBLocalDatabaseManager::UpdateRequestCompleted(
     ListIdentifier identifier(*response);
     auto sb_response = std::make_unique<SBUpdateResponse>();
     sb_response->v4_response = std::move(response);
+    update_map->insert({identifier, std::move(sb_response)});
+  }
+  sb_database_->ApplyUpdate(std::move(update_map), db_updated_callback_);
+}
+
+void SBLocalDatabaseManager::V5UpdateRequestCompleted(
+    std::optional<std::map<ListIdentifier, V5::HashList>>
+        parsed_server_response) {
+  CHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/362791941): Remove nullopt case from API since it never
+  // occurs.
+  if (!parsed_server_response.has_value()) {
+    return;
+  }
+
+  auto update_map = std::make_unique<SBUpdateResponseMap>();
+  for (auto& [identifier, response] : parsed_server_response.value()) {
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    sb_response->v5_response =
+        std::make_unique<V5::HashList>(std::move(response));
     update_map->insert({identifier, std::move(sb_response)});
   }
   sb_database_->ApplyUpdate(std::move(update_map), db_updated_callback_);

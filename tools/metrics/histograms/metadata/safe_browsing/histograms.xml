@@ -3824,16 +3824,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4DatabaseInitializationTime" units="ms"
-    expires_after="2026-12-27">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    How long it took to create the V4 database. Logged on each startup, when the
-    database is created.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
     expires_after="2026-11-22">
   <owner>thefrog@chromium.org</owner>
@@ -4675,6 +4665,18 @@ failing to fetch the updates which puts users' security at risk. -->
     of this histogram overlap, so the counts cannot be used as percentages.
   </summary>
   <token key="SafeBrowsingV4OrSB" variants="SafeBrowsingV4OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}DatabaseInitializationTime"
+    units="ms" expires_after="2026-12-27">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    How long it took to create the {SafeBrowsingV4OrV5OrSB} database. Logged on
+    each startup, when the database is created.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
 <histogram

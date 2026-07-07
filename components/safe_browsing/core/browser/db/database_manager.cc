@@ -129,8 +129,11 @@ void SafeBrowsingDatabaseManager::StartOnUIThread(
     const V4ProtocolConfig& config) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
-  v4_get_hash_protocol_manager_ = V4GetHashProtocolManager::Create(
-      url_loader_factory, GetStoresForFullHashRequests(), config);
+  // TODO(crbug.com/362791941): support v5
+  if (!base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    v4_get_hash_protocol_manager_ = V4GetHashProtocolManager::Create(
+        url_loader_factory, GetStoresForFullHashRequests(), config);
+  }
 }
 
 // |shutdown| not used. Destroys the v4 protocol managers. This may be called

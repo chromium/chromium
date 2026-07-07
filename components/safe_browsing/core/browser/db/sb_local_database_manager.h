@@ -8,6 +8,7 @@
 // A class that provides the interface between the SafeBrowsing protocol manager
 // and database that holds the downloaded updates.
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
+#include "components/safe_browsing/core/browser/db/sb_update_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
@@ -31,6 +33,10 @@
 // TODO(crbug.com/362791941): Handle v4 references
 // TODO(crbug.com/362791941): Convert |comments| to `comments`
 namespace safe_browsing {
+
+namespace V5 {
+class HashList;
+}
 
 typedef unsigned ThreatSeverity;
 
@@ -381,7 +387,10 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // callback for |DatabaseReady| when the database is ready for use.
   void SetupDatabase();
 
-  // Instantiates and initializes |v4_update_protocol_manager_|.
+  // Instantiates and initializes `update_protocol_manager_` with either a V4 or
+  // V5 update protocol manager.
+  // `url_loader_factory` is used to create network loaders.
+  // `config` is the Safe Browsing protocol configuration.
   void SetupUpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
@@ -391,10 +400,19 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void UpdateListClientStates(
       const std::unique_ptr<StoreStateMap>& store_state_map);
 
-  // The callback called each time the protocol manager downloads updates
+  // The callback called each time the V4 protocol manager downloads updates
   // successfully.
-  void UpdateRequestCompleted(
+  // `parsed_server_response` is the parsed updates from the server.
+  void V4UpdateRequestCompleted(
       std::unique_ptr<ParsedServerResponse> parsed_server_response);
+
+  // The callback called each time the V5 protocol manager downloads updates
+  // successfully.
+  // `parsed_server_response` is the map from list identifiers to their V5
+  // hash list updates from the server.
+  void V5UpdateRequestCompleted(
+      std::optional<std::map<ListIdentifier, V5::HashList>>
+          parsed_server_response);
 
   // Return true if we're enabled and have loaded real data for all of
   // these stores.
@@ -471,7 +489,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database_;
 
   // The protocol manager that downloads the hash prefix updates.
-  std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
+  std::unique_ptr<SBUpdateProtocolManager> update_protocol_manager_;
 
   // Whether the service is running. 'enabled_' is used by the
   // SBLocalDatabaseManager on the IO thread during normal operations.

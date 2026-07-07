@@ -279,6 +279,7 @@ source_set("sb_store") {
   public_deps = [
     ":safebrowsing_proto",
     ":v4_store_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:v5_store_proto",
   ]
   deps = [
