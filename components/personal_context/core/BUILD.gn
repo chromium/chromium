@@ -33,6 +33,7 @@ source_set("core") {
     "//components/personal_context/proto:personal_context_proto",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/variations/net",
     "//net",
   ]
 }
@@ -96,6 +97,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

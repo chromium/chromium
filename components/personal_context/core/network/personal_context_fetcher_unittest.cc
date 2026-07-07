@@ -16,6 +16,9 @@
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_test_utils.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -49,17 +52,50 @@ class PersonalContextFetcherTest : public testing::Test {
   void SetUp() override {
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
+    variations::VariationsIdsProvider::GetInstance()
+        ->ForceVariationIdsForTesting({"12", "34"}, "");
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<PersonalContextFetcher> fetcher_;
 };
+
+TEST_F(PersonalContextFetcherTest, FetchAppendsVariationsHeader) {
+  base::test::TestMessage request_metadata;
+  base::test::TestFuture<
+      base::expected<const proto::FetchContextResponse, ContextMemoryError>>
+      future;
+  fetcher_->FetchContext(request_metadata, std::nullopt, future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestEndpointUrl);
+
+  // Verify the variations X-Client-Data header is appended and resolves the
+  // forced IDs.
+  std::optional<std::string> variations_header =
+      pending_request->request.cors_exempt_headers.GetHeader(
+          variations::kClientDataHeader);
+  ASSERT_TRUE(variations_header.has_value());
+
+  std::set<variations::VariationID> variation_ids;
+  std::set<variations::VariationID> trigger_ids;
+  ASSERT_TRUE(variations::ExtractVariationIds(*variations_header,
+                                              &variation_ids, &trigger_ids));
+  EXPECT_TRUE(variation_ids.contains(12));
+  EXPECT_TRUE(variation_ids.contains(34));
+}
 
 TEST_F(PersonalContextFetcherTest, FetchSuccess) {
   base::HistogramTester histogram_tester;

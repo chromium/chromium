@@ -6,6 +6,8 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/subscription_eligibility",
   "+components/sync_preferences",
+  "+components/variations",
+  "+components/variations/net",
   "+google_apis/gaia",
   "+net/http",
   "+net/traffic_annotation",

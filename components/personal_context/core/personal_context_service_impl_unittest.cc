@@ -13,6 +13,8 @@
 #include "base/test/test_future.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -74,6 +76,8 @@ class PersonalContextServiceImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kPersonalContext};
   signin::IdentityTestEnvironment identity_test_env_;

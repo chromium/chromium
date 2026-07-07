@@ -27,6 +27,8 @@
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -186,6 +188,8 @@ class PersonalContextManagerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
