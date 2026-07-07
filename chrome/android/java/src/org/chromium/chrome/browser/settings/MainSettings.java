@@ -571,6 +571,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
         } else {
             removePreferenceIfPresent(PREF_DEVELOPER);
         }
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Remove old resources once the feature is launched.
+            findPreference(PREF_GOOGLE_SERVICES)
+                    .setIcon(R.drawable.ic_google_services_48dp_with_bg_containment);
+        }
 
         if (shouldShowDefaultBrowserSetting()) {
             Preference pref = addPreferenceIfAbsent(PREF_DEFAULT_BROWSER);
