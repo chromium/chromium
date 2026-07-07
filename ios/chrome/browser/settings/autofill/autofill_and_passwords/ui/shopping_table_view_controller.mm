@@ -15,5 +15,11 @@
 - (void)setShoppingWithOrders:(NSArray<TableViewItem*>*)orders
                     shipments:(NSArray<TableViewItem*>*)shipments {
 }
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate shoppingTableViewControllerDidRemove:self];
+  }
+}
 
 @end

@@ -42,6 +42,10 @@
 - (void)autofillAndPasswordsTableViewControllerDidSelectTravelInfo:
     (AutofillAndPasswordsTableViewController*)controller;
 
+// Called when the user taps on the shopping info item.
+- (void)autofillAndPasswordsTableViewControllerDidSelectShopping:
+    (AutofillAndPasswordsTableViewController*)controller;
+
 // Called when the user taps on the autofill settings item.
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
     (AutofillAndPasswordsTableViewController*)controller;

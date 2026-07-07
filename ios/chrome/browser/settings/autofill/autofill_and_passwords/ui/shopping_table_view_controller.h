@@ -10,6 +10,16 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @protocol AutofillAIBaseMutator;
+@class ShoppingTableViewController;
+
+// Delegate for ShoppingTableViewController.
+@protocol ShoppingTableViewControllerDelegate <NSObject>
+
+// Called when the view controller is removed from its parent.
+- (void)shoppingTableViewControllerDidRemove:
+    (ShoppingTableViewController*)controller;
+
+@end
 
 // The TableView for Shopping settings page.
 @interface ShoppingTableViewController
@@ -17,6 +27,9 @@
 
 // Mutator for actions in the view.
 @property(nonatomic, weak) id<AutofillAIBaseMutator> mutator;
+
+// Delegate.
+@property(nonatomic, weak) id<ShoppingTableViewControllerDelegate> delegate;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

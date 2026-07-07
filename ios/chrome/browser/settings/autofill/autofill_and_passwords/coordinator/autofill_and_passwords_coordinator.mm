@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_signin_promo_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_settings_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
@@ -63,7 +64,8 @@ enum class YourSavedInfoDataCategory {
     IdentityDocsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
     SigninPromoViewMediatorDelegate,
-    TravelInfoCoordinatorDelegate>
+    TravelInfoCoordinatorDelegate,
+    ShoppingCoordinatorDelegate>
 
 @end
 
@@ -73,6 +75,7 @@ enum class YourSavedInfoDataCategory {
   PasswordsCoordinator* _passwordsCoordinator;
   IdentityDocsCoordinator* _identityDocsCoordinator;
   TravelInfoCoordinator* _travelInfoCoordinator;
+  ShoppingCoordinator* _shoppingCoordinator;
   AutofillSettingsCoordinator* _autofillSettingsCoordinator;
 
   AutofillAndPasswordsSigninPromoMediator* _signinPromoMediator;
@@ -144,6 +147,10 @@ enum class YourSavedInfoDataCategory {
   _travelInfoCoordinator.delegate = nil;
   [_travelInfoCoordinator stop];
   _travelInfoCoordinator = nil;
+
+  _shoppingCoordinator.delegate = nil;
+  [_shoppingCoordinator stop];
+  _shoppingCoordinator = nil;
 
   _autofillSettingsCoordinator.delegate = nil;
   [_autofillSettingsCoordinator stop];
@@ -293,6 +300,19 @@ enum class YourSavedInfoDataCategory {
   [_travelInfoCoordinator start];
 }
 
+- (void)autofillAndPasswordsTableViewControllerDidSelectShopping:
+    (AutofillAndPasswordsTableViewController*)controller {
+  if (_shoppingCoordinator) {
+    return;
+  }
+
+  _shoppingCoordinator = [[ShoppingCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _shoppingCoordinator.delegate = self;
+  [_shoppingCoordinator start];
+}
+
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
     (AutofillAndPasswordsTableViewController*)controller {
   if (_autofillSettingsCoordinator) {
@@ -348,6 +368,15 @@ enum class YourSavedInfoDataCategory {
   _travelInfoCoordinator.delegate = nil;
   [_travelInfoCoordinator stop];
   _travelInfoCoordinator = nil;
+}
+
+#pragma mark - ShoppingCoordinatorDelegate
+
+- (void)shoppingCoordinatorDidRemove:(ShoppingCoordinator*)coordinator {
+  CHECK_EQ(_shoppingCoordinator, coordinator);
+  _shoppingCoordinator.delegate = nil;
+  [_shoppingCoordinator stop];
+  _shoppingCoordinator = nil;
 }
 
 #pragma mark - SigninPromoViewMediatorDelegate

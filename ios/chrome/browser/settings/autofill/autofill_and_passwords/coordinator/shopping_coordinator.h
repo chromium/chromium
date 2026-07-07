@@ -7,8 +7,20 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ShoppingCoordinator;
+
+// Delegate for ShoppingCoordinator.
+@protocol ShoppingCoordinatorDelegate <NSObject>
+
+// Called when the coordinator should be stopped.
+- (void)shoppingCoordinatorDidRemove:(ShoppingCoordinator*)coordinator;
+
+@end
+
 // Coordinator for the Shopping settings page.
 @interface ShoppingCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<ShoppingCoordinatorDelegate> delegate;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController

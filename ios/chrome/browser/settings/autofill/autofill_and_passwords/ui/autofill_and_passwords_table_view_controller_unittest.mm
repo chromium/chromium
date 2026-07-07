@@ -66,6 +66,7 @@ TEST_P(AutofillAndPasswordsTableViewControllerTest, TestModel) {
   [view_controller setAutofillProfileEnabled:YES];
   [view_controller setIdentityDocsEnabled:YES];
   [view_controller setTravelInfoEnabled:NO];
+  [view_controller setShoppingEnabled:YES];
   [view_controller setShouldShowAutofillAIFeatures:YES];
 
   [view_controller loadModel];

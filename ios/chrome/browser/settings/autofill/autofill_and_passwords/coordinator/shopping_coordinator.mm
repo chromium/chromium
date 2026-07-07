@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+@interface ShoppingCoordinator () <ShoppingTableViewControllerDelegate>
+@end
+
 @implementation ShoppingCoordinator {
   // The base navigation controller.
   UINavigationController* _baseNavigationController;
@@ -36,6 +39,7 @@
 
 - (void)start {
   _viewController = [[ShoppingTableViewController alloc] init];
+  _viewController.delegate = self;
 
   autofill::EntityDataManager* entityDataManager =
       IOSAutofillEntityDataManagerFactory::GetForProfile(
@@ -57,7 +61,16 @@
   [_mediator disconnect];
   _mediator = nil;
 
+  _viewController.delegate = nil;
   _viewController = nil;
+}
+
+#pragma mark - ShoppingTableViewControllerDelegate
+
+- (void)shoppingTableViewControllerDidRemove:
+    (ShoppingTableViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  [self.delegate shoppingCoordinatorDidRemove:self];
 }
 
 @end

@@ -13,6 +13,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_consumer.h"
 
@@ -88,7 +89,11 @@
     [_consumer setTravelInfoEnabled:
                    _userPrefService->GetBoolean(
                        autofill::prefs::kAutofillAiTravelEntitiesEnabled)];
-
+    // TODO(crbug.com/530620605): Introduce logic to enable/disable values based
+    // on pref value.
+    if (autofill::IsAmbientAutofillEnabled()) {
+      [_consumer setShoppingEnabled:YES];
+    }
     [self updateShouldShowAutofillAIFeatures];
   }
 }

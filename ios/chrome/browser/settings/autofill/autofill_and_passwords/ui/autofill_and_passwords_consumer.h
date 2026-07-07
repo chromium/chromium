@@ -25,6 +25,9 @@
 // Sets the travel info item with detail text.
 - (void)setTravelInfoEnabled:(BOOL)enabled;
 
+// Sets the shopping item with detail text.
+- (void)setShoppingEnabled:(BOOL)enabled;
+
 // Sets whether to show the Autofill AI features items.
 - (void)setShouldShowAutofillAIFeatures:(BOOL)shouldShow;
 

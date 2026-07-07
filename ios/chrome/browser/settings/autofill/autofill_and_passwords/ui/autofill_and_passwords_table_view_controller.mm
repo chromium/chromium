@@ -30,6 +30,7 @@
   BOOL _autofillProfileEnabled;
   BOOL _identityDocsEnabled;
   BOOL _travelInfoEnabled;
+  BOOL _shoppingEnabled;
   BOOL _shouldShowAutofillAIFeatures;
 
   // Updatable Items.
@@ -38,8 +39,7 @@
   TableViewDetailIconItem* _autofillProfileDetailItem;
   TableViewDetailIconItem* _identityDocsDetailItem;
   TableViewDetailIconItem* _travelInfoDetailItem;
-  TableViewDetailIconItem* _shoppingInfoDetailItem;
-
+  TableViewDetailIconItem* _shoppingDetailItem;
   BOOL _settingsAreDismissed;
 }
 
@@ -93,10 +93,8 @@
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
 
     if (autofill::IsAmbientAutofillEnabled()) {
-      // TODO(crbug.com/530619453): Replace 'YES' with _shoppingInfoEnabled
-      // once it is added to the mediator.
-      _shoppingInfoDetailItem = ShoppingInfoItem(YES);
-      [model addItem:_shoppingInfoDetailItem
+      _shoppingDetailItem = ShoppingInfoItem(_shoppingEnabled);
+      [model addItem:_shoppingDetailItem
           toSectionWithIdentifier:SettingsSectionIdentifierBasics];
     }
   }
@@ -141,7 +139,8 @@
           autofillAndPasswordsTableViewControllerDidSelectTravelInfo:self];
       break;
     case SettingsItemTypeShoppingInfo:
-      // TODO(crbug.com/530620605): Connect to the Shopping Info page.
+      [self.delegate
+          autofillAndPasswordsTableViewControllerDidSelectShopping:self];
       break;
     case SettingsItemTypeAutofillSettings:
       [self.delegate
@@ -239,6 +238,23 @@
       _travelInfoDetailItem.detailText = TravelInfoItemDetailText(enabled);
     }
     [self reconfigureCellsForItems:@[ _travelInfoDetailItem ]];
+  }
+}
+
+- (void)setShoppingEnabled:(BOOL)enabled {
+  if (_shoppingEnabled == enabled) {
+    return;
+  }
+  _shoppingEnabled = enabled;
+
+  if (_shoppingDetailItem) {
+    if (IsYourSavedInfoSettingsPageIosEnabled()) {
+      _shoppingDetailItem.trailingDetailText =
+          ShoppingInfoItemDetailText(enabled);
+    } else {
+      _shoppingDetailItem.detailText = ShoppingInfoItemDetailText(enabled);
+    }
+    [self reconfigureCellsForItems:@[ _shoppingDetailItem ]];
   }
 }
 
