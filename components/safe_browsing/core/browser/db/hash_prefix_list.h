@@ -48,7 +48,10 @@ enum class V5ApplyUpdateResult {
   // Merging removals failed because an index was out of bounds.
   kRemovalsIndexTooLargeFailure = 8,
 
-  kMaxValue = kRemovalsIndexTooLargeFailure,
+  // Failed to write the store file or hash file to disk.
+  kWriteFailure = 9,
+
+  kMaxValue = kWriteFailure,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5ApplyUpdateResult)
 

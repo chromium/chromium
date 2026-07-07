@@ -4399,6 +4399,16 @@ parsed correctly. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V5StoreWrite.Result"
+    enum="SafeBrowsingV5StoreWriteResult" expires_after="2027-06-18">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track the results of writing the SafeBrowsing V5 store file to disk.
+    Recorded every time a store is written to disk.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V5Update.Parse.Result" enum="V5ParseResult"
     expires_after="never">
 <!-- expires-never: This reports the reason for the failure to parse the Safe

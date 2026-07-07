@@ -664,6 +664,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="RiceDecodingRemovalsFailure"/>
   <int value="7" label="AdditionsHasExistingPrefixFailure"/>
   <int value="8" label="RemovalsIndexTooLargeFailure"/>
+  <int value="9" label="WriteFailure"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_list.h:V5ApplyUpdateResult) -->
@@ -708,6 +709,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/sb_store.h:V5StoreReadResult) -->
+
+<!-- LINT.IfChange(SafeBrowsingV5StoreWriteResult) -->
+
+<enum name="SafeBrowsingV5StoreWriteResult">
+  <int value="0" label="WriteSuccess"/>
+  <int value="1" label="UnexpectedWriteFailure"/>
+  <int value="2" label="UnexpectedBytesWrittenFailure"/>
+  <int value="3" label="UnableToRenameFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_store.h:V5StoreWriteResult) -->
 
 <!-- LINT.IfChange(V5ToV4MigrationResult) -->
 

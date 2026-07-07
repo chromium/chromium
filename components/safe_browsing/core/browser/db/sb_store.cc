@@ -18,6 +18,7 @@
 #include "base/strings/string_view_util.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/browser/db/hash_prefix_container.h"
+#include "components/safe_browsing/core/browser/db/hash_prefix_list.h"
 #include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
@@ -500,6 +501,14 @@ template base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
     const base::FilePath& store_path,
     V4StoreFileFormat* file_format,
     HashPrefixMap* container,
+    base::FunctionRef<void()> set_file_metadata,
+    base::FunctionRef<void()> delete_hash_files_on_error,
+    base::FunctionRef<int64_t()> get_hash_files_size,
+    base::FunctionRef<void()> cleanup_extra_files);
+template base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
+    const base::FilePath& store_path,
+    V5StoreFileFormat* file_format,
+    HashPrefixList* container,
     base::FunctionRef<void()> set_file_metadata,
     base::FunctionRef<void()> delete_hash_files_on_error,
     base::FunctionRef<int64_t()> get_hash_files_size,
