@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // See ToolAnnotations in model_context_tool.idl for details of this
 // data structure.
@@ -86,7 +87,8 @@ interface ModelContextHost {
   //
   // TODO(https://crbug.com/509555636): Consider making `success` more granular
   // in the error case, perhaps by using `ScriptToolErrorCode`.
-  ExecuteRemoteScriptTool(blink.mojom.FrameToken tool_owner_frame_token,
+  ExecuteRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
+                          blink.mojom.FrameToken tool_owner_frame_token,
                           url.mojom.Origin expected_target_origin,
                           string name,
                           string input_arguments) => (string? result, bool success);
@@ -105,6 +107,7 @@ interface ModelContext {
   //
   // Resolution of the JavaScript Promise results in the callback being called
   // with `success=true`, while rejection results in `success=false`.
-  ExecuteScriptTool(string name, string input_arguments)
+  ExecuteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
+                    string name, string input_arguments)
       => (string? result, bool success);
 };

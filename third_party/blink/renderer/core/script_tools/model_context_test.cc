@@ -101,6 +101,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   }
 
   void ExecuteRemoteScriptTool(
+      const base::UnguessableToken& invocation_id,
       const ::blink::FrameToken& tool_owner_frame_token,
       const ::scoped_refptr<const ::blink::SecurityOrigin>&
           expected_target_origin,

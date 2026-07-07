@@ -135,6 +135,7 @@ class CONTENT_EXPORT ModelContextUserData
   void GetScriptTools(const std::vector<url::Origin>& from_origins,
                       GetScriptToolsCallback callback) override;
   void ExecuteRemoteScriptTool(
+      const base::UnguessableToken& invocation_id,
       const blink::FrameToken& tool_owner_frame_token,
       const url::Origin& expected_target_origin,
       const std::string& name,

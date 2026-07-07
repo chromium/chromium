@@ -170,7 +170,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   // mojom::blink::ScriptToolReceiver implementation:
   void NotifyToolChange() override;
-  void ExecuteScriptTool(const String& name,
+  void ExecuteScriptTool(const base::UnguessableToken& invocation_id,
+                         const String& name,
                          const String& input_arguments,
                          ExecuteScriptToolCallback callback) override;
 

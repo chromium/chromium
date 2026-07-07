@@ -787,25 +787,24 @@ void ModelContext::NotifyToolChange() {
   DispatchEvent(*Event::Create(event_type_names::kToolchange));
 }
 
-void ModelContext::ExecuteScriptTool(const String& name,
-                                     const String& input_arguments,
-                                     ExecuteScriptToolCallback callback) {
-  // TODO(http://b/485810761): Pass `invocation_id` up from the browser, instead
-  // of generating it in the renderer.
-  ExecuteTool(
-      /*invocation_id=*/base::UnguessableToken::Create(), name, input_arguments,
-      /*signal=*/nullptr,
-      blink::BindOnce(
-          [](ExecuteScriptToolCallback callback,
-             base::expected<String, ScriptToolError> result) {
-            if (result.has_value()) {
-              std::move(callback).Run(result.value(), true);
-            } else {
-              std::move(callback).Run(GetToolErrorMessage(result.error()),
-                                      false);
-            }
-          },
-          std::move(callback)));
+void ModelContext::ExecuteScriptTool(
+    const base::UnguessableToken& invocation_id,
+    const String& name,
+    const String& input_arguments,
+    ExecuteScriptToolCallback callback) {
+  ExecuteTool(invocation_id, name, input_arguments,
+              /*signal=*/nullptr,
+              blink::BindOnce(
+                  [](ExecuteScriptToolCallback callback,
+                     base::expected<String, ScriptToolError> result) {
+                    if (result.has_value()) {
+                      std::move(callback).Run(result.value(), true);
+                    } else {
+                      std::move(callback).Run(
+                          GetToolErrorMessage(result.error()), false);
+                    }
+                  },
+                  std::move(callback)));
 }
 
 HeapVector<Member<const ToolData>> ModelContext::ListTools() const {
@@ -1024,9 +1023,12 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+
   model_context_host_remote_->ExecuteRemoteScriptTool(
-      frame_token, SecurityOrigin::CreateFromString(tool->origin()),
-      tool->name(), input_arguments,
+      invocation_id, frame_token,
+      SecurityOrigin::CreateFromString(tool->origin()), tool->name(),
+      input_arguments,
       blink::BindOnce(
           [](ModelContext* self,
              ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
