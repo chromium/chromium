@@ -22,7 +22,7 @@ namespace {
 constexpr int kChromeAcceleratorsTotalNum = 106;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "e67f70b79ecce321ff81c4ee00388d01111ea3c2417726588267605988dd22b8";
+    "d06e20b7fabf9838d9a2abfc795d54cd94d90e53a3021b0510a8bc4d7aa9d73c";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 104;
