@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_P
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Holder;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -145,6 +147,77 @@ public class TabbedModeTabModelStoreTest {
         }
         assertTrue("Updated tab should be found in storage", found);
         assertEquals("Tab does not match expected timestamp", newTimestamp, actualTimestamp);
+    }
+
+    @Test
+    @MediumTest
+    public void testUntidyDoesNotSave_DirtySaves() throws Exception {
+        @TabId int tabId = getActiveTabId();
+
+        // Get initial state from DB to know the baseline timestamp.
+        StorageLoadedData data1 = loadAllDataSync(WINDOW_TAG, false);
+        Long initialTimestamp = null;
+        for (StorageLoadedData.LoadedTabState lts : data1.getLoadedTabStates()) {
+            if (lts.tabId == tabId) {
+                initialTimestamp = lts.tabState.timestampMillis;
+                break;
+            }
+        }
+        assertNotNull("Initial tab should have a timestamp in DB", initialTimestamp);
+
+        // Change timestamp locally on the tab, and trigger UNTIDY.
+        Long newTimestamp = initialTimestamp + 10000L; // 10s later
+        runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
+                    tab.setTimestampMillis(newTimestamp);
+
+                    // Trigger UNTIDY state.
+                    tab.setTabHasSensitiveContent(!tab.getTabHasSensitiveContent());
+                });
+
+        // Verify DB STILL has the initial timestamp (UNTIDY did not trigger save).
+        StorageLoadedData data2 = loadAllDataSync(WINDOW_TAG, false);
+        Long timestampAfterUntidy = null;
+        for (StorageLoadedData.LoadedTabState lts : data2.getLoadedTabStates()) {
+            if (lts.tabId == tabId) {
+                timestampAfterUntidy = lts.tabState.timestampMillis;
+                break;
+            }
+        }
+        assertEquals(
+                "UNTIDY update should not trigger save to DB",
+                initialTimestamp,
+                timestampAfterUntidy);
+
+        // Trigger DIRTY state (e.g. via pin change).
+        runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
+                    // Trigger DIRTY state.
+                    tab.setIsPinned(!tab.getIsPinned());
+                });
+
+        // Verify DB NOW has the new timestamp (DIRTY triggered save).
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        StorageLoadedData data3 = loadAllDataSync(WINDOW_TAG, false);
+                        Long timestampAfterDirty = null;
+                        for (StorageLoadedData.LoadedTabState lts : data3.getLoadedTabStates()) {
+                            if (lts.tabId == tabId) {
+                                timestampAfterDirty = lts.tabState.timestampMillis;
+                                break;
+                            }
+                        }
+                        Criteria.checkThat(
+                                "DIRTY update should trigger save to DB",
+                                timestampAfterDirty,
+                                Matchers.is(newTimestamp));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     @Test

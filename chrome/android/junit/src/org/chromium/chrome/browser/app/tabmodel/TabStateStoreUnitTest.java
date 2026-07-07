@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
@@ -325,6 +326,28 @@ public class TabStateStoreUnitTest {
 
         mTabStateStore.saveState();
 
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+    }
+
+    @Test
+    public void testOnTabStateDirtinessChanged_UntidyDoesNotSave_DirtySaves() {
+        mTabStateStore.onNativeLibraryReady();
+        Tab tab = createMockTabWithParentCollection(1, mProfile);
+
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabStateStore.onTabRegistered(tab);
+        reset(mModelTrackingOrchestrator);
+
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+
+        // Transition to UNTIDY.
+        attributes.updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
+
+        // Transition to DIRTY.
+        attributes.updateIsDirty(TabStateAttributes.DirtinessState.DIRTY);
         verify(mModelTrackingOrchestrator).saveTab(tab);
     }
 

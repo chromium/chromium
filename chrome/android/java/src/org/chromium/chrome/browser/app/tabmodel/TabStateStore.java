@@ -519,7 +519,7 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
-        if (dirtiness != DirtinessState.CLEAN) {
+        if (dirtiness == DirtinessState.DIRTY) {
             saveTab(tab);
         }
     }
