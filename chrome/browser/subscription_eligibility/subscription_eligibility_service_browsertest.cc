@@ -50,7 +50,7 @@ class SubscriptionEligibilityServiceTest : public InProcessBrowserTest {
   void SetAiSubscriptionTierForProfile(int32_t subscription_tier,
                                        Profile* profile = nullptr) {
     if (!profile) {
-      profile = browser()->profile();
+      profile = browser()->GetProfile();
     }
     profile->GetPrefs()->SetInteger(prefs::kAiSubscriptionTier,
                                     subscription_tier);
@@ -58,7 +58,7 @@ class SubscriptionEligibilityServiceTest : public InProcessBrowserTest {
 
   SubscriptionEligibilityService* service() {
     return SubscriptionEligibilityServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   // Explicitly calls ProvideCurrentSessionData() for all metrics providers.
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(1, browser()->profile());
+    SetAiSubscriptionTierForProfile(1, browser()->GetProfile());
     SetAiSubscriptionTierForProfile(0, second_profile);
     ProvideCurrentSessionData();
     histogram_tester.ExpectUniqueSample(
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(1, browser()->profile());
+    SetAiSubscriptionTierForProfile(1, browser()->GetProfile());
     SetAiSubscriptionTierForProfile(2, second_profile);
     ProvideCurrentSessionData();
     histogram_tester.ExpectUniqueSample(
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(1, browser()->profile());
+    SetAiSubscriptionTierForProfile(1, browser()->GetProfile());
     SetAiSubscriptionTierForProfile(1, second_profile);
     ProvideCurrentSessionData();
     histogram_tester.ExpectUniqueSample(
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SubscriptionEligibilityServiceTest, Metrics) {
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(0, browser()->profile());
+    SetAiSubscriptionTierForProfile(0, browser()->GetProfile());
     // Intentionally throw in a bad value and treat it as not subscribed.
     SetAiSubscriptionTierForProfile(-1, second_profile);
     ProvideCurrentSessionData();

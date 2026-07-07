@@ -257,7 +257,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
   // Sets the SelectedLanguages prefs to the given value. This will change the
   // AcceptLanguages pref.
   void SetSelectedLanguages(const std::string_view value) {
-    browser()->profile()->GetPrefs()->SetString(
+    browser()->GetProfile()->GetPrefs()->SetString(
         language::prefs::kSelectedLanguages, value);
   }
 
@@ -372,7 +372,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
 
   void ClearSiteContentSettings() {
     content::BrowsingDataRemover* remover =
-        browser()->profile()->GetBrowsingDataRemover();
+        browser()->GetProfile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(),
@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(
 
   url::Origin origin = embedded_https_test_server().GetOrigin();
   auto* manager =
-      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->GetProfile());
   manager->SetServiceIdleTimeoutForTesting(origin, base::Microseconds(100));
 
   // Test that Translator API works.
@@ -1490,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin origin = embedded_https_test_server().GetOrigin();
 
   auto* manager =
-      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->GetProfile());
   manager->SetServiceIdleTimeoutForTesting(origin, base::Microseconds(100));
   content::RenderFrameHost* iframe = CreateIframe();
 
@@ -1600,7 +1600,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
   ASSERT_TRUE(guest_browser);
 
-  guest_browser->profile()->GetPrefs()->SetString(
+  guest_browser->GetProfile()->GetPrefs()->SetString(
       language::prefs::kSelectedLanguages, "ja");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1914,7 +1914,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
   void RemoveIframeAndWaitForServiceDeletion(size_t index,
                                              Browser* target_browser) {
     auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-        target_browser->profile());
+        target_browser->GetProfile());
     url::Origin origin = url::Origin::Create(CreateCrossOriginIframeUrl(index));
 
     EXPECT_EQ(EvalJsCatchingError(JsReplace("return removeIframe($1);",
@@ -2059,7 +2059,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   base::ScopedAllowBlockingForTesting allow_io;
   CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
   auto* manager =
-      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->GetProfile());
   manager->SetInstallerForTesting(&fake_installer_);
   NavigateToTestPage(browser());
   size_t i = 0;
@@ -2103,7 +2103,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      incognito_browser->profile());
+      incognito_browser->GetProfile());
   manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(incognito_browser);
@@ -2132,7 +2132,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 
   Browser* guest_browser = CreateGuestBrowser();
   auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      guest_browser->profile());
+      guest_browser->GetProfile());
   manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(guest_browser);

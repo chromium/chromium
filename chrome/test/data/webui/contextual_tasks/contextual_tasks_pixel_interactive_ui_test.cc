@@ -84,7 +84,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
     WebUIComposeBoxPixelTest::SetUpOnMainThread();
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
 
     // Set up a fake identity to get an OAuth token, which allows the <webview>
     // to load the AI page correctly.

@@ -39,7 +39,7 @@ class ContextualCueingServiceV2BrowserTestCCFlag
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceV2BrowserTestCCFlag,
                        ServiceSpawnsWithCCFlag) {
   EXPECT_NE(nullptr, ContextualCueingServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 class ContextualCueingServiceV2BrowserTestDisabledFeatures
@@ -57,7 +57,7 @@ class ContextualCueingServiceV2BrowserTestDisabledFeatures
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceV2BrowserTestDisabledFeatures,
                        NullServiceWithDisabledFeatures) {
   EXPECT_EQ(nullptr, ContextualCueingServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 }  // namespace contextual_cueing

@@ -174,7 +174,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   void SeedExecutionResult(
       optimization_guide::OptimizationGuideModelExecutionResult result) {
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
             std::move(result));
@@ -239,13 +239,13 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   MockPrivateInsightsService* GetMockPrivateInsightsService() {
     return static_cast<MockPrivateInsightsService*>(
         private_insights::PrivateInsightsServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
  private:
   syncer::TestSyncService* GetTestSyncService() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->profile()));
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   void OnWillCreateBrowserContextServices(
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        PassesFilterAndModelExecutionSucceeded) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicDefaultTabContextEnabled, true);
 
   // Navigate current Chrome tab to a valid URL (and will be in the background
@@ -1502,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, UserOptedOut) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
           optimization_guide::UserVisibleFeatureKey::kContextualCueing),
@@ -1530,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::kChromeSuggestionsSettings,
       static_cast<int>(

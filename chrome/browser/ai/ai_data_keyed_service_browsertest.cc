@@ -83,7 +83,7 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
 
     HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindLambdaForTesting([this](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
@@ -97,11 +97,11 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
   AiDataKeyedService& ai_data_service() {
     return *AiDataKeyedServiceFactory::GetAiDataKeyedService(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   actor::ActorKeyedService& actor_service() {
-    return *actor::ActorKeyedService::Get(browser()->profile());
+    return *actor::ActorKeyedService::Get(browser()->GetProfile());
   }
 
   content::WebContents* web_contents() {
