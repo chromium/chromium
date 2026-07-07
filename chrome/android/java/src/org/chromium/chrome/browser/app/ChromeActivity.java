@@ -493,7 +493,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mStartupMetricsTracker =
                 new StartupMetricsTracker(
                         mTabModelSelectorSupplier, this::wasPersistentStateRestored);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
             mStartupMetricsTracker.registerApplicationStartInfoListener();
         }
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
