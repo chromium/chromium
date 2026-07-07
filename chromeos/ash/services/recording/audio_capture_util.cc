@@ -5,6 +5,7 @@
 
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"

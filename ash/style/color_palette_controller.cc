@@ -23,6 +23,7 @@
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
