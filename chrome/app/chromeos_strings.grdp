@@ -127,13 +127,6 @@
     Automatically connect to your phone's hotspot.
   </message>
 
-  <message name="IDS_UPDATE_VERIFYING" desc="Message that the system is verifying an update">
-    Verifying...
-  </message>
-  <message name="IDS_UPDATE_FINALIZING" desc="Message that the system is finalizing an update">
-    Finalizing...
-  </message>
-
   <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready">
     Getting the device ready...
   </message>
@@ -330,107 +323,11 @@
   <message name="IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON" desc="Text of the accept button for generating a new network certificate.">
     Get new certificate
   </message>
-  <message name="IDS_UPDATE_AVAILABLE" desc="Notification for available update">
-    System update available. Preparing to download&#x2026;
-  </message>
-  <message name="IDS_UPDATE_COMPLETED_REBOOTING" desc="Notification for update completed and reboot is in progress">
-    Restarting to apply updates
-  </message>
-  <message name="IDS_UPDATE_STATUS_TITLE" desc="Title of update screeen telling the status of update.">
-    Downloading the latest update
-  </message>
-  <message name="IDS_UPDATE_STATUS_SUBTITLE_PERCENT" desc="Subtitle of update screeen telling the status of update: percent complete and time left.">
-    <ph name="PERCENT">$1<ex>100%</ex></ph> complete
-  </message>
-  <message name="IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT" desc="Subtitle of update screeen telling the status of update: percent complete and time left.">
-    About <ph name="TIME_LEFT">$1<ex>5 minutes</ex></ph> left
-  </message>
-  <message name="IDS_UPDATE_SLIDE_UPDATE_TITLE" desc="Title of educative slide.">
-    After this, no waiting for updates
-  </message>
-  <message name="IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TITLE" desc="Title of educative slide.">
-    From here on out, no waiting required
-  </message>
-  <message name="IDS_UPDATE_SLIDE_UPDATE_TEXT" desc="Text of educative slide.">
-    This is the only time you’ll wait for an update. On Chromebooks, software updates happen in the background.
-  </message>
-  <message name="IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TEXT" desc="Text of educative slide.">
-    After this, software updates will happen in the background. You can review update preferences in Settings.
-  </message>
-  <message name="IDS_UPDATE_SLIDE_ANTIVIRUS_TITLE" desc="Title of educative slide.">
-    Built-in virus protection
-  </message>
-  <message name="IDS_UPDATE_SLIDE_ANTIVIRUS_TEXT" desc="Text of educative slide.">
-    Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.
-  </message>
-  <message name="IDS_UPDATE_SLIDE_APPS_TITLE" desc="Title of educative slide.">
-    Find apps on the Google Play Store
-  </message>
-  <message name="IDS_UPDATE_SLIDE_APPS_TEXT" desc="Text of educative slide.">
-    Chromebooks use apps instead of traditional software. Get apps for productivity, entertainment, and more.
-  </message>
-  <message name="IDS_UPDATE_SLIDE_ACCOUNT_TITLE" desc="Title of educative slide.">
-    Your Google Account is your Chromebook sign-in
-  </message>
-  <message name="IDS_UPDATE_SLIDE_ACCOUNT_TEXT" desc="Text of educative slide.">
-    You’ll use your Google Account to sign in to your Chromebook – the same account you use for Gmail, Drive, YouTube, and more.
-  </message>
-  <message name="IDS_UPDATE_BATTERY_WARNING_TITLE" desc="Title of battery warning which is shown during update process if battery is running out.">
-    Charge your Chromebook
-  </message>
-  <message name="IDS_UPDATE_BATTERY_WARNING_TEXT" desc="Text of battery warning which is shown during update process if battery is running out.">
-    Looks like your Chromebook will run out of power before the update is complete. Make sure it's charging correctly to avoid interruption.
-  </message>
-  <message name="IDS_UPDATE_NO_UPDATE_AVAILABLE_TITLE" desc="Title of the screen that is shown when there is no update available.">
-    Your device is up to date
-  </message>
-  <message name="IDS_UPDATE_NO_UPDATE_AVAILABLE_TEXT" desc="Text of the screen that is shown when there is no update available.">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.
-  </message>
-  <message name="IDS_UPDATE_SLIDE_LABEL" desc="Text of slide label for accessibility.">
-    Extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
-  </message>
-  <message name="IDS_UPDATE_SELECTED_BUTTON_LABEL" desc="Text of carousel selected button label for accessibility.">
-    Selected, extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
-  </message>
-  <message name="IDS_UPDATE_UNSELECTED_BUTTON_LABEL" desc="Text of carousel unselected button label for accessibility.">
-    Navigate to extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
-  </message>
-  <message name="IDS_UPDATE_COMPLETED" desc="Notification for update completed">
-    System update complete. Please restart the system.
-  </message>
   <message name="IDS_DOWNLOADING" desc="The format for ETA during the update downloading stage">
     Downloading: <ph name="STATUS">$1<ex>Less than 1 minute left</ex></ph>
   </message>
-  <message name="IDS_UPDATE_CANCEL" desc="Message telling to press Escape to cancel update on a non-official build">
-    Press ESCAPE to skip (Non-official builds only).
-  </message>
-  <message name="IDS_UPDATE_CANCELLED" desc="Message shown when the update has been cancelled by user">
-    Cancelling update...
-  </message>
-  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE" desc="Title for the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> needs an update
-  </message>
-  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in ChromeOS OOBE before forced auto-update is attempted if the ChromeOS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
-    If you download the update over your mobile network, it could result in overage charges.
-  </message>
-  <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
-    Your Google Meet hardware is ready to set up
-  </message>
-  <message name="IDS_WELCOME_SCREEN_GREETING_CLOUD_READY" desc="Greeting message on the OOBE welcome screen">
-    Welcome to <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_WELCOME_SCREEN_GREETING_SUBTITLE" desc="Greeting message on the OOBE welcome screen">
-    Fast. Secure. Effortless.
-  </message>
   <message name="IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens 'Add New WiFi Network' dialog">
     Add other WiFi network
-  </message>
-  <message name="IDS_UPDATING_SCREEN_TITLE" desc="Title of the OOBE screen displayed while system update is being dowloaded.">
-    Updating...
-  </message>
-  <message name="IDS_UPDATE_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE update screen">
-    Chrome updates automatically so you always have the freshest version
   </message>
   <message name="IDS_LOGIN_GAIA_LOADING_MESSAGE" desc="Message on the OOBE gaia loading screen">
     Please wait...
@@ -440,24 +337,6 @@
   </message>
   <message name="IDS_OOBE_PAUSE_ANIMATION_MESSAGE" desc="Accessibility label for the button to pause animation">
     Pause animation
-  </message>
-  <message name="IDS_WELCOME_SELECTION_CONTINUE_BUTTON" desc="Text shown on continue button" meaning="Continue button label of welcome screen.">
-    Continue
-  </message>
-  <message name="IDS_WELCOME_ENABLE_DEV_FEATURES_LINK" desc="Link shown on welcome screen" meaning="Link shown on OOBE screens that opens enable debugging features dialog">
-    Enable debugging features
-  </message>
-  <message name="IDS_TIMEZONE_BUTTON_TEXT" desc="Label on a button that opens timezone selection screen" meaning="Label on a button that opens timezone selection screen during initial device configuration">
-    Timezone
-  </message>
-  <message name="IDS_TIMEZONE_SECTION_TITLE" desc="Title of timezone selection screen" meaning="A title of the dialog where user should select device timezone during initial device configuration">
-    Select timezone
-  </message>
-  <message name="IDS_TIMEZONE_DROPDOWN_TITLE" desc="Title of timezone selection dropdown menu" meaning="Small title near timezone dropdown menu suggesting that this is a timezone selector.">
-    Timezone
-  </message>
-  <message name="IDS_TIMEZONE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of timezones' dropdown menu on ChromeOS Timezone initial device setup screen" meaning="The menu itself displays only current timezone name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current timezone.">
-    Select timezone
   </message>
 
   <!-- Strings for the Bluetooth pairing dialog -->
@@ -517,105 +396,6 @@
   </message>
   <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_PAIRING_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to the a device is in progress.">
     Pairing to <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
-  </message>
-
-  <!-- Strings for OS trial screen-->
-  <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    Start using <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_OS_TRIAL_INSTALL_TITLE" desc="Title of the try option in the install or try screen, the first screen of the ChromeOS Flex Installation flow.">
-    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_OS_TRIAL_INSTALL_SUBTITLE" desc="Subtitle of the try option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    Convert this device into a <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> device.
-  </message>
-  <message name="IDS_OS_TRIAL_TRY_TITLE" desc="Title of the install option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    Try it first
-  </message>
-  <message name="IDS_OS_TRIAL_TRY_SUBTITLE" desc="Subtitle of the install option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    Keep your OS and run <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> from USB.
-  </message>
-  <message name="IDS_OS_TRIAL_NEXT_BUTTON" desc="Text of the next button in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
-    Next
-  </message>
-
-  <!-- Strings for OS install -->
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen.">
-    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step.">
-    Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> will overwrite all data on your device.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0" desc="First part of body text of the OS install screen's introduction step.">
-    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1" desc="Second part of body text of the OS install screen's introduction step.">
-    Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" desc="Footer text of the OS install screen's introduction step.">
-    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> may not work on uncertified models. Learn more at g.co/flex/InstallGuide.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
-    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
-    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> and erase hard drive?
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Make sure your data is backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Once installation starts it can’t be canceled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation dialog of the OS install screen">
-    Install
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
-    Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
-    Make sure your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen.">
-    Couldn’t complete installation
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS" desc="Label for an actionable link that opens dialog with installation logs.">
-    View logs
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found.">
-    The installer couldn’t find a valid destination to install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Try these troubleshooting steps:
-    <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure your device contains working internal storage such as a HDD, SSD, or eMMC
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model and check install notes
-    <ph name="END_LIST">&lt;/ul&gt;</ph>
-    <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
-    Installation complete
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" desc="Subtitle of the success page of the OS install screen">
-    Your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS">$2<ex>ChromeOS Flex</ex></ph>.
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
-    Service logs
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK" desc="Text of the send feedback button on the OS install screen">
-    Send feedback
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON" desc="Text of the shutdown button on the OS install screen">
-    Shut down
   </message>
 
   <!-- Other Network UI strings -->
@@ -1608,35 +1388,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     Flags
   </message>
 
-  <!-- Theme Selection -->
-  <message name="IDS_THEME_SELECTION_TITLE" desc="Title of the theme selection screen.">
-    Personalize your display theme
-  </message>
-  <message name="IDS_THEME_SELECTION_DESCRIPTION_CLAMSHELL" desc="Description of the theme selection screen for clamshell devices.">
-    Choose the theme that fits your needs. To change your theme, wallpaper, screen saver, and more, just right-click on the desktop.
-  </message>
-  <message name="IDS_THEME_SELECTION_DESCRIPTION_TABLET" desc="Description of the theme selection screen for tablets.">
-    Choose the theme that fits your needs. To change your theme, wallpaper, screen saver, and more, just touch &amp; hold on the desktop.
-  </message>
-  <message name="IDS_THEME_LIGHT_LABEL" desc="Name of the light theme button">
-    Light theme
-  </message>
-  <message name="IDS_THEME_LIGHT_DESCRIPTION" desc="Description of the light theme button">
-    Keep things bright and airy
-  </message>
-  <message name="IDS_THEME_DARK_LABEL" desc="Name of the dark theme button">
-    Dark theme
-  </message>
-  <message name="IDS_THEME_DARK_DESCRIPTION" desc="Description of the dark theme button">
-    Helpful in low light and saves battery
-  </message>
-  <message name="IDS_THEME_AUTO_LABEL" desc="Name of the auto theme button">
-    Auto
-  </message>
-  <message name="IDS_THEME_AUTO_DESCRIPTION" desc="Description of the auto theme button">
-    Switch themes at sunrise and sunset
-  </message>
-
   <!-- Strings for the office fallback dialog -->
   <message name="IDS_OFFICE_FALLBACK_CANCEL" desc="Label for the button that cancels office fallback.">
     Cancel
@@ -1956,17 +1707,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_OFFICE_FILE_ALREADY_BEING_OPENED_TITLE" desc="Title of notification for opening office files indicating same file is already being opened.">
     File is already being opened
-  </message>
-
-  <!-- Remote activity notification dialog -->
-  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_TITLE" desc="Title text displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
-    Maintenance is done
-  </message>
-  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_DESCRIPTION" desc="Detailed description displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
-    Your administrator has logged out. You're in control now.
-  </message>
-  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_BUTTON_LABEL" desc="Button label for describing that the device is available for use and user can click on the button to remove the full screen notification.">
-    Continue to use the device
   </message>
 
   <!-- App install dialog -->
