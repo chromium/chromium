@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -36,6 +37,10 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_device_info/test_device_info_builder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event_utils.h"
@@ -92,6 +97,7 @@ struct ProfileMenuViewPixelTestParam {
   bool sync_disabled = false;
   bool with_ai_avatar_ring = false;
   WithLocalData with_local_data = WithLocalData::kNoLocalData;
+  bool with_cross_device_signin_promo = false;
 
   // Features and parameters that are enabled in addition to the features
   // enabled by default.
@@ -331,15 +337,24 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .management_status = ManagementStatus::kAccountManaged,
         .sync_disabled = true,
     },
-    {.pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Light"},
-     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-     .use_multiple_profiles = true,
-     .with_ai_avatar_ring = true},
-    {.pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Dark",
-                          .use_dark_theme = true},
-     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-     .use_multiple_profiles = true,
-     .with_ai_avatar_ring = true},
+    {
+        .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Light"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .use_multiple_profiles = true,
+        .with_ai_avatar_ring = true,
+    },
+    {
+        .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Dark",
+                             .use_dark_theme = true},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .use_multiple_profiles = true,
+        .with_ai_avatar_ring = true,
+    },
+    {
+        .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromo"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_cross_device_signin_promo = true,
+    },
 };
 
 }  // namespace
@@ -373,6 +388,10 @@ class ProfileMenuViewPixelTest
     if (GetParam().with_ai_avatar_ring) {
       enabled_features_and_params.push_back(
           {features::kEnableAiSubscriptionAvatarRing, {}});
+    }
+    if (GetParam().with_cross_device_signin_promo) {
+      enabled_features_and_params.push_back(
+          {switches::kCrossDeviceSigninFromDesktop, {}});
     }
 
     // 4. Get default-enabled features without params-disabled.
@@ -428,6 +447,31 @@ class ProfileMenuViewPixelTest
                                          -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
+
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<syncer::FakeDeviceInfoSyncService>();
+          // Adds a signed in Device to ensure that the Cross-Device sign-in
+          // promo is not shown by default. Use `ClearAllSignedInDevices()` to
+          // clear this state.
+          service->GetDeviceInfoTracker()->Add(
+              syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+                  .WithGuid("remote_guid")
+                  .WithLastUpdatedTimestamp(base::Time::Now())
+                  .Build());
+          return service;
+        }));
+  }
+
+  void ClearAllSignedInDevices() {
+    auto* device_info_service = static_cast<syncer::FakeDeviceInfoSyncService*>(
+        DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile()));
+    auto* device_info_tracker = device_info_service->GetDeviceInfoTracker();
+
+    for (const auto& device : device_info_tracker->GetAllDeviceInfo()) {
+      device_info_tracker->Remove(device);
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -703,6 +747,11 @@ class ProfileMenuViewPixelTest
     if (GetParam().with_ai_avatar_ring) {
       browser()->profile()->GetPrefs()->SetInteger(
           subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+    }
+
+    if (GetParam().with_cross_device_signin_promo) {
+      // Remove all the signed in devices - so that the promo can be shown.
+      ClearAllSignedInDevices();
     }
   }
 
