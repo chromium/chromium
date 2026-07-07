@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_to_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tab_management_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -56,6 +57,9 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
     case optimization_guide::proto::Action::kAttemptLogin:
       return AttemptLoginTool::Create(action.attempt_login(), tool_delegate,
                                       profile_context_resolver_);
+    case optimization_guide::proto::Action::kCloseTab:
+      return TabManagementTool::CreateCloseTabTool(action.close_tab(),
+                                                   profile_context_resolver_);
     default:
       return base::unexpected(
           ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));
@@ -82,6 +86,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kScrollTo,
       optimization_guide::proto::Action::kSelect,
       optimization_guide::proto::Action::kAttemptLogin,
+      optimization_guide::proto::Action::kCloseTab,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 

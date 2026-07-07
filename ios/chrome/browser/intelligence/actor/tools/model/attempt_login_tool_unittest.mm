@@ -202,8 +202,7 @@ TEST_F(AttemptLoginToolTest, Create_NoWebStateForTabId) {
       result = CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
-  EXPECT_EQ(result.error().internal_code(),
-            InternalToolErrorCode::kCreationTargetTabNotFound);
+  EXPECT_FALSE(result.error().internal_code().has_value());
 }
 
 // Tests that creating the tool succeeds when given a valid tab ID corresponding

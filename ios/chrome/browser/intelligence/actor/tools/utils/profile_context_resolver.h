@@ -39,6 +39,7 @@ class ProfileContextResolver {
     base::WeakPtr<UrlLoadingBrowserAgent> url_loader;
     int tab_index = WebStateList::kInvalidIndex;
     base::WeakPtr<web::WebState> web_state;
+    base::WeakPtr<WebStateList> web_state_list;
   };
 
   // Resolves the given `tab_id` to its associated objects.

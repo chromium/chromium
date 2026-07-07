@@ -40,6 +40,8 @@ enum class ToolType {
   kScrollTo,
   // Tool to logging in to a website.
   kAttemptLogin,
+  // Tool to close a tab.
+  kCloseTab,
 };
 
 // iOS-specific error codes for tool execution failures.

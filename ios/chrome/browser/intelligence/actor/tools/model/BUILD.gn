@@ -20,6 +20,7 @@ source_set("actor_tool_factory") {
     ":scroll_to_tool",
     ":scroll_tool",
     ":select_tool",
+    ":tab_management_tool",
     ":type_tool",
     ":wait_tool",
     "//base",
@@ -92,6 +93,24 @@ source_set("navigate_tool") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
     "//url",
+  ]
+}
+
+source_set("tab_management_tool") {
+  sources = [
+    "tab_management_tool.h",
+    "tab_management_tool.mm",
+  ]
+  deps = [
+    ":actor_tool_interface",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
   ]
 }
 
@@ -442,6 +461,7 @@ source_set("unit_tests") {
     "select_tool_java_script_feature_unittest.mm",
     "select_tool_js_unittest.mm",
     "select_tool_unittest.mm",
+    "tab_management_tool_unittest.mm",
     "tool_controller_unittest.mm",
     "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
@@ -466,6 +486,7 @@ source_set("unit_tests") {
     ":scroll_tool_ts",
     ":select_tool",
     ":select_tool_ts",
+    ":tab_management_tool",
     ":tool_controller",
     ":type_tool",
     ":type_tool_ts",
@@ -482,14 +503,17 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
     "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/passwords/model/actor_login",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:ios_chrome_test_with_web_state",

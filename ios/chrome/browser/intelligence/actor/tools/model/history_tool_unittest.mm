@@ -96,8 +96,8 @@ TEST_F(HistoryToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> result =
       CreateTool(action.back());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(result.error().internal_code().has_value());
 }
 
 // Tests that the tool could not be created if the tab is removed before the

@@ -52,15 +52,20 @@ ProfileContextResolver::ResolveTab(int32_t tab_id) const {
   if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
       !browser_and_index.browser) {
     return base::unexpected(
-        ToolExecutionResult(InternalToolErrorCode::kCreationTargetTabNotFound));
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+  }
+
+  WebStateList* web_state_list = browser_and_index.browser->GetWebStateList();
+  if (!web_state_list) {
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
   }
 
   web::WebState* web_state =
-      browser_and_index.browser->GetWebStateList()->GetWebStateAt(
-          browser_and_index.tab_index);
+      web_state_list->GetWebStateAt(browser_and_index.tab_index);
   if (!web_state) {
     return base::unexpected(
-        ToolExecutionResult(InternalToolErrorCode::kCreationMissingWebState));
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
   }
 
   TabResolutionResult result;
@@ -71,6 +76,7 @@ ProfileContextResolver::ResolveTab(int32_t tab_id) const {
   }
   result.tab_index = browser_and_index.tab_index;
   result.web_state = web_state->GetWeakPtr();
+  result.web_state_list = web_state_list->AsWeakPtr();
   return result;
 }
 

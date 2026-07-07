@@ -105,8 +105,8 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
       CreateTool(action.navigate());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(result.error().internal_code().has_value());
 }
 
 TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {

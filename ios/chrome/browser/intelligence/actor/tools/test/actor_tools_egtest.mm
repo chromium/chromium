@@ -1091,4 +1091,21 @@ FindNodeResult FindNodeWithText(
                  expectedTimeoutWait, duration.InMilliseconds());
 }
 
+// Tests that the close tab tool successfully closes a tab.
+- (void)testCloseTabTool_success {
+  [ChromeEarlGrey openNewTab];
+  int initialTabCount = [ChromeEarlGrey mainTabCount];
+  int targetTabID = [ChromeEarlGrey currentTabID].intValue;
+
+  optimization_guide::proto::Action action;
+  action.mutable_close_tab()->set_tab_id(targetTabID);
+
+  [self executeAction:action];
+
+  int finalTabCount = [ChromeEarlGrey mainTabCount];
+  GREYAssertEqual(finalTabCount, initialTabCount - 1,
+                  @"Expected tab count to decrease by 1, was %d -> %d",
+                  initialTabCount, finalTabCount);
+}
+
 @end

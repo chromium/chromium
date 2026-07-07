@@ -36,6 +36,8 @@ ToolType ActorToolRequest::GetToolType() const {
       return ToolType::kScrollTo;
     case optimization_guide::proto::Action::kAttemptLogin:
       return ToolType::kAttemptLogin;
+    case optimization_guide::proto::Action::kCloseTab:
+      return ToolType::kCloseTab;
     default:
       return ToolType::kUnknown;
   }
@@ -94,6 +96,11 @@ web::WebStateID ActorToolRequest::GetTargetWebStateId() const {
     case optimization_guide::proto::Action::kAttemptLogin:
       if (action_.attempt_login().has_tab_id()) {
         tab_id = action_.attempt_login().tab_id();
+      }
+      break;
+    case optimization_guide::proto::Action::kCloseTab:
+      if (action_.close_tab().has_tab_id()) {
+        tab_id = action_.close_tab().tab_id();
       }
       break;
     default:

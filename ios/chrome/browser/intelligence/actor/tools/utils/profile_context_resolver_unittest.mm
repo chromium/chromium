@@ -62,8 +62,8 @@ TEST_F(ProfileContextResolverTest, ResolveValidTab) {
 TEST_F(ProfileContextResolverTest, ResolveInvalidTab) {
   auto result = resolver_->ResolveTab(999);
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().internal_code().value(),
-            InternalToolErrorCode::kCreationTargetTabNotFound);
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(result.error().internal_code().has_value());
 }
 
 // Tests that resolving a tab in an incognito browser returns target tab not
@@ -83,8 +83,8 @@ TEST_F(ProfileContextResolverTest, ResolveIncognitoTab) {
 
   auto result = resolver_->ResolveTab(tab_id);
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().internal_code().value(),
-            InternalToolErrorCode::kCreationTargetTabNotFound);
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(result.error().internal_code().has_value());
 }
 
 }  // namespace actor
