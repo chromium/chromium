@@ -581,9 +581,14 @@ void GPUQueue::CopyElementImageToTextureInternal(
     return;
   }
 
+  // If the image is larger than the destination texture, clip it
   wgpu::Extent3D dawn_copy_size;
-  dawn_copy_size.width = image->Size().width();
-  dawn_copy_size.height = image->Size().height();
+  dawn_copy_size.width = std::min(
+      dawn_destination.texture.GetWidth(),
+      base::ClampedNumeric(image->Size().width()).Cast<uint32_t>().RawValue());
+  dawn_copy_size.height = std::min(
+      dawn_destination.texture.GetHeight(),
+      base::ClampedNumeric(image->Size().height()).Cast<uint32_t>().RawValue());
   if (!CopyStaticImagBitmapToWGPUTexture(
           GetDawnControlClient(), device_->GetHandle(), image.get(),
           wgpu::Origin2D(), dawn_copy_size, dawn_destination,
