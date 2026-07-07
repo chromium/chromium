@@ -85,19 +85,30 @@ export class AppRouter {
   private updatePageState_(panelStateKind: PanelStateKind) {
     this.currentPanelStateKind = panelStateKind;
     this.glicController?.updatePageState(panelStateKind);
-    this.updateTitle();
+    this.updateUrl_();
   }
 
   private setInstanceId_(instanceId: string) {
     this.instanceId = instanceId;
-    this.updateTitle();
+    this.updateUrl_();
   }
 
-  private updateTitle() {
-    document.title = `Gemini in Chrome ${
-        this.currentPanelStateKind !== PanelStateKind.kHidden ?
-            'Open' :
-            'Closed'} ${this.instanceId || ''}`;
+  private updateUrl_() {
+    try {
+      const url = new URL(window.location.href);
+      if (this.instanceId) {
+        url.searchParams.set('instance', this.instanceId);
+      }
+      if (this.currentPanelStateKind !== undefined) {
+        url.searchParams.set(
+            'state',
+            this.currentPanelStateKind !== PanelStateKind.kHidden ? 'Open' :
+                                                                    'Closed');
+      }
+      window.history.replaceState({}, '', url.toString());
+    } catch (e) {
+      // Fallback in case window.location is unexpected.
+    }
   }
 
   private zoom_(zoomAction: ZoomAction) {
