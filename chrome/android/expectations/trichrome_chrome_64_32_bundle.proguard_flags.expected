@@ -386,6 +386,11 @@
   native <methods>;
 }
 
+# Keep onClick handlers in QrCodeCaptureActivity, which are called via reflection.
+-keepclassmembers class com.google.cardboard.sdk.QrCodeCaptureActivity {
+  public void skipQrCodeCapture(android.view.View);
+}
+
 # File: ../../third_party/jni_zero/proguard.flags
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
