@@ -15,6 +15,10 @@
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_tag.h"
 
+namespace base {
+class Value;
+}
+
 namespace base::i18n {
 
 namespace internal {
@@ -81,6 +85,17 @@ class LanguageTagConverter::KnownLanguageTagPassKey {
     return base::PassKey<KnownLanguageTagPassKey>();
   }
 };
+
+// Converts a LanguageTag to a string base::Value.
+BASE_I18N_EXPORT base::Value LanguageTagToValue(const LanguageTag& tag);
+
+// Parses a LanguageTag from a base::Value.
+// Returns std::nullopt if `value` is nullptr, not a string Value, or not a
+// valid BCP 47 language tag.
+BASE_I18N_EXPORT std::optional<LanguageTag> ValueToLanguageTag(
+    const base::Value* value);
+BASE_I18N_EXPORT std::optional<LanguageTag> ValueToLanguageTag(
+    const base::Value& value);
 
 }  // namespace base::i18n
 

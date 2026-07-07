@@ -10,6 +10,7 @@
 #include "base/i18n/tag_converters.h"
 #include "base/i18n/tags.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +44,24 @@ TEST(LanguageTagTest, ParseAndToString) {
 
   EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("EN-us"),
               OptionalToString("en-US"));
+}
+
+TEST(LanguageTagTest, ValueConversions) {
+  const LanguageTag en_tag = GetKnownLanguageTag("en-US");
+
+  // LanguageTagToValue
+  base::Value value = LanguageTagToValue(en_tag);
+  EXPECT_TRUE(value.is_string());
+  EXPECT_EQ(value.GetString(), "en-US");
+
+  // ValueToLanguageTag (valid)
+  EXPECT_THAT(ValueToLanguageTag(value), OptionalToString("en-US"));
+  EXPECT_THAT(ValueToLanguageTag(&value), OptionalToString("en-US"));
+
+  // ValueToLanguageTag (invalid & non-string inputs)
+  EXPECT_EQ(ValueToLanguageTag(nullptr), std::nullopt);
+  EXPECT_EQ(ValueToLanguageTag(base::Value(42)), std::nullopt);
+  EXPECT_EQ(ValueToLanguageTag(base::Value("invalid---tag")), std::nullopt);
 }
 
 TEST(LanguageTagTest, InvalidLocales) {

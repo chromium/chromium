@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 
 namespace base::i18n {
 namespace {
@@ -139,6 +140,22 @@ std::optional<LanguageTag> LanguageTagConverter::FromString(
   }
 
   return impl_->FromString(*bcp47_converted_tag);
+}
+
+base::Value LanguageTagToValue(const LanguageTag& tag) {
+  return base::Value(tag.tag_string());
+}
+
+std::optional<LanguageTag> ValueToLanguageTag(const base::Value* value) {
+  return value ? ValueToLanguageTag(*value) : std::nullopt;
+}
+
+std::optional<LanguageTag> ValueToLanguageTag(const base::Value& value) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
+    return std::nullopt;
+  }
+  return LanguageTagConverter::GetInstance().FromString(*str);
 }
 
 }  // namespace base::i18n
