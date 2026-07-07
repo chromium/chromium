@@ -36,12 +36,28 @@ PaymentsChurnedUsersBubbleController::From(tabs::TabInterface& tab_interface) {
   return Get(tab_interface.GetUnownedUserDataHost());
 }
 
-void PaymentsChurnedUsersBubbleController::Show() {
+void PaymentsChurnedUsersBubbleController::Show(
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
   if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
   is_reshow_ = false;
+  accept_callback_ = std::move(accept_callback);
+  cancel_callback_ = std::move(cancel_callback);
   QueueOrShowBubble();
+}
+
+void PaymentsChurnedUsersBubbleController::OnBubbleAccepted() {
+  if (accept_callback_) {
+    std::move(accept_callback_).Run();
+  }
+}
+
+void PaymentsChurnedUsersBubbleController::OnBubbleCancelled() {
+  if (cancel_callback_) {
+    std::move(cancel_callback_).Run();
+  }
 }
 
 void PaymentsChurnedUsersBubbleController::ReshowBubble() {

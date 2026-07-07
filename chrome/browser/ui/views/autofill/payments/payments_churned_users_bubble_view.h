@@ -38,6 +38,9 @@ class PaymentsChurnedUsersBubbleView : public AutofillLocationBarBubble {
   void WindowClosing() override;
 
  private:
+  void OnDialogAccepted();
+  void OnDialogDeclined();
+
   // LocationBarBubbleDelegateView:
   void Init() override;
 

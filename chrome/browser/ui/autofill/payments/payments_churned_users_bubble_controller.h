@@ -35,8 +35,11 @@ class PaymentsChurnedUsersBubbleController
   static PaymentsChurnedUsersBubbleController* From(
       tabs::TabInterface& tab_interface);
 
-  void Show();
+  void Show(base::OnceClosure accept_callback,
+            base::OnceClosure cancel_callback);
   void ReshowBubble();
+  void OnBubbleAccepted();
+  void OnBubbleCancelled();
 
   // AutofillBubbleControllerBase:
   void OnBubbleDiscarded() override;
@@ -59,6 +62,9 @@ class PaymentsChurnedUsersBubbleController
       scoped_unowned_user_data_;
 
   bool is_reshow_ = false;
+
+  base::OnceClosure accept_callback_;
+  base::OnceClosure cancel_callback_;
 
   base::WeakPtrFactory<PaymentsChurnedUsersBubbleController> weak_ptr_factory_{
       this};

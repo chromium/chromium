@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/payments_churned_users_manager.h"
 
+#include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -32,7 +33,10 @@ class MockPaymentsAutofillClient : public TestPaymentsAutofillClient {
       : TestPaymentsAutofillClient(client) {}
   ~MockPaymentsAutofillClient() override = default;
 
-  MOCK_METHOD(void, ShowPaymentsChurnedUsersUI, (), (override));
+  MOCK_METHOD(void,
+              ShowPaymentsChurnedUsersUI,
+              (base::OnceClosure, base::OnceClosure),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -98,8 +102,35 @@ TEST_F(PaymentsChurnedUsersManagerTest, ShowUITriggered) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI());
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_));
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+}
+
+// Tests that the Payments Churned Users UI's accept callback turns on the
+// autofill credit card enabled pref.
+TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackTurnsOnPref) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  base::OnceClosure accept_callback;
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .WillOnce([&](base::OnceClosure accept, base::OnceClosure cancel) {
+        accept_callback = std::move(accept);
+      });
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  ASSERT_FALSE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillCreditCardEnabled));
+  ASSERT_TRUE(accept_callback);
+  std::move(accept_callback).Run();
+  EXPECT_TRUE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillCreditCardEnabled));
 }
 
 // Tests that the Payments Churned Users UI is not shown if the feature flag is
@@ -112,7 +143,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, FeatureFlagOff_ShowUINotTriggered) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI()).Times(0);
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .Times(0);
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
@@ -127,7 +160,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
 
   autofill_client().GetPrefs()->ClearPref(prefs::kAutofillCreditCardEnabled);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI()).Times(0);
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .Times(0);
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
@@ -141,7 +176,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, NotCreditCardForm_ShowUINotTriggered) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI()).Times(0);
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .Times(0);
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/false);
 }
 
@@ -156,7 +193,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI()).Times(0);
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .Times(0);
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true,
                                  /*is_visible=*/false);
 }
@@ -171,7 +210,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, PrefAlreadyEnabled_ShowUINotTriggered) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            true);
 
-  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI()).Times(0);
+  EXPECT_CALL(*payments_client(),
+              ShowPaymentsChurnedUsersUI(testing::_, testing::_))
+      .Times(0);
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
