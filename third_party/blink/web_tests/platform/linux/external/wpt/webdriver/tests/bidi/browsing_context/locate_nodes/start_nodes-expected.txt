@@ -1,7 +1,5 @@
 This is a wdspec test.
 [FAIL] test_locate_with_svg_context_node[innerText-foo-expected2]
   AssertionError: assert 1 == 0
-[FAIL] test_locate_with_svg_context_node[accessibility-value3-expected3]
-  AssertionError: assert 1 == 0
 Harness: the test ran to completion.
 
