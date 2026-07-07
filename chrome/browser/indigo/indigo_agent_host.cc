@@ -37,6 +37,17 @@ std::optional<std::string> ReadFileToStringSync(const base::FilePath& path) {
   }
   return std::nullopt;
 }
+
+IndigoTransformationResult MapInvokeErrorToTransformationResult(
+    chrome::mojom::IndigoInvokeError error) {
+  switch (error) {
+    case chrome::mojom::IndigoInvokeError::kNoPrimaryImageFound:
+      return IndigoTransformationResult::kNoPrimaryImageFound;
+    case chrome::mojom::IndigoInvokeError::
+        kPrimaryImageReplacementCreationFailed:
+      return IndigoTransformationResult::kPrimaryImageReplacementCreationFailed;
+  }
+}
 }  // namespace
 
 IndigoAgentHost::IndigoAgentHost(content::Page& page)
@@ -136,7 +147,8 @@ void IndigoAgentHost::StartImageReplacement(
   std::move(callback).Run();
 }
 
-void IndigoAgentHost::ReportInvokeError() {
+void IndigoAgentHost::ReportInvokeError(
+    chrome::mojom::IndigoInvokeError error) {
   // The renderer could report an invocation error between when Reset() is
   // called and it's processed in the renderer process. We ignore the error in
   // this case since the script will be reset shortly anyway.
@@ -149,7 +161,8 @@ void IndigoAgentHost::ReportInvokeError() {
   if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
     if (auto* controller = IndigoPageActionController::From(tab)) {
       controller->Reset(ResetType::kResetReplacementsAndContentScript);
-      controller->ShowInvocationErrorToast();
+      controller->ShowInvocationErrorToast(
+          MapInvokeErrorToTransformationResult(error));
     }
   }
 }

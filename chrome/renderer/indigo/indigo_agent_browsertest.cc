@@ -55,13 +55,17 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
     std::move(callback).Run();
   }
 
-  void ReportInvokeError() override {
+  void ReportInvokeError(chrome::mojom::IndigoInvokeError error) override {
     invoke_error_reported_ = true;
+    last_invoke_error_ = error;
     invoke_error_future_.SetValue();
   }
 
   bool last_is_primary() const { return last_is_primary_; }
   bool invoke_error_reported() const { return invoke_error_reported_; }
+  std::optional<chrome::mojom::IndigoInvokeError> last_invoke_error() const {
+    return last_invoke_error_;
+  }
 
  private:
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
@@ -70,6 +74,7 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
   base::test::TestFuture<void> invoke_error_future_;
   bool last_is_primary_ = false;
   bool invoke_error_reported_ = false;
+  std::optional<chrome::mojom::IndigoInvokeError> last_invoke_error_;
 };
 
 class IndigoAgentBrowserTest : public ChromeRenderViewTest {
@@ -463,6 +468,9 @@ TEST_F(IndigoAgentBrowserTest,
   // Verify that the host received the failure notification.
   ASSERT_TRUE(host_.WaitForInvokeError());
   EXPECT_TRUE(host_.invoke_error_reported());
+  EXPECT_EQ(
+      host_.last_invoke_error(),
+      chrome::mojom::IndigoInvokeError::kPrimaryImageReplacementCreationFailed);
 }
 
 TEST_F(IndigoAgentBrowserTest, NotifyNoPrimaryImageFoundTriggersMojoCallback) {
@@ -490,6 +498,8 @@ TEST_F(IndigoAgentBrowserTest, NotifyNoPrimaryImageFoundTriggersMojoCallback) {
   // Verify that the host received the failure notification.
   ASSERT_TRUE(host_.WaitForInvokeError());
   EXPECT_TRUE(host_.invoke_error_reported());
+  EXPECT_EQ(host_.last_invoke_error(),
+            chrome::mojom::IndigoInvokeError::kNoPrimaryImageFound);
 }
 
 }  // namespace
