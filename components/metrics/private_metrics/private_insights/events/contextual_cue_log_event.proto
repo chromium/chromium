@@ -17,7 +17,7 @@ message ContextualCueLogEvent {
 
     // Serialized JSON array, containing objects in format:
     //
-    //     { "page": <string>, "title": <string> }
+    //     { "url": <string>, "title": <string> }
     //
     // to work around Federated Compute Platform's limitation in handling
     // repeated fields.
