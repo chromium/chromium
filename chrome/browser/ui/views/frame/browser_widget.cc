@@ -166,6 +166,10 @@ void BrowserWidget::InitBrowserWidget() {
 #endif
   }
 
+#if BUILDFLAG(IS_LINUX)
+  params.startup_id = browser->create_params().startup_id;
+#endif
+
 #if BUILDFLAG(IS_OZONE)
   params.inhibit_keyboard_shortcuts =
       browser->is_type_app() || browser->is_type_app_popup();

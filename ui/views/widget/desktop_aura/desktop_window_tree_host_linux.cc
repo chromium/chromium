@@ -489,6 +489,7 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   properties->wm_role_name = params.wm_role_name;
 
   properties->wayland_app_id = params.wayland_app_id;
+  properties->startup_id = params.startup_id;
 
   DCHECK(!properties->x11_extension_delegate);
   properties->x11_extension_delegate = this;

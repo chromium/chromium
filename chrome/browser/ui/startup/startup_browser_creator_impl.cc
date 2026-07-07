@@ -69,6 +69,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
 #include "ui/display/screen.h"
 #endif
 
@@ -305,7 +306,16 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     profile_ = browser->profile();
   }
 
-  if (!browser || !browser->is_type_normal()) {
+#if BUILDFLAG(IS_LINUX)
+  std::string startup_id =
+      command_line_->GetSwitchValueASCII(base::nix::kXdgActivationTokenSwitch);
+  if (startup_id.empty()) {
+    startup_id = command_line_->GetSwitchValueASCII("desktop-startup-id");
+  }
+#endif
+
+  const bool create_new_browser = !browser || !browser->is_type_normal();
+  if (create_new_browser) {
     CHECK(profile_);
     // In some conditions a new browser object cannot be created. The most
     // common reason for not being able to create browser is having this call
@@ -323,8 +333,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     Browser::CreateParams params = Browser::CreateParams(profile_, false);
     params.creation_source = Browser::CreationSource::kStartupCreator;
 #if BUILDFLAG(IS_LINUX)
-    params.startup_id =
-        command_line_->GetSwitchValueASCII("desktop-startup-id");
+    params.startup_id = startup_id;
 #endif
     if (command_line_->HasSwitch(switches::kWindowName)) {
       params.user_title =
@@ -448,6 +457,11 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     }
   }
 
+#if BUILDFLAG(IS_LINUX)
+  if (!create_new_browser && !startup_id.empty()) {
+    base::nix::SetActivationToken(startup_id);
+  }
+#endif
   browser->GetWindow()->Show();
 
   return browser;
