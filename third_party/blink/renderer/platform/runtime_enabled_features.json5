@@ -4665,6 +4665,13 @@
       status: "stable",
     },
     {
+      // Makes showPopover() throw an exception instead of just logging a console
+      // message when calling showPopover() within another popover hide/show
+      // operation. https://crbug.com/527495812
+      name: "PopoverHintNestedShowException",
+      status: "experimental",
+    },
+    {
       // Simplifies the behavior and stacking interactions of popover=hint and
       // popover=auto. See https://crbug.com/499019927.
       // This shipped in M150, was disabled via Finch, and was re-enabled in
