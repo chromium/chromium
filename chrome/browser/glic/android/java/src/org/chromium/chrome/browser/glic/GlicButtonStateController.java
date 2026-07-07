@@ -118,21 +118,24 @@ public class GlicButtonStateController
         }
     }
 
-    /** Updates the button state based on the current active task. */
+    /** Updates the button state based on the current active tasks. */
     public void updateButtonState() {
         if (mCurrentActorService == null) {
             updateButtonStateAndControls(ButtonState.DEFAULT);
             return;
         }
 
-        ActorTask task = mCurrentActorService.getCurrentActiveTask();
-        int newButtonState;
-        if (task != null) {
-            newButtonState = mapTaskStateToButtonState(task.getState());
+        List<ActorTask> tasks = mCurrentActorService.getActiveTasks();
+        int newButtonState = ButtonState.DEFAULT;
+
+        if (tasks != null && !tasks.isEmpty()) {
+            for (ActorTask task : tasks) {
+                int taskButtonState = mapTaskStateToButtonState(task.getState());
+                // Priority: NEEDS_REVIEW > DONE > WORKING > DEFAULT.
+                newButtonState = getHigherPriorityState(newButtonState, taskButtonState);
+            }
         } else if (mPersistDoneState) {
             newButtonState = ButtonState.DONE;
-        } else {
-            newButtonState = ButtonState.DEFAULT;
         }
 
         updateButtonStateAndControls(newButtonState);
@@ -153,6 +156,21 @@ public class GlicButtonStateController
             }
             mListener.onStateChanged(mButtonState, mIsPanelOpen);
         }
+    }
+
+    private @ButtonState int getHigherPriorityState(
+            @ButtonState int currentHighestState, @ButtonState int candidateState) {
+        if (currentHighestState == ButtonState.NEEDS_REVIEW
+                || candidateState == ButtonState.NEEDS_REVIEW) {
+            return ButtonState.NEEDS_REVIEW;
+        }
+        if (currentHighestState == ButtonState.DONE || candidateState == ButtonState.DONE) {
+            return ButtonState.DONE;
+        }
+        if (currentHighestState == ButtonState.WORKING || candidateState == ButtonState.WORKING) {
+            return ButtonState.WORKING;
+        }
+        return ButtonState.DEFAULT;
     }
 
     private void acquireBrowserControls() {
@@ -227,7 +245,7 @@ public class GlicButtonStateController
         if (newState == ActorTaskState.FINISHED) {
             mPersistDoneState = true;
         }
-        updateButtonStateAndControls(mapTaskStateToButtonState(newState));
+        updateButtonState();
     }
 
     @Override

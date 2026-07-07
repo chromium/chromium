@@ -271,7 +271,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                     currentTab != null
                             && mStateController.getActiveTaskIdOnTab(currentTab.getId()) != null;
 
-            if (!isOnActingTab && !tasks.isEmpty()) {
+            if ((!isOnActingTab || tasks.size() > 1) && !tasks.isEmpty()) {
                 if (mTaskMenuCoordinator == null) {
                     mTaskMenuCoordinator =
                             new GlicTaskMenuCoordinator(

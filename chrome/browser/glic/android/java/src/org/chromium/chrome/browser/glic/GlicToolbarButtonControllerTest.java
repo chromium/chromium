@@ -167,7 +167,7 @@ public class GlicToolbarButtonControllerTest {
         // Mock an active task that needs review.
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         // Trigger state change.
         actorObserver.onTaskStateChanged(1, ActorTaskState.WAITING_ON_USER);
@@ -191,7 +191,7 @@ public class GlicToolbarButtonControllerTest {
         // Mock an active task that is working.
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         // Trigger state change.
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
@@ -212,7 +212,7 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.PAUSED_BY_USER);
 
@@ -231,7 +231,7 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.FINISHED);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
 
@@ -243,7 +243,7 @@ public class GlicToolbarButtonControllerTest {
                 mContext.getString(R.string.glic_button_status_done_a11y_label),
                 buttonData.getButtonSpec().getContentDescription());
 
-        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+        when(mActorService.getActiveTasks()).thenReturn(null);
 
         buttonData = mController.get(mTab);
         Assert.assertEquals(
@@ -262,7 +262,7 @@ public class GlicToolbarButtonControllerTest {
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
         // Mock that the service returns null (task is gone).
-        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+        when(mActorService.getActiveTasks()).thenReturn(null);
 
         // Trigger state change to FINISHED.
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
@@ -286,11 +286,11 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.FINISHED);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
 
-        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+        when(mActorService.getActiveTasks()).thenReturn(null);
 
         ButtonData buttonData = mController.get(mTab);
         Assert.assertEquals(
@@ -317,13 +317,13 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.FINISHED);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
 
         ActorTask newTask = mock(ActorTask.class);
         when(newTask.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getCurrentActiveTask()).thenReturn(newTask);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(newTask));
 
         actorObserver.onTaskStateChanged(2, ActorTaskState.ACTING);
 
@@ -423,7 +423,7 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
 
@@ -439,7 +439,7 @@ public class GlicToolbarButtonControllerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
         Assert.assertEquals(
@@ -571,6 +571,10 @@ public class GlicToolbarButtonControllerTest {
         controller.get(mTab); // initialize observations
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         // Trigger state change
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
