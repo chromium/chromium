@@ -25,6 +25,7 @@
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -218,7 +219,7 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
 
   channel_ = std::move(server);
 
-  // TODO: crbug.com/475611769 - watch for process exits.
+  WatchForProcessExit();
 }
 
 void LinuxWorkerProcessLauncherDelegate::GetRemoteAssociatedInterface(
@@ -254,6 +255,7 @@ void LinuxWorkerProcessLauncherDelegate::KillProcess() {
     worker_process_.Terminate(kSuccessExitCode, /*wait=*/true);
     worker_process_.Close();
   }
+  process_exit_watcher_.Reset();
 }
 
 void LinuxWorkerProcessLauncherDelegate::OnChannelConnected(int32_t peer_pid) {
@@ -293,12 +295,15 @@ void LinuxWorkerProcessLauncherDelegate::WatchForProcessExit() {
   DCHECK(worker_process_.IsValid());
   DCHECK(process_exit_watcher_.is_null());
 
-  auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::BEST_EFFORT});
   process_exit_watcher_.emplace(
       task_runner, worker_process_.Duplicate(),
-      base::BindOnce(&LinuxWorkerProcessLauncherDelegate::OnProcessExited,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&LinuxWorkerProcessLauncherDelegate::OnProcessExited,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void LinuxWorkerProcessLauncherDelegate::OnProcessExited(int exit_code) {
@@ -307,7 +312,9 @@ void LinuxWorkerProcessLauncherDelegate::OnProcessExited(int exit_code) {
   worker_process_.Close();
   process_exit_watcher_.Reset();
 
-  event_handler_->OnProcessExited(exit_code);
+  if (event_handler_) {
+    event_handler_->OnProcessExited(exit_code);
+  }
 }
 
 void LinuxWorkerProcessLauncherDelegate::ReportFatalError() {
