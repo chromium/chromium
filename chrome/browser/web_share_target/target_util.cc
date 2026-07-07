@@ -4,11 +4,11 @@
 
 #include "chrome/browser/web_share_target/target_util.h"
 
-#include <sstream>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
@@ -76,19 +76,20 @@ void AddPlainText(const std::string& value_name,
 namespace web_share_target {
 
 std::string PercentEscapeString(const std::string& unescaped_string) {
-  std::ostringstream escaped_oss;
+  std::string escaped;
+  escaped.reserve(unescaped_string.size());
   for (char c : unescaped_string) {
     if (c == '"') {
-      escaped_oss << "%22";
+      escaped += "%22";
     } else if (c == 0x0a) {
-      escaped_oss << "%0A";
+      escaped += "%0A";
     } else if (c == 0x0d) {
-      escaped_oss << "%0D";
+      escaped += "%0D";
     } else {
-      escaped_oss << c;
+      escaped += c;
     }
   }
-  return escaped_oss.str();
+  return escaped;
 }
 
 scoped_refptr<network::ResourceRequestBody> ComputeMultipartBody(
@@ -131,14 +132,16 @@ std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
                                   const std::vector<std::string>& values) {
   if (names.size() != values.size() || names.size() == 0)
     return "";
-  std::ostringstream application_body_oss;
-  application_body_oss << base::EscapeUrlEncodedData(names[0], true) << "="
-                       << base::EscapeUrlEncodedData(values[0], true);
-  for (size_t i = 1; i < names.size(); i++)
-    application_body_oss << "&" << base::EscapeUrlEncodedData(names[i], true)
-                         << "=" << base::EscapeUrlEncodedData(values[i], true);
+  std::string application_body =
+      base::StrCat({base::EscapeUrlEncodedData(names[0], true), "=",
+                    base::EscapeUrlEncodedData(values[0], true)});
+  for (size_t i = 1; i < names.size(); i++) {
+    base::StrAppend(&application_body,
+                    {"&", base::EscapeUrlEncodedData(names[i], true), "=",
+                     base::EscapeUrlEncodedData(values[i], true)});
+  }
 
-  return application_body_oss.str();
+  return application_body;
 }
 
 }  // namespace web_share_target
