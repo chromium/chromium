@@ -618,7 +618,7 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
       return {
         suggestions: {
           tabId: idToClient(zeroStateData.tabId),
-          url: urlToClient(zeroStateData.tabUrl),
+          url: urlToClient(zeroStateData.url),
           suggestions: zeroStateData.suggestions,
         },
       };

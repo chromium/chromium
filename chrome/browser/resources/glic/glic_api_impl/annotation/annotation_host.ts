@@ -29,7 +29,7 @@ export class AnnotationHostMessageHandler implements
               'searchRangeStartNodeId without documentId');
         }
         return {
-          exactTextSelector: {
+          exactText: {
             text: selector.exactText.text,
             searchRangeStartNodeId:
                 selector.exactText.searchRangeStartNodeId ?? null,
@@ -44,7 +44,7 @@ export class AnnotationHostMessageHandler implements
               'searchRangeStartNodeId without documentId');
         }
         return {
-          textFragmentSelector: {
+          textFragment: {
             textStart: selector.textFragment.textStart,
             textEnd: selector.textFragment.textEnd,
             searchRangeStartNodeId:
@@ -59,7 +59,7 @@ export class AnnotationHostMessageHandler implements
               'nodeId without documentId');
         }
         return {
-          nodeSelector: {
+          node: {
             nodeId: selector.node.nodeId,
           },
         };

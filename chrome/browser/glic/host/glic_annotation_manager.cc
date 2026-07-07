@@ -73,7 +73,7 @@ GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
     return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
 
-  if (params.selector->is_node_selector()) {
+  if (params.selector->is_node()) {
     return base::unexpected(mojom::ScrollToErrorReason::kNotSupported);
   }
 
@@ -168,8 +168,8 @@ void GlicAnnotationManager::ScrollTo(mojom::ScrollToParamsPtr params,
   std::optional<int> search_range_start_node_id;
   std::optional<int> node_id;
 
-  if (selector->is_exact_text_selector()) {
-    auto* exact_text_selector = selector->get_exact_text_selector().get();
+  if (selector->is_exact_text()) {
+    auto* exact_text_selector = selector->get_exact_text().get();
     const std::string& exact_text = exact_text_selector->text;
     if (exact_text.empty()) {
       std::move(wrapped_callback)
@@ -187,8 +187,8 @@ void GlicAnnotationManager::ScrollTo(mojom::ScrollToParamsPtr params,
           exact_text_selector->search_range_start_node_id;
     }
     text_fragment = shared_highlighting::TextFragment(exact_text);
-  } else if (selector->is_text_fragment_selector()) {
-    auto* text_fragment_selector = selector->get_text_fragment_selector().get();
+  } else if (selector->is_text_fragment()) {
+    auto* text_fragment_selector = selector->get_text_fragment().get();
     const std::string& text_start = text_fragment_selector->text_start;
     if (text_start.empty()) {
       std::move(wrapped_callback)
@@ -214,13 +214,13 @@ void GlicAnnotationManager::ScrollTo(mojom::ScrollToParamsPtr params,
     text_fragment = shared_highlighting::TextFragment(text_start, text_end,
                                                       /*prefix=*/std::string(),
                                                       /*suffix=*/std::string());
-  } else if (selector->is_node_selector()) {
+  } else if (selector->is_node()) {
     if (!params->document_id) {
       mojo::ReportBadMessage(
           "When node_id is set, document_id should be set as well.");
       return;
     }
-    node_id = selector->get_node_selector()->node_id;
+    node_id = selector->get_node()->node_id;
   } else {
     mojo::ReportBadMessage(
         "The client should have verified that one of the selector types was "

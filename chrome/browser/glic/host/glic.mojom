@@ -475,20 +475,24 @@ union CaptureScreenshotResult {
   Screenshot screenshot;
 };
 
-// Information about the user profile.
+// @generate glic_api
+// Information from a signed-in Chrome user profile.
 struct UserProfileInfo {
-  // Profile avatar image bitmap.
+  // @glic_ignore
   skia.mojom.BitmapN32? avatar_icon;
-  // The user's full name for display purposes.
+  // The full name displayed for this profile.
   string display_name;
-  // The local name for the Chrome profile.
-  string local_profile_name;
-  // The user's email.
-  string email;
-  // The user's given name.
+  // The given name for this profile.
+  // @glic_optional
   string given_name;
+  // The local profile name, which can be customized by the user.
+  // @glic_optional
+  string local_profile_name;
+  // The profile email.
+  string email;
   // Whether the profile's signed-in account is a managed account.
-  // See `policy::ManagementService::IsAccountManaged()`.
+  /// See `policy::ManagementService::IsAccountManaged()`.
+  // @glic_optional
   bool is_managed;
 };
 
@@ -729,61 +733,84 @@ struct GetPinCandidatesOptions {
   string? query;
 };
 
-// Parameters for ScrollTo.
+// @generate glic_api
+// Params for scrollTo().
 struct ScrollToParams {
-  // Used to specify content to scroll to (and optionally highlight).
+  // Used to specify content to scroll to and highlight.
   ScrollToSelector selector;
 
-  // Whether to highlight the selected content.
+  // Whether we should highlight the content selected. True by default if not
+  // specified. If false, the content is scrolled to but not highlighted.
+  // @glic_optional
   bool highlight;
 
-  // The document targeted by this operation. When specified, it verifies
-  // that the document in the primary main frame of the currently focused tab
-  // matches the ID (and fails the operation if it doesn't). The verification
-  // does not happen for PDFs.
+  // Identifies the document we want to perform the scrollTo operation on. When
+  // specified, we verify that the currently focused tab's document matches the
+  // ID, and throw an error if doesn't. This is a required parameter for all
+  // document types except PDF (see `url` below), and a NOT_SUPPORTED error will
+  // be thrown if it is not specified.
   mojo_base.mojom.UnguessableToken? document_id;
 
-  // The URL of the document targeted by this operation. If the currently
-  // focused tab has a PDF loaded, this url is matched and verified against the
-  // tab's primary main frame's URL (and is ignored otherwise).
+  // Identifies the url of a document we want to perform the scrollTo
+  // operation on. This is only required when scrolling PDF documents (and is
+  // ignored otherwise; other document types require `documentId` to be
+  // specified instead), and is used to verify that the currently focused tab
+  // still points to a PDF with that URL. If not specified, and the currently
+  // focused tab has a PDF loaded, a NOT_SUPPORTED error will be thrown.
   url.mojom.Url? url;
 };
 
-// Used to select content in a page to scroll to and highlight.
+// @generate glic_api
+// Used to select content to scroll to. Note that only one concrete selector
+// type can be present.
+// Additional selector types will be added to this API in the future.
 union ScrollToSelector {
-  ScrollToTextSelector exact_text_selector;
-  ScrollToTextFragmentSelector text_fragment_selector;
-  ScrollToNodeSelector node_selector;
+  ScrollToTextSelector exact_text;
+  ScrollToTextFragmentSelector text_fragment;
+  ScrollToNodeSelector node;
 };
 
-// Used to specify exact text to scroll to and highlight.
+// @generate glic_api
+// scrollTo() selector to select exact text in HTML and PDF documents within
+// a given search range starting from the start node (specified with
+// searchRangeStartNodeId) to the end of the document. If not specified, the
+// search range will be the entire document.
+// The documentId in ScrollToParams must be specified if a
+// searchRangeStartNodeId is specified.
 struct ScrollToTextSelector {
   // Exact text to select.
   string text;
-  // The DOMNodeId of the start node for the search range (the end is always
-  // the end of the document). If not specified, the search range will be the
-  // entire document.
+  // See common_ancestor_dom_node_id in proto ContentAttributes
+  // in components/optimization_guide/proto/features/common_quality_data.proto.
   int32? search_range_start_node_id;
 };
 
-// Used to specify a text fragment to scroll to and highlight. Text selected
-// will match text block that starts with `text_start` and ends with `text_end`
-// (and can have any text in the middle).
+// @generate glic_api
+// scrollTo() selector to select a range of text in HTML and PDF documents
+// within a given search range starting from the start node (specified with
+// searchRangeStartNodeId) to the end of the document. If not specified, the
+// search range will be the entire document.
+// The documentId in ScrollToParams must be specified if a
+// searchRangeStartNodeId is specified.
+// Text selected will match textStart <anything in the middle> textEnd.
 struct ScrollToTextFragmentSelector {
   // Start of text to select.
   string text_start;
   // End of text to select.
   string text_end;
-  // The DOMNodeId of the start node for the search range (the end is always
-  // the end of the document). If not specified, the search range will be the
-  // entire document.
+  // See common_ancestor_dom_node_id in proto ContentAttributes
+  // in components/optimization_guide/proto/features/common_quality_data.proto.
   int32? search_range_start_node_id;
 };
 
-// Used to specify a node to scroll to and highlight. All text within the node
-// will be highlighted.
+// @generate glic_api
+// scrollTo() selector to select all text inside a specific node (corresponding
+// to the provided nodeId). documentId must also be specified in ScrollToParams
+// when this selector is used.
 struct ScrollToNodeSelector {
-  // DOMNodeId of the node whose text will be highlighted (and scrolled to).
+  // Value should be obtained from common_ancestor_dom_node_id in
+  // ContentAttributes (see
+  // components/optimization_guide/proto/features/common_quality_data.proto)
   int32 node_id;
 };
 
@@ -974,30 +1001,42 @@ enum SkillsWebClientEvent {
 //  //tools/metrics/histograms/metadata/glic/enums.xml:SkillsWebClientEvent
 // )
 
-// A list of suggestions for the currently focused tab.
+// @generate glic_api
+// Zero-state suggestions for the current tab.
 struct ZeroStateSuggestions {
-  // The list of suggestions to present to the user.
+  // A collection of suggestions associated with the linked tab. This may be
+  // empty.
   array<SuggestionContent> suggestions;
-  // The unique tab id of the tab associated with the suggestions.
+  // A unique ID to track the the associated tab.
   int32 tab_id;
-  // The url of the tab associated with the suggestions.
-  url.mojom.Url tab_url;
+  // The url of the associated tab.
+  url.mojom.Url url;
 };
 
-// A list of suggestions for the currently pinned tabs.
+// @generate glic_api
+// Zero-state suggestions for the current tab context.
 struct ZeroStateSuggestionsV2 {
-  // The list of suggestions to present to the user.
+  // A collection of suggestions associated with current tab context. This may
+  // be empty.
   array<SuggestionContent> suggestions;
   // Whether there is a current outstanding request to generate suggestions for
   // the current tab context.
+  // @glic_optional
   bool is_pending;
   // The host's invocation source.
+  // @glic_optional
   InvocationSource invocation_source;
 };
 
-// The options associated with the current zero state suggestions.
+// @generate glic_api
+// Options for ensuring chrome will create Zero State Suggestions for a
+// specific webui context.
 struct ZeroStateSuggestionsOptions {
+  // If the suggestions will be used in a first run context.
+  // @glic_optional
   bool is_first_run;
+  // The list of tools that are currently supported.
+  // @glic_optional
   array<string> supported_tools;
 };
 

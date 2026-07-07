@@ -1464,6 +1464,7 @@ export enum ActInFocusedTabErrorReason {
   FAILED_TO_START_TASK = 4,
 }
 
+/** @deprecated Use `performAction` instead. */
 export declare interface ActInFocusedTabResult {
   // The tab context result after acting and gathering new context.
   tabContextResult?: TabContextResult;
@@ -1474,6 +1475,7 @@ export declare interface ActInFocusedTabResult {
   actionResult?: number;
 }
 
+/** @deprecated Use `performAction` instead. */
 export declare interface ActInFocusedTabParams {
   // Corresponds to
   // components/optimization_guide/proto/features/actions_data.proto:
@@ -1496,107 +1498,6 @@ export type CreateTaskError = ErrorWithReason<'createTask'>;
 
 /** Error type used for perform actions errors. */
 export type PerformActionsError = ErrorWithReason<'performActions'>;
-
-/** Params for scrollTo(). */
-export declare interface ScrollToParams {
-  /**
-   * Whether we should highlight the content selected. True by default if not
-   * specified. If false, the content is scrolled to but not highlighted.
-   */
-  highlight?: boolean;
-
-  /** Used to specify content to scroll to and highlight. */
-  selector: ScrollToSelector;
-
-  /**
-   * Identifies the document we want to perform the scrollTo operation on. When
-   * specified, we verify that the currently focused tab's document matches the
-   * ID, and throw an error if doesn't. This is a required parameter for all
-   * document types except PDF (see `url` below), and a NOT_SUPPORTED error will
-   * be thrown if it is not specified.
-   */
-  documentId?: string;
-
-  /**
-   * Identifies the url of a document we want to perform the scrollTo
-   * operation on. This is only required when scrolling PDF documents (and is
-   * ignored otherwise; other document types require `documentId` to be
-   * specified instead), and is used to verify that the currently focused tab
-   * still points to a PDF with that URL. If not specified, and the currently
-   * focused tab has a PDF loaded, a NOT_SUPPORTED error will be thrown.
-   */
-  url?: string;
-}
-
-/**
- * Used to select content to scroll to. Note that only one concrete selector
- * type can be present.
- * Additional selector types will be added to this API in the future.
- */
-export declare interface ScrollToSelector {
-  /** Exact text selector, see ScrollToTextSelector for more details. */
-  exactText?: ScrollToTextSelector;
-
-  /**
-   * Text fragment selector, see ScrollToTextFragmentSelector for more details.
-   */
-  textFragment?: ScrollToTextFragmentSelector;
-
-  /** Node selector, see ScrollToNodeSelector for more details. */
-  node?: ScrollToNodeSelector;
-}
-
-/**
- * scrollTo() selector to select exact text in HTML and PDF documents within
- * a given search range starting from the start node (specified with
- * searchRangeStartNodeId) to the end of the document. If not specified, the
- * search range will be the entire document.
- * The documentId in ScrollToParams must be specified if a
- * searchRangeStartNodeId is specified.
- */
-export declare interface ScrollToTextSelector {
-  text: string;
-
-  /**
-   * See common_ancestor_dom_node_id in proto ContentAttributes
-   * in components/optimization_guide/proto/features/common_quality_data.proto.
-   */
-  searchRangeStartNodeId?: number;
-}
-
-/**
- * scrollTo() selector to select a range of text in HTML and PDF documents
- * within a given search range starting from the start node (specified with
- * searchRangeStartNodeId) to the end of the document. If not specified, the
- * search range will be the entire document.
- * The documentId in ScrollToParams must be specified if a
- * searchRangeStartNodeId is specified.
- * Text selected will match textStart <anything in the middle> textEnd.
- */
-export declare interface ScrollToTextFragmentSelector {
-  textStart: string;
-  textEnd: string;
-
-  /**
-   * See common_ancestor_dom_node_id in proto ContentAttributes
-   * in components/optimization_guide/proto/features/common_quality_data.proto.
-   */
-  searchRangeStartNodeId?: number;
-}
-
-/**
- * scrollTo() selector to select all text inside a specific node (corresponding
- * to the provided nodeId). documentId must also be specified in ScrollToParams
- * when this selector is used.
- */
-export declare interface ScrollToNodeSelector {
-  /**
-   * Value should be obtained from common_ancestor_dom_node_id in
-   * ContentAttributes (see
-   * components/optimization_guide/proto/features/common_quality_data.proto)
-   */
-  nodeId: number;
-}
 
 /** Error type used for scrollTo(). */
 export type ScrollToError = ErrorWithReason<'scrollTo'>;
@@ -1673,23 +1574,16 @@ export declare interface Observer<T> {
   complete?(): void;
 }
 
-/** Information from a signed-in Chrome user profile. */
+/**
+ * Information from a signed-in Chrome user profile.
+ * Warning: this is merged with UserProfileInfo in the generated section below.
+ */
 export declare interface UserProfileInfo {
   /**
    * Returns the avatar icon for the profile, if available. Encoded as a PNG
    * image.
    */
   avatarIcon(): Promise<Blob | undefined>;
-  /** The full name displayed for this profile. */
-  displayName: string;
-  /** The given name for this profile. */
-  givenName?: string;
-  /** The local profile name, which can be customized by the user. */
-  localProfileName?: string;
-  /** The profile email. */
-  email: string;
-  /** Whether the profile's signed-in account is a managed account. */
-  isManaged?: boolean;
 }
 
 /** Chrome version data broken down into its numeric components. */
@@ -1713,46 +1607,6 @@ export declare interface WithGlicApi {
 export declare interface GlicApiBootMessage {
   type: 'glic-bootstrap';
   glicApiSource: string;
-}
-
-/** Zero-state suggestions for the current tab context. */
-export declare interface ZeroStateSuggestionsV2 {
-  /**
-   * A collection of suggestions associated with current tab context. This may
-   * be empty.
-   */
-  suggestions: SuggestionContent[];
-  /**
-   * Whether there is a current outstanding request to generate suggestions for
-   * the current tab context.
-   */
-  isPending?: boolean;
-  /** The host's invocation source. */
-  invocationSource?: InvocationSource;
-}
-
-/**
- * Options for ensuring chrome will create Zero State Suggestions for a
- * specific webui context.
- */
-export declare interface ZeroStateSuggestionsOptions {
-  /** If the suggestions will be used in a first run context. */
-  isFirstRun?: boolean;
-  /** The list of tools that are currently supported. */
-  supportedTools?: string[];
-}
-
-/** Zero-state suggestions for the current tab. */
-export declare interface ZeroStateSuggestions {
-  /**
-   * A collection of suggestions associated with the linked tab. This may be
-   * empty.
-   */
-  suggestions: SuggestionContent[];
-  /** A unique ID to track the the associated tab. */
-  tabId: string;
-  /** The url of the associated tab. */
-  url: string;
 }
 
 /** Represents a single skill preview. */
@@ -2730,6 +2584,22 @@ export declare interface ZssConfig {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Information from a signed-in Chrome user profile.
+export declare interface UserProfileInfo {
+  // The full name displayed for this profile.
+  displayName: string;
+  // The given name for this profile.
+  givenName?: string;
+  // The local profile name, which can be customized by the user.
+  localProfileName?: string;
+  // The profile email.
+  email: string;
+  // Whether the profile's signed-in account is a managed account.
+  isManaged?: boolean;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // The result from checking a page with Safe Browsing.
 export declare interface SafeBrowsingVerdict {
   url: string;
@@ -2819,6 +2689,77 @@ export declare interface GetPinCandidatesOptions {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Params for scrollTo().
+export declare interface ScrollToParams {
+  // Used to specify content to scroll to and highlight.
+  selector: ScrollToSelector;
+  // Whether we should highlight the content selected. True by default if not
+  // specified. If false, the content is scrolled to but not highlighted.
+  highlight?: boolean;
+  // Identifies the document we want to perform the scrollTo operation on. When
+  // specified, we verify that the currently focused tab's document matches the
+  // ID, and throw an error if doesn't. This is a required parameter for all
+  // document types except PDF (see `url` below), and a NOT_SUPPORTED error will
+  // be thrown if it is not specified.
+  documentId?: string;
+  // Identifies the url of a document we want to perform the scrollTo
+  // operation on. This is only required when scrolling PDF documents (and is
+  // ignored otherwise; other document types require `documentId` to be
+  // specified instead), and is used to verify that the currently focused tab
+  // still points to a PDF with that URL. If not specified, and the currently
+  // focused tab has a PDF loaded, a NOT_SUPPORTED error will be thrown.
+  url?: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// scrollTo() selector to select exact text in HTML and PDF documents within
+// a given search range starting from the start node (specified with
+// searchRangeStartNodeId) to the end of the document. If not specified, the
+// search range will be the entire document.
+// The documentId in ScrollToParams must be specified if a
+// searchRangeStartNodeId is specified.
+export declare interface ScrollToTextSelector {
+  // Exact text to select.
+  text: string;
+  // See common_ancestor_dom_node_id in proto ContentAttributes
+  // in components/optimization_guide/proto/features/common_quality_data.proto.
+  searchRangeStartNodeId?: number;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// scrollTo() selector to select a range of text in HTML and PDF documents
+// within a given search range starting from the start node (specified with
+// searchRangeStartNodeId) to the end of the document. If not specified, the
+// search range will be the entire document.
+// The documentId in ScrollToParams must be specified if a
+// searchRangeStartNodeId is specified.
+// Text selected will match textStart <anything in the middle> textEnd.
+export declare interface ScrollToTextFragmentSelector {
+  // Start of text to select.
+  textStart: string;
+  // End of text to select.
+  textEnd: string;
+  // See common_ancestor_dom_node_id in proto ContentAttributes
+  // in components/optimization_guide/proto/features/common_quality_data.proto.
+  searchRangeStartNodeId?: number;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// scrollTo() selector to select all text inside a specific node (corresponding
+// to the provided nodeId). documentId must also be specified in ScrollToParams
+// when this selector is used.
+export declare interface ScrollToNodeSelector {
+  // Value should be obtained from common_ancestor_dom_node_id in
+  // ContentAttributes (see
+  // components/optimization_guide/proto/features/common_quality_data.proto)
+  nodeId: number;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Zero-state suggestion for the current tab.
 export declare interface SuggestionContent {
   // The suggestion text. Always provided.
@@ -2882,6 +2823,44 @@ export declare interface CreateSkillRequest {
 export declare interface UpdateSkillRequest {
   // The unique identifier of the skill to be updated.
   id: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Zero-state suggestions for the current tab.
+export declare interface ZeroStateSuggestions {
+  // A collection of suggestions associated with the linked tab. This may be
+  // empty.
+  suggestions: SuggestionContent[];
+  // A unique ID to track the the associated tab.
+  tabId: string;
+  // The url of the associated tab.
+  url: string;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Zero-state suggestions for the current tab context.
+export declare interface ZeroStateSuggestionsV2 {
+  // A collection of suggestions associated with current tab context. This may
+  // be empty.
+  suggestions: SuggestionContent[];
+  // Whether there is a current outstanding request to generate suggestions for
+  // the current tab context.
+  isPending?: boolean;
+  // The host's invocation source.
+  invocationSource?: InvocationSource;
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Options for ensuring chrome will create Zero State Suggestions for a
+// specific webui context.
+export declare interface ZeroStateSuggestionsOptions {
+  // If the suggestions will be used in a first run context.
+  isFirstRun?: boolean;
+  // The list of tools that are currently supported.
+  supportedTools?: string[];
 }
 
 ///////////////////////////////////////////////
@@ -3336,6 +3315,17 @@ export declare interface FrameMetadata {
 export declare interface PageMetadata {
   // The local frame where the traversal starts is the first entry in the array.
   frameMetadata: FrameMetadata[];
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Used to select content to scroll to. Note that only one concrete selector
+// type can be present.
+// Additional selector types will be added to this API in the future.
+export declare interface ScrollToSelector {
+  exactText?: ScrollToTextSelector;
+  textFragment?: ScrollToTextFragmentSelector;
+  node?: ScrollToNodeSelector;
 }
 
 ///////////////////////////////////////////////

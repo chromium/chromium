@@ -895,7 +895,7 @@ void GlicInstanceImpl::FetchZeroStateSuggestions(
   if (contextual_cueing_service && active_web_contents && IsShowing()) {
     auto suggestions = mojom::ZeroStateSuggestions::New();
     suggestions->tab_id = GetTabId(active_web_contents);
-    suggestions->tab_url = active_web_contents->GetLastCommittedURL();
+    suggestions->url = active_web_contents->GetLastCommittedURL();
     contextual_cueing_service
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             active_web_contents, is_first_run, supported_tools,
