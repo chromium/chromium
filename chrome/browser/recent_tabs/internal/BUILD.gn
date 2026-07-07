@@ -90,7 +90,6 @@ android_resources("java_resources") {
     "android/java/res/drawable/restore_tabs_detail_item_background_bottom.xml",
     "android/java/res/drawable/restore_tabs_detail_item_background_middle.xml",
     "android/java/res/drawable/restore_tabs_detail_item_background_top.xml",
-    "android/java/res/drawable/restore_tabs_expand_more.xml",
     "android/java/res/drawable/restore_tabs_fre_logo.xml",
     "android/java/res/drawable/restore_tabs_phone_icon.xml",
     "android/java/res/drawable/restore_tabs_single_item_background.xml",

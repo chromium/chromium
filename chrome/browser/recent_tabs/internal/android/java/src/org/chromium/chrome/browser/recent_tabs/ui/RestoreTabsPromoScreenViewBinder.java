@@ -64,7 +64,7 @@ public class RestoreTabsPromoScreenViewBinder {
             int numDevices = model.get(DEVICE_MODEL_LIST).size();
             if (numDevices != 1) {
                 getExpandIconSelectorView(view)
-                        .setImageResource(R.drawable.restore_tabs_expand_more);
+                        .setImageResource(R.drawable.ic_expand_more_horizontal_black_24dp);
                 getSelectedDeviceView(view).setOnClickListener((v) -> delegate.onShowDeviceList());
                 getSheetSubtitleTextView(view)
                         .setText(
