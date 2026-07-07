@@ -127,7 +127,11 @@ export class ContextualActionMenuElement extends
         type: Boolean,
         attribute: 'context-management-enabled',
       },
-      shareTabsFlyoutOpen: {type: Boolean},
+      shareTabsFlyoutOpen: {
+        reflect: true,
+        type: Boolean,
+        attribute: 'share-tabs-flyout-open',
+      },
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},
       uploadButtonDisabled: {type: Boolean},
@@ -157,18 +161,6 @@ export class ContextualActionMenuElement extends
     }
     this.shareTabsFlyoutOpen = open;
     this.fire('share-tabs-flyout-open-changed', {open});
-    this.updateListeners_();
-  }
-
-  private updateListeners_() {
-    if (this.shareTabsFlyoutOpen) {
-      window.addEventListener('scroll', this.onScroll_, {
-        capture: true,
-        passive: true,
-      });
-    } else {
-      window.removeEventListener('scroll', this.onScroll_, {capture: true});
-    }
   }
 
   protected accessor enableMultiTabSelection_: boolean =
@@ -196,21 +188,6 @@ export class ContextualActionMenuElement extends
   private firstTabBeingAdded_: boolean = false;
   private pendingTabAddId_: number|null = null;
   private anchor_: HTMLElement|null = null;
-
-  private onScroll_ = (e: Event) => {
-    if (!this.shareTabsFlyoutOpen) {
-      return;
-    }
-    const flyout =
-        this.shadowRoot?.querySelector<HTMLElement>('.share-tabs-flyout');
-    // Ignore scroll events originating from within the flyout's own content
-    // (e.g. scrolling a long list of tab suggestions).
-    if (flyout && e.target instanceof Node &&
-        (e.target === flyout || flyout.contains(e.target))) {
-      return;
-    }
-    this.updateFlyoutPosition_();
-  };
 
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
@@ -309,10 +286,6 @@ export class ContextualActionMenuElement extends
       this.manageShareTabsInitialFocus_(changedProperties);
     }
 
-    if (changedProperties.has('shareTabsFlyoutOpen')) {
-      this.updateListeners_();
-    }
-
     if (changedProperties.has('tabSuggestions') ||
         changedProperties.has('inputState')) {
       this.updateScrollable_();
@@ -334,13 +307,20 @@ export class ContextualActionMenuElement extends
   }
 
   private onWindowBlur_ = this.close.bind(this);
-  private boundReposition_?: () => void;
+  private boundReposition_?: (e?: Event) => void;
   private layoutResizeObserver_?: ResizeObserver|null = null;
   private lastConfig_?: unknown;
 
-  private reposition_() {
+  private reposition_(e?: Event) {
     if (!this.anchor_ || !this.open || !this.lastConfig_) {
       return;
+    }
+    if (e && e.target instanceof Node) {
+      const flyout =
+          this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
+      if (flyout && (e.target === flyout || flyout.contains(e.target))) {
+        return;
+      }
     }
     const rect = this.anchor_.getBoundingClientRect();
     const height = rect.height;
@@ -1013,31 +993,22 @@ export class ContextualActionMenuElement extends
       const flyoutWidth = flyout.offsetWidth || DEFAULT_FLYOUT_WIDTH_PX;
       const viewportWidth = window.innerWidth;
 
-      let flyoutTop: number;
       if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
           viewportWidth - triggerRect.right) {
         this.shareTabsFlyoutPosition_ = 'right';
-        flyout.style.left = `${triggerRect.right + SHARE_TABS_FLYOUT_GAP_PX}px`;
-        flyout.style.right = '';
-        flyoutTop = triggerRect.top;
+        flyout.setAttribute('data-position', 'right');
       } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
         this.shareTabsFlyoutPosition_ = 'left';
-        flyout.style.left =
-            `${triggerRect.left - flyoutWidth - SHARE_TABS_FLYOUT_GAP_PX}px`;
-        flyout.style.right = '';
-        flyoutTop = triggerRect.top;
+        flyout.setAttribute('data-position', 'left');
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
-        flyoutTop = triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX;
-        const rtl = getComputedStyle(this).direction === 'rtl';
-        if (rtl) {
-          flyout.style.left = `${triggerRect.right - flyoutWidth}px`;
-        } else {
-          flyout.style.left = `${triggerRect.left}px`;
-        }
+        flyout.setAttribute('data-position', 'bottom');
       }
-      flyout.style.top = `${flyoutTop}px`;
 
+      let flyoutTop = triggerRect.top;
+      if (this.shareTabsFlyoutPosition_ === 'bottom') {
+        flyoutTop = triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX;
+      }
       const spaceBelow = window.innerHeight - flyoutTop;
       const maxFlyoutHeight = Math.max(
           MIN_MENU_HEIGHT_PX,
@@ -1071,7 +1042,6 @@ export class ContextualActionMenuElement extends
     this.pointerOverTrigger_ = false;
     this.pointerOverFlyout_ = false;
     this.setShareTabsFlyoutOpen_(false);
-    window.removeEventListener('scroll', this.onScroll_, {capture: true});
 
     const flyout =
         this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
