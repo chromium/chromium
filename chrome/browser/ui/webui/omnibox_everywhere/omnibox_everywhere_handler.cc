@@ -23,8 +23,7 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override {
-    // TODO(crbug.com/526629960): Add correct page classification.
-    return metrics::OmniboxEventProto::OTHER;
+    return metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE;
   }
 
   void OnAutocompleteAccept(
