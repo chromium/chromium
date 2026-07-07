@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -602,8 +601,6 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
-  UMA_HISTOGRAM_ENUMERATION("Graphics.Exo.Buffer.SharedImageFormat",
-                            viz::GetSharedImageFormatUMA(format));
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {

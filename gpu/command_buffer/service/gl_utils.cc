@@ -262,10 +262,7 @@ void PopulateMappableDrmFormatsForExo(
   if (flags.chromium_image_ab30) {
     mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_1010102);
   }
-  if (flags.ext_texture_rg) {
-    mappable_formats.insert(viz::SinglePlaneFormat::kR_8);
-    mappable_formats.insert(viz::SinglePlaneFormat::kRG_88);
-  }
+
   auto* surface_factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   if (surface_factory->IsFormatSupportedForTexturing(

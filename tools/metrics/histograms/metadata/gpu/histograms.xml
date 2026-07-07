@@ -2279,16 +2279,6 @@ chromium-metrics-reviews@google.com.
   <token key="ShaderTiming" variants="WebGPUShaderTiming"/>
 </histogram>
 
-<histogram name="Graphics.Exo.Buffer.SharedImageFormat"
-    enum="SharedImageFormatUMA" expires_after="2027-01-03">
-  <owner>hitawala@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records the SharedImageFormat type for an Exo Buffer that is initialized
-    with a GpuMemoryBufferHandle. Logged once per Exo Buffer creation.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Gbm.SupportsZeroCopyWebGPUImport" enum="Boolean"
     expires_after="2026-11-29">
   <owner>hitawala@chromium.org</owner>
