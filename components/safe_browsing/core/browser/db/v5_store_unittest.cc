@@ -2378,9 +2378,7 @@ TEST_F(V5StoreTest, CleanUpOldFiles) {
   EXPECT_TRUE(base::PathExists(hash_file_path));
 }
 
-// TODO(crbug.com/362791941): Enable this test once the write to disk file leak
-// bug is fixed.
-TEST_F(V5StoreTest, DISABLED_WriteToDiskFails_DeleteHashFile) {
+TEST_F(V5StoreTest, WriteToDiskFails_DeleteHashFile) {
   base::FilePath directory_store_path =
       temp_dir_.GetPath().AppendASCII("failure_additions.store");
   ASSERT_TRUE(base::CreateDirectory(directory_store_path));

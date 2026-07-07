@@ -371,8 +371,9 @@ class SBStore {
   //    HashPrefixList).
   //  - `set_file_metadata`: Callback to set file-specific metadata (e.g. magic
   //    number, version).
-  //  - `delete_hash_files_on_error`: Callback to delete written hash files if
-  //    writing fails.
+  //  - `cleanup_on_error`: Callback to perform cleanup (e.g. delete written
+  //    hash files, clear container) if writing fails. Takes the temporary
+  //    store file path as argument.
   //  - `get_hash_files_size`: Callback to calculate the total size of the hash
   //    files.
   //  - `cleanup_extra_files`: Callback to clean up any old/temporary files.
@@ -386,7 +387,7 @@ class SBStore {
       FileFormat* file_format,
       Container* container,
       base::FunctionRef<void()> set_file_metadata,
-      base::FunctionRef<void()> delete_hash_files_on_error,
+      base::FunctionRef<void(const base::FilePath&)> cleanup_on_error,
       base::FunctionRef<int64_t()> get_hash_files_size,
       base::FunctionRef<void()> cleanup_extra_files);
 

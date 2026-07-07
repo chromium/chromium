@@ -430,16 +430,14 @@ base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
     FileFormat* file_format,
     Container* container,
     base::FunctionRef<void()> set_file_metadata,
-    base::FunctionRef<void()> delete_hash_files_on_error,
+    base::FunctionRef<void(const base::FilePath&)> cleanup_on_error,
     base::FunctionRef<int64_t()> get_hash_files_size,
     base::FunctionRef<void()> cleanup_extra_files) {
   // Attempt writing to a temporary file first and at the end, swap the files.
   const base::FilePath new_filename = TemporaryFileForFilename(store_path);
 
-  absl::Cleanup cleanup_on_error = [&new_filename,
-                                    &delete_hash_files_on_error] {
-    base::DeleteFile(new_filename);
-    delete_hash_files_on_error();
+  absl::Cleanup cleanup_on_error_block = [&new_filename, &cleanup_on_error] {
+    cleanup_on_error(new_filename);
   };
 
   int64_t written = 0;
@@ -469,7 +467,7 @@ base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
   int64_t file_size = written + get_hash_files_size();
 
   // No cleanup needed, cancel the cleanup.
-  std::move(cleanup_on_error).Cancel();
+  std::move(cleanup_on_error_block).Cancel();
   cleanup_extra_files();
 
   return file_size;
@@ -502,7 +500,7 @@ template base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
     V4StoreFileFormat* file_format,
     HashPrefixMap* container,
     base::FunctionRef<void()> set_file_metadata,
-    base::FunctionRef<void()> delete_hash_files_on_error,
+    base::FunctionRef<void(const base::FilePath&)> cleanup_on_error,
     base::FunctionRef<int64_t()> get_hash_files_size,
     base::FunctionRef<void()> cleanup_extra_files);
 template base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
@@ -510,7 +508,7 @@ template base::expected<int64_t, SBStoreWriteResult> SBStore::WriteToDiskLoop(
     V5StoreFileFormat* file_format,
     HashPrefixList* container,
     base::FunctionRef<void()> set_file_metadata,
-    base::FunctionRef<void()> delete_hash_files_on_error,
+    base::FunctionRef<void(const base::FilePath&)> cleanup_on_error,
     base::FunctionRef<int64_t()> get_hash_files_size,
     base::FunctionRef<void()> cleanup_extra_files);
 

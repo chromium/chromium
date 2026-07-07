@@ -1061,8 +1061,9 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
             file_format->set_magic_number(kFileMagic);
             file_format->set_version_number(kV4FileVersion);
           },
-          /*delete_hash_files_on_error=*/
-          [this, file_format] {
+          /*cleanup_on_error=*/
+          [this, file_format](const base::FilePath& temp_file) {
+            base::DeleteFile(temp_file);
             for (const auto& hash_file : file_format->hash_files()) {
               base::DeleteFile(
                   HashPrefixMap::GetPath(store_path_, hash_file.extension()));

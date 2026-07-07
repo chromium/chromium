@@ -683,8 +683,13 @@ V5StoreWriteResult V5Store::WriteToDisk() {
               list_details->mutable_checksum()->set_sha256(expected_checksum_);
             }
           },
-          /*delete_hash_files_on_error=*/
-          [this, &file_format] {
+          /*cleanup_on_error=*/
+          [this, &file_format](const base::FilePath& temp_file) {
+            // Clear the list to release any memory-mapped files. This is
+            // required to allow the files to be deleted on Windows, where open
+            // or mapped mapped files cannot be deleted.
+            hash_prefix_list_->Clear();
+            base::DeleteFile(temp_file);
             if (file_format.list_details().has_hash_file()) {
               base::DeleteFile(HashPrefixContainer::GetPath(
                   store_path_,
