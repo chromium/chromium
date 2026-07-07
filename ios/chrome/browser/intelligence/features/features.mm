@@ -835,3 +835,9 @@ bool IsIOSGeminiBottomSheetMigrationEnabled() {
   return IsAssistantContainerEnabled() &&
          base::FeatureList::IsEnabled(kIOSGeminiBottomSheetMigration);
 }
+
+BASE_FEATURE(kGeminiQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiQuizzesEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiQuizzes);
+}

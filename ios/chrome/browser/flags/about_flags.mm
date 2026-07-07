@@ -2877,6 +2877,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          switches::kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher)},
+    {"gemini-quizzes", flag_descriptions::kGeminiQuizzesName,
+     flag_descriptions::kGeminiQuizzesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiQuizzes)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

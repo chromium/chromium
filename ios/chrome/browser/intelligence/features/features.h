@@ -428,4 +428,10 @@ BASE_DECLARE_FEATURE(kIOSGeminiBottomSheetMigration);
 // Helper function to check if `kIOSGeminiBottomSheetMigration` is enabled.
 bool IsIOSGeminiBottomSheetMigrationEnabled();
 
+// Enables the GeminiQuizzes feature.
+BASE_DECLARE_FEATURE(kGeminiQuizzes);
+
+// Returns true if the GeminiQuizzes feature is enabled.
+bool IsGeminiQuizzesEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

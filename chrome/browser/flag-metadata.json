@@ -5226,6 +5226,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "gemini-quizzes",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "gemini-rich-apc-extraction",
     "owners": [
       "nicolasmacbeth@google.com",
