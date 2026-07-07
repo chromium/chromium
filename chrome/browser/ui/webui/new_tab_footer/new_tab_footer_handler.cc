@@ -184,7 +184,7 @@ void NewTabFooterHandler::OpenUrlInCurrentTabInternal(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser_window->OpenURL(params, /*navigation_handle_callback=*/{});
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 std::string NewTabFooterHandler::GetManagementNoticeText() {

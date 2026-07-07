@@ -145,7 +145,7 @@ void NewTabFooterController::ContentsViewFooterCotroller::
   const bool show_extension = ShouldShowExtensionFooter(url);
   const bool show = show_managed || show_extension;
   if (show) {
-    footer_->ShowUI(load_start_timestamp, url);
+    footer_->ShowUI(load_start_timestamp, url, web_contents()->GetWeakPtr());
   } else {
     footer_->CloseUI();
   }

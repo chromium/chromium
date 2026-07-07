@@ -33,8 +33,12 @@ NewTabFooterWebView::~NewTabFooterWebView() {
   contents_wrapper_ = nullptr;
 }
 
-void NewTabFooterWebView::ShowUI(base::TimeTicks load_start, GURL url) {
+void NewTabFooterWebView::ShowUI(
+    base::TimeTicks load_start,
+    GURL url,
+    base::WeakPtr<content::WebContents> attached_tab_contents) {
   attached_tab_url_ = url;
+  attached_tab_contents_ = attached_tab_contents;
   ShowUI();
   base::UmaHistogramMediumTimes("NewTabPage.Footer.ShownTime",
                                 base::TimeTicks::Now() - load_start);
@@ -98,6 +102,18 @@ bool NewTabFooterWebView::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
+}
+
+content::WebContents* NewTabFooterWebView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (!attached_tab_contents_) {
+    return nullptr;
+  }
+  return attached_tab_contents_->OpenURL(params,
+                                         std::move(navigation_handle_callback));
 }
 
 BEGIN_METADATA(NewTabFooterWebView)

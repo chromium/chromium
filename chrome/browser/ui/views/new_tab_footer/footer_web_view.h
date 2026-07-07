@@ -38,7 +38,9 @@ class NewTabFooterWebView : public views::WebView,
   NewTabFooterWebView& operator=(const NewTabFooterWebView&) = delete;
   ~NewTabFooterWebView() override;
 
-  void ShowUI(base::TimeTicks load_start, GURL url);
+  void ShowUI(base::TimeTicks load_start,
+              GURL url,
+              base::WeakPtr<content::WebContents> attached_tab_contents);
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
@@ -49,12 +51,18 @@ class NewTabFooterWebView : public views::WebView,
   void HideCustomContextMenu() override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
  private:
   // The URL of tab that the footer is attached to.
   // This URL is updated on navigation or tab change when the footer needs to be
   // shown.
   GURL attached_tab_url_;
+  base::WeakPtr<content::WebContents> attached_tab_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
   // Processes keyboard events not handled by the renderer.

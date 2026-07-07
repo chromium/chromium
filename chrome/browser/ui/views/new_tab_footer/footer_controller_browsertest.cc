@@ -30,6 +30,7 @@
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/url_util.h"
@@ -466,4 +467,35 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, CloseRightTabInSplit) {
       1, TabCloseTypes::CLOSE_USER_GESTURE |
              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   EXPECT_FALSE(footer()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, OpenUrlFromTabInSplit) {
+  auto extension = LoadNtpExtension();
+
+  tab_strip_model()->ActivateTabAt(0);
+  NavigateCurrentTab(GURL(extension->url()));
+  content::WebContents* ntp_tab_contents =
+      tab_strip_model()->GetWebContentsAt(0);
+
+  tab_strip_model()->ActivateTabAt(1);
+  content::WebContents* active_tab_contents =
+      tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(ntp_tab_contents, active_tab_contents);
+
+  auto* ntp_container = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->GetContentsContainerViewFor(ntp_tab_contents);
+  ASSERT_TRUE(ntp_container);
+  auto* ntp_footer = ntp_container->new_tab_footer_view();
+  ASSERT_TRUE(ntp_footer);
+
+  const GURL kTargetUrl("https://www.google.com/");
+  content::OpenURLParams params(kTargetUrl, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::TestNavigationObserver nav_observer(ntp_tab_contents);
+  ntp_footer->OpenURLFromTab(ntp_footer->GetWebContents(), params, {});
+  nav_observer.Wait();
+
+  EXPECT_EQ(kTargetUrl, ntp_tab_contents->GetLastCommittedURL());
+  EXPECT_EQ(GURL(kNonNtpUrl), active_tab_contents->GetLastCommittedURL());
 }

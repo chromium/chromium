@@ -101,6 +101,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/themes",
   ]
 }
