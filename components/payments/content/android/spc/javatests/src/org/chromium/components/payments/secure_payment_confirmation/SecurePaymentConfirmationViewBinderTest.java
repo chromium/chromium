@@ -338,7 +338,7 @@ public class SecurePaymentConfirmationViewBinderTest {
         RecyclerViewTestUtils.waitForStableRecyclerView(mView.mItemList);
         View itemView = mView.mItemList.getChildAt(0);
         assertEquals(
-                itemView.getContext().getString(R.string.payment_instrument_icon),
+                itemView.getContext().getString(R.string.payments_instrument_icon),
                 itemView.findViewById(R.id.icon).getContentDescription());
     }
 

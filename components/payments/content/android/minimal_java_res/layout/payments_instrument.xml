@@ -16,11 +16,11 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="@dimen/payments_item_width"
-        android:layout_height="@dimen/payments_item_height"
+        android:layout_width="@dimen/payments_instrument_icon_width"
+        android:layout_height="@dimen/payments_instrument_icon_height"
         android:layout_marginEnd="16dp"
         android:scaleType="fitCenter"
-        android:contentDescription="@string/payment_instrument_icon"/>
+        android:contentDescription="@string/payments_instrument_icon"/>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

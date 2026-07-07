@@ -38,7 +38,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
      */
     public static View createItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.payments_item, parent, false);
+                .inflate(R.layout.payments_instrument, parent, false);
     }
 
     /* package */ final RelativeLayout mContentView;

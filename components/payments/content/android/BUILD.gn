@@ -97,7 +97,7 @@ android_resources("minimal_java_resources") {
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded_down.xml",
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded_up.xml",
     "//components/payments/content/android/minimal_java_res/drawable/storefront_icon.xml",
-    "//components/payments/content/android/minimal_java_res/layout/payments_item.xml",
+    "//components/payments/content/android/minimal_java_res/layout/payments_instrument.xml",
     "//components/payments/content/android/minimal_java_res/values-night/colors.xml",
     "//components/payments/content/android/minimal_java_res/values/colors.xml",
     "//components/payments/content/android/minimal_java_res/values/drawables.xml",

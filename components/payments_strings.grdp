@@ -463,7 +463,7 @@
   <message name="IDS_PAYMENTS_ORDER_SUMMARY_ACCESSIBLE_LABEL" desc="The string used to format what the screenreader reads out for the order summary section of the Payment Sheet.">
     Order Summary, <ph name="TOTAL_LABEL">$1<ex>Total, USD $10.00</ex></ph>, More Details
   </message>
-  <message name="IDS_PAYMENT_INSTRUMENT_ICON" desc="The default content description used for payment instrument icons." formatter_data="android_java">
+  <message name="IDS_PAYMENTS_INSTRUMENT_ICON" desc="The default content description used for payment instrument icons." formatter_data="android_java">
     Payment instrument icon
   </message>
 
