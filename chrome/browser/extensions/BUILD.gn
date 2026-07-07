@@ -2583,7 +2583,9 @@ source_set("browser_tests") {
   }
 
   if (is_android) {
-    sources += [ "//chrome/browser/extensions/extension_keybinding_apitest.cc" ]
+    sources += [
+      "//chrome/browser/extensions/extension_keybinding_interactive_apitest.cc",
+    ]
     deps += [
       "//chrome/test:test_support_jni_headers",
       "//components/feed:feature_list",
@@ -3155,23 +3157,23 @@ source_set("interactive_ui_tests") {
 
   if (enable_extensions) {
     sources += [
-      "api/extension_action/browser_action_interactive_test.cc",
+      "api/extension_action/browser_action_interactive_uitest.cc",
       "api/extension_action/extension_action_api_interactive_uitest.cc",
-      "api/extension_action/page_action_interactive_test.cc",
-      "api/notifications/notifications_apitest.cc",
-      "api/omnibox/omnibox_api_interactive_test.cc",
+      "api/extension_action/page_action_interactive_uitest.cc",
+      "api/notifications/notifications_interactive_apitest.cc",
+      "api/omnibox/omnibox_api_interactive_uitest.cc",
       "api/permissions/permissions_api_interactive_uitest.cc",
       "api/runtime/runtime_interactive_apitest.cc",
-      "api/tabs/tabs_interactive_test.cc",
+      "api/tabs/tabs_interactive_uitest.cc",
       "api/tabs/window_open_interactive_apitest.cc",
       "app_window_uitest.cc",
       "extension_apitest.cc",
       "extension_browsertest.cc",
-      "extension_commands_global_registry_apitest.cc",
+      "extension_commands_global_registry_interactive_apitest.cc",
       "extension_crash_recovery_browsertest.cc",
       "extension_fullscreen_apitest.cc",
-      "extension_keybinding_apitest.cc",
-      "omnibox_focus_interactive_test.cc",
+      "extension_keybinding_interactive_apitest.cc",
+      "omnibox_focus_interactive_uitest.cc",
     ]
 
     deps += [

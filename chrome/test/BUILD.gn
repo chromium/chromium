@@ -1927,8 +1927,8 @@ if (is_android) {
       sources += [
         # These API tests can't be part of platform_browser_tests because they
         # run in interactive_ui_tests on Win/Mac/Linux.
-        "../browser/extensions/api/notifications/notifications_apitest.cc",
-        "../browser/extensions/api/omnibox/omnibox_api_interactive_test.cc",
+        "../browser/extensions/api/notifications/notifications_interactive_apitest.cc",
+        "../browser/extensions/api/omnibox/omnibox_api_interactive_uitest.cc",
         "../browser/extensions/api/tabs/tabs_apitest_android.cc",
         "../browser/extensions/desktop_android_extensions_browsertest.cc",
         "../browser/ui/extensions/reload_page_dialog_controller_android_browsertest.cc",
