@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -113,6 +114,9 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     profile_state_.profile = profile_.get();
     OCMStub([mock_scene_state profileState]).andReturn(profile_state_);
+    lens_overlay_state_ = [[LensOverlayStateNotifier alloc] init];
+    OCMStub([mock_scene_state lensOverlayStateNotifier])
+        .andReturn(lens_overlay_state_);
     browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state);
     dispatcher_ = [[CommandDispatcher alloc] init];
 
@@ -260,6 +264,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   LensOverlayCoordinator* coordinator_;
   raw_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
+  LensOverlayStateNotifier* lens_overlay_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   base::test::ScopedFeatureList feature_list_;

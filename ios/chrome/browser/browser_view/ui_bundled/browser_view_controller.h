@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
@@ -87,6 +88,7 @@ typedef struct {
                                           ContextualSheetPresenter,
                                           IncognitoReauthConsumer,
                                           LensOverlayPresentationEnvironment,
+                                          LensOverlayStateNotifierObserver,
                                           TabConsumer,
                                           OmniboxFocusDelegate,
                                           OmniboxPopupPresenterDelegate,
@@ -126,6 +128,9 @@ typedef struct {
 
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;
+
+// The lens overlay state notifier.
+@property(nonatomic, weak) LensOverlayStateNotifier* lensOverlayStateNotifier;
 
 // Callback that will be invoked when the browser view visibility changed.
 @property(nonatomic, assign) const BrowserViewVisibilityStateChangedCallback&

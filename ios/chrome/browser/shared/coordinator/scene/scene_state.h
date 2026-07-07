@@ -18,6 +18,7 @@
 @protocol BrowserProviderInterface;
 @class IncognitoState;
 @class LayoutState;
+@class LensOverlayStateNotifier;
 @class ProfileState;
 @class SceneController;
 @class SceneState;
@@ -134,6 +135,10 @@ class SigninInProgress;
 
 // Object containing the state of the layout.
 @property(nonatomic, strong, readonly) LayoutState* layoutState;
+
+// Object used to notify of changes to the LensOverlay state.
+@property(nonatomic, strong, readonly)
+    LensOverlayStateNotifier* lensOverlayStateNotifier;
 
 // Object allowing access to the SceneState scoped preferences.
 @property(nonatomic, readonly) SceneStatePrefs* prefs;
