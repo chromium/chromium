@@ -6,14 +6,10 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
-#include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "url/gurl.h"
 
 namespace payments::facilitated {
 
@@ -46,6 +42,12 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
       /*payment_link_url=*/url,
       /*page_url=*/render_frame_host->GetLastCommittedURL(),
       /*ukm_source_id=*/render_frame_host->GetPageUkmSourceId());
+}
+
+bool ContentFacilitatedPaymentsDriver::IsSecureForPaymentHandling() const {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  return security_checker_->IsSecureForPaymentLinkHandling(*render_frame_host);
 }
 
 void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(

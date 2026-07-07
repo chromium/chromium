@@ -22,6 +22,32 @@
 namespace payments::facilitated {
 namespace {
 
+constexpr char16_t kFakePixCode[] =
+    u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
+
+class MockPixManager : public PixManager {
+ public:
+  MockPixManager(
+      FacilitatedPaymentsClient* client,
+      FacilitatedPaymentsApiClientCreator api_client_creator,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+      : PixManager(client,
+                   std::move(api_client_creator),
+                   optimization_guide_decider) {}
+  ~MockPixManager() override = default;
+
+  MOCK_METHOD(void,
+              OnPixCodeCopiedToClipboard,
+              (const GURL&,
+               const std::optional<GURL>&,
+               const url::Origin&,
+               bool,
+               std::optional<PixCodeRustValidationResult>,
+               std::string,
+               ukm::SourceId),
+              (override));
+};
+
 class MockPaymentLinkManager : public PaymentLinkManager {
  public:
   MockPaymentLinkManager(
@@ -75,6 +101,15 @@ class ContentFacilitatedPaymentsDriverTest
             decider_.get());
     payment_link_manager_ = em.get();
     driver_->SetPaymentLinkManagerForTesting(std::move(em));
+
+    std::unique_ptr<MockPixManager> pm =
+        std::make_unique<testing::NiceMock<MockPixManager>>(
+            client_.get(),
+            GetFacilitatedPaymentsApiClientCreator(
+                render_frame_host->GetGlobalId()),
+            decider_.get());
+    pix_manager_ = pm.get();
+    driver_->SetPixManagerForTesting(std::move(pm));
   }
 
   void TearDown() override {
@@ -82,6 +117,7 @@ class ContentFacilitatedPaymentsDriverTest
     driver_.reset();
     security_checker_ = nullptr;
     payment_link_manager_ = nullptr;
+    pix_manager_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -90,6 +126,7 @@ class ContentFacilitatedPaymentsDriverTest
   std::unique_ptr<FacilitatedPaymentsClient> client_;
   std::unique_ptr<ContentFacilitatedPaymentsDriver> driver_;
   raw_ptr<MockPaymentLinkManager> payment_link_manager_;
+  raw_ptr<MockPixManager> pix_manager_;
   raw_ptr<MockSecurityChecker> security_checker_;
 };
 
@@ -129,6 +166,32 @@ TEST_F(ContentFacilitatedPaymentsDriverTest,
   EXPECT_CALL(*payment_link_manager_, TriggerPaymentLinkPushPayment).Times(0);
 
   driver_->HandlePaymentLink(kFakePaymentLinkUrl);
+}
+
+TEST_F(ContentFacilitatedPaymentsDriverTest,
+       PixCodeCopied_ForwardedToPixManager) {
+  EXPECT_CALL(*security_checker_,
+              IsSecureForPaymentLinkHandling(testing::Ref(*main_rfh())))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(1);
+
+  driver_->OnTextCopiedToClipboard(
+      GURL("https://example.com"), std::nullopt,
+      url::Origin::Create(GURL("https://example.com")), kFakePixCode,
+      ukm::kInvalidSourceId, /*is_same_origin=*/false);
+}
+
+TEST_F(ContentFacilitatedPaymentsDriverTest,
+       SecurityCheckFailed_PixCodeBlocked) {
+  EXPECT_CALL(*security_checker_,
+              IsSecureForPaymentLinkHandling(testing::Ref(*main_rfh())))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
+
+  driver_->OnTextCopiedToClipboard(
+      GURL("http://example.com"), std::nullopt,
+      url::Origin::Create(GURL("http://example.com")), kFakePixCode,
+      ukm::kInvalidSourceId, /*is_same_origin=*/false);
 }
 
 }  // namespace

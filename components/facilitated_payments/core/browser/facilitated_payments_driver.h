@@ -69,6 +69,10 @@ class FacilitatedPaymentsDriver {
   virtual void SetPaymentLinkManagerForTesting(
       std::unique_ptr<PaymentLinkManager> payment_link_manager);
 
+ protected:
+  // Returns true if the current page context is secure for payments.
+  virtual bool IsSecureForPaymentHandling() const = 0;
+
  private:
   const raw_ref<FacilitatedPaymentsClient> facilitated_payments_client_;
   FacilitatedPaymentsApiClientCreator api_client_creator_;

@@ -10,6 +10,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/facilitated_payments/payment_link_handler.mojom.h"
 
+class GURL;
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -43,6 +45,9 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
       mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver);
 
  private:
+  // FacilitatedPaymentsDriver:
+  bool IsSecureForPaymentHandling() const override;
+
   // The ID of the frame to which this driver is associated.
   const content::GlobalRenderFrameHostId render_frame_host_id_;
 

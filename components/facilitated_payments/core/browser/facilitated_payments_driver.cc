@@ -80,6 +80,9 @@ void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
     const std::u16string& copied_text,
     ukm::SourceId ukm_source_id,
     bool is_same_origin) {
+  if (!IsSecureForPaymentHandling()) {
+    return;
+  }
   std::string copied_text_utf8 = base::UTF16ToUTF8(copied_text);
   // Even if the feature is not enabled, always run the Rust validator to log
   // metrics about whether or not the results agree.
