@@ -4886,6 +4886,10 @@ if (!is_android) {
         "../browser/ui/extensions/settings_overridden_dialog_browsertest.cc",
       ]
 
+      deps += [
+        "//extensions/components/native_app_window",
+      ]
+
       public_deps += [
         "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
         "//chrome/test/supervised_user:live_tests",
@@ -5995,7 +5999,6 @@ if (!is_android) {
         "//components/web_resource",
         "//components/webapps/isolated_web_apps",
         "//extensions/browser:test_support",
-        "//extensions/components/native_app_window",
         "//mojo/core/embedder",
         "//mojo/public/cpp/test_support:test_utils",
         "//remoting/host/chromeos:features",

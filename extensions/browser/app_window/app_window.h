@@ -601,6 +601,7 @@ class AppWindow : public content::WebContentsDelegate,
   base::OnceClosure on_update_draggable_regions_callback_for_testing_;
 
   base::WeakPtrFactory<AppWindow> image_loader_ptr_factory_{this};
+  base::WeakPtrFactory<AppWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

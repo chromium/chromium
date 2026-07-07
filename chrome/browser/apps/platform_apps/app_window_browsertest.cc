@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/app_window/app_window.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -9,15 +11,18 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/display/display_switches.h"
@@ -272,4 +277,64 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, TestVisibleOnAllWorkspaces) {
   ASSERT_TRUE(
       RunAppWindowAPITestAndWaitForRoundTrip("testVisibleOnAllWorkspaces"))
       << message_;
+}
+
+namespace {
+
+class ClosingOnFullscreenTransitionWindow
+    : public native_app_window::NativeAppWindowViews {
+ public:
+  ClosingOnFullscreenTransitionWindow() = default;
+  ~ClosingOnFullscreenTransitionWindow() override = default;
+
+  void SetFullscreen(int fullscreen_types) override {
+    // Simulate window closure during fullscreen transition (e.g. as can happen
+    // on macOS when spinning a nested run loop).
+    widget()->CloseNow();
+  }
+};
+
+class TestAppWindowClient : public ChromeAppWindowClient {
+ public:
+  TestAppWindowClient() = default;
+  ~TestAppWindowClient() override = default;
+
+  std::unique_ptr<extensions::NativeAppWindow> CreateNativeAppWindow(
+      extensions::AppWindow* window,
+      extensions::AppWindow::CreateParams* params) override {
+    auto native_window =
+        std::make_unique<ClosingOnFullscreenTransitionWindow>();
+    native_window->Init(window, *params);
+    return native_window;
+  }
+};
+
+}  // namespace
+
+// Regression test for crbug.com/516948486.
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInSetNativeWindowFullscreen) {
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
+  ASSERT_TRUE(extension);
+
+  TestAppWindowClient test_client;
+  // `AppWindowClient::Set()` has a DCHECK verifying that we don't overwrite a
+  // non-null client with another non-null client. We must clear the existing
+  // client (set during browser startup) before setting our test client.
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::AppWindow* window = CreateAppWindowFromParams(
+      browser()->profile(), extension, extensions::AppWindow::CreateParams());
+  ASSERT_TRUE(window);
+
+  // Trigger fullscreen transition. In our placeholder `SetFullscreen()`,
+  // `OnNativeClose()` will be called, deleting `window`. Without the weak
+  // pointer check in `SetNativeWindowFullscreen()`, this call would result in a
+  // Use-After-Free when `RestoreAlwaysOnTop()` is reached.
+  SetNativeWindowFullscreenForTesting(window);
+
+  // Clear our test client before restoring the production client.
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
 }

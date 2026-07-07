@@ -284,6 +284,11 @@ void PlatformAppBrowserTest::CallAdjustBoundsToBeVisibleOnScreenForAppWindow(
                                           bounds);
 }
 
+void PlatformAppBrowserTest::SetNativeWindowFullscreenForTesting(
+    AppWindow* window) {
+  window->SetNativeWindowFullscreen();
+}
+
 AppWindow* PlatformAppBrowserTest::CreateTestAppWindow(
     const std::string& window_create_options) {
   ExtensionTestMessageListener launched_listener("launched",

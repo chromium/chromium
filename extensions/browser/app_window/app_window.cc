@@ -853,7 +853,14 @@ void AppWindow::DidDownloadFavicon(
 }
 
 void AppWindow::SetNativeWindowFullscreen() {
+  // `SetFullscreen()` can trigger window closure (e.g. on macOS when spinning a
+  // nested run loop), destroying `this`. Use a WeakPtr to avoid Use-After-Free
+  // when calling RestoreAlwaysOnTop(). See crbug.com/516948486.
+  base::WeakPtr<AppWindow> weak_this = weak_ptr_factory_.GetWeakPtr();
   native_app_window_->SetFullscreen(fullscreen_types_);
+  if (!weak_this) {
+    return;
+  }
 
   RestoreAlwaysOnTop();
 }
