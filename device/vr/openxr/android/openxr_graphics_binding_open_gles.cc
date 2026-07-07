@@ -311,7 +311,9 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
        shared_image_usage, "OpenXrGraphicsBinding"},
       std::move(gmb_handle));
   CHECK(swap_chain_info.shared_image);
-  swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
+  swap_chain_info.sync_token =
+      swap_chain_info.shared_image->creation_sync_token();
+  sii->VerifySyncToken(swap_chain_info.sync_token);
   DCHECK_EQ(swap_chain_info.shared_image->GetTextureTarget(),
             static_cast<uint32_t>(GL_TEXTURE_2D));
 

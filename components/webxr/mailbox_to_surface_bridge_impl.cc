@@ -169,7 +169,8 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
       {format, size, color_space, usage, "WebXrMailboxToSurfaceBridge"},
       std::move(buffer_handle));
   CHECK(client_shared_image);
-  sync_token = sii->GenVerifiedSyncToken();
+  sync_token = client_shared_image->creation_sync_token();
+  sii->VerifySyncToken(sync_token);
   DCHECK(client_shared_image->GetTextureTarget() == GL_TEXTURE_2D);
   return client_shared_image;
 }
