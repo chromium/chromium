@@ -79,6 +79,15 @@ namespace {
 // https://crrev.com/c/6458938.
 BASE_FEATURE(kEnableZstd, "EnableZstdV2", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Converts a network-quality observation TimeTicks into milliseconds since the
+// Unix epoch (the value exposed through the Cronet API) by anchoring both
+// clocks to the current instant.
+int64_t TimeTicksToMillisecondsSinceUnixEpoch(const base::TimeTicks& ticks) {
+  return (base::Time::Now() - (base::TimeTicks::Now() - ticks) -
+          base::Time::UnixEpoch())
+      .InMilliseconds();
+}
+
 // This class wraps a NetLog that also contains network change events.
 class NetLogWithNetworkChangeEvents {
  public:
@@ -762,8 +771,7 @@ void CronetContext::NetworkTasks::OnRTTObservation(
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
 
   callback_->OnRTTObservation(
-      rtt_ms, (timestamp - base::TimeTicks::UnixEpoch()).InMilliseconds(),
-      source);
+      rtt_ms, TimeTicksToMillisecondsSinceUnixEpoch(timestamp), source);
 }
 
 void CronetContext::NetworkTasks::OnThroughputObservation(
@@ -773,8 +781,8 @@ void CronetContext::NetworkTasks::OnThroughputObservation(
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
 
   callback_->OnThroughputObservation(
-      throughput_kbps,
-      (timestamp - base::TimeTicks::UnixEpoch()).InMilliseconds(), source);
+      throughput_kbps, TimeTicksToMillisecondsSinceUnixEpoch(timestamp),
+      source);
 }
 
 void CronetContext::NetworkTasks::OnNetworkDisconnected(
