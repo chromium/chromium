@@ -90,6 +90,22 @@ const bssl::ParsedExtension* FindExtension(
   return nullptr;
 }
 
+// Finds and parses the BasicConstraints extension. Returns nullopt if the
+// extension is absent or could not be parsed.
+std::optional<bssl::ParsedBasicConstraints> ParseBasicConstraintsExtension(
+    const std::vector<bssl::ParsedExtension>& extensions) {
+  const bssl::ParsedExtension* extension =
+      FindExtension(extensions, bssl::der::Input(bssl::kBasicConstraintsOid));
+  if (!extension) {
+    return std::nullopt;
+  }
+  bssl::ParsedBasicConstraints basic_constraints;
+  if (!bssl::ParseBasicConstraints(extension->value, &basic_constraints)) {
+    return std::nullopt;
+  }
+  return basic_constraints;
+}
+
 // Parses `spki_tlv` as a SubjectPublicKeyInfo, writing its AlgorithmIdentifier
 // TLV to `algorithm_tlv`. If `subject_public_key` is non-null, the
 // subjectPublicKey BIT STRING (with its unused-bits byte stripped) is also
@@ -374,6 +390,31 @@ std::vector<std::string> X509CertificateModel::GetExtendedKeyUsagePurposes()
     purposes.push_back(GetOidTextOrOid(oid));
   }
   return purposes;
+}
+
+bool X509CertificateModel::IsBasicConstraintsCritical() const {
+  CHECK(is_valid());
+  const bssl::ParsedExtension* extension =
+      FindExtension(extensions_, bssl::der::Input(bssl::kBasicConstraintsOid));
+  return extension && extension->critical;
+}
+
+bool X509CertificateModel::IsBasicConstraintsCA() const {
+  CHECK(is_valid());
+  std::optional<bssl::ParsedBasicConstraints> basic_constraints =
+      ParseBasicConstraintsExtension(extensions_);
+  return basic_constraints && basic_constraints->is_ca;
+}
+
+std::optional<uint8_t> X509CertificateModel::GetBasicConstraintsPathLen()
+    const {
+  CHECK(is_valid());
+  std::optional<bssl::ParsedBasicConstraints> basic_constraints =
+      ParseBasicConstraintsExtension(extensions_);
+  if (!basic_constraints || !basic_constraints->has_path_len) {
+    return std::nullopt;
+  }
+  return basic_constraints->path_len;
 }
 
 }  // namespace x509_certificate_model

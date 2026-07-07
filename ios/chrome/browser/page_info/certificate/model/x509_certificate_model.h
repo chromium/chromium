@@ -102,6 +102,18 @@ class X509CertificateModel : public X509CertificateModelBase {
   // Returns a vector of the asserted EKU purposes, or an empty vector if the
   // extension is not present or could not be parsed.
   std::vector<std::string> GetExtendedKeyUsagePurposes() const;
+
+  // Returns true if the BasicConstraints extension is present and marked
+  // critical.
+  bool IsBasicConstraintsCritical() const;
+
+  // Returns true if the BasicConstraints extension is present and asserts the
+  // cA boolean.
+  bool IsBasicConstraintsCA() const;
+
+  // Returns the BasicConstraints pathLenConstraint, or nullopt if the extension
+  // is absent, could not be parsed, or does not specify a path length.
+  std::optional<uint8_t> GetBasicConstraintsPathLen() const;
 };
 
 }  // namespace x509_certificate_model

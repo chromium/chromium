@@ -147,6 +147,10 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
                            bssl::der::Input(bssl::kExtKeyUsageOid),
                            bssl::der::Input(bssl::kAuthorityInfoAccessOid)));
 
+  EXPECT_TRUE(model.IsBasicConstraintsCritical());
+  EXPECT_FALSE(model.IsBasicConstraintsCA());
+  EXPECT_FALSE(model.GetBasicConstraintsPathLen().has_value());
+
   EXPECT_FALSE(model.IsExtendedKeyUsageCritical());
   auto eku_purposes = model.GetExtendedKeyUsagePurposes();
   ASSERT_EQ(3u, eku_purposes.size());
@@ -354,6 +358,10 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
                            bssl::der::Input(bssl::kCertificatePoliciesOid),
                            bssl::der::Input(kNetscapeCertTypeOid)));
 
+  EXPECT_FALSE(model.IsBasicConstraintsCritical());
+  EXPECT_FALSE(model.IsBasicConstraintsCA());
+  EXPECT_FALSE(model.GetBasicConstraintsPathLen().has_value());
+
   EXPECT_TRUE(model.IsKeyUsageCritical());
   EXPECT_EQ(
       "Digital Signature, Non-repudiation, Key Encipherment, Data Encipherment",
@@ -364,6 +372,31 @@ TEST_F(X509CertificateModelTest, GlobalsignComCert) {
   ASSERT_EQ(2u, eku_purposes.size());
   EXPECT_EQ("Server Authentication", eku_purposes[0]);
   EXPECT_EQ("Client Authentication", eku_purposes[1]);
+}
+
+TEST_F(X509CertificateModelTest, DiginotarCert) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "diginotar_public_ca_2025.pem");
+  ASSERT_TRUE(cert);
+  X509CertificateModel model(cert.get());
+  ASSERT_TRUE(model.is_valid());
+
+  // The cert has 7 extensions in this DER order.
+  EXPECT_THAT(
+      model.GetExtensionOidsInOrder(),
+      testing::ElementsAre(bssl::der::Input(bssl::kAuthorityInfoAccessOid),
+                           bssl::der::Input(bssl::kAuthorityKeyIdentifierOid),
+                           bssl::der::Input(bssl::kBasicConstraintsOid),
+                           bssl::der::Input(bssl::kCertificatePoliciesOid),
+                           bssl::der::Input(bssl::kCrlDistributionPointsOid),
+                           bssl::der::Input(bssl::kKeyUsageOid),
+                           bssl::der::Input(bssl::kSubjectKeyIdentifierOid)));
+
+  EXPECT_TRUE(model.IsBasicConstraintsCritical());
+  EXPECT_TRUE(model.IsBasicConstraintsCA());
+  std::optional<uint8_t> path_len = model.GetBasicConstraintsPathLen();
+  ASSERT_TRUE(path_len.has_value());
+  EXPECT_EQ(0u, path_len.value());
 }
 
 }  // namespace x509_certificate_model
