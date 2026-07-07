@@ -1378,9 +1378,9 @@ void HTMLInputElement::setValueForBinding(const String& value,
            was_autofilled && !value_changed && !value.empty()
                ? WebAutofillState::kAutofilled
                : WebAutofillState::kNotFilled);
-  if (Page* page = GetDocument().GetPage(); page && value_changed) {
-    page->GetChromeClient().JavaScriptChangedValue(*this, old_value,
-                                                   was_autofilled);
+  if (Page* page = GetDocument().GetPage(); page) {
+    page->GetChromeClient().JavaScriptSetValue(*this, old_value, was_autofilled,
+                                               value_changed);
   }
 }
 

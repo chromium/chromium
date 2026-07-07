@@ -85,9 +85,10 @@ namespace blink {
 namespace {
 class FakeChromeClientForAutofill : public EmptyChromeClient {
  public:
-  void JavaScriptChangedValue(HTMLFormControlElement& element,
-                              const String& old_value,
-                              bool was_autofilled) override {
+  void JavaScriptSetValue(HTMLFormControlElement& element,
+                          const String& old_value,
+                          bool was_autofilled,
+                          bool value_changed) override {
     last_notification_ = {element.GetIdAttribute().Utf8(), old_value.Utf8()};
   }
   std::vector<std::string> GetAndResetLastEvent() {

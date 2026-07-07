@@ -25,7 +25,7 @@ struct CallTimerState {
     kGetFormDataFromWebForm,
     kGetSubmittedForm,
     kHandleCaretMovedInFormField,
-    kJavaScriptChangedValue,
+    kJavaScriptSetValue,
     kNotifyPasswordManagerAboutClearedForm,
     kOnProvisionallySaveForm,
     kOnTextFieldValueChanged,

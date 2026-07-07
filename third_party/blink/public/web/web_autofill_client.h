@@ -88,11 +88,13 @@ class WebAutofillClient {
   // Called when the value of `element` has been changed by JavaScript.
   // `old_value` contains the value before being changed.
   // `was_autofilled` is the state of the field prior to the JS change.
-  // Only called if there is an observable change in the actual value, i.e.
-  // JavaScript setting it to the current value will not trigger this.
-  virtual void JavaScriptChangedValue(WebFormControlElement element,
-                                      const WebString& old_value,
-                                      bool was_autofilled) {}
+  // `value_changed` denotes whether `old_value` is different from the element's
+  // current value (the boolean is passed around instead of being recomputed for
+  // performance reasons).
+  virtual void JavaScriptSetValue(WebFormControlElement element,
+                                  const WebString& old_value,
+                                  bool was_autofilled,
+                                  bool value_changed) {}
 
   // Called when the focused node has changed. This is not called if the focus
   // moves outside the frame.

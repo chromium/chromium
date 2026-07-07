@@ -81,6 +81,15 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
       blink::mojom::UserActivationNotificationType::kInteraction);
   js_set_value("button_id", "js_val_button");
   EXPECT_TRUE(logs.empty());
+
+  // 5. JS change to the SAME value with user activation -> should log.
+  Focus("text_1");
+  GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction);
+  js_set_value("text_1", "js_val_3");  // Same value (set in step 3).
+
+  ASSERT_EQ(logs.size(), 1u);
+  EXPECT_EQ(logs[0].modified_field_id, form_util::GetFieldRendererId(text1));
 }
 
 }  // namespace autofill

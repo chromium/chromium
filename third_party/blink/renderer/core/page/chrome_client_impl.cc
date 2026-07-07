@@ -1416,13 +1416,14 @@ void ChromeClientImpl::AjaxSucceeded(LocalFrame* frame) {
     fill_client->AjaxSucceeded();
 }
 
-void ChromeClientImpl::JavaScriptChangedValue(HTMLFormControlElement& element,
-                                              const String& old_value,
-                                              bool was_autofilled) {
+void ChromeClientImpl::JavaScriptSetValue(HTMLFormControlElement& element,
+                                          const String& old_value,
+                                          bool was_autofilled,
+                                          bool value_changed) {
   Document& doc = element.GetDocument();
   if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
-    fill_client->JavaScriptChangedValue(WebFormControlElement(&element),
-                                        old_value, was_autofilled);
+    fill_client->JavaScriptSetValue(WebFormControlElement(&element), old_value,
+                                    was_autofilled, value_changed);
   }
 }
 

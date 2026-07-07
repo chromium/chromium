@@ -542,11 +542,13 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Called when the value of `element` has been changed by JavaScript.
   // `old_value` contains the value before being changed.
   // `was_autofilled` is the state of the field prior to the JS change.
-  // Only called if there is an observable change in the actual value, i.e.
-  // JavaScript setting it to the current value will not trigger this.
-  virtual void JavaScriptChangedValue(HTMLFormControlElement&,
-                                      const String& old_value,
-                                      bool was_autofilled) {}
+  // `value_changed` denotes whether `old_value` is different from the element's
+  // current value (the boolean is passed around instead of being recomputed for
+  // performance reasons).
+  virtual void JavaScriptSetValue(HTMLFormControlElement&,
+                                  const String& old_value,
+                                  bool was_autofilled,
+                                  bool value_changed) {}
 
   // Returns true if the given HTMLFormControlElement is eligible for Autofill
   // by the embedder's Autofill client.

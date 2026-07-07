@@ -287,9 +287,9 @@ TEST_P(FormTrackerTest, ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
   }
 }
 
-// Tests that AutofillAgent::JavaScriptChangedValue updates the last interacted
+// Tests that AutofillAgent::JavaScriptSetValue() updates the last interacted
 // saved state.
-TEST_P(FormTrackerTest, JavaScriptChangedValueUpdatesLastInteractedSavedState) {
+TEST_P(FormTrackerTest, JavaScriptSetValueUpdatesLastInteractedSavedState) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
     GTEST_SKIP();

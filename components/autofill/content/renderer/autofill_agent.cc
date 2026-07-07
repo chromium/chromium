@@ -2297,14 +2297,19 @@ void AutofillAgent::AjaxSucceeded() {
   form_tracker_->AjaxSucceeded();
 }
 
-void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
-                                           const WebString& old_value,
-                                           bool was_autofilled) {
+void AutofillAgent::JavaScriptSetValue(WebFormControlElement element,
+                                       const WebString& old_value,
+                                       bool was_autofilled,
+                                       bool value_changed) {
   if (!element.IsConnected()) {
     return;
   }
 
   javascript_autofill_tracker_.OnJavaScriptChangedValue(element);
+
+  if (!value_changed) {
+    return;
+  }
 
   form_tracker_->OnJavaScriptChangedValue(element);
 
@@ -2314,7 +2319,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   if (std::optional<FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
-              GetCallTimerState(kJavaScriptChangedValue), button_titles_cache(),
+              GetCallTimerState(kJavaScriptSetValue), button_titles_cache(),
               /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {

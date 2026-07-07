@@ -355,9 +355,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DataListOptionsChanged(const blink::WebInputElement& element) override;
   void UserGestureObserved() override;
   void AjaxSucceeded() override;
-  void JavaScriptChangedValue(blink::WebFormControlElement element,
-                              const blink::WebString& old_value,
-                              bool was_autofilled) override;
+  void JavaScriptSetValue(blink::WebFormControlElement element,
+                          const blink::WebString& old_value,
+                          bool was_autofilled,
+                          bool value_changed) override;
   void DidCompleteFocusChangeInFrame() override;
   void DidReceiveLeftMouseDownOrGestureTapInNode(
       const blink::WebNode& node) override;

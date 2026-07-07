@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GetFormDataFromWebForm"/>
   <variant name="GetSubmittedForm"/>
   <variant name="HandleCaretMovedInFormField"/>
-  <variant name="JavaScriptChangedValue"/>
+  <variant name="JavaScriptSetValue"/>
   <variant name="NotifyPasswordManagerAboutClearedForm"/>
   <variant name="OnDevToolsSessionConnectionChanged"/>
   <variant name="OnProvisionallySaveForm"/>
