@@ -478,10 +478,11 @@ void TabMenuModel::Build(int index) {
     AddItemWithIcon(
         TabStripModel::CommandAddToReadLater,
         l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kMenuBookIcon
-                                           : kMenuBookChromeRefreshOldIcon,
-                                       ui::kColorMenuIcon, kTabMenuIconSize));
+        features::IsRoundedIconsEnabled()
+            ? ui::ImageModel::FromVectorIcon(kListAltIcon)
+            : ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshOldIcon,
+                                             ui::kColorMenuIcon,
+                                             kTabMenuIconSize));
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip_->IsReadLaterSupportedForAny(indices));
   }
