@@ -133,6 +133,9 @@ declare namespace chrome {
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 
+    // Indicates if this page is a PDF.
+    let isPdf: boolean;
+
     // Fonts supported by the user's current language.
     let supportedFonts: string[];
 

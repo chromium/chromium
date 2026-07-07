@@ -1393,6 +1393,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           &ReadAnythingAppController::InImmersiveOverlayPresentationState)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
+      .SetProperty("isPdf", &ReadAnythingAppController::IsPdf)
       .SetProperty("isImmersiveEnabled",
                    &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isImprovedReadAloudEnabled",
@@ -2080,6 +2081,10 @@ bool ReadAnythingAppController::IsChromeOsAsh() const {
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
   return model_.IsDocs();
+}
+
+bool ReadAnythingAppController::IsPdf() const {
+  return model_.is_pdf();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {

@@ -3275,6 +3275,46 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Pdf.Headings.{HeadingLevel}"
+    units="count" expires_after="2027-05-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total count of {HeadingLevel} headings distilled from a PDF
+    document. This is logged once per distilled PDF document to analyze document
+    structure complexity and distribution of heading levels (as opposed to
+    logging each heading type as a separate categorical enum sample).
+  </summary>
+  <token key="HeadingLevel">
+    <variant name="H1"/>
+    <variant name="H2"/>
+    <variant name="H3"/>
+    <variant name="H4"/>
+    <variant name="H5"/>
+    <variant name="H6"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.Pdf.HeadingToParagraphRatio"
+    units="ratio * 100" expires_after="2027-05-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the ratio of headings to paragraphs on the distilled PDF. This is
+    logged once per distilled PDF document.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.Pdf.NumberParagraphs" units="count"
+    expires_after="2027-05-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the number of paragraphs distilled from a PDF. This is logged once
+    per distilled PDF document
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Readability.EarlySelection"
     enum="ReadAnythingEarlySelection" expires_after="2027-03-01">
   <owner>gusmartin@google.com</owner>

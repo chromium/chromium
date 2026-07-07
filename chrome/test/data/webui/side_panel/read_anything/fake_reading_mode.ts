@@ -109,6 +109,9 @@ export class FakeReadingMode {
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;
 
+  // Returns true if the webpage corresponds to a PDF.
+  isPdf: boolean = false;
+
   // Fonts supported by the browser's preferred language.
   supportedFonts: string[] = ['roboto'];
   allFonts: string[] = [];

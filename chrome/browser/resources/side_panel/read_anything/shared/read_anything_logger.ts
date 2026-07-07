@@ -232,6 +232,9 @@ export class ReadAnythingLogger {
     this.metrics.recordCount(UmaName.UNIQUE_HEADER_TAGS, uniqueHeaderTags);
 
     this.logTopTwoHeaderMetrics_(headerCounts);
+    if (chrome.readingMode.isPdf) {
+      this.logPdfDistilledPageStructure_(headerCounts, paragraphs.length);
+    }
   }
 
   // The "top two" headers in a hierarchy represent the first two non-zero
@@ -268,6 +271,27 @@ export class ReadAnythingLogger {
     this.metrics.recordBoolean(
         UmaName.TOP_TWO_HEADERS_HAVE_MINIMUM_TWO_ITEMS,
         topTwoHeadersHaveMinimumTwoItems);
+  }
+
+  private logPdfDistilledPageStructure_(
+      headerCounts: Array<{tag: string, count: number}>,
+      paragraphCount: number) {
+    for (const header of headerCounts) {
+      const headingLevel = header.tag.toUpperCase();
+      this.metrics.recordCount(
+          `Accessibility.ReadAnything.Pdf.Headings.${headingLevel}`,
+          header.count);
+    }
+    this.metrics.recordCount(UmaName.PDF_NUMBER_PARAGRAPHS, paragraphCount);
+
+    if (paragraphCount > 0) {
+      const totalHeaderCount =
+          headerCounts.reduce((sum, item) => sum + item.count, 0);
+      const headingToParagraphRatio =
+          Math.round((totalHeaderCount / paragraphCount) * 100);
+      this.metrics.recordCount(
+          UmaName.PDF_HEADING_TO_PARAGRAPH_RATIO, headingToParagraphRatio);
+    }
   }
 
   static getHeaderCounts(wordCountContainer: Element):
