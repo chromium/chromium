@@ -1417,6 +1417,57 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowMappingHasGroupDataAfterRestart) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       PRE_WindowMappingHasCollapsedGroupDataAfterRestart) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  // Navigate to url1 in the current tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1_, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add a second tab so the window entry will be logged instead of a single tab
+  // when the browser closes.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add the tab to a group.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group, tab_groups::TabGroupVisualData(u"Group title",
+                                            tab_groups::TabGroupColorId::kGreen,
+                                            /*is_collapsed=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       WindowMappingHasCollapsedGroupDataAfterRestart) {
+  // Enable session service in default mode.
+  EnableSessionService();
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  CHECK(tab_restore_service);
+
+  ASSERT_EQ(1u, tab_restore_service->entries().size());
+  sessions::tab_restore::Entry* entry =
+      tab_restore_service->entries().front().get();
+  ASSERT_EQ(sessions::tab_restore::WINDOW, entry->type);
+
+  auto* window = static_cast<sessions::tab_restore::Window*>(entry);
+  ASSERT_EQ(2u, window->tabs.size());
+  ASSERT_EQ(1u, window->tab_groups.size());
+
+  const sessions::tab_restore::Group* first_group =
+      window->tab_groups.begin()->second.get();
+  tab_groups::TabGroupVisualData expected_visual_data(
+      u"Group title", tab_groups::TabGroupColorId::kGreen,
+      /*is_collapsed=*/true);
+  EXPECT_EQ(expected_visual_data, first_group->visual_data);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        PRE_RecentlyClosedGroupTimestampPersistsAfterRestart) {
   // Enable session service in default mode.
   EnableSessionService();

@@ -514,8 +514,13 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
   group->browser_id = fields.browser_id;
   group->timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(fields.timestamp));
-  group->visual_data =
-      tab_groups::TabGroupVisualData(fields.title, fields.color);
+  // When restoring a single closed group, always restore it in its expanded
+  // state so the user can immediately see the restored tabs. Oppositely, Window
+  // and session restoration preserve the collapsed state in
+  // kCommandSetTabGroupData to match the last state that user left the browser
+  // in.
+  group->visual_data = tab_groups::TabGroupVisualData(
+      fields.title, fields.color, /*is_collapsed=*/false);
   *session_id = SessionID::FromSerializedValue(fields.session_id);
   *num_tabs = fields.num_tabs;
 
@@ -1039,6 +1044,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
       pickle.WriteString(tab.saved_group_id.value().AsLowercaseString());
     }
 
+    // Added in M152. Write the collapsed state.
+    pickle.WriteBool(visual_data->is_collapsed());
+
     command_storage_manager_->ScheduleCommand(
         std::make_unique<SessionCommand>(kCommandSetTabGroupData, pickle));
   }
@@ -1475,8 +1483,11 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         current_tab->group =
             tab_groups::TabGroupId::FromRawToken(group_token.value());
 
+        bool is_collapsed = false;
+        std::ignore = iter.ReadBool(&is_collapsed);
+
         current_tab->group_visual_data =
-            tab_groups::TabGroupVisualData(title, color_int);
+            tab_groups::TabGroupVisualData(title, color_int, is_collapsed);
         break;
       }
 
