@@ -5,6 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
+import {TabSuggestionsState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -27,7 +28,7 @@ suite('ContextualEntrypointAndMenu', () => {
     Object.assign(entrypointAndMenu, {
       inputState,
       usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
-      tabSuggestionsHasLoaded: true,
+      tabSuggestionsState: TabSuggestionsState.LOADED,
     });
     document.body.appendChild(entrypointAndMenu);
     await microtasksFinished();
@@ -282,8 +283,8 @@ suite('ContextualEntrypointAndMenu', () => {
     test(
         'click when not loaded and not loading requests load and delays opening',
         async () => {
-          entrypointAndMenu.tabSuggestionsHasLoaded = false;
-          entrypointAndMenu.tabSuggestionsLoading = false;
+          entrypointAndMenu.tabSuggestionsState =
+              TabSuggestionsState.NOT_STARTED;
           entrypointAndMenu.menuOpenDelayMs = 1000;
           await microtasksFinished();
 
@@ -298,20 +299,21 @@ suite('ContextualEntrypointAndMenu', () => {
           await microtasksFinished();
 
           assertTrue(requestedLoad);
-          assertTrue(entrypointAndMenu.tabSuggestionsLoading);
+          assertEquals(
+              TabSuggestionsState.LOADING,
+              entrypointAndMenu.tabSuggestionsState);
           assertFalse(entrypointAndMenu.$.menu.open);
 
           const openedPromise =
               eventToPromise('context-menu-opened', entrypointAndMenu);
-          entrypointAndMenu.tabSuggestionsHasLoaded = true;
-          entrypointAndMenu.tabSuggestionsLoading = false;
+          entrypointAndMenu.tabSuggestionsState = TabSuggestionsState.LOADED;
           await openedPromise;
 
           assertTrue(entrypointAndMenu.$.menu.open);
         });
 
     test('menu opening is delayed when suggestions are loading', async () => {
-      entrypointAndMenu.tabSuggestionsLoading = true;
+      entrypointAndMenu.tabSuggestionsState = TabSuggestionsState.LOADING;
       entrypointAndMenu.menuOpenDelayMs = 1000;
       await microtasksFinished();
 
@@ -323,7 +325,7 @@ suite('ContextualEntrypointAndMenu', () => {
 
       const openedPromise =
           eventToPromise('context-menu-opened', entrypointAndMenu);
-      entrypointAndMenu.tabSuggestionsLoading = false;
+      entrypointAndMenu.tabSuggestionsState = TabSuggestionsState.LOADED;
       await openedPromise;
 
       assertTrue(entrypointAndMenu.$.menu.open);
@@ -334,7 +336,7 @@ suite('ContextualEntrypointAndMenu', () => {
         async () => {
           const openedPromise =
               eventToPromise('context-menu-opened', entrypointAndMenu);
-          entrypointAndMenu.tabSuggestionsLoading = true;
+          entrypointAndMenu.tabSuggestionsState = TabSuggestionsState.LOADING;
           entrypointAndMenu.menuOpenDelayMs = 10;
           await microtasksFinished();
 

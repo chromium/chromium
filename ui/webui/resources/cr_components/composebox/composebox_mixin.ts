@@ -18,7 +18,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -173,8 +173,7 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             tabSuggestions: {type: Array},
-            tabSuggestionsLoading: {type: Boolean},
-            tabSuggestionsHasLoaded: {type: Boolean},
+            tabSuggestionsState: {type: Number},
             aimThreadRestoredTabs: {type: Array},
             transcript: {type: String},
             uploadButtonDisabled: {
@@ -312,8 +311,8 @@ export const ComposeboxEmbedderMixin =
         accessor suggestInventory: SuggestInventory|null = null;
         accessor submitEnabled: boolean = false;
         accessor tabSuggestions: TabInfo[] = [];
-        accessor tabSuggestionsLoading: boolean = false;
-        accessor tabSuggestionsHasLoaded: boolean = false;
+        accessor tabSuggestionsState: TabSuggestionsState =
+            TabSuggestionsState.NOT_STARTED;
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
         showTypedSuggest: boolean =
@@ -1348,7 +1347,7 @@ export const ComposeboxEmbedderMixin =
         onContextMenuOpened() {
           this.browserTabContextAdded = false;
           this.contextMenuOpened = true;
-          if (this.tabSuggestionsHasLoaded) {
+          if (this.tabSuggestionsState === TabSuggestionsState.LOADED) {
             const selectedTabIds = new Set(this.addedTabsIds.keys());
             this.tabSuggestions = [
               ...this.tabSuggestions.filter(
@@ -2265,11 +2264,12 @@ export const ComposeboxEmbedderMixin =
          * cache to minimize Mojo overhead.
          */
         async refreshTabSuggestions(forceRefresh: boolean = false) {
-          if (this.tabSuggestionsLoading ||
-              (this.tabSuggestionsHasLoaded && !forceRefresh)) {
+          if (this.tabSuggestionsState === TabSuggestionsState.LOADING ||
+              (this.tabSuggestionsState === TabSuggestionsState.LOADED &&
+               !forceRefresh)) {
             return;
           }
-          this.tabSuggestionsLoading = true;
+          this.tabSuggestionsState = TabSuggestionsState.LOADING;
           try {
             const {tabs} = await this.getSearchboxHandler().getRecentTabs();
             this.recentTabId = tabs[0]?.tabId ?? null;
@@ -2305,7 +2305,7 @@ export const ComposeboxEmbedderMixin =
             }
 
             this.tabSuggestions = [...restored, ...processedRecentTabs];
-            this.tabSuggestionsHasLoaded = true;
+            this.tabSuggestionsState = TabSuggestionsState.LOADED;
 
             if (this.inputState) {
               const {allowedInputTypes, disabledInputTypes} = this.inputState;
@@ -2320,7 +2320,9 @@ export const ComposeboxEmbedderMixin =
               }
             }
           } finally {
-            this.tabSuggestionsLoading = false;
+            if (this.tabSuggestionsState === TabSuggestionsState.LOADING) {
+              this.tabSuggestionsState = TabSuggestionsState.NOT_STARTED;
+            }
           }
         }
 
@@ -2606,8 +2608,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   submitEnabled: boolean;
   submitButtonIconType: SubmitButtonIconType;
   tabSuggestions: TabInfo[];
-  tabSuggestionsLoading: boolean;
-  tabSuggestionsHasLoaded: boolean;
+  tabSuggestionsState: TabSuggestionsState;
   transcript: string;
   uploadButtonDisabled: boolean;
   composeboxNoFlickerSuggestionsFix: boolean;

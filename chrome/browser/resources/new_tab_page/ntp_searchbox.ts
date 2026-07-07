@@ -10,7 +10,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -177,8 +177,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
       recentTabId_: {type: Number},
-      tabSuggestionsLoading_: {type: Boolean},
-      tabSuggestionsHasLoaded_: {type: Boolean},
+      tabSuggestionsState_: {type: Number},
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
@@ -236,8 +235,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor isListening: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
-  protected accessor tabSuggestionsLoading_: boolean = false;
-  protected accessor tabSuggestionsHasLoaded_: boolean = false;
+  protected accessor tabSuggestionsState_: TabSuggestionsState =
+      TabSuggestionsState.NOT_STARTED;
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -283,7 +282,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
           if (this.contextMenuOpened_) {
             this.refreshTabSuggestions_(/*forceRefresh=*/ true);
           } else {
-            this.tabSuggestionsHasLoaded_ = false;
+            this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
           }
         });
     this.inputStateListenerId_ =
@@ -552,16 +551,18 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
     // Only refresh tab suggestions if the context menu is opened.
     const requiresRefresh = forceRefresh || this.contextMenuOpened_;
-    if (!requiresRefresh || this.tabSuggestionsLoading_ ||
-        (this.tabSuggestionsHasLoaded_ && !forceRefresh)) {
+    if (!requiresRefresh ||
+        this.tabSuggestionsState_ === TabSuggestionsState.LOADING ||
+        (this.tabSuggestionsState_ === TabSuggestionsState.LOADED &&
+         !forceRefresh)) {
       return;
     }
-    this.tabSuggestionsLoading_ = true;
+    this.tabSuggestionsState_ = TabSuggestionsState.LOADING;
     try {
       const {tabs} = await this.pageHandler().getRecentTabs();
       this.recentTabId_ = tabs[0]?.tabId ?? null;
       this.tabSuggestions_ = [...tabs];
-      this.tabSuggestionsHasLoaded_ = true;
+      this.tabSuggestionsState_ = TabSuggestionsState.LOADED;
 
       if (this.contextMenuOpened_ && this.inputState_) {
         const {allowedInputTypes, disabledInputTypes} = this.inputState_;
@@ -573,7 +574,9 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         }
       }
     } finally {
-      this.tabSuggestionsLoading_ = false;
+      if (this.tabSuggestionsState_ === TabSuggestionsState.LOADING) {
+        this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
+      }
     }
   }
 
@@ -588,7 +591,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected onContextMenuClosed_() {
     this.contextMenuOpened_ = false;
-    this.tabSuggestionsHasLoaded_ = false;
+    this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
     this.blur();
   }
 

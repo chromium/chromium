@@ -41,8 +41,7 @@ export function getHtml(this: NtpComposeboxElement) {
       .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
       .fileNum="${this.files.size}"
       .sharedTabs="${this.getSharedTabs()}"
-      .tabSuggestionsLoading="${this.tabSuggestionsLoading}"
-      .tabSuggestionsHasLoaded="${this.tabSuggestionsHasLoaded}"
+      .tabSuggestionsState="${this.tabSuggestionsState}"
       ?upload-button-disabled="${this.uploadButtonDisabled}"
       ?show-context-menu-description="${this.showContextMenuDescription}">
   </cr-composebox-contextual-entrypoint-and-menu>
