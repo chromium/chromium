@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "net/base/ip_endpoint.h"
 
 namespace ash {
