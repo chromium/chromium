@@ -1522,8 +1522,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       "ResourceResponseReceived",
       true, 1);
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
   CheckCorrectForwardingResultMetric(
       histogram_tester,
@@ -1643,8 +1641,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
   CheckCorrectForwardingResultMetric(
       histogram_tester,
@@ -1673,8 +1669,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
 
   content::TestNavigationObserver back_load_observer(GetWebContents());
@@ -1688,8 +1682,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_TRUE(inner_html.contains("regular"));
   EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
 
   content::TestNavigationObserver forward_load_observer(GetWebContents());
@@ -1702,9 +1694,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   inner_html = GetDocumentInnerHTML();
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 3);
 }
@@ -1746,8 +1735,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
   CheckCorrectForwardingResultMetric(
       histogram_tester,
@@ -1770,8 +1757,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
 
   content::TestNavigationObserver back_load_observer(GetWebContents());
@@ -1785,8 +1770,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   EXPECT_TRUE(inner_html.contains("regular"));
   EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
 
   content::TestNavigationObserver forward_load_observer(GetWebContents());
@@ -1799,9 +1782,6 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   inner_html = GetDocumentInnerHTML();
   EXPECT_FALSE(inner_html.contains("regular"));
   EXPECT_TRUE(inner_html.contains("prefetch"));
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
-
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 3);
 }
@@ -2124,8 +2104,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kNoPrefetch, 1);
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 0);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 0);
 }

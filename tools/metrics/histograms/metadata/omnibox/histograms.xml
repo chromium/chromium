@@ -5821,24 +5821,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
 </histogram>
 
-<histogram
-    name="Omnibox.{SearchPrefetch}.ClickToNavigationIntercepted.{NavigationPrefetchOnly}"
-    units="ms" expires_after="2023-10-15">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    {SearchPrefetch}
-
-    Measures the time between the user clicks the Omnibox suggestion and the
-    moment the navigation is intercepted by the Search Prefetch code.
-
-    {NavigationPrefetchOnly}
-  </summary>
-  <token key="SearchPrefetch" variants="SearchPrefetch"/>
-  <token key="NavigationPrefetchOnly" variants="NavigationPrefetchOnly"/>
-</histogram>
-
 <histogram name="Omnibox.{SearchPrefetch}.FetchResult.{SuggestionPrefetchOnly}"
     enum="BooleanSuccess" expires_after="2023-10-15">
   <owner>ryansturm@chromium.org</owner>

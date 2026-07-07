@@ -129,10 +129,6 @@ class SearchPrefetchRequest {
   // `MaybeStartPrerenderSearchResult` will be called soon.
   void ResetPrerenderUpgrader();
 
-  // Record the time at which the user clicked a suggestion matching this
-  // prefetch.
-  void RecordClickTime();
-
   // Takes ownership of underlying data/objects needed to serve the response.
   scoped_refptr<StreamingSearchPrefetchURLLoader> TakeSearchPrefetchURLLoader();
 
@@ -217,9 +213,6 @@ class SearchPrefetchRequest {
   base::OnceCallback<void(bool)> report_error_callback_;
 
   base::TimeTicks time_start_prefetch_request_;
-
-  // The time at which the prefetched URL was clicked in the Omnibox.
-  base::TimeTicks time_clicked_;
 
   // Once set, this request will trigger search prerender upon receiving success
   // response.

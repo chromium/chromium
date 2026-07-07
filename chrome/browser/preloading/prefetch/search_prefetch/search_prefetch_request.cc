@@ -495,12 +495,6 @@ void SearchPrefetchRequest::MarkPrefetchAsComplete() {
 void SearchPrefetchRequest::MarkPrefetchAsServed() {
   SetSearchPrefetchStatus(
       SearchPrefetchStatus::kPrefetchServedForRealNavigation);
-  UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.ClickToNavigationIntercepted",
-                      base::TimeTicks::Now() - time_clicked_);
-}
-
-void SearchPrefetchRequest::RecordClickTime() {
-  time_clicked_ = base::TimeTicks::Now();
 }
 
 scoped_refptr<StreamingSearchPrefetchURLLoader>

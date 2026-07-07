@@ -458,7 +458,6 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!log) {
     return;
   }
-  const GURL& opened_url = log->final_destination_url;
 
   auto& match = log->result->match_at(log->selection.line);
   if (match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED) {
@@ -485,25 +484,6 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
         "HistoryOrSuggest",
         has_history_search || has_search_suggest);
   }
-
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  DCHECK(template_url_service);
-  auto* default_search = template_url_service->GetDefaultSearchProvider();
-  if (!default_search) {
-    return;
-  }
-
-  GURL canonical_search_url;
-
-  HasCanonicalPreloadingOmniboxSearchURL(opened_url, profile_,
-                                         &canonical_search_url);
-
-  if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
-    return;
-  }
-  SearchPrefetchRequest& prefetch = *prefetches_[canonical_search_url];
-  prefetch.RecordClickTime();
 }
 
 void SearchPrefetchService::OnPrerenderedRequestUsed(
