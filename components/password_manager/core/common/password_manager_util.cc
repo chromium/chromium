@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/char_iterator.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -13,10 +14,15 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace password_manager::util {
 
 namespace {
+
+// The minimum number of alphabetic characters in the input name or id that
+// allows considering it as a potential single username field.
+const size_t kMinAlphabeticCharsForSingleUsername = 2;
 
 // Returns true if the field attributes indicate a password field.
 bool IsLikelyPasswordField(std::u16string_view name, std::u16string_view id) {
@@ -24,11 +30,22 @@ bool IsLikelyPasswordField(std::u16string_view name, std::u16string_view id) {
          autofill::MatchesRegex<constants::kPasswordRe>(id);
 }
 
-}  // namespace
+// Returns true if `s` is a meaningful name or id for a single username field.
+// It must contain at least `kMinAlphabeticCharsForSingleUsername` alphabetic
+// characters (which also guarantees the length is at least
+// `kMinAlphabeticCharsForSingleUsername`).
+bool IsMeaningfulNameOrId(std::u16string_view s) {
+  size_t meaningful_char_count = 0;
+  for (base::i18n::UTF16CharIterator iter(s); !iter.end(); iter.Advance()) {
+    if (u_isalpha(iter.get()) &&
+        ++meaningful_char_count >= kMinAlphabeticCharsForSingleUsername) {
+      return true;
+    }
+  }
+  return false;
+}
 
-// The minimum length of the input name that allows considering it as potential
-// single username field.
-const size_t kMinInputNameLengthForSingleUsername = 2;
+}  // namespace
 
 bool FormContainsWebauthnAutocomplete(const autofill::FormData& form) {
   return std::ranges::any_of(
@@ -65,10 +82,9 @@ bool CanFieldBeConsideredAsSingleUsername(
     const std::u16string& id,
     const std::u16string& label,
     std::optional<autofill::FormControlType> type) {
-  // Do not consider fields with very short names/ids to avoid aggregating
-  // multiple unrelated fields on the server. (crbug.com/1209143)
-  if (name.length() < kMinInputNameLengthForSingleUsername &&
-      id.length() < kMinInputNameLengthForSingleUsername) {
+  // Do not consider fields with very short or meaningless names/ids to avoid
+  // aggregating multiple unrelated fields on the server. (crbug.com/1209143)
+  if (!IsMeaningfulNameOrId(name) && !IsMeaningfulNameOrId(id)) {
     return false;
   }
   // Do not consider fields if their HTML attributes indicate they

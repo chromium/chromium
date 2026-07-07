@@ -147,6 +147,61 @@ TEST(PasswordsManagerUtilTest,
       /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
 }
 
+// Test that a field with meaningless id and name attribute (that do not contain
+// at least two alphabetic characters) isn't considered as a valid username.
+TEST(PasswordsManagerUtilTest,
+     CanFieldBeConsideredAsSingleUsername_MeaninglessIdAndName) {
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u":0",
+      /*id=*/u"-0",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u":0",
+      /*id=*/u"",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"",
+      /*id=*/u"-1467",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+
+  // Test that identifiers with only 1 alphabetic character are rejected.
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u":a",
+      /*id=*/u"",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"",
+      /*id=*/u"______u",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+
+  // Verify that it is considered valid if at least one attribute is meaningful.
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u":0",
+      /*id=*/u"username1",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username1",
+      /*id=*/u"-0",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+
+  // Test that identifiers with at least 2 alphabetic characters are allowed,
+  // including non-ASCII alphabetic characters.
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"un",
+      /*id=*/u"",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"",
+      /*id=*/u"u_p",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"侍の名前",
+      /*id=*/u"",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+}
+
 // Test that a field that looks like a search field isn't considered as a valid
 // username.
 TEST(PasswordsManagerUtilTest,
