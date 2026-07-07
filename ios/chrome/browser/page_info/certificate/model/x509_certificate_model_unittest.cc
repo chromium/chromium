@@ -15,6 +15,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace x509_certificate_model {
 
@@ -117,6 +118,22 @@ TEST_F(X509CertificateModelTest, GetGoogleCertFields) {
       "E1 27 BA CF 99 D1 50 FF 29 25 C0 36 36 15 33 52 70 BE 31 8F 9F E8 "
       "7F E7 11 0C 8D BF 84 A0 42 1A 80 89 B0 31 58 41 07 5F",
       model.GetSignatureData());
+
+  // Subject Public Key Info.
+  EXPECT_EQ("PKCS #1 RSA Encryption", model.GetPublicKeyAlgorithm());
+  EXPECT_EQ("None", model.GetPublicKeyParameters());
+  std::optional<size_t> public_key_size = model.GetPublicKeySize();
+  EXPECT_TRUE(public_key_size.has_value());
+  EXPECT_EQ(1024u, public_key_size.value());
+  EXPECT_EQ(
+      "30 81 89 02 81 81 00 E8 F9 86 0F 90 FA 86 D7 DF BD 72 26 B6 D7 44 "
+      "02 83 78 73 D9 02 28 EF 88 45 39 FB 10 E8 7C AE A9 38 D5 75 C6 38 "
+      "EB 0A 15 07 9B 83 E8 CD 82 D5 E3 F7 15 68 45 A1 0B 19 85 BC E2 EF "
+      "84 E7 DD F2 D7 B8 98 C2 A1 BB B5 C1 51 DF D4 83 02 A7 3D 06 42 5B "
+      "E1 22 C3 DE 6B 85 5F 1C D6 DA 4E 8B D3 9B EE B9 67 22 2A 1D 11 EF "
+      "79 A4 B3 37 8A F4 FE 18 FD BC F9 46 23 50 97 F3 AC FC 24 46 2B 5C "
+      "3B B7 45 02 03 01 00 01",
+      model.GetPublicKeyData());
 }
 
 TEST_F(X509CertificateModelTest, GetNDNCertFields) {
@@ -248,6 +265,49 @@ TEST_F(X509CertificateModelTest, SignatureParametersRawBytes) {
   X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
   ASSERT_TRUE(model.is_valid());
   EXPECT_EQ("04 04 DE AD BE EF", model.GetSignatureParameters());
+}
+
+TEST_F(X509CertificateModelTest, ECPublicKey) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+  builder->GenerateECKey();
+  // This is a self-signed cert, so the signature algorithm must match the new
+  // key type, otherwise signing fails.
+  builder->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha256);
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ("Elliptic Curve Public Key", model.GetPublicKeyAlgorithm());
+  // The DER-encoded named curve OID for prime256v1 (1.2.840.10045.3.1.7).
+  EXPECT_EQ("06 08 2A 86 48 CE 3D 03 01 07", model.GetPublicKeyParameters());
+  std::optional<size_t> public_key_size = model.GetPublicKeySize();
+  EXPECT_TRUE(public_key_size.has_value());
+  EXPECT_EQ(256u, public_key_size.value());
+  EXPECT_FALSE(model.GetPublicKeyData().empty());
+}
+
+TEST_F(X509CertificateModelTest, Mldsa44PublicKey) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+  builder->GenerateMldsa44Key();
+  // This is a self-signed cert, so the signature algorithm must match the new
+  // key type, otherwise signing fails.
+  builder->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kMldsa44);
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ("ML-DSA-44", model.GetPublicKeyAlgorithm());
+  EXPECT_EQ("None", model.GetPublicKeyParameters());
+  std::optional<size_t> public_key_size = model.GetPublicKeySize();
+  EXPECT_TRUE(public_key_size.has_value());
+  EXPECT_EQ(10496u, public_key_size.value());
+  EXPECT_FALSE(model.GetPublicKeyData().empty());
 }
 
 }  // namespace x509_certificate_model

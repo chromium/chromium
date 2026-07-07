@@ -71,6 +71,18 @@ class X509CertificateModel : public X509CertificateModelBase {
 
   // Returns the signature data as hex encoded string.
   std::string GetSignatureData() const;
+
+  // Get localized public key algorithm name from the SPKI.
+  std::string GetPublicKeyAlgorithm() const;
+
+  // Get public key parameters (e.g. curve name for EC keys).
+  std::string GetPublicKeyParameters() const;
+
+  // Get public key size in bits (e.g. 2048 for RSA-2048, 256 for P-256).
+  std::optional<size_t> GetPublicKeySize() const;
+
+  // Get public key data as hex string.
+  std::string GetPublicKeyData() const;
 };
 
 }  // namespace x509_certificate_model
