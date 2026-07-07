@@ -24,6 +24,7 @@ _CONVERTED_SCHEMAS = [
     ('audio.idl', 'audio.webidl'),
     ('cec_private.idl', 'cec_private.webidl'),
     ('diagnostics.idl', 'diagnostics.webidl'),
+    ('login_screen_storage.idl', 'login_screen_storage.webidl'),
     ('virtual_keyboard.idl', 'virtual_keyboard.webidl'),
     ('webcam_private.idl', 'webcam_private.webidl'),
     ('extension_options_internal.idl', 'extension_options_internal.webidl'),

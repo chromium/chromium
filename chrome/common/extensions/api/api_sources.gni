@@ -131,7 +131,7 @@ if (enable_extensions) {
       "image_loader_private.idl",
       "input_method_private.json",
       "login.idl",
-      "login_screen_storage.idl",
+      "login_screen_storage.webidl",
       "login_screen_ui.idl",
       "login_state.idl",
       "odfs_config_private.idl",
