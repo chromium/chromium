@@ -29,7 +29,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     const std::optional<std::vector<net::SourceStreamType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
-    int initiator_process_id,
+    ChildProcessId initiator_process_id,
     std::optional<blink::DocumentToken> initiator_document_token,
     bool allow_cookies_from_browser,
     int64_t navigation_id,

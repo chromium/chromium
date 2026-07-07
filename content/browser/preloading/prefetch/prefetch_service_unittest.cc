@@ -809,7 +809,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   void Navigate(
       const GURL& url,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       const std::optional<blink::LocalFrameToken>& initiator_local_frame_token,
       const std::optional<blink::DocumentToken>& initiator_document_token) {
     mock_navigation_handle_ =
@@ -822,13 +822,12 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   }
 
   void NavigateInitiatedByRenderer(const GURL& url) {
-    Navigate(url, main_rfh()->GetProcess()->GetDeprecatedID(),
+    Navigate(url, main_rfh()->GetProcess()->GetID(),
              main_rfh()->GetFrameToken(), MainDocumentToken());
   }
 
   void NavigateInitiatedByBrowser(const GURL& url) {
-    Navigate(url, ChildProcessHost::kInvalidUniqueID, std::nullopt,
-             std::nullopt);
+    Navigate(url, ChildProcessId(), std::nullopt, std::nullopt);
   }
 
   void GetPrefetchToServe(
@@ -889,18 +888,17 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       bool is_nav_prerender) {
     return is_renderer_initiated
                ? SimulatePartOfNavigation(
-                     url, is_nav_prerender,
-                     main_rfh()->GetProcess()->GetDeprecatedID(),
+                     url, is_nav_prerender, main_rfh()->GetProcess()->GetID(),
                      main_rfh()->GetFrameToken(), MainDocumentToken())
                : SimulatePartOfNavigation(url, is_nav_prerender,
-                                          ChildProcessHost::kInvalidUniqueID,
-                                          std::nullopt, std::nullopt);
+                                          ChildProcessId(), std::nullopt,
+                                          std::nullopt);
   }
 
   std::unique_ptr<NavigationResult> SimulatePartOfNavigation(
       const GURL& url,
       bool is_nav_prerender,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       const std::optional<blink::LocalFrameToken>& initiator_local_frame_token,
       const std::optional<blink::DocumentToken>& initiator_document_token) {
     // Use std::unique_ptr as the below uses raw pointers and references.
@@ -2649,9 +2647,8 @@ TEST_P(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   ASSERT_NE(other_token, main_rfh()->GetFrameToken());
   blink::DocumentToken different_document_token;
   ASSERT_NE(different_document_token, MainDocumentToken());
-  Navigate(GURL("https://example.com"),
-           main_rfh()->GetProcess()->GetDeprecatedID(), other_token,
-           different_document_token);
+  Navigate(GURL("https://example.com"), main_rfh()->GetProcess()->GetID(),
+           other_token, different_document_token);
 
   ExpectPrefetchSuccess(std::size(kHTMLBody));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),

@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/filter/source_stream_type.h"
@@ -47,7 +48,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const std::optional<std::vector<net::SourceStreamType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       std::optional<blink::DocumentToken> initiator_document_token,
       bool allow_cookies_from_browser,
       int64_t navigation_id,
@@ -137,7 +138,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const bool is_pdf;
 
   // The initiator document's token and its process ID.
-  const int initiator_process_id;
+  const ChildProcessId initiator_process_id;
   const std::optional<blink::DocumentToken> initiator_document_token;
 
   // Whether a Cookie header added to this request should not be overwritten by

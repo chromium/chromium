@@ -4832,12 +4832,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   // TODO(crbug.com/510258191): Check that |initiator_navigation_state_| is non
   // null for renderer-intiiated navigations.
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   auto navigation_request = NavigationRequest::Create(
       node, std::move(common_params), std::move(commit_params),
       !params.is_renderer_initiated, params.was_opener_suppressed,
-      params.initiator_frame_token,
-      params.initiator_process_id.GetUnsafeValue(),
+      params.initiator_frame_token, params.initiator_process_id,
       params.initiator_navigation_state,
       params.should_ignore_initiator_policies_for_inheritance,
       extra_headers_crlf, frame_entry, entry, params.is_form_submission,
@@ -4992,10 +4990,13 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   }
   const bool is_browser_initiated = !initiator_frame_token;
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue.
   std::unique_ptr<NavigationRequest> request = NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
-      initiator_frame_token, initiator_process_id, initiator_navigation_state,
+      initiator_frame_token,
+      ChildProcessId::FromUnsafeValue(initiator_process_id),
+      initiator_navigation_state,
       false /* should_ignore_initiator_policies_for_inheritance */,
       entry->extra_headers(), frame_entry, entry, is_form_submission,
       nullptr /* navigation_ui_data */, std::nullopt /* impression */,

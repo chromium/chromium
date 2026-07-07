@@ -548,7 +548,7 @@ class RenderFrameHostManagerTest
             frame_tree_node, std::move(common_params), std::move(commit_params),
             !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
             std::nullopt /* initiator_frame_token */,
-            ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+            ChildProcessId() /* initiator_process_id */,
             nullptr /* initiator_navigation_state */,
             false /* should_ignore_initiator_policies_for_inheritance */,
             entry->extra_headers(), frame_entry, entry, is_form_submission,

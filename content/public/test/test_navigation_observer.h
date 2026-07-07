@@ -141,7 +141,9 @@ class TestNavigationObserver {
   // finished navigation. This is defined if and only if
   // last_initiator_frame_token above is, and it is valid only in conjunction
   // with it.
-  int last_initiator_process_id() const { return last_initiator_process_id_; }
+  ChildProcessId last_initiator_process_id() const {
+    return last_initiator_process_id_;
+  }
 
   // Returns the net::Error origin of the last finished navigation (that matched
   // URL / net error filters, if set).
@@ -298,7 +300,7 @@ class TestNavigationObserver {
   // The process id of the initiator frame for the last observed navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
-  int last_initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  ChildProcessId last_initiator_process_id_;
 
   // The net error code of the last navigation.
   net::Error last_net_error_code_;

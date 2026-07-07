@@ -649,7 +649,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Return the ID of the renderer process of the frame host that initiated the
   // navigation. This is defined if and only if GetInitiatorFrameToken above is,
   // and it is only valid in conjunction with it.
-  virtual int GetInitiatorProcessId() = 0;
+  virtual ChildProcessId GetInitiatorProcessId() = 0;
 
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.

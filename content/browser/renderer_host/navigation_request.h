@@ -291,7 +291,7 @@ class CONTENT_EXPORT NavigationRequest
       bool browser_initiated,
       bool was_opener_suppressed,
       const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       bool should_ignore_initiator_policies_for_inheritance,
       const std::string& extra_headers,
@@ -477,7 +477,7 @@ class CONTENT_EXPORT NavigationRequest
   const std::optional<blink::Impression>& GetImpression() override;
   const std::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
-  int GetInitiatorProcessId() override;
+  ChildProcessId GetInitiatorProcessId() override;
   const std::optional<url::Origin>& GetInitiatorOrigin() override;
   const std::optional<GURL>& GetInitiatorBaseUrl() override;
   scoped_refptr<InitiatorNavigationState> GetInitiatorNavigationState()
@@ -1890,7 +1890,7 @@ class CONTENT_EXPORT NavigationRequest
           prefetched_signed_exchange_cache,
       std::optional<base::SafeRef<RenderFrameHostImpl>>
           rfh_restored_from_back_forward_cache,
-      int initiator_process_id,
+      ChildProcessId initiator_process_id,
       scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
       bool should_ignore_initiator_policies_for_inheritance,
       bool was_opener_suppressed,
@@ -3116,7 +3116,7 @@ class CONTENT_EXPORT NavigationRequest
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
-  const int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  const ChildProcessId initiator_process_id_;
 
   // The initiator Document's token, if it is present when this
   // NavigationRequest was created.

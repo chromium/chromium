@@ -1264,7 +1264,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       /*browser_initiated=*/true, was_opener_suppressed,
       std::nullopt /* initiator_frame_token */,
-      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      ChildProcessId() /* initiator_process_id */,
       nullptr /* initiator_navigation_state */,
       false /* should_ignore_initiator_policies_for_inheritance */,
       extra_headers, frame_entry, entry, is_form_submission,
@@ -1288,7 +1288,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     bool browser_initiated,
     bool was_opener_suppressed,
     const std::optional<blink::LocalFrameToken>& initiator_frame_token,
-    int initiator_process_id,
+    ChildProcessId initiator_process_id,
     scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
     bool should_ignore_initiator_policies_for_inheritance,
     const std::string& extra_headers,
@@ -1509,8 +1509,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // initiated by a frame in the same process.
   // TODO(crbug.com/40686861): Find a way to CHECK that the routing ID
   // is from the current RFH.
-  int initiator_process_id =
-      frame_tree_node->current_frame_host()->GetProcess()->GetDeprecatedID();
+  ChildProcessId initiator_process_id =
+      frame_tree_node->current_frame_host()->GetProcess()->GetID();
 
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
@@ -1687,7 +1687,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
       std::nullopt /* rfh_restored_from_back_forward_cache */,
-      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      ChildProcessId() /* initiator_process_id */,
       nullptr /* initiator_navigation_state */,
       false /* should_ignore_initiator_policies_for_inheritance */,
       false /* was_opener_suppressed */, EmbedderIsolationInfo::Mode::kNone));
@@ -1750,7 +1750,7 @@ NavigationRequest::NavigationRequest(
         prefetched_signed_exchange_cache,
     std::optional<base::SafeRef<RenderFrameHostImpl>>
         rfh_restored_from_back_forward_cache,
-    int initiator_process_id,
+    ChildProcessId initiator_process_id,
     scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
     bool should_ignore_initiator_policies_for_inheritance,
     bool was_opener_suppressed,
@@ -10497,7 +10497,7 @@ NavigationRequest::GetInitiatorFrameToken() {
   return initiator_frame_token_;
 }
 
-int NavigationRequest::GetInitiatorProcessId() {
+ChildProcessId NavigationRequest::GetInitiatorProcessId() {
   return initiator_process_id_;
 }
 

@@ -642,8 +642,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
     EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
-    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
-              observer.last_initiator_process_id());
+    EXPECT_FALSE(observer.last_initiator_process_id());
   }
 
   RenderFrameHost* initial_rfh = current_frame_host();
@@ -657,8 +656,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
     EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
-    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
-              observer.last_initiator_process_id());
+    EXPECT_FALSE(observer.last_initiator_process_id());
   }
 
   RenderFrameHost* second_rfh = current_frame_host();
@@ -680,8 +678,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
     EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
-    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
-              observer.last_initiator_process_id());
+    EXPECT_FALSE(observer.last_initiator_process_id());
   }
 
   // The RenderFrameHost should have changed.
@@ -705,8 +702,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
     EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
-    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
-              observer.last_initiator_process_id());
+    EXPECT_FALSE(observer.last_initiator_process_id());
   }
 
   RenderFrameHost* initial_rfh = current_frame_host();
@@ -732,13 +728,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       EXPECT_NE(current_frame_host(), initial_rfh);
       EXPECT_EQ(initial_rfh_global_token.frame_token,
                 observer.last_initiator_frame_token().value());
+      // TODO(crbug.com/379869738): Remove GetUnsafeValue.
       EXPECT_EQ(initial_rfh_global_token.child_id,
-                observer.last_initiator_process_id());
+                observer.last_initiator_process_id().GetUnsafeValue());
     } else {
       EXPECT_EQ(current_frame_host(), initial_rfh);
       EXPECT_EQ(current_frame_host()->GetFrameToken(),
                 observer.last_initiator_frame_token().value());
-      EXPECT_EQ(current_frame_host()->GetProcess()->GetDeprecatedID(),
+      EXPECT_EQ(current_frame_host()->GetProcess()->GetID(),
                 observer.last_initiator_process_id());
     }
   }
@@ -786,8 +783,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initial_rfh_global_token.frame_token,
               observer.last_initiator_frame_token().value());
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     EXPECT_EQ(initial_rfh_global_token.child_id,
-              observer.last_initiator_process_id());
+              observer.last_initiator_process_id().GetUnsafeValue());
   }
 
   // The RenderFrameHost should have changed unless strict SiteInstances (either
@@ -1338,8 +1336,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initiator_global_token.frame_token,
               observer.last_initiator_frame_token().value());
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     EXPECT_EQ(initiator_global_token.child_id,
-              observer.last_initiator_process_id());
+              observer.last_initiator_process_id().GetUnsafeValue());
   }
 }
 
@@ -1374,8 +1373,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initiator_global_token.frame_token,
               observer.last_initiator_frame_token().value());
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     EXPECT_EQ(initiator_global_token.child_id,
-              observer.last_initiator_process_id());
+              observer.last_initiator_process_id().GetUnsafeValue());
   }
 }
 
@@ -1412,8 +1412,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initiator_global_token.frame_token,
               observer.last_initiator_frame_token().value());
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     EXPECT_EQ(initiator_global_token.child_id,
-              observer.last_initiator_process_id());
+              observer.last_initiator_process_id().GetUnsafeValue());
   }
 }
 
@@ -1488,8 +1489,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     EXPECT_EQ(initiator_global_token.frame_token,
               observer.last_initiator_frame_token().value());
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     EXPECT_EQ(initiator_global_token.child_id,
-              observer.last_initiator_process_id());
+              observer.last_initiator_process_id().GetUnsafeValue());
   }
 }
 
@@ -4095,8 +4097,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_global_token.frame_token, frame_token.value());
+        // TODO(crbug.com/379869738): Remove GetUnsafeValue.
         EXPECT_EQ(initiator_global_token.child_id,
-                  request->GetInitiatorProcessId());
+                  request->GetInitiatorProcessId().GetUnsafeValue());
 
         auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessId(), *frame_token);
@@ -4181,8 +4184,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_global_token.frame_token, frame_token.value());
+        // TODO(crbug.com/379869738): Remove GetUnsafeValue.
         EXPECT_EQ(initiator_global_token.child_id,
-                  request->GetInitiatorProcessId());
+                  request->GetInitiatorProcessId().GetUnsafeValue());
 
         auto* deleted_initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessId(), frame_token.value());
@@ -4284,8 +4288,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_global_token.frame_token, frame_token.value());
+        // TODO(crbug.com/379869738): Remove GetUnsafeValue.
         EXPECT_EQ(initiator_global_token.child_id,
-                  request->GetInitiatorProcessId());
+                  request->GetInitiatorProcessId().GetUnsafeValue());
 
         auto* deleted_initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessId(), frame_token.value());
@@ -4467,8 +4472,9 @@ IN_PROC_BROWSER_TEST_F(
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_global_token.frame_token, frame_token.value());
+        // TODO(crbug.com/379869738): Remove GetUnsafeValue.
         EXPECT_EQ(initiator_global_token.child_id,
-                  request->GetInitiatorProcessId());
+                  request->GetInitiatorProcessId().GetUnsafeValue());
 
         // This is the RenderFrameHost in the WebContents that was forced to
         // `Close()` in the interceptor, so it should be deleted.

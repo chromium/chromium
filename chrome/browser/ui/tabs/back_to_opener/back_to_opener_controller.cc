@@ -323,7 +323,8 @@ void BackToOpenerController::ReadyToCommitNavigation(
     return;
   }
 
-  int initiator_process_id = navigation_handle->GetInitiatorProcessId();
+  content::ChildProcessId initiator_process_id =
+      navigation_handle->GetInitiatorProcessId();
   content::RenderFrameHost* initiator_frame =
       content::RenderFrameHost::FromFrameToken(
           content::GlobalRenderFrameHostToken(initiator_process_id,
