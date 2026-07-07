@@ -34,6 +34,10 @@ class BrowserActions {
   // Initialization is separate from construction to allow more precise timing.
   void InitializeBrowserActions();
 
+  // Registers a window-scoped action item.
+  actions::ActionItem* RegisterAction(
+      std::unique_ptr<actions::ActionItem> action_item);
+
  private:
   // Helper functions to initialize actions grouped roughly by their type.
   void InitializeSidePanelActions();

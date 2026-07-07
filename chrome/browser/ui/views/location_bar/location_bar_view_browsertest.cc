@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
@@ -76,8 +77,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -812,4 +815,41 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return location_bar_view->ShouldShowAddContextButton(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, OmniboxActionsRegistered) {
+  LocationBarView* location_bar_view = GetLocationBarView();
+  ASSERT_TRUE(location_bar_view);
+
+  auto* action_manager = &actions::ActionManager::Get();
+  ASSERT_TRUE(action_manager);
+
+  struct ExpectedAction {
+    actions::ActionId action_id;
+    int string_id;
+  };
+
+  std::vector<ExpectedAction> expected_actions = {
+      {kActionOmniboxContextAddImage, IDS_NTP_COMPOSE_ADD_IMAGE},
+      {kActionOmniboxContextAddFile, IDS_NTP_COMPOSE_ADD_FILE},
+      {kActionOmniboxContextCreateImages, IDS_NTP_COMPOSE_CREATE_IMAGES},
+      {kActionOmniboxContextDeepResearch, IDS_NTP_COMPOSE_DEEP_SEARCH},
+      {kActionOmniboxContextCanvas, IDS_NTP_COMPOSE_CANVAS},
+      {kActionOmniboxContextSetModelAuto, IDS_NTP_COMPOSE_AUTO_MODEL},
+      {kActionOmniboxContextSetModelThinking, IDS_NTP_COMPOSE_THINKING_3_PRO},
+  };
+
+  for (const auto& expected : expected_actions) {
+    auto* action = action_manager->FindAction(expected.action_id);
+    ASSERT_TRUE(action) << "Action not found: " << expected.action_id;
+    EXPECT_EQ(action->GetText(), l10n_util::GetStringUTF16(expected.string_id));
+    EXPECT_FALSE(action->GetImage().IsEmpty());
+  }
+
+  // kActionOmniboxContextSetModelRegular has no text (only icon).
+  auto* regular_model_action =
+      action_manager->FindAction(kActionOmniboxContextSetModelRegular);
+  ASSERT_TRUE(regular_model_action);
+  EXPECT_TRUE(regular_model_action->GetText().empty());
+  EXPECT_FALSE(regular_model_action->GetImage().IsEmpty());
 }

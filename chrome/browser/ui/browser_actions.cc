@@ -331,6 +331,11 @@ void BrowserActions::InitializeBrowserActions() {
   AddListeners();
 }
 
+actions::ActionItem* BrowserActions::RegisterAction(
+    std::unique_ptr<actions::ActionItem> action_item) {
+  return root_action_item_->AddChild(std::move(action_item));
+}
+
 void BrowserActions::InitializeSidePanelActions() {
   Profile* const profile = base::to_address(profile_);
   BrowserWindowInterface* const bwi = base::to_address(bwi_);
@@ -3990,7 +3995,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionSpellcheckMultiLingual)
           .Build());
 #endif
-
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableResurrectingPaymentsUsers)) {

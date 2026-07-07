@@ -41,6 +41,9 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   OmniboxPopupFileSelector& operator=(const OmniboxPopupFileSelector&) = delete;
   ~OmniboxPopupFileSelector() override;
 
+  // Helper to create image encoding options from the Omnibox feature config.
+  static std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions();
+
   base::WeakPtr<OmniboxPopupFileSelector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
