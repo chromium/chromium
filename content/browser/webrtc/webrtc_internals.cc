@@ -304,7 +304,7 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
   SendUpdate("add-standard-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnGetMedia(const std::string& request_type,
+void WebRTCInternals::OnGetMedia(std::string_view request_type,
                                  GlobalRenderFrameHostId frame_id,
                                  base::ProcessId pid,
                                  int request_id,
@@ -350,7 +350,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
   }
 }
 
-void WebRTCInternals::OnGetMediaSuccess(const std::string& request_type,
+void WebRTCInternals::OnGetMediaSuccess(std::string_view request_type,
                                         GlobalRenderFrameHostId frame_id,
                                         base::ProcessId pid,
                                         int request_id,
@@ -389,7 +389,7 @@ void WebRTCInternals::OnGetMediaSuccess(const std::string& request_type,
   }
 }
 
-void WebRTCInternals::OnGetMediaFailure(const std::string& request_type,
+void WebRTCInternals::OnGetMediaFailure(std::string_view request_type,
                                         GlobalRenderFrameHostId frame_id,
                                         base::ProcessId pid,
                                         int request_id,

@@ -385,7 +385,7 @@ void LogCanAccessDataForOriginCrashKeys(
   base::debug::SetCrashKeyString(GetAccessTypeKey(), access_type);
 }
 
-void LogCanCommitUrlFailureReason(const std::string& failure_reason) {
+void LogCanCommitUrlFailureReason(std::string_view failure_reason) {
   static auto* const failure_reason_key = base::debug::AllocateCrashKeyString(
       "cpspi_can_commit_url_failure_reason", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(failure_reason_key, failure_reason);
