@@ -15,13 +15,10 @@
 #ifndef CHROME_COMMON_URL_CONSTANTS_H_
 #define CHROME_COMMON_URL_CONSTANTS_H_
 
-#include <stddef.h>
-
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "net/net_buildflags.h"
 
@@ -57,16 +54,12 @@ inline constexpr char kBrowserSettingsSearchEngineURL[] =
     "chrome://settings/search";
 
 // "Learn more" URL for Battery Saver Mode.
-inline constexpr const char16_t kBatterySaverModeLearnMoreUrl[] =
+inline constexpr char16_t kBatterySaverModeLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=chrome_battery_saver";
 
 // The URL for providing help when the Bluetooth adapter is off.
 inline constexpr char kBluetoothAdapterOffHelpURL[] =
     "https://support.google.com/chrome?p=bluetooth";
-
-// "Learn more" URL shown in the dialog to enable cloud services for Cast.
-inline constexpr char kCastCloudServicesHelpURL[] =
-    "https://support.google.com/chromecast/?p=casting_cloud_services";
 
 // The URL for the help center article to show when no Cast destination has been
 // found.
@@ -88,10 +81,6 @@ inline constexpr char kChooserUsbOverviewURL[] =
 // Link to the forum for Chrome Beta.
 inline constexpr char kChromeBetaForumURL[] =
     "https://support.google.com/chrome?p=beta_forum";
-
-// The URL for the help center article to fix Chrome update problems.
-inline constexpr char16_t kChromeFixUpdateProblems[] =
-    u"https://support.google.com/chrome?p=fix_chrome_updates";
 
 // General help links for Chrome, opened using various actions.
 inline constexpr char kChromeHelpViaKeyboardURL[] =
@@ -181,12 +170,6 @@ static_assert(std::u16string_view(kChromiumProjectURL) ==
               ash::chrome_external_urls::kChromiumProjectURL);
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// The URL for the "Clear browsing data in Chrome" help center article.
-inline constexpr char16_t kClearBrowsingDataHelpCenterURL[] =
-    u"https://support.google.com/chrome?p=delete_browsing_data";
-#endif
-
 inline constexpr char16_t kContentSettingsExceptionsLearnMoreURL[] =
     u"https://support.google.com/chrome?p=settings_manage_exceptions";
 
@@ -211,7 +194,7 @@ inline constexpr char kCrashReasonFeedbackDisplayedURL[] =
 #endif
 
 // "Learn more" URL for the inactive tabs appearance setting.
-inline constexpr const char16_t kDiscardRingTreatmentLearnMoreUrl[] =
+inline constexpr char16_t kDiscardRingTreatmentLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";
 
 // "Learn more" URL for the "Do not track" setting in the privacy section.
@@ -255,10 +238,6 @@ inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
     "chrome?p=cpn_cookies&rd=1#allow_block_cookies&zippy=%2Callow-or-block-"
     "third-party-cookies%2Callow-related-sites-to-access-your-activity%2Cabout-"
     "embedded-content";
-
-// Url to a blogpost about Flash deprecation.
-inline constexpr char kFlashDeprecationLearnMoreURL[] =
-    "https://blog.chromium.org/2017/07/so-long-and-thanks-for-all-flash.html";
 
 // URL of the 'Activity controls' section of the privacy settings page.
 inline constexpr char kGoogleAccountActivityControlsURL[] =
@@ -312,7 +291,7 @@ inline constexpr char kGooglePasswordManagerURL[] =
 inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
 
 // The URL for the "Learn more" link for the Memory Saver Mode.
-inline constexpr const char16_t kMemorySaverModeLearnMoreUrl[] =
+inline constexpr char16_t kMemorySaverModeLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=chrome_memory_saver";
 
 // The URL in the help text for the Memory Saver Mode tab discarding
@@ -465,11 +444,11 @@ inline constexpr char16_t kGmailOtpFillingLearnMoreURL[] =
     u"https://support.google.com/chrome/";
 
 // "Learn more" URL for the performance intervention notification setting.
-inline constexpr const char16_t kPerformanceInterventionLearnMoreUrl[] =
+inline constexpr char16_t kPerformanceInterventionLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";
 
 // "Learn more" URL for the preloading section in Performance settings.
-inline constexpr const char16_t kPreloadingLearnMoreUrl[] =
+inline constexpr char16_t kPreloadingLearnMoreUrl[] =
     u"https://support.google.com/chrome/?p=performance_preload_pages";
 
 // "Learn more" URL for the Privacy section under Options.
@@ -487,12 +466,6 @@ inline constexpr char kPrivacySandboxAdTopicsURL[] =
 // "Chrome Settings" URL for Managing Topics page
 inline constexpr char kPrivacySandboxManageTopicsURL[] =
     "chrome://settings/adPrivacy/interests/manage";
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// The Privacy Sandbox homepage.
-inline constexpr char16_t kPrivacySandboxURL[] =
-    u"https://www.privacysandbox.com/";
-#endif
 
 // The URL for the Learn More link of the non-CWS bubble.
 inline constexpr char kRemoveNonCWSExtensionURL[] =
@@ -727,12 +700,6 @@ inline constexpr char kWindows78DeprecationURL[] =
 // The URL for the "Learn more" page for process isolation.
 inline constexpr char kProcessIsolationLearnMoreUrl[] =
     "https://support.google.com/chrome?p=process_isolation";
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// The URL for the "Learn more" page for the outdated plugin infobar.
-inline constexpr char kOutdatedPluginLearnMoreURL[] =
-    "https://support.google.com/chrome?p=ib_outdated_plugin";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
