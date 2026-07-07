@@ -801,20 +801,6 @@ const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
 };
 
 
-const FeatureEntry::FeatureParam kReaderModeUseReadabilityDistiller[] = {
-    {"use_distiller", "true"}};
-const FeatureEntry::FeatureParam kReaderModeUseReadabilityHeuristic[] = {
-    {"use_heuristic", "true"}};
-const FeatureEntry::FeatureParam kReaderModeUseReadabilityAll[] = {
-    {"use_distiller", "true"},
-    {"use_heuristic", "true"}};
-
-const FeatureEntry::FeatureVariation kReaderModeUseReadabilityChoices[] = {
-    {"distiller only", kReaderModeUseReadabilityDistiller, nullptr},
-    {"triggering heuristic only", kReaderModeUseReadabilityHeuristic, nullptr},
-    {"both distiller and triggering heuristic", kReaderModeUseReadabilityAll,
-     nullptr}};
-
 const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kUpdateMenuTypeNone, switches::kForceUpdateMenuType,
@@ -5451,12 +5437,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"reader-mode-toggle-links", flag_descriptions::kReaderModeToggleLinksName,
      flag_descriptions::kReaderModeToggleLinksDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(dom_distiller::kReaderModeToggleLinks)},
-    {"reader-mode-use-readability",
-     flag_descriptions::kReaderModeUseReadabilityName,
-     flag_descriptions::kReaderModeUseReadabilityDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(dom_distiller::kReaderModeUseReadability,
-                                    kReaderModeUseReadabilityChoices,
-                                    "Reader Mode use readability")},
     {"submenus-in-app-menu", flag_descriptions::kSubmenusInAppMenuName,
      flag_descriptions::kSubmenusInAppMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSubmenusInAppMenu)},

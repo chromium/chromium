@@ -90,11 +90,7 @@ const char* kVideoArticlePath = "/video_article.html";
 
 class DistillerPageWebContentsTest : public ContentBrowserTest {
  public:
-  DistillerPageWebContentsTest() {
-    // TODO(crbug.com/427898374): Add integration tests for readability.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, {kReaderModeUseReadability});
-  }
+  DistillerPageWebContentsTest() = default;
 
   // ContentBrowserTest:
   void SetUpOnMainThread() override {
@@ -130,7 +126,6 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
   void RunUseCurrentWebContentsTest(const std::string& url,
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;
@@ -256,16 +251,11 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   DistillPage(run_loop.QuitClosure(), kVideoArticlePath);
   run_loop.Run();
 
-  // A relative source/track should've been updated.
+  // A relative source should've been updated.
   EXPECT_THAT(distiller_result_->distilled_content().html(),
               ContainsRegex("src=\"http://127.0.0.1:.*/relative_video.webm\""));
-  EXPECT_THAT(
-      distiller_result_->distilled_content().html(),
-      ContainsRegex("src=\"http://127.0.0.1:.*/relative_track_en.vtt\""));
   EXPECT_THAT(distiller_result_->distilled_content().html(),
               HasSubstr("src=\"http://www.google.com/absolute_video.ogg\""));
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
-              HasSubstr("src=\"http://www.google.com/absolute_track_fr.vtt\""));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -448,61 +438,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MarkupInfo DISABLED_MarkupInfo
-#else
-#define MAYBE_MarkupInfo MarkupInfo
-#endif
-IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest, MAYBE_MarkupInfo) {
-  DistillerPageWebContents distiller_page(
-      shell()->web_contents()->GetBrowserContext(),
-      shell()->web_contents()->GetContainerBounds().size(),
-      std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
 
-  base::RunLoop run_loop;
-  DistillPage(run_loop.QuitClosure(), "/markup_article.html");
-  run_loop.Run();
-
-  EXPECT_THAT(distiller_result_->distilled_content().html(),
-              HasSubstr("Lorem ipsum"));
-  EXPECT_EQ("Marked-up Markup Test Page Title", distiller_result_->title());
-
-  const proto::MarkupInfo markup_info = distiller_result_->markup_info();
-  EXPECT_EQ("Marked-up Markup Test Page Title", markup_info.title());
-  EXPECT_EQ("Article", markup_info.type());
-  EXPECT_EQ("http://test/markup.html", markup_info.url());
-  EXPECT_EQ("This page tests Markup Info.", markup_info.description());
-  EXPECT_EQ("Whoever Published", markup_info.publisher());
-  EXPECT_EQ("Copyright 2000-2014 Whoever Copyrighted", markup_info.copyright());
-  EXPECT_EQ("Whoever Authored", markup_info.author());
-
-  const proto::MarkupArticle markup_article = markup_info.article();
-  EXPECT_EQ("Whatever Section", markup_article.section());
-  EXPECT_EQ("July 23, 2014", markup_article.published_time());
-  EXPECT_EQ("2014-07-23T23:59", markup_article.modified_time());
-  EXPECT_EQ("", markup_article.expiration_time());
-  ASSERT_EQ(1, markup_article.authors_size());
-  EXPECT_EQ("Whoever Authored", markup_article.authors(0));
-
-  ASSERT_EQ(2, markup_info.images_size());
-
-  const proto::MarkupImage markup_image1 = markup_info.images(0);
-  EXPECT_EQ("http://test/markup1.jpeg", markup_image1.url());
-  EXPECT_EQ("https://test/markup1.jpeg", markup_image1.secure_url());
-  EXPECT_EQ("jpeg", markup_image1.type());
-  EXPECT_EQ("", markup_image1.caption());
-  EXPECT_EQ(600, markup_image1.width());
-  EXPECT_EQ(400, markup_image1.height());
-
-  const proto::MarkupImage markup_image2 = markup_info.images(1);
-  EXPECT_EQ("http://test/markup2.gif", markup_image2.url());
-  EXPECT_EQ("https://test/markup2.gif", markup_image2.secure_url());
-  EXPECT_EQ("gif", markup_image2.type());
-  EXPECT_EQ("", markup_image2.caption());
-  EXPECT_EQ(1000, markup_image2.width());
-  EXPECT_EQ(600, markup_image2.height());
-}
 
 IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
                        TestNoContentDoesNotCrash) {

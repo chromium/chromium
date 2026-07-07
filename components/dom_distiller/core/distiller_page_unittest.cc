@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/dom_distiller/core/extraction_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "url/gurl.h"
@@ -21,7 +22,6 @@
 namespace dom_distiller {
 
 namespace {
-
 
 constexpr char kReadabilityTitle[] = "title";
 constexpr char kReadabilityContent[] = "content";
@@ -42,7 +42,9 @@ class TestDistillerPage : public DistillerPage {
     kNullResult,
   };
 
-  TestDistillerPage() = default;
+  TestDistillerPage() {
+    SetMinimumAllowableDistilledContentLengthForTesting(0);
+  }
 
   // Configures the mock to simulate a specific result.
   void SetNextResult(SimulatedResult result) { simulate_result_ = result; }
@@ -56,8 +58,7 @@ class TestDistillerPage : public DistillerPage {
   bool ShouldFetchOfflineData() override { return false; }
 
   DistillerType GetDistillerType() override {
-    return ShouldUseReadabilityDistiller() ? DistillerType::kReadability
-                                           : DistillerType::kDOMDistiller;
+    return DistillerType::kReadability;
   }
 
   // The overridden implementation now simulates one of three outcomes based on
@@ -103,13 +104,9 @@ class TestDistillerPage : public DistillerPage {
 
 class DistillerPageTest : public testing::Test {
  protected:
-  DistillerPageTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{kReaderModeUseReadability});
-  }
+  DistillerPageTest() = default;
+  ~DistillerPageTest() override = default;
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 };
@@ -182,12 +179,6 @@ void AssertCorrectDomDistillerResult(proto::DomDistillerResult& result,
 }
 
 TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
-      /*disabled_features=*/{});
-
   base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
@@ -224,12 +215,6 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
 
 TEST_F(DistillerPageTest,
        ReadabilityObjectIsExtracted_AutoDirWhenNoneProvided) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
-      /*disabled_features=*/{});
-
   base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
@@ -264,12 +249,6 @@ TEST_F(DistillerPageTest,
 }
 
 TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
-      /*disabled_features=*/{});
-
   base::Value readability_result("undefined");
   TestDistillerPage distiller_page;
   distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
@@ -294,12 +273,6 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{dom_distiller::kReaderModeUseReadability,
-                             {{"use_distiller", "true"}, {"min_content_length", "1000"}}}},
-      /*disabled_features=*/{});
-
   base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
@@ -311,6 +284,7 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
       "one two; three. four!  fivefive six, seven, eight nine ten";
   readability_result.Set(kReadabilityTextContent, text_content);
   TestDistillerPage distiller_page;
+  distiller_page.SetMinimumAllowableDistilledContentLengthForTesting(1000);
   distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
 
   base::RunLoop run_loop;

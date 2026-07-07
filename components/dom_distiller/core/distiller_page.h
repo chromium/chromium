@@ -57,17 +57,21 @@ class DistillerPage {
                    const proto::DomDistillerOptions options,
                    DistillerPageCallback callback);
 
-  // Called when the JavaScript execution completes. |page_url| is the url of
-  // the distilled page. |value| contains data returned by the script.
-  virtual void OnDistillationDone(const GURL& page_url,
-                                  const base::Value* value);
-
   // Returns true if the distiller page should fetch distillation data for
   // offline consumption.
   virtual bool ShouldFetchOfflineData() = 0;
 
   // Returns the distillation type to use to retrieve simplified page content.
   virtual DistillerType GetDistillerType() = 0;
+
+  // Called when the JavaScript execution completes. |page_url| is the url of
+  // the distilled page. |value| contains data returned by the script.
+  virtual void OnDistillationDone(const GURL& page_url,
+                                  const base::Value* value);
+
+  void SetMinimumAllowableDistilledContentLengthForTesting(int length) {
+    min_content_length_ = length;
+  }
 
   DistillerPage(const DistillerPage&) = delete;
   DistillerPage& operator=(const DistillerPage&) = delete;
@@ -78,9 +82,14 @@ class DistillerPage {
   // should be the same regardless of the DistillerPage implementation.
   virtual void DistillPageImpl(const GURL& url, const std::string& script) = 0;
 
+  int GetMinimumAllowableDistilledContentLength() const {
+    return min_content_length_;
+  }
+
  private:
   bool ready_;
   DistillerPageCallback distiller_page_callback_;
+  int min_content_length_;
 };
 
 // Factory for generating a |DistillerPage|.

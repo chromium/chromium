@@ -6115,11 +6115,6 @@ inline constexpr char kReaderModeToggleLinksName[] = "Reader Mode toggle links";
 inline constexpr char kReaderModeToggleLinksDescription[] =
     "Enables the ability to toggle links in Reader Mode.";
 
-inline constexpr char kReaderModeUseReadabilityName[] =
-    "Reader Mode use readability";
-inline constexpr char kReaderModeUseReadabilityDescription[] =
-    "Use readability as the primary distiller and/or triggering mechanism.";
-
 inline constexpr char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 inline constexpr char kReengagementNotificationDescription[] =

@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/dom_distiller_features.h"
+#import "components/dom_distiller/core/extraction_utils.h"
 #import "components/dom_distiller/ios/distiller_page_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -51,30 +52,17 @@ bool ReaderModeDistillerPage::ShouldFetchOfflineData() {
 }
 
 dom_distiller::DistillerType ReaderModeDistillerPage::GetDistillerType() {
-  return dom_distiller::ShouldUseReadabilityDistiller()
-             ? dom_distiller::DistillerType::kReadability
-             : dom_distiller::DistillerType::kDOMDistiller;
+  return dom_distiller::DistillerType::kReadability;
 }
 
 void ReaderModeDistillerPage::HandleJavaScriptResult(
     const GURL& url,
     const base::Value* result) {
-  switch (GetDistillerType()) {
-    case dom_distiller::DistillerType::kReadability: {
-      base::Value result_as_value;
-      if (result) {
-        result_as_value = result->Clone();
-      }
-      OnDistillationDone(url, &result_as_value);
-      break;
-    }
-    case dom_distiller::DistillerType::kDOMDistiller: {
-      base::Value result_as_value =
-          dom_distiller::ParseValueFromScriptResult(result);
-      OnDistillationDone(url, &result_as_value);
-      break;
-    }
+  base::Value result_as_value;
+  if (result) {
+    result_as_value = result->Clone();
   }
+  OnDistillationDone(url, &result_as_value);
 }
 
 void ReaderModeDistillerPage::WebStateDestroyed(web::WebState* web_state) {

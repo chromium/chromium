@@ -14606,7 +14606,6 @@ from previous Chrome versions.
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
   <int value="10929486" label="WebNNDirectML:disabled"/>
   <int value="11390425" label="TabGroupParityBottomSheetAndroid:disabled"/>
-  <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="11744127" label="EnableToolbarSwipeOnNonDesktopLff:disabled"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>

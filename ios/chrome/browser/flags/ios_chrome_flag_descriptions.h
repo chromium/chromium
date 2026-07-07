@@ -1717,11 +1717,6 @@ inline constexpr char kReaderModeOptimizationGuideEligibilityName[] =
 inline constexpr char kReaderModeOptimizationGuideEligibilityDescription[] =
     "Enables the optimization guide eligibility check for Reader Mode.";
 
-inline constexpr char kReaderModeReadabilityDistillerName[] =
-    "Enables Readability distiller for Reader Mode";
-inline constexpr char kReaderModeReadabilityDistillerDescription[] =
-    "Enables Readability distiller for Reader Mode UI.";
-
 inline constexpr char kReaderModeReadabilityHeuristicName[] =
     "Enables Readability heuristic for Reader Mode";
 inline constexpr char kReaderModeReadabilityHeuristicDescription[] =

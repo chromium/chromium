@@ -17,8 +17,8 @@ TEST(ExtractionUtilsTest, TestReadabilityHeuristicMinScoreAndContentLength) {
   EXPECT_EQ(std::string::npos, script.find("$$MIN_SCORE_PLACEHOLDER"));
   EXPECT_EQ(std::string::npos, script.find("$$MIN_CONTENT_LENGTH_PLACEHOLDER"));
   std::string expected_args =
-      "(" + base::NumberToString(GetReadabilityHeuristicMinScore()) + ", " +
-      base::NumberToString(GetReadabilityHeuristicMinContentLength()) + ");";
+      "(" + base::NumberToString(kReadabilityHeuristicMinScore) + ", " +
+      base::NumberToString(kReadabilityHeuristicMinContentLength) + ");";
   EXPECT_NE(std::string::npos, script.find(expected_args));
 }
 

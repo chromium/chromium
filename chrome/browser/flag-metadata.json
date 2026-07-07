@@ -8300,11 +8300,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "reader-mode-readability-distiller-enabled",
-    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "reader-mode-readability-heuristic-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 150
@@ -8327,11 +8322,6 @@
   {
     "name": "reader-mode-us-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "reader-mode-use-readability",
-    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
     "expiry_milestone": 150
   },
   {

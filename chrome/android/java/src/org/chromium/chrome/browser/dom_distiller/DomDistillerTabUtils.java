@@ -141,24 +141,13 @@ public class DomDistillerTabUtils {
 
     /**
      * Set an InterceptNavigationDelegate on a WebContents.
+     *
      * @param delegate The navigation delegate.
      * @param webContents The WebContents to bind the delegate to.
      */
     public static void setInterceptNavigationDelegate(
             InterceptNavigationDelegate delegate, WebContents webContents) {
         DomDistillerTabUtilsJni.get().setInterceptNavigationDelegate(delegate, webContents);
-    }
-
-    /**
-     * Runs distillability heuristics on the page to determine if it's suitable for reader mode.
-     *
-     * @param webContents The web contents to run the heuristic against.
-     * @param callback The callback which informs the caller whether the given web contents are
-     *     suitable for reader mode.
-     */
-    public static void runReadabilityHeuristicsOnWebContents(
-            @Nullable WebContents webContents, Callback<Boolean> callback) {
-        DomDistillerTabUtilsJni.get().runReadabilityHeuristicsOnWebContents(webContents, callback);
     }
 
     @NativeMethods
@@ -178,9 +167,5 @@ public class DomDistillerTabUtils {
 
         void setInterceptNavigationDelegate(
                 InterceptNavigationDelegate delegate, WebContents webContents);
-
-        void runReadabilityHeuristicsOnWebContents(
-                @Nullable WebContents webContents,
-                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
     }
 }

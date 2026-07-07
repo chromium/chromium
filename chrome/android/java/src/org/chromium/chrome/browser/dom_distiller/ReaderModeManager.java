@@ -747,12 +747,12 @@ public class ReaderModeManager extends EmptyTabObserver
                         return;
                     }
 
+                    String message =
+                            mTab.getContext()
+                                    .getString(R.string.reader_mode_unavailable_snackbar_message);
                     snackbarManager.showSnackbar(
                             Snackbar.make(
-                                            mTab.getContext()
-                                                    .getString(
-                                                            R.string
-                                                                    .reader_mode_unavailable_snackbar_message),
+                                            message,
                                             new SnackbarManager.SnackbarController() {},
                                             Snackbar.TYPE_NOTIFICATION,
                                             Snackbar.UMA_UNKNOWN)
@@ -912,7 +912,9 @@ public class ReaderModeManager extends EmptyTabObserver
         sMutedSites.clear();
     }
 
-    /** @return Whether Reader mode and its new UI are enabled. */
+    /**
+     * @return Whether Reader mode and its new UI are enabled.
+     */
     public static boolean isEnabled() {
         boolean enabled =
                 CommandLine.getInstance().hasSwitch(ChromeSwitches.ENABLE_DOM_DISTILLER)

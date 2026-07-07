@@ -91,15 +91,6 @@ static void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
           env, delegate));
 }
 
-static void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_web_contents,
-    base::OnceCallback<void(bool)> callback) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  ::RunReadabilityHeuristicsOnWebContents(web_contents, std::move(callback));
-}
-
 }  // namespace android
 
 DEFINE_JNI(DomDistillerTabUtils)

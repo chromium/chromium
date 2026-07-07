@@ -269,4 +269,3 @@ void RunReadabilityHeuristicsOnWebContents(
                          std::move(callback), false)),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
-

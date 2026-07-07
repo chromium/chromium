@@ -16,6 +16,7 @@
 #include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/dom_distiller/core/extraction_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -130,8 +131,7 @@ bool DistillerPageWebContents::ShouldFetchOfflineData() {
 }
 
 DistillerType DistillerPageWebContents::GetDistillerType() {
-  return ShouldUseReadabilityDistiller() ? DistillerType::kReadability
-                                         : DistillerType::kDOMDistiller;
+  return DistillerType::kReadability;
 }
 
 void DistillerPageWebContents::DistillPageImpl(const GURL& url,
@@ -254,7 +254,7 @@ void DistillerPageWebContents::OnWebContentsDistillationDone(
                             javascript_time);
   }
 
-  DistillerPage::OnDistillationDone(page_url, &value);
+  OnDistillationDone(page_url, &value);
 }
 
 content::RenderFrameHost& DistillerPageWebContents::TargetRenderFrameHost() {

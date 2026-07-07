@@ -22,19 +22,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
@@ -60,7 +57,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -69,7 +65,6 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link ReaderModeActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(DomDistillerFeatures.READER_MODE_USE_READABILITY)
 public class ReaderModeActionProviderTest {
 
     private static final GURL TEST_URL = new GURL("https://test.com");
@@ -298,31 +293,6 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_USE_READABILITY + ":use_heuristic/true")
-    public void testReadabiltyHeuristicUsed() throws TimeoutException {
-        ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
-                MockitoHelper.callbackCaptor();
-
-        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
-        provider.getAction(mMockTab, mMockSignalAccumulator);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mDomDistillerTabUtilsJni)
-                .runReadabilityHeuristicsOnWebContents(
-                        any(), readabilityHeuristicCallbackCaptor.capture());
-        Assert.assertNotNull(readabilityHeuristicCallbackCaptor.getValue());
-
-        verify(mMockSignalAccumulator, never())
-                .setSignal(eq(AdaptiveToolbarButtonVariant.READER_MODE), anyBoolean());
-
-        // When using the readability heurisitic, the distillability provider should be ignored.
-        setReaderModeBackendSignal(true);
-        verify(mMockSignalAccumulator, Mockito.times(0))
-                .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
-        readabilityHeuristicCallbackCaptor.getValue().onResult(true);
-        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
-    }
-
-    @Test
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testDistillableButSupressed() {
         when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
@@ -331,43 +301,6 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         RobolectricUtil.runAllBackgroundAndUi();
         setReaderModeBackendSignal(true);
-        verify(mMockSignalAccumulator, Mockito.times(0))
-                .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
-    }
-
-    @Test
-    @EnableFeatures({
-        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
-        DomDistillerFeatures.READER_MODE_USE_READABILITY + ":use_heuristic/true"
-    })
-    public void testDistillableButSupressed_ReadabiltyHeuristicUsed() throws TimeoutException {
-        when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
-        ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
-                MockitoHelper.callbackCaptor();
-
-        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
-        provider.getAction(mMockTab, mMockSignalAccumulator);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mDomDistillerTabUtilsJni)
-                .runReadabilityHeuristicsOnWebContents(
-                        any(), readabilityHeuristicCallbackCaptor.capture());
-        Assert.assertNotNull(readabilityHeuristicCallbackCaptor.getValue());
-
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                ReaderModeMetrics
-                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
-                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.ELIGIBLE)
-                        .expectIntRecord(
-                                ReaderModeMetrics
-                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
-                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.SUPPRESSED)
-                        .build();
-
-        readabilityHeuristicCallbackCaptor.getValue().onResult(true);
-
-        watcher.assertExpected();
         verify(mMockSignalAccumulator, Mockito.times(0))
                 .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
