@@ -101,4 +101,7 @@ found in the LICENSE file.
     <dimen name="extension_action_hover_card_width" tools:ignore="UnusedResources">270dp</dimen>
     <dimen name="extension_action_hover_card_horizontal_padding" tools:ignore="UnusedResources">16dp</dimen>
     <dimen name="extension_action_hover_card_vertical_padding" tools:ignore="UnusedResources">12dp</dimen>
+
+    <!-- Fake Search Box -->
+    <dimen name="fake_search_box_elevation">3dp</dimen>
 </resources>

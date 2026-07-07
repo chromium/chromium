@@ -94,6 +94,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -389,8 +390,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // This should be called after both mNtpSearchBox and mComposeplateCoordinator are
         // initialized.
-        onCustomizedBackgroundChanged(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
+        onCustomizedBackgroundChanged(shouldApplyWhiteBackgroundOnSearchBox());
 
         // This should called after flags of composeplate view are initialized.
         setSearchBoxHeightBoundsVerticalInset();
@@ -495,16 +495,19 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     void setSearchBoxTextAppearance() {
         if (mNtpSearchBox == null) return;
 
-        boolean shouldApplyWhiteBackground =
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
-
-        if (shouldApplyWhiteBackground) {
+        if (shouldApplyWhiteBackgroundOnSearchBox()) {
             mNtpSearchBox.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMediumDark);
         } else {
             mNtpSearchBox.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         }
+    }
+
+    @VisibleForTesting
+    boolean shouldApplyWhiteBackgroundOnSearchBox() {
+        return NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()
+                || OmniboxCapabilities.isDesktopPlatform();
     }
 
     private void initializeComposeplateFlags(Profile profile) {
