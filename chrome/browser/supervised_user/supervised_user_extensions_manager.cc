@@ -160,7 +160,8 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context_);
+      SupervisedUserServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context_));
   bool has_custodian = supervised_user_service->GetCustodian() ||
                        supervised_user_service->GetSecondCustodian();
     return has_custodian;
@@ -389,7 +390,8 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
 std::u16string SupervisedUserExtensionsManager::GetExtensionsLockedMessage()
     const {
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context_);
+      SupervisedUserServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context_));
   std::optional<supervised_user::Custodian> custodian =
       supervised_user_service->GetCustodian();
   return l10n_util::GetStringFUTF16(

@@ -50,13 +50,6 @@ SupervisedUserServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<supervised_user::SupervisedUserService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
-
-supervised_user::SupervisedUserService*
-SupervisedUserServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return GetForProfile(Profile::FromBrowserContext(context));
-}
-
 // static
 supervised_user::SupervisedUserService*
 SupervisedUserServiceFactory::GetForProfileIfExists(Profile* profile) {

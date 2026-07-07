@@ -25,9 +25,6 @@ class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
   static supervised_user::SupervisedUserService* GetForProfile(
       Profile* profile);
 
-  static supervised_user::SupervisedUserService* GetForBrowserContext(
-      content::BrowserContext* context);
-
   static supervised_user::SupervisedUserService* GetForProfileIfExists(
       Profile* profile);
 
