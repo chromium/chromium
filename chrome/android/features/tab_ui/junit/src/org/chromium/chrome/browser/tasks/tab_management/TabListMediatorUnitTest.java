@@ -5011,7 +5011,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, null, false);
         assertThat(mModelList.size(), equalTo(5));
 
-        TreeMap<Integer, List<Integer>> resultMap = new TreeMap<>();
+        TreeMap<Integer, List<PropertyModel>> resultMap = new TreeMap<>();
 
         List<Tab> tabsToFade = List.of(mTab1, tab4, tab5, tab6, tab7);
 
@@ -5021,8 +5021,8 @@ public class TabListMediatorUnitTest {
         assertThat(resultMap.keySet(), contains(1, 2));
 
         // Tab 1 and group tab 5 & 6 should be filtered for animation.
-        assertThat(resultMap.get(1), contains(0));
-        assertThat(resultMap.get(2), contains(3));
+        assertThat(resultMap.get(1), contains(mModelList.get(0).model));
+        assertThat(resultMap.get(2), contains(mModelList.get(3).model));
     }
 
     @Test
