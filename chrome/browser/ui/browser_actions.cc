@@ -43,6 +43,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/ai_mode_button_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -1457,6 +1460,52 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
   Profile* const profile = base::to_address(profile_);
   BrowserWindowInterface* const bwi = base::to_address(bwi_);
   TabStripModel* const tab_strip_model = bwi_->GetTabStripModel();
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](TabStripModel* tab_strip_model, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                content::WebContents* const web_contents =
+                    tab_strip_model->GetActiveWebContents();
+                if (web_contents) {
+                  content::RenderFrameHost* const rfh =
+                      web_contents->GetFocusedFrame();
+                  if (rfh) {
+                    rfh->GetRenderWidgetHost()->UpdateTextDirection(
+                        base::i18n::LEFT_TO_RIGHT);
+                    rfh->GetRenderWidgetHost()->NotifyTextDirection();
+                  }
+                }
+              },
+              tab_strip_model))
+          .SetActionId(kActionWritingDirectionLtr)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](TabStripModel* tab_strip_model, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                content::WebContents* const web_contents =
+                    tab_strip_model->GetActiveWebContents();
+                if (web_contents) {
+                  content::RenderFrameHost* const rfh =
+                      web_contents->GetFocusedFrame();
+                  if (rfh) {
+                    rfh->GetRenderWidgetHost()->UpdateTextDirection(
+                        base::i18n::RIGHT_TO_LEFT);
+                    rfh->GetRenderWidgetHost()->NotifyTextDirection();
+                  }
+                }
+              },
+              tab_strip_model))
+          .SetActionId(kActionWritingDirectionRtl)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL))
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

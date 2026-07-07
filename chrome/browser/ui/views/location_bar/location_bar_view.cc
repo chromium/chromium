@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -2587,6 +2588,13 @@ void LocationBarView::RegisterOmniboxActions() {
               ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
           .SetActionId(kActionOmniboxContextSetModelRegular)
           .Build());
+
+  browser_actions->RegisterAction(
+      actions::ActionItem::Builder(
+          base::BindRepeating(&LocationBarView::ExecutePasteAndGo,
+                              base::Unretained(browser_)))
+          .SetActionId(kActionPasteAndGo)
+          .Build());
 }
 
 void LocationBarView::AddFileOrImageToOmnibox(
@@ -2666,6 +2674,27 @@ void LocationBarView::SetOmniboxModelModeAndOpenAi(
     composebox_handler->RecordModelSelectionAction(model_mode);
   }
   edit_model->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+}
+
+void LocationBarView::ExecutePasteAndGo(
+    Browser* browser,
+    actions::ActionItem* item,
+    actions::ActionInvocationContext context) {
+  LocationBarView* const location_bar = GetLocationBarViewForActions(browser);
+  if (!location_bar || !location_bar->omnibox_view_) {
+    return;
+  }
+  GetClipboardText(
+      /*notify_if_restricted=*/true,
+      base::BindOnce(
+          [](base::WeakPtr<LocationBarView> self, std::u16string text) {
+            if (self && self->omnibox_view_) {
+              if (auto* controller = self->GetOmniboxController()) {
+                controller->edit_model()->PasteAndGo(text);
+              }
+            }
+          },
+          location_bar->weak_factory_.GetWeakPtr()));
 }
 
 BEGIN_METADATA(LocationBarView)

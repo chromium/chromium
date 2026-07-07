@@ -671,6 +671,9 @@ class LocationBarView
       omnibox::ModelMode model_mode,
       actions::ActionItem* item,
       actions::ActionInvocationContext context);
+  static void ExecutePasteAndGo(Browser* browser,
+                                actions::ActionItem* item,
+                                actions::ActionInvocationContext context);
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };
