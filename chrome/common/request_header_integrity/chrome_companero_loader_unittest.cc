@@ -11,13 +11,14 @@
 
 #include "base/base_paths.h"
 #include "base/path_service.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
-#include "build/branding_buildflags.h"
 #include "chrome/common/request_header_integrity/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/http_request_headers.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,25 @@ class ChromeCompaneroLoaderTest : public testing::Test {
    public:
     TestLoader() = default;
     ~TestLoader() = default;
+  };
+
+  class SynchronizedTestLoader : public TestLoader {
+   public:
+    SynchronizedTestLoader()
+        : init_started_(base::WaitableEvent::ResetPolicy::MANUAL,
+                        base::WaitableEvent::InitialState::NOT_SIGNALED),
+          allow_init_completion_(
+              base::WaitableEvent::ResetPolicy::MANUAL,
+              base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+    void BrowserProcessInitialize() {
+      init_started_.Signal();
+      allow_init_completion_.Wait();
+      TestLoader::BrowserProcessInitialize();
+    }
+
+    base::WaitableEvent init_started_;
+    base::WaitableEvent allow_init_completion_;
   };
 
   std::optional<std::string> TestGetHeaderName(ChromeCompaneroLoader& loader) {
@@ -105,33 +125,47 @@ TEST_F(ChromeCompaneroLoaderTest, SingleShotContractEnforcement) {
 }
 
 TEST_F(ChromeCompaneroLoaderTest, ConcurrentInitializationAndExtraction) {
-  TestLoader stack_loader;
+  SynchronizedTestLoader stack_loader;
 
-  // 1. Launch 1 background startup thread executing BrowserProcessInitialize()
+  // 1. Launch background startup thread executing BrowserProcessInitialize().
+  // It will pause immediately after starting until allow_init_completion_ is
+  // signaled.
   std::thread init_thread(
       [&stack_loader]() { stack_loader.BrowserProcessInitialize(); });
 
-  // 2. Simultaneously launch 10 network worker threads calling
-  // GetHeaderNameAndValue()
+  // 2. Wait until BrowserProcessInitialize has started executing.
+  stack_loader.init_started_.Wait();
+
+  // 3. While initialization is deterministically suspended, verify worker calls
+  // block or return nullopt cleanly without crashing or racing.
   std::vector<std::thread> worker_threads;
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 5; ++i) {
     worker_threads.emplace_back([&stack_loader]() {
       auto result = stack_loader.GetHeaderNameAndValue();
-      if (result.has_value()) {
-        EXPECT_EQ(32u, result->value.length());
-      }
+      EXPECT_FALSE(result.has_value());
     });
   }
-
-  init_thread.join();
   for (auto& t : worker_threads) {
     t.join();
   }
+  worker_threads.clear();
 
-  // 3. Confirm that once Initialize() finishes, subsequent extractions succeed
-  auto final_result = stack_loader.GetHeaderNameAndValue();
-  ASSERT_TRUE(final_result.has_value());
-  EXPECT_EQ(32u, final_result->value.length());
+  // 4. Unblock initialization and allow DSO loading to complete.
+  stack_loader.allow_init_completion_.Signal();
+  init_thread.join();
+
+  // 5. Simultaneously launch worker threads now that initialization has
+  // completed.
+  for (int i = 0; i < 10; ++i) {
+    worker_threads.emplace_back([&stack_loader]() {
+      auto result = stack_loader.GetHeaderNameAndValue();
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(32u, result->value.length());
+    });
+  }
+  for (auto& t : worker_threads) {
+    t.join();
+  }
 }
 
 class MockChromeCompanero
@@ -146,8 +180,8 @@ class MockChromeCompanero
       std::move(callback).Run(nullptr);
     } else {
       std::move(callback).Run(
-          request_header_integrity::mojom::HeaderNameAndValue::New(header_name_,
-                                                                   value_));
+          network::mojom::HttpRequestHeaderKeyValuePair::New(header_name_,
+                                                             value_));
     }
   }
 

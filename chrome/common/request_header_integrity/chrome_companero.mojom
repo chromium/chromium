@@ -4,14 +4,12 @@
 
 module request_header_integrity.mojom;
 
-struct HeaderNameAndValue {
-  string name;
-  string value;
-};
+import "services/network/public/mojom/http_request_headers.mojom";
 
 // A resolver of branded configuration properties and values.
 interface ChromeCompanero {
   // Fetches the companero header name and value.
   // Returns null if the configuration is not available.
-  GetHeaderNameAndValue() => (HeaderNameAndValue? result);
+  GetHeaderNameAndValue() =>
+      (network.mojom.HttpRequestHeaderKeyValuePair? result);
 };

@@ -145,7 +145,7 @@ bool GetHeader(void* headers,
     return false;
   }
   // SAFETY: This is a callback implementing the C-style GetHeaderFunction API.
-  // We wrap the raw pointer and size in a base::span and use bounds-safe
+  // The raw pointer and size are wrapped in a base::span and use bounds-safe
   // operations for all copying.
   auto value_span = UNSAFE_BUFFERS(base::span(value_buf, value_buf_size));
   size_t copy_len = std::min(value->length(), value_buf_size - 1);
@@ -156,8 +156,8 @@ bool GetHeader(void* headers,
 
 void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
   // Don't process request headers in non-browser processes since the Platform
-  // Runtime component is not loaded there, and we only need to process headers
-  // for main frame requests.
+  // Runtime component is not loaded there, and only main frame requests need
+  // header processing.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kProcessType)) {
     return;

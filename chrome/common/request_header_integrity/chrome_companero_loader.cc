@@ -14,11 +14,12 @@
 #include "base/path_service.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "build/branding_buildflags.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_util.h"
+#include "services/network/public/mojom/http_request_headers.mojom.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/common/request_header_integrity/internal/integrity_seed_internal.h"
@@ -118,15 +119,17 @@ void ChromeCompaneroLoader::RefreshValueLocked() {
 }
 
 void ChromeCompaneroLoader::OnValueReceived(
-    mojom::HeaderNameAndValuePtr result) {
+    network::mojom::HttpRequestHeaderKeyValuePairPtr result) {
   if (!result) {
     return;
   }
+  CHECK(net::HttpUtil::IsValidHeaderName(result->key));
+  CHECK(net::HttpUtil::IsValidHeaderValue(result->value));
   base::AutoLock lock(cache_lock_);
   if (cached_header_name_.empty()) {
-    cached_header_name_ = std::move(result->name);
+    cached_header_name_ = std::move(result->key);
   } else {
-    CHECK_EQ(result->name, cached_header_name_);
+    CHECK_EQ(result->key, cached_header_name_);
   }
   cached_value_ = std::move(result->value);
   // Note: Recording Now() upon IPC receipt may extend a cached token's
@@ -206,6 +209,7 @@ ChromeCompaneroLoader::GetHeaderNameAndValue() {
       if (!resolved_name) {
         return std::nullopt;
       }
+      CHECK(net::HttpUtil::IsValidHeaderName(*resolved_name));
       cached_header_name_ = *std::move(resolved_name);
     }
 
@@ -216,6 +220,7 @@ ChromeCompaneroLoader::GetHeaderNameAndValue() {
     std::optional<std::string> value = GetHeaderValueFromLib(
         seed, google_apis::GetAPIKey(), embedder_support::GetUserAgent());
     if (value) {
+      CHECK(net::HttpUtil::IsValidHeaderValue(*value));
       cached_value_ = *std::move(value);
       cached_value_time_ = base::TimeTicks::Now();
       return HeaderNameAndValue{cached_header_name_, cached_value_};
@@ -223,7 +228,7 @@ ChromeCompaneroLoader::GetHeaderNameAndValue() {
   }
 
   // Fallback: If DSO lookup failed or if in child process, return stale cache
-  // if available!
+  // if available.
   if (!cached_header_name_.empty() && !cached_value_.empty()) {
     return HeaderNameAndValue{cached_header_name_, cached_value_};
   }

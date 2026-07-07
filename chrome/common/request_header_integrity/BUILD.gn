@@ -128,4 +128,5 @@ buildflag_header("buildflags") {
 
 mojom("mojom") {
   sources = [ "chrome_companero.mojom" ]
+  public_deps = [ "//services/network/public/mojom:url_loader_base" ]
 }
