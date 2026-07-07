@@ -23,8 +23,6 @@ class AuthenticationService;
 typedef NS_ENUM(NSInteger, GeminiSettingsContext);
 
 using GeminiEligibilityCallback = void (^)(BOOL eligible);
-// TODO(crbug.com/478259873): Get rid of BWG after internal changes land.
-using BWGEligibilityCallback = GeminiEligibilityCallback;
 
 namespace gemini {
 enum class EntryPoint;
@@ -172,9 +170,6 @@ void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration);
 
 // Starts the overlay experience with the given configuration.
-// TODO(crbug.com/478259873): Get rid of BWG after internal changes land. Use
-// `StartGeminiOverlay` is preferable in the meantime.
-void StartBwgOverlay(GeminiConfiguration* gemini_configuration);
 void StartGeminiOverlay(GeminiConfiguration* gemini_configuration);
 
 // Gets the portion of the PageContext script that checks whether PageContext
@@ -182,9 +177,6 @@ void StartGeminiOverlay(GeminiConfiguration* gemini_configuration);
 const std::u16string GetPageContextShouldDetachScript();
 
 // Creates a Gemini gateway object for relaying internal protocols.
-// TODO(crbug.com/478259873): Get rid of BWG after internal changes land. Use
-// `CreateGeminiGateway` is preferable in the meantime
-id<BWGGatewayProtocol> CreateBWGGateway();
 id<BWGGatewayProtocol> CreateGeminiGateway();
 
 // Checks if the feature is disabled through a Gemini Enterprise policy, and

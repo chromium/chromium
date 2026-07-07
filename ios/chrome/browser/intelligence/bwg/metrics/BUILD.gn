@@ -11,7 +11,7 @@ source_set("metrics") {
     "//base",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
   ]
 }
 

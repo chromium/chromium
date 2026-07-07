@@ -56,7 +56,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/tab_picker/public",
     "//ios/chrome/browser/url_loading/model",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
   ]
   public_deps = [ "//base" ]
@@ -129,7 +129,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/app_group",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ui/gfx",
   ]
 }
@@ -173,7 +173,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//mojo/public/cpp/bindings",
   ]
@@ -194,7 +194,7 @@ source_set("gemini_capabilities_manager") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/common/app_group",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
   ]
 }
 
@@ -239,7 +239,7 @@ source_set("gemini_service") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//ios/web/util",
   ]
@@ -400,7 +400,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",

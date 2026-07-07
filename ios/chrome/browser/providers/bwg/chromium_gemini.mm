@@ -12,15 +12,13 @@ constexpr const char16_t* kShouldDetachPageContextScript = u"return false;";
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* gemini_startup_configuration) {}
 
-// TODO(crbug.com/478259873): Replace with StartGeminiOverlay
-void StartBwgOverlay(GeminiConfiguration* gemini_configuration) {}
+void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
   return kShouldDetachPageContextScript;
 }
 
-// TODO(crbug.com/478259873): Replace with CreateGeminiGateway
-id<BWGGatewayProtocol> CreateBWGGateway() {
+id<BWGGatewayProtocol> CreateGeminiGateway() {
   return nil;
 }
 

@@ -91,7 +91,7 @@ source_set("page_context_extractor_feature") {
     "//base",
     "//components/autofill/ios/form_util:frame_registration_feature",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public/js_messaging",
   ]
 }
@@ -144,7 +144,7 @@ source_set("proto_wrappers") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/find_in_page",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

@@ -267,7 +267,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       base::BindRepeating(&GeminiBrowserAgent::OnPageContentPrefChanged,
                           base::Unretained(this)));
 
-  bwg_gateway_ = ios::provider::CreateBWGGateway();
+  bwg_gateway_ = ios::provider::CreateGeminiGateway();
 
   if (bwg_gateway_) {
     gemini_link_opening_handler_ = [[GeminiLinkOpeningHandler alloc]
@@ -903,7 +903,7 @@ CGFloat GeminiBrowserAgent::GetFloatyProgress() {
 
 void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   PrepareFloatyToBeShown();
-  ios::provider::StartBwgOverlay(config);
+  ios::provider::StartGeminiOverlay(config);
   last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
   if (IsChromeNextIaEnabled()) {
