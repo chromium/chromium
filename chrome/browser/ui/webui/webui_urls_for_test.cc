@@ -267,7 +267,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       "chrome://signin-dice-web-intercept.top-chrome/?debug",
-      "chrome://signin-qrcode-bar",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS)
       "chrome://signout-confirmation",

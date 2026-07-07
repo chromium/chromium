@@ -122,7 +122,6 @@ source_set("signin") {
       "cross_device_signin_qr_bubble_ui.h",
       "dice_web_signin_intercept_handler.h",
       "dice_web_signin_intercept_ui.h",
-      "signin_qrcode_bar_ui.h",
     ]
     public_deps += [ "cross_device_signin_qr_bubble:mojo_bindings" ]
   }
@@ -205,7 +204,6 @@ source_set("signin_impl") {
       "cross_device_signin_qr_bubble_ui.cc",
       "dice_web_signin_intercept_handler.cc",
       "dice_web_signin_intercept_ui.cc",
-      "signin_qrcode_bar_ui.cc",
     ]
     deps += [
       "cross_device_signin_qr_bubble:mojo_bindings",
