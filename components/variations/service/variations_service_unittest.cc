@@ -56,15 +56,17 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// A fake version of RuntimeMutableFeaturesHandler, to generate PassKeys for
-// testing purposes.  The real RuntimeMutableFeaturesHandler class is not
+// A fake version of RuntimeMutableFeaturesHandlerBase, to generate PassKeys for
+// testing purposes.  The real RuntimeMutableFeaturesHandlerBase class is not
 // defined in `components/`. We're creating a surrogate of it here so that we
 // can generate PassKeys for testing, without violating dependency layering.
-class RuntimeMutableFeaturesHandler {
+namespace metrics {
+class RuntimeMutableFeaturesHandlerBase {
  public:
-  using PassKey = base::PassKey<RuntimeMutableFeaturesHandler>;
+  using PassKey = base::PassKey<RuntimeMutableFeaturesHandlerBase>;
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
 };
+}  // namespace metrics
 
 namespace variations {
 namespace {
@@ -1095,7 +1097,8 @@ TEST_F(VariationsServiceTest, VariationsServiceSeedFetchingPauseResume) {
 
   // Pause fetching.
   service.SetSeedFetchingPaused(
-      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting(), true);
+      metrics::RuntimeMutableFeaturesHandlerBase::CreatePassKeyForTesting(),
+      true);
   EXPECT_TRUE(service.IsSeedFetchingPaused());
 
   // Start repeated fetch (simulating startup).
@@ -1106,7 +1109,8 @@ TEST_F(VariationsServiceTest, VariationsServiceSeedFetchingPauseResume) {
 
   // Resume fetching.
   service.SetSeedFetchingPaused(
-      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting(), false);
+      metrics::RuntimeMutableFeaturesHandlerBase::CreatePassKeyForTesting(),
+      false);
   EXPECT_FALSE(service.IsSeedFetchingPaused());
 
   // Verify that resume immediately triggered a fetch.

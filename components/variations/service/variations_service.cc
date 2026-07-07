@@ -1051,7 +1051,7 @@ SeedType VariationsService::GetSeedType() const {
 }
 
 void VariationsService::SetSeedFetchingPaused(
-    base::PassKey<RuntimeMutableFeaturesHandler> pass_key,
+    base::PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key,
     bool paused) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (seed_fetching_paused_ == paused) {

@@ -35,15 +35,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// A fake version of RuntimeMutableFeaturesHandler, to generate PassKeys for
-// testing purposes.  The real RuntimeMutableFeaturesHandler class is not
+// A fake version of RuntimeMutableFeaturesHandlerBase, to generate PassKeys for
+// testing purposes.  The real RuntimeMutableFeaturesHandlerBase class is not
 // defined in `components/`. We're creating a surrogate of it here so that we
 // can generate PassKeys for testing, without violating dependency layering.
-class RuntimeMutableFeaturesHandler {
+namespace metrics {
+class RuntimeMutableFeaturesHandlerBase {
  public:
-  using PassKey = base::PassKey<RuntimeMutableFeaturesHandler>;
+  using PassKey = base::PassKey<RuntimeMutableFeaturesHandlerBase>;
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
 };
+}  // namespace metrics
 
 namespace base {
 
@@ -1684,7 +1686,7 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
 
   const auto* const feature_list = FeatureList::GetInstance();
   const auto& states = feature_list->GetRuntimeMutableFeatureState(
-      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting());
+      metrics::RuntimeMutableFeaturesHandlerBase::CreatePassKeyForTesting());
 
   // Verify that the feature is in the map and has default state.
   auto it = states.find(kRuntimeMutableFeature.name);
@@ -1701,7 +1703,7 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
 
   // Verify that the map reflects the updated state.
   const auto& states2 = feature_list->GetRuntimeMutableFeatureState(
-      RuntimeMutableFeaturesHandler::CreatePassKeyForTesting());
+      metrics::RuntimeMutableFeaturesHandlerBase::CreatePassKeyForTesting());
   it = states2.find(kRuntimeMutableFeature.name);
   ASSERT_NE(it, states2.end());
   EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, it->second.override_state);
@@ -1736,8 +1738,8 @@ TEST_F(FeatureListTest, RuntimeMutability_GetOverrideStateWithoutActivation) {
   // Query the override state using the PassKey overload (non-activating).
   FeatureList::OverrideState override_state =
       active_feature_list->GetOverrideStateWithoutActivation(
-          kRuntimeMutableFeature,
-          RuntimeMutableFeaturesHandler::CreatePassKeyForTesting());
+          kRuntimeMutableFeature, metrics::RuntimeMutableFeaturesHandlerBase::
+                                      CreatePassKeyForTesting());
 
   EXPECT_EQ(FeatureList::OVERRIDE_ENABLE_FEATURE, override_state);
   // The trial MUST STILL NOT be active!

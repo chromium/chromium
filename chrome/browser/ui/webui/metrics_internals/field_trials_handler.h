@@ -5,21 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_
 
-#include <string_view>
-#include <vector>
+#include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/values.h"
+#include "components/metrics/debug/field_trials_handler_base.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace variations {
-struct StudyGroupNames;
-}
 class Profile;
 
 // UI Handler for the Field Trials tab of chrome://metrics-internals.
-class FieldTrialsHandler : public content::WebUIMessageHandler {
+class FieldTrialsHandler : public content::WebUIMessageHandler,
+                           public metrics::FieldTrialsHandlerBase::Delegate {
  public:
   explicit FieldTrialsHandler(Profile* profile);
   ~FieldTrialsHandler() override;
@@ -27,58 +23,20 @@ class FieldTrialsHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
+  // metrics::FieldTrialsHandlerBase::Delegate:
+  void ResolvePageCallback(const base::ValueView callback_id,
+                           const base::ValueView response) override;
+
  private:
-  struct ExperimentOverride {
-    std::string trial_hash;
-    std::string group_hash;
-  };
-
-  // Returns the state of all field trials. Returns a `FieldTrialState` from
-  // components/metrics/debug/browser_proxy.ts.
-  base::DictValue GetFieldTrialStateValue();
-
-  // Handlers for js calls.
-
-  // fetchTrialState() grabs the state of studies and calls populateState() with
-  // the result.
   void HandleFetchState(const base::ListValue& args);
-
-  // setTrialEnrollState(callback, trial, group, enabled) overrides the enroll
-  // state of a field trial which will be realized after a restart.
   void HandleSetEnrollState(const base::ListValue& args);
-
-  // restart() triggers a restart of Chrome.
   void HandleRestart(const base::ListValue& args);
-
-  // lookupTrialOrGroupName(name) is called when the user types in a a study or
-  // experiment name. If the name matches a known study or experiment, this
-  // provides the page a mapping from hash to name for presentation.
   void HandleLookupTrialOrGroupName(const base::ListValue& args);
 
-  // One-time initialization for this class.
-  void InitializeFieldTrials(
-      base::OnceCallback<void(base::ValueView)> done_callback);
-
-  // Refreshes the field trial overrides with the given `studies`.
-  void RefreshFieldTrialOverrides(
-      base::OnceCallback<void(base::ValueView)> done_callback,
-      std::vector<variations::StudyGroupNames> studies);
-
-  // Turns on or off an experiment override, which will be realized after a
-  // restart.
-  bool SetOverride(const ExperimentOverride& override, bool enabled);
+  bool GetShowNames();
 
   raw_ptr<Profile> profile_;
-  bool show_names_ = false;
-  bool restart_required_ = false;
-
-  // The studies available to force. This is only populated after the first
-  // call to `InitializeFieldTrials()`.
-  std::optional<std::vector<variations::StudyGroupNames>> studies_;
-
-  base::flat_map<std::string, std::string> overrides_;
-
-  base::WeakPtrFactory<FieldTrialsHandler> weak_ptr_factory_{this};
+  std::unique_ptr<metrics::FieldTrialsHandlerBase> base_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_FIELD_TRIALS_HANDLER_H_

@@ -7,18 +7,13 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/metrics/dwa/dwa_service.h"
-#include "components/metrics/metrics_service_observer.h"
-#include "components/variations/variations_seed_store.h"
+#include "components/metrics/debug/metrics_internals_handler_base.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
 
 // UI Handler for chrome://metrics-internals.
-class MetricsInternalsHandler : public content::WebUIMessageHandler,
-                                public metrics::dwa::DwaService::Observer {
+class MetricsInternalsHandler
+    : public content::WebUIMessageHandler,
+      public metrics::MetricsInternalsHandlerBase::Delegate {
  public:
   MetricsInternalsHandler();
 
@@ -32,18 +27,14 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
+  // metrics::MetricsInternalsHandlerBase::Delegate:
+  void ResolvePageCallback(const base::ValueView callback_id,
+                           const base::ValueView response) override;
+  void FireWebUIListener(std::string_view event_name) override;
+  void FireWebUIListener(std::string_view event_name,
+                         const base::ValueView arg1) override;
+
  private:
-  // Returns true if the metrics service has its own logs event observer, which
-  // indicates that we should use that observer instead of our own. This happens
-  // if this is a debug build, or if the |kExportUmaLogsToFile| command line
-  // flag is present.
-  bool ShouldUseMetricsServiceObserver();
-
-  // Returns the UMA observer to use for tracking UMA logs. I.e., if the metrics
-  // service has its own observer, return that one. Otherwise, return the one
-  // owned by the WebUI page (|uma_log_observer_|).
-  metrics::MetricsServiceObserver* GetUmaObserver();
-
   void HandleFetchVariationsSummary(const base::ListValue& args);
   void HandleFetchStoredSeedInfo(
       variations::VariationsSeedStore::SeedType seed_type,
@@ -53,27 +44,7 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler,
   void HandleFetchEncryptionPublicKey(const base::ListValue& args);
   void HandleIsUsingMetricsServiceObserver(const base::ListValue& args);
 
-  void OnUmaLogCreatedOrEvent();
-
-  // metrics::dwa::DwaService::Observer:
-  void OnEncryptionPublicKeyChanged(
-      const fcp::confidential_compute::OkpCwt& decoded_public_key) override;
-
-  // This UMA log observer keeps track of logs since its creation. It is unused
-  // if the UMA metrics service has its own observer that has observed all
-  // events since browser startup.
-  std::unique_ptr<metrics::MetricsServiceObserver> uma_log_observer_;
-
-  // The callback subscription to |uma_log_observer_| that notifies the WebUI
-  // of changes. When this subscription is destroyed, it is automatically
-  // de-registered from the callback list.
-  base::CallbackListSubscription uma_log_notified_subscription_;
-
-  base::ScopedObservation<metrics::dwa::DwaService,
-                          metrics::dwa::DwaService::Observer>
-      dwa_service_observation_{this};
-
-  base::WeakPtrFactory<MetricsInternalsHandler> weak_ptr_factory_{this};
+  std::unique_ptr<metrics::MetricsInternalsHandlerBase> base_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_HANDLER_H_

@@ -48,8 +48,19 @@ build_webui("build") {
 
 static_library("debug") {
   sources = [
+    "field_trials_handler_base.cc",
+    "field_trials_handler_base.h",
+    "metrics_internals_handler_base.cc",
+    "metrics_internals_handler_base.h",
     "metrics_internals_utils.cc",
     "metrics_internals_utils.h",
+    "runtime_mutable_features_handler_base.cc",
+    "runtime_mutable_features_handler_base.h",
+  ]
+
+  public_deps = [
+    "//components/metrics/private_metrics",
+    "//third_party/federated_compute:confidential_compute",
   ]
 
   deps = [
@@ -60,5 +71,6 @@ static_library("debug") {
     "//components/metrics_services_manager",
     "//components/variations",
     "//components/variations/service",
+    "//third_party/abseil-cpp:absl",
   ]
 }

@@ -2,6 +2,8 @@ static_library("debug") {
   sources = [
     "structured_metrics_debug_provider.cc",
     "structured_metrics_debug_provider.h",
+    "structured_metrics_internals_handler_base.cc",
+    "structured_metrics_internals_handler_base.h",
     "structured_metrics_utils.cc",
     "structured_metrics_utils.h",
   ]

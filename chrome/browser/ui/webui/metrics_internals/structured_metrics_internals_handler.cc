@@ -7,20 +7,14 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "components/metrics/debug/structured/structured_metrics_utils.h"
-#include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
-StructuredMetricsInternalsHandler::StructuredMetricsInternalsHandler() {
-  metrics::structured::StructuredMetricsService* service =
-      g_browser_process->GetMetricsServicesManager()
-          ->GetStructuredMetricsService();
-  if (service) {
-    structured_metrics_debug_provider_ =
-        std::make_unique<metrics::structured::StructuredMetricsDebugProvider>(
-            service);
-  }
-}
+StructuredMetricsInternalsHandler::StructuredMetricsInternalsHandler()
+    : base_handler_(std::make_unique<
+                    metrics::structured::StructuredMetricsInternalsHandlerBase>(
+          this,
+          g_browser_process->GetMetricsServicesManager()
+              ->GetStructuredMetricsService())) {}
 
 StructuredMetricsInternalsHandler::~StructuredMetricsInternalsHandler() =
     default;
@@ -38,23 +32,20 @@ void StructuredMetricsInternalsHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void StructuredMetricsInternalsHandler::ResolvePageCallback(
+    const base::ValueView callback_id,
+    const base::ValueView response) {
+  ResolveJavascriptCallback(callback_id, response);
+}
+
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::ListValue& args) {
   AllowJavascript();
-  const base::Value& callback_id = args[0];
-  const base::ListValue empty_events;
-  ResolveJavascriptCallback(callback_id,
-                            structured_metrics_debug_provider_
-                                ? structured_metrics_debug_provider_->events()
-                                : empty_events);
+  base_handler_->HandleFetchStructuredMetricsEvents(args[0]);
 }
 
 void StructuredMetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
     const base::ListValue& args) {
   AllowJavascript();
-  const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id,
-                            metrics::structured::GetStructuredMetricsSummary(
-                                g_browser_process->GetMetricsServicesManager()
-                                    ->GetStructuredMetricsService()));
+  base_handler_->HandleFetchStructuredMetricsSummary(args[0]);
 }

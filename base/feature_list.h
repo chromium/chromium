@@ -29,7 +29,9 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
-class RuntimeMutableFeaturesHandler;
+namespace metrics {
+class RuntimeMutableFeaturesHandlerBase;
+}
 
 namespace base {
 
@@ -213,14 +215,14 @@ class BASE_EXPORT FeatureList {
   // Must be called on the main sequence.
   const base::flat_map<std::string, internal::RuntimeMutableFeatureState>&
   GetRuntimeMutableFeatureState(
-      PassKey<RuntimeMutableFeaturesHandler> pass_key) const;
+      PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key) const;
 
   // Returns the override state for |feature|, without activating any associated
   // field trial.
   // Must be called on the main sequence.
   OverrideState GetOverrideStateWithoutActivation(
       const Feature& feature,
-      PassKey<RuntimeMutableFeaturesHandler> pass_key) const;
+      PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key) const;
 
   // Returns true if the state of |feature_name| has been overridden (regardless
   // of whether the overridden value is the same as the default value) for any

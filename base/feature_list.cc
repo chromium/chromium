@@ -517,7 +517,7 @@ void FeatureList::EnableRuntimeMutability(
 
 const base::flat_map<std::string, internal::RuntimeMutableFeatureState>&
 FeatureList::GetRuntimeMutableFeatureState(
-    PassKey<RuntimeMutableFeaturesHandler> pass_key) const {
+    PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return runtime_mutable_overrides_;
 }
@@ -1054,7 +1054,7 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
 
 FeatureList::OverrideState FeatureList::GetOverrideStateWithoutActivation(
     const Feature& feature,
-    PassKey<RuntimeMutableFeaturesHandler> pass_key) const {
+    PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key) const {
   return GetOverrideStateImpl(feature, /*activate_trial=*/false);
 }
 

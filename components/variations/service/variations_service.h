@@ -54,7 +54,9 @@ struct StudyGroupNames;
 class VariationsSeed;
 }  // namespace variations
 
-class RuntimeMutableFeaturesHandler;
+namespace metrics {
+class RuntimeMutableFeaturesHandlerBase;
+}
 
 namespace variations {
 
@@ -251,7 +253,7 @@ class VariationsService
 
   // Pauses or resumes variations seed fetching.
   void SetSeedFetchingPaused(
-      base::PassKey<RuntimeMutableFeaturesHandler> pass_key,
+      base::PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key,
       bool paused);
 
   // Returns true if variations seed fetching is paused.
