@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<html class="test-wait">
+<meta charset="utf-8">
+<title>Animating -webkit-filter functions with default arguments should not crash</title>
+<link rel="help" href="https://crbug.com/41242445">
 <style>
 @keyframes anim-blur {
   from { -webkit-filter: blur(); }
@@ -54,6 +56,8 @@
 <div style="animation: anim-sepia 1s"></div>
 <div style="animation: anim-saturate 1s"></div>
 <script>
-var asyncHandle = async_test("Don't crash when animating default filter parameters.");
-requestAnimationFrame(() => asyncHandle.done());
+  requestAnimationFrame(() => {
+    document.documentElement.classList.remove('test-wait');
+  });
 </script>
+</html>
