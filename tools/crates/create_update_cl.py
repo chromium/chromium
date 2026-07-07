@@ -344,8 +344,8 @@ process and other details can be found at
         map(FormatCrateIdForClDescriptionBody, diff.added_crate_ids))
     removed_crate_descriptions = SortedMarkdownList(
         map(FormatCrateIdForClDescriptionBody, diff.removed_crate_ids))
-    assert (update_descriptions)
-    description += f"\nUpdated crates:\n\n{update_descriptions}\n"
+    if update_descriptions:
+        description += f"\nUpdated crates:\n\n{update_descriptions}\n"
     if new_crate_descriptions:
         description += f"\nNew crates:\n\n{new_crate_descriptions}\n"
     if removed_crate_descriptions:
