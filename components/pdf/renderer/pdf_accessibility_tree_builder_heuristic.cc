@@ -13,9 +13,12 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -245,6 +248,11 @@ PdfAccessibilityTreeBuilderHeuristic::PdfAccessibilityTreeBuilderHeuristic(
     : builder_(builder) {}
 
 void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
+  base::ElapsedTimer timer;
+  absl::Cleanup run_on_exit = [&timer] {
+    base::UmaHistogramTimes("Accessibility.PDF.Heuristic.BuildPageTreeTime",
+                            timer.Elapsed());
+  };
   ComputeParagraphAndHeadingThresholds(builder_->text_runs(),
                                        &heading_font_size_threshold_,
                                        &paragraph_spacing_threshold_);

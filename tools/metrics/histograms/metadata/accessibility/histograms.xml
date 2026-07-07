@@ -2418,6 +2418,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.Heuristic.BuildPageTreeTime" units="ms"
+    expires_after="2027-05-01">
+  <owner>kristislee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time taken to build the accessibility page tree using heuristic
+    algorithms. Logged once per PDF page.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PDF.IsPDFTagged" enum="BooleanExists"
     expires_after="2026-11-15">
   <owner>dtseng@chromium.org</owner>
