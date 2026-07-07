@@ -52,18 +52,6 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
                                          SkAlphaType alpha_type,
                                          const gfx::ColorSpace& color_space,
                                          const gfx::HDRMetadata& hdr_metadata) {
-  // The SharedImages created by this provider serve as a means of import/export
-  // between VideoFrames/canvas and WebGPU, e.g.:
-  // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
-  //   WebGPU textures will then be read by clients)
-  // * Export from WebGPU into a static bitmap image via
-  //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
-  //   export happens via the WebGPU interface)
-  // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-  gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
@@ -97,7 +85,7 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
 
   auto provider = base::WrapUnique(new WebGpuRecyclableResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper, shared_image_usage_flags));
+      context_provider_wrapper));
 
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
@@ -108,8 +96,7 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    gpu::SharedImageUsageSet shared_image_usage_flags)
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -140,20 +127,26 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
   if (context_provider_wrapper_) {
     if (auto* sii = context_provider_wrapper_->ContextProvider()
                         .SharedImageInterface()) {
-      // These SharedImages are both read and written by the raster interface
-      // (both occur, for example, when copying canvas resources between
-      // canvases). Additionally, these SharedImages can be put into
+      // The SharedImages created by this provider serve as a means of
+      // import/export between VideoFrames/canvas and WebGPU, e.g.:
+      // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
+      //   WebGPU textures will then be read by clients)
+      // * Export from WebGPU into a static bitmap image via
+      //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
+      //   export happens via the WebGPU interface)
+      // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
+      // Additionally, these SharedImages are both read and written by the
+      // raster interface (both occur, for example, when copying canvas
+      // resources between canvases) and can be put into
       // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
       // GL textures by WebGL (via
       // AcceleratedStaticBitmapImage::CopyToTexture()).
-      shared_image_usage_flags = shared_image_usage_flags |
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                 gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-      // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-      if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-      }
+      gpu::SharedImageUsageSet shared_image_usage_flags =
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+          gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
 

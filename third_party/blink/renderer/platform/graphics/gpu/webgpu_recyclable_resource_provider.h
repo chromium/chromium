@@ -127,8 +127,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
       SkAlphaType,
       const gfx::ColorSpace&,
       const gfx::HDRMetadata&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   void ClearUnusedResources();
   bool IsSingleBuffered() const;
