@@ -39,7 +39,7 @@ class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
  public:
   ProcessPriorityPolicyTest() {
     base::FieldTrialParams params = {
-        {features::kNonSpareRendererHighInitialPriority.name,
+        {features::kRendererHighInitialPriority.name,
          GetParam() ? "true" : "false"}};
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPMProcessPriorityPolicy, params);
@@ -111,11 +111,11 @@ TEST_P(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
   DCHECK(rph);
 
   const base::Process::Priority kInitialPriority =
-      features::kNonSpareRendererHighInitialPriority.Get()
+      features::kRendererHighInitialPriority.Get()
           ? base::Process::Priority::kUserBlocking
           : base::Process::Priority::kBestEffort;
   const base::Process::Priority kOtherPriority =
-      features::kNonSpareRendererHighInitialPriority.Get()
+      features::kRendererHighInitialPriority.Get()
           ? base::Process::Priority::kBestEffort
           : base::Process::Priority::kUserBlocking;
 

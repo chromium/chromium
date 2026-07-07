@@ -118,7 +118,7 @@ extern const base::FeatureParam<bool> kInheritParentPriority;
 
 extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
 
-extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
+extern const base::FeatureParam<bool> kRendererHighInitialPriority;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 

@@ -27,12 +27,8 @@ namespace {
 
 const void* const kRenderProcessUserDataKey = &kRenderProcessUserDataKey;
 
-base::Process::Priority GetInitialPriority(bool is_spare) {
-  // A spare is always initialized at a low priority.
-  if (is_spare) {
-    return base::Process::Priority::kMinValue;
-  }
-  return features::kNonSpareRendererHighInitialPriority.Get()
+base::Process::Priority GetInitialPriority() {
+  return features::kRendererHighInitialPriority.Get()
              ? base::Process::Priority::kUserBlocking
              : base::Process::Priority::kMinValue;
 }
@@ -43,8 +39,7 @@ RenderProcessUserData::RenderProcessUserData(
     content::RenderProcessHost* render_process_host)
     : host_(render_process_host) {
   host_->AddObserver(this);
-  base::Process::Priority initial_priority =
-      GetInitialPriority(host_->IsSpare());
+  base::Process::Priority initial_priority = GetInitialPriority();
   process_node_ = PerformanceManagerImpl::CreateProcessNode(
       RenderProcessHostProxy(host_->GetID()), initial_priority);
 }

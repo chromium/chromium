@@ -168,9 +168,8 @@ const base::FeatureParam<bool> kInheritParentPriority{
 const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible{
     &kPMProcessPriorityPolicy, "rendered_out_of_view_is_not_visible", false};
 
-const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority{
-    &kPMProcessPriorityPolicy, "non_spare_renderer_high_initial_priority",
-    false};
+const base::FeatureParam<bool> kRendererHighInitialPriority{
+    &kPMProcessPriorityPolicy, "renderer_high_initial_priority", false};
 
 BASE_FEATURE(kPMLoadingPageVoter, base::FEATURE_DISABLED_BY_DEFAULT);
 
