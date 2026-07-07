@@ -656,6 +656,8 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
               Field(&FileSystemAccessWriteItem::sha256_hash, Eq(expected_hash)),
               Field(&FileSystemAccessWriteItem::size, Eq(3)),
               Field(&FileSystemAccessWriteItem::frame_url, Eq(kTestURL)),
+              Field(&FileSystemAccessWriteItem::initiating_frame_id,
+                    Eq(kFrameId)),
               Field(&FileSystemAccessWriteItem::has_user_gesture, Eq(false))),
           kFrameId, _))
       .WillOnce(base::test::RunOnceCallback<2>(

@@ -254,6 +254,7 @@ void FileSystemAccessSafeMoveHelper::DoAfterWriteCheck(
   item->size = size;
   item->frame_url = context_.url;
   item->outermost_main_frame_id = outermost_main_frame_id;
+  item->initiating_frame_id = context_.frame_id;
   item->has_user_gesture = has_transient_user_activation_;
   manager_->permission_context()->PerformAfterWriteChecks(
       std::move(item), context_.frame_id,

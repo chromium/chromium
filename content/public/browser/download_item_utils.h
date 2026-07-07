@@ -33,6 +33,10 @@ class CONTENT_EXPORT DownloadItemUtils {
   static RenderFrameHost* GetRenderFrameHost(
       const download::DownloadItem* downloadItem);
 
+  // Helper method to get the GlobalRenderFrameHostId from a DownloadItem.
+  static GlobalRenderFrameHostId GetRenderFrameHostId(
+      const download::DownloadItem* downloadItem);
+
   // Get the original WebContents that triggers the download. The returned
   // WebContents might be different from that of calling GetWebContents(). If
   // the primary page of the WebContents changes, GetWebContents() will return

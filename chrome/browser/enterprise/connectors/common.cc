@@ -8,15 +8,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
@@ -53,14 +55,29 @@ namespace {
 constexpr int kMaxFrameUrls = 10;
 
 google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    std::optional<content::GlobalRenderFrameHostId> initiating_frame_id) {
   google::protobuf::RepeatedPtrField<std::string> frame_urls;
 
   if (!web_contents) {
     return frame_urls;
   }
 
-  content::RenderFrameHost* current_frame = web_contents->GetFocusedFrame();
+  content::RenderFrameHost* current_frame = nullptr;
+  if (initiating_frame_id.has_value()) {
+    current_frame =
+        content::RenderFrameHost::FromID(initiating_frame_id.value());
+    if (!current_frame) {
+      // If an explicit initiating frame was expected but is no longer
+      // available, return an empty chain.
+      // TODO(crbug.com/531669028): Returning an empty chain for transient
+      // iframes allows them to bypass DLP rules by being evaluated as a
+      // main-frame action.
+      return frame_urls;
+    }
+  } else {
+    current_frame = web_contents->GetFocusedFrame();
+  }
 
   // Traverse upwards and add URLs to the chain, stopping before the outermost
   // frame.
@@ -162,14 +179,15 @@ std::string GetProfileEmail(Profile* profile) {
 
 google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
     content::WebContents* web_contents,
-    DeepScanAccessPoint access_point) {
+    DeepScanAccessPoint access_point,
+    std::optional<content::GlobalRenderFrameHostId> initiating_frame_id) {
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (!base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
     return google::protobuf::RepeatedPtrField<std::string>();
   }
 
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
-      CollectFrameUrlsImpl(web_contents);
+      CollectFrameUrlsImpl(web_contents, initiating_frame_id);
 
   // For the histogram, we count the tab URL to differentiate between cases
   // where there is no tab and tabs with no iframes.

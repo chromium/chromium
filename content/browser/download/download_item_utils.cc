@@ -119,6 +119,16 @@ RenderFrameHost* DownloadItemUtils::GetRenderFrameHost(
 }
 
 // static
+GlobalRenderFrameHostId DownloadItemUtils::GetRenderFrameHostId(
+    const download::DownloadItem* download_item) {
+  DownloadItemData* data = DownloadItemData::Get(download_item);
+  if (!data) {
+    return GlobalRenderFrameHostId();
+  }
+  return data->id();
+}
+
+// static
 WebContents* DownloadItemUtils::GetOriginalWebContents(
     const download::DownloadItem* download_item) {
   DownloadItemData* data = DownloadItemData::Get(download_item);

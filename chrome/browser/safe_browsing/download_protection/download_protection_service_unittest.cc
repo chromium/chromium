@@ -818,6 +818,8 @@ class DownloadProtectionServiceTestBase
     result->sha256_hash = hash_;
     result->size = 100;
     result->frame_url = GURL("https://example.com/foo/bar");
+    result->initiating_frame_id =
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     result->has_user_gesture = true;
     result->web_contents = web_contents()->GetWeakPtr();
     result->browser_context = profile();
@@ -832,6 +834,7 @@ class DownloadProtectionServiceTestBase
     result->sha256_hash = in->sha256_hash;
     result->size = in->size;
     result->frame_url = in->frame_url;
+    result->initiating_frame_id = in->initiating_frame_id;
     result->has_user_gesture = in->has_user_gesture;
     result->web_contents = in->web_contents;
     result->browser_context = in->browser_context;

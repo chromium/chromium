@@ -169,6 +169,33 @@ TEST_F(CollectFrameUrlsTest, NoWebContents) {
   histogram_tester.ExpectBucketCount(
       "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 0, 1);
 }
+
+TEST_F(CollectFrameUrlsTest, InitiatingFrame) {
+  base::HistogramTester histogram_tester;
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Create an iframe and navigate it to a URL.
+  GURL child_frame_url1("https://foo.com/");
+  content::RenderFrameHost* child_frame1 =
+      rfh_tester->AppendChild("child_frame1");
+  child_frame1 = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      child_frame_url1, child_frame1);
+
+  // Focus the main frame, but pass the child frame as the initiating frame.
+  content::FocusWebContentsOnFrame(web_contents(),
+                                   web_contents()->GetPrimaryMainFrame());
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD,
+                       std::make_optional(child_frame1->GetGlobalId()));
+
+  // The child frame should be included because it is the initiating frame.
+  ASSERT_EQ(1, frame_urls.size());
+  EXPECT_EQ(child_frame_url1.spec(), frame_urls[0]);
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace enterprise_connectors

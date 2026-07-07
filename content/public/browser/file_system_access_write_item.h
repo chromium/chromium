@@ -46,6 +46,9 @@ struct CONTENT_EXPORT FileSystemAccessWriteItem {
   // id of the outermost main frame in which the write operation took place.
   GlobalRenderFrameHostId outermost_main_frame_id;
 
+  // id of the frame in which the write operation took place.
+  GlobalRenderFrameHostId initiating_frame_id;
+
   // True iff the frame had a transient user activation when the writer was
   // created.
   bool has_user_gesture = false;

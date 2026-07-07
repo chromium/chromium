@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -14,6 +15,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"  // nogncheck crbug.com/40147906
@@ -70,9 +72,14 @@ std::string GetProfileEmail(Profile* profile);
 // Returns the list of URLs from the current frame all the way to the outermost
 // frame URL. Above the `kMaxFrameUrls` limit, we skip the rest of the chain and
 // take the outermost URL for performance considerations.
+//
+// The chain is collected starting from `initiating_frame_id` if provided.
+// If the frame ID is provided but the frame is dead, it returns an empty chain.
 google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
     content::WebContents* web_contents,
-    DeepScanAccessPoint access_point);
+    DeepScanAccessPoint access_point,
+    std::optional<content::GlobalRenderFrameHostId> initiating_frame_id =
+        std::nullopt);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
