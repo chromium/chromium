@@ -153,4 +153,58 @@ suite('AudioLevelsProcessorTest', () => {
         const level = processor.process(noiseBuffer, 1000);
         assertEquals(0, level);
       });
+
+  test(
+      'should return last emitted value when process is called' +
+          'within sampling interval',
+      () => {
+        const buffer = new Float32Array(512).fill(-100);
+        for (let i = 7; i <= 70; i++) {
+          buffer[i] = -50;
+        }
+        const firstLevel = processor.process(buffer, 1000);
+        // Call again 20ms later (less than sampleIntervalMs of 60ms)
+        const secondLevel = processor.process(buffer, 1020);
+        assertEquals(firstLevel, secondLevel);
+      });
+
+  test('should ignore frequencies outside speech band (bins 7 to 70)', () => {
+    const outOfBandBuffer = new Float32Array(512).fill(-100);
+    // Put high energy in bins outside 7-70
+    for (let i = 0; i < 7; i++) {
+      outOfBandBuffer[i] = 0;
+    }
+    for (let i = 71; i < 512; i++) {
+      outOfBandBuffer[i] = 0;
+    }
+    const level = processor.process(outOfBandBuffer, 1000);
+    assertEquals(0, level);
+  });
+
+  test('should handle custom dynamic shaping curve min second value', () => {
+    const customProcessor = new AudioLevelsProcessor(0.8);
+    const speechBuffer = new Float32Array(512).fill(-100);
+    for (let i = 7; i <= 70; i++) {
+      speechBuffer[i] = -50;
+    }
+    const level = customProcessor.process(speechBuffer, 1000);
+    assertTrue(level > 0);
+  });
+
+  test('should handle large time jumps cleanly', () => {
+    const buffer = new Float32Array(512).fill(-100);
+    for (let i = 7; i <= 70; i++) {
+      buffer[i] = -50;
+    }
+    processor.process(buffer, 1000);
+    // Jump forward by 1000ms (> 2 * sampleIntervalMs)
+    const levelAfterJump = processor.process(buffer, 2000);
+    assertTrue(levelAfterJump >= 0 && levelAfterJump <= 1);
+  });
+
+  test('should handle extremely low dB values without NaN', () => {
+    const buffer = new Float32Array(512).fill(-Infinity);
+    const level = processor.process(buffer, 1000);
+    assertEquals(0, level);
+  });
 });
