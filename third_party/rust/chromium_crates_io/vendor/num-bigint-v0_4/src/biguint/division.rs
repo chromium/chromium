@@ -1,14 +1,16 @@
 use super::addition::__add2;
-use super::{cmp_slice, BigUint};
+use super::shift::biguint_shl;
+use super::{cmp_slice, ilog2, BigUint};
 
-use crate::big_digit::{self, BigDigit, DoubleBigDigit};
+use crate::big_digit::{self, BigDigit, BigDigits, DoubleBigDigit, BITS};
 use crate::UsizePromotion;
 
+use alloc::borrow::Cow;
 use core::cmp::Ordering::{Equal, Greater, Less};
 use core::mem;
 use core::ops::{Div, DivAssign, Rem, RemAssign};
 use num_integer::Integer;
-use num_traits::{CheckedDiv, CheckedEuclid, Euclid, One, ToPrimitive, Zero};
+use num_traits::{CheckedDiv, CheckedEuclid, Euclid, ToPrimitive, Zero};
 
 pub(super) const FAST_DIV_WIDE: bool = cfg!(any(target_arch = "x86", target_arch = "x86_64"));
 
@@ -103,7 +105,8 @@ pub(super) fn div_rem_digit(mut a: BigUint, b: BigDigit) -> (BigUint, BigDigit) 
         }
     }
 
-    (a.normalized(), rem)
+    a.data.normalize();
+    (a, rem)
 }
 
 #[inline]
@@ -158,7 +161,15 @@ fn sub_mul_digit_same_len(a: &mut [BigDigit], b: &[BigDigit], c: BigDigit) -> Bi
     big_digit::MAX - offset_carry
 }
 
-fn div_rem(mut u: BigUint, mut d: BigUint) -> (BigUint, BigUint) {
+fn div_rem(u: BigUint, d: BigUint) -> (BigUint, BigUint) {
+    div_rem_cow(Cow::Owned(u), Cow::Owned(d))
+}
+
+pub(super) fn div_rem_ref(u: &BigUint, d: &BigUint) -> (BigUint, BigUint) {
+    div_rem_cow(Cow::Borrowed(u), Cow::Borrowed(d))
+}
+
+fn div_rem_cow(u: Cow<'_, BigUint>, d: Cow<'_, BigUint>) -> (BigUint, BigUint) {
     if d.is_zero() {
         panic!("attempt to divide by zero")
     }
@@ -166,24 +177,19 @@ fn div_rem(mut u: BigUint, mut d: BigUint) -> (BigUint, BigUint) {
         return (BigUint::ZERO, BigUint::ZERO);
     }
 
-    if d.data.len() == 1 {
-        if d.data == [1] {
+    if let [digit] = *d.data {
+        let u = u.into_owned();
+        if digit == 1 {
             return (u, BigUint::ZERO);
         }
-        let (div, rem) = div_rem_digit(u, d.data[0]);
-        // reuse d
-        d.data.clear();
-        d += rem;
-        return (div, d);
+        let (div, rem) = div_rem_digit(u, digit);
+        return (div, rem.into());
     }
 
     // Required or the q_len calculation below can underflow:
     match u.cmp(&d) {
-        Less => return (BigUint::ZERO, u),
-        Equal => {
-            u.set_one();
-            return (u, BigUint::ZERO);
-        }
+        Less => return (BigUint::ZERO, u.into_owned()),
+        Equal => return (BigUint::ONE, BigUint::ZERO),
         Greater => {} // Do nothing
     }
 
@@ -193,63 +199,155 @@ fn div_rem(mut u: BigUint, mut d: BigUint) -> (BigUint, BigUint) {
     // set: the main loop uses the highest digit of the divisor for generating guesses, so we
     // want it to be the largest number we can efficiently divide by.
     //
-    let shift = d.data.last().unwrap().leading_zeros() as usize;
+    let shift = d.data.last().unwrap().leading_zeros();
 
     if shift == 0 {
         // no need to clone d
-        div_rem_core(u, &d.data)
+        div_rem_core(u, &d)
     } else {
-        let (q, r) = div_rem_core(u << shift, &(d << shift).data);
+        let u = biguint_shl(u, shift);
+        let d = biguint_shl(d, shift);
+        let (q, r) = div_rem_core(Cow::Owned(u), &d);
         // renormalize the remainder
         (q, r >> shift)
     }
 }
 
-pub(super) fn div_rem_ref(u: &BigUint, d: &BigUint) -> (BigUint, BigUint) {
-    if d.is_zero() {
-        panic!("attempt to divide by zero")
-    }
-    if u.is_zero() {
-        return (BigUint::ZERO, BigUint::ZERO);
-    }
+const BURNIKEL_ZIEGLER_THRESHOLD: usize = 64;
 
-    if d.data.len() == 1 {
-        if d.data == [1] {
-            return (u.clone(), BigUint::ZERO);
+/// This algorithm is from Burnikel and Ziegler, "Fast Recursive Division", Algorithm 1.
+/// It is a recursive algorithm that divides the dividend and divisor into blocks of digits
+/// and uses a divide-and-conquer approach to find the quotient.
+///
+/// The algorithm is more complex than the base algorithm, but it is faster for large operands.
+///
+/// Time complexity of this algorithm is the same as the algorithm used for the multiplication.
+///
+/// link: https://pure.mpg.de/rest/items/item_1819444_4/component/file_2599480/content
+fn div_rem_burnikel_ziegler(u: &BigUint, d: &BigUint) -> (BigUint, BigUint) {
+    fn divide_biguint(mut b: BigUint, level: usize) -> (BigUint, BigUint) {
+        if b.data.len() <= level {
+            return (BigUint::ZERO, b);
         }
-
-        let (div, rem) = div_rem_digit(u.clone(), d.data[0]);
-        return (div, rem.into());
+        let mut b1_data = BigDigits::from_slice(&b.data[level..]);
+        b1_data.normalize();
+        b.data.truncate(level);
+        b.data.normalize();
+        (BigUint { data: b1_data }, b)
     }
 
-    // Required or the q_len calculation below can underflow:
-    match u.cmp(d) {
-        Less => return (BigUint::ZERO, u.clone()),
-        Equal => return (One::one(), BigUint::ZERO),
-        Greater => {} // Do nothing
+    fn normalizing_shift_amount(b: &BigUint, level: usize) -> u64 {
+        (level as u64) * u64::from(BITS) - b.bits()
     }
 
-    // This algorithm is from Knuth, TAOCP vol 2 section 4.3, algorithm D:
-    //
-    // First, normalize the arguments so the highest bit in the highest digit of the divisor is
-    // set: the main loop uses the highest digit of the divisor for generating guesses, so we
-    // want it to be the largest number we can efficiently divide by.
-    //
-    let shift = d.data.last().unwrap().leading_zeros() as usize;
+    fn concat_biguint(b1: &BigUint, b2: BigUint, level: usize) -> BigUint {
+        let mut data = b2.data;
+        data.reserve(level + b1.data.len() - data.len());
+        data.resize(level, 0);
+        data.extend_from_slice(&b1.data);
+        data.normalize();
+        BigUint { data }
+    }
 
-    if shift == 0 {
-        // no need to clone d
-        div_rem_core(u.clone(), &d.data)
+    fn div_two_digit_by_one(
+        ah: BigUint,
+        al: BigUint,
+        b: BigUint,
+        level: usize,
+    ) -> (BigUint, BigUint) {
+        // A precondition of this function is that q fits into a single digit.
+        debug_assert!(ah < b);
+        if level <= BURNIKEL_ZIEGLER_THRESHOLD {
+            return div_rem(concat_biguint(&ah, al, level), b);
+        }
+        let shift = normalizing_shift_amount(&b, level);
+        if shift != 0 {
+            let b = b << shift;
+            let (ah, al) = divide_biguint(concat_biguint(&ah, al, level) << shift, level);
+            let (q, r) = div_two_digit_by_one_normalized(ah, al, b, level);
+            (q, r >> shift)
+        } else {
+            div_two_digit_by_one_normalized(ah, al, b, level)
+        }
+    }
+
+    fn div_two_digit_by_one_normalized(
+        ah: BigUint,
+        al: BigUint,
+        b: BigUint,
+        level: usize,
+    ) -> (BigUint, BigUint) {
+        let level = level / 2;
+        let (a1, a2) = divide_biguint(ah, level);
+        let (a3, a4) = divide_biguint(al, level);
+        let (b1, b2) = divide_biguint(b, level);
+        let (q1, r) = div_three_halves_by_two(a1, a2, a3, b1.clone(), b2.clone(), level);
+        let (r1, r2) = divide_biguint(r, level);
+        let (q2, s) = div_three_halves_by_two(r1, r2, a4, b1, b2, level);
+        (concat_biguint(&q1, q2, level), s)
+    }
+
+    fn div_three_halves_by_two(
+        a1: BigUint,
+        a2: BigUint,
+        a3: BigUint,
+        b1: BigUint,
+        b2: BigUint,
+        level: usize,
+    ) -> (BigUint, BigUint) {
+        // Algorithm 2 step 3 distinguishes A₁<B₁ or A₁≥B₁, preserving
+        // div_two_digit_by_one's asserted invariant that `ah < b`.
+        let (mut q, r1, d);
+        if a1 < b1 {
+            (q, r1) = div_two_digit_by_one(a1, a2, b1.clone(), level);
+            d = &q * &b2;
+        } else {
+            // set Q = βⁿ-1 and set R₁ = [A₁;A₂] - [B₁;0] + [0;B₁]
+            //                        (= [A₁;A₂] - QB₁)
+            q = BigUint {
+                data: BigDigits::from_vec(vec![BigDigit::MAX; level]),
+            };
+            r1 = concat_biguint(&(a1 - &b1), a2, level) + &b1;
+            // also Q*B₂ = (βⁿ-1)B₂ = βⁿB₂ - B₂
+            d = (&b2 << (level * usize::from(BITS))) - &b2;
+        };
+        // The algorithm guarantees at most two corrections are needed.
+        let mut r = concat_biguint(&r1, a3, level);
+        if r < d {
+            let b = concat_biguint(&b1, b2, level);
+            q -= 1u32;
+            r += &b;
+            if r < d {
+                q -= 1u32;
+                r += &b;
+            }
+        }
+        (q, r - d)
+    }
+
+    let mut level = 1 << ilog2(u.data.len());
+    if d.data.len() > level {
+        level *= 2;
+    }
+    let (u1, u2) = divide_biguint(u.clone(), level);
+    if &u1 >= d {
+        div_two_digit_by_one(BigUint::ZERO, u.clone(), d.clone(), level * 2)
     } else {
-        let (q, r) = div_rem_core(u << shift, &(d << shift).data);
-        // renormalize the remainder
-        (q, r >> shift)
+        div_two_digit_by_one(u1, u2, d.clone(), level)
     }
 }
 
 /// An implementation of the base division algorithm.
 /// Knuth, TAOCP vol 2 section 4.3.1, algorithm D, with an improvement from exercises 19-21.
-fn div_rem_core(mut a: BigUint, b: &[BigDigit]) -> (BigUint, BigUint) {
+fn div_rem_core(a: Cow<'_, BigUint>, b: &BigUint) -> (BigUint, BigUint) {
+    if (a.data.len() > BURNIKEL_ZIEGLER_THRESHOLD * 2)
+        && (b.data.len() > BURNIKEL_ZIEGLER_THRESHOLD)
+    {
+        return div_rem_burnikel_ziegler(&a, b);
+    }
+
+    let mut a = a.into_owned();
+    let b = &*b.data;
     debug_assert!(a.data.len() >= b.len() && b.len() > 1);
     debug_assert!(b.last().unwrap().leading_zeros() == 0);
 
@@ -279,7 +377,7 @@ fn div_rem_core(mut a: BigUint, b: &[BigDigit]) -> (BigUint, BigUint) {
 
     let q_len = a.data.len() - b.len() + 1;
     let mut q = BigUint {
-        data: vec![0; q_len],
+        data: BigDigits::from_vec(vec![0; q_len]),
     };
 
     for j in (0..q_len).rev() {
@@ -334,12 +432,17 @@ fn div_rem_core(mut a: BigUint, b: &[BigDigit]) -> (BigUint, BigUint) {
         a0 = a.data.pop().unwrap();
     }
 
-    a.data.push(a0);
-    a.normalize();
+    if a0 != 0 {
+        a.data.push(a0);
+        a.data.shrink();
+    } else {
+        a.data.normalize();
+    }
 
     debug_assert_eq!(cmp_slice(&a.data, b), Less);
 
-    (q.normalized(), a)
+    q.data.normalize();
+    (q, a)
 }
 
 forward_val_ref_binop!(impl Div for BigUint, div);
@@ -399,9 +502,9 @@ impl Div<BigUint> for u32 {
 
     #[inline]
     fn div(self, other: BigUint) -> BigUint {
-        match other.data.len() {
-            0 => panic!("attempt to divide by zero"),
-            1 => From::from(self as BigDigit / other.data[0]),
+        match *other.data {
+            [] => panic!("attempt to divide by zero"),
+            [x] => BigUint::from(self as BigDigit / x),
             _ => BigUint::ZERO,
         }
     }
@@ -431,19 +534,19 @@ impl Div<BigUint> for u64 {
     cfg_digit!(
         #[inline]
         fn div(self, other: BigUint) -> BigUint {
-            match other.data.len() {
-                0 => panic!("attempt to divide by zero"),
-                1 => From::from(self / u64::from(other.data[0])),
-                2 => From::from(self / big_digit::to_doublebigdigit(other.data[1], other.data[0])),
+            match *other.data {
+                [] => panic!("attempt to divide by zero"),
+                [x] => BigUint::from(self / u64::from(x)),
+                [x, y] => BigUint::from(self / big_digit::to_doublebigdigit(y, x)),
                 _ => BigUint::ZERO,
             }
         }
 
         #[inline]
         fn div(self, other: BigUint) -> BigUint {
-            match other.data.len() {
-                0 => panic!("attempt to divide by zero"),
-                1 => From::from(self / other.data[0]),
+            match *other.data {
+                [] => panic!("attempt to divide by zero"),
+                [x] => BigUint::from(self / x),
                 _ => BigUint::ZERO,
             }
         }
@@ -474,26 +577,22 @@ impl Div<BigUint> for u128 {
         #[inline]
         fn div(self, other: BigUint) -> BigUint {
             use super::u32_to_u128;
-            match other.data.len() {
-                0 => panic!("attempt to divide by zero"),
-                1 => From::from(self / u128::from(other.data[0])),
-                2 => From::from(
-                    self / u128::from(big_digit::to_doublebigdigit(other.data[1], other.data[0])),
-                ),
-                3 => From::from(self / u32_to_u128(0, other.data[2], other.data[1], other.data[0])),
-                4 => From::from(
-                    self / u32_to_u128(other.data[3], other.data[2], other.data[1], other.data[0]),
-                ),
+            match *other.data {
+                [] => panic!("attempt to divide by zero"),
+                [x] => BigUint::from(self / u128::from(x)),
+                [x, y] => BigUint::from(self / u128::from(big_digit::to_doublebigdigit(y, x))),
+                [x, y, z] => BigUint::from(self / u32_to_u128(0, z, y, x)),
+                [w, x, y, z] => BigUint::from(self / u32_to_u128(z, y, x, w)),
                 _ => BigUint::ZERO,
             }
         }
 
         #[inline]
         fn div(self, other: BigUint) -> BigUint {
-            match other.data.len() {
-                0 => panic!("attempt to divide by zero"),
-                1 => From::from(self / other.data[0] as u128),
-                2 => From::from(self / big_digit::to_doublebigdigit(other.data[1], other.data[0])),
+            match *other.data {
+                [] => panic!("attempt to divide by zero"),
+                [x] => BigUint::from(self / u128::from(x)),
+                [x, y] => BigUint::from(self / big_digit::to_doublebigdigit(y, x)),
                 _ => BigUint::ZERO,
             }
         }

@@ -12,7 +12,7 @@ impl Pow<&BigUint> for BigUint {
     #[inline]
     fn pow(self, exp: &BigUint) -> BigUint {
         if self.is_one() || exp.is_zero() {
-            BigUint::one()
+            Self::ONE
         } else if self.is_zero() {
             Self::ZERO
         } else if let Some(exp) = exp.to_u64() {
@@ -42,7 +42,7 @@ impl Pow<&BigUint> for &BigUint {
     #[inline]
     fn pow(self, exp: &BigUint) -> BigUint {
         if self.is_one() || exp.is_zero() {
-            BigUint::one()
+            BigUint::ONE
         } else if self.is_zero() {
             BigUint::ZERO
         } else {
@@ -67,7 +67,7 @@ macro_rules! pow_impl {
 
             fn pow(self, mut exp: $T) -> BigUint {
                 if exp == 0 {
-                    return BigUint::one();
+                    return BigUint::ONE;
                 }
                 let mut base = self;
 
@@ -107,7 +107,7 @@ macro_rules! pow_impl {
             #[inline]
             fn pow(self, exp: $T) -> BigUint {
                 if exp == 0 {
-                    return BigUint::one();
+                    return BigUint::ONE;
                 }
                 Pow::pow(self.clone(), exp)
             }
@@ -153,7 +153,7 @@ fn plain_modpow(base: &BigUint, exp_data: &[BigDigit], modulus: &BigUint) -> Big
     );
 
     let i = match exp_data.iter().position(|&r| r != 0) {
-        None => return BigUint::one(),
+        None => return BigUint::ONE,
         Some(i) => i,
     };
 

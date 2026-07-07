@@ -113,6 +113,11 @@ fn divide_2(b: &mut Bencher) {
 }
 
 #[bench]
+fn divide_3(b: &mut Bencher) {
+    divide_bench(b, 1 << 20, 1 << 16);
+}
+
+#[bench]
 fn divide_big_little(b: &mut Bencher) {
     divide_bench(b, 1 << 16, 1 << 4);
 }
@@ -208,6 +213,16 @@ fn to_str_radix_10(b: &mut Bencher) {
 #[bench]
 fn to_str_radix_10_2(b: &mut Bencher) {
     to_str_radix_bench(b, 10, 10009);
+}
+
+#[bench]
+fn to_str_radix_10_3(b: &mut Bencher) {
+    to_str_radix_bench(b, 10, 100009);
+}
+
+#[bench]
+fn to_str_radix_10_4(b: &mut Bencher) {
+    to_str_radix_bench(b, 10, 1000009);
 }
 
 #[bench]

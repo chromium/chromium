@@ -1,4 +1,4 @@
-// `Add`/`Sub` ops may flip from `BigInt` to its `BigUint` magnitude
+// `Add`/`Sub` ops may flip from [`BigInt`] to its [`BigUint`] magnitude
 #![allow(clippy::suspicious_arithmetic_impl)]
 
 use alloc::string::String;
@@ -15,7 +15,7 @@ use num_traits::{ConstZero, Num, One, Pow, Signed, Zero};
 
 use self::Sign::{Minus, NoSign, Plus};
 
-use crate::big_digit::BigDigit;
+use crate::big_digit::{BigDigit, BigDigits};
 use crate::biguint::to_str_radix_reversed;
 use crate::biguint::{BigUint, IntDigits, U32Digits, U64Digits};
 
@@ -34,8 +34,11 @@ mod shift;
 /// A `Sign` is a [`BigInt`]'s composing element.
 #[derive(PartialEq, PartialOrd, Eq, Ord, Copy, Clone, Debug, Hash)]
 pub enum Sign {
+    /// The value of the [`BigInt`] is less than `0`.
     Minus,
+    /// The value of the [`BigInt`] is equal to `0`.
     NoSign,
+    /// The value of the [`BigInt`] is greater than `0`.
     Plus,
 }
 
@@ -196,8 +199,8 @@ impl Not for &BigInt {
 
     fn not(self) -> BigInt {
         match self.sign {
-            NoSign => -BigInt::one(),
-            Plus => -BigInt::from(&self.data + 1u32),
+            NoSign => BigInt::NEG_ONE,
+            Plus => BigInt::from_biguint(Minus, &self.data + 1u32),
             Minus => BigInt::from(&self.data - 1u32),
         }
     }
@@ -229,10 +232,7 @@ impl ConstZero for BigInt {
 impl One for BigInt {
     #[inline]
     fn one() -> BigInt {
-        BigInt {
-            sign: Plus,
-            data: BigUint::one(),
-        }
+        Self::ONE
     }
 
     #[inline]
@@ -245,6 +245,11 @@ impl One for BigInt {
     fn is_one(&self) -> bool {
         self.sign == Plus && self.data.is_one()
     }
+}
+
+impl num_traits::ConstOne for BigInt {
+    // forward to the inherent const
+    const ONE: Self = Self::ONE;
 }
 
 impl Signed for BigInt {
@@ -268,8 +273,8 @@ impl Signed for BigInt {
     #[inline]
     fn signum(&self) -> BigInt {
         match self.sign {
-            Plus => BigInt::one(),
-            Minus => -BigInt::one(),
+            Plus => Self::ONE,
+            Minus => Self::NEG_ONE,
             NoSign => Self::ZERO,
         }
     }
@@ -425,7 +430,7 @@ impl Integer for BigInt {
 
     /// Calculates the Greatest Common Divisor (GCD) of the number and `other`.
     ///
-    /// The result is always positive.
+    /// The result is always non-negative.
     #[inline]
     fn gcd(&self, other: &BigInt) -> BigInt {
         BigInt::from(self.data.gcd(&other.data))
@@ -534,7 +539,7 @@ impl IntDigits for BigInt {
         self.data.digits()
     }
     #[inline]
-    fn digits_mut(&mut self) -> &mut Vec<BigDigit> {
+    fn digits_mut(&mut self) -> &mut BigDigits {
         self.data.digits_mut()
     }
     #[inline]
@@ -563,10 +568,22 @@ pub trait ToBigInt {
 }
 
 impl BigInt {
-    /// A constant `BigInt` with value 0, useful for static initialization.
+    /// A constant [`BigInt`] with value 0, useful for static initialization.
     pub const ZERO: Self = BigInt {
         sign: NoSign,
         data: BigUint::ZERO,
+    };
+
+    /// A constant `BigInt` with value 1, useful for static initialization.
+    pub const ONE: Self = BigInt {
+        sign: Plus,
+        data: BigUint::ONE,
+    };
+
+    /// A constant `BigInt` with value -1, useful for static initialization.
+    pub const NEG_ONE: Self = BigInt {
+        sign: Minus,
+        data: BigUint::ONE,
     };
 
     /// Creates and initializes a [`BigInt`].
@@ -575,6 +592,22 @@ impl BigInt {
     #[inline]
     pub fn new(sign: Sign, digits: Vec<u32>) -> BigInt {
         BigInt::from_biguint(sign, BigUint::new(digits))
+    }
+
+    /// Creates a constant [`BigInt`] from a primitive [`i32`] value.
+    ///
+    /// Non-`const` callers should use [`From<i32>`] instead.
+    #[inline]
+    pub const fn new_const(n: i32) -> Self {
+        let (sign, u) = match n {
+            1.. => (Plus, n as u32),
+            0 => (NoSign, 0),
+            _ => (Minus, n.wrapping_neg() as u32),
+        };
+        BigInt {
+            sign,
+            data: BigUint::new_const(u),
+        }
     }
 
     /// Creates and initializes a [`BigInt`].
@@ -940,11 +973,10 @@ impl BigInt {
     ///
     /// ```
     /// use num_bigint::{BigInt, BigUint};
-    /// use num_traits::Zero;
     ///
     /// assert_eq!(BigInt::from(1234).magnitude(), &BigUint::from(1234u32));
     /// assert_eq!(BigInt::from(-4321).magnitude(), &BigUint::from(4321u32));
-    /// assert!(BigInt::ZERO.magnitude().is_zero());
+    /// assert_eq!(BigInt::ZERO.magnitude(), &BigUint::ZERO);
     /// ```
     #[inline]
     pub fn magnitude(&self) -> &BigUint {
@@ -975,7 +1007,17 @@ impl BigInt {
         self.data.bits()
     }
 
-    /// Converts this [`BigInt`] into a [`BigUint`], if it's not negative.
+    /// Converts this owned [`BigInt`] into a [`BigUint`], if it's not negative.
+    #[inline]
+    pub fn into_biguint(self) -> Option<BigUint> {
+        match self.sign {
+            Plus => Some(self.data),
+            NoSign => Some(BigUint::ZERO),
+            Minus => None,
+        }
+    }
+
+    /// Converts this borrowed [`BigInt`] into a [`BigUint`], if it's not negative.
     #[inline]
     pub fn to_biguint(&self) -> Option<BigUint> {
         match self.sign {

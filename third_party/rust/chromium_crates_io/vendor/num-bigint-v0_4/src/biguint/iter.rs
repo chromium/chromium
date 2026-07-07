@@ -1,13 +1,13 @@
 use core::iter::FusedIterator;
 
 cfg_digit!(
-    /// An iterator of `u32` digits representation of a `BigUint` or `BigInt`,
+    /// An iterator of `u32` digits representation of a [`BigUint`](super::BigUint) or [`BigInt`](super::super::BigInt),
     /// ordered least significant digit first.
     pub struct U32Digits<'a> {
         it: core::slice::Iter<'a, u32>,
     }
 
-    /// An iterator of `u32` digits representation of a `BigUint` or `BigInt`,
+    /// An iterator of `u32` digits representation of a [`BigUint`](super::BigUint) or [`BigInt`](super::super::BigInt),
     /// ordered least significant digit first.
     pub struct U32Digits<'a> {
         data: &'a [u64],
@@ -170,13 +170,13 @@ cfg_digit!(
 impl FusedIterator for U32Digits<'_> {}
 
 cfg_digit!(
-    /// An iterator of `u64` digits representation of a `BigUint` or `BigInt`,
+    /// An iterator of `u64` digits representation of a [`BigUint`](super::BigUint) or [`BigInt`](super::super::BigInt),
     /// ordered least significant digit first.
     pub struct U64Digits<'a> {
         it: core::slice::Chunks<'a, u32>,
     }
 
-    /// An iterator of `u64` digits representation of a `BigUint` or `BigInt`,
+    /// An iterator of `u64` digits representation of a [`BigUint`](super::BigUint) or [`BigInt`](super::super::BigInt),
     /// ordered least significant digit first.
     pub struct U64Digits<'a> {
         it: core::slice::Iter<'a, u64>,

@@ -466,7 +466,7 @@ macro_rules! impl_product_iter_type {
             where
                 I: Iterator<Item = T>,
             {
-                iter.fold(One::one(), <$res>::mul)
+                iter.fold(Self::ONE, <$res>::mul)
             }
         }
     };

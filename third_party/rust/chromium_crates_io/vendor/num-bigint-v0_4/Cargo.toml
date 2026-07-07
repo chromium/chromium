@@ -13,12 +13,18 @@
 edition = "2021"
 rust-version = "1.60"
 name = "num-bigint"
-version = "0.4.6"
+version = "0.4.8"
 authors = ["The Rust Project Developers"]
+build = false
 exclude = [
     "/ci/*",
     "/.github/*",
 ]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Big integer implementation for Rust"
 homepage = "https://github.com/rust-num/num-bigint"
 documentation = "https://docs.rs/num-bigint"
@@ -49,20 +55,72 @@ rustdoc-args = [
     "docsrs",
 ]
 
+[features]
+arbitrary = ["dep:arbitrary"]
+default = ["std"]
+quickcheck = ["dep:quickcheck"]
+rand = ["dep:rand"]
+serde = ["dep:serde"]
+std = [
+    "num-integer/std",
+    "num-traits/std",
+]
+
+[lib]
+name = "num_bigint"
+path = "src/lib.rs"
+
+[[test]]
+name = "bigint"
+path = "tests/bigint.rs"
+
+[[test]]
+name = "bigint_bitwise"
+path = "tests/bigint_bitwise.rs"
+
+[[test]]
+name = "bigint_scalar"
+path = "tests/bigint_scalar.rs"
+
+[[test]]
+name = "biguint"
+path = "tests/biguint.rs"
+
+[[test]]
+name = "biguint_scalar"
+path = "tests/biguint_scalar.rs"
+
+[[test]]
+name = "fuzzed"
+path = "tests/fuzzed.rs"
+
+[[test]]
+name = "modpow"
+path = "tests/modpow.rs"
+
+[[test]]
+name = "roots"
+path = "tests/roots.rs"
+
 [[bench]]
 name = "bigint"
+path = "benches/bigint.rs"
 
 [[bench]]
 name = "factorial"
+path = "benches/factorial.rs"
 
 [[bench]]
 name = "gcd"
+path = "benches/gcd.rs"
 
 [[bench]]
 name = "roots"
+path = "benches/roots.rs"
 
 [[bench]]
 name = "shootout-pidigits"
+path = "benches/shootout-pidigits.rs"
 harness = false
 
 [dependencies.arbitrary]
@@ -94,14 +152,3 @@ default-features = false
 version = "1.0"
 optional = true
 default-features = false
-
-[features]
-arbitrary = ["dep:arbitrary"]
-default = ["std"]
-quickcheck = ["dep:quickcheck"]
-rand = ["dep:rand"]
-serde = ["dep:serde"]
-std = [
-    "num-integer/std",
-    "num-traits/std",
-]

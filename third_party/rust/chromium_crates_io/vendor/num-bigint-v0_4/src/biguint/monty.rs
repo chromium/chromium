@@ -1,9 +1,8 @@
 use alloc::vec::Vec;
 use core::mem;
 use core::ops::Shl;
-use num_traits::One;
 
-use crate::big_digit::{self, BigDigit, DoubleBigDigit};
+use crate::big_digit::{self, BigDigit, BigDigits, DoubleBigDigit};
 use crate::biguint::BigUint;
 
 struct MontyReducer {
@@ -57,17 +56,19 @@ fn montgomery(x: &BigUint, y: &BigUint, m: &BigUint, k: BigDigit, n: usize) -> B
         n
     );
 
-    let mut z = BigUint::ZERO;
-    z.data.resize(n * 2, 0);
+    let (x, y, m) = (&*x.data, &*y.data, &*m.data);
+
+    let mut z = vec![0; n * 2];
 
     let mut c: BigDigit = 0;
     for i in 0..n {
-        let c2 = add_mul_vvw(&mut z.data[i..n + i], &x.data, y.data[i]);
-        let t = z.data[i].wrapping_mul(k);
-        let c3 = add_mul_vvw(&mut z.data[i..n + i], &m.data, t);
+        let z = &mut z[i..];
+        let c2 = add_mul_vvw(&mut z[..n], x, y[i]);
+        let t = z[0].wrapping_mul(k);
+        let c3 = add_mul_vvw(&mut z[..n], m, t);
         let cx = c.wrapping_add(c2);
         let cy = cx.wrapping_add(c3);
-        z.data[n + i] = cy;
+        z[n] = cy;
         if cx < c2 || cy < c3 {
             c = 1;
         } else {
@@ -75,17 +76,14 @@ fn montgomery(x: &BigUint, y: &BigUint, m: &BigUint, k: BigDigit, n: usize) -> B
         }
     }
 
-    if c == 0 {
-        z.data = z.data[n..].to_vec();
+    let data = if c == 0 {
+        BigDigits::from_slice(&z[n..])
     } else {
-        {
-            let (first, second) = z.data.split_at_mut(n);
-            sub_vv(first, second, &m.data);
-        }
-        z.data = z.data[..n].to_vec();
-    }
-
-    z
+        let (first, second) = z.split_at_mut(n);
+        sub_vv(first, second, m);
+        BigDigits::from_slice(first)
+    };
+    BigUint { data }
 }
 
 #[inline(always)]
@@ -152,13 +150,13 @@ pub(super) fn monty_modpow(x: &BigUint, y: &BigUint, m: &BigUint) -> BigUint {
     }
 
     // rr = 2**(2*_W*len(m)) mod m
-    let mut rr = BigUint::one();
+    let mut rr = BigUint::ONE;
     rr = (rr.shl(2 * num_words as u64 * u64::from(big_digit::BITS))) % m;
     if rr.data.len() < num_words {
         rr.data.resize(num_words, 0);
     }
     // one = 1, with equal length to that of m
-    let mut one = BigUint::one();
+    let mut one = BigUint::ONE;
     one.data.resize(num_words, 0);
 
     let n = 4;
@@ -178,11 +176,12 @@ pub(super) fn monty_modpow(x: &BigUint, y: &BigUint, m: &BigUint) -> BigUint {
     zz.data.resize(num_words, 0);
 
     // same windowed exponent, but with Montgomery multiplications
-    for i in (0..y.data.len()).rev() {
-        let mut yi = y.data[i];
+    let y = &*y.data;
+    for i in (0..y.len()).rev() {
+        let mut yi = y[i];
         let mut j = 0;
         while j < big_digit::BITS {
-            if i != y.data.len() - 1 || j != 0 {
+            if i != y.len() - 1 || j != 0 {
                 zz = montgomery(&z, &z, m, mr.n0inv, num_words);
                 z = montgomery(&zz, &zz, m, mr.n0inv, num_words);
                 zz = montgomery(&z, &z, m, mr.n0inv, num_words);
@@ -204,7 +203,7 @@ pub(super) fn monty_modpow(x: &BigUint, y: &BigUint, m: &BigUint) -> BigUint {
     // convert to regular number
     zz = montgomery(&z, &one, m, mr.n0inv, num_words);
 
-    zz.normalize();
+    zz.data.normalize();
     // One last reduction, just in case.
     // See golang.org/issue/13907.
     if zz >= *m {
@@ -221,6 +220,6 @@ pub(super) fn monty_modpow(x: &BigUint, y: &BigUint, m: &BigUint) -> BigUint {
         }
     }
 
-    zz.normalize();
+    zz.data.normalize();
     zz
 }

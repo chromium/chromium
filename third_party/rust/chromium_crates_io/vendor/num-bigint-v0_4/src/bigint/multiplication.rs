@@ -6,7 +6,7 @@ use crate::{IsizePromotion, UsizePromotion};
 
 use core::iter::Product;
 use core::ops::{Mul, MulAssign};
-use num_traits::{CheckedMul, One, Zero};
+use num_traits::{CheckedMul, Zero};
 
 impl Mul<Sign> for Sign {
     type Output = Sign;

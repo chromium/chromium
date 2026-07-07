@@ -17,7 +17,7 @@ impl quickcheck::Arbitrary for BigUint {
 
     fn shrink(&self) -> Box<dyn Iterator<Item = Self>> {
         // Use shrinker from Vec
-        Box::new(self.data.shrink().map(biguint_from_vec))
+        Box::new(self.data.to_vec().shrink().map(biguint_from_vec))
     }
 }
 

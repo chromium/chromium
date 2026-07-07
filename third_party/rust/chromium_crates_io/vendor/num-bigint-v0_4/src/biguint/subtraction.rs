@@ -17,8 +17,9 @@ use core::arch::x86 as arch;
 #[cfg(target_arch = "x86_64")]
 cfg_64!(
     #[inline]
+    #[allow(unused_unsafe)] // TODO(MSRV 1.93): the intrinsic became safe
     fn sbb(borrow: u8, a: u64, b: u64, out: &mut u64) -> u8 {
-        // Safety: There are absolutely no safety concerns with calling `_subborrow_u64`.
+        // SAFETY: There are absolutely no safety concerns with calling `_subborrow_u64`.
         // It's just unsafe for API consistency with other intrinsics.
         unsafe { arch::_subborrow_u64(borrow, a, b, out) }
     }
@@ -27,8 +28,9 @@ cfg_64!(
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 cfg_32!(
     #[inline]
+    #[allow(unused_unsafe)] // TODO(MSRV 1.93): the intrinsic became safe
     fn sbb(borrow: u8, a: u32, b: u32, out: &mut u32) -> u8 {
-        // Safety: There are absolutely no safety concerns with calling `_subborrow_u32`.
+        // SAFETY: There are absolutely no safety concerns with calling `_subborrow_u32`.
         // It's just unsafe for API consistency with other intrinsics.
         unsafe { arch::_subborrow_u32(borrow, a, b, out) }
     }
@@ -118,8 +120,8 @@ impl Sub<&BigUint> for BigUint {
 }
 impl SubAssign<&BigUint> for BigUint {
     fn sub_assign(&mut self, other: &BigUint) {
-        sub2(&mut self.data[..], &other.data[..]);
-        self.normalize();
+        sub2(&mut self.data, &other.data);
+        self.data.normalize();
     }
 }
 
@@ -129,15 +131,17 @@ impl Sub<BigUint> for &BigUint {
     fn sub(self, mut other: BigUint) -> BigUint {
         let other_len = other.data.len();
         if other_len < self.data.len() {
-            let lo_borrow = __sub2rev(&self.data[..other_len], &mut other.data);
-            other.data.extend_from_slice(&self.data[other_len..]);
+            let (lo, hi) = self.data.split_at(other_len);
+            let lo_borrow = __sub2rev(lo, &mut other.data);
+            other.data.extend_from_slice(hi);
             if lo_borrow != 0 {
                 sub2(&mut other.data[other_len..], &[1])
             }
         } else {
-            sub2rev(&self.data[..], &mut other.data[..]);
+            sub2rev(&self.data, &mut other.data);
         }
-        other.normalized()
+        other.data.normalize();
+        other
     }
 }
 
@@ -159,8 +163,8 @@ impl Sub<u32> for BigUint {
 
 impl SubAssign<u32> for BigUint {
     fn sub_assign(&mut self, other: u32) {
-        sub2(&mut self.data[..], &[other as BigDigit]);
-        self.normalize();
+        sub2(&mut self.data, &[other as BigDigit]);
+        self.data.normalize();
     }
 }
 
@@ -170,12 +174,13 @@ impl Sub<BigUint> for u32 {
     cfg_digit!(
         #[inline]
         fn sub(self, mut other: BigUint) -> BigUint {
-            if other.data.len() == 0 {
+            if other.data.is_empty() {
                 other.data.push(self);
             } else {
-                sub2rev(&[self], &mut other.data[..]);
+                sub2rev(&[self], &mut other.data);
             }
-            other.normalized()
+            other.data.normalize();
+            other
         }
 
         #[inline]
@@ -183,9 +188,10 @@ impl Sub<BigUint> for u32 {
             if other.data.is_empty() {
                 other.data.push(self as BigDigit);
             } else {
-                sub2rev(&[self as BigDigit], &mut other.data[..]);
+                sub2rev(&[self as BigDigit], &mut other.data);
             }
-            other.normalized()
+            other.data.normalize();
+            other
         }
     );
 }
@@ -205,14 +211,14 @@ impl SubAssign<u64> for BigUint {
         #[inline]
         fn sub_assign(&mut self, other: u64) {
             let (hi, lo) = big_digit::from_doublebigdigit(other);
-            sub2(&mut self.data[..], &[lo, hi]);
-            self.normalize();
+            sub2(&mut self.data, &[lo, hi]);
+            self.data.normalize();
         }
 
         #[inline]
         fn sub_assign(&mut self, other: u64) {
-            sub2(&mut self.data[..], &[other as BigDigit]);
-            self.normalize();
+            sub2(&mut self.data, &[other as BigDigit]);
+            self.data.normalize();
         }
     );
 }
@@ -228,8 +234,9 @@ impl Sub<BigUint> for u64 {
             }
 
             let (hi, lo) = big_digit::from_doublebigdigit(self);
-            sub2rev(&[lo, hi], &mut other.data[..]);
-            other.normalized()
+            sub2rev(&[lo, hi], &mut other.data);
+            other.data.normalize();
+            other
         }
 
         #[inline]
@@ -237,9 +244,10 @@ impl Sub<BigUint> for u64 {
             if other.data.is_empty() {
                 other.data.push(self);
             } else {
-                sub2rev(&[self], &mut other.data[..]);
+                sub2rev(&[self], &mut other.data);
             }
-            other.normalized()
+            other.data.normalize();
+            other
         }
     );
 }
@@ -259,15 +267,15 @@ impl SubAssign<u128> for BigUint {
         #[inline]
         fn sub_assign(&mut self, other: u128) {
             let (a, b, c, d) = super::u32_from_u128(other);
-            sub2(&mut self.data[..], &[d, c, b, a]);
-            self.normalize();
+            sub2(&mut self.data, &[d, c, b, a]);
+            self.data.normalize();
         }
 
         #[inline]
         fn sub_assign(&mut self, other: u128) {
             let (hi, lo) = big_digit::from_doublebigdigit(other);
-            sub2(&mut self.data[..], &[lo, hi]);
-            self.normalize();
+            sub2(&mut self.data, &[lo, hi]);
+            self.data.normalize();
         }
     );
 }
@@ -283,8 +291,9 @@ impl Sub<BigUint> for u128 {
             }
 
             let (a, b, c, d) = super::u32_from_u128(self);
-            sub2rev(&[d, c, b, a], &mut other.data[..]);
-            other.normalized()
+            sub2rev(&[d, c, b, a], &mut other.data);
+            other.data.normalize();
+            other
         }
 
         #[inline]
@@ -294,8 +303,9 @@ impl Sub<BigUint> for u128 {
             }
 
             let (hi, lo) = big_digit::from_doublebigdigit(self);
-            sub2rev(&[lo, hi], &mut other.data[..]);
-            other.normalized()
+            sub2rev(&[lo, hi], &mut other.data);
+            other.data.normalize();
+            other
         }
     );
 }

@@ -183,3 +183,44 @@ fn fuzzed_mul_2() {
     assert_eq!(c * a * b, result);
     assert_eq!(c * b * a, result);
 }
+
+#[test]
+fn fuzzed_sqrt_1() {
+    // This input failed an assertion in the Burnikel-Ziegler division algorithm, but only on
+    // 32-bit. See also `test_div_rem_burnikel_ziegler_a1_equals_b1` for a more targeted test
+    // which failed on both 32-bit and 64-bit targets.
+    let hex = "\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+        ffffffffffffffffffffffffffffffff974810cf4c437ba04120a1154166bbef02433931c39106e4\
+        6f2837ef218ee18e59ae8d861c29c5b276b221dfc125c5cff35dcadc6caef8f005fc56a94c280c66\
+        8118da37878e14248f36ae7350949811f342eba025d9ae5164b650727dd1c772504faadc3620bdb7\
+        cfee873de995aae72d18e100a8577eac452fc94350cfdafbe88f23c1aba8d830e517c0b4a76ff158\
+        ece8d7f2ebba856777075fe6a9bd6b1026933a35f287614f2903433e6159b4bba785b6b9b43c78d6\
+        1a93549d0be51d466602ea3d63251ee5b99efcc8e2acf47f9ef0cee82caf2d001295a3d27fec6eba\
+        3995492f907ab2241b1127740ab045796990bf62b6c8b1099dcf291df3184c5b9b4262a4752ece67\
+        d8e470674b27731012d9599c129bfa8dcd77990c747915f919cbb81319ede35b942d1cad3d90e33f\
+        9d4d4bb9a856d74e2bc7dd08a199c12c0f7f7b1832725ec180d23347ea657c027af747e2d103e585\
+        1f8c9fdfe738138d30fa810c59b53d1f8d7fb409e97a46c58049de0ebe7d5ae92fe1fb2e8d762d03\
+        3027158643541a06891dde1258624d714389f68b532406c10692d83b97262078ff66cb4907bd7273\
+        6a614764f22801d93cef8ba49fc2482cea302ac9dc0822fe341350dce3feaecd80651415971d4a1d\
+        cf8c0b3cdb189928321496a0ace3ab8d566b9afb26a812fa1fea858929006cdbd988d7b3ee0fb951\
+        87c8e4e120f63a4fab417604b9b4e86a2158cbc52c4a6f76c6bfee18b4969cba2c5e8408ecc80cb3\
+        b371469d375c372c0000000000000000000000000000000000000000000000000000000000000000\
+        00000000000000000000000000000000000000000000000000000000000000000000000000000000\
+        000000000000000000000000000000";
+
+    let x = BigUint::from_str_radix(hex, 16).unwrap();
+    let r = x.sqrt();
+    assert!(r.pow(2) <= x && (r + 1u32).pow(2) > x);
+}

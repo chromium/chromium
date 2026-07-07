@@ -26,7 +26,7 @@
 //! // Calculate large fibonacci numbers.
 //! fn fib(n: usize) -> BigUint {
 //!     let mut f0 = BigUint::ZERO;
-//!     let mut f1 = BigUint::one();
+//!     let mut f1 = BigUint::ONE;
 //!     for _ in 0..n {
 //!         let f2 = f0 + &f1;
 //!         f0 = f1;
@@ -63,7 +63,7 @@
 //! The `std` crate feature is enabled by default, which enables [`std::error::Error`]
 //! implementations and some internal use of floating point approximations. This can be disabled by
 //! depending on `num-bigint` with `default-features = false`. Either way, the `alloc` crate is
-//! always required for heap allocation of the `BigInt`/`BigUint` digits.
+//! always required for heap allocation of the [`BigInt`]/[`BigUint`] digits.
 //!
 //! ### Random Generation
 //!
@@ -81,13 +81,13 @@
 //! ### Arbitrary Big Integers
 //!
 //! `num-bigint` supports `arbitrary` and `quickcheck` features to implement
-//! [`arbitrary::Arbitrary`] and [`quickcheck::Arbitrary`], respectively, for both `BigInt` and
-//! `BigUint`. These are useful for fuzzing and other forms of randomized testing.
+//! [`arbitrary::Arbitrary`] and [`quickcheck::Arbitrary`], respectively, for both [`BigInt`] and
+//! [`BigUint`]. These are useful for fuzzing and other forms of randomized testing.
 //!
 //! ### Serialization
 //!
 //! The `serde` feature adds implementations of [`Serialize`][serde::Serialize] and
-//! [`Deserialize`][serde::Deserialize] for both `BigInt` and `BigUint`. Their serialized data is
+//! [`Deserialize`][serde::Deserialize] for both [`BigInt`] and [`BigUint`]. Their serialized data is
 //! generated portably, regardless of platform differences like the internal digit size.
 //!
 //!
@@ -224,45 +224,4 @@ pub use crate::bigint::ToBigInt;
 #[cfg_attr(docsrs, doc(cfg(feature = "rand")))]
 pub use crate::bigrand::{RandBigInt, RandomBits, UniformBigInt, UniformBigUint};
 
-mod big_digit {
-    // A [`BigDigit`] is a [`BigUint`]'s composing element.
-    cfg_digit!(
-        pub(crate) type BigDigit = u32;
-        pub(crate) type BigDigit = u64;
-    );
-
-    // A [`DoubleBigDigit`] is the internal type used to do the computations.  Its
-    // size is the double of the size of [`BigDigit`].
-    cfg_digit!(
-        pub(crate) type DoubleBigDigit = u64;
-        pub(crate) type DoubleBigDigit = u128;
-    );
-
-    pub(crate) const BITS: u8 = BigDigit::BITS as u8;
-    pub(crate) const HALF_BITS: u8 = BITS / 2;
-    pub(crate) const HALF: BigDigit = (1 << HALF_BITS) - 1;
-
-    pub(crate) const MAX: BigDigit = BigDigit::MAX;
-    const LO_MASK: DoubleBigDigit = MAX as DoubleBigDigit;
-
-    #[inline]
-    fn get_hi(n: DoubleBigDigit) -> BigDigit {
-        (n >> BITS) as BigDigit
-    }
-    #[inline]
-    fn get_lo(n: DoubleBigDigit) -> BigDigit {
-        (n & LO_MASK) as BigDigit
-    }
-
-    /// Split one [`DoubleBigDigit`] into two [`BigDigit`]s.
-    #[inline]
-    pub(crate) fn from_doublebigdigit(n: DoubleBigDigit) -> (BigDigit, BigDigit) {
-        (get_hi(n), get_lo(n))
-    }
-
-    /// Join two [`BigDigit`]s into one [`DoubleBigDigit`].
-    #[inline]
-    pub(crate) fn to_doublebigdigit(hi: BigDigit, lo: BigDigit) -> DoubleBigDigit {
-        DoubleBigDigit::from(lo) | (DoubleBigDigit::from(hi) << BITS)
-    }
-}
+mod big_digit;

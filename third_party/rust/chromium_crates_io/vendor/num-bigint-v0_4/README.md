@@ -50,14 +50,14 @@ While `num-bigint` strives for good performance in pure Rust code, other
 crates may offer better performance with different trade-offs.  The following
 table offers a brief comparison to a few alternatives.
 
-| Crate             | License        | Min rustc | Implementation | Features |
-| :---------------  | :------------- | :-------- | :------------- | :------- |
-| **`num-bigint`**  | MIT/Apache-2.0 | 1.60      | pure rust | dynamic width, number theoretical functions |
-| [`awint`]         | MIT/Apache-2.0 | 1.66      | pure rust | fixed width, heap or stack, concatenation macros |
-| [`bnum`]          | MIT/Apache-2.0 | 1.65      | pure rust | fixed width, parity with Rust primitives including floats |
-| [`crypto-bigint`] | MIT/Apache-2.0 | 1.73      | pure rust | fixed width, stack only |
-| [`ibig`]          | MIT/Apache-2.0 | 1.49      | pure rust | dynamic width, number theoretical functions |
-| [`rug`]           | LGPL-3.0+      | 1.65      | bundles [GMP] via [`gmp-mpfr-sys`] | all the features of GMP, MPFR, and MPC |
+| Crate             | License           | Min rustc | Implementation | Features |
+| :---------------  | :---------------- | :-------- | :------------- | :------- |
+| **`num-bigint`**  | MIT OR Apache-2.0 | 1.60      | pure rust | dynamic width, number theoretical functions |
+| [`awint`]         | MIT OR Apache-2.0 | 1.70      | pure rust | fixed width, heap or stack, concatenation macros |
+| [`bnum`]          | MIT OR Apache-2.0 | 1.87      | pure rust | fixed width, parity with Rust primitives including floats |
+| [`crypto-bigint`] | MIT OR Apache-2.0 | 1.85      | pure rust | fixed width, stack only |
+| [`ibig`]          | MIT OR Apache-2.0 | 1.49      | pure rust | dynamic width, number theoretical functions |
+| [`rug`]           | LGPL-3.0+         | 1.85      | bundles [GMP] via [`gmp-mpfr-sys`] | all the features of GMP, MPFR, and MPC |
 
 [`awint`]: https://crates.io/crates/awint
 [`bnum`]: https://crates.io/crates/bnum

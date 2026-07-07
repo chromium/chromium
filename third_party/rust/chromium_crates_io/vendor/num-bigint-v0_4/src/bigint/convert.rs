@@ -8,7 +8,7 @@ use alloc::vec::Vec;
 use core::cmp::Ordering::{Equal, Greater, Less};
 use core::convert::TryFrom;
 use core::str::{self, FromStr};
-use num_traits::{FromPrimitive, Num, One, ToPrimitive, Zero};
+use num_traits::{FromPrimitive, Num, ToPrimitive, Zero};
 
 impl FromStr for BigInt {
     type Err = ParseBigIntError;
@@ -363,7 +363,7 @@ impl_to_bigint!(f64, FromPrimitive::from_f64);
 impl From<bool> for BigInt {
     fn from(x: bool) -> Self {
         if x {
-            One::one()
+            Self::ONE
         } else {
             Self::ZERO
         }

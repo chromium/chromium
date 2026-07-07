@@ -1,6 +1,6 @@
-use super::{biguint_from_vec, BigUint};
+use super::BigUint;
 
-use crate::big_digit;
+use crate::big_digit::{self, BigDigits};
 
 use alloc::borrow::Cow;
 use alloc::vec::Vec;
@@ -9,7 +9,7 @@ use core::ops::{Shl, ShlAssign, Shr, ShrAssign};
 use num_traits::{PrimInt, Zero};
 
 #[inline]
-fn biguint_shl<T: PrimInt>(n: Cow<'_, BigUint>, shift: T) -> BigUint {
+pub(super) fn biguint_shl<T: PrimInt>(n: Cow<'_, BigUint>, shift: T) -> BigUint {
     if shift < T::zero() {
         panic!("attempt to shift left with negative");
     }
@@ -30,7 +30,7 @@ fn biguint_shl2(n: Cow<'_, BigUint>, digits: usize, shift: u8) -> BigUint {
             let mut data = Vec::with_capacity(len);
             data.resize(digits, 0);
             data.extend(n.data.iter());
-            data
+            BigDigits::from_vec(data)
         }
     };
 
@@ -47,7 +47,7 @@ fn biguint_shl2(n: Cow<'_, BigUint>, digits: usize, shift: u8) -> BigUint {
         }
     }
 
-    biguint_from_vec(data)
+    BigUint { data }
 }
 
 #[inline]
@@ -66,14 +66,19 @@ fn biguint_shr<T: PrimInt>(n: Cow<'_, BigUint>, shift: T) -> BigUint {
 
 fn biguint_shr2(n: Cow<'_, BigUint>, digits: usize, shift: u8) -> BigUint {
     if digits >= n.data.len() {
-        let mut n = n.into_owned();
-        n.set_zero();
-        return n;
+        return match n {
+            Cow::Borrowed(_) => BigUint::ZERO,
+            Cow::Owned(mut n) => {
+                n.set_zero();
+                n
+            }
+        };
     }
     let mut data = match n {
-        Cow::Borrowed(n) => n.data[digits..].to_vec(),
+        Cow::Borrowed(n) => BigDigits::from_slice(&n.data[digits..]),
         Cow::Owned(mut n) => {
-            n.data.drain(..digits);
+            n.data.drain_front(digits);
+            n.data.shrink();
             n.data
         }
     };
@@ -86,9 +91,14 @@ fn biguint_shr2(n: Cow<'_, BigUint>, digits: usize, shift: u8) -> BigUint {
             *elem = (*elem >> shift) | borrow;
             borrow = new_borrow;
         }
+        // Assuming we were normal before, only one
+        // most-significant digit might be off now.
+        if !data.is_normal() {
+            data.pop();
+        }
     }
 
-    biguint_from_vec(data)
+    BigUint { data }
 }
 
 macro_rules! impl_shift {
