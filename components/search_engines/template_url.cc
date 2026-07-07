@@ -1442,7 +1442,7 @@ std::string TemplateURLRef::HandleReplacements(
           case RequestSource::NTP_MODULE:
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
-          case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::COMPOSEBOX:
           case RequestSource::NTP_ACTION_CHIPS:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
@@ -1527,7 +1527,7 @@ std::string TemplateURLRef::HandleReplacements(
             break;
           case RequestSource::NTP_MODULE:
           case RequestSource::LENS_OVERLAY:
-          case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::COMPOSEBOX:
           case RequestSource::NTP_ACTION_CHIPS:
             // No replacement. `gs_ri` is longer recommended for new clients.
             // New identifiers should be based on their client names.
@@ -1850,14 +1850,14 @@ std::string TemplateURL::GetSuggestionClient(
 #else
       return "chrome-omni";
 #endif
-    case SearchTermsData::RequestSource::NTP_COMPOSEBOX: {
+    case SearchTermsData::RequestSource::COMPOSEBOX: {
       // Co-browsing composebox uses a different client since its zps
       // behave differently.
       if (search_terms_args.page_classification ==
           metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX) {
         return "chrome-cobrowse-compose";
       }
-      // SearchTermsData::RequestSource::NTP_COMPOSEBOX will use
+      // SearchTermsData::RequestSource::COMPOSEBOX will use
       // "chrome-omni" for delayed context uploads.
       // TODO(crbug.com/460858102): Figure out how to support delayed uploads
       // using "chrome-compose."
