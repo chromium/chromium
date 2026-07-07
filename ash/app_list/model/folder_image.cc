@@ -60,7 +60,7 @@ class FolderImageSource : public gfx::CanvasImageSource {
   // gfx::CanvasImageSource overrides:
   void Draw(gfx::Canvas* canvas) override;
 
-  const raw_ref<const AppListConfig, DanglingUntriaged> app_list_config_;
+  const raw_ptr<const AppListConfig> app_list_config_;
   Icons icons_;
   gfx::Size size_;
 };
@@ -69,7 +69,7 @@ FolderImageSource::FolderImageSource(const AppListConfig& app_list_config,
                                      const Icons& icons,
                                      const gfx::Size& size)
     : gfx::CanvasImageSource(size),
-      app_list_config_(app_list_config),
+      app_list_config_(&app_list_config),
       icons_(icons),
       size_(size) {
   DCHECK(icons.size() <= FolderImage::kNumFolderTopItems);
@@ -137,7 +137,6 @@ const size_t FolderImage::kNumFolderTopItems = 4;
 FolderImage::FolderImage(const AppListConfig* app_list_config,
                          AppListItemList* item_list)
     : app_list_config_(app_list_config), item_list_(item_list) {
-  DCHECK(app_list_config_);
   item_list_->AddObserver(this);
 }
 

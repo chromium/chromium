@@ -87,6 +87,7 @@ class FolderImageTest : public testing::Test,
 
   void TearDown() override {
     folder_image_->RemoveObserver(&observer_);
+    folder_image_.reset();
     AppListConfigProvider::Get().ResetForTesting();
   }
 

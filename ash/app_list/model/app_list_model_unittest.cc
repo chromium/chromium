@@ -77,7 +77,11 @@ class AppListModelTest : public testing::Test {
     model_ = std::make_unique<test::AppListTestModel>();
     model_->AddObserver(&observer_);
   }
-  void TearDown() override { model_->RemoveObserver(&observer_); }
+  void TearDown() override {
+    model_->RemoveObserver(&observer_);
+    model_.reset();
+    AppListConfigProvider::Get().ResetForTesting();
+  }
 
  protected:
   static bool ItemObservedByFolder(const AppListFolderItem* folder,
@@ -271,9 +275,6 @@ TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
 
 // Tests Icon generation configuration for folders on different grid types.
 TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
-  // Ensure any configs set by previous tests are cleared.
-  AppListConfigProvider::Get().ResetForTesting();
-
   // Start with kRegular config available.
   const AppListConfig* regular_config =
       AppListConfigProvider::Get().GetConfigForType(AppListConfigType::kRegular,
@@ -320,8 +321,6 @@ TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
   EXPECT_FALSE(ItemObservedByFolder(
       folder, folder->item_list()->item_at(num_observed_apps),
       AppListConfigType::kDense));
-
-  AppListConfigProvider::Get().ResetForTesting();
 }
 
 TEST_F(AppListModelFolderTest, MergeItems) {

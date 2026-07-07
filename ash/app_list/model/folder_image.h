@@ -102,7 +102,7 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   void RedrawIconAndNotify();
 
   // The app list config for which this folder image is created.
-  raw_ptr<const AppListConfig, DanglingUntriaged> app_list_config_;
+  const raw_ptr<const AppListConfig> app_list_config_;
 
   // The unclipped icon image. This will be clipped in AppListItemView before
   // being shown in apps grid.
