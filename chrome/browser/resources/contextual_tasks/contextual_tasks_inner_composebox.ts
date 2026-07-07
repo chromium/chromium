@@ -17,6 +17,7 @@ import type {ComposeboxFileInputsElement} from '//resources/cr_components/compos
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
+import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
@@ -197,7 +198,7 @@ export class
   override connectedCallback() {
     super.connectedCallback();
     this.focusInput();
-    // firstUpdated() runs only once, so restore the observers on reconnnect (
+    // firstUpdated() runs only once, so restore the observers on reconnect (
     // the shadow DOM persists); the initial setup happens in firstUpdated().
     if (this.hasUpdated) {
       this.syncResizeObservers_();
@@ -318,6 +319,16 @@ export class
       return;
     }
     super.updateInputPlaceholder();
+  }
+
+  override hasValidQuery(): boolean {
+    // TODO(crbug.com/485648942): Update to drive Deep Search behavior from the
+    // PEC API's ToolSubstateConfig.
+    // Allow an empty query for Deep Search follow-ups; super handles files,
+    // selected matches, and non-empty text.
+    return super.hasValidQuery() ||
+        (this.inputState?.activeTool === ToolMode.kDeepSearch &&
+         this.isFollowupQuery);
   }
 
   getAutomaticActiveTabChipElement(): HTMLElement|null {

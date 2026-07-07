@@ -70,6 +70,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .showVoiceSearch="${true}"
           .usePecApi="${this.usePecApi_}"
           .smartTabSharingVisible="${this.smartTabSharingVisible_}"
+          .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
           .energyEffectEnabled="${this.energyEffectAnimationEnabled_}"
           .glifAnimationState="${this.glifAnimationState_}"
