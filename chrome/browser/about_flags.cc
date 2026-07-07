@@ -5875,6 +5875,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
 
+    {"tab-sharing-toolbar-android",
+     flag_descriptions::kTabSharingToolbarAndroidName,
+     flag_descriptions::kTabSharingToolbarAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabSharingToolbarAndroid)},
+
     // Home module pref refactor
     {"home-module-pref-refactor",
      flag_descriptions::kHomeModulePrefRefactorName,

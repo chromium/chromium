@@ -6245,6 +6245,12 @@ inline constexpr char kTabSearchForALName[] = "Tab Search for AL";
 inline constexpr char kTabSearchForALDescription[] =
     "Enable the Tab Search for AL feature.";
 
+inline constexpr char kTabSharingToolbarAndroidName[] =
+    "Tab sharing toolbar on Android";
+inline constexpr char kTabSharingToolbarAndroidDescription[] =
+    "Enables the tab sharing toolbar for quick shared tab switching and "
+    "stopping on Android.";
+
 inline constexpr char kTabStripHeightTransitionGlitchFixName[] =
     "Tab strip height transition glitch fix";
 inline constexpr char kTabStripHeightTransitionGlitchFixDescription[] =

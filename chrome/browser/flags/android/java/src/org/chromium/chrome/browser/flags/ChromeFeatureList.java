@@ -681,6 +681,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_BOTTOM_SHEET_RESIZE_WEBVIEW = "TabBottomSheetResizeWebview";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_SEARCH_FOR_AL = "TabSearchForAL";
+    public static final String TAB_SHARING_TOOLBAR_ANDROID = "TabSharingToolbarAndroid";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE =
             "TabStripAutoSelectOnCloseChange";
@@ -1177,6 +1178,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
+    public static final CachedFlag sTabSharingToolbarAndroid =
+            newCachedFlag(
+                    TAB_SHARING_TOOLBAR_ANDROID,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStorageSqlitePrototype =
             newCachedFlag(
                     TAB_STORAGE_SQLITE_PROTOTYPE,
@@ -1407,6 +1413,7 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
+                    sTabSharingToolbarAndroid,
                     sTabStorageSqlitePrototype,
                     sTabStripHeightTransitionGlitchFix,
                     sTabStripLayoutTransitionDebounceFix,

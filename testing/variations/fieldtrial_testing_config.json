@@ -23861,6 +23861,21 @@
             ]
         }
     ],
+    "TabSharingToolbarAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSharingToolbarAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabStorageSqlitePrototype": [
         {
             "platforms": [

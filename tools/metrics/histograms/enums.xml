@@ -15940,6 +15940,7 @@ from previous Chrome versions.
   <int value="438398886"
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>
   <int value="438447086" label="AutocorrectToggle:disabled"/>
+  <int value="438595159" label="TabSharingToolbarAndroid:enabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439442906" label="PrefetchActivationBeacon:disabled"/>
   <int value="439533068" label="CCTToolbarRefactor:enabled"/>
@@ -19645,6 +19646,7 @@ from previous Chrome versions.
   <int value="1634980726" label="VrShellExperimentalRendering:disabled"/>
   <int value="1635695770" label="CSSContainerQueries:disabled"/>
   <int value="1635755615" label="ScanAppMultiPageScan:disabled"/>
+  <int value="1635809519" label="TabSharingToolbarAndroid:disabled"/>
   <int value="1635986352" label="ContextMenuSearchWithGoogleLens:enabled"/>
   <int value="1636029982" label="enable-benchmarking"/>
   <int value="1636641236" label="DefaultBrowserPromoEntryPoint:enabled"/>
