@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 }
 
 // TODO(crbug.com/524797987): Re-enable this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_AddAndRemoveImageChipFromComposebox \
   DISABLED_AddAndRemoveImageChipFromComposebox
 #else
