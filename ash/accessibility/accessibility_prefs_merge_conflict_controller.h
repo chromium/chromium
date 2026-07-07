@@ -15,9 +15,6 @@ namespace ash {
 //
 // If created, its ownership is transferred to the corresponding conflict
 // resolution dialog.
-//
-// TODO(crbug.com/487229145): This class needs to listen and react to preference
-// updates for the time the dialog is shown to the user.
 class ASH_EXPORT AccessibilityPrefsMergeConflictController {
  public:
   struct PrefConflict {
