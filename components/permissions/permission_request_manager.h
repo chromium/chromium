@@ -514,8 +514,6 @@ class PermissionRequestManager
   void RegisterTabSubscriptions(tabs::TabInterface* tab_interface);
   void OnTabActiveStatusChanged(bool is_active,
                                 tabs::TabInterface* tab_interface);
-  void OnTabVisibleStatusChanged(bool is_visible,
-                                 tabs::TabInterface* tab_interface);
   void OnTabDetached(tabs::TabInterface* tab_interface,
                      tabs::TabInterface::DetachReason reason);
   void OnTabAttached(tabs::TabInterface* tab_interface);
