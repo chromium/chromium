@@ -48,6 +48,18 @@ if (is_chromeos) {
 template("build_webui") {
   not_needed([ "target_name" ])
 
+  if (defined(invoker.in_folder) && invoker.in_folder != ".") {
+    # build_webui() targets are generally not allowed to refer to parent
+    # folders. A temporary exception is added for the folders below, which will
+    # be removed once experimentation in these folders concludes.
+    _in_folder_exceptions =
+        [ "//chrome/browser/resources/omnibox/aim_eligibility_extension:build" ]
+    _current_label = get_label_info(":$target_name", "label_no_toolchain")
+    assert(
+        filter_include([ _current_label ], _in_folder_exceptions) != [],
+        "build_webui() target ${_current_label} is not allowed to use in_folder. Setting in_folder is restricted to avoid misuse. Please reach out to WebUI owners if you have a valid use case.")
+  }
+
   forward_variables_from(invoker, [ "grd_prefix" ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
@@ -199,6 +211,9 @@ template("build_webui") {
       defines = preprocessor_defines
 
       in_folder = "."
+      if (defined(invoker.in_folder)) {
+        in_folder = invoker.in_folder
+      }
       out_folder = preprocess_dir
       in_files = static_preprocessed_files
       out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
@@ -219,6 +234,9 @@ template("build_webui") {
       defines = preprocessor_defines
 
       in_folder = "."
+      if (defined(invoker.in_folder)) {
+        in_folder = invoker.in_folder
+      }
       out_folder = preprocess_dir
       if (enable_source_maps) {
         out_folder = "${preprocess_dir}/_tmp"
@@ -245,9 +263,14 @@ template("build_webui") {
       originals = []
       outputs = []
 
+      _in_folder = "."
+      if (defined(invoker.in_folder)) {
+        _in_folder = invoker.in_folder
+      }
+
       foreach(in_file, sources) {
         rebased_path = rebase_path(in_file, "${preprocess_dir}/_tmp")
-        originals += [ rebased_path ]
+        originals += [ _in_folder + "/" + rebased_path ]
         outputs += [ "${preprocess_dir}/" + rebased_path ]
       }
       deps = [ ":preprocess_ts_files" ]
@@ -265,6 +288,9 @@ template("build_webui") {
       defines = preprocessor_defines
 
       in_folder = "."
+      if (defined(invoker.in_folder)) {
+        in_folder = invoker.in_folder
+      }
       out_folder = preprocess_dir
 
       in_files = []

@@ -2,65 +2,65 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/bundle_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 
-bundle_js("bundle_js") {
+action("rewrite_mojo_binding_imports") {
   visibility = [ ":*" ]
-  host = "chrome-extension://kgjeljgkbckpoekmgjfplammhcggiiaf"
-  input = rebase_path(
-          "$root_gen_dir/chrome/browser/resources/omnibox/aim_eligibility/tsc",
-          root_build_dir)
-  js_module_in_files = [ "app.js" ]
-  out_folder = "$target_gen_dir/resources"
-  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
-  deps = [ "//chrome/browser/resources/omnibox/aim_eligibility:build_grdp" ]
+  script = "rewrite_imports.py"
+  in_dir = "$root_gen_dir/chrome/browser/ui/webui/omnibox/aim_eligibility"
+  out_dir = "$target_gen_dir/mojo"
+  deps = [ "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings_ts__generator" ]
+  outputs = [ "$out_dir/aim_eligibility.mojom-webui.ts" ]
+  args = [
+    rebase_path(in_dir, root_build_dir),
+    rebase_path(out_dir, root_build_dir),
+    "aim_eligibility.mojom-webui.ts",
+  ]
 }
 
-copy("copy_manifest") {
-  visibility = [ ":*" ]
-  sources = [ "manifest.json" ]
-  outputs = [ "$target_gen_dir/resources/manifest.json" ]
-}
-
-copy("copy_html") {
-  visibility = [ ":*" ]
-  sources = [ "../aim_eligibility/aim_eligibility.html" ]
-  outputs = [ "$target_gen_dir/resources/aim_eligibility.html" ]
-}
-
-generate_grd("build_grd") {
-  visibility = [ ":*" ]
+generate_grd("build_manifest_grdp") {
   grd_prefix = "aim_eligibility_extension"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "manifest.json",
-    "aim_eligibility.html",
-    "app.rollup.js",
-  ]
-  resource_path_rewrites = [ "app.rollup.js|app.js" ]
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/resources", root_build_dir)
+  out_grd = "$target_gen_dir/manifest.grdp"
+  input_files = [ "manifest.json" ]
+  input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "aim_eligibility_extension"
-  deps = [
-    ":bundle_js",
-    ":copy_html",
-    ":copy_manifest",
-  ]
 }
 
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
+build_webui("build") {
+  grd_prefix = "aim_eligibility_extension"
+  grd_resource_path_prefix = "aim_eligibility_extension"
 
-  outputs = [
-    "grit/aim_eligibility_extension_resources.h",
-    "grit/aim_eligibility_extension_resources_map.cc",
-    "grit/aim_eligibility_extension_resources_map.h",
-    "aim_eligibility_extension_resources.pak",
+  in_folder = "../aim_eligibility"
+
+  static_files = [ "aim_eligibility.html" ]
+
+  extra_grdp_deps = [ ":build_manifest_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/manifest.grdp" ]
+
+  css_files = [ "app.css" ]
+
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+    "browser_proxy.ts",
   ]
 
-  output_dir = "$root_gen_dir/chrome"
+  mojo_files_deps = [ ":rewrite_mojo_binding_imports" ]
+  mojo_files = [ "$target_gen_dir/mojo/aim_eligibility.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  webui_context_type = "trusted_only"
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "chrome-extension://kgjeljgkbckpoekmgjfplammhcggiiaf"
+    optimize_webui_in_files = [ "app.js" ]
+  }
 }
