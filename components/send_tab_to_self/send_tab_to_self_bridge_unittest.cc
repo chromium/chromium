@@ -1993,24 +1993,56 @@ TEST_P(SendTabToSelfBridgeNamingTest,
 
 // Tests that SendEntry uses the fallback full name of the local device.
 TEST_F(SendTabToSelfBridgeTest, SendEntry_UsesFullName) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(syncer::kSyncSimplifyDeviceNaming);
+
   const std::string kMyLocalGuid = "unique_local_guid_2";
   InitializeBridgeWithoutDevice();
 
   SetLocalDeviceCacheGuid(kMyLocalGuid);
+  // Using an empty client name so IsClientNameHighQuality() returns false and
+  // model-based naming is used.
   std::unique_ptr<syncer::DeviceInfo> local_device =
-      CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
-  const std::string full_name =
-      syncer::GetDisplayNameCandidates(local_device.get()).fallback_full_name;
+      CreateDevice(kMyLocalGuid, /*name=*/"", clock()->Now(), "local_model");
 
   device_info_tracker()->Add(std::move(local_device));
   device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
 
   const SendTabToSelfEntry* result = bridge()->SendEntry(
-      GURL("http://www.example.com/"), "title", "target", PageContext(),
+      GURL("https://www.example.com/"), "title", "target", PageContext(),
       NavigationHistory(), base::DoNothing(), ShareEntryPoint::kShareSheet);
 
   ASSERT_NE(nullptr, result);
-  EXPECT_EQ(full_name, result->GetDeviceName());
+  EXPECT_EQ("Manufacturer Computer local_model", result->GetDeviceName());
+}
+
+// Tests that SendEntry uses the simplified display name of the local device
+// when the kSyncSimplifyDeviceNaming feature is enabled.
+TEST_F(SendTabToSelfBridgeTest, SendEntry_UsesSimplifiedName) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(syncer::kSyncSimplifyDeviceNaming);
+
+  const std::string kMyLocalGuid = "unique_local_guid_simplified";
+  InitializeBridgeWithoutDevice();
+
+  // Register the local device in the tracker and set its cache GUID.
+  SetLocalDeviceCacheGuid(kMyLocalGuid);
+  // Using an empty client name so IsClientNameHighQuality() returns false and
+  // model-based naming is used.
+  std::unique_ptr<syncer::DeviceInfo> local_device =
+      CreateDevice(kMyLocalGuid, /*name=*/"", clock()->Now(), "local_model");
+
+  device_info_tracker()->Add(std::move(local_device));
+  device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
+
+  // Send a new entry and verify that the entry stores the simplified device
+  // name.
+  const SendTabToSelfEntry* result = bridge()->SendEntry(
+      GURL("https://www.example.com/"), "title", "target", PageContext(),
+      NavigationHistory(), base::DoNothing(), ShareEntryPoint::kShareSheet);
+
+  ASSERT_NE(nullptr, result);
+  EXPECT_EQ("Manufacturer Computer", result->GetDeviceName());
 }
 
 TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsDeviceFormFactorCombination) {

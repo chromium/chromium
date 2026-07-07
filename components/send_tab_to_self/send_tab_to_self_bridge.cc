@@ -531,7 +531,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
 
   std::unique_ptr<SendTabToSelfEntry> entry =
       std::make_unique<SendTabToSelfEntry>(
-          guid, url, trimmed_title, shared_time, GetLocalFallbackFullName(),
+          guid, url, trimmed_title, shared_time, GetLocalDeviceName(),
           target_device_cache_guid, context, std::move(navigation_history));
 
   // The size is recorded before potential truncation (dropping) of the context
@@ -741,7 +741,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   // by name and chooses between preferred/fallback names based on collisions.
   std::vector<syncer::DeviceInfoWithName> device_names =
       syncer::DetermineDisplayNamesAndDeduplicate(legacy_devices,
-                                                  GetLocalFallbackFullName());
+                                                  GetLocalDeviceName());
 
   return base::ToVector(device_names, [&](const auto& info) {
     auto it =
@@ -924,12 +924,18 @@ const syncer::DeviceInfo* SendTabToSelfBridge::GetLocalDeviceInfo() const {
       change_processor()->TrackedCacheGuid());
 }
 
-std::string SendTabToSelfBridge::GetLocalFallbackFullName() const {
+std::string SendTabToSelfBridge::GetLocalDeviceName() const {
   if (local_device_name_for_testing_.has_value()) {
     return *local_device_name_for_testing_;
   }
   const syncer::DeviceInfo* local_device = GetLocalDeviceInfo();
-  CHECK(local_device, base::NotFatalUntil::M148);
+
+  // TODO(crbug.com/531649027): Remove fallback_full_name logic once
+  // kSyncSimplifyDeviceNaming launches. It is only needed for legacy name
+  // deduplication; simplified naming filters the local device by GUID.
+  if (base::FeatureList::IsEnabled(syncer::kSyncSimplifyDeviceNaming)) {
+    return syncer::GetDeviceDisplayName(local_device);
+  }
 
   return syncer::GetDisplayNameCandidates(local_device).fallback_full_name;
 }
