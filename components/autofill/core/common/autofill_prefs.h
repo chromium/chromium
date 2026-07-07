@@ -45,6 +45,17 @@ inline constexpr char kAutofillAiShoppingEntitiesEnabled[] =
 // logging (Enhanced Autofill) are.
 inline constexpr char kAutofillAiOptInStatus[] =
     "autofill.autofill_ai.opt_in_status";
+// Timestamp when the user acknowledged the private inference notice UI by
+// clicking Ok/Got it.
+inline constexpr char kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp[] =
+    "autofill.autofill_ai.private_inference_notice_acknowledged_timestamp";
+// Timestamp when the user first saw the private inference notice UI.
+inline constexpr char kAutofillAiPrivateInferenceNoticeFirstShownTimestamp[] =
+    "autofill.autofill_ai.private_inference_notice_first_shown_timestamp";
+// Boolean that is true if the user is opted-in to private inference in Autofill
+// AI.
+inline constexpr char kAutofillAiPrivateInferenceOptInStatus[] =
+    "autofill.autofill_ai.private_inference_opt_in_status";
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 // Boolean that is true if re-authentication is required before viewing Autofill
