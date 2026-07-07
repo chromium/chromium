@@ -1212,6 +1212,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabbed_mode/HistoryItemBuilder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/IncognitoMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/KeyboardFocusRowManager.java",
+  "java/src/org/chromium/chrome/browser/tabbed_mode/MoreToolsItemBuilder.java",
+  "java/src/org/chromium/chrome/browser/tabbed_mode/SaveAndShareItemBuilder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabGroupItemBuilder.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedAdaptiveToolbarBehavior.java",
   "java/src/org/chromium/chrome/browser/tabbed_mode/TabbedAppMenuPropertiesDelegate.java",

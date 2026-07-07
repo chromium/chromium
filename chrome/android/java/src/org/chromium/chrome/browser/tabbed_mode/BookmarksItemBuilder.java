@@ -217,7 +217,7 @@ public class BookmarksItemBuilder implements Destroyable {
                         items.addAll(getBookmarkItemList(childIds, bookmarkModel));
                     }
                     if (items.isEmpty()) {
-                        items.add(TabbedAppMenuPropertiesDelegate.buildEmptySubmenuItem());
+                        items.add(AppMenuItemUtils.buildEmptySubmenuItem());
                     }
                     return items;
                 };
@@ -335,9 +335,7 @@ public class BookmarksItemBuilder implements Destroyable {
                                                 bookmarkModel.getChildIds(item.getId()),
                                                 bookmarkModel);
                                 if (items.isEmpty()) {
-                                    items.add(
-                                            TabbedAppMenuPropertiesDelegate
-                                                    .buildEmptySubmenuItem());
+                                    items.add(AppMenuItemUtils.buildEmptySubmenuItem());
                                 }
                                 return items;
                             },
@@ -378,9 +376,8 @@ public class BookmarksItemBuilder implements Destroyable {
                                 item,
                                 icon ->
                                         set(
-                                                TabbedAppMenuPropertiesDelegate
-                                                        .createInsetFaviconDrawable(
-                                                                mContext, icon)));
+                                                AppMenuItemUtils.createInsetFaviconDrawable(
+                                                        mContext, icon)));
             }
         };
     }

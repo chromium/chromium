@@ -212,7 +212,7 @@ import java.util.function.Supplier;
         Set<Token> groupIds = tabModel.getAllTabGroupIds();
         if (groupIds.isEmpty()) {
             if (submenuItems.isEmpty()) {
-                submenuItems.add(TabbedAppMenuPropertiesDelegate.buildEmptySubmenuItem());
+                submenuItems.add(AppMenuItemUtils.buildEmptySubmenuItem());
             }
             return submenuItems;
         }
@@ -284,7 +284,7 @@ import java.util.function.Supplier;
                             .with(AppMenuTabItemProperties.TAB_ID, tab.getId())
                             .with(
                                     AppMenuItemProperties.ICON_SUPPLIER,
-                                    TabbedAppMenuPropertiesDelegate.createIconSupplierForTab(
+                                    AppMenuItemUtils.createIconSupplierForTab(
                                             mContext,
                                             tab.getUrl(),
                                             tab.getTabGroupId(),

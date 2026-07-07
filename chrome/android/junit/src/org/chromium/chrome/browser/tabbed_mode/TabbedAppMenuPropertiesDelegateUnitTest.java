@@ -293,6 +293,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private TabbedAppMenuPropertiesDelegate mTabbedAppMenuPropertiesDelegate;
+    private SaveAndShareItemBuilder mSaveAndShareItemBuilder;
     private MenuUiState mUpdateAvailableMenuUiState;
 
     // Boolean flags to test multi-window menu visibility for various combinations.
@@ -433,6 +434,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         () -> mSideUiStateProvider);
         RobolectricUtil.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
+        mSaveAndShareItemBuilder =
+                Mockito.spy(
+                        mTabbedAppMenuPropertiesDelegate.getSaveAndShareItemBuilderForTesting());
+        mTabbedAppMenuPropertiesDelegate.setSaveAndShareItemBuilderForTesting(
+                mSaveAndShareItemBuilder);
         mTabbedAppMenuPropertiesDelegate.setForeignSessionHelperForTesting(
                 mForeignSessionHelperMock);
         when(mForeignSessionHelperMock.getForeignSessions()).thenReturn(new ArrayList<>());
@@ -2316,7 +2322,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
-                .when(mTabbedAppMenuPropertiesDelegate)
+                .when(mSaveAndShareItemBuilder)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class));
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
@@ -2408,7 +2414,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
-                .when(mTabbedAppMenuPropertiesDelegate)
+                .when(mSaveAndShareItemBuilder)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class));
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
@@ -4112,7 +4118,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowMoveToOtherWindow();
         doReturn(options.showPaintPreview())
-                .when(mTabbedAppMenuPropertiesDelegate)
+                .when(mSaveAndShareItemBuilder)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class));
         when(mWebsitePreferenceBridgeJniMock.getContentSetting(any(), anyInt(), any(), any()))
                 .thenReturn(

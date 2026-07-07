@@ -8,13 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.util.SparseArray;
 import android.view.View;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -23,10 +20,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -41,7 +35,6 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
@@ -85,15 +78,11 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -103,7 +92,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.AttrUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -135,6 +123,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     SnackbarManager mSnackbarManager;
     private final TabGroupItemBuilder mTabGroupItemBuilder;
     private final HistoryItemBuilder mHistoryItemBuilder;
+    private SaveAndShareItemBuilder mSaveAndShareItemBuilder;
+    private final MoreToolsItemBuilder mMoreToolsItemBuilder;
 
     private boolean mUpdateMenuItemVisible;
 
@@ -234,6 +224,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         tabModelSelector,
                         isMenuIconAtStart(),
                         shouldShowIconBeforeItem());
+
+        mSaveAndShareItemBuilder =
+                new SaveAndShareItemBuilder(
+                        context, getAppMenuItemTheme(), isMenuIconAtStart(), tabModelSelector);
+
+        mMoreToolsItemBuilder =
+                new MoreToolsItemBuilder(
+                        context,
+                        getAppMenuItemTheme(),
+                        isMenuIconAtStart(),
+                        tabModelSelector,
+                        readAloudControllerSupplier,
+                        this::shouldShowPageInfoItem);
     }
 
     @Override
@@ -376,7 +379,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (MultiWindowUtils.shouldShowManageWindowsMenu()) modelList.add(buildManageWindowsItem());
 
         // Divider
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // Open History
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
@@ -389,14 +392,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (shouldShowQuickDeleteItem()) {
             modelList.add(buildQuickDeleteItem());
             if (!isPageInfoItemShown) {
-                maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
+                AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
             }
         }
 
         // Page info
         if (isPageInfoItemShown) {
             modelList.add(buildPageInfoItem(currentTab, shouldShowIconBeforeItem));
-            maybeAddDividerLine(modelList, R.id.page_info_divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.page_info_divider_line_id);
         }
 
         // Homepage
@@ -444,7 +447,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Download Page
         if (shouldShowDownloadPageMenuItem(currentTab)) {
-            modelList.add(buildDownloadPageItem(currentTab, shouldShowIconBeforeItem));
+            modelList.add(mSaveAndShareItemBuilder.buildDownloadPageItem(shouldShowIconBeforeItem));
         }
 
         // Print
@@ -478,7 +481,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Reader mode
-        if (shouldShowReaderModeItem(currentTab)) {
+        if (mMoreToolsItemBuilder.shouldShowReaderModeItem(currentTab)) {
             modelList.add(buildReaderModeItem(currentTab, shouldShowIconBeforeItem));
         }
 
@@ -511,9 +514,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Paint Preview
-        if (shouldShowPaintPreview(isNativePage, currentTab)) {
-            modelList.add(
-                    buildPaintPreviewItem(isNativePage, currentTab, shouldShowIconBeforeItem));
+        if (mSaveAndShareItemBuilder.shouldShowPaintPreview(isNativePage, currentTab)) {
+            modelList.add(mSaveAndShareItemBuilder.buildPaintPreviewItem(shouldShowIconBeforeItem));
         }
 
         // Get Image Descriptions
@@ -527,14 +529,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Divider Line
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // Settings
         modelList.add(buildSettingsItem());
 
         // NTP Customizations
-        if (shouldShowNtpCustomizations(currentTab)) {
-            modelList.add(buildNtpCustomizationsItem(currentTab, shouldShowIconBeforeItem));
+        if (mMoreToolsItemBuilder.shouldShowNtpCustomizations(currentTab)) {
+            modelList.add(
+                    mMoreToolsItemBuilder.buildNtpCustomizationsItem(shouldShowIconBeforeItem));
         }
 
         // Help
@@ -542,11 +545,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Managed by
         if (shouldShowManagedByMenuItem(currentTab)) {
-            maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
             modelList.add(buildManagedByItem(currentTab));
         }
         if (shouldShowContentFilterHelpCenterMenuItem(currentTab)) {
-            maybeAddDividerLine(modelList, R.id.menu_item_content_filter_divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(
+                    modelList, R.id.menu_item_content_filter_divider_line_id);
             modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
         }
 
@@ -554,7 +558,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (shouldShowDefaultBrowserPromo()) {
             RecordUserAction.record("MobileMenuDefaultBrowserPromoShown");
 
-            maybeAddDividerLine(modelList, R.id.divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
             modelList.add(buildDefaultBrowserPromoItem());
         }
     }
@@ -601,7 +605,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildManageWindowsItem());
         }
 
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // History and autofill parent
         if (mHistoryItemBuilder.shouldShowHistoryParentItem()) {
@@ -618,7 +622,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildHomepageItem());
         }
 
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // Downloads
         modelList.add(buildDownloadsItem());
@@ -636,12 +640,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildPasswordsAndAutofillParentItem());
         }
 
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // Page Zoom
         if (shouldShowPageZoomItem(currentTab) && !isReaderModeShowing(currentTab)) {
             modelList.add(buildPageZoomItem(currentTab));
-            maybeAddDividerLine(modelList, R.id.divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
         }
 
         // Save and share
@@ -679,7 +683,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // More tools
-        if (shouldShowMoreToolsItem(currentTab)) {
+        if (mMoreToolsItemBuilder.shouldShowMoreToolsItem(currentTab)) {
             modelList.add(buildMoreToolsItem(currentTab));
         }
 
@@ -715,7 +719,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Divider Line
-        maybeAddDividerLine(modelList, R.id.divider_line_id);
+        AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
 
         // Settings
         modelList.add(buildSettingsItem());
@@ -725,11 +729,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Managed by
         if (shouldShowManagedByMenuItem(currentTab)) {
-            maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
             modelList.add(buildManagedByItem(currentTab));
         }
         if (shouldShowContentFilterHelpCenterMenuItem(currentTab)) {
-            maybeAddDividerLine(modelList, R.id.menu_item_content_filter_divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(
+                    modelList, R.id.menu_item_content_filter_divider_line_id);
             modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
         }
 
@@ -738,7 +743,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             // Used to track how many people saw the promo.
             RecordUserAction.record("MobileMenuDefaultBrowserPromoShown");
 
-            maybeAddDividerLine(modelList, R.id.divider_line_id);
+            AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.divider_line_id);
             modelList.add(buildDefaultBrowserPromoItem());
         }
     }
@@ -757,31 +762,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 }
             }
         };
-    }
-
-    // TODO(crbug.com/404074424): Create the main item list as List<ListItem> so we can use the
-    // other method and remove this.
-    private void maybeAddDividerLine(MVCListAdapter.ModelList modelList, @IdRes int id) {
-        if (modelList.get(modelList.size() - 1).type == AppMenuHandler.AppMenuItemType.DIVIDER) {
-            return;
-        }
-
-        modelList.add(
-                new ListItem(
-                        AppMenuHandler.AppMenuItemType.DIVIDER,
-                        AppMenuItemUtils.buildModelForDivider(id)));
-    }
-
-    private void maybeAddDividerLine(List<ListItem> list, @IdRes int id) {
-        if (list.isEmpty()
-                || list.get(list.size() - 1).type == AppMenuHandler.AppMenuItemType.DIVIDER) {
-            return;
-        }
-
-        list.add(
-                new ListItem(
-                        AppMenuHandler.AppMenuItemType.DIVIDER,
-                        AppMenuItemUtils.buildModelForDivider(id)));
     }
 
     private void populateOverviewModeMenu(MVCListAdapter.ModelList modelList) {
@@ -910,82 +890,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
     }
 
-    /* package */ static LazyOneshotSupplier<Drawable> createIconSupplierForTab(
-            Context context,
-            GURL faviconUrl,
-            @Nullable Token tabGroupId,
-            boolean isOffTheRecord,
-            @Nullable Bitmap cachedFavicon,
-            boolean fallbackToHost,
-            RoundedIconGenerator roundedIconGenerator,
-            FaviconHelper.DefaultFaviconHelper defaultFaviconHelper,
-            FaviconHelper faviconHelper,
-            Profile profile) {
-        return new LazyOneshotSupplierImpl<>() {
-            @Override
-            public void doSet() {
-                int faviconDisplaySize =
-                        context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-
-                if (cachedFavicon != null) {
-                    set(
-                            createInsetFaviconDrawable(
-                                    context,
-                                    FaviconUtils.getIconDrawableWithFilter(
-                                            cachedFavicon,
-                                            faviconUrl,
-                                            roundedIconGenerator,
-                                            defaultFaviconHelper,
-                                            context,
-                                            faviconDisplaySize)));
-                    return;
-                }
-
-                FaviconHelper.FaviconImageCallback faviconCallback =
-                        (image, iconUrl) -> {
-                            set(
-                                    createInsetFaviconDrawable(
-                                            context,
-                                            FaviconUtils.getIconDrawableWithFilter(
-                                                    image,
-                                                    faviconUrl,
-                                                    roundedIconGenerator,
-                                                    defaultFaviconHelper,
-                                                    context,
-                                                    faviconDisplaySize)));
-                        };
-
-                assumeNonNull(profile);
-                if (tabGroupId != null && !isOffTheRecord) {
-                    faviconHelper.getForeignFaviconImageForURL(
-                            profile,
-                            faviconUrl,
-                            faviconDisplaySize,
-                            fallbackToHost,
-                            faviconCallback);
-                } else {
-                    faviconHelper.getLocalFaviconImageForURL(
-                            profile,
-                            faviconUrl,
-                            faviconDisplaySize,
-                            fallbackToHost,
-                            faviconCallback);
-                }
-            }
-        };
-    }
-
-    /* package */ static Drawable createInsetFaviconDrawable(Context context, Drawable icon) {
-        int menuItemIconSize = AttrUtils.getDimensionPixelSize(context, R.attr.listItemIconSize);
-        int faviconDisplaySize =
-                context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        int inset = (menuItemIconSize - faviconDisplaySize) / 2;
-        if (inset <= 0) {
-            return icon;
-        }
-        return new InsetDrawable(icon, inset);
-    }
-
     private ListItem buildNewWindowItem() {
         assert shouldShowNewWindow();
         return new ListItem(
@@ -1106,19 +1010,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         isMenuIconAtStart()));
     }
 
-    /* package */ static ListItem buildEmptySubmenuItem() {
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.EMPTY,
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.empty_item_menu_id)
-                        // Keep enabled for keyboard navigation; disabled visual styling is handled
-                        // by the layout. Keyboard navigation becomes problematic when a submenu
-                        // contains only one item and that item is disabled. Currently the "empty"
-                        // item is the only case when that can happen.
-                        .with(AppMenuItemProperties.ENABLED, true)
-                        .build());
-    }
-
     private ListItem buildDownloadsItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
@@ -1228,7 +1119,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return true;
         }
 
-        if (shouldShowPaintPreview(isNativePage, currentTab)) {
+        if (mSaveAndShareItemBuilder.shouldShowPaintPreview(isNativePage, currentTab)) {
             return true;
         }
 
@@ -1248,20 +1139,20 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         if (ShareUtils.shouldEnableShare(currentTab)) {
             submenuItems.add(buildShareListItem(/* showIcon= */ false));
-            submenuItems.add(buildCopyLinkItem());
-            submenuItems.add(buildSendToDevicesItem());
-            submenuItems.add(buildShareQrCodeItem());
+            submenuItems.add(mSaveAndShareItemBuilder.buildCopyLinkItem());
+            submenuItems.add(mSaveAndShareItemBuilder.buildSendToDevicesItem());
+            submenuItems.add(mSaveAndShareItemBuilder.buildShareQrCodeItem());
         }
 
         if (shouldShowDownloadPageMenuItem(currentTab)
                 || shouldShowHomeScreenMenuItem(
                         isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)
-                || shouldShowPaintPreview(isNativePage, currentTab)) {
-            maybeAddDividerLine(submenuItems, R.id.divider_line_id);
+                || mSaveAndShareItemBuilder.shouldShowPaintPreview(isNativePage, currentTab)) {
+            AppMenuItemUtils.maybeAddDividerLine(submenuItems, R.id.divider_line_id);
         }
 
         if (shouldShowDownloadPageMenuItem(currentTab)) {
-            submenuItems.add(buildDownloadPageItem(currentTab, /* showIcon= */ false));
+            submenuItems.add(mSaveAndShareItemBuilder.buildDownloadPageItem(/* showIcon= */ false));
         }
 
         if (shouldShowHomeScreenMenuItem(
@@ -1270,9 +1161,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             submenuItems.add(buildAddToHomescreenListItem(currentTab, /* showIcon= */ false));
         }
 
-        if (shouldShowPaintPreview(isNativePage, currentTab)) {
-            submenuItems.add(
-                    buildPaintPreviewItem(isNativePage, currentTab, /* showIcon= */ false));
+        if (mSaveAndShareItemBuilder.shouldShowPaintPreview(isNativePage, currentTab)) {
+            submenuItems.add(mSaveAndShareItemBuilder.buildPaintPreviewItem(/* showIcon= */ false));
         }
 
         return new ListItem(
@@ -1287,55 +1177,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 : Resources.ID_NULL,
                         () -> submenuItems,
                         isMenuIconAtStart()));
-    }
-
-    private ListItem buildCopyLinkItem() {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.copy_link_menu_id,
-                        R.string.menu_copy_link,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private ListItem buildSendToDevicesItem() {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.send_to_devices_menu_id,
-                        R.string.menu_send_to_devices,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private ListItem buildShareQrCodeItem() {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.qr_code_menu_id,
-                        R.string.menu_qr_code,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private ListItem buildDownloadPageItem(Tab currentTab, boolean showIcon) {
-        assert shouldShowDownloadPageMenuItem(currentTab);
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.download_page_id,
-                        R.string.menu_download_page,
-                        showIcon ? R.drawable.ic_file_download_white_24dp : Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                showIcon);
     }
 
     /** Determines whether the "Print" menu item should be shown for a given tab. */
@@ -1380,103 +1221,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         isMenuIconAtStart()));
     }
 
-    private boolean shouldShowTaskManagerItem() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TASK_MANAGER_CLANK);
-    }
-
-    private ListItem buildTaskManagerItem() {
-        assert shouldShowTaskManagerItem();
-
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.task_manager,
-                        R.string.menu_task_manager,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private boolean shouldShowDevToolsItem(@Nullable Tab currentTab) {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)) {
-            return false;
-        }
-
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            return false;
-        }
-
-        if (currentTab == null || currentTab.isNativePage()) {
-            return false;
-        }
-
-        WebContents webContents = currentTab.getWebContents();
-        if (webContents == null) {
-            return false;
-        }
-
-        return DevToolsWindowAndroid.isDevToolsAllowedFor(currentTab.getProfile(), webContents);
-    }
-
-    private ListItem buildDevToolsItem(@Nullable Tab currentTab) {
-        assert shouldShowDevToolsItem(currentTab);
-
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.dev_tools,
-                        R.string.menu_dev_tools,
-                        Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                /* showIcon= */ false);
-    }
-
-    private boolean shouldShowMoreToolsItem(@Nullable Tab currentTab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
-            return false;
-        }
-
-        // TODO(crbug.com/521223427): Dynamically update while the menu is open.
-        ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
-        if (readAloudController != null && readAloudController.isReadable(currentTab)) {
-            return true;
-        }
-
-        if (shouldShowReaderModeItem(currentTab)) {
-            return true;
-        }
-
-        if (shouldShowNameWindowItem()) {
-            return true;
-        }
-
-        if (shouldShowTabLayoutToggleItem()) {
-            return true;
-        }
-
-        if (shouldShowNtpCustomizations(currentTab)) {
-            return true;
-        }
-
-        if (shouldShowPageInfoItem()) {
-            return true;
-        }
-
-        if (shouldShowTaskManagerItem()) {
-            return true;
-        }
-
-        if (shouldShowDevToolsItem(currentTab)) {
-            return true;
-        }
-
-        return false;
-    }
-
     private ListItem buildMoreToolsItem(@Nullable Tab currentTab) {
-        assert shouldShowMoreToolsItem(currentTab);
+        assert mMoreToolsItemBuilder.shouldShowMoreToolsItem(currentTab);
 
         Supplier<List<ListItem>> submenuItemsSupplier =
                 () -> {
@@ -1486,40 +1232,46 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
                             && readAloudController != null
                             && readAloudController.isReadable(currentTab)) {
-                        submenuItems.add(buildReadAloudSubmenuItem(/* showIcon= */ false));
+                        submenuItems.add(
+                                mMoreToolsItemBuilder.buildReadAloudSubmenuItem(
+                                        /* showIcon= */ false));
                     }
 
-                    if (shouldShowReaderModeItem(currentTab)) {
+                    if (mMoreToolsItemBuilder.shouldShowReaderModeItem(currentTab)) {
                         submenuItems.add(buildReaderModeItem(currentTab, /* showIcon= */ false));
                     }
 
-                    maybeAddDividerLine(submenuItems, R.id.divider_line_id);
+                    AppMenuItemUtils.maybeAddDividerLine(submenuItems, R.id.divider_line_id);
 
-                    if (shouldShowNameWindowItem()) {
-                        submenuItems.add(buildNameWindowItem(/* showIcon= */ false));
-                    }
-
-                    if (shouldShowTabLayoutToggleItem()) {
-                        submenuItems.add(buildTabLayoutToggleItem(/* showIcon= */ false));
-                    }
-
-                    if (shouldShowNtpCustomizations(currentTab)) {
+                    if (mMoreToolsItemBuilder.shouldShowNameWindowItem()) {
                         submenuItems.add(
-                                buildNtpCustomizationsItem(currentTab, /* showIcon= */ false));
+                                mMoreToolsItemBuilder.buildNameWindowItem(/* showIcon= */ false));
                     }
 
-                    maybeAddDividerLine(submenuItems, R.id.divider_line_id);
+                    if (mMoreToolsItemBuilder.shouldShowTabLayoutToggleItem()) {
+                        submenuItems.add(
+                                mMoreToolsItemBuilder.buildTabLayoutToggleItem(
+                                        /* showIcon= */ false));
+                    }
+
+                    if (mMoreToolsItemBuilder.shouldShowNtpCustomizations(currentTab)) {
+                        submenuItems.add(
+                                mMoreToolsItemBuilder.buildNtpCustomizationsItem(
+                                        /* showIcon= */ false));
+                    }
+
+                    AppMenuItemUtils.maybeAddDividerLine(submenuItems, R.id.divider_line_id);
 
                     if (shouldShowPageInfoItem()) {
                         submenuItems.add(buildPageInfoItem(currentTab, /* showIcon= */ false));
                     }
 
-                    if (shouldShowTaskManagerItem()) {
-                        submenuItems.add(buildTaskManagerItem());
+                    if (mMoreToolsItemBuilder.shouldShowTaskManagerItem()) {
+                        submenuItems.add(mMoreToolsItemBuilder.buildTaskManagerItem());
                     }
 
-                    if (shouldShowDevToolsItem(currentTab)) {
-                        submenuItems.add(buildDevToolsItem(currentTab));
+                    if (mMoreToolsItemBuilder.shouldShowDevToolsItem(currentTab)) {
+                        submenuItems.add(mMoreToolsItemBuilder.buildDevToolsItem());
                     }
 
                     if (!submenuItems.isEmpty()
@@ -1543,71 +1295,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 : Resources.ID_NULL,
                         submenuItemsSupplier,
                         isMenuIconAtStart()));
-    }
-
-    private boolean shouldShowNameWindowItem() {
-        return MultiWindowUtils.isMultiInstanceApi31Enabled();
-    }
-
-    private ListItem buildNameWindowItem(boolean showIcon) {
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.name_window_menu_id,
-                        R.string.menu_name_window,
-                        showIcon ? R.drawable.ic_window_24dp : Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                showIcon);
-    }
-
-    private boolean shouldShowTabLayoutToggleItem() {
-        return VerticalTabUtils.isVerticalTabsEligible(mContext);
-    }
-
-    private ListItem buildTabLayoutToggleItem(boolean showIcon) {
-        boolean isVerticalActive = VerticalTabUtils.isVerticalTabsEnabled(mContext);
-        int stringRes =
-                isVerticalActive
-                        ? org.chromium.chrome.tab_ui.R.string.show_tabs_horizontally
-                        : org.chromium.chrome.tab_ui.R.string.show_tabs_vertically;
-
-        int iconRes = Resources.ID_NULL;
-        if (showIcon) {
-            iconRes =
-                    isVerticalActive
-                            ? R.drawable.ic_toolbar_24dp
-                            : R.drawable.ic_dock_to_right_24dp;
-        }
-
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.toggle_tab_layout_menu_id,
-                        stringRes,
-                        iconRes,
-                        isMenuIconAtStart()),
-                showIcon);
-    }
-
-    @Contract("null -> false")
-    private boolean shouldShowReaderModeItem(@Nullable Tab currentTab) {
-        if (currentTab == null) {
-            return false;
-        }
-
-        GURL url = currentTab.getUrl();
-        boolean isChromeOrNativePage =
-                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
-                        || currentTab.isNativePage();
-
-        if (isChromeOrNativePage) {
-            return false;
-        }
-
-        return true;
     }
 
     @Contract("null -> false")
@@ -1749,32 +1436,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.string.menu_listen_to_feed,
                         R.drawable.ic_play_circle,
                         isMenuIconAtStart()));
-    }
-
-    /**
-     * Returns True if the NTP Customization menu entry should be visible.
-     *
-     * <p>This entry is shown only when the corresponding feature flag is enabled and the user is on
-     * the regular Ntp.
-     */
-    @Contract("null -> false")
-    private boolean shouldShowNtpCustomizations(@Nullable Tab currentTab) {
-        return !isIncognitoShowing()
-                && currentTab != null
-                && UrlUtilities.isNtpUrl(currentTab.getUrl());
-    }
-
-    private ListItem buildNtpCustomizationsItem(Tab currentTab, boolean showIcon) {
-        assert shouldShowNtpCustomizations(currentTab);
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.ntp_customization_id,
-                        R.string.menu_ntp_customization,
-                        showIcon ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                showIcon);
     }
 
     private ListItem buildHelpItem() {
@@ -1985,33 +1646,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     /**
-     * @param isNativePage Whether the current tab is a native page.
-     * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether the paint preview menu item should be displayed.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @Contract("_, null -> false")
-    public boolean shouldShowPaintPreview(boolean isNativePage, @Nullable Tab currentTab) {
-        return currentTab != null
-                && ChromeFeatureList.sPaintPreviewDemo.isEnabled()
-                && !isNativePage
-                && !isIncognitoShowing();
-    }
-
-    private ListItem buildPaintPreviewItem(boolean isNativePage, Tab currentTab, boolean showIcon) {
-        assert shouldShowPaintPreview(isNativePage, currentTab);
-        return AppMenuItemUtils.createStandardListItem(
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.paint_preview_show_id,
-                        R.string.menu_paint_preview_show,
-                        showIcon ? R.drawable.ic_photo_camera : Resources.ID_NULL,
-                        isMenuIconAtStart()),
-                showIcon);
-    }
-
-    /**
      * @return Whether the "New window" menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -2158,18 +1792,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
     }
 
-    private ListItem buildReadAloudSubmenuItem(boolean showIcon) {
-        PropertyModel propertyModel =
-                AppMenuItemUtils.buildModelForStandardMenuItem(
-                        mContext,
-                        getAppMenuItemTheme(),
-                        R.id.readaloud_menu_id,
-                        R.string.menu_listen_to_this_page,
-                        showIcon ? R.drawable.ic_play_circle : Resources.ID_NULL,
-                        isMenuIconAtStart());
-        return AppMenuItemUtils.createStandardListItem(propertyModel, showIcon);
-    }
-
     private Profile getProfileFromTabModel() {
         var profile = mTabModelSelector.getModel(false).getProfile();
         assert profile != null;
@@ -2178,5 +1800,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     public void setImageFetcherForTesting(BookmarkImageFetcher imageFetcher) {
         mBookmarksItemBuilder.setImageFetcherForTesting(imageFetcher);
+    }
+
+    public void setSaveAndShareItemBuilderForTesting(SaveAndShareItemBuilder builder) {
+        mSaveAndShareItemBuilder = builder;
+    }
+
+    public SaveAndShareItemBuilder getSaveAndShareItemBuilderForTesting() {
+        return mSaveAndShareItemBuilder;
     }
 }

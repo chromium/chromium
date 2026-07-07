@@ -286,7 +286,7 @@ public class HistoryItemBuilder implements Destroyable {
                         }
                     }
                     if (submenuItems.isEmpty()) {
-                        submenuItems.add(TabbedAppMenuPropertiesDelegate.buildEmptySubmenuItem());
+                        submenuItems.add(AppMenuItemUtils.buildEmptySubmenuItem());
                     }
                     return submenuItems;
                 };
@@ -345,7 +345,7 @@ public class HistoryItemBuilder implements Destroyable {
                         .with(AppMenuItemProperties.TITLE, tab.title)
                         .with(
                                 AppMenuItemProperties.ICON_SUPPLIER,
-                                TabbedAppMenuPropertiesDelegate.createIconSupplierForTab(
+                                AppMenuItemUtils.createIconSupplierForTab(
                                         mContext,
                                         /* faviconUrl= */ tab.url,
                                         /* tabGroupId= */ null,
@@ -457,7 +457,7 @@ public class HistoryItemBuilder implements Destroyable {
                         .with(AppMenuItemProperties.TITLE, tab.getTitle())
                         .with(
                                 AppMenuItemProperties.ICON_SUPPLIER,
-                                TabbedAppMenuPropertiesDelegate.createIconSupplierForTab(
+                                AppMenuItemUtils.createIconSupplierForTab(
                                         mContext,
                                         tab.getUrl(),
                                         /* tabGroupId= */ null,
@@ -544,7 +544,7 @@ public class HistoryItemBuilder implements Destroyable {
         return buildRecentEntryMenuItem(
                 tab,
                 TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl()),
-                TabbedAppMenuPropertiesDelegate.createIconSupplierForTab(
+                AppMenuItemUtils.createIconSupplierForTab(
                         mContext,
                         tab.getUrl(),
                         tab.getTabGroupId(),
