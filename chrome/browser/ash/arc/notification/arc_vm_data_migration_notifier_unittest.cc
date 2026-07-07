@@ -11,12 +11,12 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -27,6 +27,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +76,9 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
-    DCHECK(ash::ProfileHelper::IsPrimaryProfile(testing_profile_));
+    DCHECK(user_manager::UserManager::Get()->IsPrimaryUser(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            testing_profile_)));
 
     arc_vm_data_migration_notifier_ =
         std::make_unique<ArcVmDataMigrationNotifier>(testing_profile_);
