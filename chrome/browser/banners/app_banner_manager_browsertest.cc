@@ -64,8 +64,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #endif
 
 namespace webapps {
@@ -737,13 +738,18 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   // be separate OS-specific versions of this test for AppBannerManagerDesktop
   // and AppBannerManagerAndroid.
 #if !BUILDFLAG(IS_ANDROID)
-  auto* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
   // Corresponds to the id listed in manifest_listing_related_chrome_app.json.
-  const auto extension = extensions::ExtensionBuilder("installed-extension-id")
-                             .SetID("installed-extension-id")
-                             .Build();
-  extension_registry->AddEnabled(extension);
+  const auto extension =
+      extensions::ExtensionBuilder("installed related chrome app")
+          .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .Build();
+  // Install the extension via ExtensionRegistrar so the full load path runs and
+  // notifies RendererStartupHelper. Adding it straight to the ExtensionRegistry
+  // enabled set leaves RendererStartupHelper's bookkeeping out of sync and trips
+  // a DCHECK when a new renderer process initializes (crbug.com/515192463).
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->AddExtension(extension);
 #endif
 
   GURL test_url = embedded_test_server()->GetURL(

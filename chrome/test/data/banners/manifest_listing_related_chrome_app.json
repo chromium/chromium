@@ -13,6 +13,6 @@
   "prefer_related_applications": false,
   "related_applications": [{
     "platform": "chrome_web_store",
-    "id": "installed-extension-id"
+    "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   }]
 }
