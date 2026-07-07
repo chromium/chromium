@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_IN_MEMORY_MEMORY_BANK_H_
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_IN_MEMORY_MEMORY_BANK_H_
 
+#include <optional>
+
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
@@ -23,6 +25,7 @@ class InMemoryMemoryBank : public MemoryBank {
   // MemoryBank:
   void SaveTab(const GURL& url,
                const std::string& tab_title,
+               const std::string& page_text,
                OperationCompleteCallback callback) override;
   void SaveTextSelection(const GURL& url,
                          const std::string& tab_title,

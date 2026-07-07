@@ -130,7 +130,7 @@ TEST_F(ContextHubServiceTest, GenerateAutoTodos_FeatureEnabled_ParseError) {
 
 TEST_F(ContextHubServiceTest, SaveTab) {
   base::test::TestFuture<void> save_tab_future;
-  service_.SaveTab(GURL("https://example.com"), "Title",
+  service_.SaveTab(GURL("https://example.com"), "Title", "Page text",
                    save_tab_future.GetCallback());
   EXPECT_TRUE(save_tab_future.Wait());
 
@@ -158,8 +158,10 @@ TEST_F(ContextHubServiceTest, SaveTextSelection) {
 }
 
 TEST_F(ContextHubServiceTest, DeleteEntries) {
-  service_.SaveTab(GURL("https://example1.com"), "Title1", base::DoNothing());
-  service_.SaveTab(GURL("https://example2.com"), "Title2", base::DoNothing());
+  service_.SaveTab(GURL("https://example1.com"), "Title1", "Page text 1",
+                   base::DoNothing());
+  service_.SaveTab(GURL("https://example2.com"), "Title2", "Page text 2",
+                   base::DoNothing());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service_.GetAllEntries(get_entries_future.GetCallback());

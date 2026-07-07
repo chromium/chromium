@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_H_
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,7 @@ class MemoryBank {
   // Saves a tab to the memory bank.
   virtual void SaveTab(const GURL& url,
                        const std::string& tab_title,
+                       const std::string& page_text,
                        OperationCompleteCallback callback) = 0;
   // Saves a text selection to the memory bank.
   virtual void SaveTextSelection(const GURL& url,

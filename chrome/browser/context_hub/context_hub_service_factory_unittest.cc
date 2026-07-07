@@ -57,7 +57,7 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title",
+  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
                    save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
@@ -77,7 +77,7 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title",
+  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
                    save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 

@@ -44,6 +44,7 @@ class ContextHubService : public KeyedService {
   // Saves a tab to the memory bank.
   void SaveTab(const GURL& url,
                const std::string& tab_title,
+               const std::string& page_text,
                MemoryBank::OperationCompleteCallback callback);
   // Saves a text selection to the memory bank.
   void SaveTextSelection(const GURL& url,

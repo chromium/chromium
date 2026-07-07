@@ -21,6 +21,7 @@ InMemoryMemoryBank::~InMemoryMemoryBank() = default;
 
 void InMemoryMemoryBank::SaveTab(const GURL& url,
                                  const std::string& tab_title,
+                                 const std::string& page_text,
                                  OperationCompleteCallback callback) {
   MemoryBankEntry entry;
   entry.id = static_cast<int64_t>(
@@ -29,6 +30,7 @@ void InMemoryMemoryBank::SaveTab(const GURL& url,
   entry.timestamp = base::Time::Now();
   entry.url = url;
   entry.tab_title = tab_title;
+  entry.selected_text = page_text;
   entries_.Put(entry.id, std::move(entry));
   if (callback) {
     std::move(callback).Run();

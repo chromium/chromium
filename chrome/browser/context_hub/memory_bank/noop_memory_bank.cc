@@ -15,6 +15,7 @@ NoOpMemoryBank::~NoOpMemoryBank() = default;
 
 void NoOpMemoryBank::SaveTab(const GURL& url,
                              const std::string& tab_title,
+                             const std::string& page_text,
                              OperationCompleteCallback callback) {
   if (callback) {
     std::move(callback).Run();

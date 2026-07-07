@@ -31,7 +31,7 @@ TEST(InMemoryMemoryBankTest, SaveTab) {
   EXPECT_TRUE(GetAllEntriesSync(memory_bank).empty());
 
   GURL url("https://www.google.com");
-  memory_bank.SaveTab(url, "Google", base::DoNothing());
+  memory_bank.SaveTab(url, "Google", "Page text", base::DoNothing());
 
   std::vector<MemoryBankEntry> entries = GetAllEntriesSync(memory_bank);
   ASSERT_EQ(1u, entries.size());
@@ -39,7 +39,24 @@ TEST(InMemoryMemoryBankTest, SaveTab) {
   EXPECT_EQ(MemoryBankType::kTab, entries[0].type);
   EXPECT_EQ(url, entries[0].url);
   EXPECT_EQ("Google", entries[0].tab_title);
-  EXPECT_FALSE(entries[0].selected_text.has_value());
+  EXPECT_EQ("Page text", entries[0].selected_text);
+}
+
+TEST(InMemoryMemoryBankTest, SaveTabWithText) {
+  InMemoryMemoryBank memory_bank;
+  EXPECT_TRUE(GetAllEntriesSync(memory_bank).empty());
+
+  GURL url("https://www.google.com");
+  memory_bank.SaveTab(url, "Google", "Page Content", base::DoNothing());
+
+  std::vector<MemoryBankEntry> entries = GetAllEntriesSync(memory_bank);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_GT(entries[0].id, 0);
+  EXPECT_EQ(MemoryBankType::kTab, entries[0].type);
+  EXPECT_EQ(url, entries[0].url);
+  EXPECT_EQ("Google", entries[0].tab_title);
+  ASSERT_TRUE(entries[0].selected_text.has_value());
+  EXPECT_EQ("Page Content", entries[0].selected_text.value());
 }
 
 TEST(InMemoryMemoryBankTest, SaveTextSelection) {
@@ -61,9 +78,9 @@ TEST(InMemoryMemoryBankTest, SaveTextSelection) {
 TEST(InMemoryMemoryBankTest, DeleteEntries) {
   InMemoryMemoryBank memory_bank;
 
-  memory_bank.SaveTab(GURL("https://www.google.com"), "Google",
+  memory_bank.SaveTab(GURL("https://www.google.com"), "Google", "Page text 1",
                       base::DoNothing());
-  memory_bank.SaveTab(GURL("https://www.youtube.com"), "YouTube",
+  memory_bank.SaveTab(GURL("https://www.youtube.com"), "YouTube", "Page text 2",
                       base::DoNothing());
   std::vector<MemoryBankEntry> entries = GetAllEntriesSync(memory_bank);
   ASSERT_EQ(2u, entries.size());

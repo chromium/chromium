@@ -64,8 +64,9 @@ void ContextHubService::OnAutoTodosFetched(
 void ContextHubService::SaveTab(
     const GURL& url,
     const std::string& tab_title,
+    const std::string& page_text,
     MemoryBank::OperationCompleteCallback callback) {
-  memory_bank_->SaveTab(url, tab_title, std::move(callback));
+  memory_bank_->SaveTab(url, tab_title, page_text, std::move(callback));
 }
 
 void ContextHubService::SaveTextSelection(

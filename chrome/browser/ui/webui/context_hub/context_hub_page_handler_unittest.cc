@@ -232,7 +232,7 @@ TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Success) {
   ASSERT_TRUE(service);
 
   base::test::TestFuture<void> save_tab_future;
-  service->SaveTab(GURL("https://example.com/tab"), "Tab Title",
+  service->SaveTab(GURL("https://example.com/tab"), "Tab Title", "Page text",
                    save_tab_future.GetCallback());
   ASSERT_TRUE(save_tab_future.Wait());
 
@@ -282,12 +282,12 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
 
   base::test::TestFuture<void> save_tab_future1;
   service->SaveTab(GURL("https://example.com/tab1"), "Tab Title 1",
-                   save_tab_future1.GetCallback());
+                   "Page text 1", save_tab_future1.GetCallback());
   ASSERT_TRUE(save_tab_future1.Wait());
 
   base::test::TestFuture<void> save_tab_future2;
   service->SaveTab(GURL("https://example.com/tab2"), "Tab Title 2",
-                   save_tab_future2.GetCallback());
+                   "Page text 2", save_tab_future2.GetCallback());
   ASSERT_TRUE(save_tab_future2.Wait());
 
   base::test::TestFuture<
