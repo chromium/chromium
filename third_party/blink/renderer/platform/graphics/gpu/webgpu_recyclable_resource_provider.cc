@@ -166,7 +166,20 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
     }
   }
 
-  resource_ = NewOrRecycledResource();
+  if (image_pool_) {
+    auto resource = image_pool_->GetImage();
+    if (resource) {
+      if (!resource->IsInitialized()) {
+        resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
+                             hdr_metadata_, /*is_accelerated=*/true);
+        ++num_inflight_resources_;
+        if (num_inflight_resources_ > max_inflight_resources_) {
+          max_inflight_resources_ = num_inflight_resources_;
+        }
+      }
+      resource_ = std::move(resource);
+    }
+  }
 
   if (resource_) {
     EnsureWriteAccess();
@@ -184,28 +197,6 @@ WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
 
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
-}
-
-scoped_refptr<CanvasResourceSharedImage>
-WebGpuRecyclableResourceProvider::NewOrRecycledResource() {
-  if (!image_pool_) {
-    return nullptr;
-  }
-
-  auto resource = image_pool_->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
-
-  if (!resource->IsInitialized()) {
-    resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                         hdr_metadata_, /*is_accelerated=*/true);
-    ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_) {
-      max_inflight_resources_ = num_inflight_resources_;
-    }
-  }
-  return resource;
 }
 
 bool WebGpuRecyclableResourceProvider::IsValid() const {

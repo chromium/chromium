@@ -149,7 +149,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
 
   void EnsureWriteAccess();
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   bool IsValid() const;
 
   gpu::raster::RasterInterface* RasterInterface() const;
