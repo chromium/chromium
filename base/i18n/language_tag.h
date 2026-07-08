@@ -151,7 +151,8 @@ class BASE_I18N_EXPORT Bcp47Subtag {
 
   using SubtagType = Bcp47Subtag<MinLen, MaxLen>;
 
-  explicit Bcp47Subtag(std::string_view subtag) : size_(subtag.size()) {
+  explicit Bcp47Subtag(std::string_view subtag)
+      : size_(static_cast<uint8_t>(subtag.size())) {
     std::copy(subtag.begin(), subtag.end(), value_.begin());
     CHECK_GE(subtag.size(), MinLen);
     CHECK_LE(subtag.size(), MaxLen);

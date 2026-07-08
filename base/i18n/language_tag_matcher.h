@@ -57,6 +57,9 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
   LanguageTagMatcher(const LanguageTagMatcher&) = delete;
   LanguageTagMatcher& operator=(const LanguageTagMatcher&) = delete;
 
+  LanguageTagMatcher(LanguageTagMatcher&&) noexcept;
+  LanguageTagMatcher& operator=(LanguageTagMatcher&&) noexcept;
+
   // Finds the best match between the supported tags and the preferred
   // tag. Returns the matched LanguageTag from the supported list, or
   // std::nullopt if no match is found.
@@ -82,7 +85,7 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
       base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
       rust::Box<internal::IcuFallbacker> icu_fallbacker);
 
-  const base::flat_map<LanguageTag, LanguageTag> closest_supported_tag_;
+  base::flat_map<LanguageTag, LanguageTag> closest_supported_tag_;
   rust::Box<internal::IcuFallbacker> icu_fallbacker_;
 };
 

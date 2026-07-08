@@ -153,6 +153,11 @@ class LanguageTagPreferenceGraph {
     // rest should default to en-GB.
     AddEdge(GetKnownLanguageTag("en-PH"), GetKnownLanguageTag("en-US"));
     AddEdge(GetKnownLanguageTag("en-LR"), GetKnownLanguageTag("en-US"));
+    // Add a special edge between "tl" and "fil".
+    // The tag "tl" is legacy, but it is still kept around as
+    // Translate uses it. This special edge makes "tl" match "fil" if "tl" is
+    // not supported, but "fil" is.
+    AddEdge(GetKnownLanguageTag("tl"), GetKnownLanguageTag("fil"));
   }
 
   // Computes the closest supported locale for all reachable nodes in the graph.
@@ -270,6 +275,10 @@ LanguageTagMatcher::LanguageTagMatcher(
     rust::Box<internal::IcuFallbacker> icu_fallbacker)
     : closest_supported_tag_(std::move(closest_supported_tag)),
       icu_fallbacker_(std::move(icu_fallbacker)) {}
+
+LanguageTagMatcher::LanguageTagMatcher(LanguageTagMatcher&&) noexcept = default;
+LanguageTagMatcher& LanguageTagMatcher::operator=(
+    LanguageTagMatcher&&) noexcept = default;
 
 LanguageTagMatcher::~LanguageTagMatcher() = default;
 

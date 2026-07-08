@@ -60,10 +60,8 @@ TEST(AcceptLanguagesServiceTest, TestCanBeAcceptLanguage) {
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("es"));
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("es-419"));
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("zh-CN"));
-
-  // Not valid format.
-  EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("en-us"));
-  EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("zh-Hant"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("en-us"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("zh-Hant"));
 
   // Not valid language.
   EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("xx"));

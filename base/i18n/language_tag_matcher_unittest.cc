@@ -132,6 +132,15 @@ TEST(LanguageTagMatcherTest, PortugueseBrazil) {
   }
 }
 
+TEST(LanguageTagMatcherTest, TlMatchesFil) {
+  std::vector<LanguageTag> supported = {LanguageTagOrDie("en-US"),
+                                        LanguageTagOrDie("fil")};
+  LanguageTagMatcher matcher = LanguageTagMatcher::Create(supported);
+
+  EXPECT_THAT(matcher.Match(LanguageTagOrDie("tl")),
+              Optional(LanguageTagOrDie("fil")));
+}
+
 TEST(LanguageTagMatcherTest, MultipleEnglishLocales) {
   {
     std::vector<LanguageTag> supported = {LanguageTagOrDie("en-US"),

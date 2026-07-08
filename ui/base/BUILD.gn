@@ -139,6 +139,8 @@ component("base") {
     "dragdrop/os_exchange_data_provider_factory.h",
     "ime/utf_offset.cc",
     "ime/utf_offset.h",
+    "l10n/chromium_language_matcher.cc",
+    "l10n/chromium_language_matcher.h",
     "l10n/formatter.cc",
     "l10n/formatter.h",
     "l10n/l10n_font_util.cc",

@@ -689,11 +689,13 @@ TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
   EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en-CA"));
   EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("fil"));
   EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("zu"));
-
-  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("tl"));
-  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("fr-CO"));
-  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("iw"));
-
+  // These now match via LanguageTagMatcher:
+  // tl -> fil
+  // fr-CO -> fr
+  // iw -> he
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("tl"));
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("fr-CO"));
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("iw"));
   EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("dne"));
 }
 
@@ -703,26 +705,26 @@ TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
   EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("es", "fil"));
   EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("de", "zu"));
 
-  // The old code for "he" is not supported.
-  EXPECT_FALSE(l10n_util::IsAcceptLanguageDisplayable("es", "iw"));
+  // "iw" now matches "he".
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("es", "iw"));
 }
 
 TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
   // All valid languages.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "fr"}),
             std::vector<std::string>({"en", "es", "fr"}));
-  // Some invalid languages.
+  // iw now matches he.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "iw"}),
-            std::vector<std::string>({"en", "es"}));
-  // All invalid languages.
+            std::vector<std::string>({"en", "es", "iw"}));
+  // All invalid languages except iw.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"iw", "ch_ZN"}),
-            std::vector<std::string>{});
+            std::vector<std::string>({"iw"}));
   // Empty input.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({}), std::vector<std::string>{});
   // Maintain languages order.
   EXPECT_EQ(
       l10n_util::KeepAcceptedLanguages({"en", "aa", "es", "iw", "fr", "xx"}),
-      std::vector<std::string>({"en", "es", "fr"}));
+      std::vector<std::string>({"en", "es", "iw", "fr"}));
 }
 
 TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
@@ -742,4 +744,73 @@ TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
 #else
   EXPECT_EQ(offsets[0], 10u);
 #endif
+}
+
+TEST_F(L10nUtilTest, AllLegacyAcceptLanguagesWork) {
+  static constexpr std::string_view kLegacyAcceptLanguages[] = {
+      "af",       "ak",    "am",
+      "an",       "ar",    "ar-XB",
+      "as",       "ast",   "ay",
+      "az",       "be",    "bg",
+      "bho",      "bm",    "bn",
+      "br",       "bs",    "ca",
+      "ceb",      "chr",   "ckb",
+      "co",       "cs",    "cy",
+      "da",       "de",    "de-AT",
+      "de-CH",    "de-DE", "de-LI",
+      "doi",      "dv",    "ee",
+      "el",       "en",    "en-AU",
+      "en-CA",    "en-GB", "en-GB-oxendict",
+      "en-IE",    "en-IN", "en-NZ",
+      "en-US",    "en-XA", "en-ZA",
+      "eo",       "es",    "es-419",
+      "es-AR",    "es-CL", "es-CO",
+      "es-CR",    "es-ES", "es-HN",
+      "es-MX",    "es-PE", "es-US",
+      "es-UY",    "es-VE", "et",
+      "eu",       "fa",    "fi",
+      "fil",      "fo",    "fr",
+      "fr-CA",    "fr-CH", "fr-FR",
+      "fy",       "ga",    "gd",
+      "gl",       "gn",    "gu",
+      "ha",       "haw",   "he",
+      "hi",       "hmn",   "hr",
+      "ht",       "hu",    "hy",
+      "ia",       "id",    "ig",
+      "ilo",      "is",    "it",
+      "it-CH",    "it-IT", "ja",
+      "jv",       "ka",    "kk",
+      "km",       "kn",    "ko",
+      "kok",      "kri",   "ku",
+      "ky",       "la",    "lb",
+      "lg",       "ln",    "lo",
+      "lt",       "lus",   "lv",
+      "mai",      "mg",    "mi",
+      "mk",       "ml",    "mn",
+      "mni-Mtei", "mo",    "mr",
+      "ms",       "mt",    "my",
+      "nb",       "ne",    "nl",
+      "nn",       "no",    "nso",
+      "ny",       "oc",    "om",
+      "or",       "pa",    "pl",
+      "ps",       "pt",    "pt-BR",
+      "pt-PT",    "qu",    "rm",
+      "ro",       "ru",    "rw",
+      "sa",       "sd",    "sh",
+      "si",       "sk",    "sl",
+      "sm",       "sn",    "so",
+      "sq",       "sr",    "st",
+      "su",       "sv",    "sw",
+      "ta",       "te",    "tg",
+      "th",       "ti",    "tk",
+      "tn",       "to",    "tr",
+      "ts",       "tt",    "tw",
+      "ug",       "uk",    "ur",
+      "uz",       "vi",    "wa",
+      "wo",       "xh",    "yi",
+      "yo",       "zh",    "zh-CN",
+      "zh-HK",    "zh-TW", "zu"};
+  for (std::string_view locale : kLegacyAcceptLanguages) {
+    EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage(locale)) << locale;
+  }
 }
