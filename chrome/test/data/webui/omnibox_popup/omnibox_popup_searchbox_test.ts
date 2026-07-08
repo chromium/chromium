@@ -80,6 +80,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     // Send `focusin` event to clear `pendingFocusSelection_`.
     searchbox.$.input.dispatchEvent(new Event('focusin', {bubbles: true}));
+    await new Promise(resolve => requestAnimationFrame(resolve));
     await microtasksFinished();
 
     // Set some selection in the HTML.
