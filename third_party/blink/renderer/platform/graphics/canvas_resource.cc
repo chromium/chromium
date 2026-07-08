@@ -200,7 +200,8 @@ void CanvasResourceSharedImage::InitializeSoftware(
   auto* shared_image_interface =
       shared_image_interface_provider->SharedImageInterface();
   DCHECK(shared_image_interface);
-  gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
+  gpu::SyncToken sync_token = GetSharedImage()->creation_sync_token();
+  shared_image_interface->VerifySyncToken(sync_token);
   SetReleaseSyncToken(sync_token);
   GetSharedImage()->UpdateDestructionSyncToken(sync_token);
 
