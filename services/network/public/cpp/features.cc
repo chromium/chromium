@@ -667,4 +667,7 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 
+BASE_FEATURE(kBrowserInitiatedFileUploadValidation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features

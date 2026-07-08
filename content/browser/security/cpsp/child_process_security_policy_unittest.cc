@@ -3595,6 +3595,101 @@ TEST_P(ChildProcessSecurityPolicyTest,
   p->EraseOriginAgentClusterState(browsing_instance_id);
 }
 
+TEST_P(ChildProcessSecurityPolicyTest,
+       BrowserFileAccess_GrantAndRevokeSingleToken) {
+  auto* p = ChildProcessSecurityPolicyImpl::GetInstance();
+  base::FilePath file(TEST_PATH("/foo/bar"));
+  base::UnguessableToken token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+
+  p->GrantFileForBrowserUpload(token, file);
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file));
+
+  p->RevokeFileForBrowserUpload(token);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+}
+
+TEST_P(ChildProcessSecurityPolicyTest,
+       BrowserFileAccess_MultipleTokensSameFile) {
+  auto* p = ChildProcessSecurityPolicyImpl::GetInstance();
+  base::FilePath file(TEST_PATH("/foo/bar"));
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+
+  p->GrantFileForBrowserUpload(token1, file);
+  p->GrantFileForBrowserUpload(token2, file);
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file));
+
+  p->RevokeFileForBrowserUpload(token1);
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file));
+
+  p->RevokeFileForBrowserUpload(token2);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+}
+
+TEST_P(ChildProcessSecurityPolicyTest,
+       BrowserFileAccess_MultipleTokensDifferentFiles) {
+  auto* p = ChildProcessSecurityPolicyImpl::GetInstance();
+  base::FilePath file1(TEST_PATH("/foo/bar1"));
+  base::FilePath file2(TEST_PATH("/foo/bar2"));
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+
+  p->GrantFileForBrowserUpload(token1, file1);
+  p->GrantFileForBrowserUpload(token2, file2);
+
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file1));
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file2));
+
+  p->RevokeFileForBrowserUpload(token1);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file1));
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file2));
+
+  p->RevokeFileForBrowserUpload(token2);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file1));
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file2));
+}
+
+TEST_P(ChildProcessSecurityPolicyTest,
+       BrowserFileAccess_OneTokenMultipleFiles) {
+  auto* p = ChildProcessSecurityPolicyImpl::GetInstance();
+  base::FilePath file1(TEST_PATH("/foo/bar1"));
+  base::FilePath file2(TEST_PATH("/foo/bar2"));
+  base::UnguessableToken token = base::UnguessableToken::Create();
+
+  p->GrantFileForBrowserUpload(token, file1);
+  p->GrantFileForBrowserUpload(token, file2);
+
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file1));
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file2));
+
+  p->RevokeFileForBrowserUpload(token);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file1));
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file2));
+}
+
+TEST_P(ChildProcessSecurityPolicyTest,
+       BrowserFileAccess_RevokeNonExistentToken) {
+  auto* p = ChildProcessSecurityPolicyImpl::GetInstance();
+  base::FilePath file(TEST_PATH("/foo/bar"));
+  base::UnguessableToken valid_token = base::UnguessableToken::Create();
+  base::UnguessableToken invalid_token = base::UnguessableToken::Create();
+
+  p->GrantFileForBrowserUpload(valid_token, file);
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file));
+
+  // Revoking a token that was never granted access shouldn't crash or modify
+  // other grants.
+  p->RevokeFileForBrowserUpload(invalid_token);
+  EXPECT_TRUE(p->CanReadFileForBrowserUpload(file));
+
+  p->RevokeFileForBrowserUpload(valid_token);
+  EXPECT_FALSE(p->CanReadFileForBrowserUpload(file));
+}
+
 // This intentionally excludes {kCppOnly, kProcessState} since that behaves
 // the same as {kCppOnly, kMain} and is redundant to test separately.
 const CpspTestParam kCpspTestParams[] = {
