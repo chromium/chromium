@@ -2119,13 +2119,12 @@ void AppMenuModel::Build() {
       BrowserWindow::FromBrowser(browser())->GetColorProvider()));
   auto* const profile_submenu_model =
       static_cast<ProfileSubMenuModel*>(sub_menus_.back().get());
-  AddSubMenu(IDC_PROFILE_MENU_IN_APP_MENU,
-             profile_submenu_model->profile_name(), profile_submenu_model);
-  SetIconForCommandId(IDC_PROFILE_MENU_IN_APP_MENU,
+  AddSubMenu(kProfileMenuPlaceholder, profile_submenu_model->profile_name(),
+             profile_submenu_model);
+  SetIconForCommandId(kProfileMenuPlaceholder,
                       profile_submenu_model->avatar_image_model());
-  SetElementIdentifierAt(
-      GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
-      kProfileMenuItem);
+  SetElementIdentifierAt(GetIndexOfCommandId(kProfileMenuPlaceholder).value(),
+                         kProfileMenuItem);
   AddSeparator(ui::SPACING_SEPARATOR);
 #endif
 
@@ -2133,13 +2132,13 @@ void AppMenuModel::Build() {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
     AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_PASSWORDS_AND_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
-        sub_menus_.back().get(),
+        this, kPasswordsAndAutofillMenuPlaceholder,
+        IDS_PASSWORDS_AND_AUTOFILL_MENU, sub_menus_.back().get(),
         features::IsRoundedIconsEnabled()
             ? vector_icons::kPasswordManagerIcon
             : vector_icons::kPasswordManagerOldIcon);
     SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
+        GetIndexOfCommandId(kPasswordsAndAutofillMenuPlaceholder).value(),
         kPasswordAndAutofillMenuItem);
   }
 
@@ -2150,10 +2149,12 @@ void AppMenuModel::Build() {
         &AppMenuModel::LogMenuMetrics, base::Unretained(this)));
     sub_menus_.push_back(std::move(recent_tabs_sub_menu));
     AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_RECENT_TABS_MENU, IDS_HISTORY_MENU, sub_menus_.back().get(),
+        this, kRecentTabsMenuPlaceholder, IDS_HISTORY_MENU,
+        sub_menus_.back().get(),
         features::IsRoundedIconsEnabled() ? kHistoryIcon : kHistoryOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_RECENT_TABS_MENU).value(),
-                           kHistoryMenuItem);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(kRecentTabsMenuPlaceholder).value(),
+        kHistoryMenuItem);
   }
   AddItemWithStringIdAndVectorIcon(
       this, IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS,
@@ -2165,24 +2166,25 @@ void AppMenuModel::Build() {
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
 
     AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_AND_LISTS_MENU,
+        this, kBookmarksMenuPlaceholder, IDS_BOOKMARKS_AND_LISTS_MENU,
         bookmark_sub_menu_model_.get(),
         features::IsRoundedIconsEnabled() ? kStarIcon
                                           : kBookmarksListsMenuOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
-                           kBookmarksMenuItem);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(kBookmarksMenuPlaceholder).value(),
+        kBookmarksMenuItem);
   }
 
   if (browser_->profile()->IsRegularProfile()) {
     auto saved_tab_groups_model = std::make_unique<ui::SimpleMenuModel>(this);
     sub_menus_.push_back(std::move(saved_tab_groups_model));
     AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_SAVED_TAB_GROUPS_MENU, IDS_SAVED_TAB_GROUPS_MENU,
+        this, kSavedTabGroupsMenuPlaceholder, IDS_SAVED_TAB_GROUPS_MENU,
         sub_menus_.back().get(),
         features::IsRoundedIconsEnabled() ? kGridViewIcon
                                           : kSavedTabGroupBarEverythingOldIcon);
     SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_SAVED_TAB_GROUPS_MENU).value(),
+        GetIndexOfCommandId(kSavedTabGroupsMenuPlaceholder).value(),
         kTabGroupsMenuItem);
   }
 
@@ -2200,13 +2202,14 @@ void AppMenuModel::Build() {
   } else {
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
+        this, kExtensionsSubmenuPlaceholder, IDS_EXTENSIONS_SUBMENU,
         sub_menus_.back().get(),
         features::IsRoundedIconsEnabled()
             ? vector_icons::kChromeExtensionIcon
             : vector_icons::kExtensionChromeRefreshOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
-                           kExtensionsMenuItem);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(kExtensionsSubmenuPlaceholder).value(),
+        kExtensionsMenuItem);
   }
 
   AddItemWithStringIdAndVectorIcon(
@@ -2268,11 +2271,12 @@ void AppMenuModel::Build() {
                       ? IDS_CAST_SAVE_AND_SHARE_MENU
                       : IDS_SAVE_AND_SHARE_MENU;
   AddSubMenuWithStringIdAndVectorIcon(
-      this, IDC_SAVE_AND_SHARE_MENU, string_id, sub_menus_.back().get(),
+      this, kSaveAndShareMenuPlaceholder, string_id, sub_menus_.back().get(),
       features::IsRoundedIconsEnabled() ? kFileSaveIcon
                                         : kFileSaveChromeRefreshOldIcon);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU).value(),
-                         kSaveAndShareMenuItem);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(kSaveAndShareMenuPlaceholder).value(),
+      kSaveAndShareMenuItem);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
@@ -2291,10 +2295,11 @@ void AppMenuModel::Build() {
 
   sub_menus_.push_back(std::make_unique<ToolsMenuModel>(this, browser_));
   AddSubMenuWithStringIdAndVectorIcon(
-      this, IDC_MORE_TOOLS_MENU, IDS_MORE_TOOLS_MENU, sub_menus_.back().get(),
+      this, kMoreToolsMenuPlaceholder, IDS_MORE_TOOLS_MENU,
+      sub_menus_.back().get(),
       features::IsRoundedIconsEnabled() ? kHomeRepairServiceIcon
                                         : kMoreToolsMenuOldIcon);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_MORE_TOOLS_MENU).value(),
+  SetElementIdentifierAt(GetIndexOfCommandId(kMoreToolsMenuPlaceholder).value(),
                          kMoreToolsMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2304,9 +2309,9 @@ void AppMenuModel::Build() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   sub_menus_.push_back(std::make_unique<HelpMenuModel>(this, browser_));
   AddSubMenuWithStringIdAndVectorIcon(
-      this, IDC_HELP_MENU, IDS_HELP_MENU, sub_menus_.back().get(),
+      this, kHelpMenuPlaceholder, IDS_HELP_MENU, sub_menus_.back().get(),
       features::IsRoundedIconsEnabled() ? kHelpCustomIcon : kHelpMenuOldIcon);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_HELP_MENU).value(),
+  SetElementIdentifierAt(GetIndexOfCommandId(kHelpMenuPlaceholder).value(),
                          kHelpMenuItem);
 #else
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2362,13 +2367,13 @@ void AppMenuModel::CreateCutCopyPasteMenu() {
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_CUT, IDS_CUT);
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_COPY, IDS_COPY);
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_PASTE, IDS_PASTE);
-  AddButtonItem(IDC_EDIT_MENU, edit_menu_item_model_.get());
+  AddButtonItem(kEditMenuPlaceholder, edit_menu_item_model_.get());
 }
 
 void AppMenuModel::CreateFindAndEditSubMenu() {
   sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
   AddSubMenuWithStringIdAndVectorIcon(
-      this, IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
+      this, kFindAndEditMenuPlaceholder, IDS_FIND_AND_EDIT_MENU,
       sub_menus_.back().get(),
       features::IsRoundedIconsEnabled() ? kFindInPageIcon : kSearchMenuOldIcon);
 }
@@ -2381,9 +2386,9 @@ void AppMenuModel::CreateZoomMenu() {
   zoom_menu_item_model_->AddGroupItemWithStringId(IDC_ZOOM_PLUS,
                                                   IDS_ZOOM_PLUS2);
   zoom_menu_item_model_->AddImageItem(IDC_FULLSCREEN);
-  AddButtonItem(IDC_ZOOM_MENU, zoom_menu_item_model_.get());
+  AddButtonItem(kZoomMenuPlaceholder, zoom_menu_item_model_.get());
   SetCommandIcon(
-      this, IDC_ZOOM_MENU,
+      this, kZoomMenuPlaceholder,
       features::IsRoundedIconsEnabled() ? kZoomInIcon : kZoomInOldIcon);
 }
 
@@ -2474,7 +2479,7 @@ void AppMenuModel::UpdateSettingsItemState() {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  index = GetIndexOfCommandId(IDC_HELP_MENU);
+  index = GetIndexOfCommandId(kHelpMenuPlaceholder);
   if (index.has_value()) {
     ui::SimpleMenuModel* help_menu =
         static_cast<ui::SimpleMenuModel*>(GetSubmenuModelAt(index.value()));

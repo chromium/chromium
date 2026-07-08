@@ -230,7 +230,7 @@ bool SpellingMenuObserver::IsCommandIdSupported(int command_id) {
 
   switch (command_id) {
     case IDC_SPELLCHECK_ADD_TO_DICTIONARY:
-    case IDC_CONTENT_CONTEXT_NO_SPELLING_SUGGESTIONS:
+    case kNoSpellingSuggestionsId:
     case IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION:
     case IDC_CONTENT_CONTEXT_SPELLING_TOGGLE:
       return true;
@@ -260,7 +260,7 @@ bool SpellingMenuObserver::IsCommandIdEnabled(int command_id) {
     case IDC_SPELLCHECK_ADD_TO_DICTIONARY:
       return !misspelled_word_.empty();
 
-    case IDC_CONTENT_CONTEXT_NO_SPELLING_SUGGESTIONS:
+    case kNoSpellingSuggestionsId:
       return false;
 
     case IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION:

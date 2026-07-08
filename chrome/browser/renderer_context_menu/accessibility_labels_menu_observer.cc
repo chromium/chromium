@@ -44,7 +44,7 @@ void AccessibilityLabelsMenuObserver::InitMenu(
 
 bool AccessibilityLabelsMenuObserver::IsCommandIdSupported(int command_id) {
   return command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE ||
-         command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS ||
+         command_id == kAccessibilityLabelsMenuId ||
          command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE;
 }
 
@@ -53,7 +53,7 @@ bool AccessibilityLabelsMenuObserver::IsCommandIdChecked(int command_id) {
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
 
   if (command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE ||
-      command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS ||
+      command_id == kAccessibilityLabelsMenuId ||
       command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) {
     return profile->GetPrefs()->GetBoolean(
         prefs::kAccessibilityImageLabelsEnabled);
@@ -64,7 +64,7 @@ bool AccessibilityLabelsMenuObserver::IsCommandIdChecked(int command_id) {
 bool AccessibilityLabelsMenuObserver::IsCommandIdEnabled(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
   if (command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE ||
-      command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS ||
+      command_id == kAccessibilityLabelsMenuId ||
       command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) {
     return ShouldShowLabelsItem();
   }

@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
                        ContextMenuEntryAppearsForHandledUrls) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
       CreateContextMenu(GURL("https://www.google.com/")));
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
+  ASSERT_FALSE(menu->IsItemPresent(kOpenLinkWithMenuId));
 
   AddProtocolHandler(std::string("web+search"),
                      GURL("https://www.google.com/%s"));
@@ -175,14 +175,14 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
+  ASSERT_TRUE(menu->IsItemPresent(kOpenLinkWithMenuId));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
                        UnregisterProtocolHandler) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
       CreateContextMenu(GURL("https://www.google.com/")));
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
+  ASSERT_FALSE(menu->IsItemPresent(kOpenLinkWithMenuId));
 
   AddProtocolHandler(std::string("web+search"),
                      GURL("https://www.google.com/%s"));
@@ -190,12 +190,12 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ProtocolHandlerRegistry* registry = GetRegistry();
   ASSERT_EQ(1u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
+  ASSERT_TRUE(menu->IsItemPresent(kOpenLinkWithMenuId));
   RemoveProtocolHandler(std::string("web+search"),
                         GURL("https://www.google.com/%s"));
   ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
   menu.reset(CreateContextMenu(url));
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
+  ASSERT_FALSE(menu->IsItemPresent(kOpenLinkWithMenuId));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,

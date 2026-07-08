@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
       AppMenuModel::kHistoryMenuItem, context));
   views::MenuItemView* const history_menu_item =
       app_menu_button->app_menu()->root_menu_item()->GetMenuItemByID(
-          IDC_RECENT_TABS_MENU);
+          AppMenuModel::kRecentTabsMenuPlaceholder);
   EXPECT_EQ(history_menu_item,
             views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                 AppMenuModel::kHistoryMenuItem, context));

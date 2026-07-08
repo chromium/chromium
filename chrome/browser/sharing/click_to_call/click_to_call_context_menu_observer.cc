@@ -87,13 +87,13 @@ void ClickToCallContextMenuObserver::BuildMenu(
     BuildSubMenu();
 #if BUILDFLAG(IS_MAC)
     proxy_->AddSubMenu(
-        IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
+        kClickToCallMultipleDevicesMenuId,
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES),
         sub_menu_model_.get());
 #else
     proxy_->AddSubMenuWithStringIdAndIcon(
-        IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
+        kClickToCallMultipleDevicesMenuId,
         IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
         sub_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
@@ -124,8 +124,7 @@ bool ClickToCallContextMenuObserver::IsCommandIdSupported(int command_id) {
     return command_id ==
            IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE;
   } else {
-    return command_id ==
-           IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES;
+    return command_id == kClickToCallMultipleDevicesMenuId;
   }
 }
 

@@ -279,7 +279,7 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 void RenderViewContextMenuViews::ExecuteCommand(int command_id,
                                                 int event_flags) {
   switch (command_id) {
-    case IDC_WRITING_DIRECTION_DEFAULT:
+    case kWritingDirectionDefaultId:
       // WebKit's current behavior is for this menu item to always be disabled.
       NOTREACHED();
 
@@ -311,7 +311,7 @@ void RenderViewContextMenuViews::ExecuteCommand(int command_id,
 
 bool RenderViewContextMenuViews::IsCommandIdChecked(int command_id) const {
   switch (command_id) {
-    case IDC_WRITING_DIRECTION_DEFAULT:
+    case kWritingDirectionDefaultId:
       return (params_.writing_direction_default &
               blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
     case IDC_WRITING_DIRECTION_RTL:
@@ -328,9 +328,9 @@ bool RenderViewContextMenuViews::IsCommandIdChecked(int command_id) const {
 
 bool RenderViewContextMenuViews::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
-    case IDC_WRITING_DIRECTION_MENU:
+    case kWritingDirectionMenuId:
       return true;
-    case IDC_WRITING_DIRECTION_DEFAULT:  // Provided to match OS defaults.
+    case kWritingDirectionDefaultId:  // Provided to match OS defaults.
       return params_.writing_direction_default &
              blink::ContextMenuData::kCheckableMenuItemEnabled;
     case IDC_WRITING_DIRECTION_RTL:
@@ -358,7 +358,7 @@ RenderViewContextMenuViews::GetBrowserAcceleratorProvider() const {
 
 void RenderViewContextMenuViews::AppendPlatformEditableItems() {
   bidi_submenu_model_.AddCheckItem(
-      IDC_WRITING_DIRECTION_DEFAULT,
+      kWritingDirectionDefaultId,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT));
   bidi_submenu_model_.AddCheckItem(
       IDC_WRITING_DIRECTION_LTR,
@@ -368,7 +368,7 @@ void RenderViewContextMenuViews::AppendPlatformEditableItems() {
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL));
 
   menu_model_.AddSubMenu(
-      IDC_WRITING_DIRECTION_MENU,
+      kWritingDirectionMenuId,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU),
       &bidi_submenu_model_);
 }

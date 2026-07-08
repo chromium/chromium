@@ -1766,7 +1766,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_MANAGE_PASSWORDS_FOR_PAGE, true);
 
   // Zoom
-  command_updater_->UpdateCommandEnabled(IDC_ZOOM_MENU, true);
+  command_updater_->UpdateCommandEnabled(kZoomMenuId, true);
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_PLUS, true);
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_NORMAL, false);
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_MINUS, true);
@@ -1808,7 +1808,7 @@ void BrowserCommandController::InitCommandState() {
                                          CanOpenTaskManager());
   command_updater_->UpdateCommandEnabled(IDC_TASK_MANAGER_MAIN_MENU,
                                          CanOpenTaskManager());
-  command_updater_->UpdateCommandEnabled(IDC_PROFILE_MENU_IN_APP_MENU, true);
+  command_updater_->UpdateCommandEnabled(kProfileMenuId, true);
   command_updater_->UpdateCommandEnabled(
       IDC_SHOW_HISTORY, (!guest_session && !profile()->IsSystemProfile()));
   command_updater_->UpdateCommandEnabled(
@@ -1819,8 +1819,8 @@ void BrowserCommandController::InitCommandState() {
       TabsFromOtherDevicesSidePanelCoordinator::IsSupported(profile()));
   command_updater_->UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_COMMENTS_SIDE_PANEL, true);
-  command_updater_->UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
-  command_updater_->UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
+  command_updater_->UpdateCommandEnabled(kFindAndEditMenuId, true);
+  command_updater_->UpdateCommandEnabled(kSaveAndShareMenuId, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL,
                                          true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_READING_MODE_KEYBOARD, true);
@@ -1830,7 +1830,7 @@ void BrowserCommandController::InitCommandState() {
                                          true);
   command_updater_->UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, false);
   command_updater_->UpdateCommandEnabled(IDC_QRCODE_GENERATOR, false);
-  command_updater_->UpdateCommandEnabled(IDC_PASSWORDS_AND_AUTOFILL_MENU,
+  command_updater_->UpdateCommandEnabled(kPasswordsAndAutofillMenuId,
                                          !guest_session);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
                                          !guest_session);
@@ -1848,7 +1848,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_IDENTITY_DOCS,
                                          !guest_session);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_TRAVEL, !guest_session);
-  command_updater_->UpdateCommandEnabled(IDC_HELP_MENU, true);
+  command_updater_->UpdateCommandEnabled(kHelpMenuId, true);
   command_updater_->UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);
   command_updater_->UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_BETA_FORUM, true);
@@ -1856,11 +1856,11 @@ void BrowserCommandController::InitCommandState() {
       IDC_CHROME_ENTERPRISE_RELEASE_NOTES,
       base::FeatureList::IsEnabled(features::kEnterpriseReleaseNotes));
   command_updater_->UpdateCommandEnabled(
-      IDC_BOOKMARKS_MENU, (!guest_session && !profile()->IsSystemProfile()));
-  command_updater_->UpdateCommandEnabled(IDC_SAVED_TAB_GROUPS_MENU, true);
+      kBookmarksMenuId, (!guest_session && !profile()->IsSystemProfile()));
+  command_updater_->UpdateCommandEnabled(kSavedTabGroupsMenuId, true);
   command_updater_->UpdateCommandEnabled(
-      IDC_RECENT_TABS_MENU, (!guest_session && !profile()->IsSystemProfile() &&
-                             !profile()->IsIncognitoProfile()));
+      kRecentTabsMenuId, (!guest_session && !profile()->IsSystemProfile() &&
+                          !profile()->IsIncognitoProfile()));
   command_updater_->UpdateCommandEnabled(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
@@ -1969,7 +1969,7 @@ void BrowserCommandController::InitCommandState() {
 
   if (browser_->is_type_normal()) {
     // Reading list commands.
-    command_updater_->UpdateCommandEnabled(IDC_READING_LIST_MENU, true);
+    command_updater_->UpdateCommandEnabled(kReadingListMenuId, true);
     command_updater_->UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB, true);
     command_updater_->UpdateCommandEnabled(IDC_READING_LIST_MENU_SHOW_UI, true);
   }
@@ -2333,7 +2333,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
 
   // Show various bits of UI
-  command_updater_->UpdateCommandEnabled(IDC_DEVELOPER_MENU, show_main_ui);
+  command_updater_->UpdateCommandEnabled(kDeveloperMenuId, show_main_ui);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   command_updater_->UpdateCommandEnabled(
       IDC_FEEDBACK, show_main_ui || browser_->is_type_devtools());

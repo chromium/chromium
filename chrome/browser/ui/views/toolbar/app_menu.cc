@@ -1226,7 +1226,7 @@ int AppMenu::GetDragOperations(MenuItemView* sender) {
 }
 
 int AppMenu::GetMaxWidthForMenu(MenuItemView* menu) {
-  if (menu->GetCommand() == IDC_BOOKMARKS_MENU ||
+  if (menu->GetCommand() == AppMenuModel::kBookmarksMenuPlaceholder ||
       IsBookmarkCommand(menu->GetCommand())) {
     return bookmark_menu_delegate_->GetMaxWidthForMenu(menu);
   }
@@ -1264,22 +1264,23 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if (command_id == IDC_MORE_TOOLS_MENU) {
+  if (command_id == AppMenuModel::kMoreToolsMenuPlaceholder) {
     return true;
   }
 
-  if (command_id == IDC_EXTENSIONS_SUBMENU) {
+  if (command_id == AppMenuModel::kExtensionsSubmenuPlaceholder) {
     return true;
   }
 
-  if (command_id == IDC_SHARING_HUB_MENU) {
+  if (command_id == AppMenuModel::kSharingHubMenuPlaceholder) {
     return true;
   }
 
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.
   // The child views of these items enabled state updates appropriately.
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
+  if (command_id == AppMenuModel::kEditMenuPlaceholder ||
+      command_id == AppMenuModel::kZoomMenuPlaceholder) {
     return true;
   }
 
@@ -1312,7 +1313,8 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
     return;
   }
 
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
+  if (command_id == AppMenuModel::kEditMenuPlaceholder ||
+      command_id == AppMenuModel::kZoomMenuPlaceholder) {
     // These items are represented by child views. If ExecuteCommand is invoked
     // it means the user clicked on the area around the buttons and we should
     // not do anyting.
@@ -1360,7 +1362,8 @@ bool AppMenu::GetAccelerator(int command_id,
     return false;
   }
 
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
+  if (command_id == AppMenuModel::kEditMenuPlaceholder ||
+      command_id == AppMenuModel::kZoomMenuPlaceholder) {
     // These have special child views; don't show the accelerator for them.
     return false;
   }
@@ -1537,7 +1540,7 @@ void AppMenu::OnGlobalErrorsChanged() {
 }
 
 views::View* AppMenu::GetZoomAppMenuViewForTest() {
-  std::optional<int> zoom_view_command_id = IDC_ZOOM_MENU;
+  std::optional<int> zoom_view_command_id = AppMenuModel::kZoomMenuPlaceholder;
   auto* menu_item = root_->GetMenuItemByID(zoom_view_command_id.value());
   DCHECK(menu_item);
 
@@ -1573,7 +1576,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
     };
 
     switch (model->GetCommandIdAt(i)) {
-      case IDC_PROFILE_MENU_IN_APP_MENU: {
+      case AppMenuModel::kProfileMenuPlaceholder: {
         add_menu_row_background(ChromeLayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
                                 ui::kColorAppMenuProfileRowBackground);
@@ -1624,7 +1627,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         }
         break;
       }
-      case IDC_EDIT_MENU: {
+      case AppMenuModel::kEditMenuPlaceholder: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));
         DCHECK_EQ(IDC_COPY, submodel->GetCommandIdAt(1));
@@ -1636,7 +1639,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
       }
 
-      case IDC_ZOOM_MENU: {
+      case AppMenuModel::kZoomMenuPlaceholder: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_ZOOM_MINUS, submodel->GetCommandIdAt(0));
         DCHECK_EQ(IDC_ZOOM_PLUS, submodel->GetCommandIdAt(1));
@@ -1647,12 +1650,12 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
       }
 
-      case IDC_BOOKMARKS_MENU:
+      case AppMenuModel::kBookmarksMenuPlaceholder:
         DCHECK(!bookmark_menu_);
         bookmark_menu_ = item;
         break;
 
-      case IDC_SAVED_TAB_GROUPS_MENU:
+      case AppMenuModel::kSavedTabGroupsMenuPlaceholder:
         DCHECK(!saved_tab_groups_menu_);
         saved_tab_groups_menu_ = item;
         break;
@@ -1671,7 +1674,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
 #endif
 
-      case IDC_RECENT_TABS_MENU:
+      case AppMenuModel::kRecentTabsMenuPlaceholder:
         DCHECK(!recent_tabs_menu_model_delegate_.get());
         recent_tabs_menu_model_delegate_ =
             std::make_unique<RecentTabsMenuModelDelegate>(

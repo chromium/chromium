@@ -161,8 +161,7 @@ TEST_F(ClickToCallContextMenuObserverTest, MultipleDevices_ShowMenu) {
   // Assert item ordering.
   MockRenderViewContextMenu::MockMenuItem item;
   ASSERT_TRUE(menu_.GetMenuItem(0, &item));
-  EXPECT_EQ(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
-            item.command_id);
+  EXPECT_EQ(kClickToCallMultipleDevicesMenuId, item.command_id);
 
   for (int i = 0; i < device_count; i++) {
     ASSERT_TRUE(menu_.GetMenuItem(i + 1, &item));
@@ -204,8 +203,7 @@ TEST_F(ClickToCallContextMenuObserverTest,
   // Assert item ordering.
   MockRenderViewContextMenu::MockMenuItem item;
   ASSERT_TRUE(menu_.GetMenuItem(0, &item));
-  EXPECT_EQ(IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES,
-            item.command_id);
+  EXPECT_EQ(kClickToCallMultipleDevicesMenuId, item.command_id);
 
   for (int i = 0; i < kMaxDevicesShown; i++) {
     ASSERT_TRUE(menu_.GetMenuItem(i + 1, &item));

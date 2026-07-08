@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -54,7 +55,7 @@ NSMenuItem* BuildAppMenu(NSApplication* nsapp,
       // determine what is displayed in bold in the menu bar as the app menu
       // title. The Info.plist's CFBundleName value is what is actually used.
       Item(IDS_APP_MENU_PRODUCT_NAME)
-          .tag(IDC_CHROME_MENU)
+          .tag(kMacChromeMenuId)
           .submenu({
               Item(IDS_ABOUT_MAC)
                   .string_format_1(product_name)
@@ -123,7 +124,7 @@ NSMenuItem* BuildFileMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_FILE_MENU_MAC)
-          .tag(IDC_FILE_MENU)
+          .tag(kMacFileMenuId)
           .submenu({
               Item(IDS_NEW_TAB_MAC)
                   .command_id(IDC_NEW_TAB)
@@ -182,7 +183,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_EDIT_MENU_MAC)
-          .tag(IDC_EDIT_MENU)
+          .tag(kEditMenuId)
           .submenu({
               Item(IDS_EDIT_UNDO_MAC)
                   .tag(IDC_CONTENT_CONTEXT_UNDO)
@@ -216,7 +217,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                   .action(@selector(selectAll:)),
               Item().is_separator(),
               Item(IDS_EDIT_FIND_SUBMENU_MAC)
-                  .tag(IDC_FIND_MENU)
+                  .tag(kFindMenuId)
                   .submenu({
                       Item(IDS_EDIT_SEARCH_WEB_MAC)
                           .command_id(IDC_FOCUS_SEARCH),
@@ -235,7 +236,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                           .key_equivalent(@"j", NSEventModifierFlagCommand),
               }),
               Item(IDS_EDIT_SPELLING_GRAMMAR_MAC)
-                  .tag(IDC_SPELLCHECK_MENU)
+                  .tag(kSpellcheckMenuId)
                   .submenu({
                       Item(IDS_EDIT_SHOW_SPELLING_GRAMMAR_MAC)
                           .action(@selector(showGuessPanel:))
@@ -293,7 +294,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_VIEW_MENU_MAC)
-          .tag(IDC_VIEW_MENU)
+          .tag(kMacViewMenuId)
           .submenu({
               Item(IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC)
                   .command_id(IDC_SHOW_BOOKMARK_BAR)
@@ -347,7 +348,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_ROUTE_MEDIA),
               Item().is_separator(),
               Item(IDS_DEVELOPER_MENU_MAC)
-                  .tag(IDC_DEVELOPER_MENU)
+                  .tag(kDeveloperMenuId)
                   .submenu({
                       Item(IDS_VIEW_SOURCE_MAC)
                           .command_id(IDC_VIEW_SOURCE),
@@ -374,7 +375,7 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_HISTORY_MENU_MAC)
-          .tag(IDC_HISTORY_MENU)
+          .tag(kMacHistoryMenuId)
           .submenu({
               Item(IDS_HISTORY_HOME_MAC)
                   .command_id(IDC_HOME)
@@ -426,7 +427,7 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_BOOKMARKS_MENU)
-          .tag(IDC_BOOKMARKS_MENU)
+          .tag(AppMenuModel::kBookmarksMenuPlaceholder)
           .submenu({
               Item(bookmarks_manager_string_id)
                   .command_id(IDC_SHOW_BOOKMARK_MANAGER),
@@ -460,7 +461,7 @@ NSMenuItem* BuildGroupsMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_SAVED_TAB_GROUPS_MENU)
-          .tag(IDC_SAVED_TAB_GROUPS_MENU)
+          .tag(AppMenuModel::kSavedTabGroupsMenuPlaceholder)
           .submenu({
               Item(IDS_CREATE_NEW_TAB_GROUP)
                   .command_id(IDC_CREATE_NEW_TAB_GROUP),
@@ -478,7 +479,7 @@ NSMenuItem* BuildPeopleMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_PROFILES_MENU_NAME)
-          .tag(IDC_PROFILE_MAIN_MENU)
+          .tag(kMacProfileMainMenuId)
           .submenu({})
           .Build();
   // clang-format on
@@ -493,7 +494,7 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_WINDOW_MENU_MAC)
-          .tag(IDC_WINDOW_MENU)
+          .tag(kMacWindowMenuId)
           .submenu({
               Item(IDS_MINIMIZE_WINDOW_MAC)
                   .tag(IDC_MINIMIZE_WINDOW)
@@ -522,7 +523,7 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
               Item().is_separator()
                   .remove_if(is_pwa),
               Item(IDS_ALL_WINDOWS_FRONT_MAC)
-                  .tag(IDC_ALL_WINDOWS_FRONT)
+                  .tag(kMacAllWindowsMenuId)
                   .action(@selector(arrangeInFront:)),
               Item().is_separator(),
           })
@@ -544,7 +545,7 @@ NSMenuItem* BuildTabMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_TAB_MENU_MAC)
-          .tag(IDC_TAB_MENU)
+          .tag(kMacTabMenuId)
           .submenu({
               Item(is_rtl ? IDS_TAB_CXMENU_NEWTABTOLEFT
                           : IDS_TAB_CXMENU_NEWTABTORIGHT)

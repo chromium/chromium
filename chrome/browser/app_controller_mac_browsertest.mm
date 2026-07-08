@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // in the menu.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-  NSMenuItem* about_menu_item = [[[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU]
+  NSMenuItem* about_menu_item = [[[NSApp.mainMenu itemWithTag:kMacChromeMenuId]
       submenu] itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([AppController.sharedController
       validateUserInterfaceItem:about_menu_item]);
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   EXPECT_FALSE(browser()->GetProfile()->IsGuestSession());
   // "About Chrome" is not available in the menu.
   NSMenu* chrome_submenu =
-      [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu];
+      [[NSApp.mainMenu itemWithTag:kMacChromeMenuId] submenu];
   NSMenuItem* about_menu_item = [chrome_submenu itemWithTag:IDC_ABOUT];
   EXPECT_FALSE([app_controller validateUserInterfaceItem:about_menu_item]);
   [chrome_submenu update];
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
 
   // Menus are updated before they are brought onscreen. This includes a call
   // to -menuNeedsUpdate: to update the menu's items.
-  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:kMacFileMenuId] submenu];
   [app_controller menuNeedsUpdate:file_submenu];
 
   // The Profiler Picker has no tabs, so Close Tab should not be present.

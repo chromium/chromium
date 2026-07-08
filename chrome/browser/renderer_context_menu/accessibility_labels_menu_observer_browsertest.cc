@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
   ASSERT_EQ(3u, menu()->GetMenuSize());
   MockRenderViewContextMenu::MockMenuItem item;
   menu()->GetMenuItem(0, &item);
-  EXPECT_EQ(IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS, item.command_id);
+  EXPECT_EQ(kAccessibilityLabelsMenuId, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.checked);
   EXPECT_FALSE(item.hidden);

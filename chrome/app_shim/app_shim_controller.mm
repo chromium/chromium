@@ -785,7 +785,7 @@ void AppShimController::UpdateProfileMenu(
   profile_menu_items_ = std::move(profile_menu_items);
 
   NSMenuItem* cocoa_profile_menu =
-      [NSApp.mainMenu itemWithTag:IDC_PROFILE_MAIN_MENU];
+      [NSApp.mainMenu itemWithTag:kMacProfileMainMenuId];
   if (profile_menu_items_.empty()) {
     cocoa_profile_menu.submenu = nil;
     cocoa_profile_menu.hidden = YES;
