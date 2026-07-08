@@ -28,6 +28,7 @@
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -307,6 +308,36 @@ TEST_P(SessionStorageNamespaceImplTest, CloneBeforeBind) {
 
   EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
+  namespaces_.clear();
+}
+
+TEST_P(SessionStorageNamespaceImplTest,
+       CloneWithInvalidNamespaceIdIsBadMessage) {
+  // A compromised renderer can call Clone() with an arbitrary string over the
+  // SessionStorageNamespace mojo interface. An id whose length isn't
+  // `blink::kSessionStorageNamespaceIdLength` must be rejected as a bad message
+  // rather than crashing later when the shared map's metadata key is written.
+  SessionStorageNamespaceImpl* namespace_impl1 =
+      CreateSessionStorageNamespaceImpl(test_namespace_id1_);
+
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/0, testing::_)).Times(1);
+
+  namespace_impl1->PopulateFromMetadata(
+      database_.get(),
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_));
+
+  mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
+  namespace_impl1->Bind(ss_namespace1.BindNewPipeAndPassReceiver());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  ss_namespace1->Clone("1");
+  EXPECT_EQ("Invalid session storage namespace ID.",
+            bad_message_observer.WaitForBadMessage());
+
+  // No clone namespace should have been registered.
+  EXPECT_EQ(namespaces_.find("1"), namespaces_.end());
+
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
   namespaces_.clear();
 }
 

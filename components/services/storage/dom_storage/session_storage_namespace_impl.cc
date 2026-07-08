@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 
 namespace storage {
 
@@ -200,6 +201,14 @@ void SessionStorageNamespaceImpl::OpenArea(
 
 void SessionStorageNamespaceImpl::Clone(const std::string& clone_to_namespace) {
   DCHECK(IsPopulated());
+  // `clone_to_namespace` comes from the mojo peer and must be a valid session
+  // storage namespace ID. Reject invalid IDs here rather than crashing later
+  // when the shared map's metadata key is written.
+  if (clone_to_namespace.size() != blink::kSessionStorageNamespaceIdLength) {
+    receivers_.ReportBadMessage("Invalid session storage namespace ID.");
+    return;
+  }
+
   child_namespaces_waiting_for_clone_call_.erase(clone_to_namespace);
   delegate_->RegisterShallowClonedNamespace(namespace_id_, clone_to_namespace,
                                             storage_key_areas_);
