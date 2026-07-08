@@ -1145,16 +1145,18 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicActorButton.setAccessibilityDescription(desc);
         } else {
             if (mGlicButton == null) return;
+            mGlicButton.setEnabled(!mIsIncognito);
             if (mIsGlicUiVisible) {
                 mGlicButton.setAccessibilityDescription(
                         mContext.getString(R.string.glic_tab_strip_button_tooltip_close));
+                // If no tooltip is set, tooltip defaults to a11y description
+                mGlicButton.setTooltipText(null);
             } else {
-                String text = mGlicButton.getText();
-                String desc =
-                        TextUtils.isEmpty(text)
-                                ? mContext.getString(R.string.glic_tab_strip_button_tooltip)
-                                : text;
+                String defaultTooltip = mContext.getString(R.string.glic_tab_strip_button_tooltip);
+                String buttonText = mGlicButton.getText();
+                String desc = TextUtils.isEmpty(buttonText) ? defaultTooltip : buttonText;
                 mGlicButton.setAccessibilityDescription(desc);
+                mGlicButton.setTooltipText(defaultTooltip);
             }
         }
     }

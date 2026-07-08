@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts.components;
 import android.content.Context;
 import android.graphics.RectF;
 import android.util.FloatProperty;
+import android.widget.Button;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -69,6 +70,7 @@ public class CompositorButton extends StripLayoutView {
     private final @DrawableRes int mBackgroundResource;
 
     private final @Nullable TooltipHandler mTooltipHandler;
+    private @Nullable String mTooltipText;
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
     @Nullable private final StripLayoutView mParentView;
     private final @ButtonType int mType;
@@ -78,6 +80,7 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
+    private boolean mEnabled = true;
 
     private boolean mBackgroundAlwaysVisible;
 
@@ -325,7 +328,7 @@ public class CompositorButton extends StripLayoutView {
      */
     public void setHovered(boolean isHovered) {
         if (mTooltipHandler != null && mIsHovered != isHovered) {
-            mTooltipHandler.setTooltipText(isHovered ? getAccessibilityDescription() : "");
+            mTooltipHandler.setTooltipText(isHovered ? getTooltipText() : "");
         }
         mIsHovered = isHovered;
     }
@@ -350,5 +353,37 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean getShouldApplyHoverBackground() {
         return mBackgroundAlwaysVisible || isHovered() || isPressedFromMouse();
+    }
+
+    /**
+     * Sets the tooltip text for the button.
+     *
+     * @param tooltipText The tooltip text.
+     */
+    public void setTooltipText(@Nullable String tooltipText) {
+        mTooltipText = tooltipText;
+    }
+
+    private String getTooltipText() {
+        return mTooltipText != null ? mTooltipText : getAccessibilityDescription();
+    }
+
+    @Override
+    public String getAccessibilityClassName() {
+        return Button.class.getName();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    /**
+     * Sets the enabled state of the button.
+     *
+     * @param enabled Whether this button is enabled.
+     */
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
     }
 }

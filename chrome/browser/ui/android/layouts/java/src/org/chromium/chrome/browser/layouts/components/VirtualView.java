@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.layouts.components;
 
 import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -68,4 +69,19 @@ public interface VirtualView {
 
     /** Returns whether this {@link VirtualView} is keyboard focused. */
     boolean isKeyboardFocused();
+
+    /**
+     * Returns whether this view is enabled.
+     *
+     * <p>Note that this only reports the enabled state to accessibility services and does not
+     * affect the clickability of the view.
+     */
+    default boolean isEnabled() {
+        return true;
+    }
+
+    /** Returns the class name of this virtual view for accessibility. */
+    default String getAccessibilityClassName() {
+        return View.class.getName();
+    }
 }
