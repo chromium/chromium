@@ -13,10 +13,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_impl.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/device_trust/core/signals/signals_service.h"
 #include "components/policy/core/common/management/management_service.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

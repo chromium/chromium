@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_SIGNALS_SIGNALS_SERVICE_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_SIGNALS_SIGNALS_SERVICE_H_
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -24,4 +24,4 @@ class SignalsService {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_SIGNALS_SIGNALS_SERVICE_H_
