@@ -5970,6 +5970,10 @@ shown properly on the user-facing crash UI.
     A window.moveTo() / moveBy() / resizeTo() / resizeBy() / SetWindowRect() IPC
     arrived for a frame in BFCache or pending deletion.
   </int>
+  <int value="47" label="kClipboard">
+    A clipboard read/write or listener registration IPC arrived for an inactive
+    frame.
+  </int>
 </enum>
 
 <enum name="IncidentType">

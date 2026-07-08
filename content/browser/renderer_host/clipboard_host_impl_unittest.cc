@@ -168,6 +168,48 @@ TEST_F(ClipboardHostImplTest, DoesNotCacheClipboard) {
                                       &unused_sequence_number);
 }
 
+TEST_F(ClipboardHostImplTest, WriteFromInactiveDocumentIsIgnored) {
+  const std::u16string kInitial = u"initial";
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(kInitial);
+  }
+
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
+
+  mojo_clipboard()->WriteText(u"from-inactive-document");
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+
+  base::test::TestFuture<std::u16string> future;
+  system_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                               /*data_dst=*/std::nullopt, future.GetCallback());
+  EXPECT_EQ(kInitial, future.Take());
+}
+
+TEST_F(ClipboardHostImplTest, ReadFromInactiveDocumentIsIgnored) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"clipboard-text");
+  }
+
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
+
+  std::u16string result = u"non-empty";
+  mojo_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste, &result);
+  EXPECT_TRUE(result.empty());
+
+  std::vector<std::u16string> types = {u"non-empty"};
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_TRUE(types.empty());
+}
+
 TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
   std::vector<std::u16string> types;
 
@@ -1076,8 +1118,10 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
     return fake_clipboard_host_impl_;
   }
 
- private:
+ protected:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
+
+ private:
   // `ClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
   raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
@@ -1129,6 +1173,22 @@ TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
 
   // Run message loop to allow mojo communication to complete
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ClipboardHostImplChangeTest, NoNotificationToInactiveDocument) {
+  auto mock_listener = std::make_unique<MockClipboardListener>();
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(0);
+
+  clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
+  EXPECT_TRUE(clipboard_host_impl()->listening_to_clipboard_);
+
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  ASSERT_FALSE(web_contents()->GetPrimaryMainFrame()->IsActive());
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  remote_.FlushForTesting();
 }
 
 TEST_F(ClipboardHostImplChangeTest, ClipboardListenerDisconnect) {
