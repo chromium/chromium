@@ -100,6 +100,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl
   void GetCertProvisioningProfileId(
       PrivateKeyHandle key,
       Kcer::GetCertProvisioningProfileIdCallback callback) override;
+  void GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::GetBrowserEnterpriseClientCertTagCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       Kcer::StatusCallback callback) override;
@@ -109,6 +112,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl
   void SetCertProvisioningProfileId(PrivateKeyHandle key,
                                     std::string profile_id,
                                     Kcer::StatusCallback callback) override;
+  void SetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::StatusCallback callback) override;
 
   // Public for tests.
   static constexpr int kDefaultAttempts = 5;
@@ -398,6 +404,26 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl
                                            std::optional<Error> kcer_error,
                                            chaps::AttributeList attributes,
                                            uint32_t result_code);
+
+  struct GetBrowserEnterpriseClientCertTagTask {
+    GetBrowserEnterpriseClientCertTagTask(
+        PrivateKeyHandle in_key,
+        Kcer::GetBrowserEnterpriseClientCertTagCallback in_callback);
+    GetBrowserEnterpriseClientCertTagTask(
+        GetBrowserEnterpriseClientCertTagTask&& other);
+    ~GetBrowserEnterpriseClientCertTagTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetBrowserEnterpriseClientCertTagCallback callback;
+    int attempts_left = kDefaultAttempts;
+  };
+  void GetBrowserEnterpriseClientCertTagImpl(
+      GetBrowserEnterpriseClientCertTagTask task);
+  void GetBrowserEnterpriseClientCertTagWithAttributes(
+      GetBrowserEnterpriseClientCertTagTask task,
+      std::optional<Error> kcer_error,
+      chaps::AttributeList attributes,
+      uint32_t result_code);
 
   struct SetKeyAttributeTask {
     SetKeyAttributeTask(PrivateKeyHandle in_key,

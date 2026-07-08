@@ -33,6 +33,9 @@ using KeyPermissionsAttributeId =
 using CertProvisioningIdAttributeId =
     base::StrongAlias<class TagKcerToken1,
                       pkcs11_custom_attributes::CkAttributeType>;
+using BrowserEnterpriseClientCertTagAttributeId =
+    base::StrongAlias<class TagKcerToken2,
+                      pkcs11_custom_attributes::CkAttributeType>;
 
 // Implementation of KcerToken that uses NSS as a permanent storage.
 // Exported for unit tests only.
@@ -112,6 +115,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void GetCertProvisioningProfileId(
       PrivateKeyHandle key,
       Kcer::GetCertProvisioningProfileIdCallback callback) override;
+  void GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::GetBrowserEnterpriseClientCertTagCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       Kcer::StatusCallback callback) override;
@@ -121,6 +127,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void SetCertProvisioningProfileId(PrivateKeyHandle key,
                                     std::string profile_id,
                                     Kcer::StatusCallback callback) override;
+  void SetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::StatusCallback callback) override;
 
   // NSS software database (softoken) doesn't support custom attributes. If
   // attribute translation is enabled, KcerToken will store the attributes in
@@ -158,6 +167,8 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   // respecting SetAttributeTranslationForTesting.
   KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
   CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
+  BrowserEnterpriseClientCertTagAttributeId
+  GetBrowserEnterpriseClientCertTagAttributeId() const;
 
   // Indicates whether fake attribute ids should be used (for testing).
   bool translate_attributes_for_testing_ = false;

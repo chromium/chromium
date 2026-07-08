@@ -799,6 +799,42 @@ void GetCertProvisioningIdOnWorkerThread(
       UNSAFE_TODO(cert_prov_attribute->data + cert_prov_attribute->len)));
 }
 
+void GetBrowserEnterpriseClientCertTagOnWorkerThread(
+    BrowserEnterpriseClientCertTagAttributeId attribute_id,
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    Kcer::GetBrowserEnterpriseClientCertTagCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+
+  crypto::ScopedSECItem tag_attribute(SECITEM_AllocItem(/*arena=*/nullptr,
+                                                        /*item=*/nullptr,
+                                                        /*len=*/0));
+
+  SECStatus status = PK11_ReadRawAttribute(
+      /*objType=*/PK11_TypePrivKey, sec_private_key.get(), attribute_id.value(),
+      tag_attribute.get());
+
+  if (status != SECSuccess) {
+    int error = PORT_GetError();
+    if (error == SEC_ERROR_BAD_DATA) {
+      // Attribute was never set; treat as untagged rather than as an error.
+      return std::move(callback).Run(false);
+    }
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToReadAttribute));
+  }
+
+  if (tag_attribute->len == 0 || tag_attribute->data == nullptr) {
+    return std::move(callback).Run(false);
+  }
+  return std::move(callback).Run(tag_attribute->data[0] != 0);
+}
+
 void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
                                 Kcer::GetTokenInfoCallback callback) {
   TokenInfo token_info;
@@ -884,6 +920,7 @@ void SetKeyPermissionsOnWorkerThread(KeyPermissionsAttributeId attribute_id,
                                    serialized_permissions.size());
 
   SECItem attribute_value;
+  attribute_value.type = siBuffer;
   attribute_value.data = serialized_permissions.data();
   attribute_value.len = serialized_permissions.size();
 
@@ -910,8 +947,36 @@ void SetCertProvisioningProfileIdOnWorkerThread(
   }
 
   SECItem attribute_value;
+  attribute_value.type = siBuffer;
   attribute_value.data = reinterpret_cast<uint8_t*>(cert_prov_id.data());
   attribute_value.len = cert_prov_id.size();
+
+  if (SECStatus res = PK11_WriteRawAttribute(
+          /*objType=*/PK11_TypePrivKey, private_key.value().get(),
+          attribute_id.value(), &attribute_value);
+      res != SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(callback).Run({});
+}
+
+void SetBrowserEnterpriseClientCertTagOnWorkerThread(
+    BrowserEnterpriseClientCertTagAttributeId attribute_id,
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    Kcer::StatusCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  uint8_t tag_value = 1u;
+  SECItem attribute_value;
+  attribute_value.type = siBuffer;
+  attribute_value.data = &tag_value;
+  attribute_value.len = sizeof(tag_value);
 
   if (SECStatus res = PK11_WriteRawAttribute(
           /*objType=*/PK11_TypePrivKey, private_key.value().get(),
@@ -1435,6 +1500,31 @@ void KcerTokenImplNss::GetCertProvisioningProfileId(
                      std::move(key), std::move(unblocking_callback)));
 }
 
+void KcerTokenImplNss::GetBrowserEnterpriseClientCertTag(
+    PrivateKeyHandle key,
+    Kcer::GetBrowserEnterpriseClientCertTagCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (state_ == State::kInitializationFailed) [[unlikely]] {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImplNss::GetBrowserEnterpriseClientCertTag,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetBrowserEnterpriseClientCertTagOnWorkerThread,
+                     GetBrowserEnterpriseClientCertTagAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
+}
+
 void KcerTokenImplNss::SetKeyNickname(PrivateKeyHandle key,
                                       std::string nickname,
                                       Kcer::StatusCallback callback) {
@@ -1512,6 +1602,31 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
                      std::move(key), std::move(profile_id),
                      std::move(unblocking_callback)));
+}
+
+void KcerTokenImplNss::SetBrowserEnterpriseClientCertTag(
+    PrivateKeyHandle key,
+    Kcer::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (state_ == State::kInitializationFailed) [[unlikely]] {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImplNss::SetBrowserEnterpriseClientCertTag,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetBrowserEnterpriseClientCertTagOnWorkerThread,
+                     GetBrowserEnterpriseClientCertTagAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
 }
 
 // `did_modify` indicates whether a modification was actually made (which should
@@ -1656,6 +1771,16 @@ KcerTokenImplNss::GetCertProvisioningIdAttributeId() const {
   }
   return CertProvisioningIdAttributeId(
       pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId);
+}
+
+BrowserEnterpriseClientCertTagAttributeId
+KcerTokenImplNss::GetBrowserEnterpriseClientCertTagAttributeId() const {
+  if (translate_attributes_for_testing_) [[unlikely]] {
+    CHECK_IS_TEST();
+    return BrowserEnterpriseClientCertTagAttributeId(CKA_SUBJECT);
+  }
+  return BrowserEnterpriseClientCertTagAttributeId(
+      pkcs11_custom_attributes::kCkaBrowserEnterpriseClientCertKey);
 }
 
 }  // namespace kcer::internal

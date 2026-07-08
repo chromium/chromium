@@ -299,6 +299,8 @@ class COMPONENT_EXPORT(KCER) Kcer {
       base::expected<std::optional<chaps::KeyPermissions>, Error>)>;
   using GetCertProvisioningProfileIdCallback = base::OnceCallback<void(
       base::expected<std::optional<std::string>, Error>)>;
+  using GetBrowserEnterpriseClientCertTagCallback =
+      base::OnceCallback<void(base::expected<bool, Error>)>;
 
   Kcer() = default;
   virtual ~Kcer() = default;

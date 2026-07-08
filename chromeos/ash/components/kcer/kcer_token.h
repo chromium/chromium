@@ -101,6 +101,9 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void GetCertProvisioningProfileId(
       PrivateKeyHandle key,
       Kcer::GetCertProvisioningProfileIdCallback callback) = 0;
+  virtual void GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::GetBrowserEnterpriseClientCertTagCallback callback) = 0;
   virtual void SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               Kcer::StatusCallback callback) = 0;
@@ -110,6 +113,9 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   virtual void SetCertProvisioningProfileId(PrivateKeyHandle key,
                                             std::string profile_id,
                                             Kcer::StatusCallback callback) = 0;
+  virtual void SetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      Kcer::StatusCallback callback) = 0;
 };
 
 }  // namespace kcer::internal

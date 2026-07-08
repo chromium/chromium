@@ -3778,6 +3778,168 @@ TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdRetryToReadAttributes) {
   EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that GetBrowserEnterpriseClientCertTag can successfully read the tag of
+// a tagged key.
+TEST_F(KcerTokenImplTest, GetBrowserEnterpriseClientCertTagSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  // The tag is a single CK_BYTE; non-zero means CK_TRUE.
+  std::vector<uint8_t> tag_value = {1u};
+  chaps::AttributeList tag_attrs;
+  AddAttribute(tag_attrs,
+               pkcs11_custom_attributes::kCkaBrowserEnterpriseClientCertKey,
+               tag_value);
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(tag_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_TRUE(result_waiter.Get().has_value());
+  EXPECT_TRUE(result_waiter.Get().value());
+}
+
+// Test that GetBrowserEnterpriseClientCertTag returns false (rather than an
+// error) when the tag attribute was never set on the key.
+TEST_F(KcerTokenImplTest, GetBrowserEnterpriseClientCertTagUntagged) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_ATTRIBUTE_TYPE_INVALID));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_TRUE(result_waiter.Get().has_value());
+  EXPECT_FALSE(result_waiter.Get().value());
+}
+
+// Test that GetBrowserEnterpriseClientCertTag correctly fails when it fails to
+// find the key.
+TEST_F(KcerTokenImplTest, GetBrowserEnterpriseClientCertTagFailToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that GetBrowserEnterpriseClientCertTag correctly fails when it fails to
+// read attributes.
+TEST_F(KcerTokenImplTest,
+       GetBrowserEnterpriseClientCertTagFailToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(chaps::AttributeList(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kFailedToReadAttribute);
+}
+
+// Test that GetBrowserEnterpriseClientCertTag correctly fails when retrieved
+// attributes are invalid.
+TEST_F(KcerTokenImplTest, GetBrowserEnterpriseClientCertTagBadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(
+          RunOnceCallback<3>(chaps::AttributeList(), chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kFailedToDecodeKeyAttributes);
+}
+
+// Test that GetBrowserEnterpriseClientCertTag retries several times when Chaps
+// fails to find the key with a session error.
+TEST_F(KcerTokenImplTest, GetBrowserEnterpriseClientCertTagRetryToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GetBrowserEnterpriseClientCertTag retries several times when Chaps
+// fails to read attributes with a session error.
+TEST_F(KcerTokenImplTest,
+       GetBrowserEnterpriseClientCertTagRetryToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<bool, Error>> result_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that SetKeyNickname can successfully set a nickname.
 TEST_F(KcerTokenImplTest, SetKeyNicknameSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
@@ -4007,6 +4169,42 @@ TEST_F(KcerTokenImplTest, SetCertProvisioningProfileIdSuccess) {
   EXPECT_TRUE(waiter.Get().has_value());
 }
 
+// Test that SetBrowserEnterpriseClientCertTag can successfully tag a key. The
+// implementation is largely shared with SetKeyNickname and the tests for it
+// cover the fail cases.
+TEST_F(KcerTokenImplTest, SetBrowserEnterpriseClientCertTagSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
+
+  ObjectHandle key_handle{1};
+  std::vector<ObjectHandle> key_handles{key_handle};
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&find_key_attrs),
+                RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList tag_attrs;
+  EXPECT_CALL(chaps_client_,
+              SetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(DoAll(MoveArg<2>(&tag_attrs),
+                      RunOnceCallback<3>(chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetBrowserEnterpriseClientCertTag(PrivateKeyHandle(public_key),
+                                           waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            GetRsaPkcs11Id().value()));
+  // The tag is a single CK_BYTE = CK_TRUE.
+  std::vector<uint8_t> expected_tag_value = {1u};
+  EXPECT_TRUE(FindAttribute(
+      tag_attrs,
+      static_cast<uint32_t>(AttributeId::kBrowserEnterpriseClientCertKey),
+      expected_tag_value));
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
 // Test that all methods are queued until the token is initialized and unblocked
 // after that. In this scenario fail all the methods for simplicity.
 TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
@@ -4068,6 +4266,11 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
       get_cert_prov_id_waiter;
   token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
                                       get_cert_prov_id_waiter.GetCallback());
+  base::test::TestFuture<base::expected<bool, Error>>
+      get_browser_enterprise_tag_waiter;
+  token_.GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle(public_key),
+      get_browser_enterprise_tag_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
   token_.SetKeyNickname(PrivateKeyHandle(public_key), "",
                         set_nickname_waiter.GetCallback());
@@ -4079,6 +4282,11 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   base::test::TestFuture<base::expected<void, Error>> set_cert_prov_id_waiter;
   token_.SetCertProvisioningProfileId(PrivateKeyHandle(public_key), "",
                                       set_cert_prov_id_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>>
+      set_browser_enterprise_tag_waiter;
+  token_.SetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle(public_key),
+      set_browser_enterprise_tag_waiter.GetCallback());
   // Run GenerateRsaKey again to test that SetCertProvisioningProfileId will
   // trigger it after initialization.
   base::test::TestFuture<base::expected<PublicKey, Error>>
@@ -4103,9 +4311,11 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(key_info_waiter.IsReady());
   EXPECT_FALSE(get_key_permissions_waiter.IsReady());
   EXPECT_FALSE(get_cert_prov_id_waiter.IsReady());
+  EXPECT_FALSE(get_browser_enterprise_tag_waiter.IsReady());
   EXPECT_FALSE(set_nickname_waiter.IsReady());
   EXPECT_FALSE(set_key_permissions_waiter.IsReady());
   EXPECT_FALSE(set_cert_prov_id_waiter.IsReady());
+  EXPECT_FALSE(set_browser_enterprise_tag_waiter.IsReady());
   EXPECT_FALSE(generate_rsa_waiter_2.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
@@ -4125,9 +4335,11 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(key_info_waiter.Get().has_value());
   EXPECT_FALSE(get_key_permissions_waiter.Get().has_value());
   EXPECT_FALSE(get_cert_prov_id_waiter.Get().has_value());
+  EXPECT_FALSE(get_browser_enterprise_tag_waiter.Get().has_value());
   EXPECT_FALSE(set_nickname_waiter.Get().has_value());
   EXPECT_FALSE(set_key_permissions_waiter.Get().has_value());
   EXPECT_FALSE(set_cert_prov_id_waiter.Get().has_value());
+  EXPECT_FALSE(set_browser_enterprise_tag_waiter.Get().has_value());
   EXPECT_FALSE(generate_rsa_waiter_2.Get().has_value());
 }
 
