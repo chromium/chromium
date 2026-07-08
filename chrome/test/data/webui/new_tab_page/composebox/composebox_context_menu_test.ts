@@ -269,6 +269,31 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             assertTrue(!!contextMenuButton);
           });
 
+          test(
+              'composebox context menu disables cr-action-menu auto-reposition',
+              async () => {
+                createComposeboxElement(testProxy);
+
+                const entrypointAndMenu =
+                    testProxy.element.shadowRoot.querySelector(
+                        'cr-composebox-contextual-entrypoint-and-menu');
+                assertTrue(!!entrypointAndMenu);
+                await entrypointAndMenu.updateComplete;
+                assertEquals(
+                    useForked, entrypointAndMenu.disableAutoReposition);
+
+                const contextualActionMenu =
+                    entrypointAndMenu.shadowRoot.querySelector(
+                        'cr-composebox-contextual-action-menu');
+                assertTrue(!!contextualActionMenu);
+                await contextualActionMenu.updateComplete;
+
+                const crActionMenu = contextualActionMenu.$.menu;
+                assertEquals(useForked, !crActionMenu.autoReposition);
+                assertEquals(
+                    useForked, !crActionMenu.hasAttribute('auto-reposition'));
+              });
+
           test('add tab context', async () => {
             createComposeboxElement(testProxy);
             testProxy.searchboxHandler.setPromiseResolveFor(

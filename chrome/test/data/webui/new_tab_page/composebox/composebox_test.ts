@@ -5,7 +5,6 @@
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -688,25 +687,6 @@ suite('NewTabPageComposeboxTest', () => {
       // Assert call occurs.
       assertEquals(
           testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
-    });
-
-    test('ShareComposeboxMountPreservesAutoReposition', async () => {
-      createComposeboxElement(testProxy);
-      await testProxy.element.updateComplete;
-
-      const entrypointAndMenu =
-          testProxy.element.shadowRoot
-              .querySelector<ContextualEntrypointAndMenuElement>(
-                  'cr-composebox-contextual-entrypoint-and-menu');
-      assertTrue(!!entrypointAndMenu);
-      await entrypointAndMenu.updateComplete;
-      assertFalse(entrypointAndMenu.disableAutoReposition);
-
-      const contextualActionMenu = entrypointAndMenu.$.menu;
-      await contextualActionMenu.updateComplete;
-      const crActionMenu = contextualActionMenu.$.menu;
-      assertTrue(crActionMenu.autoReposition);
-      assertTrue(crActionMenu.hasAttribute('auto-reposition'));
     });
 
     // Required to test how the voice chips are integrated into NTP html

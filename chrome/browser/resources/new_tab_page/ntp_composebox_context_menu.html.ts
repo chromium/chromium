@@ -17,6 +17,7 @@ export function getHtml(this: NtpComposeboxElement) {
       part="composebox-entrypoint"
       exportparts="context-menu-entrypoint-icon, entrypoint-button"
       class="upload-button no-overlap"
+      disable-auto-reposition
       @add-tab-context="${this.onAddTabContext}"
       @delete-tab-context="${this.onDeleteTabContext}"
       @tool-click="${this.onToolClick}"
