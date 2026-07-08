@@ -285,6 +285,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       ContextSupport* context_support,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback);
 
+  static void CreateGpuFenceForSyncTokens(
+      std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+      std::vector<SyncToken> sync_tokens,
+      SharedImageInterface* sii,
+      base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback);
+
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;
   }

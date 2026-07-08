@@ -68,6 +68,10 @@ class MockGpuChannel : public mojom::GpuChannel {
                     uint64_t,
                     CopyToGpuMemoryBufferAsyncCallback));
 #endif  // BUILDFLAG(IS_WIN)
+  MOCK_METHOD3(GetGLGpuFence,
+               void(const std::vector<SyncToken>&,
+                    uint64_t,
+                    GetGLGpuFenceCallback));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   MOCK_METHOD3(CopyNativeGmbToSharedMemoryAsync,
                void(gfx::GpuMemoryBufferHandle,

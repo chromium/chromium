@@ -178,6 +178,12 @@ void SharedImageInterface::RemoveGpuChannelLostObserver(
   NOTREACHED();
 }
 
+void SharedImageInterface::GetGLGpuFence(
+    std::vector<SyncToken> sync_tokens,
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback) {
+  NOTREACHED();
+}
+
 SharedImageInterfaceHolder::SharedImageInterfaceHolder(
     SharedImageInterface* sii)
     : sii_(sii) {}

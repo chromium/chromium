@@ -935,7 +935,7 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
 
   gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
       std::move(shared_images), std::move(combined_sync_tokens),
-      context_provider_->ContextGL(), context_provider_->ContextSupport(),
+      context_provider_->SharedImageInterface(),
       base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
                      weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids));
 }

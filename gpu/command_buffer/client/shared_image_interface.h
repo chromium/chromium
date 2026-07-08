@@ -40,6 +40,7 @@
 
 namespace gfx {
 class GpuFence;
+struct GpuFenceHandle;
 class Size;
 
 #if BUILDFLAG(IS_WIN)
@@ -325,6 +326,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   // this interface on the service side. This is an async wait for all the
   // previous commands which will be sent to server on the next flush().
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
+
+  // This is equivalent of CreateGpuFenceCHROMIUM+GetGpuFence on GLES interface.
+  // It's not universal way to get a Gpu Fence for shared image. Use with care.
+  // `callback` will run on the calling thread.
+  virtual void GetGLGpuFence(
+      std::vector<SyncToken> sync_tokens,
+      base::OnceCallback<void(gfx::GpuFenceHandle)> callback);
 
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().

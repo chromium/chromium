@@ -64,6 +64,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
                                   base::OnceCallback<void(bool)> callback);
 #endif
 
+  void GetGLGpuFence(base::OnceCallback<void(gfx::GpuFenceHandle)> callback);
+
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,

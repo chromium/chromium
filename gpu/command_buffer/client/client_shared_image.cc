@@ -656,6 +656,27 @@ void ClientSharedImage::CreateGpuFenceForSyncTokens(
   gl->DestroyGpuFenceCHROMIUM(id);
 }
 
+void ClientSharedImage::CreateGpuFenceForSyncTokens(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    SharedImageInterface* sii,
+    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
+  CHECK(sii);
+
+  auto wrapped_callback = base::BindOnce(
+      [](base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback,
+         gfx::GpuFenceHandle handle) {
+        std::unique_ptr<gfx::GpuFence> fence =
+            handle.is_null()
+                ? std::make_unique<gfx::GpuFence>(std::move(handle))
+                : nullptr;
+        std::move(callback).Run(std::move(fence));
+      },
+      std::move(callback));
+
+  sii->GetGLGpuFence(std::move(sync_tokens), std::move(wrapped_callback));
+}
+
 gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
     const gpu::SyncToken& sync_token) {
   CHECK(sii_holder_);

@@ -368,4 +368,10 @@ void ClientSharedImageInterface::DestroySharedImagePool(
   proxy_->DestroySharedImagePool(pool_id);
 }
 
+void ClientSharedImageInterface::GetGLGpuFence(
+    std::vector<SyncToken> sync_tokens,
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback) {
+  proxy_->GetGLGpuFence(std::move(sync_tokens), std::move(callback));
+}
+
 }  // namespace gpu

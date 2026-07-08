@@ -30,6 +30,7 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_fence.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/d3d_shared_fence.h"
@@ -628,6 +629,21 @@ std::string SharedImageStub::GetLabel(const std::string& debug_label) const {
   // For cross process shared images, compose the label from the client pid for
   // easier identification in debug tools.
   return debug_label + "_Pid:" + base::NumberToString(channel_->client_pid());
+}
+
+void SharedImageStub::GetGLGpuFence(
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback) {
+  gfx::GpuFenceHandle handle;
+  if (MakeContextCurrent(/*needs_gl=*/true) &&
+      gl::GLFence::IsGpuFenceSupported()) {
+    if (auto fence = gl::GLFence::CreateForGpuFence()) {
+      if (auto gpu_fence = fence->GetGpuFence()) {
+        handle = gpu_fence->GetGpuFenceHandle().Clone();
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(handle));
 }
 
 }  // namespace gpu

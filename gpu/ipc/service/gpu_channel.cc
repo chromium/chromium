@@ -179,6 +179,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       uint64_t release_count,
       CopyToGpuMemoryBufferAsyncCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
+  void GetGLGpuFence(const std::vector<gpu::SyncToken>& sync_token_dependencies,
+                     uint64_t release_count,
+                     GetGLGpuFenceCallback callback) override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
@@ -614,6 +617,48 @@ void GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync(
                                            sync_token_dependencies, release));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void GpuChannelMessageFilter::GetGLGpuFence(
+    const std::vector<gpu::SyncToken>& sync_token_dependencies,
+    uint64_t release_count,
+    GetGLGpuFenceCallback callback) {
+  TRACE_EVENT0("gpu", "GpuChannelMessageFilter::GetGLGpuFence");
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run(gfx::GpuFenceHandle());
+    std::visit([](auto& receiver) { receiver.reset(); }, receiver_);
+    return;
+  }
+  int32_t routing_id =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
+  auto it = route_sequences_.find(routing_id);
+  if (it == route_sequences_.end()) {
+    LOG(ERROR) << "Could not find SharedImageInterface route id!";
+    std::move(callback).Run(gfx::GpuFenceHandle());
+    return;
+  }
+  SyncToken release;
+  if (release_count != 0) {
+    release = SyncToken(CommandBufferNamespace::GPU_IO,
+                        CommandBufferIdFromChannelAndRoute(
+                            gpu_channel_->client_id(), routing_id),
+                        release_count);
+  }
+
+  auto run_on_main = base::BindOnce(
+      [](base::WeakPtr<gpu::GpuChannel> channel,
+         GetGLGpuFenceCallback callback) {
+        if (!channel) {
+          std::move(callback).Run(gfx::GpuFenceHandle());
+        }
+        channel->shared_image_stub()->GetGLGpuFence(std::move(callback));
+      },
+      gpu_channel_->AsWeakPtr(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback)));
+  scheduler_->ScheduleTask(Scheduler::Task(it->second, std::move(run_on_main),
+                                           sync_token_dependencies, release));
+}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
