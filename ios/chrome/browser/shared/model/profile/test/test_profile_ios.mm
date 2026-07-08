@@ -147,11 +147,11 @@ TestProfileIOS::~TestProfileIOS() {
   // tear it down first.
   otr_profile_.reset();
 
+  ProfileDependencyManagerIOS::GetInstance()->DestroyProfileServices(this);
+
   if (user_cloud_policy_manager_) {
     user_cloud_policy_manager_->Shutdown();
   }
-
-  ProfileDependencyManagerIOS::GetInstance()->DestroyProfileServices(this);
 }
 
 void TestProfileIOS::Init() {
