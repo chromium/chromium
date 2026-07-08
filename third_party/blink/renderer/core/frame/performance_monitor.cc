@@ -96,15 +96,11 @@ void PerformanceMonitor::Subscribe(Violation violation,
                                    base::TimeDelta threshold,
                                    Client* client) {
   DCHECK(violation < kAfterLast);
-  ClientThresholds* client_thresholds = nullptr;
-
-  auto it = subscriptions_.find(violation);
-  if (it == subscriptions_.end()) {
-    client_thresholds = MakeGarbageCollected<ClientThresholds>();
-    subscriptions_.Set(violation, client_thresholds);
-  } else {
-    client_thresholds = it->value;
+  auto add_result = subscriptions_.insert(violation, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value = MakeGarbageCollected<ClientThresholds>();
   }
+  ClientThresholds* client_thresholds = add_result.stored_value->value;
 
   client_thresholds->Set(client, threshold);
   UpdateInstrumentation();

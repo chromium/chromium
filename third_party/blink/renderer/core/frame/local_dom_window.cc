@@ -346,14 +346,14 @@ TrustedTypePolicyFactory* LocalDOMWindow::GetTrustedTypesForWorld(
     const DOMWrapperWorld& world) const {
   DCHECK(world.IsMainWorld() || world.IsIsolatedWorld());
   DCHECK(IsMainThread());
-  auto iter = trusted_types_map_.find(&world);
-  if (iter != trusted_types_map_.end()) {
-    return iter->value.Get();
+  // Look up (or create) the factory for this world in a single hash lookup,
+  // constructing it only when the entry is new.
+  auto add_result = trusted_types_map_.insert(&world, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value =
+        MakeGarbageCollected<TrustedTypePolicyFactory>(GetExecutionContext());
   }
-  return trusted_types_map_
-      .insert(&world, MakeGarbageCollected<TrustedTypePolicyFactory>(
-                          GetExecutionContext()))
-      .stored_value->value;
+  return add_result.stored_value->value.Get();
 }
 
 bool LocalDOMWindow::IsCrossSiteSubframe() const {
