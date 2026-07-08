@@ -11,6 +11,7 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
@@ -255,6 +256,9 @@ public class TabGroupListBottomSheetMediator {
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
+        if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
+            return groupWindowState != GroupWindowState.HIDDEN;
+        }
         return groupWindowState != GroupWindowState.IN_ANOTHER
                 && groupWindowState != GroupWindowState.HIDDEN;
     }

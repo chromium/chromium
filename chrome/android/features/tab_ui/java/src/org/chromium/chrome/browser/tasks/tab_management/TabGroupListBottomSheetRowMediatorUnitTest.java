@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,11 +21,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -39,6 +48,7 @@ import java.util.List;
 /** Unit tests for {@link TabGroupListBottomSheetRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
 public class TabGroupListBottomSheetRowMediatorUnitTest {
     private static final String TEST_SYNC_ID = "testSyncId";
     private static final int TEST_COLOR = 0;
@@ -55,6 +65,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Tab mTab;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private final Token mToken = Token.createRandom();
     private List<Tab> mTabs;
@@ -162,6 +174,56 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
                 .mergeListOfTabsToGroup(
                         mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
+        verify(mOnClickRunnable).run();
+    }
+
+    @Test
+    public void testClickRow_groupInAnotherWindow() {
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(null);
+        TabWindowInfo info = new TabWindowInfo(2, null, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(TEST_LOCAL_ID)).thenReturn(info);
+
+        PropertyModel model = mMediator.getModel();
+        Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
+        clickRunnable.run();
+
+        verify(mMultiInstanceOrchestrator)
+                .moveTabsToWindowByIdChecked(
+                        eq(2),
+                        eq(mTabs),
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(TEST_LOCAL_ID),
+                        eq(false));
+        verify(mTabMovedCallback).onTabMoved();
+        verify(mOnClickRunnable).run();
+    }
+
+    @Test
+    public void testClickRow_groupInAnotherWindow_groupedTabs() {
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(null);
+        TabWindowInfo info = new TabWindowInfo(2, null, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(TEST_LOCAL_ID)).thenReturn(info);
+        when(mTabModel.isTabInTabGroup(mTab)).thenReturn(true);
+
+        PropertyModel model = mMediator.getModel();
+        Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
+        clickRunnable.run();
+
+        verify(mTabUngrouper).ungroupTabs(eq(List.of(mTab)), eq(true), eq(false));
+        verify(mMultiInstanceOrchestrator)
+                .moveTabsToWindowByIdChecked(
+                        eq(2),
+                        eq(mTabs),
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(TEST_LOCAL_ID),
+                        eq(false));
+        verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 }

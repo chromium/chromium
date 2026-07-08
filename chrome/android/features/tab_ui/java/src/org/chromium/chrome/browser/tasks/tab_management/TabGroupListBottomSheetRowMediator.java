@@ -10,9 +10,15 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
@@ -23,6 +29,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -118,7 +125,39 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
 
-        mergeTabsToDest(tabs, localId, mTabModel, mTabMovedCallback);
+        if (mTabModel.getTabById(localId) != null) {
+            mergeTabsToDest(tabs, localId, mTabModel, mTabMovedCallback);
+        } else if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
+            TabWindowInfo info =
+                    TabWindowManagerSingleton.getInstance().getTabWindowInfoById(localId);
+            if (info != null && info.windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                maybeUngroupTabs(tabs);
+                MultiInstanceOrchestratorFactory.getInstance()
+                        .moveTabsToWindowByIdChecked(
+                                info.windowId,
+                                tabs,
+                                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                localId,
+                                /* bringToFront= */ false);
+                if (mTabMovedCallback != null) {
+                    mTabMovedCallback.onTabMoved();
+                }
+            }
+        }
+    }
+
+    private void maybeUngroupTabs(List<Tab> tabs) {
+        List<Tab> groupedTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (mTabModel.isTabInTabGroup(tab)) {
+                groupedTabs.add(tab);
+            }
+        }
+        if (!groupedTabs.isEmpty()) {
+            mTabModel
+                    .getTabUngrouper()
+                    .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
+        }
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

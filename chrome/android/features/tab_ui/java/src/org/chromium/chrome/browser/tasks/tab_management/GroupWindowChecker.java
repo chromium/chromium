@@ -7,9 +7,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -46,8 +51,8 @@ public class GroupWindowChecker {
     /**
      * Returns a sorted list of {@link SavedTabGroup}s.
      *
-     * <p>The list includes all synced tab groups, except those that are currently open in other
-     * windows. The list is sorted using the provided comparator.
+     * <p>The list includes all synced tab groups filtered by the provided predicate and sorted
+     * using the provided comparator.
      *
      * @param tabGroupSelectionPredicate The predicate used for selecting tab groups which should be
      *     included in the returned list.
@@ -63,7 +68,6 @@ public class GroupWindowChecker {
             SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
             assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
 
-            // To simplify interactions, do not include any groups currently open in other windows.
             @GroupWindowState int groupWindowState = getState(savedTabGroup);
             if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
                 groupList.add(savedTabGroup);
@@ -90,10 +94,35 @@ public class GroupWindowChecker {
                 isFullyClosing &= tab.isClosing();
             }
         }
-        if (!foundGroup) return GroupWindowState.IN_ANOTHER;
+        if (!foundGroup) {
+            if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+                    && isWindowForGroupNotActive(groupId)) {
+                return GroupWindowState.HIDDEN;
+            }
+            return GroupWindowState.IN_ANOTHER;
+        }
 
         // If the group is only partially closing no special case is required since we still have to
         // do all the IN_CURRENT work and returning to the tab group via the dialog will work.
         return isFullyClosing ? GroupWindowState.IN_CURRENT_CLOSING : GroupWindowState.IN_CURRENT;
+    }
+
+    private boolean isWindowForGroupNotActive(Token groupId) {
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        if (windowManager == null) {
+            return false;
+        }
+
+        int windowId = windowManager.findWindowIdForTabGroup(groupId);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
+        }
+
+        TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
+        if (selector == null) {
+            return false;
+        }
+
+        return selector.getModel(/* incognito= */ false).getTabModelType() == TabModelType.HEADLESS;
     }
 }
