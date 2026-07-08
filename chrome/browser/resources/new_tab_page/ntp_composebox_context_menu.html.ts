@@ -33,6 +33,7 @@ export function getHtml(this: NtpComposeboxElement) {
       .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
       .inputState="${this.inputState}"
       .usePecApi="${this.usePecApi}"
+      .recentTabId="${this.recentTabId}"
       .smartTabSharingActive="${this.smartTabSharingActive}"
       .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
       .searchboxLayoutMode="${this.searchboxLayoutMode}"
