@@ -809,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDuration.TabletMode" units="ms"
-    expires_after="2026-07-08">
+    expires_after="2027-01-02">
   <owner>robliao@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>wangsongjin@microsoft.com</owner>
