@@ -325,10 +325,12 @@ void AffiliationBackend::ProcessSuccessfulFetch(
     affiliation.last_update_time = clock_->Now();
     std::vector<AffiliatedFacetsWithUpdateTime> obsoleted_affiliations;
     GroupedFacets group;
-    if (map_facet_to_group.count(affiliated_facets[0].uri.canonical_spec())) {
+    auto group_it =
+        map_facet_to_group.find(affiliated_facets[0].uri.canonical_spec());
+    if (group_it != map_facet_to_group.end()) {
       // Affiliations are subset of group. So |map_facet_to_group| must hold a
       // vector to the whole group.
-      group = *map_facet_to_group[affiliated_facets[0].uri.canonical_spec()];
+      group = *group_it->second;
     }
     cache_->StoreAndRemoveConflicting(affiliation, group,
                                       &obsoleted_affiliations);
