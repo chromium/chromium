@@ -14,6 +14,7 @@
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/bluetooth/bluetooth_manifest_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
@@ -271,6 +272,56 @@ TEST_F(ChromePermissionMessageProviderUnittest, PrivilegeIncreaseAllUrls) {
   // privilege increase.
   EXPECT_FALSE(IsPrivilegeIncrease(granted_permissions, granted_hosts,
                                    requested_permissions, requested_hosts));
+}
+
+TEST_F(ChromePermissionMessageProviderUnittest, BluetoothSocketEscalation) {
+  // V1: only uuids
+  base::DictValue v1_dict;
+  base::ListValue v1_uuids;
+  v1_uuids.Append("180D");
+  v1_dict.Set("uuids", std::move(v1_uuids));
+  base::Value v1_value(std::move(v1_dict));
+  std::u16string error;
+  std::unique_ptr<BluetoothManifestPermission> v1_permission =
+      BluetoothManifestPermission::FromValue(v1_value, &error);
+  ASSERT_TRUE(v1_permission);
+
+  // V2: uuids + socket
+  base::DictValue v2_dict;
+  base::ListValue v2_uuids;
+  v2_uuids.Append("180D");
+  v2_dict.Set("uuids", std::move(v2_uuids));
+  v2_dict.Set("socket", true);
+  base::Value v2_value(std::move(v2_dict));
+  std::unique_ptr<BluetoothManifestPermission> v2_permission =
+      BluetoothManifestPermission::FromValue(v2_value, &error);
+  ASSERT_TRUE(v2_permission);
+
+  // Test serialization round-trip of V2 before comparing, to show it loses data
+  std::unique_ptr<base::Value> serialized = v2_permission->ToValue();
+  ASSERT_TRUE(serialized);
+
+  auto restored = std::make_unique<BluetoothManifestPermission>();
+  ASSERT_TRUE(restored->FromValue(serialized.get()));
+  // This will fail before the fix because ToValue/FromValue is lossy
+  EXPECT_TRUE(restored->CheckSocketPermitted(nullptr));
+
+  ManifestPermissionSet g_manifest_permissions;
+  g_manifest_permissions.insert(std::move(v1_permission));
+  PermissionSet granted_permissions(APIPermissionSet(),
+                                    std::move(g_manifest_permissions),
+                                    URLPatternSet(), URLPatternSet());
+
+  ManifestPermissionSet r_manifest_permissions;
+  r_manifest_permissions.insert(std::move(v2_permission));
+  PermissionSet requested_permissions(APIPermissionSet(),
+                                      std::move(r_manifest_permissions),
+                                      URLPatternSet(), URLPatternSet());
+
+  // This will fail before the fix because IsPrivilegeIncrease returns false
+  EXPECT_TRUE(message_provider()->IsPrivilegeIncrease(
+      granted_permissions, requested_permissions,
+      Manifest::Type::kPlatformApp));
 }
 
 }  // namespace extensions

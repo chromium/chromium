@@ -290,6 +290,77 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "Access information about Bluetooth devices paired with your system and "
       "discover nearby Bluetooth devices."));
 
+  // Test that bluetooth with socket produces the devices warning.
+  CreateAndInstall(
+      "{"
+      "  'app': {"
+      "    'background': {"
+      "      'scripts': ['background.js']"
+      "    }"
+      "  },"
+      "  'bluetooth': {"
+      "    'socket': true"
+      "  }"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Access information about Bluetooth devices paired with your system and "
+      "discover nearby Bluetooth devices.",
+      "Send messages to and receive messages from Bluetooth devices."));
+
+  // Test that bluetooth with low_energy produces the devices warning.
+  CreateAndInstall(
+      "{"
+      "  'app': {"
+      "    'background': {"
+      "      'scripts': ['background.js']"
+      "    }"
+      "  },"
+      "  'bluetooth': {"
+      "    'low_energy': true"
+      "  }"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Access information about Bluetooth devices paired with your system and "
+      "discover nearby Bluetooth devices.",
+      "Send messages to and receive messages from Bluetooth devices."));
+
+  // Test that bluetooth with peripheral produces the devices warning.
+  CreateAndInstall(
+      "{"
+      "  'app': {"
+      "    'background': {"
+      "      'scripts': ['background.js']"
+      "    }"
+      "  },"
+      "  'bluetooth': {"
+      "    'peripheral': true"
+      "  }"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Access information about Bluetooth devices paired with your system and "
+      "discover nearby Bluetooth devices.",
+      "Send messages to and receive messages from Bluetooth devices."));
+
+  // Test that bluetooth with multiple sub-capabilities produces only one
+  // devices warning.
+  CreateAndInstall(
+      "{"
+      "  'app': {"
+      "    'background': {"
+      "      'scripts': ['background.js']"
+      "    }"
+      "  },"
+      "  'bluetooth': {"
+      "    'socket': true,"
+      "    'low_energy': true,"
+      "    'peripheral': true"
+      "  }"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Access information about Bluetooth devices paired with your system and "
+      "discover nearby Bluetooth devices.",
+      "Send messages to and receive messages from Bluetooth devices."));
+
   // Test that the USB and Serial permissions coalesce.
   CreateAndInstall(
       "{"
@@ -346,7 +417,8 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "}");
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Access USB devices from an unknown vendor",
-      "Access your Bluetooth and Serial devices"));
+      "Access your Bluetooth and Serial devices",
+      "Send messages to and receive messages from Bluetooth devices."));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
