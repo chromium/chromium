@@ -12,6 +12,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
@@ -110,15 +111,45 @@ BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
 // resize.
 BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, checks the `had_saved_frame_at_start` parameter of a
+// VisibleTimeEvent to decide whether to log it in the "WithSavedFrames" metric.
+// Otherwise, overwrites the parameter with the current value of
+// HasSavedFrames(), which was the pre-M149 behaviour.
+BASE_FEATURE(kUseHadSavedFrameAtStart, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Extract any events in `visible_time_request` that should go to the
 // DelegatedFrameHost and sends them to `delegated_frame_host`. Modifies
 // `visible_time_request` in place.
 void SendVisibleTimeRequestToDelegatedFrameHost(
     blink::RecordContentToVisibleTimeRequest& visible_time_request,
-    DelegatedFrameHost* delegated_frame_host) {
+    DelegatedFrameHost* delegated_frame_host,
+    bool has_saved_frame) {
   CHECK(delegated_frame_host);
-  std::optional<blink::RecordContentToVisibleTimeRequest> delegated_request =
-      visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+  std::optional<blink::RecordContentToVisibleTimeRequest> delegated_request;
+  if (base::FeatureList::IsEnabled(kUseHadSavedFrameAtStart)) {
+    // Send only the events that had a saved frame when the tab switch started
+    // to the DelegatedFrameHost.
+    delegated_request =
+        visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+  } else {
+    // If there's already a Surface available, send all tab switch events to the
+    // DelegatedFrameHost. Otherwise leave them all in `visible_time_request` to
+    // send to the renderer. (This is the behaviour before
+    // https://crrev.com/c/7723380.)
+    if (has_saved_frame) {
+      delegated_request = visible_time_request.ExtractAllTabSwitchEvents();
+
+      // Pretend all events had a saved frame at start, to match the pre-M149
+      // behaviour.
+      if (delegated_request) {
+        for (auto& event : delegated_request->events) {
+          std::get<blink::VisibleTimeEvent::TabSwitchReason>(event.reason)
+              .had_saved_frame_at_start = true;
+        }
+      }
+    }
+  }
+
   if (delegated_request) {
     delegated_frame_host->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(*delegated_request));
@@ -553,6 +584,9 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
   // tab switch measurement should go through DelegatedFrameHost) it's important
   // to call RequestSuccessfulPresentationTimeForNextFrame to register the
   // request before the compositor has a chance to commit.
+  const bool has_saved_frame =
+      browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
+
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
   // If the frame for the renderer is already available, then the
@@ -561,7 +595,8 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
   // in this state, but doesn't include the presentation time request.
   if (tab_switch_start_state) {
     SendVisibleTimeRequestToDelegatedFrameHost(
-        *tab_switch_start_state, browser_compositor_->GetDelegatedFrameHost());
+        *tab_switch_start_state, browser_compositor_->GetDelegatedFrameHost(),
+        has_saved_frame);
   }
 
   host()->WasShown(std::move(tab_switch_start_state));
@@ -575,7 +610,8 @@ void RenderWidgetHostViewMac::
   // If the frame for the renderer is already available, then the tab-switching
   // time is the presentation time for the browser-compositor.
   SendVisibleTimeRequestToDelegatedFrameHost(
-      visible_time_request, browser_compositor_->GetDelegatedFrameHost());
+      visible_time_request, browser_compositor_->GetDelegatedFrameHost(),
+      browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame());
 
   if (!visible_time_request.events.empty()) {
     host()->RequestSuccessfulPresentationTimeForNextFrame(
