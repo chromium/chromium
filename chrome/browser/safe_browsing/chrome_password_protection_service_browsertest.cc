@@ -126,7 +126,7 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override { identity_test_env_adaptor_.reset(); }
@@ -142,14 +142,14 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   ChromePasswordProtectionService* GetService(bool is_incognito) {
     return ChromePasswordProtectionService::GetPasswordProtectionService(
-        is_incognito ? browser()->profile()->GetPrimaryOTRProfile(
+        is_incognito ? browser()->GetProfile()->GetPrimaryOTRProfile(
                            /*create_if_needed=*/true)
                      : browser()->profile());
   }
 
   void SimulateGaiaPasswordChange(const std::string& new_password) {
     password_manager::PasswordReuseManager* reuse_manager =
-        PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+        PasswordReuseManagerFactory::GetForProfile(browser()->GetProfile());
     reuse_manager->SaveGaiaPasswordHash(
         user_manager::kStubUserEmail, base::UTF8ToUTF16(new_password),
         /*is_primary_account=*/true,
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(
   // action.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+          browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
   // In order to test removal, we need to make sure it was added first.
   const std::string kSignonRealm = "https://example.test";
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
-      PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+      PasswordReuseManagerFactory::GetForProfile(browser()->GetProfile());
   reuse_manager->SaveGaiaPasswordHash(
       user_manager::kStubUserEmail, u"password_1",
       /*is_primary_account=*/true,
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     .size());
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
-      PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+      PasswordReuseManagerFactory::GetForProfile(browser()->GetProfile());
   reuse_manager->SaveEnterprisePasswordHash("username@domain.com",
                                             u"password_1");
   reuse_manager->SaveGaiaPasswordHash(
@@ -1569,7 +1569,7 @@ class ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                browser()->profile(),
+                browser()->GetProfile(),
                 base::BindRepeating(&BuildMockTrustSafetySentimentService)));
   }
 

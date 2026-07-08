@@ -158,7 +158,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    SessionServiceTestHelper helper(browser()->profile());
+    SessionServiceTestHelper helper(browser()->GetProfile());
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     g_browser_process->set_background_mode_manager_for_test(
@@ -285,7 +285,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
   virtual Browser* QuitBrowserAndRestore(Browser* browser,
                                          bool close_all_windows) {
-    Profile* profile = browser->profile();
+    Profile* profile = browser->GetProfile();
 
     ScopedKeepAlive test_keep_alive(KeepAliveOrigin::PANEL_VIEW,
                                     KeepAliveRestartOption::DISABLED);
@@ -356,7 +356,7 @@ class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
     SessionStartupPref::SetStartupPref(
-        browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
+        browser()->GetProfile(), SessionStartupPref(SessionStartupPref::LAST));
   }
 
  protected:
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_SessionCookies) {
   // Set the startup preference to "continue where I left off" and visit a page
   // which stores a session cookie.
   StoreDataWithPage("session_cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
+  content::EnsureCookiesFlushed(browser()->GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, SessionCookies) {
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   // Normally localStorage is restored.
   CheckReloadedPageRestored();
   // ... but not if it's set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_CookiesClearedOnExit) {
   // Normally cookies are restored.
   CheckReloadedPageRestored();
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
   CheckReloadedPageRestored(new_browser);
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(new_browser->profile())
+  CookieSettingsFactory::GetForProfile(new_browser->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 
   EnableBackgroundMode();
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   Browser* new_browser = QuitBrowserAndRestore(browser(), true);
   CheckReloadedPageRestored(new_browser);
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(new_browser->profile())
+  CookieSettingsFactory::GetForProfile(new_browser->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
   // ... even if background mode is active.
   EnableBackgroundMode();
@@ -658,7 +658,7 @@ class RestartTest : public BetterSessionRestoreTest {
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_SessionCookies) {
   StoreDataWithPage("session_cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
+  content::EnsureCookiesFlushed(browser()->GetProfile());
   Restart();
 }
 
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(RestartSessionStorageTest, SessionStorage) {
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_LocalStorageClearedOnExit) {
   StoreDataWithPage("local_storage.html");
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
   Restart();
 }
@@ -722,8 +722,8 @@ IN_PROC_BROWSER_TEST_F(RestartTest, LocalStorageClearedOnExit) {
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_CookiesClearedOnExit) {
   StoreDataWithPage("cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  content::EnsureCookiesFlushed(browser()->GetProfile());
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
   Restart();
 }
@@ -773,7 +773,8 @@ class NoSessionRestoreTest : public BetterSessionRestoreTest {
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
     SessionStartupPref::SetStartupPref(
-        browser()->profile(), SessionStartupPref(SessionStartupPref::DEFAULT));
+        browser()->GetProfile(),
+        SessionStartupPref(SessionStartupPref::DEFAULT));
   }
 };
 
@@ -864,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnExit) {
   EXPECT_EQ(std::string(url::kAboutBlankURL), web_contents->GetURL().spec());
   NavigateAndCheckStoredData("local_storage.html");
   // ... but not if it's set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
@@ -877,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnExit) {
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_PRE_CookiesClearedOnExit) {
   StoreDataWithPage("cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
+  content::EnsureCookiesFlushed(browser()->GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnExit) {
@@ -887,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnExit) {
   EXPECT_EQ(std::string(url::kAboutBlankURL), web_contents->GetURL().spec());
   NavigateAndCheckStoredData("cookies.html");
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
@@ -901,9 +902,9 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnExit) {
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnStartup) {
   // Normally cookies are restored.
   StoreDataWithPage("cookies.html");
-  content::EnsureCookiesFlushed(browser()->profile());
+  content::EnsureCookiesFlushed(browser()->GetProfile());
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 
   // Disable cookie and storage deletion on shutdown to simulate the
@@ -920,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnStartup) {
   // Normally localStorage is persisted.
   StoreDataWithPage("local_storage.html");
   // ... but not if it's set to clear on exit.
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 
   // Disable cookie and storage deletion on shutdown to simulate the
@@ -937,8 +938,8 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserCloseWithPopupOpen) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  Browser* popup = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_POPUP, browser()->GetProfile(), true));
   popup->GetWindow()->Show();
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
   NavigateAndCheckStoredData(new_browser, "session_cookies.html");
@@ -949,8 +950,8 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
                        SessionCookiesBrowserClosePopupLast) {
   StoreDataWithPage("session_cookies.html");
-  Browser* popup = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  Browser* popup = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_POPUP, browser()->GetProfile(), true));
   popup->GetWindow()->Show();
   CloseBrowserSynchronously(browser());
   Browser* new_browser = QuitBrowserAndRestore(popup, false);
@@ -973,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
 
   // ... but not if the content setting is set to clear on exit.
   auto cookie_settings =
-      CookieSettingsFactory::GetForProfile(new_browser->profile());
+      CookieSettingsFactory::GetForProfile(new_browser->GetProfile());
   cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   cookie_settings->SetCookieSetting(GURL("http://www.test.com"),
                                     CONTENT_SETTING_SESSION_ONLY);
@@ -991,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnBrowserClose) {
   NavigateAndCheckStoredData(new_browser, "cookies.html");
 
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(new_browser->profile())
+  CookieSettingsFactory::GetForProfile(new_browser->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 
   EnableBackgroundMode();
@@ -1023,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnCloseAllBrowsers) {
   NavigateAndCheckStoredData(new_browser, "cookies.html");
 
   // ... but not if the content setting is set to clear on exit.
-  CookieSettingsFactory::GetForProfile(new_browser->profile())
+  CookieSettingsFactory::GetForProfile(new_browser->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
   // ... even if background mode is active.
   EnableBackgroundMode();

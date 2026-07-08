@@ -82,7 +82,7 @@ class SearchEngineChoiceServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceServiceBrowserTest,
                        StaticCondition_IsEligible) {
-  EXPECT_EQ(GetStaticConditions(browser()->profile()),
+  EXPECT_EQ(GetStaticConditions(browser()->GetProfile()),
             SearchEngineChoiceScreenConditions::kEligible);
 }
 

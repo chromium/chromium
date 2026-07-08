@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  Browser* browser2 = CreateBrowser(browser1->profile());
+  Browser* browser2 = CreateBrowser(browser1->GetProfile());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser2, GURL("https://www.example.com")));
   ui_test_utils::NavigateToURLWithDisposition(

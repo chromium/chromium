@@ -540,21 +540,21 @@ class SafeBrowsingBlockingPageBrowserTest
 
   void EnableExtendedReporting(bool enable) {
     if (IsSberDeprecated()) {
-      SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+      SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                            enable ? SafeBrowsingState::ENHANCED_PROTECTION
                                   : SafeBrowsingState::STANDARD_PROTECTION);
     } else {
-      SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(),
+      SetExtendedReportingPrefForTests(browser()->GetProfile()->GetPrefs(),
                                        enable);
     }
   }
 
   bool IsExtendedReportingEnabled() {
     if (IsSberDeprecated()) {
-      return IsEnhancedProtectionEnabled(*browser()->profile()->GetPrefs());
+      return IsEnhancedProtectionEnabled(*browser()->GetProfile()->GetPrefs());
     }
     return ::safe_browsing::IsExtendedReportingEnabled(
-        *browser()->profile()->GetPrefs());
+        *browser()->GetProfile()->GetPrefs());
   }
 
   void SendCommand(
@@ -752,7 +752,8 @@ class SafeBrowsingBlockingPageBrowserTest
   }
 
   HostContentSettingsMap* hcsm() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    return HostContentSettingsMapFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
  protected:
@@ -1094,7 +1095,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        ReloadWhileInterstitialShowing) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, false);
@@ -1467,7 +1468,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   }
 
   Browser* incognito_browser = CreateIncognitoBrowser();
-  incognito_browser->profile()->GetPrefs()->SetBoolean(
+  incognito_browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, true);   // set up SBER
   GURL url = SetupWarningAndNavigate(incognito_browser);  // incognito
   // Check enhanced protection message is not shown.
@@ -2117,7 +2118,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
                        TestInterstitialPageStringsEnhancedEnabled) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
@@ -2178,7 +2179,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
 IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
                        TestInterstitialPageStringsStandardEnabled) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
@@ -2928,9 +2929,9 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
                        VerifyEnhancedProtectionMessageShownAndClicked) {
   safe_browsing::SetExtendedReportingPrefForTests(
-      browser()->profile()->GetPrefs(), true);
+      browser()->GetProfile()->GetPrefs(), true);
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   SetupWarningAndNavigateToURL(embedded_test_server()->GetURL("/empty.html"),
                                browser());
@@ -2987,9 +2988,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
                        VerifyEnhancedProtectionMessageNotShownAlreadyInEp) {
   safe_browsing::SetExtendedReportingPrefForTests(
-      browser()->profile()->GetPrefs(), true);
+      browser()->GetProfile()->GetPrefs(), true);
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetupWarningAndNavigateToURL(embedded_test_server()->GetURL("/empty.html"),
                                browser());
@@ -3084,12 +3085,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
                        EnterpriseRealTimeUrlCheck) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   SetUpEnterpriseUrlCheck();
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
-  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURLAndWaitForAsyncChecks(url);
@@ -3107,13 +3108,13 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
                        ConsumerRealTimeUrlCheck) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   browser()->profile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
-  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURLAndWaitForAsyncChecks(url);
@@ -3171,7 +3172,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     // Enable enhanced protection which enables real-time URL check which is
     // conducted asynchronously.
     safe_browsing::SetSafeBrowsingState(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
@@ -3453,7 +3454,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set up prerendering.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  SetupUrlRealTimeVerdictInCacheManager(prerender_url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(prerender_url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   prerender_helper().AddPrerenderAsync(prerender_url);
@@ -3469,7 +3470,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
   AssertNoInterstitial(browser());  // Assert the interstitial is gone
 
-  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
+  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->GetProfile()->GetPrefs()));
   EXPECT_EQ(url, browser()
                      ->tab_strip_model()
                      ->GetActiveWebContents()
@@ -3805,7 +3806,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
 
   // Mark the URL as dangerous for both checks.
   SetupUrlRealTimeVerdictInCacheManager(
-      url, browser()->profile(), RTLookupResponse::ThreatInfo::DANGEROUS,
+      url, browser()->GetProfile(), RTLookupResponse::ThreatInfo::DANGEROUS,
       RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
   SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   NavigateToURLAndWaitForAsyncChecks(url);
@@ -3870,10 +3871,10 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_EnhancedProtectionEnabled) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  SetupUnsafeVerdict(url, browser()->profile());
+  SetupUnsafeVerdict(url, browser()->GetProfile());
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetReportSentCallback(threat_report_sent_runner->QuitClosure());
 
@@ -3885,12 +3886,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningShown_MbbEnabled) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   browser()->profile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  SetupUnsafeVerdict(url, browser()->profile());
+  SetupUnsafeVerdict(url, browser()->GetProfile());
 
   NavigateToURL(url);
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
@@ -3900,12 +3901,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        WarningNotShown_MbbDisabled) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   browser()->profile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  SetupUnsafeVerdict(url, browser()->profile());
+  SetupUnsafeVerdict(url, browser()->GetProfile());
 
   NavigateToURL(url);
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
@@ -3916,7 +3917,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        EnterpriseRealTimeUrlCheck_HistogramHasDmToken) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup, including DM token.
@@ -3929,7 +3930,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
-  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURL(url);
@@ -3944,7 +3945,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
                        EnterpriseRealTimeUrlCheck_HistogramHasNoDmToken) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup, but no DM token.
@@ -3956,7 +3957,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       policy::POLICY_SCOPE_MACHINE);
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
-  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURL(url);
@@ -3972,7 +3973,7 @@ IN_PROC_BROWSER_TEST_F(
     EnterpriseRealTimeUrlCheck_NoHistogramBecausePolicyDisabled) {
   base::HistogramTester histogram_tester;
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup so that the policy is disabled.
@@ -3985,7 +3986,7 @@ IN_PROC_BROWSER_TEST_F(
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
-  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURL(url);
@@ -4041,7 +4042,7 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
   }
   void SetUpAndNavigateToUrl(bool is_unsafe) {
     GURL url = embedded_test_server()->GetURL("/empty.html");
-    SetUpVerdict(url, browser()->profile(), is_unsafe);
+    SetUpVerdict(url, browser()->GetProfile(), is_unsafe);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
         browser()->tab_strip_model()->GetActiveWebContents(),
@@ -4152,7 +4153,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
     // sampled HPRT lookups.
     return;
   }
-  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  SetExtendedReportingPrefForTests(browser()->GetProfile()->GetPrefs(), true);
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());
 

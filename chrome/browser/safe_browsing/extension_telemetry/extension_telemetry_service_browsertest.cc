@@ -97,7 +97,7 @@ class ExtensionTelemetryServiceBrowserTest
     // Helper to set up enterprise reporting and enable by default.
     event_report_validator_helper_ = std::make_unique<
         enterprise_connectors::test::EventReportValidatorHelper>(
-        browser()->profile(), /*browser_test=*/true);
+        browser()->GetProfile(), /*browser_test=*/true);
     // Enable enterprise policy.
     enterprise_connectors::test::SetOnSecurityEventReporting(
         /*prefs=*/prefs(),
@@ -121,7 +121,7 @@ class ExtensionTelemetryServiceBrowserTest
 
   ExtensionTelemetryService* telemetry_service() {
     return ExtensionTelemetryServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   bool IsTelemetryServiceEnabledForESB() {
@@ -171,7 +171,7 @@ class ExtensionTelemetryServiceBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsCookiesGetAllSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsCookiesGetSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsDeclarativeNetRequestSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsDeclarativeNetRequestActionSignal) {
   UseHttpsTestServer();
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        MAYBE_DetectsAndReportsTabsApiSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        InterceptsRemoteHostContactedSignalInRenderer) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
   extensions::ResultCatcher result_catcher;
@@ -862,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsWebRequestFromContentScript) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        MAYBE_DetectsAndReportsSearchHijackingSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
   // Set up DSE.
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   TemplateURLData data;
   data.SetShortName(u"Test");
   data.SetKeyword(u"test");

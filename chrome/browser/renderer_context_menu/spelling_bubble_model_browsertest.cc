@@ -30,7 +30,7 @@ class SpellingBubbleModelTest : public InProcessBrowserTest {
   std::unique_ptr<SpellingBubbleModel> CreateSpellingBubble() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    auto model = std::make_unique<SpellingBubbleModel>(browser()->profile(),
+    auto model = std::make_unique<SpellingBubbleModel>(browser()->GetProfile(),
                                                        web_contents);
     return model;
   }
@@ -45,9 +45,9 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, ConfirmSetsPrefs) {
       spellcheck::prefs::kSpellCheckEnable, false);
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
   model->Accept();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       spellcheck::prefs::kSpellCheckEnable));
 }
 
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, CancelSetsPref) {
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
   model->Cancel();
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService));
 }
 

@@ -51,7 +51,7 @@ class WallpaperSearchBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
                        PRE_EnablingWallpaperSearchEnables) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
-      browser()->profile());
+      browser()->GetProfile());
 
   // Enable Wallpaper Search via Optimization Guide Prefs.
   // GM3 should enable itself when the browser restarts.
@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
 IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
                        EnablingWallpaperSearchEnables) {
   // Wallpaper search feature should be enabled.
-  auto* keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  auto* keyed_service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->GetProfile());
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
@@ -86,7 +86,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
                        PRE_EnablingWallpaperSearchEnables) {
   signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       "test@example.com", signin::ConsentLevel::kSync);
 
   // Enable Wallpaper Search via Optimization Guide Prefs.
@@ -98,15 +98,15 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
 
   // Declare if the user is the device owner.
   ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
-      browser()->profile()->GetOriginalProfile())
+      browser()->GetProfile()->GetOriginalProfile())
       ->RunPendingIsOwnerCallbacksForTesting(IsDeviceOwner());
 }
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
                        EnablingWallpaperSearchEnables) {
   // Wallpaper search feature should be enabled.
-  auto* keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  auto* keyed_service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->GetProfile());
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }

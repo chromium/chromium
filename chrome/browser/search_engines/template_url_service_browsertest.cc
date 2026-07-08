@@ -29,7 +29,7 @@ class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
   }
 
   TemplateURLService* template_url_service() {
-    return TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    return TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   }
 };
 

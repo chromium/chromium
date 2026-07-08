@@ -163,7 +163,7 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
 
   void SetUpOnMainThread() override {
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(
             &CloudBinaryUploadServiceRequestValidationBrowserTest::
                 CreateCloudBinaryUploadService,
@@ -186,7 +186,8 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
 
   enterprise_connectors::CloudBinaryUploadServiceBase* service() {
     return static_cast<enterprise_connectors::CloudBinaryUploadServiceBase*>(
-        CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()));
+        CloudBinaryUploadServiceFactory::GetForProfile(
+            browser()->GetProfile()));
   }
 
   std::string dm_token() {

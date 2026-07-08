@@ -98,14 +98,14 @@ class MainContentExtractionTest : public InProcessBrowserTest {
 
   void Connect() {
     base::test::TestFuture<bool> future;
-    ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile())
+    ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->GetProfile())
         ->GetServiceStateAsync(
             ScreenAIServiceRouter::Service::kMainContentExtraction,
             future.GetCallback());
     ASSERT_TRUE(future.Wait()) << "Service state callback not called.";
     ASSERT_TRUE(future.Get<bool>()) << "Service initialization failed.";
 
-    ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile())
+    ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->GetProfile())
         ->BindMainContentExtractor(
             main_content_extractor_.BindNewPipeAndPassReceiver());
     main_content_extractor_->SetClientType(

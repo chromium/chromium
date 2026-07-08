@@ -258,7 +258,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
   void SetPrefsAcceptLanguage(
       const std::vector<std::string>& accept_languages) {
     auto language_prefs = std::make_unique<language::LanguagePrefs>(
-        browser()->profile()->GetPrefs());
+        browser()->GetProfile()->GetPrefs());
     language_prefs->SetUserSelectedLanguagesList(accept_languages);
   }
 
@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
   // Disable script for first party origin.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingCustomScope(
           ContentSettingsPattern::FromURL(GURL(kFirstPartyOriginUrl)),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::JAVASCRIPT,
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   // Disable script for first party origin.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingCustomScope(
           ContentSettingsPattern::FromURL(GURL(kFirstPartyOriginUrl)),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::JAVASCRIPT,

@@ -47,7 +47,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     SessionStartupPref pref(SessionStartupPref::LAST);
-    SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+    SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
   }
 
   bool SetUpUserDataDirectory() override {
@@ -59,7 +59,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
   }
 
   BrowserWindowInterface* QuitBrowserAndRestore(Browser* browser) {
-    Profile* profile = browser->profile();
+    Profile* profile = browser->GetProfile();
 
     // Close the browser.
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   Profile* profile = browser()->profile();
 
   // Create a second browser.
-  CreateBrowser(browser()->profile());
+  CreateBrowser(browser()->GetProfile());
 
   // Minimize the first browser window.
   views::test::PropertyWaiter minimize_waiter(

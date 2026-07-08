@@ -86,7 +86,7 @@ using NotificationContentDetectionServiceFactoryBrowserTest =
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
                        EnabledForRegularProfiles) {
   EXPECT_NE(nullptr, NotificationContentDetectionServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
@@ -131,10 +131,10 @@ class NotificationContentDetectionBrowserTest
   void SetUpOnMainThread() override {
     notification_content_detection_service_ =
         NotificationContentDetectionServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(
-            browser()->profile());
+            browser()->GetProfile());
 
     // Set up allowlisted and non-allowlisted URLs.
     SetNotificationsGlobalCacheListDomainsForTesting(
@@ -166,7 +166,7 @@ class NotificationContentDetectionBrowserTest
 
   PlatformNotificationServiceImpl* service() {
     return PlatformNotificationServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   NotificationContentDetectionService*
@@ -200,7 +200,7 @@ class NotificationContentDetectionBrowserTest
             .AppendASCII("data")
             .AppendASCII("safe_browsing")
             .AppendASCII("notification_content_detection_bert_model.tflite");
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->OverrideTargetModelForTesting(
             optimization_guide::proto::
                 OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION,
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
   // `kNonAllowlistedUrl`.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetWebsiteSettingCustomScope(
           ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
           ContentSettingsPattern::Wildcard(),
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(
     WarningShownWhenUserAllowlistsOriginThenUnsubscribesThenResubscribes) {
   // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
   // `kNonAllowlistedUrl`.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetWebsiteSettingCustomScope(
           ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
           ContentSettingsPattern::Wildcard(),
@@ -582,11 +582,12 @@ IN_PROC_BROWSER_TEST_P(
   // Unsubscribe from notifications then re-enable them.
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
-  handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl),
+  handler->DisableNotifications(browser()->GetProfile(),
+                                GURL(kNonAllowlistedUrl),
                                 /*notification_id=*/std::nullopt,
                                 /*is_suspicious=*/false);
   NotificationPermissionContext::UpdatePermission(
-      browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
+      browser()->GetProfile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
 
   // Display persistent notification.
   UpdateNotificationContentDetectionModel();
@@ -684,7 +685,7 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
     auto logs_uploader = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(
         g_browser_process->local_state());
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetModelQualityLogsUploaderServiceForTesting(
             std::move(logs_uploader));
 
@@ -735,7 +736,7 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
     return static_cast<
         optimization_guide::TestModelQualityLogsUploaderService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile())
+            browser()->GetProfile())
             ->GetModelQualityLogsUploaderService());
   }
 

@@ -371,12 +371,12 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     web_app_info->description = u"Test description 🐐";
     web_app_info->user_display_mode = display_mode;
 
-    return web_app::test::InstallWebApp(browser()->profile(),
+    return web_app::test::InstallWebApp(browser()->GetProfile(),
                                         std::move(web_app_info));
   }
 
   Browser* OpenTestWebApp(const AppId& app_id) {
-    return web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    return web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   }
 
   void OpenImagePageAndContextMenu(std::string image_path) {
@@ -543,8 +543,8 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
     if (!UseOopif()) {
       test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-          browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                    ->CreateGuestViewManagerDelegate());
+          browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
+                                       ->CreateGuestViewManagerDelegate());
     }
   }
 
@@ -972,7 +972,7 @@ class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+    return SupervisedUserServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
@@ -997,7 +997,7 @@ class ContextMenuForSupervisedUsersBrowserTest
 IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
                        SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), "www.google.com", /*allowlist=*/false);
+      browser()->GetProfile(), "www.google.com", /*allowlist=*/false);
 
   base::RunLoop().RunUntilIdle();
 
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   {
     WebAppProvider* const provider =
-        WebAppProvider::GetForTest(browser()->profile());
+        WebAppProvider::GetForTest(browser()->GetProfile());
     base::RunLoop run_loop;
 
     ASSERT_TRUE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
@@ -1523,11 +1523,11 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
     TemplateURLService* model =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     EXPECT_NE(model, nullptr);
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
 
-    data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+    data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
                                    {data_controls_rule});
 
     auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
@@ -1558,7 +1558,7 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
     TemplateURLService* model =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     EXPECT_NE(model, nullptr);
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
 
@@ -1571,7 +1571,7 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     model->SetUserSelectedDefaultSearchProvider(template_url);
 
-    data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+    data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
                                    {data_controls_rule});
 
     content::ContextMenuParams params;
@@ -1592,7 +1592,7 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
       const std::string& data_controls_rule) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-    data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+    data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
                                    {data_controls_rule});
 
     content::ContextMenuParams params;
@@ -1827,7 +1827,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
          const std::string&) { ui::ShowTabletModeEmojiPanel(); }));
   std::unique_ptr<content::WebContents> detached_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   TestRenderViewContextMenu menu(*detached_web_contents->GetPrimaryMainFrame(),
                                  {});
   menu.Init();
@@ -1839,7 +1839,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ContextMenuForEmojiPanel_NullBrowserCrash) {
   std::unique_ptr<content::WebContents> detached_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   TestRenderViewContextMenu menu(*detached_web_contents->GetPrimaryMainFrame(),
                                  {});
   menu.Init();
@@ -2923,7 +2923,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
         "thumb={google:imageThumbnail}";
 
     TemplateURLService* model =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_NE(model, nullptr);
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
     ASSERT_TRUE(model->loaded());
@@ -3718,7 +3718,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, BrowserlessWebContentsCrash) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   CreateContextMenuInWebContents(web_contents.get(),
                                  GURL("http://www.google.com/"),
                                  GURL("http://www.google.com/"), u"Google",
@@ -4322,8 +4322,8 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
   // Verify that the command is in the menu.
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS));
 
-  auto* service = ContextHubServiceFactory::GetForProfile(
-      browser()->profile());
+  auto* service =
+      ContextHubServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(service);
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);

@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
                        MAYBE_ChooseSearchEngine) {
   SearchEngineChoiceDialogService* search_engine_choice_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   int first_search_engine_id =
       search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
 
   EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(*browser()));
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();
   EXPECT_EQ(default_search_engine->prepopulate_id(), first_search_engine_id);

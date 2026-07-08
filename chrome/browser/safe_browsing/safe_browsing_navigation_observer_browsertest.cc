@@ -488,7 +488,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       bool enhanced_protection_enabled,
       bool is_incognito,
       SafeBrowsingNavigationObserverManager::AttributionResult result) {
-    SetEnhancedProtectionPrefForTests(browser()->profile()->GetPrefs(),
+    SetEnhancedProtectionPrefForTests(browser()->GetProfile()->GetPrefs(),
                                       enhanced_protection_enabled);
     auto* maybe_otr_profile = is_incognito
                                   ? browser()->profile()->GetPrimaryOTRProfile(

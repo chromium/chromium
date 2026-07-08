@@ -46,7 +46,7 @@ class SafeBrowsingUrlLookupServiceTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -98,10 +98,10 @@ class SafeBrowsingUrlLookupServiceTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest,
                        ServiceRespectsLocationChanges) {
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   auto* url_lookup_service =
-      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->profile());
+      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->GetProfile());
 
   // By default for ESB, full URL lookups should be enabled.
   EXPECT_TRUE(url_lookup_service->CanPerformFullURLLookup());
@@ -127,10 +127,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
       secure_embedded_test_server()->GetURL(kRealtimeEndpoint));
 
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   auto* url_lookup_service =
-      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->profile());
+      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->GetProfile());
 
   base::RunLoop run_loop;
   url_lookup_service->StartLookup(
@@ -150,10 +150,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
       secure_embedded_test_server()->GetURL(kRealtimeEndpoint));
 
   safe_browsing::SetSafeBrowsingState(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   auto* url_lookup_service =
-      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->profile());
+      RealTimeUrlLookupServiceFactory::GetForProfile(browser()->GetProfile());
 
   base::RunLoop run_loop;
   url_lookup_service->StartLookup(

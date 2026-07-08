@@ -33,7 +33,7 @@ class AccessibilityLabelsBubbleModelTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
-        browser()->profile(), web_contents, /*enable_always=*/true);
+        browser()->GetProfile(), web_contents, /*enable_always=*/true);
     return model;
   }
 };
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, ConfirmSetsPref) {
       prefs::kAccessibilityImageLabelsEnabled, false);
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
   model->Accept();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityImageLabelsEnabled));
 }
 
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest,
       prefs::kAccessibilityImageLabelsEnabled, false);
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
   model->Cancel();
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityImageLabelsEnabled));
 }
 

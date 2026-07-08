@@ -201,7 +201,7 @@ class ScreenAIServiceRouterTest
 
   ScreenAIServiceRouter* router() {
     return ScreenAIServiceRouterFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
  protected:

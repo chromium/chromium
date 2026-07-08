@@ -71,8 +71,8 @@ const VariationsCountryTestParam kTestParams[] = {
 IN_PROC_BROWSER_TEST_P(
     RegionalCapabilitiesServiceFactoryBrowserTestForVariationsCountry,
     GetCountryId) {
-  auto& service = CHECK_DEREF(
-      RegionalCapabilitiesServiceFactory::GetForProfile(browser()->profile()));
+  auto& service = CHECK_DEREF(RegionalCapabilitiesServiceFactory::GetForProfile(
+      browser()->GetProfile()));
 
   EXPECT_EQ(service.GetCountryId().GetForTesting(), GetExpectedCountryId());
 }

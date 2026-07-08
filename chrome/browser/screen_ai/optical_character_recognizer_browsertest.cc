@@ -199,7 +199,7 @@ class OpticalCharacterRecognizerTestBase : public InProcessBrowserTest {
       mojom::OcrClientType client_type = mojom::OcrClientType::kTest) {
     base::test::TestFuture<bool> init_future;
     ocr_ = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), client_type, init_future.GetCallback());
+        browser()->GetProfile(), client_type, init_future.GetCallback());
     EXPECT_TRUE(init_future.Wait());
     return init_future.Get<bool>();
   }
@@ -209,7 +209,7 @@ class OpticalCharacterRecognizerTestBase : public InProcessBrowserTest {
   mojom::VisualAnnotationPtr PerformOCR(const SkBitmap& bitmap) {
     screen_ai::ScreenAIServiceRouter* router =
         ScreenAIServiceRouterFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
 
     // If OCR service crashes while performing OCR, the callback will not be
     // called. A timer is used to check the connection state and stop the
@@ -336,7 +336,7 @@ class OpticalCharacterRecognizerTest
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr =
       screen_ai::OpticalCharacterRecognizer::Create(
-          browser()->profile(), mojom::OcrClientType::kTest);
+          browser()->GetProfile(), mojom::OcrClientType::kTest);
   base::test::TestFuture<void> future;
   // This step can be slow.
   WaitForStatus(ocr, future.GetCallback(), /*remaining_tries=*/25);
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   base::test::TestFuture<bool> future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
+          browser()->GetProfile(), mojom::OcrClientType::kTest,
           future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -378,7 +378,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // Create an `OpticalCharacterRecognizer` scoped_refptr and then immediately
   // discard the result.
   OpticalCharacterRecognizer::CreateWithStatusCallback(
-      browser()->profile(), mojom::OcrClientType::kTest, future.GetCallback());
+      browser()->GetProfile(), mojom::OcrClientType::kTest,
+      future.GetCallback());
 
   // The status callback should still be run without crashing even though the
   // created scoped_refptr was destroyed.
@@ -554,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_ocr_future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
       OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
+          browser()->GetProfile(), mojom::OcrClientType::kTest,
           base::BindLambdaForTesting([&](bool is_successful) {
             EXPECT_TRUE(is_successful);
             // The status callback is run asynchronously after `ocr` is created
@@ -582,7 +583,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   }
 
   screen_ai::ScreenAIServiceRouter* router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+      ScreenAIServiceRouterFactory::GetForBrowserContext(
+          browser()->GetProfile());
 
   // Init OCR once and verify service availability.
   ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
@@ -871,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
       auto* ocr = std::begin(ocr_clients);
       for (int i = 0; i < kTestFilenamesCount; i++) {
         (*ocr) = OpticalCharacterRecognizer::CreateWithStatusCallback(
-            browser()->profile(), mojom::OcrClientType::kTest,
+            browser()->GetProfile(), mojom::OcrClientType::kTest,
             future->GetCallback());
         future = std::next(future);
         ocr = std::next(ocr);
@@ -924,7 +926,8 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
 
   // Wait for the service to shutdown and store metrics.
   screen_ai::ScreenAIServiceRouter* router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+      ScreenAIServiceRouterFactory::GetForBrowserContext(
+          browser()->GetProfile());
   base::test::TestFuture<void> future;
   WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
   ASSERT_TRUE(future.Wait());
@@ -964,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   {
     base::test::TestFuture<bool> future;
     ocr_client = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), mojom::OcrClientType::kTest,
+        browser()->GetProfile(), mojom::OcrClientType::kTest,
         future.GetCallback());
     ASSERT_TRUE(future.Wait());
     ASSERT_TRUE(future.Get<bool>());
@@ -1026,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   {
     base::test::TestFuture<bool> future;
     ocr_client = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), mojom::OcrClientType::kTest,
+        browser()->GetProfile(), mojom::OcrClientType::kTest,
         future.GetCallback());
     ASSERT_TRUE(future.Wait());
     ASSERT_TRUE(future.Get<bool>());
@@ -1093,10 +1096,10 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
     base::test::TestFuture<bool> futures[2];
 
     ocr_clients[0] = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), mojom::OcrClientType::kTest,
+        browser()->GetProfile(), mojom::OcrClientType::kTest,
         futures[0].GetCallback());
     ocr_clients[1] = OpticalCharacterRecognizer::CreateWithStatusCallback(
-        browser()->profile(), mojom::OcrClientType::kTest,
+        browser()->GetProfile(), mojom::OcrClientType::kTest,
         futures[1].GetCallback());
 
     ASSERT_TRUE(futures[0].Wait());
@@ -1163,7 +1166,8 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   ocr_clients[0].reset();
   ocr_clients[1].reset();
   screen_ai::ScreenAIServiceRouter* router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+      ScreenAIServiceRouterFactory::GetForBrowserContext(
+          browser()->GetProfile());
   base::test::TestFuture<void> future;
   WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
   ASSERT_TRUE(future.Wait());

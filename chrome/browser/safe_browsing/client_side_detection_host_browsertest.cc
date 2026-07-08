@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   }
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
-    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+    SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                          SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   }
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
-    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+    SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                          SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   }
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
-    SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+    SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                          SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP();
   }
 
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   FakeClientSideDetectionService fake_csd_service;
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP();
   }
 
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   ClientSideDetectionFeatureCache* feature_cache_map =
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP();
   }
 
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP();
   }
 
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1380,7 +1380,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1511,7 +1511,7 @@ IN_PROC_BROWSER_TEST_P(
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1551,7 +1551,7 @@ IN_PROC_BROWSER_TEST_P(
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1719,7 +1719,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1761,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTriggerDisabledTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormDetectionOnlyTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1852,7 +1852,7 @@ IN_PROC_BROWSER_TEST_F(
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1913,7 +1913,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -1991,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::HistogramTester histogram_tester;
@@ -2088,7 +2088,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostGeminiAntiscamProtectionTest,
     GTEST_SKIP();
   }
   base::HistogramTester histogram_tester;
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());

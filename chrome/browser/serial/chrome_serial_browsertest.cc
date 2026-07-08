@@ -43,7 +43,8 @@ class SerialTest : public InProcessBrowserTest {
 
     mojo::PendingRemote<device::mojom::SerialPortManager> port_manager;
     port_manager_.AddReceiver(port_manager.InitWithNewPipeAndPassReceiver());
-    context_ = SerialChooserContextFactory::GetForProfile(browser()->profile());
+    context_ =
+        SerialChooserContextFactory::GetForProfile(browser()->GetProfile());
     context_->SetPortManagerForTesting(std::move(port_manager));
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");

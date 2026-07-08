@@ -36,7 +36,7 @@ class SafeBrowsingOhttpKeyServiceTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SafeBrowsingOhttpKeyServiceTest,
                        ServiceRespectsLocationChanges) {
   auto* ohttp_key_service =
-      OhttpKeyServiceFactory::GetForProfile(browser()->profile());
+      OhttpKeyServiceFactory::GetForProfile(browser()->GetProfile());
   ohttp_key_service->set_ohttp_key_for_testing(
       {kTestOhttpKey, base::Time::Now() + base::Days(10)});
 

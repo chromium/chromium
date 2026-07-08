@@ -232,13 +232,13 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
     content::SetupCrossSiteRedirector(embedded_test_server());
 
 #if BUILDFLAG(IS_CHROMEOS)
-    SessionServiceTestHelper helper(browser()->profile());
+    SessionServiceTestHelper helper(browser()->GetProfile());
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 #endif
 
     if (browser()) {
       SessionStartupPref pref(SessionStartupPref::LAST);
-      SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+      SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
     }
   }
 
@@ -262,7 +262,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
       Browser* browser,
       const GURL& url = GURL(),
       bool no_memory_pressure = true) {
-    Profile* profile = browser->profile();
+    Profile* profile = browser->GetProfile();
 
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
@@ -777,7 +777,7 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
     browser()->tab_strip_model()->ActivateTabAt(0);
 
     // Window 2 on the right side of the screen
-    Browser* window2 = CreateBrowser(browser()->profile());
+    Browser* window2 = CreateBrowser(browser()->GetProfile());
     window2->GetWindow()->SetBounds(kWindowBounds2);
 
     // Window 2 Tab 1 should be pinned and shows GetUrl(1)
@@ -831,7 +831,7 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
   }
 
   void AssertSessionState() {
-    if (SessionRestore::IsRestoring(browser()->profile())) {
+    if (SessionRestore::IsRestoring(browser()->GetProfile())) {
       SessionRestoreTestHelper helper;
       helper.Wait();
     }
@@ -962,7 +962,7 @@ class TabRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
 
   // Asserts that the tabs from SetUpExpectedTabs() are present.
   void AssertExpectedTabs() {
-    if (SessionRestore::IsRestoring(browser()->profile())) {
+    if (SessionRestore::IsRestoring(browser()->GetProfile())) {
       SessionRestoreTestHelper helper;
       helper.Wait();
     }

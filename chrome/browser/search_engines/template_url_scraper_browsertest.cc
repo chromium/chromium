@@ -90,10 +90,10 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
 
   TemplateURLPrepopulateData::Resolver* prepopulate_data_resolver =
       TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   TemplateURLService* template_urls =
       TemplateURLServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   TemplateURLServiceLoader loader(template_urls);
 
   TemplateURLService::TemplateURLVector all_urls =

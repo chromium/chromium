@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        NotificationsAcceptedReportSentWithCorrectOrigins) {
   SetUpSendingNotificationsAcceptedCSBRR();
   network::TestURLLoaderFactory test_url_loader_factory;
-  ChromePingManagerFactory::GetForBrowserContext(browser()->profile())
+  ChromePingManagerFactory::GetForBrowserContext(browser()->GetProfile())
       ->SetURLLoaderFactoryForTesting(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory));
@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   // render_frame_host should be nullptr as we're not testing referrer chain
   // here.
   bool result = safe_browsing_service()->MaybeSendNotificationsAcceptedReport(
-      /*render_frame_host=*/nullptr, browser()->profile(), kUrl, kPageUrl,
+      /*render_frame_host=*/nullptr, browser()->GetProfile(), kUrl, kPageUrl,
       kPermissionPromptOrigin, kDisplayDuration);
   EXPECT_TRUE(result)
       << "MaybeSendNotificationsAcceptedReport should return true";
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        NotificationsAcceptedReportSentWithReferrerChain) {
   SetUpSendingNotificationsAcceptedCSBRR();
   network::TestURLLoaderFactory test_url_loader_factory;
-  ChromePingManagerFactory::GetForBrowserContext(browser()->profile())
+  ChromePingManagerFactory::GetForBrowserContext(browser()->GetProfile())
       ->SetURLLoaderFactoryForTesting(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory));
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
   // Call the `MaybeSendNotificationsAcceptedReport` method.
   bool result = safe_browsing_service()->MaybeSendNotificationsAcceptedReport(
-      rfh, browser()->profile(), report_resource_url, landing_page_gurl,
+      rfh, browser()->GetProfile(), report_resource_url, landing_page_gurl,
       permission_prompt_origin_gurl, kDisplayDuration);
   EXPECT_TRUE(result)
       << "MaybeSendNotificationsAcceptedReport should return true.";

@@ -276,11 +276,12 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
 
-    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    web_app::test::InstallWebApp(browser()->GetProfile(),
+                                 std::move(web_app_info));
   }
 
   void CleanupWebApps() {
-    web_app::test::UninstallAllWebApps(browser()->profile());
+    web_app::test::UninstallAllWebApps(browser()->GetProfile());
     override_registration_.reset();
   }
 
@@ -486,7 +487,7 @@ class GlicInteractiveContextMenuTestBase
     ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, "foo@google.com",
                                         signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
@@ -506,7 +507,7 @@ class GlicInteractiveContextMenuTestBase
                      },
                      "polling until the client is ready"),
                  Do([this]() {
-                   ::glic::SetFRECompletion(browser()->profile(),
+                   ::glic::SetFRECompletion(browser()->GetProfile(),
                                             glic::prefs::FreStatus::kCompleted);
                  }));
   }
@@ -817,7 +818,7 @@ class GlicInteractiveContextMenuPolicyTest
         SetSuccessDialogTimeoutForTesting(base::Milliseconds(0));
 
     enterprise_connectors::test::SetAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::BULK_DATA_ENTRY, kBulkDataEntryPolicyValue);
 
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
@@ -905,7 +906,7 @@ class GlicInteractiveContextMenuPolicyTest
 IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnCopyDenied) {
   // Taken from DataProtectionClipboardBrowserTest in clipboard_browsertest.cc.
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
                                    "sources": {
@@ -992,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
   // Check that our destination is the Guest URL.
   GURL guest_url = glic::GetGuestURL();
   data_controls::SetDataControls(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       {base::StringPrintf(kPastePolicyTemplate, guest_url.spec())});
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);

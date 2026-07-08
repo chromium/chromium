@@ -108,7 +108,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
   // Turn on session restore before we restart.
   void TurnOnSessionRestore() {
     SessionStartupPref::SetStartupPref(
-        browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
+        browser()->GetProfile(), SessionStartupPref(SessionStartupPref::LAST));
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -487,12 +487,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   LaunchApp(GetAppType());
 
   // Should have one SWA window and one default browser window.
-  EXPECT_TRUE(ash::FindSystemWebAppBrowser(browser()->profile(), GetAppType(),
-                                           ash::BrowserType::kApp));
+  EXPECT_TRUE(ash::FindSystemWebAppBrowser(
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp));
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   SessionStartupPref::SetStartupPref(
-      browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
+      browser()->GetProfile(), SessionStartupPref(SessionStartupPref::LAST));
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,

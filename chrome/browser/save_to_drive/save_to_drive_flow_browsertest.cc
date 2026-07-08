@@ -142,7 +142,8 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
     account_chooser_ = account_chooser.get();
     hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+            browser()->GetProfile(),
+            base::BindRepeating(&BuildMockHatsService)));
 
     SaveToDriveFlow::CreateForCurrentDocument(
         rfh, std::move(event_dispatcher), std::move(content_reader),

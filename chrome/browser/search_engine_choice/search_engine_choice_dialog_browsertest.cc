@@ -193,7 +193,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
 
   // TODO(crbug.com/40277150): Make this function handle multiple browsers.
   void QuitAndRestoreBrowser(Browser* browser) {
-    Profile* profile = browser->profile();
+    Profile* profile = browser->GetProfile();
     // Enable SessionRestore to last used pages.
     SessionStartupPref startup_pref(SessionStartupPref::LAST);
     SessionStartupPref::SetStartupPref(profile, startup_pref);
@@ -281,7 +281,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     profiles::SwitchToGuestProfile(browser_future.GetCallback());
     Browser* guest_browser = browser_future.Get();
     CHECK(guest_browser);
-    EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
+    EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
     content::WebContents* ntp_contents =
         guest_browser->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(ntp_contents);
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser()->profile()));
+          browser()->GetProfile()));
   ASSERT_TRUE(service);
 
   // Make sure that the dialog gets opened only once and the display is
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest, BackgroundTab) {
 
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser()->profile()));
+          browser()->GetProfile()));
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->IsShowingDialog(*browser()));
 
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        DialogDoesNotShowAgainAfterSettingPref) {
   auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser()->profile()));
+          browser()->GetProfile()));
   // Test that the search engine choice dialog service is null after relaunching
   // a browser with a profile in which the search engine choice was already
   // made.

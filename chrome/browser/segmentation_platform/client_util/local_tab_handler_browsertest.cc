@@ -36,7 +36,7 @@ class LocalTabHandlerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     handler_ = std::make_unique<LocalTabHandler>(&session_sync_service_,
-                                                 browser()->profile());
+                                                 browser()->GetProfile());
 
     source_ = std::make_unique<LocalTabSource>(&session_sync_service_,
                                                handler_.get());

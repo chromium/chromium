@@ -34,8 +34,8 @@ void InnerContentsCreationObserver::InnerWebContentsCreated(
 
 TestSafeBrowsingNavigationObserverManager::
     TestSafeBrowsingNavigationObserverManager(Browser* browser)
-    : SafeBrowsingNavigationObserverManager(browser->profile()->GetPrefs(),
-                                            browser->profile()
+    : SafeBrowsingNavigationObserverManager(browser->GetProfile()->GetPrefs(),
+                                            browser->GetProfile()
                                                 ->GetDefaultStoragePartition()
                                                 ->GetServiceWorkerContext()) {
   browser->tab_strip_model()->AddObserver(this);

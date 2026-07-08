@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, BlocksCopyingLinkToText) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
                                    "sources": {
@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, BlocksCopyingLinkToText) {
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndCancel) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
                                    "sources": {
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndBypass) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
                                    "sources": {
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesCopyingLinkToText) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
                                    "destinations": {

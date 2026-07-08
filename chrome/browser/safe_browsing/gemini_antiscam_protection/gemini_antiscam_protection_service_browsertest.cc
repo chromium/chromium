@@ -44,7 +44,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Mock the `ModelQualityLogsUploaderService`.
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetModelQualityLogsUploaderServiceForTesting(
             std::make_unique<
                 optimization_guide::TestModelQualityLogsUploaderService>(
@@ -65,7 +65,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
         base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
     any_result.set_value(serialized_metadata);
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::
                 kGeminiAntiscamProtection,
@@ -81,7 +81,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
         base::StrCat({"type.googleapis.com/", any_result.GetTypeName()}));
     any_result.set_value(serialized_metadata);
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::
                 kGeminiAntiscamProtection,
@@ -91,7 +91,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpEmptyModelExecution() {
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::
                 kGeminiAntiscamProtection,
@@ -109,7 +109,7 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
     return static_cast<
         optimization_guide::TestModelQualityLogsUploaderService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile())
+            browser()->GetProfile())
             ->GetModelQualityLogsUploaderService());
   }
 
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                false);
   EXPECT_EQ(nullptr, GeminiAntiscamProtectionServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
   EXPECT_EQ(nullptr, GeminiAntiscamProtectionServiceFactory::GetForProfile(
-                         browser()->profile()->GetOffTheRecordProfile(
+                         browser()->GetProfile()->GetOffTheRecordProfile(
                              Profile::OTRProfileID::CreateUniqueForTesting(),
                              /*create_if_needed=*/true)));
 }
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   EXPECT_NE(nullptr, service);
 }
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_NE(nullptr, service);
   SetUpEmptyModelExecution();
   service->MaybeStartAntiscamProtection(
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_NE(nullptr, service);
   SetUpFailedParsingModelExecution();
   service->MaybeStartAntiscamProtection(
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_NE(nullptr, service);
 
   float scam_score = 0.6;
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_NE(nullptr, service);
 
   float scam_score = 0.3;

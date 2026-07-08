@@ -299,13 +299,13 @@ class SessionRestoreTest : public InProcessBrowserTest {
         "NoSessionRestoreNewWindowChromeOS") {
       // Undo the effect of kBrowserAliveWithNoWindows in defaults.cc so that we
       // can get these test to work without quitting.
-      SessionServiceTestHelper helper(browser()->profile());
+      SessionServiceTestHelper helper(browser()->GetProfile());
       helper.SetForceBrowserNotAliveWithNoWindows(true);
     }
 #endif
     if (browser()) {
       SessionStartupPref pref(SessionStartupPref::LAST);
-      SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+      SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
     }
   }
 
@@ -363,7 +363,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
       const GURL& url = GURL(),
       bool no_memory_pressure = true,
       base::OnceClosure after_close_calback = base::DoNothing()) {
-    Profile* profile = browser->profile();
+    Profile* profile = browser->GetProfile();
 
     // Close the browser.
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
 // Test that maximized applications get restored maximized.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   const char* app_name = "TestApp";
-  Browser* app_browser = CreateBrowserForApp(app_name, browser()->profile());
+  Browser* app_browser = CreateBrowserForApp(app_name, browser()->GetProfile());
   app_browser->GetWindow()->Maximize();
   app_browser->GetWindow()->Show();
   EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
@@ -698,13 +698,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
 // Creates a tabbed browser and popup and makes sure we restore both.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
   // Open a popup.
-  Browser* popup = CreateBrowserForPopup(browser()->profile());
+  Browser* popup = CreateBrowserForPopup(browser()->GetProfile());
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
   // and won't be restored.
-  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+  SessionServiceFactory::ShutdownForProfile(browser()->GetProfile());
 
   // Restart and make sure we have two windows.
   CloseBrowserSynchronously(popup);
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   }
 
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
   service->ClearEntries();
 
   browser()->GetWindow()->Close();
@@ -1180,7 +1180,7 @@ class SessionRestoreTabGroupsTest : public SessionRestoreTest {
   BrowserWindowInterface* QuitBrowserAndRestore(Browser* browser) {
     // The test parameter determines whether to do a command reset.
     SessionService* const session_service =
-        SessionServiceFactory::GetForProfile(browser->profile());
+        SessionServiceFactory::GetForProfile(browser->GetProfile());
     session_service->ResetFromCurrentBrowsers();
 
     return SessionRestoreTest::QuitBrowserAndRestore(browser);
@@ -1343,7 +1343,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
 
   // We should have a restore entry for the group.
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
   const sessions::TabRestoreService::Entries& entries = service->entries();
   ASSERT_GE(entries.size(), 1u);
   ASSERT_EQ(entries.front()->type, sessions::tab_restore::Type::GROUP);
@@ -1585,7 +1585,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, StartupPagesWithOnlyNtp) {
   SessionStartupPref pref(SessionStartupPref::URLS);
   pref.urls.push_back(GetUrl1());
   pref.urls.push_back(GetUrl2());
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   SessionRestore::OpenStartupPagesAfterCrash(browser());
   // Wait until the original tab finished closing.
@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, StartupPagesWithExistingPages) {
   SessionStartupPref pref(SessionStartupPref::URLS);
   pref.urls.push_back(GetUrl1());
   pref.urls.push_back(GetUrl2());
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   SessionRestore::OpenStartupPagesAfterCrash(browser());
 
@@ -1768,7 +1768,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OnErrorWritingSessionCommands) {
       browser(), GetUrl2(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* session_service =
-      SessionServiceFactory::GetForProfile(browser()->profile());
+      SessionServiceFactory::GetForProfile(browser()->GetProfile());
   session_service->OnErrorWritingSessionCommands();
 
   BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
@@ -2012,7 +2012,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
 
   // Open a second window and navigate it to url 2.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -2031,7 +2031,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
   // Simulate an exit by shutting down the session service. If we don't do this
   // the window close is treated as though the user closed the window and won't
   // be restored.
-  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+  SessionServiceFactory::ShutdownForProfile(browser()->GetProfile());
 
   // Then close all the browsers and "restart" Chromium.
   CloseBrowserSynchronously(browser2);
@@ -2324,7 +2324,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   {
     content::DownloadTestObserverTerminal observer(
-        browser()->profile()->GetDownloadManager(), 1,
+        browser()->GetProfile()->GetDownloadManager(), 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_download_url));
     observer.WaitForFinished();
@@ -2742,7 +2742,7 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
                        PRE_TabWithURLFromCommandLineIsActive) {
   SessionStartupPref pref(SessionStartupPref::DEFAULT);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // Add 3 pinned tabs.
   for (const auto& url : {GetUrl1(), GetUrl2(), GetUrl3()}) {
@@ -2777,7 +2777,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
                        PRE_StartupPrefSetAsLastAndURLs) {
   SessionStartupPref pref(SessionStartupPref::LAST_AND_URLS);
   pref.urls = {GetUrl1()};
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -2787,9 +2787,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
 // The startup pref urls shouldn't be opened if a command line url is supplied.
 IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
                        StartupPrefSetAsLastAndURLs) {
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(2, tab_strip_model->count());
   // The first tab is restored from the last session.
@@ -3358,7 +3357,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   // The tab at index 2 is the one created by startup.
 
   // Ensure there is a restore event
-  auto events = GetSessionServiceEvents(browser()->profile());
+  auto events = GetSessionServiceEvents(browser()->GetProfile());
   for (const SessionServiceEvent& event : base::Reversed(events)) {
     // For normal shutdown (as this test triggers) kRestore should always occur
     // after kExit. This iterates in reverse, so that kRestore should occur
@@ -3558,7 +3557,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
 
   // Make a second window; navigate it to url 2.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -3569,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
 
   // Make a third window that is omitted from session restore; navigate it to
   // url 3.
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   params.omit_from_session_restore = true;
   Browser* browser3 = Browser::Create(params);
   content::WebContents* tab = chrome::AddSelectedTabWithURL(
@@ -3584,7 +3583,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first two window closes are treated as though the user closed the
   // windows and won't be restored.
-  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+  SessionServiceFactory::ShutdownForProfile(browser()->GetProfile());
 
   // Then close all the browsers and "restart" Chromium.
   CloseBrowserSynchronously(browser3);
@@ -3615,7 +3614,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   EXPECT_EQ(4, browser()->GetTabStripModel()->count());
 
   // SessionService should report there are open trackable browsers.
-  SessionServiceTestHelper helper(browser()->profile());
+  SessionServiceTestHelper helper(browser()->GetProfile());
   EXPECT_TRUE(helper.GetHasOpenTrackableBrowsers());
 
   // Close the first tab.
@@ -3658,7 +3657,7 @@ class SessionRestoreSilentLaunchTest : public SessionRestoreTest {
 IN_PROC_BROWSER_TEST_F(SessionRestoreSilentLaunchTest,
                        PRE_PRE_SilentLaunchAfterCrash) {
   // Marks session as crashed.
-  ExitTypeService::GetInstanceForProfile(browser()->profile())
+  ExitTypeService::GetInstanceForProfile(browser()->GetProfile())
       ->SetWaitingForUserToAckCrashForTest(true);
 }
 
@@ -4656,7 +4655,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
   // and won't be restored.
-  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+  SessionServiceFactory::ShutdownForProfile(browser()->GetProfile());
 
   // Then close all the browsers and "restart" Chromium.
   QuitBrowserAndRestore(browser());
@@ -4911,7 +4910,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   service->SetIsInitializedForTesting(false);
@@ -4945,7 +4944,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   service->SetIsInitializedForTesting(true);
@@ -4987,7 +4986,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
   // Expect no groups have been saved at this point.
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
   service->SetIsInitializedForTesting(true);
 
