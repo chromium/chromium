@@ -142,8 +142,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
             std::move(gmb_handle));
     CHECK(shared_image_);
 
-    create_sync_token_ = raster_context_provider_->SharedImageInterface()
-                             ->GenVerifiedSyncToken();
+    create_sync_token_ = shared_image_->creation_sync_token();
+    raster_context_provider_->SharedImageInterface()->VerifySyncToken(
+        create_sync_token_);
   }
 
   OutputMailbox(const OutputMailbox&) = delete;

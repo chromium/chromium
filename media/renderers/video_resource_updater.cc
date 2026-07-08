@@ -393,7 +393,8 @@ class VideoResourceUpdater::FrameResource {
             {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "VideoResourceUpdater"});
     mapping_ = shared_image_->Map();
-    sync_token_ = shared_image_interface->GenVerifiedSyncToken();
+    sync_token_ = shared_image_->creation_sync_token();
+    shared_image_interface->VerifySyncToken(sync_token_);
   }
 
   // For hardware frame resource.

@@ -234,7 +234,8 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
         LOG(ERROR) << "Unable to create a mappable shared image.";
         return nullptr;
       }
-      sync_token = sii->GenVerifiedSyncToken();
+      sync_token = shared_image->creation_sync_token();
+      sii->VerifySyncToken(sync_token);
       available_shared_images_.push_back(std::move(shared_image));
     }
 

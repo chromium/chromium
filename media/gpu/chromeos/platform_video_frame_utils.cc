@@ -423,10 +423,12 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
       {*si_format, coded_size, color_space_to_use,
        gpu::SharedImageUsageSet(si_usage), "PlatformVideoFrameUtils"},
       gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+  auto creation_sync_token = shared_image->creation_sync_token();
+  sii->VerifySyncToken(creation_sync_token);
 
   auto video_frame = media::VideoFrame::WrapMappableSharedImage(
-      std::move(shared_image), sii->GenVerifiedSyncToken(),
-      base::NullCallback(), visible_rect, natural_size, timestamp);
+      std::move(shared_image), creation_sync_token, base::NullCallback(),
+      visible_rect, natural_size, timestamp);
 
   if (!video_frame) {
     return nullptr;

@@ -163,11 +163,12 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
         stored_shared_image->size() ==
             to_shared_image_size(origin_frame, frame) &&
         stored_shared_image->color_space() == color_space) {
-      shared_image_interface_->UpdateSharedImage(
-          gpu::SyncToken(), stored_shared_image->mailbox());
-      WrapSharedImageAndVideoFrameAndOutput(
-          origin_frame, std::move(frame), std::move(stored_shared_image),
-          shared_image_interface_->GenVerifiedSyncToken());
+      gpu::SyncToken sync_token =
+          stored_shared_image->BackingWasExternallyUpdated(gpu::SyncToken());
+      shared_image_interface_->VerifySyncToken(sync_token);
+      WrapSharedImageAndVideoFrameAndOutput(origin_frame, std::move(frame),
+                                            std::move(stored_shared_image),
+                                            sync_token);
       return;
     }
   }
