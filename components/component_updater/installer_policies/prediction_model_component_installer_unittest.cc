@@ -36,7 +36,8 @@ namespace {
 const char kTestVersion[] = "1.0.0.0";
 
 constexpr optimization_guide::proto::OptimizationTarget kTestTarget =
-    optimization_guide::proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+    optimization_guide::proto::
+        OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
 
 class PredictionModelMockComponentUpdateService
     : public MockComponentUpdateService {
@@ -200,7 +201,7 @@ TEST_F(PredictionModelComponentInstallerTest, ComponentReadyNotifiesListener) {
 TEST_F(PredictionModelComponentInstallerTest, GetRelativeInstallDir) {
   base::FilePath expected_dir =
       base::FilePath(FILE_PATH_LITERAL("OptGuidePredictionModels"))
-          .AppendASCII("ModelValidation");
+          .AppendASCII("GeolocationPermissions");
   EXPECT_EQ(policy_->GetRelativeInstallDir(), expected_dir);
 }
 

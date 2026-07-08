@@ -146,7 +146,7 @@ class PredictionModelComponentUpdateListenerTest : public testing::Test {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAndNotify) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
                                                    nullptr, &observer);
@@ -171,7 +171,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAndNotify) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   base::Version version("1.2.3.4");
@@ -198,7 +198,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, AddObserverAfterReady) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, UpdateWithOlderVersion) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
@@ -223,7 +223,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, UpdateWithOlderVersion) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, GetModelWithoutObserver) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   base::Version version("1.2.3.4");
   base::FilePath install_dir = CreateModelDirectory(target, /*version=*/123);
 
@@ -243,7 +243,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, GetModelWithoutObserver) {
 TEST_F(PredictionModelComponentUpdateListenerTest,
        SelfRemovalDuringNotification) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   SelfRemovingOptimizationTargetModelObserver observer(listener_.get());
 
   listener_->AddObserverForOptimizationTargetModel(target, std::nullopt,
@@ -276,7 +276,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 TEST_F(PredictionModelComponentUpdateListenerTest,
        DoubleNotificationMitigation) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   // Start loading version 1.
@@ -315,7 +315,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 TEST_F(PredictionModelComponentUpdateListenerTest,
        RemoveObserverBeforeAsyncNotification) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   base::Version version("1.2.3.4");
@@ -342,7 +342,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 
 TEST_F(PredictionModelComponentUpdateListenerTest, OnModelUninstalled) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   base::Version version("1.2.3.4");
@@ -374,7 +374,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, OnModelUninstalled) {
 TEST_F(PredictionModelComponentUpdateListenerTest,
        OnModelUninstalledCancelsPendingNotification) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   base::Version version("1.2.3.4");
@@ -408,7 +408,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 TEST_F(PredictionModelComponentUpdateListenerTest,
        SelfRemovalDuringSyncNotification) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   base::Version version("1.2.3.4");
   base::FilePath install_dir = CreateModelDirectory(target, /*version=*/123);
 
@@ -442,7 +442,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 
 TEST_F(PredictionModelComponentUpdateListenerTest, LoadFailure) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   // First load a good model.
@@ -475,7 +475,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, LoadFailure) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, EmptyInstallDirIgnored) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   // First load a good model.
@@ -519,7 +519,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, EmptyInstallDirIgnored) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, CorruptModelInfo) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   // First load a good model.
@@ -552,7 +552,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, CorruptModelInfo) {
 
 TEST_F(PredictionModelComponentUpdateListenerTest, UseObserverTaskRunner) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
   auto test_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
@@ -587,7 +587,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest, UseObserverTaskRunner) {
 TEST_F(PredictionModelComponentUpdateListenerTest,
        TaskRunnerClearedOnObserverRemoval) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
   auto test_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
@@ -617,7 +617,7 @@ TEST_F(PredictionModelComponentUpdateListenerTest,
 
 TEST_F(PredictionModelComponentUpdateListenerTest, RegisterCallbackCalled) {
   proto::OptimizationTarget target =
-      proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
   FakeOptimizationTargetModelObserver observer;
 
   using MockRegisterCallback = base::MockCallback<
@@ -665,6 +665,74 @@ TEST_F(PredictionModelComponentUpdateListenerTest, RerouteNonMigratedTarget) {
 
   listener_->RemoveObserverForOptimizationTargetModel(target, &observer);
   EXPECT_FALSE(fallback_provider_.IsRegistered(target));
+}
+
+TEST_F(PredictionModelComponentUpdateListenerTest,
+       MultipleTargetsIndependentObservers) {
+  proto::OptimizationTarget target1 =
+      proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS;
+  proto::OptimizationTarget target2 =
+      proto::OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS;
+
+  FakeOptimizationTargetModelObserver observer1;
+  FakeOptimizationTargetModelObserver observer2;
+
+  auto test_task_runner1 = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto test_task_runner2 = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+  listener_->AddObserverForOptimizationTargetModel(
+      target1, std::nullopt, test_task_runner1, &observer1);
+  listener_->AddObserverForOptimizationTargetModel(
+      target2, std::nullopt, test_task_runner2, &observer2);
+
+  EXPECT_EQ(observer1.call_count(), 0);
+  EXPECT_EQ(observer2.call_count(), 0);
+
+  base::Version version1("1.0.0");
+  base::FilePath install_dir1 = CreateModelDirectory(target1, /*version=*/100);
+  base::Version version2("2.0.0");
+  base::FilePath install_dir2 = CreateModelDirectory(target2, /*version=*/200);
+
+  listener_->MaybeUpdateModel(target1, version1, install_dir1);
+  listener_->MaybeUpdateModel(target2, version2, install_dir2);
+
+  // Each target's load task should be posted to its own task runner.
+  EXPECT_TRUE(test_task_runner1->HasPendingTask());
+  EXPECT_TRUE(test_task_runner2->HasPendingTask());
+
+  // Run pending tasks on both task runners.
+  test_task_runner1->RunPendingTasks();
+  test_task_runner2->RunPendingTasks();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return observer1.call_count() == 1 && observer2.call_count() == 1;
+  }));
+  EXPECT_EQ(observer1.last_target(), target1);
+  ASSERT_TRUE(observer1.last_model_info());
+  EXPECT_EQ(observer1.last_model_info()->GetVersion(), 100);
+  EXPECT_EQ(observer2.last_target(), target2);
+  ASSERT_TRUE(observer2.last_model_info());
+  EXPECT_EQ(observer2.last_model_info()->GetVersion(), 200);
+
+  // Verify GetModelForTesting returns the isolated models.
+  ASSERT_TRUE(listener_->GetModelForTesting(target1));
+  EXPECT_EQ(listener_->GetModelForTesting(target1)->GetVersion(), 100);
+  ASSERT_TRUE(listener_->GetModelForTesting(target2));
+  EXPECT_EQ(listener_->GetModelForTesting(target2)->GetVersion(), 200);
+
+  // Uninstalling target1 should only affect target1.
+  listener_->OnModelUninstalled(target1);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return observer1.call_count() == 2; }));
+  EXPECT_EQ(observer1.call_count(), 2);
+  EXPECT_EQ(observer1.last_model_info(), nullptr);
+  EXPECT_EQ(listener_->GetModelForTesting(target1), nullptr);
+  EXPECT_EQ(observer2.call_count(), 1);
+  ASSERT_TRUE(listener_->GetModelForTesting(target2));
+  EXPECT_EQ(listener_->GetModelForTesting(target2)->GetVersion(), 200);
+
+  // Clean up observers.
+  listener_->RemoveObserverForOptimizationTargetModel(target1, &observer1);
+  listener_->RemoveObserverForOptimizationTargetModel(target2, &observer2);
 }
 
 }  // namespace optimization_guide

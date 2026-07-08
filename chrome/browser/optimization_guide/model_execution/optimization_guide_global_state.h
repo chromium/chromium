@@ -86,10 +86,10 @@ class OptimizationGuideGlobalState final
     return prediction_manager_.prediction_manager();
   }
   OptimizationGuideModelProvider& model_provider() {
-    return prediction_manager_.model_provider();
+    return *prediction_model_component_update_listener_;
   }
-
-  OptimizationGuideModelProvider& prediction_model_component_update_listener() {
+  PredictionModelComponentUpdateListener&
+  prediction_model_component_update_listener() {
     return *prediction_model_component_update_listener_;
   }
 
@@ -113,11 +113,6 @@ class OptimizationGuideGlobalState final
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   ChromePredictionManager prediction_manager_;
-  std::unique_ptr<OnDeviceCapability> on_device_capability_;
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  std::unique_ptr<ChromeModelComponentStateManagerObserver>
-      component_state_manager_observer_;
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   // Registers the prediction model component for `target` with the component
   // updater.
@@ -126,6 +121,12 @@ class OptimizationGuideGlobalState final
           std::make_unique<PredictionModelComponentUpdateListener>(
               prediction_manager_.model_provider(),
               base::BindRepeating(&RegisterPredictionModelComponent));
+
+  std::unique_ptr<OnDeviceCapability> on_device_capability_;
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  std::unique_ptr<ChromeModelComponentStateManagerObserver>
+      component_state_manager_observer_;
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };
