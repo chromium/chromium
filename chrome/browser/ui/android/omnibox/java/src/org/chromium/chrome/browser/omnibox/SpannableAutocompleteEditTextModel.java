@@ -16,6 +16,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxWordBoundary;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -252,6 +253,44 @@ public class SpannableAutocompleteEditTextModel
                 || code == KeyEvent.KEYCODE_DPAD_RIGHT;
     }
 
+    /** Returns whether {@code event} is a Ctrl-modified delete-by-word event. */
+    @Override
+    public boolean isDeleteByWord(final KeyEvent event) {
+        return event.getAction() == KeyEvent.ACTION_DOWN
+                && event.isCtrlPressed()
+                && !event.isShiftPressed()
+                && (event.getKeyCode() == KeyEvent.KEYCODE_DEL
+                        || event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL);
+    }
+
+    /**
+     * Deletes the word adjacent to the cursor.
+     *
+     * @param forward True for a forward delete; false for backward.
+     * @return True if a word was deleted and the event was consumed; false otherwise.
+     */
+    private boolean deleteByWord(final boolean forward) {
+        assert mInputConnection != null;
+        TextSelection selection = mCurrentState.getSelection();
+        if (!selection.isCollapsed()) return false;
+
+        String userText = mCurrentState.getUserText();
+        int length = userText.length();
+        int cursor = Math.max(0, Math.min(selection.to, length));
+
+        int boundary = OmniboxWordBoundary.getDeletionBoundary(userText, cursor, forward);
+        if (forward) {
+            if (boundary <= cursor) return false;
+            mInputConnection.deleteSurroundingText(0, boundary - cursor);
+        } else {
+            if (boundary >= cursor) return false;
+            mInputConnection.deleteSurroundingText(cursor - boundary, 0);
+        }
+
+        mLastEditWasTyping = false;
+        return true;
+    }
+
     /**
      * Translates specific keyboard combinations into standardized key events.
      *
@@ -317,6 +356,9 @@ public class SpannableAutocompleteEditTextModel
                 // of the autocomplete suggestion.
                 retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
             }
+        } else if (isDeleteByWord(dispatchedEvent)
+                && deleteByWord(dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL)) {
+            retVal = true;
         } else {
             if (dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN
                     && dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {

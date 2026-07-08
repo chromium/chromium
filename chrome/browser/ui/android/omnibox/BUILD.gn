@@ -291,6 +291,7 @@ android_library("java") {
     "//components/image_fetcher:java",
     "//components/omnibox/browser:autocomplete_proto_java",
     "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//components/omnibox/common:features_java",
     "//components/page_info/android:java",
     "//components/permissions/android:core_java",

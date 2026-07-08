@@ -587,6 +587,8 @@ static_library("location_bar") {
       "autocomplete_scheme_classifier_android.cc",
       "autocomplete_scheme_classifier_android.h",
       "omnibox_url_emphasizer.cc",
+      "omnibox_word_boundary.cc",
+      "omnibox_word_boundary.h",
     ]
     deps += [ ":scheme_classifier_jni" ]
   }
@@ -633,6 +635,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxWordBoundary.java",
     ]
   }
 
@@ -642,6 +645,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxWordBoundary.java",
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
     ]
     deps = [
@@ -1050,6 +1054,7 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
+    sources += [ "omnibox_word_boundary_unittest.cc" ]
     deps += [ "//components/location/android:test_support" ]
   }
 

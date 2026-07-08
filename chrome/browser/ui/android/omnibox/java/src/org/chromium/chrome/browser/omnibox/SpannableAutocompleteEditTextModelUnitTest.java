@@ -35,6 +35,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.omnibox.OmniboxWordBoundary;
+import org.chromium.components.omnibox.OmniboxWordBoundaryJni;
 import org.chromium.components.omnibox.TextSelection;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,6 +47,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock AutocompleteInputConnection mConnection;
     private @Mock AutocompleteEditTextModelBase.Delegate mDelegate;
+    private @Mock OmniboxWordBoundary.Natives mWordBoundaryNatives;
     private SpannableAutocompleteEditTextModel mModel;
     private AutocompleteState mCurrentState;
     private AtomicInteger mImeCommandNestLevel;
@@ -52,6 +55,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
     @Before
     public void setUp() {
+        OmniboxWordBoundaryJni.setInstanceForTesting(mWordBoundaryNatives);
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
@@ -230,5 +234,48 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
         assertEquals(12, Selection.getSelectionStart(editable));
         assertEquals(12, Selection.getSelectionEnd(editable));
+    }
+
+    @Test
+    public void dispatchKeyEvent_deleteWordBackward() {
+        mCurrentState.setAutocompleteText(null);
+        mCurrentState.setUserText("google.com");
+        mCurrentState.setSelection(new TextSelection(10, 10));
+
+        doReturn(7).when(mWordBoundaryNatives).getDeletionBoundary("google.com", 10, false);
+
+        var event =
+                new KeyEvent(
+                        0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON);
+
+        clearInvocations(mConnection, mDelegate);
+        boolean handled = mModel.dispatchKeyEvent(event);
+
+        assertTrue(handled);
+        verify(mConnection).deleteSurroundingText(3, 0);
+    }
+
+    @Test
+    public void dispatchKeyEvent_deleteWordForward() {
+        mCurrentState.setAutocompleteText(null);
+        mCurrentState.setUserText("google::com_");
+        mCurrentState.setSelection(new TextSelection(6, 6));
+
+        doReturn(12).when(mWordBoundaryNatives).getDeletionBoundary("google::com_", 6, true);
+
+        var event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_FORWARD_DEL,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+
+        clearInvocations(mConnection, mDelegate);
+        boolean handled = mModel.dispatchKeyEvent(event);
+
+        assertTrue(handled);
+        verify(mConnection).deleteSurroundingText(0, 6);
     }
 }

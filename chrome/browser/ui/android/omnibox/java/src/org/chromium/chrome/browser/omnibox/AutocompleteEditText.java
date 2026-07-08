@@ -349,6 +349,17 @@ public class AutocompleteEditText extends EditTextWithLeading
     }
 
     @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (mModel != null && mModel.isDeleteByWord(event)) {
+            // Route directly to dispatchKeyEvent to override the native word deletion.
+            if (dispatchKeyEvent(event)) {
+                return true;
+            }
+        }
+        return super.onKeyPreIme(keyCode, event);
+    }
+
+    @Override
     public void setOnKeyListener(@Nullable OnKeyListener listener) {
         super.setOnKeyListener(listener);
         mOnKeyListener = listener;
