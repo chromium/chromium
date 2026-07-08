@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
@@ -52,9 +53,15 @@ void ExtensionsTest::SetExtensionsBrowserClient(
   extensions_browser_client_ = std::move(extensions_browser_client);
 }
 
+void ExtensionsTest::SetBrowserContextPath(const base::FilePath& path) {
+  CHECK(!browser_context_);
+  browser_context_path_ = path;
+}
+
 void ExtensionsTest::SetUp() {
   content::ForceInProcessNetworkService();
-  browser_context_ = std::make_unique<content::TestBrowserContext>();
+  browser_context_ =
+      std::make_unique<content::TestBrowserContext>(browser_context_path_);
   incognito_context_ = CreateTestIncognitoContext();
 
   // Ensure `browser_context_` and `incognito_context_` are marked as live

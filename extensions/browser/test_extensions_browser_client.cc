@@ -23,10 +23,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#endif
-
 using content::BrowserContext;
 
 namespace extensions {
@@ -219,14 +215,6 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
 bool TestExtensionsBrowserClient::IsActiveContext(
     content::BrowserContext* browser_context) const {
   return true;
-}
-
-std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
-    content::BrowserContext* context) {
-  if (context != main_context_ || !ash::LoginState::IsInitialized()) {
-    return "";
-  }
-  return ash::LoginState::Get()->primary_user_hash();
 }
 #endif
 

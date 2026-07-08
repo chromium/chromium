@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
@@ -24,6 +24,9 @@
 #include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/onc/onc_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/extension_registry.h"
@@ -85,12 +88,21 @@ bool GetPrimaryUserIdHash(content::BrowserContext* browser_context,
                           std::string* user_hash,
                           std::string* error) {
   std::string context_user_hash =
-      extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
           browser_context);
 
   // Currently Chrome OS only configures networks for the primary user.
   // Configuration attempts from other browser contexts should fail.
-  if (context_user_hash != ash::LoginState::Get()->primary_user_hash()) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  const user_manager::User* primary_user =
+      primary_session ? user_manager::UserManager::Get()->FindUser(
+                            primary_session->account_id())
+                      : nullptr;
+  const std::string primary_user_hash =
+      primary_user ? primary_user->username_hash() : "";
+
+  if (context_user_hash != primary_user_hash) {
     // Disallow class requiring a user id hash from a non-primary user context
     // to avoid complexities with the policy code.
     LOG(ERROR) << "networkingPrivate API call from non primary user: "

@@ -139,7 +139,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
@@ -387,12 +386,6 @@ bool ChromeExtensionsBrowserClient::IsActiveContext(
   // this code will need to be changed.
   return static_cast<Profile*>(browser_context)
       ->IsSameOrParent(ProfileManager::GetActiveUserProfile());
-}
-
-std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
-    content::BrowserContext* context) {
-  return ash::ProfileHelper::GetUserIdHashFromProfile(
-      static_cast<Profile*>(context));
 }
 #endif
 

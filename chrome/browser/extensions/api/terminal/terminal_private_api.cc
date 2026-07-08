@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/experiences/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
@@ -307,8 +308,8 @@ ExtensionFunction::ResponseAction
 TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     const std::string& process_name,
     std::optional<std::vector<std::string>> args) {
-  const std::string& user_id_hash =
-      extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
+  const std::string user_id_hash =
+      ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
           browser_context());
   content::WebContents* caller_contents = GetSenderWebContents();
   if (!caller_contents) {

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/mock_extension_system.h"
@@ -45,6 +46,10 @@ class ExtensionsTest : public testing::Test {
   // before SetUp().
   void SetExtensionsBrowserClient(
       std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client);
+
+  // Sets the path to be used for the BrowserContext. Must be called before
+  // SetUp().
+  void SetBrowserContextPath(const base::FilePath& path);
 
   // Returned as a BrowserContext since most users don't need methods from
   // TestBrowserContext.
@@ -95,6 +100,8 @@ class ExtensionsTest : public testing::Test {
   // The existence of this object enables tests via
   // RenderViewHostTester.
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
+
+  base::FilePath browser_context_path_;
 };
 
 }  // namespace extensions

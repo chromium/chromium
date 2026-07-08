@@ -250,11 +250,6 @@ class ExtensionsBrowserClient {
   // Returns true if `browser_context` is the active one.
   virtual bool IsActiveContext(
       content::BrowserContext* browser_context) const = 0;
-
-  // Returns a user id hash from `context` or an empty string if no hash could
-  // be extracted.
-  virtual std::string GetUserIdHashFromContext(
-      content::BrowserContext* context) = 0;
 #endif
 
   // Returns true if `context` corresponds to a guest session.
