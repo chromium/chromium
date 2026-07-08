@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/sync:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/default_browser/model:features",
