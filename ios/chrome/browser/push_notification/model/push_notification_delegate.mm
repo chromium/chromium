@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -1269,13 +1268,9 @@ void ProcessIncomingNotification(
 
     return nil;
   }
-
-  std::string targetSceneSessionIdentifier =
-      SessionIdentifierForScene(targetScene);
-
-  for (SceneState* scene in _appState.connectedScenes) {
-    if (scene.sceneSessionID == targetSceneSessionIdentifier) {
-      return scene;
+  for (SceneState* sceneState in _appState.connectedScenes) {
+    if (sceneState.scene == targetScene) {
+      return sceneState;
     }
   }
 
