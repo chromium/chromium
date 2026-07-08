@@ -1124,10 +1124,19 @@ void AILanguageModel::OnPromptOutputComplete() {
     model_output->pieces.push_back(
         InputPiece::NewText(prompt_state_->response()));
     model_output->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
-    item.input->pieces.insert(
-        item.input->pieces.end(),
-        std::make_move_iterator(model_output->pieces.begin()),
-        std::make_move_iterator(model_output->pieces.end()));
+    if (base::FeatureList::IsEnabled(
+            features::kAILanguageModelAppendOutputTokensToContext)) {
+      item.input->pieces.insert(
+          item.input->pieces.end(),
+          std::make_move_iterator(model_output->pieces.begin()),
+          std::make_move_iterator(model_output->pieces.end()));
+    } else {
+      // Preserve `model_output->pieces` for potential use below when
+      // kAILanguageModelAppendOutputTokensToContext is disabled.
+      for (const auto& piece : model_output->pieces) {
+        item.input->pieces.push_back(piece->Clone());
+      }
+    }
     // One extra token for the end token on the model output.
     item.tokens++;
   }

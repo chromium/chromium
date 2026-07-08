@@ -446,6 +446,18 @@ TEST_F(AILanguageModelTest, MultiplePrompts) {
               ElementsAreArray({"UfooEM", "UbarEM", "UbazEM"}));
 }
 
+// TODO(crbug.com/530923828): remove this test with the feature entry.
+TEST_F(AILanguageModelTest, MultiplePrompts_AppendOutputTokensDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAILanguageModelAppendOutputTokensToContext);
+
+  auto session = CreateSession();
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAreArray({"UfooEM"}));
+  EXPECT_THAT(Prompt(*session, MakeInput("bar")),
+              ElementsAreArray({"UfooEM", "UfooEME", "UbarEM"}));
+}
+
 TEST_F(AILanguageModelTest, PromptMultipleContents) {
   auto session = CreateSession();
   EXPECT_THAT(Prompt(*session, MakeInput({"foo", "bar"})),
