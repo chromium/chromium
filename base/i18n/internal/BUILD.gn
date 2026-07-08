@@ -7,6 +7,7 @@ import("//build/rust/rust_static_library.gni")
 
 source_set("internal") {
   sources = [
+    "bcp47_parser.h",
     "immutable_string.cc",
     "immutable_string.h",
     "legacy_icu_converter.cc",
@@ -62,10 +63,14 @@ source_set("canonical_language_tags") {
 
 source_set("unittests") {
   testonly = true
-  sources = [ "immutable_string_unittest.cc" ]
+  sources = [
+    "bcp47_parser_unittest.cc",
+    "immutable_string_unittest.cc",
+  ]
   deps = [
     "//base",
     "//base:i18n",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
