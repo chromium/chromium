@@ -2207,8 +2207,8 @@ bool CompositeEditCommand::BreakOutOfEmptyMailBlockquotedParagraph(
   DCHECK(IsA<HTMLBRElement>(caret_pos.AnchorNode()) ||
          (caret_pos.AnchorNode()->IsTextNode() && caret_pos.AnchorNode()
                                                       ->GetLayoutObject()
-                                                      ->Style()
-                                                      ->ShouldPreserveBreaks()))
+                                                      ->StyleRef()
+                                                      .ShouldPreserveBreaks()))
       << caret_pos;
 
   if (IsA<HTMLBRElement>(*caret_pos.AnchorNode())) {

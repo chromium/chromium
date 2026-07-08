@@ -672,8 +672,8 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       DCHECK(!position_after_split.ComputeContainerNode()->GetLayoutObject() ||
              position_after_split.ComputeContainerNode()
                  ->GetLayoutObject()
-                 ->Style()
-                 ->ShouldCollapseWhiteSpaces())
+                 ->StyleRef()
+                 .ShouldCollapseWhiteSpaces())
           << position_after_split;
       DeleteInsignificantTextDownstream(position_after_split);
       if (position_after_split.AnchorNode()->IsTextNode()) {

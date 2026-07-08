@@ -1355,15 +1355,16 @@ void ReplaceSelectionCommand::SetUpStyle(const VisibleSelection& selection) {
        selection.Start()
                .AnchorNode()
                ->GetLayoutObject()
-               ->Style()
-               ->UsedUserModify() == EUserModify::kReadWritePlaintextOnly) &&
+               ->StyleRef()
+               .UsedUserModify() == EUserModify::kReadWritePlaintextOnly) &&
       (selection.End().AnchorNode()->GetLayoutObject() &&
        selection.End()
                .AnchorNode()
                ->GetLayoutObject()
-               ->Style()
-               ->UsedUserModify() == EUserModify::kReadWritePlaintextOnly))
+               ->StyleRef()
+               .UsedUserModify() == EUserModify::kReadWritePlaintextOnly)) {
     match_style_ = false;
+  }
 
   if (match_style_) {
     insertion_style_ = MakeGarbageCollected<EditingStyle>(selection.Start());
