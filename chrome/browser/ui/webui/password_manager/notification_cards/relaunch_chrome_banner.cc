@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/relaunch_chrome_banner.h"
 
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"

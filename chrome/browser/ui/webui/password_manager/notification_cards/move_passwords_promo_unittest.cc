@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/move_passwords_promo.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

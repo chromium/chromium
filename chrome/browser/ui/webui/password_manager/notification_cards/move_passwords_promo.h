@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_MOVE_PASSWORDS_PROMO_H_
-#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_MOVE_PASSWORDS_PROMO_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_MOVE_PASSWORDS_PROMO_H_
+#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_MOVE_PASSWORDS_PROMO_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/notification_card.h"
 
 namespace extensions {
 class PasswordsPrivateDelegate;
@@ -33,4 +33,4 @@ class MovePasswordsPromo : public password_manager::PasswordPromoCardBase {
   base::WeakPtr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_MOVE_PASSWORDS_PROMO_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_MOVE_PASSWORDS_PROMO_H_

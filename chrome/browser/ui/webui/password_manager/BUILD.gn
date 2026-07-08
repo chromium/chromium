@@ -28,9 +28,9 @@ source_set("password_manager_ui_handler") {
   ]
 }
 
-source_set("promo_card") {
-  sources = [ "promo_card.cc" ]
-  public = [ "promo_card.h" ]
+source_set("notification_card") {
+  sources = [ "notification_card.cc" ]
+  public = [ "notification_card.h" ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
@@ -47,19 +47,19 @@ source_set("promo_card") {
   ]
 }
 
-source_set("promo_cards_handler") {
-  sources = [ "promo_cards_handler.cc" ]
-  public = [ "promo_cards_handler.h" ]
+source_set("notification_cards_handler") {
+  sources = [ "notification_cards_handler.cc" ]
+  public = [ "notification_cards_handler.h" ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
-    ":promo_card",
+    ":notification_card",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions/api/passwords_private",
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
-    "//chrome/browser/ui/webui/password_manager/promo_cards",
+    "//chrome/browser/ui/webui/password_manager/notification_cards",
     "//components/os_crypt/async/browser",
     "//components/os_crypt/async/common",
     "//components/password_manager/core/common",
@@ -87,8 +87,8 @@ source_set("password_manager_ui") {
     "//ui/webui",
   ]
   deps = [
-    ":promo_card",
-    ":promo_cards_handler",
+    ":notification_card",
+    ":notification_cards_handler",
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process_platform_part",
@@ -124,14 +124,14 @@ source_set("password_manager_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "promo_cards_handler_unittest.cc",
+    "notification_cards_handler_unittest.cc",
     "sync_handler_unittest.cc",
   ]
   deps = [
+    ":notification_card",
+    ":notification_cards_handler",
     ":password_manager_ui",
     ":password_manager_ui_handler",
-    ":promo_card",
-    ":promo_cards_handler",
     "//base/test:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
@@ -154,10 +154,10 @@ source_set("unit_tests") {
   }
 
   if (is_chrome_branded) {
-    sources += [ "promo_card_unittest.cc" ]
+    sources += [ "notification_card_unittest.cc" ]
     deps += [
       "//chrome/browser/affiliations",
-      "//chrome/browser/ui/webui/password_manager/promo_cards",
+      "//chrome/browser/ui/webui/password_manager/notification_cards",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_app_test",
       "//chrome/browser/web_applications:web_applications_test_support",

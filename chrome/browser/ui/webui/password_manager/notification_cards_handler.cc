@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards_handler.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,26 +14,26 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/notification_card.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/password_checkup_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/web_password_manager_promo.h"
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/move_passwords_promo.h"
 #endif
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/relaunch_chrome_banner.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #endif

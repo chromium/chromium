@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARD_H_
-#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARD_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARD_H_
+#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARD_H_
 
 #include <string>
 
@@ -85,4 +85,4 @@ class PasswordPromoCardBase {
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARD_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARD_H_

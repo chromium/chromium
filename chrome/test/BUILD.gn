@@ -7850,7 +7850,7 @@ test("unit_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/webui/password_manager:unit_tests",
-      "//chrome/browser/ui/webui/password_manager/promo_cards:unit_tests",
+      "//chrome/browser/ui/webui/password_manager/notification_cards:unit_tests",
       "//chrome/browser/ui/webui/side_panel/bookmarks:unit_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:unit_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar:unit_tests",

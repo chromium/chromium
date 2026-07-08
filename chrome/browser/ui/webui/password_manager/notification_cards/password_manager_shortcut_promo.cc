@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/password_manager_shortcut_promo.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_education/user_education_service.h"

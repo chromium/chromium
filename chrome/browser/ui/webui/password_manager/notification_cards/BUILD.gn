@@ -5,7 +5,7 @@
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 
-source_set("promo_cards") {
+source_set("notification_cards") {
   sources = []
   public = []
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -15,7 +15,7 @@ source_set("promo_cards") {
     "//chrome/browser/extensions/api/passwords_private",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
-    "//chrome/browser/ui/webui/password_manager:promo_card",
+    "//chrome/browser/ui/webui/password_manager:notification_card",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -48,8 +48,8 @@ source_set("promo_cards") {
   }
 
   if (is_linux || is_mac) {
-    sources += [ "relaunch_chrome_promo.cc" ]
-    public += [ "relaunch_chrome_promo.h" ]
+    sources += [ "relaunch_chrome_banner.cc" ]
+    public += [ "relaunch_chrome_banner.h" ]
     deps += [ "//components/os_crypt/async/common" ]
   }
 }
@@ -58,10 +58,10 @@ source_set("unit_tests") {
   testonly = true
   sources = []
   deps = [
-    ":promo_cards",
+    ":notification_cards",
     "//base/test:test_support",
     "//chrome/browser/password_manager:test_support",
-    "//chrome/browser/ui/webui/password_manager:promo_card",
+    "//chrome/browser/ui/webui/password_manager:notification_card",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -77,7 +77,7 @@ source_set("unit_tests") {
   }
 
   if (is_linux || is_mac) {
-    sources += [ "relaunch_chrome_promo_unittest.cc" ]
+    sources += [ "relaunch_chrome_banner_unittest.cc" ]
     deps += [ "//components/os_crypt/async/browser:test_support" ]
   }
 }

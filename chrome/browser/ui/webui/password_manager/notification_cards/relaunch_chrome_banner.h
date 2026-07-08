@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_RELAUNCH_CHROME_PROMO_H_
-#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_RELAUNCH_CHROME_PROMO_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_RELAUNCH_CHROME_BANNER_H_
+#define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_RELAUNCH_CHROME_BANNER_H_
 
 #include <optional>
 
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/notification_card.h"
 
 // Promo card to communicate that there is an error with the Keychain.
 class RelaunchChromePromo : public password_manager::PasswordPromoCardBase {
@@ -34,4 +34,4 @@ class RelaunchChromePromo : public password_manager::PasswordPromoCardBase {
   std::optional<bool> is_encryption_available_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PROMO_CARDS_RELAUNCH_CHROME_PROMO_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_NOTIFICATION_CARDS_RELAUNCH_CHROME_BANNER_H_

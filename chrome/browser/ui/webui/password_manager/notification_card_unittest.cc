@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/notification_card.h"
 
 #include <memory>
 
@@ -16,10 +16,10 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/password_checkup_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/notification_cards/web_password_manager_promo.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
