@@ -24,5 +24,9 @@ UIWindow* GetAnyKeyWindow() {
 }
 
 UIInterfaceOrientation GetInterfaceOrientation() {
-  return GetAnyKeyWindow().windowScene.interfaceOrientation;
+  if (@available(iOS 16.0, *)) {
+    return GetAnyKeyWindow().windowScene.effectiveGeometry.interfaceOrientation;
+  } else {
+    return GetAnyKeyWindow().windowScene.interfaceOrientation;
+  }
 }
