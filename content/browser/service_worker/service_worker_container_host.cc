@@ -1023,6 +1023,15 @@ void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
 
   for (const auto& registration : registrations) {
     DCHECK(registration.get());
+    SCOPED_CRASH_KEY_STRING256(
+        "SWCH_GRC", "client_origin",
+        service_worker_client().key().origin().Serialize());
+    SCOPED_CRASH_KEY_STRING256("SWCH_GRC", "client_url",
+                               service_worker_client().url().spec());
+    SCOPED_CRASH_KEY_STRING256("SWCH_GRC", "reg_scope",
+                               registration->scope().spec());
+    SCOPED_CRASH_KEY_STRING256("SWCH_GRC", "reg_origin",
+                               registration->key().origin().Serialize());
     // TODO(crbug.com/372879072): remove this CHECK
     CHECK_EQ(service_worker_client().key().origin(),
              url::Origin::Create(registration->scope()));
