@@ -1981,8 +1981,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2u, windows.size());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
-                       Async_Navigate_FromIncognitoPopup_FallbackToNewWindow) {
+// TODO(crbug.com/529550838): Flaky on all (android-desktop) builders.
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    DISABLED_Async_Navigate_FromIncognitoPopup_FallbackToNewWindow) {
   const GURL url1 = StartAtURL("/title1.html");
   ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
 
