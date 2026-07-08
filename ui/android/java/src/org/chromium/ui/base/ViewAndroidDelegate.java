@@ -4,8 +4,6 @@
 
 package org.chromium.ui.base;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -310,9 +308,11 @@ public class ViewAndroidDelegate {
     @VisibleForTesting
     @CalledByNative
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
+        ViewGroup containerView = getContainerViewGroup();
+        if (containerView == null) return;
         PointerIcon icon = PointerIcon.create(customCursorBitmap, hotspotX, hotspotY);
 
-        assumeNonNull(getContainerViewGroup()).setPointerIcon(icon);
+        containerView.setPointerIcon(icon);
     }
 
     @VisibleForTesting
@@ -439,7 +439,7 @@ public class ViewAndroidDelegate {
                 break;
         }
         ViewGroup containerView = getContainerViewGroup();
-        assumeNonNull(containerView);
+        if (containerView == null) return;
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
 
         containerView.setPointerIcon(icon);
