@@ -305,14 +305,15 @@ TEST(AttributesConditionTest, URLAndOneComponent) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(AttributesConditionTest, IncognitoDestination) {
-  // A context with only "incognito" and no URL shouldn't be evaluated.
+  // A destination tab can have `incognito` set even without a committed URL
+  // (e.g. the initial empty document), so a context with only `incognito` set
+  // should still be evaluated.
   auto incognito_dst = DestinationAttributesCondition::Create(CreateDict(R"(
       {
         "incognito": true,
       })"));
   ASSERT_TRUE(incognito_dst);
-  ASSERT_FALSE(
-      incognito_dst->CanBeEvaluated({.destination = {.incognito = true}}));
+  ASSERT_TRUE(incognito_dst->IsTriggered({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       incognito_dst->CanBeEvaluated({.destination = {.incognito = false}}));
   ASSERT_FALSE(incognito_dst->CanBeEvaluated({.source = {.incognito = true}}));
@@ -323,8 +324,10 @@ TEST(AttributesConditionTest, IncognitoDestination) {
         "incognito": false,
       })"));
   ASSERT_TRUE(non_incognito_dst);
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       non_incognito_dst->CanBeEvaluated({.destination = {.incognito = true}}));
+  ASSERT_FALSE(
+      non_incognito_dst->IsTriggered({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       non_incognito_dst->CanBeEvaluated({.destination = {.incognito = false}}));
   ASSERT_FALSE(
@@ -334,7 +337,9 @@ TEST(AttributesConditionTest, IncognitoDestination) {
 }
 
 TEST(AttributesConditionTest, IncognitoSource) {
-  // A context with only "incognito" and no URL shouldn't be evaluated.
+  // A source tab can have `incognito` set even without a committed URL (e.g.
+  // the initial empty document), so a context with only `incognito` set should
+  // still be evaluated.
   auto incognito_src = SourceAttributesCondition::Create(CreateDict(R"(
       {
         "incognito": true,
@@ -344,7 +349,7 @@ TEST(AttributesConditionTest, IncognitoSource) {
       incognito_src->CanBeEvaluated({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       incognito_src->CanBeEvaluated({.destination = {.incognito = false}}));
-  ASSERT_FALSE(incognito_src->CanBeEvaluated({.source = {.incognito = true}}));
+  ASSERT_TRUE(incognito_src->IsTriggered({.source = {.incognito = true}}));
   ASSERT_FALSE(incognito_src->CanBeEvaluated({.source = {.incognito = false}}));
 
   auto non_incognito_src = SourceAttributesCondition::Create(CreateDict(R"(
@@ -356,8 +361,9 @@ TEST(AttributesConditionTest, IncognitoSource) {
       non_incognito_src->CanBeEvaluated({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       non_incognito_src->CanBeEvaluated({.destination = {.incognito = false}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       non_incognito_src->CanBeEvaluated({.source = {.incognito = true}}));
+  ASSERT_FALSE(non_incognito_src->IsTriggered({.source = {.incognito = true}}));
   ASSERT_FALSE(
       non_incognito_src->CanBeEvaluated({.source = {.incognito = false}}));
 }
@@ -381,7 +387,7 @@ TEST(AttributesConditionTest, URLAndIncognitoDestination) {
       {.destination = {.url = GURL(kChromiumUrl), .incognito = false}}));
   ASSERT_FALSE(url_and_incognito->IsTriggered(
       {.destination = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       url_and_incognito->CanBeEvaluated({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       url_and_incognito->CanBeEvaluated({.destination = {.incognito = false}}));
@@ -405,7 +411,7 @@ TEST(AttributesConditionTest, URLAndIncognitoDestination) {
       {.destination = {.url = GURL(kChromiumUrl), .incognito = false}}));
   ASSERT_FALSE(url_and_not_incognito->IsTriggered(
       {.destination = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(url_and_not_incognito->CanBeEvaluated(
+  ASSERT_TRUE(url_and_not_incognito->CanBeEvaluated(
       {.destination = {.incognito = true}}));
   ASSERT_FALSE(url_and_not_incognito->CanBeEvaluated(
       {.destination = {.incognito = false}}));
@@ -430,7 +436,7 @@ TEST(AttributesConditionTest, URLAndIncognitoSource) {
       {.source = {.url = GURL(kChromiumUrl), .incognito = false}}));
   ASSERT_FALSE(
       url_and_incognito->IsTriggered({.source = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       url_and_incognito->CanBeEvaluated({.source = {.incognito = true}}));
   ASSERT_FALSE(
       url_and_incognito->CanBeEvaluated({.source = {.incognito = false}}));
@@ -453,7 +459,7 @@ TEST(AttributesConditionTest, URLAndIncognitoSource) {
       {.source = {.url = GURL(kChromiumUrl), .incognito = false}}));
   ASSERT_FALSE(url_and_not_incognito->IsTriggered(
       {.source = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       url_and_not_incognito->CanBeEvaluated({.source = {.incognito = true}}));
   ASSERT_FALSE(
       url_and_not_incognito->CanBeEvaluated({.source = {.incognito = false}}));
@@ -472,7 +478,7 @@ TEST(AttributesConditionTest, URLAndNoIncognitoDestination) {
   ASSERT_TRUE(any_url->IsTriggered(
       {.destination = {.url = GURL(kGoogleUrl), .incognito = false}}));
   ASSERT_TRUE(any_url->IsTriggered({.destination = {.url = GURL(kGoogleUrl)}}));
-  ASSERT_FALSE(any_url->CanBeEvaluated({.destination = {.incognito = true}}));
+  ASSERT_TRUE(any_url->CanBeEvaluated({.destination = {.incognito = true}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.destination = {.incognito = false}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.destination = {}}));
 }
@@ -490,20 +496,22 @@ TEST(AttributesConditionTest, URLAndNoIncognitoSource) {
   ASSERT_TRUE(any_url->IsTriggered(
       {.source = {.url = GURL(kGoogleUrl), .incognito = false}}));
   ASSERT_TRUE(any_url->IsTriggered({.source = {.url = GURL(kGoogleUrl)}}));
-  ASSERT_FALSE(any_url->CanBeEvaluated({.source = {.incognito = true}}));
+  ASSERT_TRUE(any_url->CanBeEvaluated({.source = {.incognito = true}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.source = {.incognito = false}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.source = {}}));
 }
 
 TEST(AttributesConditionTest, OtherProfileDestination) {
-  // A context with only "other_profile" and no URL shouldn't be evaluated.
+  // A destination tab can have `other_profile` set even without a committed
+  // URL (e.g. the initial empty document), so a context with only
+  // `other_profile` set should still be evaluated.
   auto other_profile_dst = DestinationAttributesCondition::Create(CreateDict(R"(
       {
         "other_profile": true,
       })"));
   ASSERT_TRUE(other_profile_dst);
-  ASSERT_FALSE(other_profile_dst->CanBeEvaluated(
-      {.destination = {.other_profile = true}}));
+  ASSERT_TRUE(
+      other_profile_dst->IsTriggered({.destination = {.other_profile = true}}));
   ASSERT_FALSE(other_profile_dst->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
   ASSERT_FALSE(
@@ -517,7 +525,9 @@ TEST(AttributesConditionTest, OtherProfileDestination) {
         "other_profile": false,
       })"));
   ASSERT_TRUE(non_other_profile_dst);
-  ASSERT_FALSE(non_other_profile_dst->CanBeEvaluated(
+  ASSERT_TRUE(non_other_profile_dst->CanBeEvaluated(
+      {.destination = {.other_profile = true}}));
+  ASSERT_FALSE(non_other_profile_dst->IsTriggered(
       {.destination = {.other_profile = true}}));
   ASSERT_FALSE(non_other_profile_dst->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
@@ -528,7 +538,9 @@ TEST(AttributesConditionTest, OtherProfileDestination) {
 }
 
 TEST(AttributesConditionTest, OtherProfileSource) {
-  // A context with only "other_profile" and no URL shouldn't be evaluated.
+  // A source tab can have `other_profile` set even without a committed URL
+  // (e.g. the initial empty document), so a context with only `other_profile`
+  // set should still be evaluated.
   auto other_profile_src = SourceAttributesCondition::Create(CreateDict(R"(
       {
         "other_profile": true,
@@ -538,8 +550,8 @@ TEST(AttributesConditionTest, OtherProfileSource) {
       {.destination = {.other_profile = true}}));
   ASSERT_FALSE(other_profile_src->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
-  ASSERT_FALSE(
-      other_profile_src->CanBeEvaluated({.source = {.other_profile = true}}));
+  ASSERT_TRUE(
+      other_profile_src->IsTriggered({.source = {.other_profile = true}}));
   ASSERT_FALSE(
       other_profile_src->CanBeEvaluated({.source = {.other_profile = false}}));
 
@@ -552,8 +564,10 @@ TEST(AttributesConditionTest, OtherProfileSource) {
       {.destination = {.other_profile = true}}));
   ASSERT_FALSE(non_other_profile_src->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
-  ASSERT_FALSE(non_other_profile_src->CanBeEvaluated(
+  ASSERT_TRUE(non_other_profile_src->CanBeEvaluated(
       {.source = {.other_profile = true}}));
+  ASSERT_FALSE(
+      non_other_profile_src->IsTriggered({.source = {.other_profile = true}}));
   ASSERT_FALSE(non_other_profile_src->CanBeEvaluated(
       {.source = {.other_profile = false}}));
 }
@@ -578,7 +592,7 @@ TEST(AttributesConditionTest, URLAndOtherProfileDestination) {
       {.destination = {.url = GURL(kChromiumUrl), .other_profile = false}}));
   ASSERT_FALSE(url_and_other_profile->IsTriggered(
       {.destination = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(url_and_other_profile->CanBeEvaluated(
+  ASSERT_TRUE(url_and_other_profile->CanBeEvaluated(
       {.destination = {.other_profile = true}}));
   ASSERT_FALSE(url_and_other_profile->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
@@ -602,7 +616,7 @@ TEST(AttributesConditionTest, URLAndOtherProfileDestination) {
       {.destination = {.url = GURL(kChromiumUrl), .other_profile = false}}));
   ASSERT_FALSE(url_and_not_other_profile->IsTriggered(
       {.destination = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(url_and_not_other_profile->CanBeEvaluated(
+  ASSERT_TRUE(url_and_not_other_profile->CanBeEvaluated(
       {.destination = {.other_profile = true}}));
   ASSERT_FALSE(url_and_not_other_profile->CanBeEvaluated(
       {.destination = {.other_profile = false}}));
@@ -627,7 +641,7 @@ TEST(AttributesConditionTest, URLAndOtherProfileSource) {
       {.source = {.url = GURL(kChromiumUrl), .other_profile = false}}));
   ASSERT_FALSE(url_and_other_profile->IsTriggered(
       {.source = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(url_and_other_profile->CanBeEvaluated(
+  ASSERT_TRUE(url_and_other_profile->CanBeEvaluated(
       {.source = {.other_profile = true}}));
   ASSERT_FALSE(url_and_other_profile->CanBeEvaluated(
       {.source = {.other_profile = false}}));
@@ -651,7 +665,7 @@ TEST(AttributesConditionTest, URLAndOtherProfileSource) {
       {.source = {.url = GURL(kChromiumUrl), .other_profile = false}}));
   ASSERT_FALSE(url_and_not_other_profile->IsTriggered(
       {.source = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(url_and_not_other_profile->CanBeEvaluated(
+  ASSERT_TRUE(url_and_not_other_profile->CanBeEvaluated(
       {.source = {.other_profile = true}}));
   ASSERT_FALSE(url_and_not_other_profile->CanBeEvaluated(
       {.source = {.other_profile = false}}));
@@ -670,7 +684,7 @@ TEST(AttributesConditionTest, URLAndNoOtherProfileDestination) {
   ASSERT_TRUE(any_url->IsTriggered(
       {.destination = {.url = GURL(kGoogleUrl), .other_profile = false}}));
   ASSERT_TRUE(any_url->IsTriggered({.destination = {.url = GURL(kGoogleUrl)}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       any_url->CanBeEvaluated({.destination = {.other_profile = true}}));
   ASSERT_FALSE(
       any_url->CanBeEvaluated({.destination = {.other_profile = false}}));
@@ -690,7 +704,7 @@ TEST(AttributesConditionTest, URLAndNoOtherProfileSource) {
   ASSERT_TRUE(any_url->IsTriggered(
       {.source = {.url = GURL(kGoogleUrl), .other_profile = false}}));
   ASSERT_TRUE(any_url->IsTriggered({.source = {.url = GURL(kGoogleUrl)}}));
-  ASSERT_FALSE(any_url->CanBeEvaluated({.source = {.other_profile = true}}));
+  ASSERT_TRUE(any_url->CanBeEvaluated({.source = {.other_profile = true}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.source = {.other_profile = false}}));
   ASSERT_FALSE(any_url->CanBeEvaluated({.source = {}}));
 }
@@ -723,10 +737,10 @@ TEST(AttributesConditionTest, URLOtherProfileIncognitoSource) {
       {.source = {.url = GURL(kChromiumUrl), .other_profile = true}}));
   ASSERT_FALSE(condition->IsTriggered({.source = {.url = GURL(kGoogleUrl)}}));
   ASSERT_FALSE(condition->IsTriggered({.source = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(condition->CanBeEvaluated({.source = {.incognito = true}}));
+  ASSERT_TRUE(condition->CanBeEvaluated({.source = {.incognito = true}}));
   ASSERT_FALSE(condition->CanBeEvaluated({.source = {.incognito = false}}));
 
-  ASSERT_FALSE(condition->CanBeEvaluated({.source = {.other_profile = true}}));
+  ASSERT_TRUE(condition->CanBeEvaluated({.source = {.other_profile = true}}));
   ASSERT_FALSE(condition->CanBeEvaluated({.source = {.other_profile = false}}));
 }
 
@@ -761,11 +775,11 @@ TEST(AttributesConditionTest, URLOtherProfileIncognitoDestination) {
       condition->IsTriggered({.destination = {.url = GURL(kGoogleUrl)}}));
   ASSERT_FALSE(
       condition->IsTriggered({.destination = {.url = GURL(kChromiumUrl)}}));
-  ASSERT_FALSE(condition->CanBeEvaluated({.destination = {.incognito = true}}));
+  ASSERT_TRUE(condition->CanBeEvaluated({.destination = {.incognito = true}}));
   ASSERT_FALSE(
       condition->CanBeEvaluated({.destination = {.incognito = false}}));
 
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       condition->CanBeEvaluated({.destination = {.other_profile = true}}));
   ASSERT_FALSE(
       condition->CanBeEvaluated({.destination = {.other_profile = false}}));
