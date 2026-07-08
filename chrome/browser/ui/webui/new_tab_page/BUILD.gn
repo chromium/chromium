@@ -204,36 +204,41 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "new_tab_page_ui_unittest.cc" ]
+  sources = [
+    "new_tab_page_handler_unittest.cc",
+    "new_tab_page_ui_unittest.cc",
+    "untrusted_source_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":new_tab_page",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/new_tab_page",
+    "//chrome/browser/new_tab_page:impl",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/search/background",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/search",
     "//components/search_engines",
+    "//components/search_provider_logos",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
   if (!is_android) {
-    sources += [
-      "new_tab_page_handler_unittest.cc",
-      "untrusted_source_unittest.cc",
-    ]
     deps += [
       "//chrome/browser/desktop_to_mobile_promos:utils",
-      "//chrome/browser/optimization_guide:test_support",
-      "//chrome/browser/search/background",
-      "//chrome/browser/search_engines",
       "//chrome/browser/themes",
       "//chrome/browser/ui/hats:test_support",
-      "//components/feature_engagement/test:test_support",
-      "//components/search_provider_logos",
-      "//components/segmentation_platform/embedder/default_model",
-      "//components/segmentation_platform/public:test_support",
       "//components/themes",
     ]
   }
