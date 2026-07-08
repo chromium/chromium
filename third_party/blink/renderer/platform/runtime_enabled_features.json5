@@ -2710,6 +2710,10 @@
       status: "stable",
     },
     {
+      name: "EventTimingMatchingHTML",
+      status: "experimental",
+    },
+    {
       name: "EventTimingTargetSelector",
       status: "experimental",
     },

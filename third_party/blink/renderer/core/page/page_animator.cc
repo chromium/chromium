@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
+#include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -256,15 +257,38 @@ void PageAnimator::ServiceScriptedAnimations(
 
   // 10. For each doc of docs, evaluate media queries and report changes for
   // doc.
+  // CallMediaQueryListListeners handles legacy mql.addListener() callbacks,
+  // while DispatchEvents handles standard mql.addEventListener('change')
+  // events. Both must be dispatched in Step 10 per spec.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
     active_controllers[i]->CallMediaQueryListListeners();
+    if (RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
+      active_controllers[i]->DispatchEvents(BindRepeating([](Event* event) {
+        return event->InterfaceName() ==
+               event_interface_names::kMediaQueryListEvent;
+      }));
+    }
   });
 
   // 11. For each doc of docs, update animations and send events for doc,
   // passing in relative high resolution time given frameTimestamp and doc's
   // relevant global object as the timestamp.
-  run_for_all_active_controllers_with_timing(
-      [&](wtf_size_t i) { active_controllers[i]->DispatchEvents(); });
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    if (RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
+      active_controllers[i]->DispatchEvents(BindRepeating([](Event* event) {
+        return event->type() != event_type_names::kScroll &&
+               event->type() != event_type_names::kScrollsnapchange &&
+               event->type() != event_type_names::kScrollsnapchanging &&
+               event->type() != event_type_names::kScrollend &&
+               event->type() != event_type_names::kResize &&
+               event->type() != event_type_names::kPagereveal &&
+               event->InterfaceName() !=
+                   event_interface_names::kMediaQueryListEvent;
+      }));
+    } else {
+      active_controllers[i]->DispatchEvents();
+    }
+  });
 
   // 12. For each doc of docs, run the fullscreen steps for doc.
   run_for_all_active_controllers_with_timing(
