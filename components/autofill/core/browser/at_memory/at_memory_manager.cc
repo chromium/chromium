@@ -474,6 +474,8 @@ AtMemoryManager::~AtMemoryManager() = default;
 
 void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        parent_suggestion_metadata,
     bool is_context_secure,
     UpdateSuggestionsCallback update_callback,
     FormSignature form_signature,
@@ -482,14 +484,17 @@ void AtMemoryManager::OnPopupShown(
     return;
   }
 
-  trigger_source_ = trigger_source;
-  is_context_secure_ = is_context_secure;
-  update_callback_ = std::move(update_callback);
-  at_memory_metrics_recorder_ = std::make_unique<AtMemoryMetricsRecorder>(
-      owner_->client().GetMqlsUploadService(),
-      owner_->client().GetLastCommittedPrimaryMainFrameURL(),
-      owner_->client().GetPageTitle(), form_signature, field_signature);
-  at_memory_metrics_recorder_->OnPopupShown(trigger_source);
+  if (!parent_suggestion_metadata) {
+    trigger_source_ = trigger_source;
+    is_context_secure_ = is_context_secure;
+    update_callback_ = std::move(update_callback);
+    at_memory_metrics_recorder_ = std::make_unique<AtMemoryMetricsRecorder>(
+        owner_->client().GetMqlsUploadService(),
+        owner_->client().GetLastCommittedPrimaryMainFrameURL(),
+        owner_->client().GetPageTitle(), form_signature, field_signature);
+  }
+  at_memory_metrics_recorder_->OnPopupShown(trigger_source,
+                                            parent_suggestion_metadata);
 }
 
 bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {

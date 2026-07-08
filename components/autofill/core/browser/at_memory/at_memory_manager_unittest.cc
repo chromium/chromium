@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -207,6 +208,7 @@ Matcher<Suggestion> EqualsAtMemorySuggestion(
 // affordance suggestion and does NOT trigger QueryService::Query.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -236,6 +238,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
 // Tests that OnFilterChanged with an empty filter clears all suggestions.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -252,6 +255,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -290,6 +294,7 @@ TEST_F(AtMemoryManagerTest,
 // generated suggestion has no labels.
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -314,6 +319,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_QueryServiceReturnsNoConnectionFailure) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -339,6 +345,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   AddOrUpdateEntityInstance(passport);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -407,6 +414,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
   AddOrUpdateEntityInstance(passport);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -481,6 +489,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   AddOrUpdateEntityInstance(passport);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -541,6 +550,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 // results when the context is insecure.
 TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/false, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -608,6 +618,7 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
                               std::move(entries));
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -636,6 +647,7 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
 // when the context is secure.
 TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -686,6 +698,7 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   base::HistogramTester histogram_tester;
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -727,6 +740,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 
   // 1. Show Popup 1.
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -783,6 +797,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback_2;
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_2.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -831,6 +846,7 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -857,6 +873,7 @@ TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -879,6 +896,7 @@ TEST_F(
 
   autofill_client().set_is_glic_enabled(true);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -903,6 +921,7 @@ TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_UnsupportedQuery_GlicDisabled_NoDataSuggestion) {
   autofill_client().set_is_glic_enabled(false);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -932,6 +951,7 @@ TEST_F(AtMemoryManagerTest,
                                     MemorySearchStatus::kPartialResponseSuccess,
                                     std::move(entries), final_suggestions);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -953,6 +973,7 @@ TEST_F(AtMemoryManagerTest,
                                     MemorySearchStatus::kFinalResponseSuccess,
                                     std::move(entries), final_suggestions);
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 
@@ -961,6 +982,32 @@ TEST_F(AtMemoryManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.QueryCompleted",
       AtMemoryQueryCompletedStatus::kQueryReturnedData, 1);
+}
+
+TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Show root popup. This should initialize the metrics recorder.
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+
+  // 2. Show sub-popup. This should NOT reset the recorder.
+  AutofillSuggestionDelegate::SuggestionMetadata metadata;
+  metadata.multi_index = {0, 0};  // sub-popup
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory, metadata,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         FormSignature(0), FieldSignature(0));
+
+  // If it had reset, the first recorder would have been destroyed and logged
+  // "QuerySubmitted".
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
+
+  // 3. Hide popup. This should destroy the recorder and log the metric.
+  manager().OnPopupHidden();
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", false,
+                                      1);
 }
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
@@ -995,6 +1042,7 @@ class AtMemoryManagerIconTest
 TEST_P(AtMemoryManagerIconTest,
        TransformsResultsIntoSuggestionsWithCorrectIcons) {
   manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          FormSignature(0), FieldSignature(0));
 

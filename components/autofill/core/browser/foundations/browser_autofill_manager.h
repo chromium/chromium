@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -205,13 +206,16 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillSuggestionDelegate::SuggestionMetadata& metadata,
       const FieldGlobalId& trigger_field_id);
 
-  void DidShowSuggestions(base::span<const Suggestion> suggestions,
-                          const FormGlobalId& form_id,
-                          const FieldGlobalId& field_id,
-                          AutofillExternalDelegate::UpdateSuggestionsCallback
-                              update_suggestions_callback,
-                          AutofillSuggestionTriggerSource trigger_source =
-                              AutofillSuggestionTriggerSource::kUnspecified);
+  void DidShowSuggestions(
+      base::span<const Suggestion> suggestions,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          parent_suggestion_metadata,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      AutofillExternalDelegate::UpdateSuggestionsCallback
+          update_suggestions_callback,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kUnspecified);
 
   // Invoked when the user selected the `suggestion` in a suggestions list from
   // single field filling.

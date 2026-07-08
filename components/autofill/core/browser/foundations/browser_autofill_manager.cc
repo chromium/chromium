@@ -2229,12 +2229,19 @@ void BrowserAutofillManager::RequestRefillImpl(const FillId& fill_id) {
 
 void BrowserAutofillManager::DidShowSuggestions(
     base::span<const Suggestion> suggestions,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        parent_suggestion_metadata,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillExternalDelegate::UpdateSuggestionsCallback
         update_suggestions_callback,
     AutofillSuggestionTriggerSource trigger_source) {
-  NotifyObservers(&Observer::OnSuggestionsShown, suggestions);
+  if (!parent_suggestion_metadata) {
+    // `OnSuggestionsHidden` does not (yet) get notified when a sub-popup (or
+    // equivalent mobile UI) is shown. To keep the observer event symmetric,
+    // we only emit it for root popups.
+    NotifyObservers(&Observer::OnSuggestionsShown, suggestions);
+  }
 
   auto [form_structure, autofill_field] =
       GetCachedFormAndField(form_id, field_id);
@@ -2244,9 +2251,14 @@ void BrowserAutofillManager::DidShowSuggestions(
   FieldSignature field_signature =
       autofill_field ? autofill_field->GetFieldSignature() : FieldSignature(0);
 
-  GetAtMemoryManager().OnPopupShown(trigger_source, client().IsContextSecure(),
-                                    update_suggestions_callback, form_signature,
-                                    field_signature);
+  GetAtMemoryManager().OnPopupShown(
+      trigger_source, parent_suggestion_metadata, client().IsContextSecure(),
+      update_suggestions_callback, form_signature, field_signature);
+  if (parent_suggestion_metadata.has_value()) {
+    // The shown suggestions were in a sub-popup and the code below is not
+    // relevant for those.
+    return;
+  }
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);

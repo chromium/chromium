@@ -74,7 +74,10 @@ class AtMemoryMetricsRecorder {
   // with potentially different trigger sources are ignored. This is consistent
   // with the popup lifecycle, where a change in trigger mechanism would
   // typically result in the popup being hidden and a new session starting.
-  void OnPopupShown(AutofillSuggestionTriggerSource trigger_source);
+  void OnPopupShown(
+      AutofillSuggestionTriggerSource trigger_source,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          parent_suggestion_metadata);
 
   // Records that a search query was submitted during this session.
   void OnQuerySubmitted(std::u16string_view query);
