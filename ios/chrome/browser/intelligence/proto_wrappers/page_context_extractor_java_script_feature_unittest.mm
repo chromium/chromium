@@ -1762,6 +1762,9 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction_ZOrder_OffScreen) {
   const std::string html = R"(
     <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
       <body style="margin: 0; padding: 0;">
         <button style="position: absolute; top: 2000px; left: 10px; width: 100px; height: 50px;">
           Click me
