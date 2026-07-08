@@ -10113,6 +10113,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrossDeviceTaskHandoffDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCrossDeviceTaskHandoff)},
 
+    {"cross-window-tab-group-operations",
+     flag_descriptions::kCrossWindowTabGroupOperationsName,
+     flag_descriptions::kCrossWindowTabGroupOperationsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCrossWindowTabGroupOperations)},
+
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHistoryPaneAndroid)},

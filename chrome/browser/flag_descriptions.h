@@ -5769,6 +5769,12 @@ inline constexpr char kCrossDeviceTaskHandoffDescription[] =
     "Allows users to pick up where they left off in Chrome by transferring "
     "tasks and states to nearby devices.";
 
+inline constexpr char kCrossWindowTabGroupOperationsName[] =
+    "Cross-window tab group operations";
+inline constexpr char kCrossWindowTabGroupOperationsDescription[] =
+    "Enables tab group synchronization and operations across multi-window "
+    "instances on Android.";
+
 inline constexpr char kDebugToolbarPositioningName[] =
     "Debug Toolbar Positioning";
 inline constexpr char kDebugToolbarPositioningDescription[] =
