@@ -606,8 +606,6 @@ void AudioRendererImpl::OnDeviceInfoReceived(
       sample_rate = stream->audio_decoder_config().samples_per_second();
     }
 
-    int stream_channel_count = stream->audio_decoder_config().channels();
-
     bool try_supported_channel_layouts = false;
 #if BUILDFLAG(IS_WIN)
     try_supported_channel_layouts =
@@ -647,15 +645,13 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     //   hardware later changes to equal stream channels, browser-side will stop
     //   down-mixing and use the data from all stream channels.
 
-    ChannelLayout stream_channel_layout =
-        stream->audio_decoder_config().channel_layout();
+    ChannelLayoutConfig stream_layout_config =
+        stream->audio_decoder_config().channel_layout_config();
     bool use_stream_channel_layout =
-        hw_channel_layout.channels() <= stream_channel_count;
+        hw_channel_layout.channels() <= stream_layout_config.channels();
 
     ChannelLayoutConfig renderer_channel_layout_config =
-        use_stream_channel_layout
-            ? ChannelLayoutConfig(stream_channel_layout, stream_channel_count)
-            : hw_channel_layout;
+        use_stream_channel_layout ? stream_layout_config : hw_channel_layout;
 
     audio_parameters_.Reset(hw_params.format(), renderer_channel_layout_config,
                             sample_rate,
