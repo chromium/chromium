@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
 
   // Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
 
   // clang-format off
   RunTestSequence(

@@ -126,7 +126,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 
     OidcAuthenticationSigninInterceptorFactory::GetInstance()
         ->SetTestingFactory(
-            browser()->profile(),
+            browser()->GetProfile(),
             base::BindRepeating(
                 [](Profile* profile, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
@@ -145,7 +145,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
   MockOidcAuthenticationSigninInterceptor* GetMockOidcInterceptor() {
     return static_cast<MockOidcAuthenticationSigninInterceptor*>(
         OidcAuthenticationSigninInterceptorFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   void ValidateOidcTokens(ProfileManagementOidcTokens tokens,
@@ -356,9 +356,10 @@ IN_PROC_BROWSER_TEST_F(OidcAuthResponseCaptureNavigationThrottleTest,
 
 IN_PROC_BROWSER_TEST_F(OidcAuthResponseCaptureNavigationThrottleTest,
                        NoServiceForIncognito) {
-  TestNoServiceForInvalidProfile(browser()->profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(),
-      /*create_if_needed=*/true));
+  TestNoServiceForInvalidProfile(
+      browser()->GetProfile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUniqueForTesting(),
+          /*create_if_needed=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(OidcAuthResponseCaptureNavigationThrottleTest,

@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest, Successful) {
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
                        DoesNotProxyInIncognito) {
   // Create an Incognito browser window linked to the main profile.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ASSERT_TRUE(incognito_browser);
 
   // The SSO proxying should not occur in an Incognito window.

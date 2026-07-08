@@ -201,7 +201,7 @@ class ObserverTester : public SiteEngagementObserver {
 IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
                        SiteEngagementHelperMediaTrackerInPrerendering) {
   site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(browser()->profile());
+      site_engagement::SiteEngagementService::Get(browser()->GetProfile());
   ObserverTester tester(service);
 
   SiteEngagementService::Helper* helper =

@@ -345,7 +345,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
     // in all of these tests.  If it's already here, grab it; if not,
     // wait for it to show up.
     std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
-    DownloadManager* manager = browser->profile()->GetDownloadManager();
+    DownloadManager* manager = browser->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&items);
     if (items.empty())
       DownloadItemCreatedObserver(manager).WaitForDownloadItem(&items);
@@ -367,13 +367,13 @@ class SavePageBrowserTest : public InProcessBrowserTest {
     GetDestinationPaths(prefix_for_output_files, main_file_name, output_dir,
                         save_page_type);
     DownloadPersistedObserver persisted(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DownloadStoredProperly, url, *main_file_name,
                             expected_number_of_files,
                             history::DownloadState::COMPLETE));
     base::RunLoop run_loop;
     content::SavePackageFinishedObserver observer(
-        browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+        browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
     ASSERT_TRUE(GetCurrentTab(browser())
                     ->SavePage(*main_file_name, *output_dir, save_page_type));
 
@@ -407,7 +407,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
   }
 
   base::FilePath GetSaveDir() {
-    return DownloadPrefs(browser()->profile()).DownloadPath();
+    return DownloadPrefs(browser()->GetProfile()).DownloadPath();
   }
 
   // Path to directory containing test data.
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyCancel) {
   GetDestinationPaths("a", &full_file_name, &dir);
   DownloadItemCreatedObserver creation_observer(manager);
   DownloadPersistedObserver persisted(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&DownloadStoredProperly, url, full_file_name, -1,
                           history::DownloadState::CANCELLED));
   // -1 to disable number of files check; we don't update after cancel, and
@@ -558,11 +558,11 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 // Disabled on multiple platforms due to flakiness. crbug.com/41236339
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   GURL url = NavigateToMockURL("a");
-  auto delaying_delegate =
-      std::make_unique<DelayingDownloadManagerDelegate>(browser()->profile());
+  auto delaying_delegate = std::make_unique<DelayingDownloadManagerDelegate>(
+      browser()->GetProfile());
   delaying_delegate->GetDownloadIdReceiverCallback().Run(
       download::DownloadItem::kInvalidId + 1);
-  DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+  DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
       ->SetDownloadManagerDelegateForTesting(std::move(delaying_delegate));
   DownloadManager* manager = GetDownloadManager();
   std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
 
   // Create a download item creation waiter on that window.
   DownloadItemCreatedObserver creation_observer(
-      incognito->profile()->GetDownloadManager());
+      incognito->GetProfile()->GetDownloadManager());
 
   // Navigate, unblocking with new tab.
   GURL url = embedded_test_server()->GetURL("/save_page/b.htm");
@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
 
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      incognito->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      incognito->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   ASSERT_TRUE(GetCurrentTab(incognito)->SavePage(
       full_file_name, dir, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML));
 
@@ -683,12 +683,12 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, FileNameFromPageTitle) {
   base::FilePath dir =
       GetSaveDir().AppendASCII("Test page for saving page feature_files");
   DownloadPersistedObserver persisted(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&DownloadStoredProperly, url, full_file_name, 3,
                           history::DownloadState::COMPLETE));
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   ASSERT_TRUE(GetCurrentTab(browser())->SavePage(
       full_file_name, dir, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML));
 
@@ -723,7 +723,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, RemoveFromList) {
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1UL, downloads.size());
 
-  DownloadRemovedObserver removed(browser()->profile(), downloads[0]->GetId());
+  DownloadRemovedObserver removed(browser()->GetProfile(),
+                                  downloads[0]->GetId());
   downloads[0]->Remove();
   removed.WaitForRemoved();
 
@@ -753,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, CleanFilenameFromPageTitle) {
   SavePackageFilePicker::SetShouldPromptUser(false);
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   chrome::SavePage(browser());
   run_loop.Run();
 
@@ -792,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
 
   SavePackageFilePicker::SetShouldPromptUser(true);
   DownloadPersistedObserver persisted(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindRepeating(&DownloadStoredProperly, url, full_file_name, -1,
                           history::DownloadState::COMPLETE));
 
@@ -818,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
   // Save the file as MHTML. Run until save completes.
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   ASSERT_TRUE(select_file_dialog_factory->GetLastDialog()->CallFileSelected(
       full_file_name, "mhtml"));
   run_loop.Run();
@@ -884,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   chrome::SavePage(browser());
   run_loop.Run();
   base::FilePath download_dir = DownloadPrefs::FromDownloadManager(
@@ -927,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveDownloadableIFrame) {
     GURL download_url =
         embedded_test_server()->GetURL("/downloads/thisdayinhistory.xls");
     DownloadPersistedObserver persisted(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DownloadStoredProperly, download_url,
                             base::FilePath(), -1,
                             history::DownloadState::COMPLETE));
@@ -1642,14 +1643,14 @@ class BlockingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveOnlyHTMLBlocked) {
   GURL url = NavigateToMockURL("a");
 
-  auto blocking_delegate =
-      std::make_unique<BlockingDownloadManagerDelegate>(browser()->profile());
+  auto blocking_delegate = std::make_unique<BlockingDownloadManagerDelegate>(
+      browser()->GetProfile());
   blocking_delegate->GetDownloadIdReceiverCallback().Run(
       download::DownloadItem::kInvalidId + 1);
-  DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+  DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
       ->SetDownloadManagerDelegateForTesting(std::move(blocking_delegate));
   auto* delegate = static_cast<BlockingDownloadManagerDelegate*>(
-      DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+      DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDownloadManagerDelegate());
 
   base::FilePath full_file_name, dir;
@@ -1657,7 +1658,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveOnlyHTMLBlocked) {
                       content::SAVE_PAGE_TYPE_AS_ONLY_HTML);
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   ASSERT_TRUE(GetCurrentTab(browser())->SavePage(
       full_file_name, dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
 
@@ -1674,14 +1675,14 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveOnlyHTMLBlocked) {
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTMLBlocked) {
   GURL url = NavigateToMockURL("b");
 
-  auto blocking_delegate =
-      std::make_unique<BlockingDownloadManagerDelegate>(browser()->profile());
+  auto blocking_delegate = std::make_unique<BlockingDownloadManagerDelegate>(
+      browser()->GetProfile());
   blocking_delegate->GetDownloadIdReceiverCallback().Run(
       download::DownloadItem::kInvalidId + 1);
-  DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+  DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
       ->SetDownloadManagerDelegateForTesting(std::move(blocking_delegate));
   auto* delegate = static_cast<BlockingDownloadManagerDelegate*>(
-      DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
+      DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDownloadManagerDelegate());
 
   base::FilePath full_file_name, dir;
@@ -1689,7 +1690,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTMLBlocked) {
                       content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
-      browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
+      browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   ASSERT_TRUE(GetCurrentTab(browser())->SavePage(
       full_file_name, dir, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML));
 

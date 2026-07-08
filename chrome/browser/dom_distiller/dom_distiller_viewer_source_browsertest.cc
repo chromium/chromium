@@ -198,7 +198,7 @@ void DomDistillerViewerSourceBrowserTest::ViewSingleDistilledPage(
   // Ensure the correct factory is used for the DomDistillerService.
   dom_distiller::DomDistillerServiceFactory::GetInstance()
       ->SetTestingFactoryAndUse(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
   dom_distiller::DomDistillerServiceFactory::GetInstance()
       ->SetTestingFactoryAndUse(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
   expect_distiller_page_ = true;
   dom_distiller::DomDistillerServiceFactory::GetInstance()
       ->SetTestingFactoryAndUse(
-          browser()->profile(),
+          browser()->GetProfile(),
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
@@ -516,7 +516,7 @@ void DomDistillerViewerSourceBrowserTest::PrefTest(bool is_error_page) {
   ExpectBodyHasThemeAndFont(contents, "light", "sans-serif");
 
   DistilledPagePrefs* distilled_page_prefs =
-      DomDistillerServiceFactory::GetForBrowserContext(browser()->profile())
+      DomDistillerServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDistilledPagePrefs();
 
   // Test theme.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
   DistilledPagePrefs* distilled_page_prefs =
-      DomDistillerServiceFactory::GetForBrowserContext(browser()->profile())
+      DomDistillerServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDistilledPagePrefs();
 
   std::string result = content::EvalJs(contents, kGetFontSize).ExtractString();
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MAYBE_UISetsPrefs) {
   }));
 
   DistilledPagePrefs* distilled_page_prefs =
-      DomDistillerServiceFactory::GetForBrowserContext(browser()->profile())
+      DomDistillerServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDistilledPagePrefs();
 
   // Verify that the initial preferences aren't the same as those set below.

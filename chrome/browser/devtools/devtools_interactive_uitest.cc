@@ -210,13 +210,13 @@ class DevToolsPWAFocusTest : public InProcessBrowserTest {
             embedded_test_server()->GetURL("/simple.html"));
     web_app_info->title = u"Test PWA";
     web_app_info->scope = embedded_test_server()->GetURL("/");
-    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
+    app_id_ = web_app::test::InstallWebApp(browser()->GetProfile(),
                                            std::move(web_app_info));
   }
 
   void TearDownOnMainThread() override {
     if (!app_id_.empty()) {
-      web_app::test::UninstallWebApp(browser()->profile(), app_id_);
+      web_app::test::UninstallWebApp(browser()->GetProfile(), app_id_);
     }
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -229,7 +229,7 @@ class DevToolsPWAFocusTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DevToolsPWAFocusTest,
                        ClosingUndockedDevToolsFocusesPWAWindow) {
   BrowserWindowInterface* const pwa_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id_);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id_);
   ASSERT_TRUE(pwa_browser);
   ASSERT_TRUE(pwa_browser->GetWindow());
 

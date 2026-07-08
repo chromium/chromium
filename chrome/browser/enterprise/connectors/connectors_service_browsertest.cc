@@ -167,7 +167,7 @@ class ConnectorsServiceProfileBrowserTest
 
   void SetUpProfileData() {
 #if !BUILDFLAG(IS_CHROMEOS)
-    test::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
+    test::SetProfileDMToken(browser()->GetProfile(), kFakeProfileDMToken);
 #endif
 
     enterprise_management::PolicyData profile_policy_data;
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
            kNormalReportingSettingsPref);
 
   auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetReportingSettings();
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::kUnmanaged) {
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   }
 #else
   std::string management_domain =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetManagementDomain();
   // expected state is the same regardless of management_status() value.
   EXPECT_TRUE(settings.has_value());
@@ -325,7 +325,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     output.Set("browser",
                policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                    BuildBrowserDictionary(!is_cloud || include_device_info));
-    base::DictValue context = reporting::GetContext(browser()->profile());
+    base::DictValue context = reporting::GetContext(browser()->GetProfile());
     output.Merge(std::move(context));
     if (include_device_info) {
       base::DictValue device;
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref, settings_value(),
            /*profile_scope*/ false);
   auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
@@ -506,10 +506,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ((management_status() == ManagementStatus::kUnaffiliated) ? kDomain2
-                                                                     : kDomain1,
-            ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-                ->GetManagementDomain());
+  ASSERT_EQ(
+      (management_status() == ManagementStatus::kUnaffiliated) ? kDomain2
+                                                               : kDomain1,
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
+          ->GetManagementDomain());
 #endif
 }
 
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
            kNormalReportingSettingsPref);
   auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetAnalysisSettings(GURL(kTestUrl), FILE_DOWNLOADED);
 
   // Expect no local analysis settings on platforms where it is unsupported.
@@ -551,7 +552,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   }
 #else
   std::string management_domain =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::kUnaffiliated:
@@ -613,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   SetPrefs(AnalysisConnectorPref(PRINT), AnalysisConnectorScopePref(PRINT),
            settings_value());
   auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetAnalysisSettings(GURL(kTestUrl), PRINT);
 
   // Expect no local analysis settings on platforms where it is unsupported.
@@ -638,7 +639,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   }
 #else
   std::string management_domain =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::kUnaffiliated:
@@ -709,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   SetPrefs(AnalysisConnectorPref(BULK_DATA_ENTRY),
            AnalysisConnectorScopePref(BULK_DATA_ENTRY), settings_value());
   auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetAnalysisSettings(GURL(kTestUrl), BULK_DATA_ENTRY);
 
   if (settings_value() == kNormalLocalAnalysisSettingsPref) {
@@ -783,10 +784,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   SetPrefs(kEnterpriseRealTimeUrlCheckMode, kEnterpriseRealTimeUrlCheckScope,
            1);
   auto maybe_dm_token =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetDMTokenForRealTimeUrlCheck();
   EnterpriseRealTimeUrlCheckMode url_check_pref =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetAppliedRealTimeUrlCheck();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -803,7 +804,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   }
 #else
   std::string management_domain =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->GetManagementDomain();
   // expected state is the same regardless of management_status() value.
   ASSERT_TRUE(maybe_dm_token.has_value());

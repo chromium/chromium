@@ -70,7 +70,7 @@ class DataProtectionNavigationControllerTest : public InProcessBrowserTest {
 
   safe_browsing::NavigationEventList* navigation_event_list() {
     return safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-        GetForBrowserContext(browser()->profile())
+        GetForBrowserContext(browser()->GetProfile())
             ->navigation_event_list();
   }
 
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest, DownloadItem) {
   ASSERT_TRUE(chain.empty());
 
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
       GetAnalysisPolicy());
   AddFakeNavigationsToChain();
@@ -194,28 +194,28 @@ class DataProtectionNavigationControllerPolicyTest
       public testing::WithParamInterface<
           base::RepeatingCallback<void(PrefService*)>> {
  public:
-  void EnablePolicy() { GetParam().Run(browser()->profile()->GetPrefs()); }
+  void EnablePolicy() { GetParam().Run(browser()->GetProfile()->GetPrefs()); }
 
   void TearDownOnMainThread() override {
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY);
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
 #if BUILDFLAG(IS_CHROMEOS)
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::FILE_TRANSFER);
 #endif
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::PRINT);
     enterprise_connectors::test::SetOnSecurityEventReporting(
-        browser()->profile()->GetPrefs(), false);
+        browser()->GetProfile()->GetPrefs(), false);
     browser()->profile()->GetPrefs()->ClearPref(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode);
     browser()->profile()->GetPrefs()->ClearPref(

@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
   delegate->SetDeleteOnClosedAndObserve(&test_dialog_destructor_called_unused_);
 
   auto view = std::make_unique<views::WebDialogView>(
-      browser()->profile(), delegate,
+      browser()->GetProfile(), delegate,
       std::make_unique<ChromeWebContentsHandler>());
   auto view_ptr = view.get();
   gfx::NativeView parent_view =

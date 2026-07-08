@@ -25,10 +25,11 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
-  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->profile());
+  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(tracker);
 
-  MaybeShowCopyToast(browser()->profile(), web_contents, CopyToastType::kAudit);
+  MaybeShowCopyToast(browser()->GetProfile(), web_contents,
+                     CopyToastType::kAudit);
 
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(),
@@ -45,10 +46,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
-  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->profile());
+  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(tracker);
 
-  MaybeShowCopyToast(browser()->profile(), web_contents,
+  MaybeShowCopyToast(browser()->GetProfile(), web_contents,
                      CopyToastType::kKeptInManagedChrome);
 
   EXPECT_TRUE(toast_controller->IsShowingToast());
@@ -66,11 +67,12 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
   ASSERT_TRUE(toast_controller);
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
-  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->profile());
+  auto* tracker = ClipboardToastTracker::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(tracker);
 
   // 1. Show the toast for the first time.
-  MaybeShowCopyToast(browser()->profile(), web_contents, CopyToastType::kAudit);
+  MaybeShowCopyToast(browser()->GetProfile(), web_contents,
+                     CopyToastType::kAudit);
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(),
             ToastId::kEnterpriseCopyAudit);
@@ -81,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardToastTrackerBrowserTest,
 
   // 3. Attempt to show the same toast type again during the same active
   // session.
-  MaybeShowCopyToast(browser()->profile(), web_contents, CopyToastType::kAudit);
+  MaybeShowCopyToast(browser()->GetProfile(), web_contents,
+                     CopyToastType::kAudit);
 
   // 4. Verify that the toast is NOT shown a second time.
   EXPECT_FALSE(toast_controller->IsShowingToast());

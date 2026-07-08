@@ -32,7 +32,7 @@ ActiveUserTestMixin::~ActiveUserTestMixin() = default;
 
 void ActiveUserTestMixin::SetFakeCookieValue() {
   signin::TestIdentityManagerObserver observer(
-      IdentityManagerFactory::GetForProfile(test_->browser()->profile()));
+      IdentityManagerFactory::GetForProfile(test_->browser()->GetProfile()));
   base::RunLoop run_loop;
   observer.SetOnAccountsInCookieUpdatedCallback(run_loop.QuitClosure());
 

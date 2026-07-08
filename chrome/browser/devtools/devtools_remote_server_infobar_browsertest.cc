@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsRemoteServerInfobarBrowserTest,
 
   delegate->SetActiveWebSocketConnections(1);
 
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   CloseBrowserSynchronously(browser());

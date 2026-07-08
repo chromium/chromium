@@ -264,7 +264,7 @@ class DownloadDisplayControllerTest : public InProcessBrowserTest {
 
     mock_update_service_ =
         std::make_unique<StrictMock<MockDownloadBubbleUpdateService>>(
-            browser()->profile(), items_, offline_items_);
+            browser()->GetProfile(), items_, offline_items_);
     // Will be called when the DownloadDisplayController is constructed.
     EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(DownloadDisplay::ProgressInfo()));

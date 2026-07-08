@@ -253,7 +253,7 @@ class DownloadFramePolicyBrowserTest
     if (num_downloads > 0) {
       download_observer_ =
           std::make_unique<content::DownloadTestObserverTerminal>(
-              browser()->profile()->GetDownloadManager(),
+              browser()->GetProfile()->GetDownloadManager(),
               num_downloads /* wait_count */,
               content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     }

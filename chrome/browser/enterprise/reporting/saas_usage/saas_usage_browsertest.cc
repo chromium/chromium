@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
   // Force trigger the report upload.
   auto delegate_factory =
       enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop::
-          CreateForProfile(browser()->profile());
+          CreateForProfile(browser()->GetProfile());
   auto scheduler = enterprise_reporting::SaasUsageReportScheduler::Create(
       "profile", delegate_factory.get());
   ASSERT_TRUE(scheduler);

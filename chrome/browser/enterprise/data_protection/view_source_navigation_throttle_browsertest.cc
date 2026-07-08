@@ -59,7 +59,7 @@ class ViewSourceNavigationThrottleBrowserTest : public InProcessBrowserTest {
     safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
         GetInstance()
             ->SetTestingFactoryAndUse(
-                browser()->profile(),
+                browser()->GetProfile(),
                 base::BindRepeating(&ViewSourceNavigationThrottleBrowserTest::
                                         CreateMockLookupService,
                                     base::Unretained(this)));

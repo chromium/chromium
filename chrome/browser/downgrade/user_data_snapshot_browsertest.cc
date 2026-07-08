@@ -207,7 +207,7 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
   // |_ www.mobile.com
   void SimulateUserActions() override {
     bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     auto* folder = bookmark_model->AddFolder(
         bookmark_model->bookmark_bar_node(), 0, folder_title_);
@@ -229,7 +229,7 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
 
   void ValidateUserActions() override {
     bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     ASSERT_TRUE(bookmark_model->bookmark_bar_node()->children().size() == 2);
 
@@ -315,7 +315,7 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
  protected:
   void SimulateUserActions() override {
     auto* history_service = HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+        browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
     for (const auto& entry : history_entries_) {
       history_service->AddPage(entry.url, entry.time, entry.source);
       history_service->SetPageTitle(entry.url, entry.title);
@@ -324,7 +324,7 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
 
   void ValidateUserActions() override {
     auto* history_service = HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+        browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
     history::QueryResults history_query_results;
     base::RunLoop run_loop;
@@ -423,9 +423,9 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
   }
 
   void ValidateUserActions() override {
-    EXPECT_EQ(
-        browser()->profile()->GetPrefs()->GetInteger(prefs::kRestoreOnStartup),
-        1);
+    EXPECT_EQ(browser()->GetProfile()->GetPrefs()->GetInteger(
+                  prefs::kRestoreOnStartup),
+              1);
     auto* tab_strip = browser()->tab_strip_model();
     // There are 2 tabs that need to be preserved. There might be a 3rd tab,
     // about:blank that is opened by the test itself. That 3rd tab may or may

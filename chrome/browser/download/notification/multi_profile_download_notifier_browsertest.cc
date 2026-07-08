@@ -86,7 +86,7 @@ class MultiProfileDownloadNotifierBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     notifier_ = std::make_unique<MultiProfileDownloadNotifier>(
         &client(), RequireManagerInitialization());
-    ConfigureMockManagerForProfile(browser()->profile());
+    ConfigureMockManagerForProfile(browser()->GetProfile());
   }
 
   void ConfigureMockManagerForProfile(Profile* profile) {

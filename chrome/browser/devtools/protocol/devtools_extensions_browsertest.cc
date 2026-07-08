@@ -69,7 +69,7 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
   scoped_refptr<const extensions::Extension> InstallExtensionFromPath(
       const std::string& path) {
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
 
     base::FilePath extension_path =
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(*result->FindString("id"));
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {
 
   std::string id = *install_result->FindString("id");
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   const extensions::Extension* extension_before =
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   std::string id = *install_result->FindString("id");
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(extension->creation_flags() &
@@ -203,13 +203,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        ExtensionMarkedAsInstalledViaCdp) {
   base::RunLoop run_loop;
-  extensions::ExtensionSystem::Get(browser()->profile())
+  extensions::ExtensionSystem::Get(browser()->GetProfile())
       ->ready()
       .Post(FROM_HERE, run_loop.QuitWhenIdleClosure());
   run_loop.Run();
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   // The extension should not be loaded on a subsequent run.
 
   // Verify that the extension is not in the registry.
@@ -230,12 +230,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
       extensions::ExtensionBuilder("unpacked")
           .SetLocation(extensions::mojom::ManifestLocation::kComponent)
           .Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension.get());
 
   std::string id = extension.get()->id();
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   const extensions::Extension* extension_before =
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        FailsToUninstallNonexistentExtension) {
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   std::string id = "non-existent-id";
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetStorageValues) {
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   DetachProtocolClient();
 
-  extensions::ExtensionBackgroundPageWaiter(browser()->profile(), *extension)
+  extensions::ExtensionBackgroundPageWaiter(browser()->GetProfile(), *extension)
       .WaitForBackgroundOpen();
   agent_host_ = FindBackgroundPageHost("/_generated_background_page.html");
   agent_host_->AttachClient(this);
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_TRUE(load_result);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
 
   const extensions::Extension* extension = registry->GetExtensionById(
       *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
   ASSERT_FALSE(id.empty());
 
   // Load packed extension
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   loader.set_location(extensions::mojom::ManifestLocation::kInternal);
   loader.set_pack_extension(true);
   auto packed_extension = loader.LoadExtension(packed_path);
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
 
   // Verify the internal extension is actually in the registry.
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_TRUE(registry->enabled_extensions().Contains(packed_id));
 
   content::RunAllTasksUntilIdle();

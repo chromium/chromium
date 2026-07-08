@@ -2177,7 +2177,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
     const std::string* browser_context_id =
         target_info_dict.FindString("browserContextId");
     ASSERT_TRUE(browser_context_id);
-    EXPECT_EQ(browser()->profile()->UniqueId(), *browser_context_id);
+    EXPECT_EQ(browser()->GetProfile()->UniqueId(), *browser_context_id);
     const std::string* target_id = target_info_dict.FindString("targetId");
     ASSERT_TRUE(target_id);
     const base::DictValue* embedder_data =

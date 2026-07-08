@@ -477,11 +477,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   // Mirror the per-browser download prefs setup the base fixture does for
   // the regular browser, so the incognito download lands in the temp dir.
   DownloadPrefs* incognito_prefs =
-      DownloadPrefs::FromBrowserContext(incognito->profile());
+      DownloadPrefs::FromBrowserContext(incognito->GetProfile());
   incognito_prefs->SetDownloadPath(GetDownloadDirectory(browser()));
   incognito_prefs->SetSaveFilePath(GetDownloadDirectory(browser()));
-  incognito->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  incognito->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
 
   GURL page_url = embedded_test_server()->GetURL(kPagePath);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, page_url));

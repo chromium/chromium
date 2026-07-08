@@ -99,7 +99,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   }
 
   void TearDownOnMainThread() override {
-    web_app::test::UninstallAllWebApps(browser()->profile());
+    web_app::test::UninstallAllWebApps(browser()->GetProfile());
     override_registration_.reset();
     PWAProtocolTestWithoutApp::TearDownOnMainThread();
   }
@@ -112,7 +112,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     // The title needs to match the web app to avoid triggering an update.
     web_app_info->title = u"Basic web app";
     init(*web_app_info);
-    return web_app::test::InstallWebApp(browser()->profile(),
+    return web_app::test::InstallWebApp(browser()->GetProfile(),
                                         std::move(web_app_info));
   }
 
@@ -155,7 +155,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   }
 
   bool AppExists(const ManifestId& manifest_id) {
-    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
     CHECK(provider);
     return provider->registrar_unsafe()
         .GetInstallState(web_app::GenerateAppIdFromManifestId(manifest_id))
@@ -241,7 +241,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
                  web_app::mojom::UserDisplayMode>;
 
   AppUserSettings GetAppUserSettings(const ManifestId& manifest_id) {
-    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
     CHECK(provider);
     const auto* web_app = provider->registrar_unsafe().GetAppById(
         web_app::GenerateAppIdFromManifestId(manifest_id));
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState) {
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithBadge) {
   webapps::AppId app_id = InstallWebApp();
   ukm::TestUkmRecorder test_recorder;
-  badging::BadgeManagerFactory::GetForProfile(browser()->profile())
+  badging::BadgeManagerFactory::GetForProfile(browser()->GetProfile())
       ->SetBadgeForTesting(app_id, 11, &test_recorder);
   const base::DictValue* result =
       SendCommandSync("PWA.getOsAppState",
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithBadge) {
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithZeroBadge) {
   webapps::AppId app_id = InstallWebApp();
   ukm::TestUkmRecorder test_recorder;
-  badging::BadgeManagerFactory::GetForProfile(browser()->profile())
+  badging::BadgeManagerFactory::GetForProfile(browser()->GetProfile())
       ->SetBadgeForTesting(app_id, 0, &test_recorder);
   const base::DictValue* result =
       SendCommandSync("PWA.getOsAppState",
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithZeroBadge) {
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithBadgeOverInt) {
   webapps::AppId app_id = InstallWebApp();
   ukm::TestUkmRecorder test_recorder;
-  badging::BadgeManagerFactory::GetForProfile(browser()->profile())
+  badging::BadgeManagerFactory::GetForProfile(browser()->GetProfile())
       ->SetBadgeForTesting(app_id, static_cast<uint64_t>(INT_MAX) + 1,
                            &test_recorder);
   const base::DictValue* result =
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(InstallableWebAppManifestId());
   BrowserWindowInterface* app_browser =
-      web_app::AppBrowserController::FindForWebApp(*browser()->profile(),
+      web_app::AppBrowserController::FindForWebApp(*browser()->GetProfile(),
                                                    app_id);
   auto* web_contents_after =
       app_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();

@@ -37,12 +37,12 @@ using download::DownloadUrlParameters;
 using extensions::Extension;
 
 DownloadManager* DownloadManagerForBrowser(Browser* browser) {
-  return browser->profile()->GetDownloadManager();
+  return browser->GetProfile()->GetDownloadManager();
 }
 
 void SetPromptForDownload(Browser* browser, bool prompt_for_download) {
-  browser->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                             prompt_for_download);
+  browser->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                prompt_for_download);
 }
 
 DownloadTestObserverResumable::DownloadTestObserverResumable(
@@ -144,8 +144,8 @@ bool DownloadTestBase::InitialSetup() {
   DownloadManager* manager = DownloadManagerForBrowser(browser());
   DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 
-  file_activity_observer_ =
-      std::make_unique<DownloadTestFileActivityObserver>(browser()->profile());
+  file_activity_observer_ = std::make_unique<DownloadTestFileActivityObserver>(
+      browser()->GetProfile());
 
   return true;
 }

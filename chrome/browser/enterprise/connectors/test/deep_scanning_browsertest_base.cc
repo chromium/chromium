@@ -138,11 +138,11 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
   ContentAnalysisDelegate::ResetFactoryForTesting();
   FilesRequestHandler::ResetFactoryForTesting();
 
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(), FILE_ATTACHED);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(), FILE_DOWNLOADED);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(), BULK_DATA_ENTRY);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(), PRINT);
-  SetOnSecurityEventReporting(browser()->profile()->GetPrefs(), false);
+  ClearAnalysisConnector(browser()->GetProfile()->GetPrefs(), FILE_ATTACHED);
+  ClearAnalysisConnector(browser()->GetProfile()->GetPrefs(), FILE_DOWNLOADED);
+  ClearAnalysisConnector(browser()->GetProfile()->GetPrefs(), BULK_DATA_ENTRY);
+  ClearAnalysisConnector(browser()->GetProfile()->GetPrefs(), PRINT);
+  SetOnSecurityEventReporting(browser()->GetProfile()->GetPrefs(), false);
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {

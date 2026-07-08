@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
                        CreateNavigationThrottleIncognitoMode) {
   // Add incognito browser for the mock navigation handle.
-  auto* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  auto* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   content::MockNavigationHandle mock_nav_handle(
       web_contents(incognito_browser));
   content::MockNavigationThrottleRegistry registry(
@@ -291,7 +291,7 @@ INSTANTIATE_TEST_SUITE_P(ManagedState,
 // expect per platform.
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
   auto* device_trust_service =
-      DeviceTrustServiceFactory::GetForProfile(browser()->profile());
+      DeviceTrustServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(device_trust_service);
 
   base::test::TestFuture<base::DictValue> future;
@@ -884,7 +884,7 @@ class DeviceTrustBrowserTestSignalsContractForUnmanagedDevices
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
                        SignalsContract) {
   auto* device_trust_service =
-      DeviceTrustServiceFactory::GetForProfile(browser()->profile());
+      DeviceTrustServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(device_trust_service);
 
   base::test::TestFuture<base::DictValue> future;

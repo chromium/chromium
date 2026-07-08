@@ -155,11 +155,11 @@ class HttpHeaderInjectionBrowserTest : public policy::PolicyTest {
     )",
                                         {resource_type}, nullptr));
 
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
 
     auto* rules_monitor_service =
         extensions::declarative_net_request::RulesMonitorService::Get(
-            browser()->profile());
+            browser()->GetProfile());
     extensions::declarative_net_request::RulesetManagerObserver ruleset_waiter(
         rules_monitor_service->ruleset_manager());
 

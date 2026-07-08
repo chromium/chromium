@@ -60,7 +60,7 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
 
     MixinBasedPlatformBrowserTest::SetUpOnMainThread();
   }
@@ -106,7 +106,7 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
       "block_until_verdict": 1
     })";
 
-    test::SetAnalysisConnector(browser()->profile()->GetPrefs(), connector,
+    test::SetAnalysisConnector(browser()->GetProfile()->GetPrefs(), connector,
                                kBlockingDlpScans, machine_scope);
   }
 
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
   data.clipboard_source.set_url("https://source.com/");
 
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->GetProfile(),
                                                  browser()
                                                      ->tab_strip_model()
                                                      ->GetActiveWebContents()
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, FileAttachAllowed) {
   ContentAnalysisDelegate::Data data;
   data.paths.emplace_back(file_path);
 
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->GetProfile(),
                                                  browser()
                                                      ->tab_strip_model()
                                                      ->GetActiveWebContents()

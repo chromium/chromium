@@ -237,7 +237,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
     delegate->SetDeleteOnClosedAndObserve(&web_dialog_delegate_destroyed_);
 
     auto view = std::make_unique<views::WebDialogView>(
-        browser()->profile(), delegate,
+        browser()->GetProfile(), delegate,
         std::make_unique<ChromeWebContentsHandler>());
     gfx::NativeView parent_view =
         browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED,
       kBlockingScansForDlpAndMalware);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
   ContentAnalysisDelegate::Data data;
   CreateFilesForTest({"foo.doc"}, {"content"}, &data);
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest,
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED,
       kBlockingScansForDlpAndMalware);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest,
   ContentAnalysisDelegate::Data data;
   CreateFilesForTest({"foo.doc"}, {"content"}, &data);
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
           /*dlp=*/true, /*malware=*/std::nullopt,
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
   CreateFilesForTest({"foo.doc", "bar.doc", "baz.doc"},
                      {"random", "file", "contents"}, &data);
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
 
   // Setup policies.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
 
   // Setup the DLP warning response.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
   data.text.emplace_back(text());
   CreateFilesForTest({"foo.doc", "bar.doc"}, {"file", "content"}, &data);
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED,
       kBlockingScansForDlpAndMalware);
 
   SetStatusCallbackResponse(
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
     data.text.emplace_back(text());
   }
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
   // Setup policies to enable deep scanning, its UI and the responses to be
   // simulated.
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED,
       kBlockingScansForDlpAndMalwareWithCustomMessage);
 
   SetStatusCallbackResponse(
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
     data.text.emplace_back(text());
   }
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data,
+      browser()->GetProfile(), GURL(kTestUrl), &data,
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(

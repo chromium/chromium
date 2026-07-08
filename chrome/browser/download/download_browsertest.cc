@@ -1308,8 +1308,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownload) {
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
   // Since |incognito| is a separate browser, we have to set it up explicitly.
-  incognito->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  incognito->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
   DownloadAndWait(incognito, url);
 
   // We should still have 2 windows.
@@ -1681,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadHistoryCheck) {
 
   // Download the url and wait until the object has been stored.
   base::Time start(base::Time::Now());
-  HistoryObserver observer(browser()->profile());
+  HistoryObserver observer(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
 
   // Finish the download.  We're ok relying on the history to be flushed
@@ -1706,7 +1706,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadHistoryCheck) {
   observer.WaitForStored();
   // Get the details on what was stored into the history.
   std::vector<history::DownloadRow> downloads_in_database =
-      DownloadsHistoryDataCollector(browser()->profile()).WaitForDownloadInfo();
+      DownloadsHistoryDataCollector(browser()->GetProfile())
+          .WaitForDownloadInfo();
   ASSERT_EQ(1u, downloads_in_database.size());
 
   // Confirm history storage is what you expect for an interrupted slow download
@@ -1755,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadHistoryDangerCheck) {
           DownloadManagerForBrowser(browser()), 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT);
   base::Time start(base::Time::Now());
-  HistoryObserver observer(browser()->profile());
+  HistoryObserver observer(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
 
   // Validate the download and wait for it to finish.
@@ -1770,7 +1771,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadHistoryDangerCheck) {
   // Get history details and confirm it's what you expect.
   observer.WaitForStored();
   std::vector<history::DownloadRow> downloads_in_database =
-      DownloadsHistoryDataCollector(browser()->profile()).WaitForDownloadInfo();
+      DownloadsHistoryDataCollector(browser()->GetProfile())
+          .WaitForDownloadInfo();
   ASSERT_EQ(1u, downloads_in_database.size());
   history::DownloadRow& row1(downloads_in_database[0]);
   base::FilePath file(FILE_PATH_LITERAL("downloads/dangerous/dangerous.swf"));
@@ -1944,7 +1946,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstall) {
 
   // Check that the CRX is not installed.
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
@@ -1983,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInstallDenysPermissions) {
 
   // Check that the extension was not installed.
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
@@ -2028,7 +2030,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInstallAcceptPermissions) {
 
   // Check that the extension was installed.
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_TRUE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
@@ -2055,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxInvalid) {
 
   // Check that the extension was not installed.
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_FALSE(extension_registry->enabled_extensions().Contains(kGoodCrxId));
 }
 
@@ -2096,7 +2098,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxLargeTheme) {
 
   // Check that the extension was installed.
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_TRUE(
       extension_registry->enabled_extensions().Contains(kLargeThemeCrxId));
 }
@@ -2831,7 +2833,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   // Open a newer browser window that the download should be opened in.
   Browser* latest_tabbed_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
@@ -4581,7 +4583,7 @@ class InProgressDownloadTest : public DownloadTest {
       // released from `DownloadManagerUtils`.
       set_in_progress_manager(
           DownloadManagerUtils::GetInProgressDownloadManager(
-              browser()->profile()->GetProfileKey()));
+              browser()->GetProfile()->GetProfileKey()));
     }
 
     // As a pointer to the in progress download manager has now been cached,
@@ -4629,7 +4631,7 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   // Wait for in-progress download manager to initialize.
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
-          browser()->profile()->GetProfileKey());
+          browser()->GetProfile()->GetProfileKey());
   SimpleDownloadManagerCoordinatorWaiter coordinator_waiter(coordinator);
   coordinator_waiter.WaitForInitialization();
 
@@ -4664,7 +4666,7 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   download::DownloadItem* download = coordinator->GetDownloadByGuid(guid);
   content::DownloadManager* manager = DownloadManagerForBrowser(browser());
   DownloadCoreService* service =
-      DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile());
+      DownloadCoreServiceFactory::GetForBrowserContext(browser()->GetProfile());
   service->SetDownloadHistoryForTesting(nullptr);
 
   ASSERT_TRUE(download);
@@ -4697,7 +4699,7 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   // Wait for in-progress download manager to initialize.
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
-          browser()->profile()->GetProfileKey());
+          browser()->GetProfile()->GetProfileKey());
   SimpleDownloadManagerCoordinatorWaiter coordinator_waiter(coordinator);
   coordinator_waiter.WaitForInitialization();
 
@@ -4868,8 +4870,8 @@ class DisableSafeBrowsingOnInProgressDownload
       return true;
 
     final_state_seen_ = true;
-    browser_->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                false);
+    browser_->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                   false);
     EXPECT_EQ(download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
               download->GetDangerType());
     EXPECT_FALSE(download->IsDangerous());
@@ -4906,7 +4908,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   in_progress_observer->WaitForFinished();
 
   // SafeBrowsing should have been disabled by our observer.
-  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  ASSERT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingEnabled));
 
   std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
@@ -5136,8 +5138,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
   // Since |incognito| is a separate browser, we have to set it up explicitly.
-  incognito->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  incognito->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
   DownloadAndWait(incognito, url);
 
   // Verify that the download surface is showing for the Incognito window.
@@ -5214,11 +5216,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, PRE_DownloadTest_History) {
   GURL download_url =
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
-  HistoryObserver observer(browser()->profile());
+  HistoryObserver observer(browser()->GetProfile());
   DownloadAndWait(browser(), download_url);
   observer.WaitForStored();
   base::RunLoop run_loop;
-  HistoryServiceFactory::GetForProfile(browser()->profile(),
+  HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                        ServiceAccessType::IMPLICIT_ACCESS)
       ->FlushForTest(run_loop.QuitWhenIdleClosure());
   run_loop.Run();
@@ -5340,9 +5342,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, WebAppDownloadOnlyShowsUiInWebAppWindow) {
 
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
+      browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(app_browser, url);
 
@@ -5360,9 +5362,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
 
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
+      browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(browser(), url);
 
@@ -5379,9 +5381,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadFromWebApp) {
 
   // Load an app.
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
+      browser()->GetProfile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   DownloadAndWait(app_browser, url);
 

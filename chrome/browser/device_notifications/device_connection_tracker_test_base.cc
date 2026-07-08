@@ -92,14 +92,14 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   MockDeviceSystemTrayIcon* mock_device_system_tray_icon =
       GetMockDeviceSystemTrayIcon();
   auto* connection_tracker =
-      GetDeviceConnectionTracker(browser()->profile(), true);
+      GetDeviceConnectionTracker(browser()->GetProfile(), true);
   connection_tracker->SetTaskRunnerAndClockForTesting(
       task_runner, task_runner->GetMockTickClock());
 
   // First connection of the first origin stages the profile.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                StageProfile(browser()->profile()));
+                StageProfile(browser()->GetProfile()));
   }
   connection_tracker->IncrementConnectionCount(origin_name_pairs[0].first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
@@ -114,7 +114,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   auto t1 = task_runner->NowTicks();
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()))
+                NotifyConnectionCountUpdated(browser()->GetProfile()))
         .Times(2);
   }
   connection_tracker->IncrementConnectionCount(origin_name_pairs[1].first);
@@ -138,7 +138,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // Two origins are removed 1 seconds apart.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()))
+                NotifyConnectionCountUpdated(browser()->GetProfile()))
         .Times(2);
   }
   connection_tracker->DecrementConnectionCount(origin_name_pairs[0].first);
@@ -156,7 +156,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   auto t2 = task_runner->NowTicks();
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()));
+                NotifyConnectionCountUpdated(browser()->GetProfile()));
   }
   connection_tracker->DecrementConnectionCount(origin_name_pairs[1].first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
@@ -170,7 +170,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // The first origin is removed at t4.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()));
+                NotifyConnectionCountUpdated(browser()->GetProfile()));
   }
   task_runner->FastForwardBy(base::Seconds(2));
   auto t4 = task_runner->NowTicks();
@@ -185,7 +185,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // removed at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()));
+                NotifyConnectionCountUpdated(browser()->GetProfile()));
   }
   connection_tracker->IncrementConnectionCount(origin_name_pairs[1].first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
@@ -199,10 +199,10 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // Scheduled CleanUpOrigin is no-op at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()))
+                NotifyConnectionCountUpdated(browser()->GetProfile()))
         .Times(0);
     EXPECT_CALL(*mock_device_system_tray_icon,
-                UnstageProfile(browser()->profile(), /*immediate=*/true))
+                UnstageProfile(browser()->GetProfile(), /*immediate=*/true))
         .Times(0);
   }
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
@@ -215,7 +215,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // The last connection of the second origin is gone at t5.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                NotifyConnectionCountUpdated(browser()->profile()));
+                NotifyConnectionCountUpdated(browser()->GetProfile()));
   }
   connection_tracker->DecrementConnectionCount(origin_name_pairs[1].first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
@@ -229,7 +229,7 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   // the system tray icon because there are no active origins on this profile.
   if (has_system_tray_icon) {
     EXPECT_CALL(*mock_device_system_tray_icon,
-                UnstageProfile(browser()->profile(), /*immediate=*/true))
+                UnstageProfile(browser()->GetProfile(), /*immediate=*/true))
         .Times(1);
   }
   task_runner->FastForwardBy(base::Seconds(3));
@@ -245,18 +245,19 @@ void DeviceConnectionTrackerTestBase::TestWhitelistedOrigin(
   MockDeviceSystemTrayIcon* mock_device_system_tray_icon =
       GetMockDeviceSystemTrayIcon();
   auto* connection_tracker =
-      GetDeviceConnectionTracker(browser()->profile(), true);
+      GetDeviceConnectionTracker(browser()->GetProfile(), true);
   connection_tracker->SetTaskRunnerAndClockForTesting(
       task_runner, task_runner->GetMockTickClock());
 
-  EXPECT_CALL(*mock_device_system_tray_icon, StageProfile(browser()->profile()))
+  EXPECT_CALL(*mock_device_system_tray_icon,
+              StageProfile(browser()->GetProfile()))
       .Times(0);
   connection_tracker->IncrementConnectionCount(whitelisted_origin.first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
   EXPECT_CALL(*mock_device_system_tray_icon,
-              StageProfile(browser()->profile()));
+              StageProfile(browser()->GetProfile()));
   connection_tracker->IncrementConnectionCount(non_whitelisted_origin.first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
   EXPECT_THAT(connection_tracker->origins(),
@@ -266,7 +267,7 @@ void DeviceConnectionTrackerTestBase::TestWhitelistedOrigin(
   testing::Mock::VerifyAndClearExpectations(&connection_tracker);
 
   EXPECT_CALL(*mock_device_system_tray_icon,
-              UnstageProfile(browser()->profile(), /*immediate=*/true))
+              UnstageProfile(browser()->GetProfile(), /*immediate=*/true))
       .Times(0);
   connection_tracker->DecrementConnectionCount(whitelisted_origin.first);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
@@ -276,11 +277,11 @@ void DeviceConnectionTrackerTestBase::TestWhitelistedOrigin(
                        OriginState(1, t0, non_whitelisted_origin.second))));
 
   EXPECT_CALL(*mock_device_system_tray_icon,
-              NotifyConnectionCountUpdated(browser()->profile()));
+              NotifyConnectionCountUpdated(browser()->GetProfile()));
 
   connection_tracker->DecrementConnectionCount(non_whitelisted_origin.first);
   EXPECT_CALL(*mock_device_system_tray_icon,
-              UnstageProfile(browser()->profile(), /*immediate=*/true));
+              UnstageProfile(browser()->GetProfile(), /*immediate=*/true));
 
   task_runner->FastForwardBy(base::Seconds(3));
   EXPECT_EQ(connection_tracker->total_connection_count(), 0);
@@ -338,8 +339,8 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnectionExtensionOrigins(
     bool has_system_tray_icon) {
   auto extension1 = CreateExtensionWithName("Test Extension 1");
   auto extension2 = CreateExtensionWithName("Test Extension 2");
-  AddExtensionToProfile(browser()->profile(), extension1.get());
-  AddExtensionToProfile(browser()->profile(), extension2.get());
+  AddExtensionToProfile(browser()->GetProfile(), extension1.get());
+  AddExtensionToProfile(browser()->GetProfile(), extension2.get());
   TestDeviceConnection(has_system_tray_icon,
                        {{extension1->origin(), extension1->name()},
                         {extension2->origin(), extension2->name()}});
@@ -351,8 +352,8 @@ void DeviceConnectionTrackerTestBase::TestSingleProfileWhitelistedExtension(
   auto whitelisted_extension = CreateExtensionWithNameAndId(
       whitelisted_extension_name, whitelisted_extension_id);
   auto extension2 = CreateExtensionWithName("Test Extension 2");
-  AddExtensionToProfile(browser()->profile(), whitelisted_extension.get());
-  AddExtensionToProfile(browser()->profile(), extension2.get());
+  AddExtensionToProfile(browser()->GetProfile(), whitelisted_extension.get());
+  AddExtensionToProfile(browser()->GetProfile(), extension2.get());
   TestWhitelistedOrigin(
       {whitelisted_extension->origin(), whitelisted_extension->name()},
       {extension2->origin(), extension2->name()});

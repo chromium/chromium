@@ -219,7 +219,7 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
 
   AutofillProfile CreateTestProfile() {
     AutofillProfile profile = test::GetFullProfile();
-    AddTestProfile(browser()->profile(), profile);
+    AddTestProfile(browser()->GetProfile(), profile);
     return profile;
   }
 

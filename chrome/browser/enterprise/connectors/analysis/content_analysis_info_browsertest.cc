@@ -419,11 +419,11 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
     expected_email = expected_default_active_email();
   }
   ASSERT_EQ(expected_email,
-            ContentAreaUserProvider::GetUser(browser()->profile(),
+            ContentAreaUserProvider::GetUser(browser()->GetProfile(),
                                              /*web_contents=*/nullptr, url()));
 
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   ASSERT_EQ(expected_active_email(),
             GetActiveContentAreaUser(identity_manager, url()));
   ASSERT_EQ(expected_active_email(),
@@ -454,11 +454,11 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
     expected_email = expected_default_active_email();
   }
   ASSERT_EQ(expected_email, ContentAreaUserProvider::GetUser(
-                                browser()->profile(),
+                                browser()->GetProfile(),
                                 /*web_contents=*/nullptr, non_urlf_url));
 
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   ASSERT_EQ(expected_active_email(),
             GetActiveContentAreaUser(identity_manager, non_urlf_url));
 }
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(ActiveFrameUserEmailBrowserTest, GetActiveUserForFrame) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), tab_url()));
   ASSERT_EQ(expected_active_email(),
             GetActiveFrameUser(
-                IdentityManagerFactory::GetForProfile(browser()->profile()),
+                IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
                 tab_url(), frame_url()));
 }
 
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(ReferrerChainActiveUserEmailBrowserTest,
   GURL url("https://docs.google.com/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(ContentAreaUserProvider::GetUser(
-                browser()->profile(),
+                browser()->GetProfile(),
                 browser()->tab_strip_model()->GetActiveWebContents(), url),
             expected_active_email());
 }
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderTest, FrameUrlChain) {
       .WillByDefault(testing::ReturnRef(empty_url_chain));
 
   content::DownloadItemUtils::AttachInfoForTesting(
-      &mock_download_item, browser()->profile(), web_contents);
+      &mock_download_item, browser()->GetProfile(), web_contents);
 
   // Initialize the provider, trigger iframe urls collection.
   DownloadContentAreaUserProvider provider(mock_download_item);

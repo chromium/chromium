@@ -125,7 +125,7 @@ class DataProtectionClipboardBrowserTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        CopyBlockedByDataControls) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        CopyWarnedByDataControls_Cancel) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "WARN"}
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        CopyWarnedByDataControls_Bypass) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "WARN"}
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        CopyAllowedByDataControls) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["google.com"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "WARN"}
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        PasteBlockedByDataControls) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        PasteWarnedByDataControls_Cancel) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "WARN"}
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        PasteWarnedByDataControls_Bypass) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "WARN"}
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        PasteAllowedByDataControls) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["google.com"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        ChromePrintReportsInitiator) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["http://127.0.0.1"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        ChromePrintReportsPrimaryMainFrameURLWithinSubframe) {
-  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
                     "sources": { "urls": ["a.com"] },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}

@@ -80,7 +80,7 @@ class IWAProtocolTestBase : public DevToolsProtocolTestBase {
   }
 
   void TearDownOnMainThread() override {
-    web_app::test::UninstallAllWebApps(browser()->profile());
+    web_app::test::UninstallAllWebApps(browser()->GetProfile());
     override_registration_.reset();
     DevToolsProtocolTestBase::TearDownOnMainThread();
   }
@@ -95,7 +95,7 @@ class IWAProtocolTestBase : public DevToolsProtocolTestBase {
   webapps::AppId AppId() const { return app_id_; }
 
   bool AppExists() {
-    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    auto* provider = WebAppProvider::GetForTest(browser()->GetProfile());
     CHECK(provider);
 
     return provider->registrar_unsafe().GetInstallState(AppId()).has_value();
