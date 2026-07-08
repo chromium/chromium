@@ -377,11 +377,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("launchAndWaitUntilAppReady($1)",
+                                               method_name)));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Get the payment handler web contents.
@@ -484,11 +483,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("launchAndWaitUntilAppReady($1)",
+                                               method_name)));
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Get the payment handler web contents.

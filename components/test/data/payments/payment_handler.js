@@ -114,6 +114,43 @@ function launchWithoutWaitForResponseWithMethods(methodData) {
 }
 
 /**
+ * Launches the payment handler and wait until the window client and service
+ * worker are ready.
+ * @param {string} methodNameOverride - Optional payment method identifier.
+ * @return {Promise<string>} - 'success' or error message on failure.
+ */
+async function launchAndWaitUntilAppReady(methodNameOverride) {
+  let appReadyResolver;
+  appReadyPromise = new Promise((r) => {
+    appReadyResolver = r;
+  });
+  const method =
+      (methodNameOverride !== undefined) ? methodNameOverride : methodName;
+  try {
+    request = new PaymentRequest([{supportedMethods: method}], {
+      total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
+    });
+    request.show();
+    request.onpaymentmethodchange = (event) => {
+      // The payment app service worker calls changePaymentMethod() when its
+      // window client is ready. We leverage this event as a signaling channel
+      // to notify the test that the payment app is ready.
+      //
+      // Calling updateWith() is required by the Payment Request when
+      // handling paymentmethodchange. We don't care what's updated here.
+      event.updateWith({});
+      // Acknowledge the payment app readiness and resolve the promise.
+      if (event.methodDetails.status === 'success') {
+        appReadyResolver(event.methodDetails.status);
+      }
+    };
+    return appReadyPromise;
+  } catch (e) {
+    return appReadyResolver(e.toString());
+  }
+}
+
+/**
  * Completes the resolved payment response with the specified status.
  * @param {string} status - 'success' or 'fail'.
  * @return {Promise<string>} - 'success' or error message on failure.

@@ -12,12 +12,33 @@ found in the LICENSE file.
   <body>
     <button id="reject-button">Reject Payment</button>
     <script>
+      function postMessage(msg) {
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage(msg);
+        } else {
+          navigator.serviceWorker.ready.then(reg => {
+            reg.active.postMessage(msg);
+          });
+        }
+      }
       document.getElementById('reject-button').addEventListener('click', () => {
+        // Since `window.onload` awaits service worker readiness before the page is
+        // interactive, `navigator.serviceWorker.controller` is guaranteed to be
+        // available here.
         navigator.serviceWorker.controller.postMessage('reject');
       });
+      // window client is ready
+      window.onload = function() {
+        navigator.serviceWorker.ready.then(reg => {
+          // app is ready
+          reg.active.postMessage('app_is_ready');
+        })
+      }
       // Providing page loaded signal for payment app service worker to
       // immediately reject promise and cause an error status.
-      navigator.serviceWorker.controller.postMessage('loaded');
+      // We use the custom postMessage because the service worker controller might
+      // not be set up yet at this early stage of script execution.
+      postMessage('loaded');
     </script>
   </body>
 </html>
