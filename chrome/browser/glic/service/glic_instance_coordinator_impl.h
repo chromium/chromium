@@ -153,7 +153,7 @@ class GlicInstanceCoordinatorImpl
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source) override;
-  void EnsurePreload() override;
+  bool MaybeStartInitialWarming() override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
   void Shutdown() override;

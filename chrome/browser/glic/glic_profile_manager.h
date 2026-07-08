@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory_coordinator/memory_consumer.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -24,10 +23,8 @@ enum class GlicPrewarmingChecksResult;
 // Among other things it is used for determining which profile to launch from an
 // OS Entry point and ensuring that just one panel is shown across all profiles.
 class GlicProfileManager : public ProfileManagerObserver,
-                           public ProfileObserver,
-                           public base::PassiveMemoryConsumer {
+                           public ProfileObserver {
  public:
-  static constexpr char kMemoryConsumerName[] = "GlicProfileManager";
 
   GlicProfileManager();
   ~GlicProfileManager() override;
@@ -89,8 +86,6 @@ class GlicProfileManager : public ProfileManagerObserver,
   // Callback from ProfilePicker::Show().
   void DidSelectProfile(Profile* profile);
 
-  bool IsUnderMemoryPressure() const;
-
   // Checks whether preloading is possible for the profile for either the fre
   // or the glic panel (i.e., this excludes specific checks for those two
   // surfaces).
@@ -100,8 +95,6 @@ class GlicProfileManager : public ProfileManagerObserver,
   // detached glic, if any.
   base::WeakPtr<GlicKeyedService> current_detached_glic_;
   bool did_auto_open_ = false;
-
-  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

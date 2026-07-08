@@ -65,7 +65,7 @@ class GlicWebContentsWarmingPool::Metrics {
 
   GlicWebContentsWarmingPool::WarmingPoolStatus RecordTakeContainerStatus(
       const std::unique_ptr<WebUIContentsContainer>& warmed_container,
-      bool is_disabled_by_memory_pressure) {
+      bool is_warming_allowed_by_memory_pressure) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
     if (warmed_container) {
       status = warmed_container->web_contents()->IsCrashed()
@@ -75,7 +75,7 @@ class GlicWebContentsWarmingPool::Metrics {
       if (status == WarmingPoolStatus::kHit) {
         RecordWarmedContainerFate(WarmedContainerFate::kUsed);
       }
-    } else if (is_disabled_by_memory_pressure) {
+    } else if (!is_warming_allowed_by_memory_pressure) {
       status = WarmingPoolStatus::kMemoryPressure;
     } else if (was_expired_) {
       status = WarmingPoolStatus::kExpired;
@@ -147,7 +147,7 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::TakeContainer() {
   metrics_->RecordTakeContainerStatus(warmed_container_,
-                                      is_disabled_by_memory_pressure_);
+                                      IsWarmingAllowedByMemoryPressure());
   reload_count_ = 0;
 
   EnsurePreload(ContainerCreationReason::kUserTriggeredColdStart);
@@ -159,8 +159,16 @@ GlicWebContentsWarmingPool::TakeContainer() {
   return result;
 }
 
+bool GlicWebContentsWarmingPool::MaybeStartInitialWarming() {
+  if (memory_pressure_level_ >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return false;
+  }
+  EnsurePreload(ContainerCreationReason::kInitialColdWarming);
+  return true;
+}
+
 void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
-  CHECK(!is_disabled_by_memory_pressure_ ||
+  CHECK(IsWarmingAllowedByMemoryPressure() ||
         reason == ContainerCreationReason::kUserTriggeredColdStart);
   delay_timer_.Stop();
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
@@ -189,7 +197,7 @@ GlicWebContentsWarmingPool::CreateContainer() {
 
 void GlicWebContentsWarmingPool::OnContainerExpired() {
   CHECK(warmed_container_);
-  CHECK(!is_disabled_by_memory_pressure_);
+  CHECK(IsWarmingAllowedByMemoryPressure());
   TRACE_EVENT_INSTANT("glic", "GlicWebContentsWarmingPool::OnContainerExpired");
   metrics_->OnContainerExpired();
   Clear(std::nullopt);
@@ -223,43 +231,33 @@ void GlicWebContentsWarmingPool::Clear(std::optional<ClearReason> reason) {
 
 void GlicWebContentsWarmingPool::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  memory_pressure_level_ = level;
+
+  // Clear the warmed container when receiving critical memory pressure. In
+  // stateful mode, IsWarmingAllowedByMemoryPressure() also prevents future
+  // pre-warming while memory pressure remains critical.
+  if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    Clear(ClearReason::kMemoryPressure);
+    return;
+  }
+
+  // Refill the pool when memory pressure drops below critical in stateful mode.
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-      DisableForMemoryPressure();
-    } else {
-      EnableAfterMemoryPressure();
-    }
-  } else {
-    // Stateless behavior: clear on critical memory pressure without disabling
-    // the pool.
-    if (level >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-      Clear(ClearReason::kMemoryPressure);
+    if (!warmed_container_) {
+      EnsurePreloadDelayed(ContainerCreationReason::kRefill);
     }
   }
 }
 
-void GlicWebContentsWarmingPool::DisableForMemoryPressure() {
-  if (is_disabled_by_memory_pressure_) {
-    return;
-  }
-  is_disabled_by_memory_pressure_ = true;
-  Clear(ClearReason::kMemoryPressure);
-}
-
-void GlicWebContentsWarmingPool::EnableAfterMemoryPressure() {
-  if (!is_disabled_by_memory_pressure_) {
-    return;
-  }
-  is_disabled_by_memory_pressure_ = false;
-  if (!warmed_container_) {
-    EnsurePreloadDelayed(ContainerCreationReason::kRefill);
-  }
+bool GlicWebContentsWarmingPool::IsWarmingAllowedByMemoryPressure() const {
+  return !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) ||
+         memory_pressure_level_ < base::MEMORY_PRESSURE_LEVEL_CRITICAL;
 }
 
 void GlicWebContentsWarmingPool::EnsurePreloadDelayed(
     ContainerCreationReason reason) {
   CHECK(!warmed_container_);
-  if (is_disabled_by_memory_pressure_) {
+  if (!IsWarmingAllowedByMemoryPressure()) {
     return;
   }
   if (delay_timer_.IsRunning()) {

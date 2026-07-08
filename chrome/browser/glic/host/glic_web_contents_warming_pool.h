@@ -55,8 +55,12 @@ class GlicWebContentsWarmingPool {
   // container is available, one will be created and then returned. A new
   // container is then preloaded in the background to replace the taken one.
   std::unique_ptr<WebUIContentsContainer> TakeContainer();
-  // Ensures that a WebUIContentsContainer is preloaded. If the existing one is
-  // crashed, it will be replaced.
+  // Checks resource constraints (e.g., memory pressure) and initiates
+  // initial cold-start pre-warming if allowed. Returns true if pre-warming
+  // proceeded, or false otherwise.
+  bool MaybeStartInitialWarming();
+  // Unconditionally ensures that a WebUIContentsContainer is preloaded. If the
+  // existing one is crashed, it will be replaced.
   void EnsurePreload(ContainerCreationReason reason =
                          ContainerCreationReason::kUserTriggeredColdStart);
   // Clears the warming pool and destroys any warmed WebContents.
@@ -102,12 +106,12 @@ class GlicWebContentsWarmingPool {
   // Starts a timer to preload a WebContents after a delay.
   void EnsurePreloadDelayed(ContainerCreationReason reason);
 
-  // Used in stateful mode only: disables background pre-warming due to memory
-  // pressure and clears any existing standby container.
-  void DisableForMemoryPressure();
-  // Used in stateful mode only: re-enables background pre-warming after
-  // memory pressure subsides and schedules a refill if empty.
-  void EnableAfterMemoryPressure();
+  // Returns true if pre-warming is permitted to run. When the stateful memory
+  // pressure feature (kStatefulMemoryPressure) is enabled, pre-warming is
+  // suspended while the system remains under critical memory pressure. When the
+  // feature is disabled (stateless mode), pre-warming is never blocked by
+  // memory pressure state.
+  bool IsWarmingAllowedByMemoryPressure() const;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebUIContentsContainer> warmed_container_;
@@ -119,10 +123,8 @@ class GlicWebContentsWarmingPool {
   std::unique_ptr<Metrics> metrics_;
   // Number of times the standby container has been reloaded after expiring.
   int reload_count_ = 0;
-  // Used in stateful mode only: whether background pre-warming is currently
-  // suspended due to memory pressure. When true, background pre-warming
-  // requests are ignored.
-  bool is_disabled_by_memory_pressure_ = false;
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
   base::TimeDelta expiry_delay_ = base::Hours(23);
   base::TimeDelta warming_delay_ = base::Seconds(20);
 };

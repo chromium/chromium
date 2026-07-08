@@ -492,17 +492,17 @@ base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
 }
 
 void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
+  if (result == GlicPrewarmingChecksResult::kSuccess) {
+    if (!instance_coordinator().MaybeStartInitialWarming()) {
+      result = GlicPrewarmingChecksResult::kUnderMemoryPressure;
+    }
+  }
+
   base::UmaHistogramEnumeration("Glic.Prewarming.ChecksResult", result);
   if (preload_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(preload_callback_)));
   }
-
-  if (result != GlicPrewarmingChecksResult::kSuccess) {
-    return;
-  }
-
-  instance_coordinator().EnsurePreload();
 }
 
 GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {

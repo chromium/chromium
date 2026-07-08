@@ -98,8 +98,9 @@ class GlicInstanceCoordinator {
                       bool prevent_close,
                       mojom::InvocationSource source) = 0;
 
-  // Readies glic to show.
-  virtual void EnsurePreload() = 0;
+  // Checks resource constraints (e.g., memory pressure) before readying glic to
+  // show. Returns true if preloading proceeded, or false otherwise.
+  virtual bool MaybeStartInitialWarming() = 0;
 
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;

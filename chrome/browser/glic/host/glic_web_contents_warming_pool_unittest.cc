@@ -434,6 +434,36 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
 }
 
+TEST_F(GlicWebContentsWarmingPoolTest,
+       MaybeStartInitialWarmingUnderStatefulMemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  EXPECT_FALSE(warming_pool.MaybeStartInitialWarming());
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_TRUE(warming_pool.MaybeStartInitialWarming());
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       MaybeStartInitialWarmingUnderStatelessMemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  EXPECT_FALSE(warming_pool.MaybeStartInitialWarming());
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+}
+
 TEST_F(GlicWebContentsWarmingPoolTest, OnMemoryPressureStateless) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
