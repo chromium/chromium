@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(CpuPerformancePolicyTest, PolicyOverrideNormal) {
   SetPolicy(policy_override_tier());
 
   // Create a new normal browser.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url()));
   EXPECT_EQ(policy_override_tier(), GetCpuPerformanceFromJs(new_browser));
 }
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(CpuPerformancePolicyTest, PolicyChangeNormalWindow) {
   KillRendererProcessOfActiveTab(browser());
 
   // Step 4: Open new tab in second window, in a new normal browser.
-  Browser* normal = CreateBrowser(browser()->profile());
+  Browser* normal = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(normal, url()));
 
   // New tab has overridden tier.
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(CpuPerformancePolicyTest, UserOverrideNormal) {
   SetUserOverride(user_override_tier());
 
   // Create a new normal browser.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url()));
   EXPECT_EQ(user_override_tier(), GetCpuPerformanceFromJs(new_browser));
 }
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CpuPerformancePolicyTest, PolicyWinsOverUserOverride) {
   SetPolicy(policy_override_tier());
 
   // Create a new normal browser. Policy should win.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url()));
   EXPECT_EQ(policy_override_tier(), GetCpuPerformanceFromJs(new_browser));
 }

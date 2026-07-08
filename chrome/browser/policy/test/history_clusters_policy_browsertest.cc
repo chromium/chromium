@@ -36,7 +36,8 @@ class HistoryClustersPolicyTest : public PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(HistoryClustersPolicyTest, HistoryClustersVisible) {
   auto* history_clusters_service =
-      HistoryClustersServiceFactory::GetForBrowserContext(browser()->profile());
+      HistoryClustersServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
   PrefService* prefs = browser()->profile()->GetPrefs();
   PolicyMap policies;
 

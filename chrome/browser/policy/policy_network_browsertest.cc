@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
   content::FlushNetworkServiceInstanceForTesting();
 
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
 
   auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(

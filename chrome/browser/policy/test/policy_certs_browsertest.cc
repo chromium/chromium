@@ -566,11 +566,11 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
 
   // Set policy provided trusted anchors on the primary profile.
   user_policy_certs_helper_.SetRootCertONCUserPolicy(
-      browser()->profile(),
+      browser()->GetProfile(),
       multi_profile_policy_helper_.policy_for_profile_1());
 
   EXPECT_EQ(net::OK,
-            VerifyTestServerCert(browser()->profile(),
+            VerifyTestServerCert(browser()->GetProfile(),
                                  user_policy_certs_helper_.server_cert()));
   // Verify that the lock screen can access the policy provided certs.
   EXPECT_EQ(net::OK,

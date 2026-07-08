@@ -87,7 +87,7 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
   }
 
   void SetAlwaysOpenPdfExternally() {
-    PluginPrefs::GetForProfile(browser()->profile())
+    PluginPrefs::GetForProfile(browser()->GetProfile())
         ->SetAlwaysOpenPdfExternallyForTests(true);
   }
 

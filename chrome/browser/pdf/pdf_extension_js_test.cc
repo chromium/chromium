@@ -60,7 +60,7 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
         pak_path, ui::kScaleFactorNone);
 
     // Register the chrome://webui-test data source.
-    webui::CreateAndAddWebUITestDataSource(browser()->profile());
+    webui::CreateAndAddWebUITestDataSource(browser()->GetProfile());
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
@@ -347,7 +347,7 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
  protected:
   void SetPdfJavaScript(bool enabled) {
     auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     map->SetContentSettingCustomScope(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::JAVASCRIPT,

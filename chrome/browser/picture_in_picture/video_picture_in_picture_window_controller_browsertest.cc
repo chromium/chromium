@@ -355,7 +355,8 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
   MediaEngagementService* GetMediaEngagementService() const {
-    return MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+    return MediaEngagementServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   void SetExpectedHasHighEngagement(bool has_high_engagenent) const {
@@ -1197,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
       window_controller();
   EXPECT_TRUE(first_controller->GetWindowForTesting()->IsVisible());
 
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   LoadTabAndEnterPictureInPicture(
       second_browser, base::FilePath(kPictureInPictureWindowSizePage));
 

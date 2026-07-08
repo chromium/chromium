@@ -1046,7 +1046,8 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   }
 
   MediaEngagementService* GetMediaEngagementService() const {
-    return MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+    return MediaEngagementServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   void SetExpectedHasHighEngagement(bool has_high_engagenent) const {
@@ -1107,7 +1108,7 @@ class AutoPictureInPictureTabHelperHatsBrowserTest
 
   MockHatsService* GetMockHatsService() {
     return static_cast<MockHatsService*>(
-        HatsServiceFactory::GetForProfile(browser()->profile(),
+        HatsServiceFactory::GetForProfile(browser()->GetProfile(),
                                           /*create_if_necessary=*/true));
   }
 
@@ -1637,7 +1638,7 @@ IN_PROC_BROWSER_TEST_F(
     AutoPictureInPictureTabHelperBrowserTest,
     PromptResultRecorded_VideoConferencingNotShownIncognito) {
   // Load a page that registers for autopip and start video playback.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   LoadCameraMicrophonePage(incognito_browser, "a.com");
   auto* web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
@@ -2293,7 +2294,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        ContentSettingAskIsBlockForIncognito) {
   // Load a page that registers for autopip.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   LoadCameraMicrophonePage(incognito_browser);
   auto* original_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();

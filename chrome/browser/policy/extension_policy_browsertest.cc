@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallBlocklistComponentApps) {
   // Load all component extensions.
   extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
-  auto* loader = extensions::ComponentLoader::Get(browser()->profile());
+  auto* loader = extensions::ComponentLoader::Get(browser()->GetProfile());
   loader->AddDefaultComponentExtensions(false);
   base::RunLoop().RunUntilIdle();
 
@@ -2444,9 +2444,9 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe();
-  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->GetProfile());
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
@@ -2478,9 +2478,9 @@ IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyWithAppFallbackNameManifestTest,
     StartUpInstallationPWAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe();
-  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->GetProfile());
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
@@ -2512,9 +2512,9 @@ class WebAppInstallForceListPolicySAATest
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
                        StartUpInstallationSAA) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe();
-  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->GetProfile());
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
@@ -2543,9 +2543,9 @@ class WebAppInstallForceListPolicyWithAppFallbackNameSAATest
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
                        StartUpInstallationSAAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe();
-  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->GetProfile());
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
@@ -2585,10 +2585,10 @@ IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
     MAYBE_StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(
-      browser()->profile());
+      browser()->GetProfile());
   std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
       policy_app_url_,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());

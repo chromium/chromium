@@ -213,7 +213,7 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
   // Starts watching for shutdown and triggers ClearAllSiteData() at the last
   // possible time.
   void ClearAllSiteDataOnShutdown() {
-    clear_site_data_.emplace(browser()->profile());
+    clear_site_data_.emplace(browser()->GetProfile());
   }
 
  private:

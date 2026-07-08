@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
 
   // Opening a new window should not trigger the callback.
   EXPECT_CALL(callback, Run(_)).Times(0);
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
 
   // Opening a new window should not trigger the callback.
   EXPECT_CALL(callback, Run(_)).Times(0);
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
   testing::Mock::VerifyAndClearExpectations(&callback);
 

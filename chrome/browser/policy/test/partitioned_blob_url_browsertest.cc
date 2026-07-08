@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(PartitionedBlobUrlUsagePolicyBrowserTestP,
   // fetch would succeed even if the blob URL is cross-origin and
   // kBlockCrossPartitionBlobUrlFetching is enabled.
   content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
   settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   bool fetch_results = FetchAndReadBlobUrl(rfh_c_2, blob_url);

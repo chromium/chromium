@@ -138,7 +138,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                                             ui::TrackedElement* element) {
               auto* pref_service = browser()->profile()->GetPrefs();
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
 
               settings_map->SetDefaultContentSetting(
                   ContentSettingsType::NOTIFICATIONS,
@@ -166,7 +166,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
               util->EvaluateAt(kBlockButton,
                                "blockButton => blockButton.click()");
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
               EXPECT_EQ(CONTENT_SETTING_BLOCK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));
@@ -188,7 +188,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
               util->EvaluateAt(kAskButton, "askButton => askButton.click()");
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));
@@ -254,7 +254,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
               util->EvaluateAt(kAskButton, "askButton => askButton.click()");
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));
@@ -288,7 +288,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
               util->EvaluateAt(kAskButton, "askButton => askButton.click()");
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));
@@ -328,7 +328,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
               util->EvaluateAt(kAskButton, "askButton => askButton.click()");
               auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
                             ContentSettingsType::NOTIFICATIONS, nullptr));

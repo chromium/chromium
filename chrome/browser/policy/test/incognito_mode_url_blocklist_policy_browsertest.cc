@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest, IncognitoBlocklist) {
   Browser* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   } else {
     test_browser = browser();
   }
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
                        IncognitoAllBlocklistAndAllowlist) {
   // Checks that the allowlist works as an exception to the blocklist.
   Browser* test_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set a blocklist that blocks everything.
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   // Checks that the allowlist works as an exception to specific blocklist
   // entries.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string blocked_url1 =
       embedded_test_server()->GetURL("blocked1.com", "/empty.html").spec();
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   Browser* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   } else {
     test_browser = browser();
   }
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   Browser* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   } else {
     test_browser = browser();
   }
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest, IncognitoAllowlistOnly) {
   // Checks that setting only the Incognito allowlist allows specific URLs
   // and blocks others in Incognito mode.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
       embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   // Checks that the Incognito allowlist allows specific URLs even if
   // IncognitoModeAvailability is set to disabled.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
       embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
   // Checks that the Incognito allowlist allows specific URLs even if
   // IncognitoModeAvailability is set to disabled, and blocklist is set.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
       embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingFeatureEnabledTest,
   Browser* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   } else {
     test_browser = browser();
   }
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingFeatureDisabledTest,
   Browser* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   } else {
     test_browser = browser();
   }

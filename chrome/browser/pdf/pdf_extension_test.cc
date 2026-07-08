@@ -676,7 +676,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadInPlatformApp) {
       LoadAndLaunchApp(dir.UnpackedPath(), /*uses_guest_view=*/!UseOopif()));
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
-  auto* app_registry = extensions::AppWindowRegistry::Get(browser()->profile());
+  auto* app_registry =
+      extensions::AppWindowRegistry::Get(browser()->GetProfile());
   ASSERT_TRUE(app_registry);
   const extensions::AppWindowRegistry::AppWindowList& app_windows =
       app_registry->app_windows();
@@ -1169,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
       browser(), embedded_test_server()->GetURL("/empty.html")));
 
   content::DownloadTestObserverTerminal download_observer(
-      browser()->profile()->GetDownloadManager(), /*wait_count=*/1,
+      browser()->GetProfile()->GetDownloadManager(), /*wait_count=*/1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   const GURL pdf_download_url(embedded_test_server()->GetURL(
       "/set-header-with-file/chrome/test/data/pdf/test.pdf?"
@@ -1754,7 +1755,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_NE(plugin_frames[0]->GetProcess(), iframe->GetProcess());
   EXPECT_EQ(
       content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
-          browser()->profile()),
+          browser()->GetProfile()),
       content::HasOriginKeyedProcess(plugin_frames[0]));
 }
 
@@ -3594,7 +3595,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
   // Wait for the MimeHandleView guest to be created.  This should return
   // before the actual PDF navigation in the guest is started.
   GuestViewBase* guest_view =
-      GetGuestViewManagerForProfile(incognito->profile())
+      GetGuestViewManagerForProfile(incognito->GetProfile())
           ->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
 

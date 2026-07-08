@@ -83,9 +83,11 @@ class HappyEyeballsV3EnabledPolicyTest
 
     // Ensure a loading request succeeds.
     GURL url = embedded_test_server()->GetURL("/empty.html");
-    int rv = content::LoadBasicRequest(
-        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext(),
-        url);
+    int rv = content::LoadBasicRequest(browser()
+                                           ->GetProfile()
+                                           ->GetDefaultStoragePartition()
+                                           ->GetNetworkContext(),
+                                       url);
     ASSERT_EQ(rv, net::OK);
   }
 };
@@ -100,9 +102,11 @@ IN_PROC_BROWSER_TEST_P(HappyEyeballsV3EnabledPolicyTest, RespectPolicy) {
 
   // Ensure a loading request succeeds.
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  int rv = content::LoadBasicRequest(
-      browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext(),
-      url);
+  int rv = content::LoadBasicRequest(browser()
+                                         ->GetProfile()
+                                         ->GetDefaultStoragePartition()
+                                         ->GetNetworkContext(),
+                                     url);
   ASSERT_EQ(rv, net::OK);
 }
 

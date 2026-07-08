@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   ExtensionInstallPolicyServiceImpl* extension_install_policy_service =
       static_cast<ExtensionInstallPolicyServiceImpl*>(
           ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
-              browser()->profile()));
+              browser()->GetProfile()));
   ASSERT_TRUE(extension_install_policy_service);
   std::set<ExtensionIdAndVersion> extensions = {
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1)};
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyExtensionInstallPolicyTest,
   ExtensionInstallPolicyServiceImpl* extension_install_policy_service =
       static_cast<ExtensionInstallPolicyServiceImpl*>(
           ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
-              browser()->profile()));
+              browser()->GetProfile()));
   ASSERT_TRUE(extension_install_policy_service);
   std::set<ExtensionIdAndVersion> extensions = {
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1)};

@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Open the second window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("b.com", "/title2.html")));
 

@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   Browser* restored_browser = nullptr;
   {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
-    chrome::OpenWindowWithRestoredTabs(browser()->profile());
+    chrome::OpenWindowWithRestoredTabs(browser()->GetProfile());
     restored_browser = browser_created_observer.Wait();
   }
 
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
 
   // Restore recently closed window.
   browser_created_observer.emplace();
-  chrome::OpenWindowWithRestoredTabs(browser()->profile());
+  chrome::OpenWindowWithRestoredTabs(browser()->GetProfile());
   BrowserWindowInterface* const restored_browser =
       browser_created_observer->Wait();
   ASSERT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());

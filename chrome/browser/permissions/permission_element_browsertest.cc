@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
       web_contents()->GetPrimaryMainFrame());
   MediaStreamDevicePermissionContext* camera_permission_context =
       static_cast<MediaStreamDevicePermissionContext*>(
-          PermissionManagerFactory::GetForProfile(browser()->profile())
+          PermissionManagerFactory::GetForProfile(browser()->GetProfile())
               ->GetPermissionContextForTesting(
                   ContentSettingsType::MEDIASTREAM_CAMERA));
   camera_permission_context->set_can_request_device_permission_for_test(
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, TabSwitchingClosesPrompt) {
   observer.Wait();
 
   std::unique_ptr<content::WebContents> new_tab = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   browser()->tab_strip_model()->AppendWebContents(std::move(new_tab),
                                                   /*foreground*/ false);
 

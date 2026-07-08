@@ -53,9 +53,11 @@ class IPv6ReachabilityOverridePolicyTest : public PolicyTest {
   int LoadIPv6OnlyRequest() {
     GURL url(base::StringPrintf("http://ipv6.test:%hu/empty.html",
                                 embedded_test_server()->port()));
-    return content::LoadBasicRequest(
-        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext(),
-        url);
+    return content::LoadBasicRequest(browser()
+                                         ->GetProfile()
+                                         ->GetDefaultStoragePartition()
+                                         ->GetNetworkContext(),
+                                     url);
   }
 };
 

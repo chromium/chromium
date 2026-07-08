@@ -39,10 +39,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
+            IsNativeMessagingHostAllowed(browser()->GetProfile(), "host.name"));
   EXPECT_EQ(
       extensions::MessagingDelegate::PolicyPermission::ALLOW_ALL,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
+      IsNativeMessagingHostAllowed(browser()->GetProfile(), "other.host.name"));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
@@ -55,10 +55,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
+            IsNativeMessagingHostAllowed(browser()->GetProfile(), "host.name"));
   EXPECT_EQ(
       extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
+      IsNativeMessagingHostAllowed(browser()->GetProfile(), "other.host.name"));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
@@ -76,10 +76,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::ALLOW_ALL,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
+            IsNativeMessagingHostAllowed(browser()->GetProfile(), "host.name"));
   EXPECT_EQ(
       extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
+      IsNativeMessagingHostAllowed(browser()->GetProfile(), "other.host.name"));
 }
 
 }  // namespace policy

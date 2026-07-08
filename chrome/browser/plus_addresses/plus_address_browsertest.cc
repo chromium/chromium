@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressServiceBrowserTest, VerifyNonNullService) {
 IN_PROC_BROWSER_TEST_F(PlusAddressServiceBrowserTest,
                        VerifyShouldShowManualFallback) {
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "plus@plus.plus",
                                       signin::ConsentLevel::kSignin);
   plus_addresses::PlusAddressService* plus_address_service =

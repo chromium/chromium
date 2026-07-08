@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
                        RequestPermissionInWebView) {
   GURL default_ai_url =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile())
+          browser()->GetProfile())
           ->GetDefaultAiPageUrl();
   std::string expected_host(default_ai_url.host());
 
@@ -313,9 +313,9 @@ class MimeHandlerPermissionEmbeddingBrowserTest
         LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler")
                           .AppendASCII("embeddable"));
     ASSERT_TRUE(extension);
-    ASSERT_EQ(extension->id(),
-              PluginUtils::GetExtensionIdForMimeType(
-                  browser()->profile(), "application/pdf", /*embedded=*/true))
+    ASSERT_EQ(extension->id(), PluginUtils::GetExtensionIdForMimeType(
+                                   browser()->GetProfile(), "application/pdf",
+                                   /*embedded=*/true))
         << "embeddable variant must be the chosen handler for embedded "
            "application/pdf; check `can_embed` in its manifest";
   }

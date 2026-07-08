@@ -56,7 +56,7 @@ class AutofillPolicyTest : public PolicyTest,
     InProcessBrowserTest::SetUpOnMainThread();
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
-    autofill::WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+    autofill::WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
     ASSERT_TRUE(ImportAddress());
 
     PolicyMap policies;
@@ -75,7 +75,7 @@ class AutofillPolicyTest : public PolicyTest,
 
   autofill::PersonalDataManager* personal_data_manager() {
     return autofill::PersonalDataManagerFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   [[nodiscard]] testing::AssertionResult ImportAddress() {
@@ -83,7 +83,7 @@ class AutofillPolicyTest : public PolicyTest,
         0u) {
       return testing::AssertionFailure() << "Should be empty profile.";
     }
-    autofill::AddTestProfile(browser()->profile(),
+    autofill::AddTestProfile(browser()->GetProfile(),
                              autofill::test::GetFullProfile());
     expected_suggestions_["name"] = u"John H. Doe";
     expected_suggestions_["street-address"] = u"666 Erebus St., Apt 8";

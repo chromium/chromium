@@ -385,7 +385,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
   PredictionModelHandlerProvider* model_handler_provider() {
     return PredictionModelHandlerProviderFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   PredictionModelHandler* prediction_model_handler() {
@@ -457,7 +457,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
  protected:
   OptimizationGuideKeyedService* opt_guide() {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   raw_ptr<PermissionsAiv4HandlerFake> aiv4_model_handler_ = nullptr;

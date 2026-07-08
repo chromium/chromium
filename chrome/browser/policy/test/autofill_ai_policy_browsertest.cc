@@ -80,7 +80,7 @@ class AutofillAiPolicyTest
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
 
     EnableSignin();
 

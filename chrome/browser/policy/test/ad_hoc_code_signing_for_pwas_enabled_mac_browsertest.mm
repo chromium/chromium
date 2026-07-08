@@ -73,7 +73,7 @@ class AdHocCodeSigningForPWAsEnabledTest
 
 IN_PROC_BROWSER_TEST_P(AdHocCodeSigningForPWAsEnabledTest, IsRespected) {
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "Example", GURL("https://www.example.com"));
+      browser()->GetProfile(), "Example", GURL("https://www.example.com"));
 
   base::FilePath info_plist_path = destination_dir_.Append("Example.app")
                                        .Append("Contents")

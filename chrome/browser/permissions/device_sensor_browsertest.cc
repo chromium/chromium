@@ -82,7 +82,8 @@ class DeviceSensorPermissionBrowserTest : public InProcessBrowserTest {
   }
 
   HostContentSettingsMap* GetHostContentSettingsMap() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    return HostContentSettingsMapFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
  private:

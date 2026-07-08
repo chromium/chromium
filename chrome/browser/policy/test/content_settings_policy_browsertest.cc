@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_PRE_DefaultCookiesSetting) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_DefaultCookiesSetting) {
   // Verify that the cookie persists across restarts.
-  EXPECT_EQ(kCookieValue, GetCookies(browser()->profile(), GURL(kURL)));
+  EXPECT_EQ(kCookieValue, GetCookies(browser()->GetProfile(), GURL(kURL)));
   // Now set the policy and the cookie should be gone after another restart.
   PolicyMap policies;
   policies.Set(key::kDefaultCookiesSetting, POLICY_LEVEL_MANDATORY,
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_DefaultCookiesSetting) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultCookiesSetting) {
   // Verify that the cookie is gone.
-  EXPECT_TRUE(GetCookies(browser()->profile(), GURL(kURL)).empty());
+  EXPECT_TRUE(GetCookies(browser()->GetProfile(), GURL(kURL)).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_PRE_WebsiteCookiesSetting) {
@@ -113,9 +113,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_PRE_WebsiteCookiesSetting) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WebsiteCookiesSetting) {
   // Verify that the cookie persists across restarts.
-  EXPECT_EQ(kCookieValue, GetCookies(browser()->profile(), GURL(kURL)));
+  EXPECT_EQ(kCookieValue, GetCookies(browser()->GetProfile(), GURL(kURL)));
   // Now set the policy and the cookie should be gone after another restart.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(GURL(kURL), GURL(kURL),
                                       ContentSettingsType::COOKIES,
                                       CONTENT_SETTING_SESSION_ONLY);
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WebsiteCookiesSetting) {
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WebsiteCookiesSetting) {
   // Verify that the cookie is gone.
-  EXPECT_TRUE(GetCookies(browser()->profile(), GURL(kURL)).empty());
+  EXPECT_TRUE(GetCookies(browser()->GetProfile(), GURL(kURL)).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, Javascript) {
@@ -228,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbDefault) {
   const auto kTestOrigin = url::Origin::Create(GURL("https://foo.com:443"));
 
   // Expect the default permission value to be 'ask'.
-  auto* context = UsbChooserContextFactory::GetForProfile(browser()->profile());
+  auto* context =
+      UsbChooserContextFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(context->CanRequestObjectPermission(kTestOrigin));
 
   // Update policy to change the default permission value to 'block'.
@@ -251,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
   const auto& device_info = device->GetDeviceInfo();
 
   // Expect the default permission value to be empty.
-  auto* context = UsbChooserContextFactory::GetForProfile(browser()->profile());
+  auto* context =
+      UsbChooserContextFactory::GetForProfile(browser()->GetProfile());
   EXPECT_FALSE(context->HasDevicePermission(kTestOrigin, device_info));
 
   // Update policy to add an entry to the permission value to allow
@@ -479,13 +481,13 @@ class WebPrintingPolicyTest : public PolicyTest {
   }
 
   ContentSetting GetWebPrintingDefaultContentSetting() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetDefaultContentSetting(ContentSettingsType::WEB_PRINTING,
                                    /*provider_id=*/nullptr);
   }
 
   ContentSetting GetWebPrintingContentSetting(const GURL& url) {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
                             ContentSettingsType::WEB_PRINTING);
   }
@@ -553,7 +555,7 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
       ContentSettingsType type) {
     CHECK(type == ContentSettingsType::LOCAL_NETWORK ||
           type == ContentSettingsType::LOOPBACK_NETWORK);
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetDefaultContentSetting(type, /*provider_id=*/nullptr);
   }
 
@@ -561,7 +563,7 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
                                       const GURL& url) {
     CHECK(type == ContentSettingsType::LOCAL_NETWORK ||
           type == ContentSettingsType::LOOPBACK_NETWORK);
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url, type);
   }
 
@@ -832,13 +834,13 @@ class DirectSocketsPolicyTest : public PolicyTest {
   }
 
   ContentSetting GetDirectSocketsDefaultContentSetting() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetDefaultContentSetting(ContentSettingsType::DIRECT_SOCKETS,
                                    /*provider_id=*/nullptr);
   }
 
   ContentSetting GetDirectSocketsContentSetting(const GURL& url) {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
                             ContentSettingsType::DIRECT_SOCKETS);
   }
@@ -912,13 +914,13 @@ class ControlledFramePolicyTest : public PolicyTest {
   }
 
   ContentSetting GetControlledFrameDefaultContentSetting() {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetDefaultContentSetting(ContentSettingsType::CONTROLLED_FRAME,
                                    /*provider_id=*/nullptr);
   }
 
   ContentSetting GetControlledFrameContentSetting(const GURL& url) {
-    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
                             ContentSettingsType::CONTROLLED_FRAME);
   }
@@ -1001,7 +1003,7 @@ class SmartCardConnectPolicyTest : public PolicyTest {
   GetSmartCardConnectContentSetting(const GURL& url) {
     content_settings::SettingInfo settings_info;
     auto content_setting =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
             ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
                                 ContentSettingsType::SMART_CARD_GUARD,
                                 &settings_info);
@@ -1120,7 +1122,7 @@ class DeviceAttributesPolicyTest : public PolicyTest {
   GetDeviceAttributesContentSetting(const GURL& url) {
     content_settings::SettingInfo settings_info;
     auto content_setting =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
             ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
                                 ContentSettingsType::DEVICE_ATTRIBUTES,
                                 &settings_info);
@@ -1264,7 +1266,7 @@ class IdleDetectionPolicyTest : public PolicyTest {
   void VerifyPermission(const char* url, ContentSetting status) {
     content_settings::SettingInfo settings_info;
     auto content_setting =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
             ->GetContentSetting(
                 /*primary_url=*/GURL(url), /*secondary_url=*/GURL(url),
                 ContentSettingsType::IDLE_DETECTION, &settings_info);

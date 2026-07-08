@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   base::FilePath crx_path(chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("devtools").AppendASCII("extensions"),
       base::FilePath().AppendASCII("options.crx")));
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
   // TODO(crbug.com/40269105): We shouldn't need to ignore manifest warnings
   // here, but there's an issue related to the _metadata folder added for
   // content verification when force-installing an off-store crx in a branded

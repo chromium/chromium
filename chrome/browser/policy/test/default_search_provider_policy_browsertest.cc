@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   const std::string kNewTabURL("http://search.example/newtab");
 
   TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   search_test_utils::WaitForTemplateURLServiceToLoad(service);
   const TemplateURL* default_search = service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_search);

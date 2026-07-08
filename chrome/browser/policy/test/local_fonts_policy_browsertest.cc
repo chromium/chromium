@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestLocalFonts, DefaultSetting) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::LOCAL_FONTS, nullptr));
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestLocalFonts, AllowedForUrlsSettings) {
   UpdateProviderPolicy(policies);
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::LOCAL_FONTS, nullptr));
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestLocalFonts, BlockedForUrlsSettings) {
   UpdateProviderPolicy(policies);
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::LOCAL_FONTS, nullptr));

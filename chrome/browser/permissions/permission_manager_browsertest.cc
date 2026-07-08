@@ -88,7 +88,7 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
     incognito_browser_ = CreateIncognitoBrowser();
 
     PermissionManagerFactory::GetInstance()->SetTestingFactory(
-        incognito_browser_->profile(),
+        incognito_browser_->GetProfile(),
         base::BindRepeating(
             &PermissionManagerBrowserTest::CreateTestingPermissionManager));
 
@@ -105,8 +105,8 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
                        DISABLED_ServiceWorkerPermissionQueryIncognitoClose) {
   base::RunLoop run_loop;
-  permissions::PermissionManager* pm =
-      PermissionManagerFactory::GetForProfile(incognito_browser()->profile());
+  permissions::PermissionManager* pm = PermissionManagerFactory::GetForProfile(
+      incognito_browser()->GetProfile());
   static_cast<SubscriptionInterceptingPermissionManager*>(pm)
       ->SetSubscribeCallback(run_loop.QuitClosure());
 
@@ -146,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
 
   base::RunLoop run_loop;
   auto* pm = static_cast<SubscriptionInterceptingPermissionManager*>(
-      PermissionManagerFactory::GetForProfile(incognito_browser()->profile()));
+      PermissionManagerFactory::GetForProfile(
+          incognito_browser()->GetProfile()));
   pm->SetSubscribeCallback(run_loop.QuitClosure());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

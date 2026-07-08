@@ -44,7 +44,7 @@ void DownloadAndVerifyFile(Browser* browser,
   embedded_test_server.ServeFilesFromDirectory(test_data_directory);
   ASSERT_TRUE(embedded_test_server.Start());
   content::DownloadManager* download_manager =
-      browser->profile()->GetDownloadManager();
+      browser->GetProfile()->GetDownloadManager();
   content::DownloadTestObserverTerminal observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory) {
                                                false);
 
   base::FilePath initial_dir =
-      DownloadPrefs(browser()->profile()).DownloadPath();
+      DownloadPrefs(browser()->GetProfile()).DownloadPath();
 
   // Verify that downloads end up on the default directory.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -103,10 +103,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory_Drive) {
     UpdateProviderPolicy(policies);
 
     EXPECT_EQ(drive::DriveIntegrationServiceFactory::FindForProfile(
-                  browser()->profile())
+                  browser()->GetProfile())
                   ->GetMountPointPath()
                   .AppendASCII("root"),
-              DownloadPrefs(browser()->profile())
+              DownloadPrefs(browser()->GetProfile())
                   .DownloadPath()
                   .StripTrailingSeparators());
   }
@@ -118,10 +118,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory_Drive) {
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(drive::DriveIntegrationServiceFactory::FindForProfile(
-                browser()->profile())
+                browser()->GetProfile())
                 ->GetMountPointPath()
                 .AppendASCII("root/Downloads"),
-            DownloadPrefs(browser()->profile())
+            DownloadPrefs(browser()->GetProfile())
                 .DownloadPath()
                 .StripTrailingSeparators());
 }

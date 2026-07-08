@@ -34,11 +34,11 @@ using MediaRouterEnabledPolicyTest = MediaRouterPolicyTest<true>;
 using MediaRouterDisabledPolicyTest = MediaRouterPolicyTest<false>;
 
 IN_PROC_BROWSER_TEST_F(MediaRouterEnabledPolicyTest, MediaRouterEnabled) {
-  EXPECT_TRUE(media_router::MediaRouterEnabled(browser()->profile()));
+  EXPECT_TRUE(media_router::MediaRouterEnabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterDisabledPolicyTest, MediaRouterDisabled) {
-  EXPECT_FALSE(media_router::MediaRouterEnabled(browser()->profile()));
+  EXPECT_FALSE(media_router::MediaRouterEnabled(browser()->GetProfile()));
 }
 
 template <bool enable>
@@ -59,14 +59,14 @@ using MediaRouterActionDisabledPolicyTest = MediaRouterActionPolicyTest<false>;
 
 IN_PROC_BROWSER_TEST_F(MediaRouterActionEnabledPolicyTest,
                        MediaRouterActionEnabled) {
-  EXPECT_TRUE(
-      CastToolbarButtonController::IsActionShownByPolicy(browser()->profile()));
+  EXPECT_TRUE(CastToolbarButtonController::IsActionShownByPolicy(
+      browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterActionDisabledPolicyTest,
                        MediaRouterActionDisabled) {
-  EXPECT_FALSE(
-      CastToolbarButtonController::IsActionShownByPolicy(browser()->profile()));
+  EXPECT_FALSE(CastToolbarButtonController::IsActionShownByPolicy(
+      browser()->GetProfile()));
 }
 
 class MediaRouterCastAllowAllIPsPolicyTest
