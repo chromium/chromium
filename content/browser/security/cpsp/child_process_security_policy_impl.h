@@ -222,11 +222,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanRequestURL(int child_id, const GURL& url) override;
   bool CanReadFile(ChildProcessId child_id,
                    const base::FilePath& file) override;
-  void GrantFileForBrowserUpload(const base::UnguessableToken& owner_token,
-                                 const base::FilePath& file) override;
-  void RevokeFileForBrowserUpload(
-      const base::UnguessableToken& owner_token) override;
-  bool CanReadFileForBrowserUpload(const base::FilePath& file) override;
   bool CanCreateReadWriteFile(int child_id,
                               const base::FilePath& file) override;
   bool CanReadFileSystem(int child_id,
@@ -464,6 +459,20 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanReadRequestBody(
       RenderProcessHost* process,
       const scoped_refptr<network::ResourceRequestBody>& body);
+
+  // Grants the network service the capability to upload a specific file on
+  // the browser's behalf. The owner_token ties the lifetime of the grant to
+  // an object (e.g. SimpleURLLoader) so it can be revoked when the object is
+  // destroyed.
+  void GrantFileForBrowserUpload(const base::UnguessableToken& owner_token,
+                                 const base::FilePath& file);
+
+  // Revokes all file accesses previously granted to the specific owner_token.
+  void RevokeFileForBrowserUpload(const base::UnguessableToken& owner_token);
+
+  // Verifies whether the browser process has granted the network service
+  // permission to upload the given file.
+  bool CanReadFileForBrowserUpload(const base::FilePath& file);
 
   // Pseudo schemes are treated differently than other schemes because they
   // cannot be requested like normal URLs.  There is no mechanism for revoking

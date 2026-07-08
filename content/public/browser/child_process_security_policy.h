@@ -17,7 +17,6 @@
 
 namespace base {
 class FilePath;
-class UnguessableToken;
 }
 
 namespace content {
@@ -102,22 +101,6 @@ class ChildProcessSecurityPolicy {
   // capability to upload the requested file.
   virtual bool CanReadFile(ChildProcessId child_id,
                            const base::FilePath& file) = 0;
-
-  // Grants the network service the capability to upload a specific file on
-  // the browser's behalf. The owner_token ties the lifetime of the grant to
-  // an object (e.g. SimpleURLLoader) so it can be revoked when the object is
-  // destroyed.
-  virtual void GrantFileForBrowserUpload(
-      const base::UnguessableToken& owner_token,
-      const base::FilePath& file) = 0;
-
-  // Revokes all file accesses previously granted to the specific owner_token.
-  virtual void RevokeFileForBrowserUpload(
-      const base::UnguessableToken& owner_token) = 0;
-
-  // Verifies whether the browser process has granted the network service
-  // permission to upload the given file.
-  virtual bool CanReadFileForBrowserUpload(const base::FilePath& file) = 0;
 
   virtual bool CanCreateReadWriteFile(int child_id,
                                       const base::FilePath& file) = 0;

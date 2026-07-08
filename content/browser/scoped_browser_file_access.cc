@@ -4,21 +4,21 @@
 
 #include "content/browser/scoped_browser_file_access.h"
 
-#include "content/public/browser/child_process_security_policy.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 
 namespace content {
 
 ScopedBrowserFileAccess::ScopedBrowserFileAccess(
     std::vector<base::FilePath> files)
     : owner_token_(base::UnguessableToken::Create()) {
-  auto* policy = ChildProcessSecurityPolicy::GetInstance();
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   for (const auto& file : files) {
     policy->GrantFileForBrowserUpload(owner_token_, file);
   }
 }
 
 ScopedBrowserFileAccess::~ScopedBrowserFileAccess() {
-  ChildProcessSecurityPolicy::GetInstance()->RevokeFileForBrowserUpload(
+  ChildProcessSecurityPolicyImpl::GetInstance()->RevokeFileForBrowserUpload(
       owner_token_);
 }
 
