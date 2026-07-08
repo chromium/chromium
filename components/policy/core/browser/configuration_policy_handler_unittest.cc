@@ -719,6 +719,18 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
   std::unique_ptr<base::Value> output_value;
   EXPECT_FALSE(handler.CheckAndGetValueForTest(policy_map, /*errors=*/nullptr,
                                                &output_value));
+
+  // When an error map is provided, the validation failure is reported as a
+  // blocking kError. The value fails validation outright, so no output value is
+  // produced (and, notably, the input value is never cloned).
+  PolicyErrorMap error_map;
+  output_value.reset();
+  EXPECT_FALSE(
+      handler.CheckAndGetValueForTest(policy_map, &error_map, &output_value));
+  EXPECT_FALSE(output_value);
+  EXPECT_THAT(error_map.GetErrors(kPolicyName),
+              testing::ElementsAre(testing::FieldsAre(
+                  testing::_, PolicyMap::MessageType::kError)));
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {

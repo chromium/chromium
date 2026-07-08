@@ -509,20 +509,40 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
   if (!value)
     return true;
 
-  *output = base::Value::ToUniquePtrValue(value->Clone());
+  // First, validate the value without cloning. Validate() is read-only and
+  // produces the same pass/fail result as Normalize() for the same strategy.
+  // This avoids an expensive deep clone when validation fails outright.
   PolicyErrorPath error_path;
   std::string error;
+  bool valid = schema_.Validate(*value, strategy_, &error_path, &error);
+
+  if (!valid) {
+    if (errors && !error.empty()) {
+      errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
+                       error_path,
+                       /*error_level=*/PolicyMap::MessageType::kError);
+    }
+    return false;
+  }
+
+  // Validation passed. Clone and normalize to strip unknown properties and
+  // produce the output value. Normalize() may still report warnings.
+  *output = base::Value::ToUniquePtrValue(value->Clone());
+  error_path.clear();
+  error.clear();
   bool result =
       schema_.Normalize(output->get(), strategy_, &error_path, &error, nullptr);
+  // Set error_level based on whether strategy_ tolerates this error without
+  // failure. Validate() already succeeded above and Normalize() yields the
+  // same pass/fail result, so `result` is always true here and any error that
+  // Normalize() reports is a tolerated warning rather than a validation
+  // failure.
+  DCHECK(result);
 
   if (errors && !error.empty()) {
-    // Set error_level based on whether strategy_ tolerates this error without
-    // failure.
     errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
                      error_path,
-                     /*error_level=*/
-                     result ? PolicyMap::MessageType::kWarning
-                            : PolicyMap::MessageType::kError);
+                     /*error_level=*/PolicyMap::MessageType::kWarning);
   }
 
   return result;
