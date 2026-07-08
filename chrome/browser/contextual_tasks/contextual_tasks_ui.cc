@@ -439,7 +439,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       /* composeDeepSearchPlaceholder and
        * composeCreateImagePlaceholder are defined by searchbox_handler.cc.
        */
-      {"onboardingTitle", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE},
       {"onboardingBody", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION},
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
       {"onboardingAcceptButton",
@@ -463,6 +462,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  int onboarding_title_id = IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE;
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage)) {
+    onboarding_title_id = IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_SHORT_TITLE;
+  }
+  source->AddLocalizedString("onboardingTitle", onboarding_title_id);
 
   int stsDefaultOnHeaderId = IDS_STS_IPH_DEFAULT_ON_HEADER;
   int stsDefaultOnBodyId = IDS_STS_IPH_DEFAULT_ON_BODY;
