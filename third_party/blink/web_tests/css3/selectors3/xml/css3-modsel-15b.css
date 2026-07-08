@@ -1,7 +1,0 @@
-
-p { background: green; color: white; }
-#test#fail { background: red; color: yellow; }
-#fail#test { background: red; color: yellow; }
-#fail { background: red; color: yellow; }
-div { background: red; color: yellow; }
-#pass#pass { background: green; color: white; }

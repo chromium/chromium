@@ -1,2 +1,0 @@
-div.stub > * { background-color : red }
-div.stub *:not(:visited) { background-color : lime }

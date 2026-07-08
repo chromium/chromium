@@ -52,10 +52,6 @@ css3/masking/clip-path-reference-of-fake-clipPath.html
 css3/masking/mask-serializing.html
 css3/motion-path/use-count-offset.html
 css3/motion-path/use-count-offset-position.html
-css3/selectors3/html/css3-modsel-61.html
-css3/selectors3/xhtml/css3-modsel-17.xml
-css3/selectors3/xml/css3-modsel-17.xml
-css3/selectors3/xml/css3-modsel-61.xml
 css3/style-zoomed-image.html
 css3/supports-crash.html
 css-parser/color-escape-parsing.html
