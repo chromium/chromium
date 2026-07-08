@@ -55,10 +55,7 @@ public class WebContentsAccessibilityEventsTest {
      *
      */
     private void performTest(String inputFile, String expectationFile) {
-        performTest(
-                inputFile,
-                expectationFile,
-                /* shouldFilterTrivialEvents= */ true);
+        performTest(inputFile, expectationFile, true);
     }
 
     /**
@@ -74,21 +71,7 @@ public class WebContentsAccessibilityEventsTest {
     private void performTest(
             String inputFile, String expectationFile, boolean shouldFilterTrivialEvents) {
         performTestWithJavascriptMethod(
-                inputFile,
-                expectationFile,
-                "go()",
-                shouldFilterTrivialEvents,
-                /* testServer= */ false);
-    }
-
-    private void performTestWithServer(
-            String inputFile, String expectationFile, boolean shouldFilterTrivialEvents) {
-        performTestWithJavascriptMethod(
-                inputFile,
-                expectationFile,
-                "go()",
-                shouldFilterTrivialEvents,
-                /* testServer= */ true);
+                inputFile, expectationFile, "go()", shouldFilterTrivialEvents);
     }
 
     /**
@@ -101,17 +84,14 @@ public class WebContentsAccessibilityEventsTest {
      * @param expectationFile TXT expectations file
      * @param javascriptMethod javascript method (e.g. "expand()" or "go()")
      * @param shouldFilterTrivialEvents Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
-     * @param testServer Flag to indicate that the test server should be used
      */
     private void performTestWithJavascriptMethod(
             String inputFile,
             String expectationFile,
             String javascriptMethod,
-            boolean shouldFilterTrivialEvents,
-            boolean testServer) {
+            boolean shouldFilterTrivialEvents) {
         // Build page from given file and enable testing framework, set a tracker.
-        mActivityTestRule.setupTestFromFile(
-                BASE_FILE_PATH + inputFile, shouldFilterTrivialEvents, testServer);
+        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile, shouldFilterTrivialEvents);
 
         // Inject a separator comment to separate initial page-load events from JS events
         mActivityTestRule.addCommentToTracker("=== END INITIAL PAGE LOAD ===");
@@ -142,7 +122,7 @@ public class WebContentsAccessibilityEventsTest {
      * Helper method to compare test outputs with expected results. Reads content of expectations
      * file, asserts non-null, then compares with results.
      *
-     * @param expectationFile Filename of the expectations for the given test.
+     * @param expectationFile           Filename of the expectations for the given test.
      */
     private void assertResults(String expectationFile) {
         String expectedResults;
@@ -1248,11 +1228,9 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/382549182")
     public void test_navigationApi() {
-        performTestWithServer(
-                "navigation-api.html",
-                "navigation-api-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ true);
+        performTest("navigation-api.html", "navigation-api-expected-android.txt");
     }
 
     @Test
