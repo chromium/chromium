@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
@@ -347,6 +348,11 @@ public class RecentTabsPage
     }
 
     @Override
+    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
+        updateMargins();
+    }
+
+    @Override
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
@@ -373,13 +379,24 @@ public class RecentTabsPage
         // update the margin. We don't do this if the controls height is increasing because changing
         // the margin shrinks the view height to its final value, leaving a gap at the bottom until
         // the animation finishes.
-        if (contentOffset >= topControlsHeight) {
+        // On native pages, when controls position switches from bottom to top, contentOffset
+        // is initialized to 0 while topControlsHeight increases to its resting height.
+        // We want to ensure topMargin is updated when controls are top-anchored or resting.
+        if (contentOffset >= topControlsHeight
+                || mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP) {
             topMargin = topControlsHeight;
         }
 
         // If the content offset is different from the margin, we use translationY to position the
-        // view in line with the content offset.
-        recentTabsRoot.setTranslationY(contentOffset - topMargin);
+        // view in line with the content offset. We only apply translationY when contentOffset >
+        // topMargin
+        // (e.g. during top banner animations) to prevent negative translation when contentOffset is
+        // 0.
+        int translationY = 0;
+        if (contentOffset > topMargin) {
+            translationY = contentOffset - topMargin;
+        }
+        recentTabsRoot.setTranslationY(translationY);
 
         final int bottomMargin = mBrowserControlsStateProvider.getBottomControlsHeight();
         if (topMargin != layoutParams.topMargin || bottomMargin != layoutParams.bottomMargin) {

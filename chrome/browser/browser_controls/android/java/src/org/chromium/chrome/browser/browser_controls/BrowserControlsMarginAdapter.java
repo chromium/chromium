@@ -10,6 +10,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 
 /**
  * An implementation of {@link MonotonicObservableSupplier} that monitors changes to browser
@@ -65,6 +66,11 @@ public class BrowserControlsMarginAdapter
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
+        updateMargins();
+    }
+
+    @Override
+    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
         updateMargins();
     }
 

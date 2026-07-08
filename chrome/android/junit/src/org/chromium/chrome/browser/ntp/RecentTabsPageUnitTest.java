@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -86,5 +88,24 @@ public class RecentTabsPageUnitTest {
 
         mRecentTabsPage.destroy();
         verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
+    }
+
+    @Test
+    public void testUpdateMargins_onControlsPositionChanged() {
+        when(mBrowserControlsStateProvider.getControlsPosition())
+                .thenReturn(BrowserControlsStateProvider.ControlsPosition.TOP);
+        when(mBrowserControlsStateProvider.getTopControlsHeight()).thenReturn(168);
+        when(mBrowserControlsStateProvider.getContentOffset()).thenReturn(0);
+
+        mRecentTabsPage.onControlsPositionChanged(
+                BrowserControlsStateProvider.ControlsPosition.TOP);
+
+        View root = mRecentTabsPage.getView().findViewById(R.id.recent_tabs_root);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
+        assertEquals(
+                "Top margin should equal top controls height when top-anchored.",
+                168,
+                params.topMargin);
+        assertEquals("Translation Y should be 0.", 0, (int) root.getTranslationY());
     }
 }
