@@ -149,6 +149,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kMaximizeCreditCardBenefitsEntry";
     case SuggestionType::kAutofillAiOtherOrders:
       return "kAutofillAiOtherOrders";
+    case SuggestionType::kAutofillAiPrivateInferenceNotice:
+      return "kAutofillAiPrivateInferenceNotice";
   }
   NOTREACHED();
 }

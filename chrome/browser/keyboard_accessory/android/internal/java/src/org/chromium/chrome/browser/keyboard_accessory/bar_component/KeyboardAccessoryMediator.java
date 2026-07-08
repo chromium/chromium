@@ -288,6 +288,7 @@ class KeyboardAccessoryMediator
             case SuggestionType.SEPARATOR:
             case SuggestionType.UNDO_OR_CLEAR:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
+            case SuggestionType.AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.MANAGE_ADDRESS:
             case SuggestionType.MANAGE_AUTOFILL_AI:
