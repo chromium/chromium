@@ -1121,8 +1121,8 @@ class AutocompleteHistoryManagerAtMemoryTest
 
     // Set mock enablement service state to enabled.
     ON_CALL(personal_context_service_, GetEnablementState)
-        .WillByDefault(
-            Return(personal_context::PersonalContextEnablementState::kEnabled));
+        .WillByDefault(Return(
+            personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client_.set_personal_context_enablement_service(
         &personal_context_service_);
 

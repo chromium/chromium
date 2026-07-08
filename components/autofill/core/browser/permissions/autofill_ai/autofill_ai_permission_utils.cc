@@ -70,13 +70,13 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // Returns true if the account is eligible for Personal Context (e.g. to
 // determine whether to show Personal Context settings UI).
 [[nodiscard]] bool IsPersonalContextEligible(
-    personal_context::PersonalContextEnablementState state) {
-  using personal_context::PersonalContextEnablementState;
+    personal_context::PersonalContextEligibilityState state) {
+  using personal_context::PersonalContextEligibilityState;
   switch (state) {
-    case PersonalContextEnablementState::kEnabled:
+    case PersonalContextEligibilityState::kEligible:
       return true;
-    case PersonalContextEnablementState::kDisabledNotEligible:
-    case PersonalContextEnablementState::kDisabledNeedsOptIn:
+    case PersonalContextEligibilityState::kDisabledNotEligible:
+    case PersonalContextEligibilityState::kDisabledNeedsOptIn:
       return false;
   }
 }
@@ -585,7 +585,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     bool supports_reauth,
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
-    personal_context::PersonalContextEnablementState
+    personal_context::PersonalContextEligibilityState
         personal_context_enablement_state,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
@@ -748,7 +748,7 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
       client.IsWalletPublicPassStorageEnabled(), client.IsOffTheRecord(),
       client.GetVariationConfigCountryCode(),
       client.GetSubscriptionEligibilityService(),
-      client.GetPersonalContextEnablementState(), action, entity_type,
+      client.GetPersonalContextEligibilityState(), action, entity_type,
       debug_message);
 }
 
@@ -765,7 +765,7 @@ bool MayPerformAutofillAiAction(
     const GeoIpCountryCode& country_code,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
-    personal_context::PersonalContextEnablementState
+    personal_context::PersonalContextEligibilityState
         personal_context_enablement_state,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
@@ -861,7 +861,7 @@ bool SetAutofillAiOptInStatus(AutofillClient& client,
       client.IsWalletPublicPassStorageEnabled(), client.IsOffTheRecord(),
       client.GetVariationConfigCountryCode(),
       client.GetSubscriptionEligibilityService(),
-      client.GetPersonalContextEnablementState(), opt_in_status);
+      client.GetPersonalContextEligibilityState(), opt_in_status);
 }
 
 bool SetAutofillAiOptInStatus(
@@ -877,7 +877,7 @@ bool SetAutofillAiOptInStatus(
     const GeoIpCountryCode& country_code,
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_service,
-    personal_context::PersonalContextEnablementState
+    personal_context::PersonalContextEligibilityState
         personal_context_enablement_state,
     AutofillAiOptInStatus opt_in_status) {
   if (!MayPerformAutofillAiAction(

@@ -17,7 +17,7 @@ class PersonalContextEnablementServiceImplTestApi {
       PersonalContextEnablementServiceImpl* service)
       : service_(CHECK_DEREF(service)) {}
 
-  PersonalContextEnablementState ComputeEnablementState() {
+  PersonalContextEligibilityState ComputeEnablementState() {
     return service_->ComputeEnablementState().first;
   }
 

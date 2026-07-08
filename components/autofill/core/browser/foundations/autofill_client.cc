@@ -145,9 +145,10 @@ AtMemoryQueryService* AutofillClient::GetAtMemoryQueryService() {
   return nullptr;
 }
 
-personal_context::PersonalContextEnablementState
-AutofillClient::GetPersonalContextEnablementState() const {
-  return personal_context::PersonalContextEnablementState::kDisabledNotEligible;
+personal_context::PersonalContextEligibilityState
+AutofillClient::GetPersonalContextEligibilityState() const {
+  return personal_context::PersonalContextEligibilityState::
+      kDisabledNotEligible;
 }
 
 personal_context::PersonalContextEnablementService*

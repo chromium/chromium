@@ -172,11 +172,11 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
           ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
           .value_or(false);
 
-  const personal_context::PersonalContextEnablementState
+  const personal_context::PersonalContextEligibilityState
       personal_context_enablement_state =
           personal_context_enablement_service_
               ? personal_context_enablement_service_->GetEnablementState()
-              : personal_context::PersonalContextEnablementState::
+              : personal_context::PersonalContextEligibilityState::
                     kDisabledNotEligible;
 
   return autofill::SetAutofillAiOptInStatus(
@@ -432,11 +432,11 @@ bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabled(JNIEnv* env) {
 bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
     AutofillAiAction action,
     std::optional<EntityType> entity_type) const {
-  const personal_context::PersonalContextEnablementState
+  const personal_context::PersonalContextEligibilityState
       personal_context_enablement_state =
           personal_context_enablement_service_
               ? personal_context_enablement_service_->GetEnablementState()
-              : personal_context::PersonalContextEnablementState::
+              : personal_context::PersonalContextEligibilityState::
                     kDisabledNotEligible;
 
   return MayPerformAutofillAiAction(

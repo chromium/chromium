@@ -158,8 +158,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
   AtMemoryQueryService* GetAtMemoryQueryService() override;
-  personal_context::PersonalContextEnablementState
-  GetPersonalContextEnablementState() const override;
+  personal_context::PersonalContextEligibilityState
+  GetPersonalContextEligibilityState() const override;
   personal_context::PersonalContextEnablementService*
   GetPersonalContextEnablementService() const override;
   PasswordManagerDelegate* GetPasswordManagerDelegate(

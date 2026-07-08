@@ -45,7 +45,7 @@ class MockPersonalContextEnablementService
  public:
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(PersonalContextEnablementState,
+  MOCK_METHOD(PersonalContextEligibilityState,
               GetEnablementState,
               (),
               (override));
@@ -164,7 +164,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 
 TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
 
   EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
@@ -184,7 +184,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
 
 TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
 
   EXPECT_CALL(*client(), ShowNotice)
       .WillOnce([](content::WebContents*, FirstRunInvocationSource,
@@ -204,7 +204,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotSetPrefOnDismiss) {
 
 TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNotEligible) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
+      .WillOnce(Return(PersonalContextEligibilityState::kDisabledNotEligible));
 
   EXPECT_CALL(*client(), ShowNotice).Times(0);
 
@@ -219,7 +219,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNotEligible) {
 TEST_F(PersonalContextFirstRunServiceImplTest,
        DoesNotTriggerWhenAlreadyEnabled) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillRepeatedly(Return(PersonalContextEnablementState::kEnabled));
+      .WillRepeatedly(Return(PersonalContextEligibilityState::kEligible));
   pref_service()->SetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
 
@@ -235,7 +235,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 
 TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNeedsOptIn) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledNeedsOptIn));
+      .WillOnce(Return(PersonalContextEligibilityState::kDisabledNeedsOptIn));
 
   EXPECT_CALL(*client(), ShowNotice).Times(0);
 
@@ -247,7 +247,7 @@ TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNeedsOptIn) {
 
 TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
 
   EXPECT_CALL(*client(), ShowNotice).Times(1);
 
@@ -268,21 +268,21 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
        ShouldShowPersonalContextAmbientAutofillNotice) {
-  // Test kEnabled (and prefs true by default)
+  // Test kEligible (and prefs true by default)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
   EXPECT_TRUE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 
-  // Test kEnabled (with pref false)
+  // Test kEligible (with pref false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
   pref_service()->SetBoolean(
       prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
   EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 
   // Test kDisabledNotEligible (should be false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
+      .WillOnce(Return(PersonalContextEligibilityState::kDisabledNotEligible));
   EXPECT_FALSE(service()->ShouldShowPersonalContextAmbientAutofillNotice());
 }
 
@@ -303,21 +303,21 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
        ShouldShowPersonalContextAtMemoryNotice) {
-  // Test kEnabled (and prefs true by default)
+  // Test kEligible (and prefs true by default)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
   EXPECT_TRUE(service()->ShouldShowPersonalContextAtMemoryNotice());
 
-  // Test kEnabled (with pref false)
+  // Test kEligible (with pref false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kEnabled));
+      .WillOnce(Return(PersonalContextEligibilityState::kEligible));
   pref_service()->SetBoolean(prefs::kPersonalContextAtMemoryNoticeShouldBeShown,
                              false);
   EXPECT_FALSE(service()->ShouldShowPersonalContextAtMemoryNotice());
 
   // Test kDisabledNotEligible (should be false)
   EXPECT_CALL(*enablement_service(), GetEnablementState())
-      .WillOnce(Return(PersonalContextEnablementState::kDisabledNotEligible));
+      .WillOnce(Return(PersonalContextEligibilityState::kDisabledNotEligible));
   EXPECT_FALSE(service()->ShouldShowPersonalContextAtMemoryNotice());
 }
 
