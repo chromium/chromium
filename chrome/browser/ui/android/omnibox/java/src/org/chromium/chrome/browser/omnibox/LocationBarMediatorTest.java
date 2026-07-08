@@ -3580,5 +3580,6 @@ public class LocationBarMediatorTest {
         assertEquals(
                 AutocompleteState.STANDBY,
                 mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertTrue(mMediator.isUrlBarFocusedWithoutAnimation());
     }
 }

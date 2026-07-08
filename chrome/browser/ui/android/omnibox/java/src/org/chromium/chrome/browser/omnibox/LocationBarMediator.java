@@ -2648,6 +2648,7 @@ class LocationBarMediator
             AutocompleteInput input = state.getAutocompleteInput();
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
             input.setAutocompleteState(AutocompleteState.STANDBY);
+            mUrlFocusedWithoutAnimations = true;
             beginInput(input);
         }
 
