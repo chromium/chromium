@@ -21,7 +21,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
-#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
@@ -43,14 +43,7 @@
 #include "crypto/tpm_parser.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/nid.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace crypto {
 
@@ -195,11 +188,6 @@ void LogTPMOperationError(
       status);
 }
 
-std::vector<uint8_t> CBBToVector(const CBB* cbb) {
-  return std::vector<uint8_t>(CBB_data(cbb),
-                              UNSAFE_TODO(CBB_data(cbb) + CBB_len(cbb)));
-}
-
 // BCryptAlgorithmFor returns the BCrypt algorithm ID for the given Chromium
 // signing algorithm.
 std::optional<LPCWSTR> BCryptAlgorithmFor(
@@ -293,7 +281,6 @@ bool IsIdentityKey(NCRYPT_KEY_HANDLE key) {
          ((*usage_policy & NCRYPT_PCP_IDENTITY_KEY) != 0);
 }
 
-
 // ExportKey returns |key| exported in the given format or nullopt on error.
 SecurityStatusOr<std::vector<uint8_t>> ExportKey(NCRYPT_KEY_HANDLE key,
                                                  LPCWSTR format) {
@@ -321,20 +308,22 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
                    ExportKey(key, BCRYPT_ECCPUBLIC_BLOB),
                    [](auto) { return std::nullopt; });
 
-  // The exported key is a |BCRYPT_ECCKEY_BLOB| followed by the bytes of the
+  // The exported key is a `BCRYPT_ECCKEY_BLOB` followed by the bytes of the
   // public key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_ecckey_blob
-  BCRYPT_ECCKEY_BLOB header;
-  if (pub_key.size() < sizeof(header)) {
+  base::span pub_key_span = pub_key;
+  if (pub_key_span.size() < sizeof(BCRYPT_ECCKEY_BLOB)) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(&header, pub_key.data(), sizeof(header)));
+  auto [header_bytes, key_bytes] =
+      pub_key_span.split_at<sizeof(BCRYPT_ECCKEY_BLOB)>();
+  const BCRYPT_ECCKEY_BLOB& header =
+      base::subtle::reinterpret_span<const BCRYPT_ECCKEY_BLOB>(header_bytes)[0];
   // |cbKey| is documented[1] as "the length, in bytes, of the key". It is
   // not. For ECDSA public keys it is the length of a field element.
   if ((header.dwMagic != BCRYPT_ECDSA_PUBLIC_P256_MAGIC &&
        header.dwMagic != BCRYPT_ECDSA_PUBLIC_GENERIC_MAGIC) ||
-      header.cbKey != 256 / 8 ||
-      pub_key.size() - sizeof(BCRYPT_ECCKEY_BLOB) != 64) {
+      header.cbKey != 256 / 8 || key_bytes.size() != 64) {
     return std::nullopt;
   }
 
@@ -348,28 +337,11 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
     }
   }
 
-  uint8_t x962[1 + 32 + 32];
-  UNSAFE_TODO(x962[0]) = POINT_CONVERSION_UNCOMPRESSED;
-  UNSAFE_TODO(
-      memcpy(&x962[1], pub_key.data() + sizeof(BCRYPT_ECCKEY_BLOB), 64));
+  std::array<uint8_t, 1 + 32 + 32> x962 = {POINT_CONVERSION_UNCOMPRESSED};
+  base::span(x962).last<64>().copy_from(key_bytes);
 
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(p256.get()));
-  if (!EC_POINT_oct2point(p256.get(), point.get(), x962, sizeof(x962),
-                          /*ctx=*/nullptr)) {
-    return std::nullopt;
-  }
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_set_public_key(ec_key.get(), point.get()));
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), ec_key.get()));
-
-  bssl::ScopedCBB cbb;
-  CHECK(CBB_init(cbb.get(), /*initial_capacity=*/128) &&
-        EVP_marshal_public_key(cbb.get(), pkey.get()));
-  return CBBToVector(cbb.get());
+  return keypair::PublicKey::FromEcP256Point(x962).transform(
+      [](const auto& key) { return key.ToSubjectPublicKeyInfo(); });
 }
 
 std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
@@ -377,43 +349,31 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
                    ExportKey(key, BCRYPT_RSAPUBLIC_BLOB),
                    [](auto) { return std::nullopt; });
 
-  // The exported key is a |BCRYPT_RSAKEY_BLOB| followed by the bytes of the
+  base::span pub_key_span = pub_key;
+  // The exported key is a `BCRYPT_RSAKEY_BLOB` followed by the bytes of the
   // key itself.
   // https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/ns-bcrypt-bcrypt_rsakey_blob
-  BCRYPT_RSAKEY_BLOB header;
-  if (pub_key.size() < sizeof(header)) {
+  if (pub_key_span.size() < sizeof(BCRYPT_RSAKEY_BLOB)) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(&header, pub_key.data(), sizeof(header)));
+  auto [header_bytes, key_bytes] =
+      pub_key_span.split_at<sizeof(BCRYPT_RSAKEY_BLOB)>();
+  const BCRYPT_RSAKEY_BLOB& header =
+      base::subtle::reinterpret_span<const BCRYPT_RSAKEY_BLOB>(header_bytes)[0];
   if (header.Magic != static_cast<ULONG>(BCRYPT_RSAPUBLIC_MAGIC)) {
     return std::nullopt;
   }
 
-  size_t bytes_needed;
-  if (!base::CheckAdd(sizeof(BCRYPT_RSAKEY_BLOB),
-                      base::CheckAdd(header.cbPublicExp, header.cbModulus))
-           .AssignIfValid(&bytes_needed) ||
-      pub_key.size() < bytes_needed) {
+  if (key_bytes.size() <
+      base::ClampedNumeric<size_t>(header.cbPublicExp) + header.cbModulus) {
     return std::nullopt;
   }
 
-  bssl::UniquePtr<BIGNUM> e(
-      BN_bin2bn(UNSAFE_TODO(&pub_key.data()[sizeof(BCRYPT_RSAKEY_BLOB)]),
-                header.cbPublicExp, nullptr));
-  bssl::UniquePtr<BIGNUM> n(BN_bin2bn(
-      UNSAFE_TODO(
-          &pub_key.data()[sizeof(BCRYPT_RSAKEY_BLOB) + header.cbPublicExp]),
-      header.cbModulus, nullptr));
+  auto [e_bytes, rest_bytes] = key_bytes.split_at(header.cbPublicExp);
+  auto n_bytes = rest_bytes.first(header.cbModulus);
 
-  bssl::UniquePtr<RSA> rsa(RSA_new());
-  CHECK(RSA_set0_key(rsa.get(), n.release(), e.release(), nullptr));
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  CHECK(EVP_PKEY_set1_RSA(pkey.get(), rsa.get()));
-
-  bssl::ScopedCBB cbb;
-  CHECK(CBB_init(cbb.get(), /*initial_capacity=*/384) &&
-        EVP_marshal_public_key(cbb.get(), pkey.get()));
-  return CBBToVector(cbb.get());
+  return keypair::PublicKey::FromRsaPublicKeyComponents(n_bytes, e_bytes)
+      .transform([](const auto& key) { return key.ToSubjectPublicKeyInfo(); });
 }
 
 SecurityStatusOr<std::vector<uint8_t>> SignECDSA(
@@ -438,17 +398,9 @@ SecurityStatusOr<std::vector<uint8_t>> SignECDSA(
   }
   CHECK_EQ(sig.size(), sig_size);
 
-  bssl::UniquePtr<BIGNUM> r(BN_bin2bn(sig.data(), 32, nullptr));
-  bssl::UniquePtr<BIGNUM> s(
-      BN_bin2bn(UNSAFE_TODO(sig.data() + 32), 32, nullptr));
-  ECDSA_SIG sig_st;
-  sig_st.r = r.get();
-  sig_st.s = s.get();
-
-  bssl::ScopedCBB cbb;
-  CHECK(CBB_init(cbb.get(), /*initial_capacity=*/72) &&
-        ECDSA_SIG_marshal(cbb.get(), &sig_st));
-  return CBBToVector(cbb.get());
+  auto [r_bytes, s_bytes] = base::span(sig).split_at<32>();
+  return base::OptionalToExpected(
+      ConvertEcdsaRawComponentsToDer(r_bytes, s_bytes), NTE_FAIL);
 }
 
 SecurityStatusOr<std::vector<uint8_t>> SignRSA(NCRYPT_KEY_HANDLE key,
