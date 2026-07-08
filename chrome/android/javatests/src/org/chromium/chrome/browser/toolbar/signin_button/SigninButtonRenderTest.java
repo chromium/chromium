@@ -10,7 +10,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +41,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -72,8 +72,6 @@ public class SigninButtonRenderTest {
 
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
-    private RegularNewTabPageStation mPage;
-
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
@@ -90,12 +88,6 @@ public class SigninButtonRenderTest {
         ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
-    @Before
-    public void setUp() {
-        mPage = mActivityTestRule.startOnNtp();
-        NewTabPageTestUtils.waitForNtpLoaded(mPage.getTab());
-    }
-
     @After
     public void tearDown() {
         if (mFakeSyncServiceImpl != null) {
@@ -110,6 +102,8 @@ public class SigninButtonRenderTest {
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninButton_SignedOut(boolean nightModeEnabled) throws IOException {
+        startActivityOnNtp();
+
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
@@ -123,6 +117,8 @@ public class SigninButtonRenderTest {
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninButton_SignedOut_SigninDisabled(boolean nightModeEnabled)
             throws IOException {
+        startActivityOnNtp();
+
         setSigninAllowed(false);
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
@@ -137,6 +133,8 @@ public class SigninButtonRenderTest {
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninButton_SignedIn_Avatar(boolean nightModeEnabled) throws IOException {
+        startActivityOnNtp();
+
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
@@ -151,15 +149,14 @@ public class SigninButtonRenderTest {
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninButtonWithErrorBadge(boolean nightModeEnabled) throws IOException {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mFakeSyncServiceImpl = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
                 });
 
-        // SigninButton may have already been initialized with a real SyncService. As such,
-        // recreating the activity in order to ensure the fake SyncService override is used.
-        mActivityTestRule.recreateActivity();
+        startActivityOnNtp();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -171,6 +168,11 @@ public class SigninButtonRenderTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
                 "signin_button_identity_error_exist");
+    }
+
+    private void startActivityOnNtp() {
+        RegularNewTabPageStation page = mActivityTestRule.startOnNtp();
+        NewTabPageTestUtils.waitForNtpLoaded(page.getTab());
     }
 
     private void setSigninAllowed(boolean allowed) {
