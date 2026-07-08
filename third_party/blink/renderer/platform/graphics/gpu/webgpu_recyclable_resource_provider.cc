@@ -205,7 +205,6 @@ WebGpuRecyclableResourceProvider::NewOrRecycledResource() {
       max_inflight_resources_ = num_inflight_resources_;
     }
   }
-  DCHECK(resource->HasOneRef());
   return resource;
 }
 
@@ -215,8 +214,6 @@ bool WebGpuRecyclableResourceProvider::IsValid() const {
 
 void WebGpuRecyclableResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
-  DCHECK(resource_->HasOneRef())
-      << "Write access requires exclusive access to the resource";
   DCHECK(!resource()->is_cross_thread())
       << "Write access is only allowed on the owning thread";
 
@@ -258,9 +255,6 @@ void WebGpuRecyclableResourceProvider::OnAcquireRecyclableCanvasResource() {
 
 void WebGpuRecyclableResourceProvider::OnDestroyRecyclableCanvasResource(
     const gpu::SyncToken& sync_token) {
-  // RecyclableCanvasResource should be the only one that holds onto
-  // |resource_|.
-  DCHECK(resource()->HasOneRef());
   resource()->WaitSyncToken(sync_token);
 }
 
@@ -272,7 +266,7 @@ void WebGpuRecyclableResourceProvider::ClearUnusedResources() {
 
 void WebGpuRecyclableResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
-  if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
+  if (!resource->IsLost() && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
 }
@@ -297,9 +291,8 @@ bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
     return true;
   }
 
-  // Replace the target buffer if there are active readers (i.e. we don't have
-  // the only ref to the resource).
-  return !resource_->HasOneRef();
+  // This class holds the only ref to `resource_` internally.
+  return false;
 }
 
 void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
