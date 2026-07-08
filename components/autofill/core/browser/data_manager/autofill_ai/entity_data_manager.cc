@@ -282,7 +282,7 @@ void EntityDataManager::OnMaskedEntityTypeEvicted(
   base::EraseIf(entities_, [&](const EntityInstance& entity) {
     return entity.record_type() ==
                EntityInstance::RecordType::kPersonalContext &&
-           entity.type() == type;
+           entity.type() == type && !test_pcontext_entities_.contains(entity);
   });
   NotifyEntityInstancesChanged();
 }

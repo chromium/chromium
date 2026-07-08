@@ -326,7 +326,8 @@ void SetDataForEDM(base::WeakPtr<EntityDataManager> edm,
           break;
       }
     }
-    edm->SetPersonalContextEntitiesForTesting(personal_context_entities);
+    edm->SetPersonalContextEntitiesForTesting(
+        std::move(personal_context_entities));
   }
 }
 

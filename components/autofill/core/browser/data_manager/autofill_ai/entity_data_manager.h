@@ -196,8 +196,11 @@ class EntityDataManager : public KeyedService,
   // Populates this `EntityDataManager` directly with `entities`. This should
   // only be used for testing purposes.
   void SetPersonalContextEntitiesForTesting(
-      base::span<const EntityInstance> entities) {
+      std::vector<EntityInstance> entities) {
     AddPersonalContextEntities(entities);
+    test_pcontext_entities_ =
+        base::flat_set<EntityInstance, EntityInstance::CompareByGuid>(
+            std::move(entities));
   }
 
   base::WeakPtr<EntityDataManager> GetWeakPtr() {
@@ -245,6 +248,11 @@ class EntityDataManager : public KeyedService,
   // Contains the entities from the database and personal context.
   // All entries are identifiable by their EntityInstance::guid().
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
+
+  // Contains personal context testing entities, which are intentionally stored
+  // separately to avoid evicting them like normal entities.
+  base::flat_set<EntityInstance, EntityInstance::CompareByGuid>
+      test_pcontext_entities_;
 
   base::ScopedObservation<AutofillWebDataService,
                           AutofillWebDataServiceObserverOnUISequence>
