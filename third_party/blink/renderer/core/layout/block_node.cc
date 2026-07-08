@@ -959,13 +959,16 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     return *cached_fragment_geometry;
   };
 
+  const bool is_orthogonal_flow_root =
+      !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
+
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
   // In some scenarios, Grid, Grid-lanes and Flex will run layout on their items
   // during MinMaxSizes computation. Instead of running (and possible caching
   // incorrect results), when we're not performing layout, just use border +
   // padding.
   if (!is_in_perform_layout &&
-      (IsGrid() || IsGridLanes() ||
+      (is_orthogonal_flow_root || IsGrid() || IsGridLanes() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection()))) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
@@ -976,17 +979,11 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   }
 
-  bool is_orthogonal_flow_root =
-      !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
-
   // If we're orthogonal, run layout to compute the sizes.
   if (is_orthogonal_flow_root) {
     // If we have an aspect ratio, we may be able to avoid laying out the
     // child as an optimization, if performance testing shows this to be
     // important.
-
-    MinMaxSizes sizes;
-    CHECK(is_in_perform_layout);
 
     // If we're computing MinMax after layout, we need to disable side effects
     // so that |Layout| does not update the |LayoutObject| tree and other global
@@ -997,15 +994,17 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
 
     const LayoutResult* layout_result = Layout(constraint_space);
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
-    sizes = LogicalFragment({container_writing_mode, TextDirection::kLtr},
-                            layout_result->GetPhysicalFragment())
-                .InlineSize();
+    const LayoutUnit inline_size =
+        LogicalFragment({container_writing_mode, TextDirection::kLtr},
+                        layout_result->GetPhysicalFragment())
+            .InlineSize();
     const bool depends_on_block_constraints =
         Style().LogicalWidth().HasAuto() ||
         Style().LogicalWidth().HasPercentOrStretch() ||
         Style().LogicalMinWidth().HasPercentOrStretch() ||
         Style().LogicalMaxWidth().HasPercentOrStretch();
-    return MinMaxSizesResult(sizes, depends_on_block_constraints);
+    return MinMaxSizesResult({inline_size, inline_size},
+                             depends_on_block_constraints);
   }
 
   // Returns if we are (directly) dependent on any block constraints.
