@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
 
   // Prepare the target browser (existing window).
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   ASSERT_TRUE(target_browser);
   AddTabs(target_browser, 1);
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToExistingWindow) {
   // Create another window, and add tabs.
   Browser* second_window =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
-          browser()->profile());
+          browser()->GetProfile());
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   // Target browser: 0(active)
   Browser* target_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   AddTabs(target_browser, 1);
   ASSERT_EQ(1, target_browser->tab_strip_model()->count());
 
@@ -689,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        ConvertPopupToTabbedBrowserShutdownRace) {
   // Confirm we do not incorrectly start shutdown when converting a popup into a
   // tab, in the case where the popup is the only active Browser object
-  Browser* popup_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  Browser* popup_browser = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_POPUP, browser()->GetProfile(), true));
   chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
   popup_browser->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->CloseAllTabs();

@@ -59,7 +59,7 @@ class BrowserFinderWithDesksTest : public InProcessBrowserTest {
   }
 
   Browser* CreateTestBrowser() {
-    Browser* new_browser = CreateBrowser(browser()->profile());
+    Browser* new_browser = CreateBrowser(browser()->GetProfile());
     new_browser->GetWindow()->Show();
     ActivateBrowser(new_browser);
     return new_browser;
@@ -79,27 +79,25 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   CloseBrowserSynchronously(browser());
   SetBrowser(browser_1);
   auto* window_1 = browser_1->GetWindow()->GetNativeWindow();
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
-  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->GetProfile()));
 
   // Switch to desk_2 and create a browser there.
   ash::ActivateDesk(desk_2);
   EXPECT_TRUE(desk_2->is_active());
   Browser* browser_2 = CreateTestBrowser();
   auto* window_2 = browser_2->GetWindow()->GetNativeWindow();
-  EXPECT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_2));
 
   // FindAnyBrowser should return the MRU browser, which is browser_2 in this
   // case.
-  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->profile()));
+  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->GetProfile()));
 
   // Switch to desk_3, no browsers on this desk, however, FindAnyBrowser
   // should still return browser_2.
@@ -107,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   EXPECT_TRUE(desk_3->is_active());
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_2));
-  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->profile()));
+  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->GetProfile()));
 
   // Switch to desk_1 by activating browser_1. When we switch back to desk_3,
   // FindAnyBrowser() will return browser_1 as the MRU browser.
@@ -117,11 +115,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
 
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
-  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->GetProfile()));
 
   ash::ActivateDesk(desk_3);
   EXPECT_TRUE(desk_3->is_active());
-  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->GetProfile()));
 }
 
 class BrowserFinderChromeOSBrowserTest : public MixinBasedInProcessBrowserTest {

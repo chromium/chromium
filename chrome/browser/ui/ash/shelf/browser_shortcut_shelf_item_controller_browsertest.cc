@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
 
   // Browsers are not listed in the menu if their windows have not been shown.
   Browser* browser1 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   EXPECT_FALSE(browser1->GetWindow()->IsVisible());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1U, GetAppMenuItems(controller, ui::EF_NONE).size());
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
                              ui::EF_NONE, display::kInvalidDisplayId);
 
   // Create and close a window, but don't allow asynchronous teardown to occur.
-  browser1 = CreateBrowser(browser()->profile());
+  browser1 = CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(browser1);
   CloseBrowserAsynchronously(browser1);

@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
   VerifyMute(browser(), /*isMuted=*/true);
 
   // Open Incognito tab and check the site is muted there.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
   VerifyMute(incognito_browser, /*isMuted=*/true);
 
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
   VerifyMute(browser(), /*isMuted=*/true);
 
   // Open Incognito tab and check the site is muted there.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
   VerifyMute(incognito_browser, /*isMuted=*/true);
 
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
   // Open tab in Incognito
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
   // Mute the site in Incognito.
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
             2u);
 
   auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   EXPECT_NE(sync_service, nullptr);
 
   auto groups = sync_service->GetAllGroups();
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
             2u);
 
   auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-      browser()->profile());
+      browser()->GetProfile());
   EXPECT_NE(sync_service, nullptr);
 
   auto groups = sync_service->GetAllGroups();
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        NewSplitTabFromIncognito) {
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
 
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(incognito_browser);

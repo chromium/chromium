@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
   // Attempt to launch Explore app.
   delegate()->LaunchSystemWebAppAsync(
       ash::BrowserContextHelper::Get()
-          ->GetUserByBrowserContext(browser()->profile())
+          ->GetUserByBrowserContext(browser()->GetProfile())
           ->GetAccountId(),
       ash::SystemWebAppType::HELP, apps::LaunchSource::kFromWelcomeTour,
       display::kDefaultDisplayId);

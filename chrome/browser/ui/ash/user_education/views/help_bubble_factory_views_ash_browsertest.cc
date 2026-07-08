@@ -64,7 +64,7 @@ class HelpBubbleFactoryViewsAshBrowserTest
   // Returns the help bubble factory registry for the active browser profile.
   user_education::HelpBubbleFactoryRegistry& GetHelpBubbleFactoryRegistry() {
     return UserEducationServiceFactory::GetForBrowserContext(
-               browser()->profile())
+               browser()->GetProfile())
         ->help_bubble_factory_registry();
   }
 };

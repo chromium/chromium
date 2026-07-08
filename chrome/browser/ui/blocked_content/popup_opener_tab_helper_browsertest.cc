@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   host_content_settings_map->SetContentSettingDefaultScope(
       first_url, first_url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
 

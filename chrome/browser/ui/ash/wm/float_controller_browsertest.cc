@@ -50,19 +50,19 @@ using FloatControllerBrowserTest = InProcessBrowserTest;
 // the window to freeze. Regression test for b/278917878.
 IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
                        TuckingBrowserDoesNotFreezeWindow) {
-  ash::test::InstallSystemAppsForTesting(browser()->profile());
+  ash::test::InstallSystemAppsForTesting(browser()->GetProfile());
 
   // Open two SWAs. The bug was a result of the window targeters installed by
   // the window tucker and immersive mode not being reinstalled in the correct
   // order. More details in b/278917878.
-  ash::test::CreateSystemWebApp(browser()->profile(),
+  ash::test::CreateSystemWebApp(browser()->GetProfile(),
                                 ash::SystemWebAppType::FILE_MANAGER);
   aura::Window* browser_window1 =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile()
           ->GetWindow()
           ->GetNativeWindow();
 
-  ash::test::CreateSystemWebApp(browser()->profile(),
+  ash::test::CreateSystemWebApp(browser()->GetProfile(),
                                 ash::SystemWebAppType::SETTINGS);
   aura::Window* browser_window2 =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile()

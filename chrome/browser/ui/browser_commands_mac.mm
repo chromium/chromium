@@ -37,7 +37,7 @@ void ToggleAlwaysShowToolbarInFullscreen(Browser* browser) {
   }
 
   // Otherwise toggle the value of the preference.
-  PrefService* prefs = browser->profile()->GetPrefs();
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
   bool show_toolbar = prefs->GetBoolean(prefs::kShowFullscreenToolbar);
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, !show_toolbar);
 }
@@ -77,7 +77,7 @@ void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {
     return;
   }
 
-  PrefService* prefs = browser->profile()->GetPrefs();
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents,
                     !prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents));
 }

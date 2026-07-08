@@ -213,9 +213,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                    is_mac /* command */);
   navigation_observer.Wait();
 
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   content::WebContents* new_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(new_contents));
@@ -253,9 +252,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                    false /* command */);
   navigation_observer.Wait();
 
-  EXPECT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
   content::WebContents* new_contents =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile()
           ->GetTabStripModel()

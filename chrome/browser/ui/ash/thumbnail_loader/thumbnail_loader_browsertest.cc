@@ -99,9 +99,9 @@ class ThumbnailLoaderTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     test_mount_point_ = std::make_unique<ScopedExternalMountPoint>(
-        browser()->profile(), "test_downloads");
+        browser()->GetProfile(), "test_downloads");
     thumbnail_loader_ =
-        std::make_unique<ash::ThumbnailLoader>(browser()->profile());
+        std::make_unique<ash::ThumbnailLoader>(browser()->GetProfile());
     ASSERT_TRUE(test_mount_point_->IsValid());
     SetUpTestDirStructure();
   }

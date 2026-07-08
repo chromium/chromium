@@ -65,7 +65,7 @@ class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+                browser()->GetProfile()));
     observer->Wait();
   }
 };
@@ -215,7 +215,7 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
 
   testprofile->SetGuestSession(false);
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kForced);
   chrome::BrowserCommandController ::
       UpdateSharedCommandsForIncognitoAvailability(
@@ -514,7 +514,7 @@ TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
   profile->SetGuestSession(true);
   // Setup forced incognito mode.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kForced);
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   // Enter fullscreen.
@@ -526,10 +526,10 @@ TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
   // Reenter incognito mode, this should trigger
   // UpdateSharedCommandsForIncognitoAvailability() again.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kDisabled);
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kForced);
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
 }
@@ -758,11 +758,11 @@ class CreateShortcutBrowserCommandControllerTest
     // Simulate installing the extension.
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(browser()->profile()));
+            extensions::ExtensionSystem::Get(browser()->GetProfile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(),
         /*install_directory=*/base::FilePath(), /*autoupdate_enabled=*/false);
-    extensions::ExtensionRegistrar::Get(browser()->profile())
+    extensions::ExtensionRegistrar::Get(browser()->GetProfile())
         ->AddExtension(extension);
 
     return extension;

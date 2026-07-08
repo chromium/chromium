@@ -691,7 +691,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   browser_select_file_dialog_controller_ =
       std::make_unique<BrowserSelectFileDialogController>(
-          browser->profile(), browser->tab_strip_model(),
+          browser->GetProfile(), browser->tab_strip_model(),
           BrowserWindow::FromBrowser(browser), browser);
 
   if (browser_view) {
@@ -749,7 +749,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (webui_browser_window) {
     webui_browser_exclusive_access_context_ =
         std::make_unique<WebUIBrowserExclusiveAccessContext>(
-            browser->profile(), browser_, browser->GetTabStripModel(),
+            browser->GetProfile(), browser_, browser->GetTabStripModel(),
             webui_browser_window->widget(), webui_browser_window);
   }
 
@@ -920,7 +920,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser_view) {
       if (media_router::MediaRouterEnabled(
-              browser_view->browser()->profile())) {
+              browser_view->browser()->GetProfile())) {
         cast_browser_controller_ =
             std::make_unique<media_router::CastBrowserController>(
                 browser_view->browser());

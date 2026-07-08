@@ -926,17 +926,19 @@ void BrowserCommandController::HandleCommandWithDisposition(
       break;
     case IDC_TURN_ON_SYNC:
       signin_ui_util::EnableSyncFromSingleAccountPromo(
-          browser_->profile(), GetAccountInfoFromProfile(browser_->profile()),
+          browser_->GetProfile(),
+          GetAccountInfoFromProfile(browser_->GetProfile()),
           signin_metrics::AccessPoint::kMenu);
       break;
     case IDC_SHOW_SIGNIN:
       signin_ui_util::SignInFromSingleAccountPromo(
-          browser_->profile(), GetAccountInfoFromProfile(browser_->profile()),
+          browser_->GetProfile(),
+          GetAccountInfoFromProfile(browser_->GetProfile()),
           signin_metrics::AccessPoint::kMenu);
       break;
     case IDC_SHOW_SIGNIN_WHEN_PAUSED:
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          browser_->profile(), signin_metrics::AccessPoint::kMenu);
+          browser_->GetProfile(), signin_metrics::AccessPoint::kMenu);
       break;
     case IDC_SHOW_PASSWORD_MANAGER:
       ShowPasswordManager(browser_);
@@ -1476,15 +1478,15 @@ void BrowserCommandController::HandleCommandWithDisposition(
       chrome::ShowSettingsSubPage(browser_, chrome::kManageProfileSubPage);
       break;
     case IDC_CLOSE_PROFILE: {
-      if (browser_->profile()->IsIncognitoProfile()) {
-        chrome::CloseAllBrowsersWithIncognitoProfile(browser_->profile());
+      if (browser_->GetProfile()->IsIncognitoProfile()) {
+        chrome::CloseAllBrowsersWithIncognitoProfile(browser_->GetProfile());
       } else {
-        profiles::CloseProfileWindows(browser_->profile());
+        profiles::CloseProfileWindows(browser_->GetProfile());
       }
       break;
     }
     case IDC_MANAGE_GOOGLE_ACCOUNT: {
-      Profile* profile = browser_->profile();
+      Profile* profile = browser_->GetProfile();
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
       DCHECK(
@@ -1514,7 +1516,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
 
       // Clear prefs and close prompts.
       chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
-          browser_->profile());
+          browser_->GetProfile());
       DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
           DefaultBrowserPromptManager::CloseReason::kAccept);
       break;
@@ -1890,7 +1892,7 @@ void BrowserCommandController::InitCommandState() {
   const bool is_web_app_or_custom_tab = IsWebAppOrCustomTab(browser_);
   const bool enable_copy_url =
       is_web_app_or_custom_tab ||
-      !sharing_hub::SharingIsDisabledByPolicy(browser_->profile());
+      !sharing_hub::SharingIsDisabledByPolicy(browser_->GetProfile());
   command_updater_->UpdateCommandEnabled(IDC_COPY_URL, enable_copy_url);
   command_updater_->UpdateCommandEnabled(IDC_WEB_APP_SETTINGS,
                                          is_web_app_or_custom_tab);
@@ -2656,7 +2658,7 @@ BrowserWindow* BrowserCommandController::window() {
 }
 
 Profile* BrowserCommandController::profile() {
-  return browser_->profile();
+  return browser_->GetProfile();
 }
 
 }  // namespace chrome

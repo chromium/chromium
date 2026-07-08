@@ -16,12 +16,12 @@ using BrowserFinderBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(BrowserFinderBrowserTest, ScheduledForDeletion) {
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  Browser* new_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(new_browser);
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(new_browser,
-            ProfileBrowserCollection::GetForProfile(browser()->profile())
+            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                 ->GetLastActiveBrowser());
 
   // Close all tabs. The tabstrip starts with one blank tab (created by
@@ -34,6 +34,6 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderBrowserTest, ScheduledForDeletion) {
   EXPECT_TRUE(new_browser->IsDeleteScheduled());
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_NE(new_browser,
-            ProfileBrowserCollection::GetForProfile(browser()->profile())
+            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                 ->GetLastActiveBrowser());
 }

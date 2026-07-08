@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
 
   // 4) Popup browser windows.
   browser_create_params =
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true);
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true);
   Browser* popup_browser = Browser::Create(browser_create_params);
   ASSERT_TRUE(popup_browser->is_type_popup());
   ASSERT_FALSE(popup_browser->is_type_app());
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
     extensions::AppWindow::CreateParams params;
     params.frame = extensions::AppWindow::FRAME_CHROME;
     extensions::AppWindow* app_window =
-        CreateAppWindowFromParams(browser()->profile(), extension, params);
+        CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
     extensions::NativeAppWindow* native_app_window =
         app_window->GetBaseWindow();
     SetToInitialShowState(app_window);
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
     extensions::AppWindow::CreateParams params;
     params.frame = extensions::AppWindow::FRAME_NONE;
     extensions::AppWindow* app_window =
-        CreateAppWindowFromParams(browser()->profile(), extension, params);
+        CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
     extensions::NativeAppWindow* native_app_window =
         app_window->GetBaseWindow();
     ASSERT_TRUE(app_window->GetBaseWindow()->IsActive());

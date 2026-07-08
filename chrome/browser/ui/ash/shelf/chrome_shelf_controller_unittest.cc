@@ -4505,7 +4505,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
 
   constexpr char kMapsWebPackageName[] = "com.google.maps";
 
-  auto* service = ash::ApkWebAppService::Get(browser()->profile());
+  auto* service = ash::ApkWebAppService::Get(browser()->GetProfile());
   ASSERT_TRUE(service);
 
   base::test::TestFuture<const std::string&, const webapps::AppId&> future;

@@ -179,9 +179,9 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
 
   // Open bookmark sheet dialog.
   auto* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   auto editor = std::make_unique<BookmarkEditorView>(
-      browser()->profile(),
+      browser()->GetProfile(),
       BookmarkEditor::EditDetails::MoveNodes(
           bookmark_model,
           {bookmark_model->AddURL(bookmark_model->other_node(), 0, u"bookmark",

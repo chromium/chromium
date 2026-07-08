@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusBasicTest, BrowserFocusedOnCreation) {
   // new window. The difference is that it makes sure that there is at least one
   // tab on the window before calling `BrowserView::Show()`.
   BrowserWindowInterface* browser2 =
-      chrome::OpenEmptyWindow(browser()->profile());
+      chrome::OpenEmptyWindow(browser()->GetProfile());
   WaitForToolbarReady(browser2);
   ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser2).Wait();
   views::test::WaitForWidgetActive(GetWidgetForBrowser(browser2), true);
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
 
   // Open a new browser window.
   Browser* background_browser =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   chrome::AddTabAt(background_browser, GURL(), -1, true);
   background_browser->GetWindow()->Show();
 
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 // TODO(crbug.com/40794922): Flaky on Linux.
 // TODO(crbug.com/41493632): Broken since CR2023.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
-  Browser* popup_browser = CreateBrowserForPopup(browser()->profile());
+  Browser* popup_browser = CreateBrowserForPopup(browser()->GetProfile());
 
   // Make sure the popup is in the front. Otherwise the test is flaky.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup_browser));
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
                                               false, false, false, false));
-  if (sharing_hub::HasPageAction(browser()->profile(), true)) {
+  if (sharing_hub::HasPageAction(browser()->GetProfile(), true)) {
     ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_SHARING_HUB_BUTTON,
                                     true);
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
@@ -845,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
 // Tests that the location bar is not focusable when hidden, which is the case
 // in app windows.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AppLocationBar) {
-  Browser* app_browser = CreateBrowserForApp("foo", browser()->profile());
+  Browser* app_browser = CreateBrowserForApp("foo", browser()->GetProfile());
 
   // Make sure the app window is in the front. Otherwise the test is flaky.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(app_browser));

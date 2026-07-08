@@ -26,7 +26,7 @@ class AskGoogleForSuggestionsDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     std::unique_ptr<SpellingBubbleModel> model =
         std::make_unique<SpellingBubbleModel>(
-            browser()->profile(),
+            browser()->GetProfile(),
             browser()->tab_strip_model()->GetActiveWebContents());
 
     // The toolkit-views version of the dialog does not utilize the anchor_view

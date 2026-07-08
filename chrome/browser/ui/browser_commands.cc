@@ -469,7 +469,7 @@ void MoveTabsToWindowImpl(BrowserWindowInterface* source,
 }
 
 Browser* CreateNewBrowser(Browser* browser, bool user_gesture) {
-  auto params = Browser::CreateParams(browser->profile(), user_gesture);
+  auto params = Browser::CreateParams(browser->GetProfile(), user_gesture);
   return Browser::Create(params);
 }
 
@@ -1283,7 +1283,7 @@ void NewTabFromClipboardURL(BrowserWindowInterface* browser) {
                   base::UserMetricsAction("NewTabButton_PasteAndNavigate"));
               AutocompleteMatch match;
               AutocompleteClassifierFactory::GetForProfile(
-                  browser_weak->profile())
+                  browser_weak->GetProfile())
                   ->Classify(text, false, false,
                              metrics::OmniboxEventProto::BLANK, &match,
                              nullptr);
@@ -1493,7 +1493,7 @@ void MoveGroupToNewWindow(BrowserWindowInterface* browser,
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
         current_browser->app_name(), app_controller->IsTrustedSource(),
-        gfx::Rect(), current_browser->profile(), true));
+        gfx::Rect(), current_browser->GetProfile(), true));
     web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);
@@ -1516,7 +1516,7 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
         current_browser->app_name(), app_controller->IsTrustedSource(),
-        gfx::Rect(), current_browser->profile(), true));
+        gfx::Rect(), current_browser->GetProfile(), true));
     web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);

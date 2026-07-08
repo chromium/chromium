@@ -59,7 +59,7 @@ void ChromeBluetoothChooserController::OpenAdapterOffHelpUrl() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS can directly link to the OS setting to turn on the adapter.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      GetBrowser()->profile(),
+      GetBrowser()->GetProfile(),
       chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
 #else
   // For other operating systems, show a help center page in a tab.

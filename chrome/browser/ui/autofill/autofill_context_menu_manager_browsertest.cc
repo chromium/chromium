@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManualFallbackTest,
                        SelectPasswordTriggersSuggestions) {
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::PasswordStoreWaiter add_waiter(password_store);
   password_manager::PasswordForm existing_form;
@@ -802,10 +802,10 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
     password_manager::PasswordStoreInterface* password_store =
         use_profile_store()
             ? ProfilePasswordStoreFactory::GetForProfile(
-                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                  browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
                   .get()
             : AccountPasswordStoreFactory::GetForProfile(
-                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                  browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
                   .get();
 
     password_manager::PasswordForm password_form;
@@ -938,7 +938,7 @@ class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTestBase {
     return guest_browser_->tab_strip_model()->GetActiveWebContents();
   }
 
-  Profile* profile() override { return guest_browser_->profile(); }
+  Profile* profile() override { return guest_browser_->GetProfile(); }
 
   void TearDownOnMainThread() override {
     // Release raw_ptr's so they don't become dangling.
@@ -989,7 +989,7 @@ class SelectPasswordFallbackMetricsTest
     // Add a saved password so the manual fallback option shows.
     password_manager::PasswordStoreInterface* password_store =
         ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+            browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
             .get();
     password_manager::PasswordStoreWaiter add_waiter(password_store);
     password_manager::PasswordForm form;

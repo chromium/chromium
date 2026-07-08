@@ -70,10 +70,10 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   // into the map.
   content::SessionStorageNamespaceMap session_storage_namespace_map =
       content::CreateMapWithDefaultSessionStorageNamespace(
-          browser->profile(), session_storage_namespace);
+          browser->GetProfile(), session_storage_namespace);
   WebContents::CreateParams create_params(
-      browser->profile(),
-      tab_util::GetSiteInstanceForNewTab(browser->profile(), restore_url));
+      browser->GetProfile(),
+      tab_util::GetSiteInstanceForNewTab(browser->GetProfile(), restore_url));
   create_params.initially_hidden = initially_hidden;
   create_params.desired_renderer_state =
       WebContents::CreateParams::kNoRendererProcess;
@@ -82,7 +82,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   std::unique_ptr<WebContents> web_contents =
       WebContents::CreateWithSessionStorage(create_params,
                                             session_storage_namespace_map);
-  apps::SetAppIdForWebContents(browser->profile(), web_contents.get(),
+  apps::SetAppIdForWebContents(browser->GetProfile(), web_contents.get(),
                                extension_app_id);
 
   glic::RestoreGlicStateFromExtraData(web_contents.get(), extra_data);
@@ -91,7 +91,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
 
   std::vector<std::unique_ptr<NavigationEntry>> entries =
       ContentSerializedNavigationBuilder::ToNavigationEntries(
-          navigations, browser->profile());
+          navigations, browser->GetProfile());
 
   blink::UserAgentOverride ua_override;
   ua_override.ua_string_override = user_agent_override.ua_string_override;

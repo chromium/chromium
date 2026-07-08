@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
 
   // Set Incognito to DISABLED and verify the action item is updated.
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
+      browser()->GetProfile()->GetPrefs(),
       policy::IncognitoModeAvailability::kDisabled);
   EXPECT_FALSE(
       action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled());

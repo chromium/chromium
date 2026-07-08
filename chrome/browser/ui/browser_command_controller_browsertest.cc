@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   // Wait for robustness because InProcessBrowserTest::PreRunTestOnMainThread
   // does not flush the task scheduler.
   TabRestoreServiceLoadWaiter waiter(
-      TabRestoreServiceFactory::GetForProfile(browser()->profile()));
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile()));
   waiter.Wait();
 
   // After initialization, the command should become disabled because there's
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   // Wait for robustness because InProcessBrowserTest::PreRunTestOnMainThread
   // does not flush the task scheduler.
   TabRestoreServiceLoadWaiter waiter(
-      TabRestoreServiceFactory::GetForProfile(browser()->profile()));
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile()));
   waiter.Wait();
 
   // After initialization, the command should remain enabled because there's
@@ -430,7 +430,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        OpenDisabledForDevToolsBrowser) {
-  auto params = Browser::CreateParams::CreateForDevTools(browser()->profile());
+  auto params =
+      Browser::CreateParams::CreateForDevTools(browser()->GetProfile());
   Browser* browser = Browser::Create(params);
 
   chrome::BrowserCommandController* commandController =
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteProfileMenuManageGoogleAccount) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   CoreAccountInfo account_info = signin::SetPrimaryAccount(
       identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
   chrome::UpdateCommandEnabled(browser(), IDC_MANAGE_GOOGLE_ACCOUNT, true);
@@ -506,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GUEST_PROFILE));
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(guest_browser);
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
@@ -544,7 +545,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestShowSigninWhenPaused,
                        ExecuteShowSigninWhenPaused) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(
       identity_manager, "user@example.com",
       syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
@@ -727,14 +728,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        EnabledInRegularProfile) {
-  ASSERT_TRUE(browser()->profile()->IsRegularProfile());
+  ASSERT_TRUE(browser()->GetProfile()->IsRegularProfile());
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_GLIC_TOGGLE_PIN));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        DisabledInIncognitoProfile) {
   Browser* incognito_browser = CreateIncognitoBrowser();
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_FALSE(
       chrome::IsCommandEnabled(incognito_browser, IDC_GLIC_TOGGLE_PIN));
 }
@@ -743,14 +744,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        DisabledInGuestProfile) {
   Browser* guest_browser = CreateGuestBrowser();
-  EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
+  EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
   EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_GLIC_TOGGLE_PIN));
 }
 #endif  // !BUILDFLAG(IS_CHROME)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ThreeDotMenuItemEnabledInRegularProfile) {
-  ASSERT_TRUE(browser()->profile()->IsRegularProfile());
+  ASSERT_TRUE(browser()->GetProfile()->IsRegularProfile());
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC));
 }
 
@@ -762,15 +763,15 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
       optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   // Bypass fre.
-  glic::GlicKeyedService::Get(browser()->profile())
+  glic::GlicKeyedService::Get(browser()->GetProfile())
       ->enabling()
       .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
-  ASSERT_TRUE(
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-          ->instance_coordinator()
-          .IsAnyPanelShowing());
+  ASSERT_TRUE(glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+                  browser()->GetProfile())
+                  ->instance_coordinator()
+                  .IsAnyPanelShowing());
   // Open command is disabled because Glic is now open.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC); }));
@@ -807,7 +808,7 @@ class BrowserCommandControllerBrowserTestGlicChromeOSGuest
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlicChromeOSGuest,
                        DisabledInGuestProfile) {
-  EXPECT_TRUE(browser()->profile()->IsGuestSession());
+  EXPECT_TRUE(browser()->GetProfile()->IsGuestSession());
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_GLIC_TOGGLE_PIN));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

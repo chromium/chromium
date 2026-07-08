@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create a second browser window.
   Browser* const browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+      Browser::Create(Browser::CreateParams(browser()->GetProfile(), true));
   ASSERT_NE(browser2, nullptr);
   browser2->GetWindow()->Show();
 
