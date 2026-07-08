@@ -340,13 +340,12 @@ void Text::AttachLayoutTree(AttachContext& context) {
   if (context.parent) {
     if (Element* style_parent =
             LayoutTreeBuilderTraversal::ParentElement(*this)) {
-      const ComputedStyle* const style =
+      const ComputedStyle& style =
           IsA<HTMLHtmlElement>(style_parent) && style_parent->GetLayoutObject()
-              ? style_parent->GetLayoutObject()->Style()
-              : style_parent->GetComputedStyle();
-      CHECK(style);
-      if (TextLayoutObjectIsNeeded(context, *style)) {
-        LayoutTreeBuilderForText(*this, context, style).CreateLayoutObject();
+              ? style_parent->GetLayoutObject()->StyleRef()
+              : style_parent->ComputedStyleRef();
+      if (TextLayoutObjectIsNeeded(context, style)) {
+        LayoutTreeBuilderForText(*this, context, &style).CreateLayoutObject();
         context.previous_in_flow = GetLayoutObject();
       }
     }
@@ -391,11 +390,11 @@ void Text::RecalcTextStyle(const StyleRecalcChange change) {
   const ComputedStyle* new_style =
       GetDocument().GetStyleResolver().StyleForText(this);
   if (LayoutText* layout_text = GetLayoutObject()) {
-    const ComputedStyle* layout_parent_style =
-        GetLayoutObject()->Parent()->Style();
+    const ComputedStyle& layout_parent_style =
+        GetLayoutObject()->Parent()->StyleRef();
     if (!new_style || GetForceReattachLayoutTree() ||
-        (new_style != layout_parent_style &&
-         !new_style->InheritedEqual(*layout_parent_style))) {
+        (*new_style != layout_parent_style &&
+         !new_style->InheritedEqual(layout_parent_style))) {
       // The computed style or the need for an anonymous inline wrapper for a
       // display:contents text child changed.
       SetNeedsReattachLayoutTree();
