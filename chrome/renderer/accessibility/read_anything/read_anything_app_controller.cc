@@ -1462,6 +1462,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isImprovedReadAloudEnabled",
                    &ReadAnythingAppController::IsImprovedReadAloudEnabled)
+      .SetProperty(
+          "isReadAnythingTranslateEntryPointEnabled",
+          &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled)
       .SetProperty("isReadabilityEnabled",
                    &ReadAnythingAppController::IsReadabilityEnabled)
       .SetProperty("isReadabilitySelectTextEnabled",
@@ -1516,6 +1519,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
       .SetMethod("onLinksEnabledToggled",
                  &ReadAnythingAppController::OnLinksEnabledToggled)
+      .SetMethod("onTranslationRequested",
+                 &ReadAnythingAppController::OnTranslationRequested)
       .SetMethod("onImagesEnabledToggled",
                  &ReadAnythingAppController::OnImagesEnabledToggled)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
@@ -2178,6 +2183,11 @@ bool ReadAnythingAppController::IsImprovedReadAloudEnabled() const {
   return features::IsImprovedReadAloudEnabled();
 }
 
+bool ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled()
+    const {
+  return features::IsReadAnythingTranslateEntryPointEnabled();
+}
+
 // Returns true if the experimental flag allowing testing with alternative
 // distillation methods such as Readability.js is enabled.
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
@@ -2444,6 +2454,13 @@ void ReadAnythingAppController::OnFontSizeReset() {
 void ReadAnythingAppController::OnLinksEnabledToggled() {
   model_.set_links_enabled(!model_.links_enabled());
   page_handler_->OnLinksEnabledChanged(model_.links_enabled());
+}
+
+void ReadAnythingAppController::OnTranslationRequested() {
+  if (!IsReadAnythingTranslateEntryPointEnabled()) {
+    return;
+  }
+  page_handler_->OnTranslationRequested();
 }
 
 void ReadAnythingAppController::OnImagesEnabledToggled() {

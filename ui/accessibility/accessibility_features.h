@@ -335,6 +335,10 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxChip);
 AX_BASE_EXPORT bool IsReadAnythingOmniboxChipEnabled();
 
+// Enable the translate entrypoint for Read Anything.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingTranslateEntryPoint);
+AX_BASE_EXPORT bool IsReadAnythingTranslateEntryPointEnabled();
+
 // Enable the line focus feature for Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLineFocus);
 AX_BASE_EXPORT bool IsReadAnythingLineFocusEnabled();

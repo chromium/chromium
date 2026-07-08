@@ -234,6 +234,10 @@ interface UntrustedPageHandler {
   // via the webui toolbar.
   OnLinksEnabledChanged(bool enabled);
 
+  // Informs the browser controller that the user requested translation
+  // via the webui toolbar.
+  OnTranslationRequested();
+
   // Informs the browser controller that the user has toggled images
   // via the webui toolbar.
   OnImagesEnabledChanged(bool enabled);

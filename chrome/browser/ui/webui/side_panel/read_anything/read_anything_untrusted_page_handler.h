@@ -210,6 +210,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnFontChange(const std::string& font) override;
   void OnFontSizeChange(double font_size) override;
   void OnLinksEnabledChanged(bool enabled) override;
+  void OnTranslationRequested() override;
   void OnImagesEnabledChanged(bool enabled) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnHighlightGranularityChanged(
@@ -359,6 +360,8 @@ class ReadAnythingUntrustedPageHandler :
 
   bool AreInnerContentsPdfContent(
       std::vector<content::WebContents*> inner_contents);
+
+  content::WebContents* GetWebContents() const;
 
   void OnScreenAIServiceInitialized(bool successful);
 

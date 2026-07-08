@@ -21,6 +21,7 @@ source_set("read_anything") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common/read_anything:mojo_bindings",
+    "//components/translate/core/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]
@@ -83,8 +84,10 @@ source_set("browser_tests") {
     ":read_anything",
     "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/speech",
+    "//chrome/browser/translate",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/views/translate",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/language_detection/core",

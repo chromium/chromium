@@ -53,6 +53,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -811,6 +812,18 @@ void ReadAnythingUntrustedPageHandler::OnCopy() {
   }
 }
 
+content::WebContents* ReadAnythingUntrustedPageHandler::GetWebContents() const {
+  // Target the PDF observer's WebContents if available instead of the outer
+  // container frame.
+  if (pdf_observer_ != nullptr) {
+    return pdf_observer_->web_contents();
+  }
+  if (main_observer_ != nullptr) {
+    return main_observer_->web_contents();
+  }
+  return nullptr;
+}
+
 bool ReadAnythingUntrustedPageHandler::IsObservingTree(
     const ui::AXTreeID& tree_id) const {
   content::RenderFrameHost* rfh =
@@ -869,6 +882,30 @@ void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
 void ReadAnythingUntrustedPageHandler::OnLinksEnabledChanged(bool enabled) {
   profile_->GetPrefs()->SetBoolean(
       prefs::kAccessibilityReadAnythingLinksEnabled, enabled);
+}
+
+void ReadAnythingUntrustedPageHandler::OnTranslationRequested() {
+  if (!features::IsReadAnythingTranslateEntryPointEnabled()) {
+    mojo::ReportBadMessage("Translate entry point not enabled");
+    return;
+  }
+  content::WebContents* contents = GetWebContents();
+  if (!contents) {
+    return;
+  }
+
+  ChromeTranslateClient* translate_client =
+      ChromeTranslateClient::FromWebContents(contents);
+  if (!translate_client) {
+    return;
+  }
+
+  translate::TranslateManager* translate_manager =
+      translate_client->GetTranslateManager();
+  if (translate_manager) {
+    translate_manager->ShowTranslateUI(/*auto_translate=*/true,
+                                       /*triggered_from_menu=*/true);
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnImagesEnabledChanged(bool enabled) {
