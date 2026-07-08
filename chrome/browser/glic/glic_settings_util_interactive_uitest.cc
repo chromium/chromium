@@ -78,7 +78,8 @@ class GlicSettingsUtilUiTest
             kFirstTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
         AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUICreditsURL)),
         AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUIAboutURL)),
-        Do([this, f] { f(browser()->profile()); }), InstrumentTab(kSettingsTab),
+        Do([this, f] { f(browser()->GetProfile()); }),
+        InstrumentTab(kSettingsTab),
         WaitForWebContentsReady(
             kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
         CheckResult([this] { return browser()->tab_strip_model()->count(); }, 3,
@@ -152,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, ThrottleOpenOsToggleSetting) {
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i++) {
-    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(browser()->profile(),
-                                                         features::kGlic);
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        browser()->GetProfile(), features::kGlic);
   }
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i++) {
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        browser()->profile(), features::kGlicKeyboardShortcutNewBadge);
+        browser()->GetProfile(), features::kGlicKeyboardShortcutNewBadge);
   }
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),

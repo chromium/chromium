@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 
   // Get the actor keyed service.
   auto* actor_keyed_service =
-      actor::ActorKeyedService::Get(browser()->profile());
+      actor::ActorKeyedService::Get(browser()->GetProfile());
   ASSERT_TRUE(actor_keyed_service);
 
   // Create a new task.

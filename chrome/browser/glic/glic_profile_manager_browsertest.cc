@@ -88,8 +88,8 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Enable GLIC for the default profile.
-    SigninWithPrimaryAccount(browser()->profile());
-    SetGlicCapability(browser()->profile(), true);
+    SigninWithPrimaryAccount(browser()->GetProfile());
+    SetGlicCapability(browser()->GetProfile(), true);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -331,7 +331,8 @@ class GlicProfileManagerPreloadingTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    GlicProfileManager::ForceProfileForLaunchForTesting(browser()->profile());
+    GlicProfileManager::ForceProfileForLaunchForTesting(
+        browser()->GetProfile());
   }
 
   void TearDown() override {
@@ -350,7 +351,7 @@ class GlicProfileManagerPreloadingTest
   GlicPrewarmingChecksResult WaitForShouldPreload() {
     base::test::TestFuture<GlicPrewarmingChecksResult> future;
     GlicProfileManager::GetInstance()->ShouldPreloadForProfile(
-        browser()->profile(), future.GetCallback());
+        browser()->GetProfile(), future.GetCallback());
     return future.Get();
   }
 
@@ -361,7 +362,7 @@ class GlicProfileManagerPreloadingTest
 
   bool IsWarmed() {
     auto* service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
     return static_cast<GlicInstanceCoordinatorImpl&>(
                service->instance_coordinator())
         .GetWebContentsWarmingPoolForTesting()
@@ -389,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   }
   ResetPrewarming();
   GlicProfileManager::ForceProfileForLaunchForTesting(std::nullopt);
-  SetGlicCapability(browser()->profile(), false);
+  SetGlicCapability(browser()->GetProfile(), false);
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kProfileNotEligibleAccountCapabilities);
 }
@@ -468,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   }
   ResetPrewarming();
   auto* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   service->TryPreload();
   // Since we have no delay, running until idle should mean that we do warm
   // (provided warming is enabled).
@@ -502,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   }
   ResetPrewarming();
   auto* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   service->TryPreload();
   // Since we shouldn't preload until after the delay, we shouldn't be warmed
   // after running until idle.
@@ -517,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   }
   ResetPrewarming();
   auto* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   base::RunLoop run_loop;
   service->AddPreloadCallback(run_loop.QuitClosure());
   service->TryPreload();

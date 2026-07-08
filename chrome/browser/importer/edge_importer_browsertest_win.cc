@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
   source_profile.importer_type = user_data_importer::TYPE_EDGE;
   source_profile.source_path = temp_path.AppendASCII("edge_profile");
 
-  host->StartImportSettings(source_profile, browser()->profile(),
+  host->StartImportSettings(source_profile, browser()->GetProfile(),
                             user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
   }
   source_profile.source_path = source_path;
 
-  host->StartImportSettings(source_profile, browser()->profile(),
+  host->StartImportSettings(source_profile, browser()->GetProfile(),
                             user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterNoDatabase) {
   source_profile.importer_type = user_data_importer::TYPE_EDGE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(source_profile, browser()->profile(),
+  host->StartImportSettings(source_profile, browser()->GetProfile(),
                             user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }

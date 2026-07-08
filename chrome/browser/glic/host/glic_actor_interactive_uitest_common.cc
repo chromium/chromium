@@ -110,7 +110,7 @@ void GlicActorUiTest::SetUpOnMainThread() {
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
   return actor_service->GetTask(task_id_);
 }
 

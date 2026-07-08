@@ -554,7 +554,7 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
     policy_provider_.SetupPolicyServiceForPolicyUpdates(
-        browser()->profile()->GetProfilePolicyConnector()->policy_service());
+        browser()->GetProfile()->GetProfilePolicyConnector()->policy_service());
   }
 
   void TearDownOnMainThread() override {
@@ -657,7 +657,7 @@ class GlicApiTestGeminiEnterpriseSettingsPolicy : public GlicApiTestWithOneTab {
 
   void SetUpOnMainThread() override {
     policy_provider_.SetupPolicyServiceForPolicyUpdates(
-        browser()->profile()->GetProfilePolicyConnector()->policy_service());
+        browser()->GetProfile()->GetProfilePolicyConnector()->policy_service());
 
     base::DictValue enterprise_settings;
     enterprise_settings.Set("project_id", "policy-project");
@@ -762,7 +762,7 @@ class GlicApiTestWithFailedCookieSync : public GlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
   GlicHistogramTester histogram_tester;
-  GlicInstanceTracker instance_tracker(browser()->profile());
+  GlicInstanceTracker instance_tracker(browser()->GetProfile());
 
   GetService()->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
                          /*source=*/mojom::InvocationSource::kOsButton);
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
 // Tests that the response to a user confirmation dialog is correctly ordered
 // w.r.t. other Glic API calls. See b/465690937 and associated CLs for details.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
   ASSERT_TRUE(actor_service);
 
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
@@ -1371,7 +1371,7 @@ class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
 IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testIsOnboardingCompleted) {
   ExecuteJsTest();
 
-  SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
 
   ContinueJsTest();
 }
@@ -1379,7 +1379,7 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testIsOnboardingCompleted) {
 IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
   ExecuteJsTest();
 
-  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(browser()->profile()));
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(browser()->GetProfile()));
 
   base::RunLoop run_loop;
   // Ensure that CheckDefaultBrowserToEnableLauncher was called.
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
   ContinueJsTest();
 
   ASSERT_TRUE(base::test::RunUntil([&] {
-    return GlicEnabling::HasConsentedForProfile(browser()->profile());
+    return GlicEnabling::HasConsentedForProfile(browser()->GetProfile());
   }));
 
   // Wait for the default browser check to be called.
@@ -1737,7 +1737,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSignInPauseState) {
 
   // Pause the sign-in.
   auto* const identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 
   // The guest frame should be destroyed, and the WebUI should show the sign-in
@@ -1896,7 +1896,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   // Simulate click on contextual cue with prompt suggestion.
   glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kNudge);
   options.prompts.push_back("Prompt Suggestion");
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
       ->Invoke(std::move(options));
 
   ExecuteJsTest();
@@ -1932,7 +1932,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabByIdWithDiscard) {
   // Discard the tab.
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* new_contents_ptr = new_contents.get();
   browser()->tab_strip_model()->DiscardWebContentsAt(1,
                                                      std::move(new_contents));

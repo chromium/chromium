@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
-  ASSERT_EQ(browser()->profile(), profile_1_);
+  ASSERT_EQ(browser()->GetProfile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
   // Disable the policy in the default profile.
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
-  ASSERT_EQ(browser()->profile(), profile_1_);
+  ASSERT_EQ(browser()->GetProfile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
   // Create two windows in each profile.
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
 // Ensure that background mode is entered if and only if a profile with the
 // policy enabled is loaded.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
-  ASSERT_EQ(browser()->profile(), profile_1_);
+  ASSERT_EQ(browser()->GetProfile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
   Browser* new_window_profile_2 = CreateBrowser(profile_2_);
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
   // 2. Disable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
-            browser()->profile()->GetPrefs()->GetInteger(kGeminiSettings));
+            browser()->GetProfile()->GetPrefs()->GetInteger(kGeminiSettings));
 
   // Verify it shows the disabled page.
   ASSERT_TRUE(base::test::RunUntil([&]() {

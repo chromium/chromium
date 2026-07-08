@@ -183,7 +183,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   void SetGlicUserStatusUrlForTest() {
-    GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+    GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
         ->enabling()
         .SetGlicUserStatusUrlForTest(
             embedded_test_server()->GetURL(kGlicUserStatusRelativeTestUrl));

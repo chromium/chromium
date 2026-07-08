@@ -216,13 +216,14 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     CHECK(test_account.has_value());
     sign_in_functions.TurnOnSync(*test_account, 0);
   } else {
-    SigninWithPrimaryAccount(browser()->profile());
-    SetGlicCapability(browser()->profile(), true);
+    SigninWithPrimaryAccount(browser()->GetProfile());
+    SetGlicCapability(browser()->GetProfile(), true);
   }
 }
 
 void GlicE2ETest::SetFRECompletion() {
-  ::glic::SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+  ::glic::SetFRECompletion(browser()->GetProfile(),
+                           prefs::FreStatus::kCompleted);
 }
 
 void GlicE2ETest::SetUserEnabledActuationOnWeb(bool enabled) {

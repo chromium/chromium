@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testPanelActive) {
   // Opening a new browser window will deactivate the previous one, and make
   // the panel not active.
   auto params = std::make_unique<NavigateParams>(
-      InProcessBrowserTest::browser()->profile(), GURL("about:blank"),
+      InProcessBrowserTest::browser()->GetProfile(), GURL("about:blank"),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->disposition = WindowOpenDisposition::NEW_WINDOW;
   base::WeakPtr<content::NavigationHandle> navigation_handle =

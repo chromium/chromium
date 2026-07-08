@@ -123,7 +123,7 @@ class ZeroStateSuggestionsBrowserTest
         optimization_guide::AnyWrapProto(metadata));
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddOnDemandHintForTesting(
             url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
             decision_with_metadata);
@@ -140,7 +140,7 @@ class ZeroStateSuggestionsBrowserTest
     og_metadata.set_any_metadata(optimization_guide::AnyWrapProto(metadata));
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddHintForTesting(
             url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
             og_metadata);
@@ -148,7 +148,7 @@ class ZeroStateSuggestionsBrowserTest
 
   void SetUpHintsNoResult(const GURL& url) {
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddHintForTesting(
             url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
             std::nullopt);
@@ -167,7 +167,7 @@ class ZeroStateSuggestionsBrowserTest
     any_result.set_value(serialized_metadata);
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
             optimization_guide::OptimizationGuideModelExecutionResult(
@@ -177,7 +177,7 @@ class ZeroStateSuggestionsBrowserTest
   void SetUpEmptyModelExecutionResult() {
     optimization_guide::proto::Any any_result;
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
             optimization_guide::OptimizationGuideModelExecutionResult(
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
 
   base::test::TestFuture<std::vector<std::string>> future;
 
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+  ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
       ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
           web_contents, /*is_fre=*/false, /*supported_tools=*/{},
           future.GetCallback());
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
   ContextualCueingService* contextual_cueing_service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
 
   // Set up two concurrent calls (simulates mouse down and then on load).
   base::test::TestFuture<std::vector<std::string>> future;
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
   base::test::TestFuture<std::vector<std::string>> future;
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+  ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
       ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
           web_contents, /*is_fre=*/true, /*supported_tools=*/{},
           future.GetCallback());
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, NoResultFromHints) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
   base::test::TestFuture<std::vector<std::string>> future;
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+  ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
       ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
           web_contents, /*is_fre=*/false, /*supported_tools=*/{},
           future.GetCallback());
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehavior) {
     SetUpHints(url(), /*allow_contextual=*/true, /*suggestions=*/{});
     SetUpSuccessfulModelExecution();
 
-    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+    ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             web_contents, /*is_fre=*/false, /*supported_tools=*/{},
             future.GetCallback());
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehavior) {
     base::HistogramTester histogram_tester;
     base::test::TestFuture<std::vector<std::string>> future;
 
-    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+    ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             web_contents, /*is_fre=*/false, /*supported_tools=*/{},
             future.GetCallback());
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehaviorError) {
             ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY);
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddExecutionResultForTesting(
             optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
             optimization_guide::OptimizationGuideModelExecutionResult(
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehaviorError) {
                         FromModelExecutionServerError(error_response)),
                 nullptr));
 
-    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+    ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             web_contents, /*is_fre=*/false, /*supported_tools=*/{},
             future.GetCallback());
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehaviorError) {
 
     base::test::TestFuture<std::vector<std::string>> future;
 
-    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+    ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             web_contents, /*is_fre=*/false, /*supported_tools=*/{},
             future.GetCallback());
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   base::test::TestFuture<std::vector<std::string>> future;
 
-  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+  ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
       ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
           web_contents, /*is_fre=*/false, /*supported_tools=*/{},
           future.GetCallback());
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   // This is true since we do not know the answer yet.
   EXPECT_TRUE(
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
               {initial_web_contents, web_contents2}, /*is_fre=*/false,
               /*supported_tools=*/{}, initial_web_contents,
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   base::test::TestFuture<std::vector<std::string>> future;
 
   EXPECT_TRUE(
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
               {initial_web_contents, web_contents2}, /*is_fre=*/false,
               /*supported_tools=*/{}, initial_web_contents,
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
 
   base::test::TestFuture<std::vector<std::string>> future;
   EXPECT_FALSE(
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
               {initial_web_contents, web_contents2}, /*is_fre=*/false,
               /*supported_tools=*/{}, nullptr, future.GetCallback()));
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
   base::test::TestFuture<std::vector<std::string>> future;
 
   EXPECT_TRUE(
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
               {initial_web_contents, web_contents2}, /*is_fre=*/false,
               /*supported_tools=*/{}, initial_web_contents,
@@ -740,7 +740,7 @@ class ZeroStateSuggestionsBFCacheConfusionBrowserTest
 
   void SetUpHintsNoResult(const GURL& url) {
     OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
+        ->GetForProfile(browser()->GetProfile())
         ->AddHintForTesting(
             url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
             std::nullopt);

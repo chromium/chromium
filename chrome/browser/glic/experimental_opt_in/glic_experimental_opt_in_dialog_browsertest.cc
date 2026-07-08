@@ -157,13 +157,13 @@ class GlicExperimentalOptInTest
     fake_gaia_.fake_gaia()->UpdateConfiguration(config);
 
     signin::SetAutomaticIssueOfAccessTokens(
-        IdentityManagerFactory::GetForProfile(browser()->profile()), true);
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()), true);
   }
 
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                  ->CreateGuestViewManagerDelegate());
+        browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
+                                     ->CreateGuestViewManagerDelegate());
   }
 
   views::Widget* ShowDialogAndWait(
@@ -263,7 +263,7 @@ function isHidden(e) { return !!(e && e.hidden); }
         opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
     expected_url = net::AppendOrReplaceQueryParameter(
         expected_url, "experimental_triggering_opt_in", expected_state_value);
-    expected_url = DecorateGlicOptInUrl(browser()->profile(), expected_url);
+    expected_url = DecorateGlicOptInUrl(browser()->GetProfile(), expected_url);
     EXPECT_EQ(actual_url, expected_url);
 
     service()->opt_in_controller().CloseDialog(false);
@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
   auto* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   service->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(service->enabling().HasConsented());
 
@@ -1141,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // 2. Create Window B (background window).
-  BrowserWindowCreateParams params(*browser()->profile(),
+  BrowserWindowCreateParams params(*browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   base::test::TestFuture<BrowserWindowInterface*> window_future;
   CreateBrowserWindow(std::move(params), window_future.GetCallback());

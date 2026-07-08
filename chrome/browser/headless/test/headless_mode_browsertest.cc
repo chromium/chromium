@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, StartNonIncognito) {
   // guarantees that tests are running with a unique user data dir, so expect to
   // start in non incognito mode which is the default when user data dir is
   // specified.
-  EXPECT_FALSE(browser()->profile()->IsOffTheRecord());
+  EXPECT_FALSE(browser()->GetProfile()->IsOffTheRecord());
 }
 
 class HeadlessModeBrowserTestWithIncognito : public HeadlessModeBrowserTest {
@@ -331,7 +331,7 @@ class HeadlessModeBrowserTestWithIncognito : public HeadlessModeBrowserTest {
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithIncognito,
                        StartWithIncognito) {
   // With user data dir and incognito expect to start in incognito mode.
-  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
+  EXPECT_TRUE(browser()->GetProfile()->IsOffTheRecord());
 }
 
 // Clipboard tests -----------------------------------------------------------

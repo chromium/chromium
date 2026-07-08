@@ -131,7 +131,7 @@ class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
 
     auto* metrics = glic_service()->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        browser()->profile(), /*window_controller=*/nullptr, metrics);
+        browser()->GetProfile(), /*window_controller=*/nullptr, metrics);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
     // TODO(mcrouse): Add tests for invalid candidates once testing harness for

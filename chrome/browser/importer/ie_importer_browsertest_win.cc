@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   source_profile.source_path = temp_dir_.GetPath();
 
   host->StartImportSettings(
-      source_profile, browser()->profile(),
+      source_profile, browser()->GetProfile(),
       user_data_importer::HISTORY | user_data_importer::FAVORITES, observer);
   loop.Run();
 
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
     source_profile.importer_type = user_data_importer::TYPE_IE;
     source_profile.source_path = temp_dir_.GetPath();
 
-    host->StartImportSettings(source_profile, browser()->profile(),
+    host->StartImportSettings(source_profile, browser()->GetProfile(),
                               user_data_importer::FAVORITES, observer);
     loop.Run();
   }
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
   source_profile.importer_type = user_data_importer::TYPE_IE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(source_profile, browser()->profile(),
+  host->StartImportSettings(source_profile, browser()->GetProfile(),
                             user_data_importer::HOME_PAGE, observer);
   loop.Run();
 }

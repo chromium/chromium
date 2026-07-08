@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
                        RoundedCornersOnTabSwitch) {
   // 1. Set dummy contents so CreateView can set up containing view.
   coordinator().SetContentsView(
-      std::make_unique<views::WebView>(browser()->profile()));
+      std::make_unique<views::WebView>(browser()->GetProfile()));
   coordinator().Show();
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
 
@@ -431,8 +431,9 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
   // to a view added deep in the hierarchy without OnChildViewAdded.
   std::unique_ptr<content::WebContents> test_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
-  auto web_view_owner = std::make_unique<views::WebView>(browser()->profile());
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  auto web_view_owner =
+      std::make_unique<views::WebView>(browser()->GetProfile());
   web_view_owner->SetWebContents(test_web_contents.get());
 
   coordinator().SetContentsView(std::move(web_view_owner));

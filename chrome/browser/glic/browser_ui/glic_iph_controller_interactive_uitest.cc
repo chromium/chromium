@@ -53,7 +53,7 @@ class GlicIphControllerTestBase : public TestBase {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         GetChromeTestDataDir());
     TestBase::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
+    SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kNotStarted);
   }
 
   GURL Title1() const {
@@ -123,7 +123,7 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
 // TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt, ShowPromoWithCtaEndsInGlic) {
-  SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
                   WaitForAndInstrumentGlic(kHostAndContents));
@@ -141,7 +141,7 @@ class GlicIphControllerTestPromoDisabled : public GlicIphControllerTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestPromoDisabled,
                        ShowPromoWithCtaEndsInGlic) {
-  SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
                   WaitForAndInstrumentGlic(kHostAndContents));
@@ -163,7 +163,7 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
                        ShowPromoWithCtaEndsInGlic) {
-  SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
                   WaitForAndInstrumentGlic(kHostAndContents));

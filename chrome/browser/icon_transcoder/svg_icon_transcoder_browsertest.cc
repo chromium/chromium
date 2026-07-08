@@ -43,7 +43,7 @@ class SvgIconTranscoderTest : public InProcessBrowserTest {
   apps::SvgIconTranscoder* svg_icon_transcoder() {
     if (!svg_icon_transcoder_) {
       svg_icon_transcoder_ =
-          std::make_unique<apps::SvgIconTranscoder>(browser()->profile());
+          std::make_unique<apps::SvgIconTranscoder>(browser()->GetProfile());
     }
     return svg_icon_transcoder_.get();
   }

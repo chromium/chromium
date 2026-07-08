@@ -204,7 +204,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpOnMainThread();
 
     IndigoService* service =
-        IndigoServiceFactory::GetForProfile(browser()->profile());
+        IndigoServiceFactory::GetForProfile(browser()->GetProfile());
     service->SetRemoteEligibilityFetcherForTesting(base::BindRepeating(
         [](IndigoService::RemoteEligibilityCallback callback) {
           std::move(callback).Run(
@@ -214,7 +214,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
     AccountInfo account_info =
@@ -309,7 +309,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
     // will show.
     auto* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     ASSERT_TRUE(optimization_guide_keyed_service);
     optimization_guide_keyed_service->AddHintForTesting(
         embedded_test_server()->GetURL("/image.html"),
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
 
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
   IndigoService* service =
-      IndigoServiceFactory::GetForProfile(browser()->profile());
+      IndigoServiceFactory::GetForProfile(browser()->GetProfile());
   // Set anchored message as already shown so the suggestion chip shows
   // automatically instead of the anchored message.
   service->ContextualCueShown();

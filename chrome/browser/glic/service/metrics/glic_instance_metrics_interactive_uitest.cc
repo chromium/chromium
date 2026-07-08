@@ -133,7 +133,7 @@ class GlicFreMetricsTest : public test::InteractiveGlicTest {
 
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
-    glic::GlicKeyedService::Get(browser()->profile())
+    glic::GlicKeyedService::Get(browser()->GetProfile())
         ->enabling()
         .SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
   }

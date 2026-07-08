@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        InterceptGlicContinueUrlFromGeminiAndOpenGlicUi) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Metrics_CIDTooLong) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        Metrics_TargetUrlTooLong) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Metrics_InvalidUrl) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        Metrics_TurnIdTooLong) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        InterceptGlicContinueUrlFromGemini_NonHttpsTargetUrl) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        InterceptGlicContinueUrlFromGemini_NoTargetURL) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithPref,
       prefs::kGlicWebContinuityOriginatingHostUrlPreset, pref_url);
 
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        InterceptGlicContinueUrlFromGemini_PreservesParams) {
   base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
                                                    /*create=*/true));
   ASSERT_TRUE(mock_service);
 

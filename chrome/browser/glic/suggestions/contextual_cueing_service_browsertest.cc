@@ -119,7 +119,7 @@ class ZeroStateSuggestionsFetcher : public content::WebContentsObserver {
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
                        ServiceSpawnsWithZSSFlag) {
   EXPECT_NE(nullptr, ContextualCueingServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
   base::HistogramTester histogram_tester;
 
   auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
   base::HistogramTester histogram_tester;
 
   auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
 
     base::test::TestFuture<std::vector<std::string>> future;
     auto* service =
-        ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+        ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
   base::HistogramTester histogram_tester;
 
   auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -318,9 +318,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
   base::HistogramTester histogram_tester;
 
   auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
   auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -373,9 +373,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
   base::HistogramTester histogram_tester;
 
   auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
   auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -413,7 +413,7 @@ class ContextualCueingServiceBrowserTestCCFlag
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestCCFlag,
                        ServiceSpawnsWithCCFlag) {
   EXPECT_NE(nullptr, ContextualCueingServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 class ContextualCueingServiceBrowserTestDisabledFeatures
@@ -432,7 +432,7 @@ class ContextualCueingServiceBrowserTestDisabledFeatures
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestDisabledFeatures,
                        NullServiceWithDisabledFeatures) {
   EXPECT_EQ(nullptr, ContextualCueingServiceFactory::GetForProfile(
-                         browser()->profile()));
+                         browser()->GetProfile()));
 }
 
 }  // namespace glic

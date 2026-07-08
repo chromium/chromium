@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
   // Set up two windows, each with one tab
   ASSERT_EQ(GetTabListInterface()->GetTabCount(), 1);
   // Second browser window
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   browser2->GetWindow()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, Title2()));
   ASSERT_EQ(GetTabListInterface()->GetTabCount(), 1);

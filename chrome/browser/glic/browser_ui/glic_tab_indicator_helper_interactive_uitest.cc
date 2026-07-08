@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(GlicTabIndicatorHelperMultiInstanceUiTest,
       ClickMockGlicContextAccessButtonIfLiveMode(),
       WaitForState(kTab1AlertState, ExpectedAlertState()),
       Do([this, browser1]() {
-        Browser* const browser2 = CreateBrowser(browser1->profile());
+        Browser* const browser2 = CreateBrowser(browser1->GetProfile());
         RunTestSequence(
             ObserveState(kTab1AlertState, browser1, 0),
             ObserveState(kTab2AlertState, browser1, 1),

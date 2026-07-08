@@ -334,7 +334,7 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
 
     auto expected_pinned_notification_id =
         device_pinned_notification_renderer->GetNotificationId(
-            browser->profile());
+            browser->GetProfile());
     auto maybe_indicator_notification =
         display_service_for_system_notification_->GetNotification(
             expected_pinned_notification_id);

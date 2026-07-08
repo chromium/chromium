@@ -696,8 +696,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
   Browser* const browser1 = CreateBrowser(&profile1);
   GlicKeyedService* const service1 =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser1->profile());
-  ::glic::SetFRECompletion(browser1->profile(), prefs::FreStatus::kCompleted);
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser1->GetProfile());
+  ::glic::SetFRECompletion(browser1->GetProfile(),
+                           prefs::FreStatus::kCompleted);
   EXPECT_TRUE(service1->enabling().HasConsented());
 
   // Open glic
@@ -709,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   // Delete the second profile
   ui_test_utils::BrowserDestroyedObserver observer(browser1);
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-      browser1->profile()->GetPath(), base::DoNothing(),
+      browser1->GetProfile()->GetPath(), base::DoNothing(),
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   observer.Wait();
 

@@ -82,7 +82,7 @@ ContextSharingBorderView::ContextSharingBorderView(
     Browser* browser,
     ContentsWebView* contents_web_view,
     std::unique_ptr<Tester> tester)
-    : AnimatedEffectView(browser->profile(), std::move(tester)),
+    : AnimatedEffectView(browser->GetProfile(), std::move(tester)),
       browser_(browser),
       controller_(std::move(controller)) {
   // Post-initialization updates. Don't do the update in the controller's ctor

@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       // Start a task on the current tab.
       Do([this, &add_tab_result]() {
         auto* actor_service =
-            actor::ActorKeyedService::Get(browser()->profile());
+            actor::ActorKeyedService::Get(browser()->GetProfile());
         ASSERT_TRUE(actor_service);
         actor::TaskId task_id = actor_service->CreateTask(
             actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayHotkeyInteractiveTest,
         tabs::TabInterface* tab =
             tabs::TabInterface::GetFromContents(web_contents);
         GlicKeyedService* glic_keyed_service =
-            GlicKeyedService::Get(browser()->profile());
+            GlicKeyedService::Get(browser()->GetProfile());
         GlicInvokeOptions options(
             glic::mojom::InvocationSource::kCaptureRegionHotkey);
         options.wait_for_panel_open = true;
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(
         tabs::TabInterface* tab =
             tabs::TabInterface::GetFromContents(web_contents);
         GlicKeyedService* glic_keyed_service =
-            GlicKeyedService::Get(browser()->profile());
+            GlicKeyedService::Get(browser()->GetProfile());
         GlicInvokeOptions options(
             glic::mojom::InvocationSource::kCaptureRegionHotkey);
         options.wait_for_panel_open = true;

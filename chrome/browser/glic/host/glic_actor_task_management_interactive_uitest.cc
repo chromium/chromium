@@ -457,7 +457,7 @@ class GlicActorTaskManagementDownloadUiTest
 
     file_activity_observer_ =
         std::make_unique<DownloadTestFileActivityObserver>(
-            browser()->profile());
+            browser()->GetProfile());
 
     file_activity_observer_->EnableFileChooser(true);
   }

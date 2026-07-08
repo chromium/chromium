@@ -137,21 +137,22 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   virtual void InitSignin() {
     OptimizationGuideKeyedService* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     optimization_guide_keyed_service->AllowUnsignedUserForTesting(
         optimization_guide::UserVisibleFeatureKey::kHistorySearch);
     optimization_guide::EnableSigninAndModelExecutionCapability(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   HistoryEmbeddingsService* service() {
-    return HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
+    return HistoryEmbeddingsServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   page_content_annotations::PageContentAnnotationsService*
   page_content_annotations_service() {
     return PageContentAnnotationsServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void OverrideVisibilityScoresForTesting(
@@ -223,11 +224,11 @@ class HistoryEmbeddingsRestrictedSigninBrowserTest
   void InitSignin() override {
     OptimizationGuideKeyedService* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     optimization_guide_keyed_service->AllowUnsignedUserForTesting(
         optimization_guide::UserVisibleFeatureKey::kHistorySearch);
     optimization_guide::EnableSigninWithoutModelExecutionCapability(
-        browser()->profile());
+        browser()->GetProfile());
   }
 };
 
@@ -474,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
   OverrideVisibilityScoresForTesting({
       {"A a B C b a 2 D", 0.99},
   });
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->AddHintForTesting(GetUrl(),
                           optimization_guide::proto::HISTORY_EMBEDDINGS,
                           std::nullopt);

@@ -85,7 +85,7 @@ class IdleBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     map->SetContentSettingDefaultScope(
         url, url, ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ASK);
 
@@ -109,7 +109,7 @@ class IdleBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
   GURL url = https_server()->GetURL("a.com", "/simple_page.html");
   auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

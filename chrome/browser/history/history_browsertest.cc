@@ -269,7 +269,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
-    HistoryServiceFactory::GetForProfile(browser()->profile(),
+    HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->QueryURLAndVisits(url, history::VisitQuery404sPolicy::kInclude404s,
                             base::BindLambdaForTesting(
@@ -290,7 +290,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     base::CancelableTaskTracker tracker;
     history::QueryOptions options;
     options.include_actor_visits = true;
-    HistoryServiceFactory::GetForProfile(browser()->profile(),
+    HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->QueryHistory(
             std::u16string(), options,
@@ -309,7 +309,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
 
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
     base::CancelableTaskTracker tracker;
 
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SavingHistoryEnabled) {
       GetProfile(), ServiceAccessType::IMPLICIT_ACCESS));
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   ExpectEmptyHistory();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SavingHistoryDisabled) {
       GetProfile(), ServiceAccessType::IMPLICIT_ACCESS));
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   ExpectEmptyHistory();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SavingHistoryEnabledThenDisabled) {
   EXPECT_FALSE(GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled));
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
   WaitForHistoryBackendToRun(GetProfile());
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SavingHistoryDisabledThenEnabled) {
   GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled, true);
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   ExpectEmptyHistory();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, MultiTabsWindowsHistory) {
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url2));
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
 
   // Adding the keyword in the template URL.
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
   // Waiting for the model to load.
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
   EXPECT_EQ(t_url, model->GetTemplateURLForHost(kOrigin));
 
   auto* history_service = HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
   history_service->DeleteURLs({url});
 
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageVisitsRecorded) {
 
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
 
   // Navigate to some arbitrary page.
   GURL url = GetTestFileURL("landing.html");
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
                        MAYBE_ObserversCallBothOnURLVisitedForLocalVisits) {
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   ui_test_utils::WaitForHistoryToLoad(history_service);
 
@@ -1332,7 +1332,7 @@ class History404BrowserTest : public HistoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(History404BrowserTest, NavigationTo404) {
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   ui_test_utils::WaitForHistoryToLoad(history_service);
 
@@ -1379,7 +1379,7 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest, NavigationTo404) {
 
 IN_PROC_BROWSER_TEST_P(History404BrowserTest, HistoryRemovalRemoves404Url) {
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   GURL url(embedded_https_test_server().GetURL("/page404.html"));
@@ -1411,7 +1411,7 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest, HistoryRemovalRemoves404Url) {
 IN_PROC_BROWSER_TEST_P(History404BrowserTest,
                        NoOnUpdatedHistoryForNavigationOn404) {
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   HistoryTabHelper* history_tab_helper = HistoryTabHelper::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -1661,7 +1661,7 @@ IN_PROC_BROWSER_TEST_F(HistoryVisitedLinksBrowserTest,
 
   // Obtain our expected salt value from the history service.
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   // crbug.com/391985597: To obtain a salt from the `HistoryService`, the
@@ -1707,7 +1707,7 @@ IN_PROC_BROWSER_TEST_F(HistoryVisitedLinksBrowserTest,
 
   // Obtain our expected salt value for kOrigin from the history service.
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   // crbug.com/391985597: To obtain a salt from the `HistoryService`, the

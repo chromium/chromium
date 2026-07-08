@@ -121,7 +121,7 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest,
  protected:
   TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(),
+        browser()->GetProfile(),
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 

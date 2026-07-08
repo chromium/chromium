@@ -93,7 +93,7 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
 
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
-            browser()->profile(),
+            browser()->GetProfile(),
             base::BindRepeating(
                 &enterprise_connectors::test::MockRealtimeReportingClient::
                     CreateMockRealtimeReportingClient));
@@ -113,7 +113,8 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
         policy::DMToken::CreateValidToken("fake-dm-token"));
 
     enterprise_connectors::test::SetAnalysisConnector(
-        browser()->profile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
+        browser()->GetProfile()->GetPrefs(),
+        enterprise_connectors::FILE_ATTACHED,
         R"(
         {
           "service_provider": "google",
@@ -128,7 +129,7 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
         })");
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, "foo@google.com",
                                         signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
@@ -136,9 +137,9 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
 
   void TearDownOnMainThread() override {
     enterprise_connectors::test::SetOnSecurityEventReporting(
-        browser()->profile()->GetPrefs(), false);
+        browser()->GetProfile()->GetPrefs(), false);
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        browser()->profile())
+        browser()->GetProfile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
     GlicApiBrowserTest::TearDownOnMainThread();
   }
@@ -542,7 +543,8 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                        MAYBE_testWebToGlicDragDlpBlocked) {
   base::HistogramTester histogram_tester;
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::BULK_DATA_ENTRY,
       R"(
       {
         "service_provider": "google",

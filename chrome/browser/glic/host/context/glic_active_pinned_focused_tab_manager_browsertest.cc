@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        TakesPinnedTabStatusIntoAccount) {
   // 1. Initial setup.
   GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   ASSERT_TRUE(service);
   auto& manager = service->active_instance_sharing_manager();
 
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        TakesActiveTabStatusIntoAccount) {
   GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   ASSERT_TRUE(service);
   auto& manager = service->active_instance_sharing_manager();
 
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        DoesNotTriggerFocusChangeOnPinChangesToInactiveTabs) {
   GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
   ASSERT_TRUE(service);
   auto& manager = service->active_instance_sharing_manager();
 
