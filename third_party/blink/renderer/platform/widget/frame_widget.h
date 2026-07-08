@@ -269,6 +269,9 @@ class PLATFORM_EXPORT FrameWidget {
   // Mouse capture has been lost.
   virtual void MouseCaptureLost() = 0;
 
+  // Pointer lock has been acquired or released.
+  virtual void SetPointerLocked(bool is_locked) = 0;
+
   // Determines whether composition can happen inline.
   virtual bool CanComposeInline() = 0;
 

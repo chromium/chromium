@@ -225,6 +225,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   void SetHandwritingRadiusOnInputThread(int handwriting_radius);
   int HandwritingRadiusOnInputThread() const { return handwriting_radius_; }
 
+  void SetPointerLockedOnInputThread(bool is_locked);
+
   void RequestCallbackAfterEventQueueFlushed(base::OnceClosure callback);
 
   // cc::InputHandlerClient implementation.
@@ -445,6 +447,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Set by the main thread. This is relevant when calculating the TouchAction
   // for "near-miss" pointer scenarios.
   int handwriting_radius_ = blink::kStylusWritingHitTestRadius;
+
+  // Set by the main thread. This is set when the pointer lock is acquired,
+  // and unset when exit from the pointer lock.
+  bool is_pointer_locked_ = false;
 
   // Tracks whether the first scroll update gesture event has been seen after a
   // scroll begin. This is set/reset when scroll gestures are processed in

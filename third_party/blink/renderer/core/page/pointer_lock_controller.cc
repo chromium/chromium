@@ -294,6 +294,7 @@ void PointerLockController::ExitPointerLock() {
   if (pointer_lock_document && pointer_lock_document->GetFrame()) {
     LocalFrame* frame = pointer_lock_document->GetFrame();
     frame->GetEventHandler().ResetMousePositionForPointerUnlock();
+    frame->GetWidgetForLocalRoot()->SetPointerLocked(false);
   }
 
   ClearElement();
@@ -356,6 +357,7 @@ void PointerLockController::DidAcquirePointerLock() {
     // sends all mouse events to the initial target of the drag.
     // If Lock is entered it supersedes any in progress Capture.
     frame->GetWidgetForLocalRoot()->MouseCaptureLost();
+    frame->GetWidgetForLocalRoot()->SetPointerLocked(true);
     // Acquiring the mouse pointer lock is a strong indication of a high-end web
     // experience, which would benefit from higher framerates. In particular,
     // this is the case for gaming, where pointer lock is essential for most

@@ -604,6 +604,20 @@ void WidgetInputHandlerManager::PostHandwritingRadiusToInputThread(
   InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
 
+void WidgetInputHandlerManager::PostSetPointerLockedToInputThread(
+    bool is_locked) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+  base::OnceClosure closure = base::BindOnce(
+      [](scoped_refptr<WidgetInputHandlerManager> manager, bool is_locked) {
+        if (manager->input_handler_proxy_) {
+          manager->input_handler_proxy_->SetPointerLockedOnInputThread(
+              is_locked);
+        }
+      },
+      scoped_refptr<WidgetInputHandlerManager>(this), is_locked);
+  InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(closure));
+}
+
 void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
     std::unique_ptr<WebGestureEvent> event) {
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());

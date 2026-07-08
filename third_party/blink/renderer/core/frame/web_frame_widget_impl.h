@@ -327,6 +327,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   float DIPsToBlinkSpace(float scalar) override;
   gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) override;
   void MouseCaptureLost() override;
+  void SetPointerLocked(bool is_locked) override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPlugin() override;
   void ImeSetCompositionForPlugin(const String& text,

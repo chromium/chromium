@@ -3499,6 +3499,12 @@ void WebFrameWidgetImpl::MouseCaptureLost() {
   mouse_capture_element_ = nullptr;
 }
 
+void WebFrameWidgetImpl::SetPointerLocked(bool is_locked) {
+  if (auto* manager = widget_base_->widget_input_handler_manager()) {
+    manager->PostSetPointerLockedToInputThread(is_locked);
+  }
+}
+
 void WebFrameWidgetImpl::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
   widget_base_->UpdateVisualProperties(visual_properties);

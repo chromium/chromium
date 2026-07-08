@@ -316,6 +316,7 @@ InputHandlerProxy::~InputHandlerProxy() {}
 void InputHandlerProxy::WillShutdown() {
   elastic_overscroll_controller_.reset();
   input_handler_ = nullptr;
+  is_pointer_locked_ = false;
   client_->WillShutdown();
 }
 
@@ -1133,7 +1134,11 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
   }
 
   gfx::PointF position_in_widget = wheel_event.PositionInWidget();
-  if (input_handler_->HasBlockingWheelEventHandlerAt(
+  // TODO(crbug.com/530589456): When pointer is locked, ideally we should
+  // only forward if the locked element or its ancestors have a blocking
+  // wheel event listener, rather than any element on the page.
+  if (is_pointer_locked_ ||
+      input_handler_->HasBlockingWheelEventHandlerAt(
           gfx::Point(position_in_widget.x(), position_in_widget.y()))) {
     result = DID_NOT_HANDLE;
   } else {
@@ -2165,6 +2170,10 @@ void InputHandlerProxy::SetHandwritingRadiusOnInputThread(
   if (handwriting_radius_ != handwriting_radius) {
     handwriting_radius_ = handwriting_radius;
   }
+}
+
+void InputHandlerProxy::SetPointerLockedOnInputThread(bool is_locked) {
+  is_pointer_locked_ = is_locked;
 }
 
 void InputHandlerProxy::SetDeferBeginMainFrame(

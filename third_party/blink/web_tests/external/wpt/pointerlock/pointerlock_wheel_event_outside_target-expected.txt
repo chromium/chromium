@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] acquire pointer lock and scroll when the cursor is not on locked element
+  assert_equals: target should have scrolled (target.scrollTop: 0); toggle should not have scrolled (toggle.scrollTop: 100) expected 0 but got 2
+Harness: the test ran to completion.
+

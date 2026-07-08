@@ -223,6 +223,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   int HandwritingRadiusOnInputThread() const {
     return input_handler_proxy_->HandwritingRadiusOnInputThread();
   }
+  void PostSetPointerLockedToInputThread(bool is_locked);
 
  private:
   friend class ThreadSafeRefCounted<WidgetInputHandlerManager>;
