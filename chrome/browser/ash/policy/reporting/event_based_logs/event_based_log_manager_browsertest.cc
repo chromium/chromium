@@ -8,8 +8,11 @@
 #include <memory>
 #include <set>
 
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -41,7 +44,9 @@ class EventBasedLogManagerBrowserTest
 IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
                        AddAllExpectedEventObservers) {
   SetLogUploadEnabled(true);
-  policy::EventBasedLogManager log_manager;
+  policy::EventBasedLogManager log_manager(g_browser_process->platform_part()
+                                               ->browser_policy_connector_ash()
+                                               ->GetDeviceCloudPolicyManager());
   const std::map<ash::reporting::TriggerEventType,
                  std::unique_ptr<policy::EventObserverBase>>&
       event_observers_map = log_manager.GetEventObserversForTesting();
@@ -55,7 +60,9 @@ IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
                        RemoveEventObserversWhenPolicyIsDisabled) {
   SetLogUploadEnabled(true);
-  policy::EventBasedLogManager log_manager;
+  policy::EventBasedLogManager log_manager(g_browser_process->platform_part()
+                                               ->browser_policy_connector_ash()
+                                               ->GetDeviceCloudPolicyManager());
   // Verify that event observers are added.
   EXPECT_FALSE(log_manager.GetEventObserversForTesting().empty());
   SetLogUploadEnabled(false);

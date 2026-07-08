@@ -17,6 +17,8 @@
 
 namespace policy {
 
+class DeviceCloudPolicyManagerAsh;
+
 // Observes `reporting::FatalCrashEventsObserver` for fatal crashes. When fatal
 // crash event is observed, uploads the related log files to server.
 // `reporting::FatalCrashEventsObserver` will notify this if only the reporting
@@ -25,7 +27,8 @@ class FatalCrashEventLogObserver
     : public EventObserverBase,
       public reporting::FatalCrashEventsObserver::FatalCrashEventLogObserver {
  public:
-  FatalCrashEventLogObserver();
+  explicit FatalCrashEventLogObserver(
+      DeviceCloudPolicyManagerAsh& policy_manager);
   ~FatalCrashEventLogObserver() override;
 
   // EventObserverBase

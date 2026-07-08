@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -15,10 +16,13 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -130,7 +134,10 @@ IN_PROC_BROWSER_TEST_F(FatalCrashEventLogObserverBrowserTest,
                 }),
                 base::test::RunOnceCallback<3>(reporting::Status::StatusOK())));
 
-  policy::FatalCrashEventLogObserver event_observer;
+  policy::FatalCrashEventLogObserver event_observer(
+      CHECK_DEREF(g_browser_process->platform_part()
+                      ->browser_policy_connector_ash()
+                      ->GetDeviceCloudPolicyManager()));
   event_observer.SetLogUploaderForTesting(std::move(mock_uploader));
 
   EmitFakeCrashEvent();

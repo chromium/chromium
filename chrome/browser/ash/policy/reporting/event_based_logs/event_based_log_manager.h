@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
@@ -16,9 +17,12 @@
 
 namespace policy {
 
+class DeviceCloudPolicyManagerAsh;
+
 class EventBasedLogManager {
  public:
-  EventBasedLogManager();
+  // `policy_manager` must not be null and must outlive `this`.
+  explicit EventBasedLogManager(DeviceCloudPolicyManagerAsh* policy_manager);
 
   EventBasedLogManager(const EventBasedLogManager&) = delete;
   EventBasedLogManager& operator=(const EventBasedLogManager&) = delete;
@@ -41,6 +45,7 @@ class EventBasedLogManager {
   void MaybeAddAllEventObservers();
 
   SEQUENCE_CHECKER(sequence_checker_);
+  const raw_ref<DeviceCloudPolicyManagerAsh> policy_manager_;
   // List of event observers.
   std::map<ash::reporting::TriggerEventType, std::unique_ptr<EventObserverBase>>
       event_observers_;

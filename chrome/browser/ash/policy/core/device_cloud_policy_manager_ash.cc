@@ -260,7 +260,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
-    event_based_log_manager_ = std::make_unique<EventBasedLogManager>();
+    event_based_log_manager_ = std::make_unique<EventBasedLogManager>(this);
   }
 
   NotifyConnected();

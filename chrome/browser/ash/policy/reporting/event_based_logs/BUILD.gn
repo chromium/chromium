@@ -88,6 +88,8 @@ source_set("browser_tests") {
   deps = [
     ":event_based_logs",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/remote_commands:test_support",
