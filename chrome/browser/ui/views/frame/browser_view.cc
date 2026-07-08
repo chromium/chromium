@@ -2235,6 +2235,19 @@ void BrowserView::FullscreenStateChanged() {
       frame_view->ShouldEnableImmersiveModeController());
 #endif
 
+#if !BUILDFLAG(IS_MAC)
+  if (AppUsesWindowControlsOverlay()) {
+    // Defer the refresh: the fullscreen transition resizes the HWND
+    // synchronously, and updating layer state mid-paint trips
+    // cc::Layer::IsPropertyChangeAllowed().
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BrowserView::RefreshWindowControlsOverlayAfterFullscreenTransition,
+            GetAsWeakPtr()));
+  }
+#endif
+
 #if BUILDFLAG(IS_MAC)
   if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
@@ -2577,6 +2590,13 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
 #else
   GetViewAccessibility().AnnounceText(state_change_text);
 #endif
+}
+
+void BrowserView::RefreshWindowControlsOverlayAfterFullscreenTransition() {
+  UpdateWindowControlsOverlayEnabled();
+  // Schedule (don't force) a layout; a synchronous layout here can mutate
+  // compositor state while a frame is still being painted.
+  InvalidateLayout();
 }
 
 void BrowserView::UpdateWindowControlsOverlayAvailable() {

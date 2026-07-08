@@ -1848,6 +1848,51 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_TRUE(helper()->browser_view()->AppUsesWindowControlsOverlay());
 }
 
+// ChromeOS (immersive) and macOS (https://crbug.com/41431787) disable WCO in
+// fullscreen.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       EnabledAndClickableInFullscreen) {
+  InstallAndLaunchWebApp();
+
+  // Toggle WCO on.
+  ToggleWindowControlsOverlayAndWait();
+  BrowserView* const browser_view = helper()->browser_view();
+  EXPECT_TRUE(browser_view->IsWindowControlsOverlayEnabled());
+
+  // Enter fullscreen.
+  ui_test_utils::FullscreenWaiter waiter(
+      browser_view->browser(),
+      {.browser_fullscreen = true, .tab_fullscreen = false});
+  chrome::ToggleFullscreenMode(browser_view->browser(),
+                               /*user_initiated=*/false);
+  waiter.Wait();
+  ASSERT_TRUE(browser_view->IsFullscreen());
+
+  // WCO stays enabled in fullscreen.
+  EXPECT_TRUE(browser_view->IsWindowControlsOverlayEnabled());
+
+#if BUILDFLAG(IS_WIN)
+  // The top-right overlay area must not hit-test as caption, which would
+  // swallow clicks meant for app UI (https://crbug.com/518849412).
+  gfx::Point top_right(browser_view->width() - 1, 0);
+  views::View::ConvertPointToTarget(browser_view, browser_view->parent(),
+                                    &top_right);
+  EXPECT_NE(browser_view->NonClientHitTest(top_right), HTCAPTION);
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Exiting fullscreen keeps WCO enabled.
+  ui_test_utils::FullscreenWaiter exit_waiter(
+      browser_view->browser(),
+      {.browser_fullscreen = false, .tab_fullscreen = false});
+  chrome::ToggleFullscreenMode(browser_view->browser(),
+                               /*user_initiated=*/false);
+  exit_waiter.Wait();
+  ASSERT_FALSE(browser_view->IsFullscreen());
+  EXPECT_TRUE(browser_view->IsWindowControlsOverlayEnabled());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        OpenInChrome) {
   InstallAndLaunchWebApp();

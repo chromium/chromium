@@ -381,6 +381,13 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   const int frame_component =
       browser_widget()->client_view()->NonClientHitTest(point);
 
+  // In fullscreen there is no draggable or resizable frame, so window
+  // controls overlay hits outside the caption buttons must stay HTCLIENT;
+  // HTCAPTION would swallow clicks meant for the overlaid app UI.
+  const bool is_fullscreen_with_overlay =
+      browser_widget()->IsFullscreen() &&
+      GetBrowserView()->IsWindowControlsOverlayEnabled();
+
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
   if (frame_component != HTCLIENT && ShouldShowWindowIcon(TitlebarType::kAny)) {
@@ -394,10 +401,14 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   }
 
   if (frame_component != HTNOWHERE) {
-    // If the clientview  registers a hit within it's bounds, it's still
-    // possible that the hit target should be top resize since the tabstrip
-    // region paints to the top of the frame. If the frame registered a hit for
-    // the Top resize, override the client frame target.
+    if (is_fullscreen_with_overlay) {
+      return HTCLIENT;
+    }
+
+    // If the clientview registers a hit within its bounds, it's still possible
+    // that the hit target should be top resize since the tabstrip region paints
+    // to the top of the frame. If the frame registered a hit for the Top
+    // resize, override the client frame target.
     if (window_component == HTTOP && !IsMaximized()) {
       return window_component;
     }
@@ -413,6 +424,10 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
     if (hit_test_result != HTNOWHERE) {
       return hit_test_result;
     }
+  }
+
+  if (is_fullscreen_with_overlay) {
+    return HTCLIENT;
   }
 
   // On Windows, the caption buttons are almost butted up to the top right
@@ -511,7 +526,11 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
 }
 
 ui::ImageModel BrowserFrameViewWin::GetFaviconForTabIconView() {
-  DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
+  // A paint may race a fullscreen transition before the next titlebar layout
+  // hides the icon view; don't assert in that transient state.
+  if (!ShouldShowWindowIcon(TitlebarType::kCustom)) {
+    return ui::ImageModel();
+  }
   return browser_widget()->widget_delegate()->GetWindowIcon();
 }
 
@@ -852,7 +871,9 @@ void BrowserFrameViewWin::LayoutTitleBar() {
 void BrowserFrameViewWin::LayoutCaptionButtons() {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::LayoutCaptionButtons");
 
-  caption_button_container_->SetVisible(!browser_widget()->IsFullscreen());
+  caption_button_container_->SetVisible(
+      !browser_widget()->IsFullscreen() ||
+      GetBrowserView()->IsWindowControlsOverlayEnabled());
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();

@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/win/windows_version.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -449,16 +451,27 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   InstallAndLaunchWebAppWithWindowControlsOverlay();
   ToggleWindowControlsOverlayEnabledAndWait();
 
+  EXPECT_TRUE(browser_view_->IsWindowControlsOverlayEnabled());
   EXPECT_GT(frame_view_->GetBoundsForClientView().y(), 0);
 
   frame_view_->browser_widget()->SetFullscreen(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return frame_view_->browser_widget()->IsFullscreen(); }));
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
-  // ClientView should be covering the entire screen.
+  // WCO and its caption controls should remain enabled in fullscreen.
+  EXPECT_TRUE(browser_view_->IsWindowControlsOverlayEnabled());
+  EXPECT_TRUE(
+      frame_view_->caption_button_container_for_testing()->GetVisible());
   EXPECT_EQ(frame_view_->GetBoundsForClientView().y(), 0);
+
+  // Non-button overlay areas must stay client-clickable in fullscreen.
+  EXPECT_EQ(frame_view_->NonClientHitTest(gfx::Point(10, 10)), HTCLIENT);
 
   // Exit full screen.
   frame_view_->browser_widget()->SetFullscreen(false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !frame_view_->browser_widget()->IsFullscreen(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,

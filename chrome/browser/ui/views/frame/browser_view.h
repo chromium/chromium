@@ -1041,6 +1041,7 @@ class BrowserView : public BrowserWindow,
   void MaybeShowSignInBenefitsIPH();
 
   void UpdateWindowControlsOverlayEnabled();
+  void RefreshWindowControlsOverlayAfterFullscreenTransition();
 
   // Updates the Window Controls Overlay availability in this window.
   void UpdateWindowControlsOverlayAvailable();
