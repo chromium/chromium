@@ -32,7 +32,7 @@ InterpolationValue ConvertBorderShape(const StyleBorderShape* border_shape,
         GeometryBox box =
             index == 0 ? border_shape->OuterBox() : border_shape->InnerBox();
         return shape_interpolation_functions::MaybeConvertBasicShape(
-            &shape, property, zoom, box, CoordBox::kBorderBox);
+            &shape, property, zoom, {box, CoordBox::kBorderBox});
       });
 }
 
@@ -200,8 +200,8 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertValue(
   return ListInterpolationFunctions::CreateList(
       entries.size(), [this, &entries](wtf_size_t index) {
         return shape_interpolation_functions::MaybeConvertCSSValue(
-            *entries[index].shape_value, CssProperty(), entries[index].box,
-            CoordBox::kBorderBox);
+            *entries[index].shape_value, CssProperty(),
+            {entries[index].box, CoordBox::kBorderBox});
       });
 }
 
@@ -299,15 +299,17 @@ void CSSBorderShapeInterpolationType::ApplyStandardPropertyValue(
   BasicShape* outer_shape = shape_interpolation_functions::CreateBasicShape(
       *interpolable_list.Get(0), *non_interpolable_list.Get(0),
       state.CssToLengthConversionData());
-  GeometryBox outer_box = shape_interpolation_functions::GetGeometryBox(
-      *non_interpolable_list.Get(0), GeometryBox::kBorderBox);
+  GeometryBox outer_box =
+      shape_interpolation_functions::GetBox(*non_interpolable_list.Get(0))
+          .geometry.value_or(GeometryBox::kBorderBox);
   CHECK(outer_shape);
 
   BasicShape* inner_shape = shape_interpolation_functions::CreateBasicShape(
       *interpolable_list.Get(1), *non_interpolable_list.Get(1),
       state.CssToLengthConversionData());
-  GeometryBox inner_box = shape_interpolation_functions::GetGeometryBox(
-      *non_interpolable_list.Get(1), GeometryBox::kPaddingBox);
+  GeometryBox inner_box =
+      shape_interpolation_functions::GetBox(*non_interpolable_list.Get(1))
+          .geometry.value_or(GeometryBox::kPaddingBox);
   CHECK(inner_shape);
 
   state.StyleBuilder().SetBorderShape(MakeGarbageCollected<StyleBorderShape>(

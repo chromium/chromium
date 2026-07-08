@@ -257,34 +257,28 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
+  CHECK(non_interpolable_value);
   BasicShape* shape = basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, *non_interpolable_value,
       state.CssToLengthConversionData());
   CHECK(shape);
-  CHECK(non_interpolable_value);
+  ShapeReferenceBox box =
+      basic_shape_interpolation_functions::GetBox(*non_interpolable_value);
   switch (CssProperty().PropertyID()) {
-    case CSSPropertyID::kShapeOutside: {
-      ShapeBox shape_box = basic_shape_interpolation_functions::GetShapeBox(
-          *non_interpolable_value);
-      state.StyleBuilder().SetShapeOutside(
-          MakeGarbageCollected<ShapeValue>(*shape, shape_box));
+    case CSSPropertyID::kShapeOutside:
+      state.StyleBuilder().SetShapeOutside(MakeGarbageCollected<ShapeValue>(
+          *shape, box.shape.value_or(ShapeBox::kMarginBox)));
       break;
-    }
-    case CSSPropertyID::kOffsetPath: {
-      CoordBox coord_box = basic_shape_interpolation_functions::GetCoordBox(
-          *non_interpolable_value);
+    case CSSPropertyID::kOffsetPath:
       state.StyleBuilder().SetOffsetPath(
-          MakeGarbageCollected<ShapeOffsetPathOperation>(*shape, coord_box));
+          MakeGarbageCollected<ShapeOffsetPathOperation>(
+              *shape, box.coord.value_or(CoordBox::kBorderBox)));
       break;
-    }
-    case CSSPropertyID::kClipPath: {
-      GeometryBox geometry_box =
-          basic_shape_interpolation_functions::GetGeometryBox(
-              *non_interpolable_value);
+    case CSSPropertyID::kClipPath:
       state.StyleBuilder().SetClipPath(
-          MakeGarbageCollected<ShapeClipPathOperation>(*shape, geometry_box));
+          MakeGarbageCollected<ShapeClipPathOperation>(
+              *shape, box.geometry.value_or(GeometryBox::kBorderBox)));
       break;
-    }
     case CSSPropertyID::kObjectViewBox:
       state.StyleBuilder().SetObjectViewBox(shape);
       break;

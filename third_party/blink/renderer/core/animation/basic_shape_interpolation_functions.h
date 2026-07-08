@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/shape_property_functions.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
@@ -33,11 +32,7 @@ CORE_EXPORT bool ShapesAreCompatible(const NonInterpolableValue&,
 CORE_EXPORT BasicShape* CreateBasicShape(const InterpolableValue&,
                                          const NonInterpolableValue&,
                                          const CSSToLengthConversionData&);
-CORE_EXPORT GeometryBox
-GetGeometryBox(const NonInterpolableValue&,
-               GeometryBox default_box = GeometryBox::kBorderBox);
-CORE_EXPORT CoordBox GetCoordBox(const NonInterpolableValue&);
-CORE_EXPORT ShapeBox GetShapeBox(const NonInterpolableValue&);
+CORE_EXPORT ShapeReferenceBox GetBox(const NonInterpolableValue&);
 
 }  // namespace basic_shape_interpolation_functions
 

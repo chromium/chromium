@@ -108,8 +108,7 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
   SetPath(CssProperty(), state.StyleBuilder(),
           PathInterpolationFunctions::AppliedValue(interpolable_value,
                                                    *non_interpolable_value),
-          {.shape =
-               PathInterpolationFunctions::GetCssBox(*non_interpolable_value)});
+          PathInterpolationFunctions::GetBox(*non_interpolable_value));
 }
 
 void CSSPathInterpolationType::Composite(
@@ -132,7 +131,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers&) const {
   return PathInterpolationFunctions::ConvertValue(
-      nullptr, PathInterpolationFunctions::kForceAbsolute);
+      nullptr, PathInterpolationFunctions::kForceAbsolute, {});
 }
 
 class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
@@ -170,7 +169,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
       CssProperty(), parent_info.path, parent_info.box));
   return PathInterpolationFunctions::ConvertValue(
       parent_info.path, PathInterpolationFunctions::kForceAbsolute,
-      parent_info.box.shape);
+      parent_info.box);
 }
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
@@ -178,16 +177,16 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const StyleResolverState&,
     ConversionCheckers&) const {
   const cssvalue::CSSPathValue* path_value = nullptr;
-  std::optional<ShapeBox> css_box;
+  ShapeReferenceBox box;
   if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
-    css_box = ShapeBox::kMarginBox;
+    box.shape = ShapeBox::kMarginBox;
   }
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     path_value = DynamicTo<cssvalue::CSSPathValue>(list->First());
     if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside &&
         list->length() == 2) {
       if (const auto* ident = DynamicTo<CSSIdentifierValue>(list->Last())) {
-        css_box = ident->ConvertTo<ShapeBox>();
+        box.shape = ident->ConvertTo<ShapeBox>();
       }
     }
   } else {
@@ -198,7 +197,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
   }
   return PathInterpolationFunctions::ConvertValue(
       path_value->GetStylePath(), PathInterpolationFunctions::kForceAbsolute,
-      css_box);
+      box);
 }
 
 InterpolationValue
@@ -206,7 +205,7 @@ CSSPathInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   auto info = GetPathAndCssBox(CssProperty(), style);
   return PathInterpolationFunctions::ConvertValue(
-      info.path, PathInterpolationFunctions::kForceAbsolute, info.box.shape);
+      info.path, PathInterpolationFunctions::kForceAbsolute, info.box);
 }
 
 PairwiseInterpolationValue CSSPathInterpolationType::MaybeMergeSingles(

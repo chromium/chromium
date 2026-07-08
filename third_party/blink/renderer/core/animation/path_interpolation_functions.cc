@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/blink/renderer/core/svg/svg_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_parser.h"
@@ -23,25 +22,22 @@ namespace blink {
 
 class SVGPathNonInterpolableValue : public NonInterpolableValue {
  public:
-  explicit SVGPathNonInterpolableValue(
-      Vector<SVGPathSegType>&& path_seg_types,
-      WindRule wind_rule = RULE_NONZERO,
-      std::optional<ShapeBox> css_box = std::nullopt)
-      : path_seg_types_(path_seg_types),
-        wind_rule_(wind_rule),
-        css_box_(css_box) {}
+  explicit SVGPathNonInterpolableValue(Vector<SVGPathSegType>&& path_seg_types,
+                                       WindRule wind_rule,
+                                       ShapeReferenceBox box)
+      : path_seg_types_(path_seg_types), wind_rule_(wind_rule), box_(box) {}
   ~SVGPathNonInterpolableValue() override = default;
 
   const Vector<SVGPathSegType>& PathSegTypes() const { return path_seg_types_; }
   WindRule GetWindRule() const { return wind_rule_; }
-  std::optional<ShapeBox> CssBox() const { return css_box_; }
+  ShapeReferenceBox GetBox() const { return box_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
   Vector<SVGPathSegType> path_seg_types_;
   WindRule wind_rule_;
-  std::optional<ShapeBox> css_box_;
+  ShapeReferenceBox box_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(SVGPathNonInterpolableValue);
@@ -64,7 +60,7 @@ enum PathComponentIndex : unsigned {
 InterpolationValue PathInterpolationFunctions::ConvertValue(
     const StylePath* style_path,
     CoordinateConversion coordinate_conversion,
-    std::optional<ShapeBox> css_box) {
+    ShapeReferenceBox box) {
   if (!style_path)
     return nullptr;
 
@@ -96,9 +92,8 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
   result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(0));
 
   return InterpolationValue(
-      result,
-      MakeGarbageCollected<SVGPathNonInterpolableValue>(
-          std::move(path_seg_types), style_path->GetWindRule(), css_box));
+      result, MakeGarbageCollected<SVGPathNonInterpolableValue>(
+                  std::move(path_seg_types), style_path->GetWindRule(), box));
 }
 
 class UnderlyingPathSegTypesChecker final
@@ -110,15 +105,13 @@ class UnderlyingPathSegTypesChecker final
       const InterpolationValue& underlying) {
     return MakeGarbageCollected<UnderlyingPathSegTypesChecker>(
         GetPathSegTypes(underlying), GetWindRule(underlying),
-        GetCssBox(underlying));
+        GetBox(underlying));
   }
 
   UnderlyingPathSegTypesChecker(const Vector<SVGPathSegType>& path_seg_types,
                                 WindRule wind_rule,
-                                std::optional<ShapeBox> css_box)
-      : path_seg_types_(path_seg_types),
-        wind_rule_(wind_rule),
-        css_box_(css_box) {}
+                                ShapeReferenceBox box)
+      : path_seg_types_(path_seg_types), wind_rule_(wind_rule), box_(box) {}
 
  private:
   static const Vector<SVGPathSegType>& GetPathSegTypes(
@@ -132,22 +125,20 @@ class UnderlyingPathSegTypesChecker final
         .GetWindRule();
   }
 
-  static std::optional<ShapeBox> GetCssBox(
-      const InterpolationValue& underlying) {
+  static ShapeReferenceBox GetBox(const InterpolationValue& underlying) {
     return To<SVGPathNonInterpolableValue>(*underlying.non_interpolable_value)
-        .CssBox();
+        .GetBox();
   }
 
   bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return path_seg_types_ == GetPathSegTypes(underlying) &&
-           wind_rule_ == GetWindRule(underlying) &&
-           css_box_ == GetCssBox(underlying);
+           wind_rule_ == GetWindRule(underlying) && box_ == GetBox(underlying);
   }
 
   Vector<SVGPathSegType> path_seg_types_;
   WindRule wind_rule_;
-  std::optional<ShapeBox> css_box_;
+  ShapeReferenceBox box_;
 };
 
 InterpolationValue PathInterpolationFunctions::MaybeConvertNeutral(
@@ -197,16 +188,16 @@ bool PathInterpolationFunctions::PathsAreCompatible(
   if (start_types.size() == 0 || !PathSegTypesMatch(start_types, end_types))
     return false;
 
-  if (start_path.CssBox() != end_path.CssBox()) {
+  if (start_path.GetBox() != end_path.GetBox()) {
     return false;
   }
 
   return true;
 }
 
-std::optional<ShapeBox> PathInterpolationFunctions::GetCssBox(
+ShapeReferenceBox PathInterpolationFunctions::GetBox(
     const NonInterpolableValue& value) {
-  return To<SVGPathNonInterpolableValue>(value).CssBox();
+  return To<SVGPathNonInterpolableValue>(value).GetBox();
 }
 
 PairwiseInterpolationValue PathInterpolationFunctions::MaybeMergeSingles(

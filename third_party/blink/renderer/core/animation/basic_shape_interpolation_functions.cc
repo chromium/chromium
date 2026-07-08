@@ -44,17 +44,10 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
     return size_;
   }
 
-  virtual std::optional<GeometryBox> GetGeometryBox() const {
-    return std::nullopt;
-  }
-  virtual std::optional<CoordBox> GetCoordBox() const { return std::nullopt; }
-  virtual std::optional<ShapeBox> GetShapeBox() const { return std::nullopt; }
+  virtual ShapeReferenceBox GetBox() const { return {}; }
 
   bool IsCompatibleWith(const BasicShapeNonInterpolableValue& other) const {
-    if (GetGeometryBox() != other.GetGeometryBox() ||
-        GetCoordBox() != other.GetCoordBox() ||
-        GetShapeBox() != other.GetShapeBox() ||
-        GetShapeType() != other.GetShapeType()) {
+    if (GetShapeType() != other.GetShapeType() || GetBox() != other.GetBox()) {
       return false;
     }
     switch (GetShapeType()) {
@@ -77,48 +70,18 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
   const wtf_size_t size_;
 };
 
-class GeometryBoxBasicShapeNonInterpolableValue final
+class ReferenceBoxBasicShapeNonInterpolableValue final
     : public BasicShapeNonInterpolableValue {
  public:
-  GeometryBoxBasicShapeNonInterpolableValue(
+  ReferenceBoxBasicShapeNonInterpolableValue(
       const BasicShapeNonInterpolableValue& other,
-      GeometryBox geometry_box)
-      : BasicShapeNonInterpolableValue(other), geometry_box_(geometry_box) {}
+      ShapeReferenceBox box)
+      : BasicShapeNonInterpolableValue(other), box_(box) {}
 
-  std::optional<GeometryBox> GetGeometryBox() const final {
-    return geometry_box_;
-  }
+  ShapeReferenceBox GetBox() const final { return box_; }
 
  private:
-  GeometryBox geometry_box_;
-};
-
-class CoordBoxBasicShapeNonInterpolableValue final
-    : public BasicShapeNonInterpolableValue {
- public:
-  CoordBoxBasicShapeNonInterpolableValue(
-      const BasicShapeNonInterpolableValue& other,
-      CoordBox coord_box)
-      : BasicShapeNonInterpolableValue(other), coord_box_(coord_box) {}
-
-  std::optional<CoordBox> GetCoordBox() const final { return coord_box_; }
-
- private:
-  CoordBox coord_box_;
-};
-
-class ShapeBoxBasicShapeNonInterpolableValue final
-    : public BasicShapeNonInterpolableValue {
- public:
-  ShapeBoxBasicShapeNonInterpolableValue(
-      const BasicShapeNonInterpolableValue& other,
-      ShapeBox shape_box)
-      : BasicShapeNonInterpolableValue(other), shape_box_(shape_box) {}
-
-  std::optional<ShapeBox> GetShapeBox() const final { return shape_box_; }
-
- private:
-  ShapeBox shape_box_;
+  ShapeReferenceBox box_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(BasicShapeNonInterpolableValue);
@@ -146,19 +109,11 @@ InterpolationValue AttachBoxes(InterpolationValue&& value,
   switch (property.PropertyID()) {
     case CSSPropertyID::kBorderShape:
     case CSSPropertyID::kClipPath:
-      value.non_interpolable_value =
-          MakeGarbageCollected<GeometryBoxBasicShapeNonInterpolableValue>(
-              non_interpolable, *box.geometry);
-      break;
     case CSSPropertyID::kOffsetPath:
-      value.non_interpolable_value =
-          MakeGarbageCollected<CoordBoxBasicShapeNonInterpolableValue>(
-              non_interpolable, *box.coord);
-      break;
     case CSSPropertyID::kShapeOutside:
       value.non_interpolable_value =
-          MakeGarbageCollected<ShapeBoxBasicShapeNonInterpolableValue>(
-              non_interpolable, *box.shape);
+          MakeGarbageCollected<ReferenceBoxBasicShapeNonInterpolableValue>(
+              non_interpolable, box);
       break;
     default:
       value.non_interpolable_value =
@@ -897,23 +852,9 @@ BasicShape* basic_shape_interpolation_functions::CreateBasicShape(
   }
 }
 
-GeometryBox basic_shape_interpolation_functions::GetGeometryBox(
-    const NonInterpolableValue& value,
-    GeometryBox default_box) {
-  return To<BasicShapeNonInterpolableValue>(value).GetGeometryBox().value_or(
-      default_box);
-}
-
-CoordBox basic_shape_interpolation_functions::GetCoordBox(
+ShapeReferenceBox basic_shape_interpolation_functions::GetBox(
     const NonInterpolableValue& value) {
-  return To<BasicShapeNonInterpolableValue>(value).GetCoordBox().value_or(
-      CoordBox::kBorderBox);
-}
-
-ShapeBox basic_shape_interpolation_functions::GetShapeBox(
-    const NonInterpolableValue& value) {
-  return To<BasicShapeNonInterpolableValue>(value).GetShapeBox().value_or(
-      ShapeBox::kMarginBox);
+  return To<BasicShapeNonInterpolableValue>(value).GetBox();
 }
 
 }  // namespace blink
