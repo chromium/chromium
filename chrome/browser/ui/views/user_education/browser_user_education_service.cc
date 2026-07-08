@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/views/user_education/ios_promo_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "components/signin/public/base/signin_switches.h"
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
@@ -2511,6 +2512,14 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(
           153, "mtatarski@google.com",
           "Show the new badge on Send to Your Devices context menu items.")));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      switches::kCrossDeviceSigninFromDesktop,
+      user_education::Metadata(
+          151, "pmeuleman@chromium.org",
+          "Shown on the sign-in with your phone profile menu item.")));
+#endif
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerImpl>

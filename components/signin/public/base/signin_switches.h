@@ -245,6 +245,9 @@ BASE_DECLARE_FEATURE(kCrossDeviceSigninFromDesktop);
 // Parameter containing the base URL for cross device sign-in from desktop.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<std::string> kCrossDeviceSigninFromDesktopUrl;
+// Param to control if the "New" badge should be shown.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopNewBadge;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -41,6 +41,7 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/test_device_info_builder.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event_utils.h"
@@ -98,6 +99,7 @@ struct ProfileMenuViewPixelTestParam {
   bool with_ai_avatar_ring = false;
   WithLocalData with_local_data = WithLocalData::kNoLocalData;
   bool with_cross_device_signin_promo = false;
+  bool with_cross_device_signin_new_badge = false;
 
   // Features and parameters that are enabled in addition to the features
   // enabled by default.
@@ -355,6 +357,11 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_cross_device_signin_promo = true,
     },
+    {
+        .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromoNewBadge"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .with_cross_device_signin_promo = true,
+    },
 };
 
 }  // namespace
@@ -485,6 +492,10 @@ class ProfileMenuViewPixelTest
     ProfilesPixelTestBaseT<DialogBrowserTest>::SetUpCommandLine(command_line);
     if (GetSigninStatus() == SigninStatusPixelTestParam::kSigninDisallowed) {
       command_line->AppendSwitchASCII("allow-browser-signin", "false");
+    }
+    if (GetParam().with_cross_device_signin_new_badge) {
+      command_line->AppendSwitch(
+          user_education::features::kDisableRateLimitingCommandLine);
     }
   }
 

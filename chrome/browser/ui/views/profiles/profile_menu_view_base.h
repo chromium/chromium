@@ -177,7 +177,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void AddFeatureButton(const std::u16string& text,
                         base::RepeatingClosure action,
                         const gfx::VectorIcon& icon,
-                        float icon_to_image_ratio = 1.0f);
+                        float icon_to_image_ratio = 1.0f,
+                        bool is_new = false);
   void SetProfileManagementHeading(const std::u16string& heading);
 
   // Does not resize the image.
@@ -240,11 +241,15 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void CreateAXWidgetObserver(views::Widget* widget);
 
+  // `badge_view` is a view positioned on the trailing edge of the button (e.g.
+  // a "New" badge or status icon) that sits flush on the far right opposite of
+  // the main title.
   std::unique_ptr<HoverButton> CreateMenuRowButton(
       base::RepeatingClosure action,
       std::unique_ptr<views::View> icon_view,
       const std::u16string& text,
-      int icon_offset);
+      int icon_offset = 0,
+      std::unique_ptr<views::View> badge_view = nullptr);
 
   const raw_ref<Profile> profile_;
 
