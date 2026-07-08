@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
   ASSERT_TRUE(simple_loader_helper.response_body());
 
   base::FilePath expected_cache_path;
-  chrome::GetUserCacheDirectory(browser()->profile()->GetPath(),
+  chrome::GetUserCacheDirectory(browser()->GetProfile()->GetPath(),
                                 &expected_cache_path);
   expected_cache_path = expected_cache_path.Append(chrome::kCacheDirname);
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -195,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
   // correct max size, but we can make sure that we set up our network context
   // params correctly.
   ProfileNetworkContextService* profile_network_context_service =
-      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+      ProfileNetworkContextServiceFactory::GetForContext(
+          browser()->GetProfile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
   cert_verifier::mojom::CertVerifierCreationParams
@@ -213,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest, CacheSize) {
   // correct max size, but we can make sure that we set up our network context
   // params correctly and that the histogram is recorded.
   ProfileNetworkContextService* profile_network_context_service =
-      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+      ProfileNetworkContextServiceFactory::GetForContext(
+          browser()->GetProfile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
   cert_verifier::mojom::CertVerifierCreationParams
@@ -620,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(
   // Populate cache for non-default partition.
   content::StoragePartition* partition =
       browser()->profile()->GetStoragePartition(
-          content::StoragePartitionConfig::Create(browser()->profile(),
+          content::StoragePartitionConfig::Create(browser()->GetProfile(),
                                                   "testdomain", "testpartition",
                                                   /*in_memory=*/false));
 
@@ -684,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(
   // Request the cached resource for non-default partition.
   content::StoragePartition* partition =
       browser()->profile()->GetStoragePartition(
-          content::StoragePartitionConfig::Create(browser()->profile(),
+          content::StoragePartitionConfig::Create(browser()->GetProfile(),
                                                   "testdomain", "testpartition",
                                                   /*in_memory=*/false));
   FetchUrl(url, partition);
@@ -740,7 +742,7 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
 #if !BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(
         AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
-            CreateGuestBrowser()->profile()),
+            CreateGuestBrowser()->GetProfile()),
         AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(policy_value));
 #endif
   }
@@ -830,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   // Cache directory should now exist.
   base::FilePath expected_cache_path =
       TempPath()
-          .Append(browser()->profile()->GetBaseName())
+          .Append(browser()->GetProfile()->GetBaseName())
           .Append(chrome::kCacheDirname);
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(expected_cache_path));
@@ -847,7 +849,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
   // correct max size, but we can make sure that we set up our network context
   // params correctly.
   ProfileNetworkContextService* profile_network_context_service =
-      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+      ProfileNetworkContextServiceFactory::GetForContext(
+          browser()->GetProfile());
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
   cert_verifier::mojom::CertVerifierCreationParams
@@ -919,18 +922,18 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
                        TrustTokenBlocked) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService("a.test");
   auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+      PrivacySandboxSettingsFactory::GetForProfile(browser()->GetProfile());
   auto privacy_sandbox_delegate = std::make_unique<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
   privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
       /*restricted=*/false);
   privacy_sandbox_delegate->SetUpIsIncognitoProfileResponse(
-      /*incognito=*/browser()->profile()->IsIncognitoProfile());
+      /*incognito=*/browser()->GetProfile()->IsIncognitoProfile());
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
   privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
   auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   Flush();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

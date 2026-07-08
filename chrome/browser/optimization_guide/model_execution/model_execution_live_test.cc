@@ -48,7 +48,7 @@ class ModelExecutionLiveTest : public signin::test::LiveTest {
 
   OptimizationGuideKeyedService* GetOptGuideKeyedService() {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   bool IsSettingVisible(optimization_guide::UserVisibleFeatureKey feature) {

@@ -140,7 +140,8 @@ class NtpPromoUiTest
 
   void ClearRegisteredPromos() {
     UserEducationService* const service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+        UserEducationServiceFactory::GetForBrowserContext(
+            browser()->GetProfile());
     service->ntp_promo_registry()->ClearPromosForTesting();
   }
 
@@ -150,7 +151,8 @@ class NtpPromoUiTest
   void ClearRegisteredPromosExcept(
       const user_education::NtpPromoIdentifier& keep_id) {
     UserEducationService* const service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+        UserEducationServiceFactory::GetForBrowserContext(
+            browser()->GetProfile());
     auto ids = service->ntp_promo_registry()->GetNtpPromoIdentifiers();
     for (const auto& id : ids) {
       if (id != keep_id) {
@@ -163,7 +165,8 @@ class NtpPromoUiTest
                          Eligibility eligibility,
                          int text_id) {
     UserEducationService* const service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+        UserEducationServiceFactory::GetForBrowserContext(
+            browser()->GetProfile());
     user_education::NtpPromoRegistry* registry = service->ntp_promo_registry();
     user_education::NtpPromoSpecification spec(
         id, user_education::NtpPromoContent(kSignInIconName, text_id, text_id),
@@ -341,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(NtpPromoWithModuleUiTest, ModuleEnabled) {
 IN_PROC_BROWSER_TEST_F(NtpPromoWithModuleUiTest, ModuleDisabled) {
   // Disable the Tab Groups module in prefs.
   {
-    ScopedListPrefUpdate update(browser()->profile()->GetPrefs(),
+    ScopedListPrefUpdate update(browser()->GetProfile()->GetPrefs(),
                                 prefs::kNtpDisabledModules);
     base::ListValue& list = update.Get();
     base::Value module_id_value(ntp_modules::kTabGroupsModuleId);
@@ -399,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
 
   // Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   RunTestSequence(
       // Set up the first browser.

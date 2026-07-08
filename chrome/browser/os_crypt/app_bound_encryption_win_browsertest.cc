@@ -145,8 +145,8 @@ class AppBoundEncryptionWinTestBase : public InProcessBrowserTest {
 
   std::optional<std::vector<uint8_t>> RetrieveData() {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    return base::ReadFileToBytes(
-        browser()->profile()->GetPath().Append(FILE_PATH_LITERAL("TestData")));
+    return base::ReadFileToBytes(browser()->GetProfile()->GetPath().Append(
+        FILE_PATH_LITERAL("TestData")));
   }
 
   static bool IsPreTest() {

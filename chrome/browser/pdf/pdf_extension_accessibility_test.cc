@@ -1299,7 +1299,7 @@ class PdfSearchifyIntegrationTest
     base::test::TestFuture<bool> future;
     auto* router =
         screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     router->GetServiceStateAsync(
         screen_ai::ScreenAIServiceRouter::Service::kOCR, future.GetCallback());
     ASSERT_TRUE(future.Wait());

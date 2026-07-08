@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideTabUrlProviderBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  OptimizationGuideTabUrlProvider provider(browser()->profile());
+  OptimizationGuideTabUrlProvider provider(browser()->GetProfile());
   std::vector<GURL> urls = provider.GetUrlsOfActiveTabs(base::Days(90));
 
   // The behavior of OptimizationGuideTabUrlProvider is to sort by last active

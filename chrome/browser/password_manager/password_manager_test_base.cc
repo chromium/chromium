@@ -217,7 +217,7 @@ void PasswordManagerBrowserTestBase::SetUpCommandLine(
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
-          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+          browser->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
   password_manager::PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
       profile_syncer.GetWeakPtr());
@@ -225,7 +225,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
 
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store = AccountPasswordStoreFactory::GetForProfile(
-          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+          browser->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
   if (account_password_store) {
     password_manager::PasswordStoreResultsObserver account_syncer;
     account_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -467,7 +467,7 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
     std::optional<password_manager::PasswordForm::Type> type) {
   SCOPED_TRACE(::testing::Message() << username << ", " << password);
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      GetDefaultPasswordStore(browser()->profile());
+      GetDefaultPasswordStore(browser()->GetProfile());
   auto passwords_map = GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;

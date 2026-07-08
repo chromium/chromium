@@ -154,7 +154,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
         run_loop.get()));
 
     RegisterModelFileObserverWithKeyedService(
-        model_file_observer, profile ? profile : browser()->profile());
+        model_file_observer, profile ? profile : browser()->GetProfile());
     base::test::ScopedRunLoopTimeout model_file_download_timeout(
         FROM_HERE, kModelFileDownloadTimeout);
     run_loop->Run();
@@ -307,9 +307,9 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
   base::HistogramTester histogram_tester_otr;
   ModelFileObserver model_file_observer_otr;
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
   RegisterAndWaitForModelUpdate(&model_file_observer_otr,
-                                otr_browser->profile());
+                                otr_browser->GetProfile());
 
   // No more downloads should happen.
   histogram_tester_otr.ExpectTotalCount(
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
     // Trigger the periodic fetch timer.
     base::HistogramTester histogram_tester;
     auto* prediction_model_fetch_timer =
-        GetPredictionManager(browser()->profile())
+        GetPredictionManager(browser()->GetProfile())
             ->GetPredictionModelFetchTimerForTesting();
     EXPECT_EQ(PredictionModelFetchTimer::PredictionModelFetchTimerState::
                   kPeriodicFetch,
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
         PredictionModelDownloadStatus::kSuccess, 1);
-    GetPredictionManager(browser()->profile())
+    GetPredictionManager(browser()->GetProfile())
         ->RemoveObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &model_file_observer);
     histogram_tester.ExpectUniqueSample(

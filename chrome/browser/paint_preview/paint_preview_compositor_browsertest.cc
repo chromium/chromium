@@ -77,7 +77,7 @@ class PaintPreviewCompositorBrowserTest : public InProcessBrowserTest {
  protected:
   void CreateServiceInstance() {
     key_ = std::make_unique<SimpleFactoryKey>(
-        browser()->profile()->GetPath(),
+        browser()->GetProfile()->GetPath(),
         browser()->profile()->IsOffTheRecord());
     PaintPreviewBaseServiceTestFactory::GetInstance()->SetTestingFactory(
         key_.get(),

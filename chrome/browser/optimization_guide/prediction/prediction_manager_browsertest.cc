@@ -199,7 +199,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   }
 
   void RegisterWithKeyedService(ModelFileObserver* model_file_observer) {
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
             std::nullopt,
@@ -211,7 +211,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   PredictionManager* GetPredictionManager() {
     OptimizationGuideKeyedService* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     return optimization_guide_keyed_service->GetPredictionManager();
   }
 
@@ -429,7 +429,7 @@ class PredictionManagerModelDownloadingBrowserTest
 
   void RegisterModelFileObserverWithKeyedService(Profile* profile = nullptr) {
     OptimizationGuideKeyedServiceFactory::GetForProfile(
-        profile ? profile : browser()->profile())
+        profile ? profile : browser()->GetProfile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
             /*model_metadata=*/std::nullopt,
@@ -490,8 +490,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
     base::HistogramTester otr_histogram_tester;
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     SetUpValidModelInfoReceival(model_file_observer(), run_loop.get());
-    Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-    RegisterModelFileObserverWithKeyedService(otr_browser->profile());
+    Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+    RegisterModelFileObserverWithKeyedService(otr_browser->GetProfile());
 
     run_loop->Run();
 
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelPackageOverrideTest, TestE2E) {
   SetUpValidModelInfoReceival(&model_file_observer, &run_loop,
                               {FILE_PATH_LITERAL("good_additional_file.txt")});
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->AddObserverForOptimizationTargetModel(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
           /*model_metadata=*/std::nullopt,

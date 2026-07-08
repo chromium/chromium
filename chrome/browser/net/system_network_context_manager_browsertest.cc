@@ -827,10 +827,10 @@ IN_PROC_BROWSER_TEST_F(
   // reconfiguration includes setting up First-Party Sets.
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_TRUE(content::SetCookie(
-      browser()->profile(), host_root,
+      browser()->GetProfile(), host_root,
       base::StrCat(
           {kCookieName, "=1; SameSite=None; secure; max-age=2147483647"})));
-  ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
+  ASSERT_THAT(content::GetCookies(browser()->GetProfile(), host_root),
               net::CookieStringIs(
                   testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }

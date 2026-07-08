@@ -103,7 +103,7 @@ class NotificationPermissionBrowserTest : public InProcessBrowserTest {
  protected:
   void GrantNotificationPermissionForTest(const GURL& url) const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), url.DeprecatedGetOriginAsURL(),
+        browser()->GetProfile(), url.DeprecatedGetOriginAsURL(),
         CONTENT_SETTING_ALLOW);
   }
 
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<NonPersistentNotificationHandler>();
-  handler->DisableNotifications(browser()->profile(), TesterUrl(),
+  handler->DisableNotifications(browser()->GetProfile(), TesterUrl(),
                                 /*notification_id=*/std::nullopt,
                                 /*is_suspicious=*/false);
 

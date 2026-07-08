@@ -137,7 +137,7 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override { display_service_tester_.reset(); }
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, GetDisplayed) {
   {
     base::RunLoop run_loop;
     bridge->GetDisplayed(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindOnce(
             &NotificationPlatformBridgeWinUITest::DisplayedNotifications,
             base::Unretained(this), run_loop.QuitClosure()));
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
               &NotificationPlatformBridgeWinUITest::OnHistogramRecorded,
               base::Unretained(this), display_run_loop.QuitClosure()));
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT,
-                  browser()->profile(), notification, /*metadata=*/nullptr);
+                  browser()->GetProfile(), notification, /*metadata=*/nullptr);
   display_run_loop.Run();
 
   // The notification should now be in the expected map.
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
           base::BindRepeating(
               &NotificationPlatformBridgeWinUITest::OnHistogramRecorded,
               base::Unretained(this), close_run_loop.QuitClosure()));
-  bridge->Close(browser()->profile(), notification.id());
+  bridge->Close(browser()->GetProfile(), notification.id());
   close_run_loop.Run();
 
   // Closing a notification should remove it from the expected map.

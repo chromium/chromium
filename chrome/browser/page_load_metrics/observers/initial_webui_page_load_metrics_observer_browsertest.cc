@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   base::HistogramTester histograms;
 
   // Create a new window
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   Browser* new_browser = Browser::Create(params);
 
   auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
     // Navigate to WebUI URL in the new window.
     GURL url(chrome::kChromeUIWebUIToolbarURL);
 
-    content::BrowserContext* browser_context = new_browser->profile();
+    content::BrowserContext* browser_context = new_browser->GetProfile();
     content::WebContents::CreateParams new_contents_params(
         browser_context,
         content::SiteInstance::CreateForURL(browser_context, url));

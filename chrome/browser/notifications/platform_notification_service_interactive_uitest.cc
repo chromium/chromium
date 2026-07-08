@@ -105,7 +105,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(
-            browser()->profile());
+            browser()->GetProfile());
 
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     NavigateToTestPage(std::string("/") + kTestFileName);
@@ -120,7 +120,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // Returns the Platform Notification Service these unit tests are for.
   PlatformNotificationServiceImpl* service() const {
     return PlatformNotificationServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   // Returns a vector with the Notification objects that are being displayed
@@ -173,7 +173,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        browser()->GetProfile(), TestPageUrl().DeprecatedGetOriginAsURL(),
         CONTENT_SETTING_ALLOW);
   }
 
@@ -181,7 +181,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void BlockNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        browser()->GetProfile(), TestPageUrl().DeprecatedGetOriginAsURL(),
         CONTENT_SETTING_BLOCK);
   }
 
@@ -191,7 +191,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   }
 
   double GetEngagementScore(const GURL& origin) const {
-    return site_engagement::SiteEngagementService::Get(browser()->profile())
+    return site_engagement::SiteEngagementService::Get(browser()->GetProfile())
         ->GetScore(origin);
   }
 
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
                        TestShouldDisplayMultiFullscreen) {
   ASSERT_NO_FATAL_FAILURE(GrantNotificationPermissionForTest());
 
-  Browser* other_browser = CreateBrowser(browser()->profile());
+  Browser* other_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   EXPECT_EQ("ok", RunScript("DisplayPersistentNotification('display_normal')"));
@@ -1053,13 +1053,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT));
 
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop run_loop;
-  handler->OnClick(browser()->profile(), notifications[0].origin_url(),
+  handler->OnClick(browser()->GetProfile(), notifications[0].origin_url(),
                    notifications[0].id(), std::nullopt /* action_index */,
                    std::nullopt /* reply */, run_loop.QuitClosure());
 
@@ -1089,13 +1089,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop run_loop;
-  handler->OnClose(browser()->profile(), notifications[0].origin_url(),
+  handler->OnClose(browser()->GetProfile(), notifications[0].origin_url(),
                    notifications[0].id(), true /* by_user */,
                    run_loop.QuitClosure());
 
@@ -1139,13 +1139,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   // Close the notification.
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop close_event_run_loop;
-  handler->OnClose(browser()->profile(), notification->origin_url(),
+  handler->OnClose(browser()->GetProfile(), notification->origin_url(),
                    notification->id(), /*by_user=*/true,
                    close_event_run_loop.QuitClosure());
 
@@ -1204,13 +1204,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   // Close the first notification.
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop first_close_event_run_loop;
-  handler->OnClose(browser()->profile(), first_notification->origin_url(),
+  handler->OnClose(browser()->GetProfile(), first_notification->origin_url(),
                    first_notification->id(), /*by_user=*/true,
                    first_close_event_run_loop.QuitClosure());
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
@@ -1268,13 +1268,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   // Close the notification.
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop close_event_run_loop;
-  handler->OnClose(browser()->profile(), notification->origin_url(),
+  handler->OnClose(browser()->GetProfile(), notification->origin_url(),
                    notification->id(), /*by_user=*/true,
                    close_event_run_loop.QuitClosure());
 
@@ -1309,13 +1309,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   // Close the notification.
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop close_event_run_loop;
-  handler->OnClose(browser()->profile(), notification->origin_url(),
+  handler->OnClose(browser()->GetProfile(), notification->origin_url(),
                    notification->id(), /*by_user=*/true,
                    close_event_run_loop.QuitClosure());
 
@@ -1364,13 +1364,13 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   // Close the notification.
   NotificationDisplayServiceImpl* display_service =
-      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+      NotificationDisplayServiceImpl::GetForProfile(browser()->GetProfile());
   NotificationHandler* handler = display_service->GetNotificationHandler(
       NotificationHandler::Type::WEB_PERSISTENT);
   ASSERT_TRUE(handler);
 
   base::RunLoop close_event_run_loop;
-  handler->OnClose(browser()->profile(), notification->origin_url(),
+  handler->OnClose(browser()->GetProfile(), notification->origin_url(),
                    notification->id(), /*by_user=*/true,
                    close_event_run_loop.QuitClosure());
 
@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "Web App Title", web_app_url);
+      browser()->GetProfile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok",
             RunScript("DisplayIncomingCallNotificationWithActionButton()"));
@@ -1477,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
   EXPECT_EQ(message_center::ButtonType::DISMISS,
             app_notification.buttons()[1].type);
 
-  web_app::test::UninstallWebApp(browser()->profile(), app_id);
+  web_app::test::UninstallWebApp(browser()->GetProfile(), app_id);
 
   EXPECT_EQ("ok",
             RunScript("DisplayIncomingCallNotificationWithActionButton()"));
@@ -1530,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      browser()->profile(), "Web App Title", web_app_url);
+      browser()->GetProfile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok", RunScript("DisplayIncomingCallNotification()"));
 
@@ -1551,7 +1551,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
   EXPECT_EQ(message_center::ButtonType::DISMISS,
             app_notification.buttons()[0].type);
 
-  web_app::test::UninstallWebApp(browser()->profile(), app_id);
+  web_app::test::UninstallWebApp(browser()->GetProfile(), app_id);
 
   EXPECT_EQ("ok", RunScript("DisplayIncomingCallNotification()"));
 

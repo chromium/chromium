@@ -84,7 +84,7 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
         std::make_unique<ErrorLogger>());
     auto cache = webdata_services::WebDataServiceWrapperFactory::
         GetWebPaymentsWebDataServiceForBrowserContext(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
     ManifestVerifier verifier(
         url::Origin::Create(https_server_->GetURL("/payment_handler.html")),

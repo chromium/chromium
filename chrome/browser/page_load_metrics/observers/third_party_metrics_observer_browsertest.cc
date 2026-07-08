@@ -176,7 +176,7 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void Enable3pcForUrl(GURL url) {
-    CookieSettingsFactory::GetForProfile(browser()->profile())
+    CookieSettingsFactory::GetForProfile(browser()->GetProfile())
         ->SetCookieSetting(url, CONTENT_SETTING_ALLOW);
   }
 

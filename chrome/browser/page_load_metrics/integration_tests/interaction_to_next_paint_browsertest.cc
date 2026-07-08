@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
   // Add a new tab and switch to it.
   std::unique_ptr<content::WebContents> web_contents_to_add =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   web_contents_to_add->GetController().LoadURL(
       embedded_test_server()->GetURL("/resources/empty.html"),
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
   // Add a new tab and switch to it.
   std::unique_ptr<content::WebContents> web_contents_to_add =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   web_contents_to_add->GetController().LoadURL(
       embedded_test_server()->GetURL("/resources/empty.html"),

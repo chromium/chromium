@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   // Explicitly allow http access for the incognito mode. Otherwise the
   // incognito mode cannot reach to the SRP domain.
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {kSRPDomain}, browser()->profile()->GetPrefs());
+      {kSRPDomain}, browser()->GetProfile()->GetPrefs());
 
   // Navigate to SRP with incognito mode.
   Browser* incognito = CreateIncognitoBrowser();

@@ -224,7 +224,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
                        PrerenderSRPActivation) {
-  auto* model = TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  auto* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
   TemplateURLData data;
   data.SetShortName(u"test");

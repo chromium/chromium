@@ -417,7 +417,8 @@ class GWSPageLoadMetricsObserverContextMenuNaviBrowserTest
 IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverContextMenuNaviBrowserTest,
                        ContextMenuSearchNavigation) {
   // 1. Setup the test server as the default search engine.
-  auto* model = TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  auto* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
   TemplateURLData data;
   data.SetShortName(u"test");

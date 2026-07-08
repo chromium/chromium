@@ -56,7 +56,7 @@ class SerpPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(template_url_service);
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
 
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(SerpPageLoadMetricsObserverBrowserTest, Serp) {
   auto* telemetry_service = static_cast<MockExtensionTelemetryService*>(
       safe_browsing::ExtensionTelemetryServiceFactory::GetInstance()
           ->SetTestingFactoryAndUse(
-              browser()->profile(),
+              browser()->GetProfile(),
               base::BindRepeating(&BuildMockExtensionTelemetryService)));
 
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(

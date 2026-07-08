@@ -84,7 +84,7 @@ class NTPTilesTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     most_visited_sites_ =
-        ChromeMostVisitedSitesFactory::NewForProfile(browser()->profile());
+        ChromeMostVisitedSitesFactory::NewForProfile(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -103,7 +103,7 @@ class NTPTilesForSupervisedUsersTest : public MixinBasedInProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Started());
     most_visited_sites_ =
-        ChromeMostVisitedSitesFactory::NewForProfile(browser()->profile());
+        ChromeMostVisitedSitesFactory::NewForProfile(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

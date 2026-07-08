@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeChromeOsBrowserTest,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()));
 
-  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
   expected_close_count_ = 1;

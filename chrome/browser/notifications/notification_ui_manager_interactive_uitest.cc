@@ -63,7 +63,7 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        browser()->GetProfile(), TestPageUrl().DeprecatedGetOriginAsURL(),
         CONTENT_SETTING_ALLOW);
   }
 
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerInteractiveUITest,
   EXPECT_EQ("ok", script_result);
 
   ProfileNotification::ProfileID profile_id =
-      ProfileNotification::GetProfileID(browser()->profile());
+      ProfileNotification::GetProfileID(browser()->GetProfile());
   std::set<std::string> ids = manager()->GetAllIdsByProfile(profile_id);
   ASSERT_EQ(1u, ids.size());
   const message_center::Notification* notification =

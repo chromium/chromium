@@ -108,7 +108,7 @@ class OnDeviceModelExecutionDisabledBrowserTest : public InProcessBrowserTest {
   OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       mojom::OnDeviceFeature feature) {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
-               browser()->profile())
+               browser()->GetProfile())
         ->GetOnDeviceModelEligibility(feature);
   }
 
@@ -125,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionDisabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionDisabledBrowserTest,
                        PerformanceClassNotComputed) {
-  auto* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->GetProfile());
   base::HistogramTester histogram_tester;
   base::RunLoop loop;
   // The call should exit early because the service is not enabled.
@@ -187,8 +187,8 @@ class LogOnDeviceMetricsOnStartupEnabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(LogOnDeviceMetricsOnStartupEnabledBrowserTest,
                        LogOnDeviceMetricsAfterStart) {
-  auto* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->GetProfile());
   base::HistogramTester histogram_tester;
 
   base::RunLoop loop;

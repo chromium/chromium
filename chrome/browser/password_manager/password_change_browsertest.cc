@@ -239,17 +239,17 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
   MockAffiliationService* affiliation_service() {
     return static_cast<MockAffiliationService*>(
-        AffiliationServiceFactory::GetForProfile(browser()->profile()));
+        AffiliationServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   ChromePasswordChangeService* password_change_service() {
-    return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
+    return PasswordChangeServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   ChromePasswordManagerClient* client() const {
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       WebContents(), embedded_test_server()->GetURL(
                          kMainHost, "/password/simple_password.html")));
   password_manager::PasswordStoreInterface* password_store =
-      GetDefaultPasswordStore(browser()->profile());
+      GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"pa$$word",
       "/password/update_form_empty_fields.html");
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   // the tab where the main flow is active.
   std::unique_ptr<content::WebContents> extra_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* new_active_web_contents = extra_web_contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(extra_web_contents),
                                                   true /* foreground */);
@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                          kMainHost, "/password/simple_password.html")));
 
   password_manager::PasswordStoreInterface* password_store =
-      GetDefaultPasswordStore(browser()->profile());
+      GetDefaultPasswordStore(browser()->GetProfile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"old_pa$$word",
       "/password/update_form_empty_fields.html");
