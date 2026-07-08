@@ -49,7 +49,10 @@ group("gtk_config") {
 }
 
 generate_stubs("gtk_stubs") {
-  visibility = [ ":gtk" ]
+  visibility = [
+    ":gtk",
+    ":gtk_unittests",
+  ]
   sigs = [
     "gdk_pixbuf.sigs",
     "gdk.sigs",
@@ -68,8 +71,16 @@ generate_stubs("gtk_stubs") {
 }
 
 component("gtk") {
-  visibility = [ "//ui/linux:linux_ui_factory" ]
-  public = [ "gtk_ui_factory.h" ]
+  visibility = [
+    ":gtk_unittests",
+    "//ui/linux:linux_ui_factory",
+  ]
+  public = [
+    "gtk_compat.h",
+    "gtk_types.h",
+    "gtk_ui_factory.h",
+    "gtk_util.h",
+  ]
 
   sources = [
     "gtk_color_mixers.cc",
@@ -184,4 +195,29 @@ component("gtk") {
 
   # TODO: This should be removed.
   deps += [ "//ui/ozone" ]
+}
+
+if (use_gtk) {
+  test("gtk_unittests") {
+    use_xvfb = true
+
+    configs += [ ":gtk_internal_config" ]
+
+    sources = [
+      "gtk_util_unittest.cc",
+      "run_all_unittests.cc",
+    ]
+
+    deps = [
+      ":gtk",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//ui/base/glib",
+      "//ui/linux:linux_ui",
+    ]
+  }
+} else {
+  group("gtk_unittests") {
+  }
 }

@@ -2750,6 +2750,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "gtk_unittests",
+)
+
+targets.tests.gtest_test(
     name = "views_ax_chromeos_browser_tests",
     args = [
         "--enable-features=ViewsAccessibilitySerializeOnDataChanged",

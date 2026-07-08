@@ -13,6 +13,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -43,7 +44,7 @@ using SkColor = uint32_t;
 namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
-bool LoadGtk(ui::LinuxUiBackend backend);
+COMPONENT_EXPORT(GTK) bool LoadGtk(ui::LinuxUiBackend backend);
 
 const base::Version& GtkVersion();
 
@@ -55,7 +56,7 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor = 0, uint32_t micro = 0);
 // The below functions replace GTK functions whose interface has
 // changed across versions, but whose (symbol) names have not.
 
-[[nodiscard]] bool GtkInitCheck(int* argc, char** argv);
+[[nodiscard]] COMPONENT_EXPORT(GTK) bool GtkInitCheck(int* argc, char** argv);
 
 gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context);
 

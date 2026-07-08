@@ -15,6 +15,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -318,6 +319,10 @@ group("gn_all") {
         "//ui/views/examples:views_examples_unittests",
         "//ui/views/examples:views_examples_with_content",
       ]
+    }
+
+    if (use_gtk) {
+      deps += [ "//ui/gtk:gtk_unittests" ]
     }
 
     if (enterprise_watermark) {
