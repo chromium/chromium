@@ -163,6 +163,124 @@ TEST_F(LocalFileUtilTest, CreateFailForSymlink) {
   ASSERT_FALSE(file.IsValid());
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, file.error_details());
 }
+
+TEST_F(LocalFileUtilTest, EnsureFileExistsFailForSymlink) {
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  base::FilePath target_path = LocalPath(target_name);
+
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  bool created = false;
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            EnsureFileExists(symlink_name, &created));
+  EXPECT_FALSE(created);
+}
+
+TEST_F(LocalFileUtilTest, TouchFailForSymlink) {
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  base::FilePath target_path = LocalPath(target_name);
+
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->Touch(context.get(), CreateURL(symlink_name),
+                               base::Time::Now(), base::Time::Now()));
+}
+
+TEST_F(LocalFileUtilTest, TruncateFailForSymlink) {
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  base::FilePath target_path = LocalPath(target_name);
+
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->Truncate(context.get(), CreateURL(symlink_name), 1));
+  EXPECT_EQ(0, GetSize(target_name));
+}
+
+TEST_F(LocalFileUtilTest, CopyOrMoveFileFailForSymlink) {
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  base::FilePath target_path = LocalPath(target_name);
+
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  const char* other_name = "other_file";
+  bool created;
+  ASSERT_EQ(base::File::FILE_OK, EnsureFileExists(other_name, &created));
+  ASSERT_TRUE(created);
+
+  std::unique_ptr<FileSystemOperationContext> context;
+  context = NewContext();
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->Truncate(context.get(), CreateURL(other_name), 1020));
+
+  // Copying onto a symlink should fail.
+  context = NewContext();
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                context.get(), CreateURL(other_name), CreateURL(symlink_name),
+                FileSystemFileUtil::CopyOrMoveOptionSet(), true /* copy */));
+  EXPECT_EQ(0, GetSize(target_name));
+
+  // Copying from a symlink should fail.
+  context = NewContext();
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                context.get(), CreateURL(symlink_name), CreateURL(other_name),
+                FileSystemFileUtil::CopyOrMoveOptionSet(), true /* copy */));
+  EXPECT_EQ(1020, GetSize(other_name));
+}
+
+TEST_F(LocalFileUtilTest, CopyInForeignFileFailForSymlink) {
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  base::FilePath target_path = LocalPath(target_name);
+
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  base::ScopedTempDir foreign_dir;
+  ASSERT_TRUE(foreign_dir.CreateUniqueTempDir());
+  base::FilePath foreign_path =
+      foreign_dir.GetPath().AppendASCII("foreign_file");
+  ASSERT_TRUE(base::WriteFile(foreign_path, "data"));
+
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyInForeignFile(context.get(), foreign_path,
+                                           CreateURL(symlink_name)));
+  EXPECT_EQ(0, GetSize(target_name));
+}
 #endif
 
 TEST_F(LocalFileUtilTest, EnsureFileExists) {

@@ -104,8 +104,6 @@ base::File LocalFileUtil::CreateOrOpen(FileSystemOperationContext* context,
   base::File::Error error = GetLocalFilePath(context, url, &file_path);
   if (error != base::File::FILE_OK)
     return base::File(error);
-  if (IsHiddenItem(file_path))
-    return base::File(base::File::FILE_ERROR_NOT_FOUND);
 
   return NativeFileUtil::CreateOrOpen(file_path, file_flags);
 }
@@ -142,8 +140,6 @@ base::File::Error LocalFileUtil::GetFileInfo(
   base::File::Error error = GetLocalFilePath(context, url, &file_path);
   if (error != base::File::FILE_OK)
     return error;
-  if (IsHiddenItem(file_path))
-    return base::File::FILE_ERROR_NOT_FOUND;
 
   error = NativeFileUtil::GetFileInfo(file_path, file_info);
   if (error == base::File::FILE_OK)
@@ -175,6 +171,9 @@ base::File::Error LocalFileUtil::GetLocalFilePath(
     return base::File::FILE_ERROR_ACCESS_DENIED;
   }
   *local_file_path = url.path();
+  if (IsHiddenItem(*local_file_path)) {
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
   return base::File::FILE_OK;
 }
 
@@ -232,6 +231,9 @@ base::File::Error LocalFileUtil::CopyInForeignFile(
       GetLocalFilePath(context, dest_url, &dest_file_path);
   if (error != base::File::FILE_OK)
     return error;
+  if (IsHiddenItem(src_file_path)) {
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
   return NativeFileUtil::CopyOrMoveFile(
       src_file_path, dest_file_path, FileSystemOperation::CopyOrMoveOptionSet(),
       NativeFileUtil::CopyOrMoveModeForDestination(dest_url, true /* copy */));

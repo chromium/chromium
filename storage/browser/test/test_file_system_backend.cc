@@ -47,6 +47,9 @@ class TestFileUtil : public LocalFileUtil {
                                      const FileSystemURL& file_system_url,
                                      base::FilePath* local_file_path) override {
     *local_file_path = base_path_.Append(file_system_url.path());
+    if (IsHiddenItem(*local_file_path)) {
+      return base::File::FILE_ERROR_NOT_FOUND;
+    }
     return base::File::FILE_OK;
   }
 
