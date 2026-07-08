@@ -536,28 +536,11 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
   // cached device permission state because a change (e.g. user toggling the
   // OS-level permission) must invalidate cached state for *all* origins via
   // the wildcard observer notification in MaybeUpdateCachedHasDevicePermission.
-  //
-  // Since this code is reached from navigation hot paths (e.g. on macOS, where
-  // the OS permission query can be expensive), post the refresh asynchronously
-  // in the non-GRANTED case so the hot path is not blocked, while still
-  // preserving the cross-origin observer-notification correctness.
+  MaybeUpdateCachedHasDevicePermission(web_contents);
+
   if (result.status != blink::mojom::PermissionStatus::GRANTED) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<PermissionContextBase> self,
-                          base::WeakPtr<content::WebContents> wc) {
-                         if (!self) {
-                           return;
-                         }
-                         self->MaybeUpdateCachedHasDevicePermission(wc.get());
-                       },
-                       weak_factory_.GetWeakPtr(),
-                       web_contents ? web_contents->GetWeakPtr()
-                                    : base::WeakPtr<content::WebContents>()));
     return result;
   }
-
-  MaybeUpdateCachedHasDevicePermission(web_contents);
 
   // If the device-level permission is granted, it has no effect on the result.
   if (last_has_device_permission_result_.has_value() &&

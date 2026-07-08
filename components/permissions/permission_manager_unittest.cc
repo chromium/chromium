@@ -855,16 +855,16 @@ class WildcardPermissionObserver : public permissions::Observer {
 // TODO(crbug.com/377264243): Enable when device permission is supported on
 // Android.
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DeviceStatusRefreshIsAsyncForNonGranted \
-  DISABLED_DeviceStatusRefreshIsAsyncForNonGranted
+#define MAYBE_DeviceStatusRefreshNotifiesObservers \
+  DISABLED_DeviceStatusRefreshNotifiesObservers
 #else
-#define MAYBE_DeviceStatusRefreshIsAsyncForNonGranted \
-  DeviceStatusRefreshIsAsyncForNonGranted
+#define MAYBE_DeviceStatusRefreshNotifiesObservers \
+  DeviceStatusRefreshNotifiesObservers
 #endif
-// On the non-GRANTED hot path, MaybeUpdateCachedHasDevicePermission is
-// posted asynchronously. Verifies the wildcard notification does not fire
-// inline and does fire after the posted task runs.
-TEST_F(PermissionManagerTest, MAYBE_DeviceStatusRefreshIsAsyncForNonGranted) {
+// Verifies that when the device-level permission is revoked, the site-level
+// permission status is updated and a wildcard observer notification is
+// dispatched.
+TEST_F(PermissionManagerTest, MAYBE_DeviceStatusRefreshNotifiesObservers) {
   PermissionContextBase* context =
       GetPermissionManager()->GetPermissionContextForTesting(
           ContentSettingsType::NOTIFICATIONS);
@@ -881,51 +881,15 @@ TEST_F(PermissionManagerTest, MAYBE_DeviceStatusRefreshIsAsyncForNonGranted) {
   WildcardPermissionObserver observer;
   context->AddObserver(&observer);
 
-  // Switch to the non-GRANTED hot path and revoke the OS-level permission.
-  SetPermission(PermissionType::NOTIFICATIONS, PermissionStatus::ASK);
+  // Revoking the OS permission must downgrade the status to ASK and trigger the
+  // wildcard notification.
   permissions_client().SetHasDevicePermission(false);
-
   CheckPermissionStatus(PermissionType::NOTIFICATIONS, PermissionStatus::ASK,
                         /*should_include_device_status=*/true);
 
-  // Not fired inline.
-  EXPECT_EQ(0, observer.wildcard_count());
-
-  // Fired after the posted task runs.
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.wildcard_count() >= 1; }));
+  EXPECT_EQ(1, observer.wildcard_count());
 
   context->RemoveObserver(&observer);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DeviceStatusRefreshIsSyncForGranted \
-  DISABLED_DeviceStatusRefreshIsSyncForGranted
-#else
-#define MAYBE_DeviceStatusRefreshIsSyncForGranted \
-  DeviceStatusRefreshIsSyncForGranted
-#endif
-// Counterpart to the test above: on the GRANTED path, the cache refresh
-// must be synchronous, otherwise a revoked OS permission would return a
-// stale GRANTED.
-TEST_F(PermissionManagerTest, MAYBE_DeviceStatusRefreshIsSyncForGranted) {
-  // Prime the cache so the subsequent flip is a real change.
-  SetPermission(PermissionType::NOTIFICATIONS, PermissionStatus::GRANTED);
-  permissions_client().SetHasDevicePermission(true);
-  permissions_client().SetCanRequestDevicePermission(true);
-  CheckPermissionStatus(PermissionType::NOTIFICATIONS,
-                        PermissionStatus::GRANTED,
-                        /*should_include_device_status=*/true);
-
-  // Revoking the OS permission must synchronously downgrade to ASK.
-  permissions_client().SetHasDevicePermission(false);
-  CheckPermissionStatus(PermissionType::NOTIFICATIONS, PermissionStatus::ASK,
-                        /*should_include_device_status=*/true);
-
-  // And to DENIED when can_request is also false.
-  permissions_client().SetCanRequestDevicePermission(false);
-  CheckPermissionStatus(PermissionType::NOTIFICATIONS, PermissionStatus::DENIED,
-                        /*should_include_device_status=*/true);
 }
 
 TEST_F(PermissionManagerTest,

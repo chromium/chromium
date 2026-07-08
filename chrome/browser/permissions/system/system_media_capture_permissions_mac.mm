@@ -170,7 +170,7 @@ void RequestSystemVideoCapturePermission(base::OnceClosure callback) {
 
 void SetMediaAuthorizationWrapperForTesting(
     MediaAuthorizationWrapper* wrapper) {
-  CHECK(!g_media_authorization_wrapper_for_tests);
+  CHECK(!wrapper || !g_media_authorization_wrapper_for_tests);
   g_media_authorization_wrapper_for_tests = wrapper;
 }
 
