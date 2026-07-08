@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_shared_tabs_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/unguessable_token.h"
 #import "components/contextual_tasks/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
@@ -38,6 +39,7 @@ const CGFloat kCollectionViewTopPadding = 8.0;
 // Content padding and dimensions.
 const CGFloat kHorizontalMargin = 16.0;
 const CGFloat kFaviconSize = 24.0;
+const CGFloat kTrashSymbolPointSize = 18.0;
 
 // Section identifier for the collection view diffable data source.
 NSString* const kSharedTabsSectionIdentifier = @"kSharedTabsSectionIdentifier";
@@ -283,6 +285,60 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   [snapshot appendSectionsWithIdentifiers:@[ kSharedTabsSectionIdentifier ]];
   [snapshot appendItemsWithIdentifiers:_sharedTabs];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - UICollectionViewDelegate
+
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point {
+  ComposeboxMenuSharedTab* tab =
+      [_dataSource itemIdentifierForIndexPath:indexPath];
+  if (!tab) {
+    return nil;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIContextMenuConfiguration
+      configurationWithIdentifier:nil
+                  previewProvider:nil
+                   actionProvider:^UIMenu*(
+                       NSArray<UIMenuElement*>* suggestedActions) {
+                     return [weakSelf contextMenuForTab:tab];
+                   }];
+}
+
+// Creates and returns the context menu for a given shared `tab`.
+- (UIMenu*)contextMenuForTab:(ComposeboxMenuSharedTab*)tab {
+  __weak __typeof(self) weakSelf = self;
+
+  UIAction* removeAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_REMOVE_TAB)
+                image:DefaultSymbolWithPointSize(kTrashSymbol,
+                                                 kTrashSymbolPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf removeTab:tab];
+              }];
+  removeAction.attributes = UIMenuElementAttributesDestructive;
+
+  return [UIMenu menuWithTitle:@"" children:@[ removeAction ]];
+}
+
+// Removes `tab` from the collection view and notifies the delegate.
+- (void)removeTab:(ComposeboxMenuSharedTab*)tab {
+  NSMutableArray<ComposeboxMenuSharedTab*>* updatedTabs =
+      [_sharedTabs mutableCopy];
+  [updatedTabs removeObject:tab];
+  _sharedTabs = [updatedTabs copy];
+
+  NSDiffableDataSourceSnapshot<NSString*, ComposeboxMenuSharedTab*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot deleteItemsWithIdentifiers:@[ tab ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+
+  [self.delegate composeboxMenuSharedTabsViewController:self
+                            didRemoveTabWithServerToken:tab.serverToken];
 }
 
 #pragma mark - User Actions

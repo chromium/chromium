@@ -582,6 +582,23 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                         cachedWebStateIDs:attachments.cachedWebStateIDs];
 }
 
+- (void)removeSharedTabWithServerToken:
+    (const base::UnguessableToken&)serverToken {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  ComposeboxInputItem* item = [_items itemForServerToken:serverToken];
+  if (item) {
+    [self removeItem:item];
+  }
+}
+
+- (ComposeboxUIInputState*)currentUIInputState {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return [_stateManager
+      computeUIInputStateWithFavicon:_currentTabFavicon
+                 attachedWebStateIDs:[self
+                                         attachedWebStateIDsInCurrentContext]];
+}
+
 - (void)applyFocusParams:(ComposeboxFocusParams*)params {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!params) {

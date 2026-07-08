@@ -907,6 +907,16 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
 }
 
+- (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
+      didRemoveTabWithServerToken:(const base::UnguessableToken&)serverToken {
+  [_mediator removeSharedTabWithServerToken:serverToken];
+}
+
+- (ComposeboxUIInputState*)currentUIInputStateForMenuCoordinator:
+    (ComposeboxMenuCoordinator*)coordinator {
+  return [_mediator currentUIInputState];
+}
+
 #pragma mark - ComposeboxMenuCoordinatorDelegate
 
 - (void)composeboxMenuCoordinatorDidDismissMenu:

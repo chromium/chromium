@@ -9,6 +9,10 @@
 
 #import "url/gurl.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 @class ComposeboxMenuSharedTab;
 @class ComposeboxMenuSharedTabsViewController;
 
@@ -19,6 +23,12 @@
 - (void)composeboxMenuSharedTabsViewController:
             (ComposeboxMenuSharedTabsViewController*)viewController
                                      didTapURL:(const GURL&)url;
+
+// Called when the user removes a tab with the given server token.
+- (void)composeboxMenuSharedTabsViewController:
+            (ComposeboxMenuSharedTabsViewController*)viewController
+                   didRemoveTabWithServerToken:
+                       (const base::UnguessableToken&)serverToken;
 
 @end
 

@@ -1741,8 +1741,14 @@
       <message name="IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Current tab
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_REMOVE_TAB" desc="Title of the context menu action to stop sharing a tab in the composebox menu. [iOS only].">
+        Remove tab
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS" desc="The Composebox menu title for shared tabs section. [iOS only].">
         Shared tabs
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_TAB_NO_LONGER_SHARED" desc="Message shown in a snackbar after a tab is removed from the shared list. [iOS only].">
+        Tab removed
       </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE" desc="Title for the tools section in the composebox section [iOS only].">
         Tools

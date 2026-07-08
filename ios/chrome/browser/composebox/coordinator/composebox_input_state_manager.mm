@@ -517,14 +517,16 @@ ComposeboxStrings* ServerStringsFromInputState(
 
   NSMutableArray<ComposeboxMenuSharedTab*>* sharedTabs =
       [[NSMutableArray alloc] init];
-  for (ComposeboxInputItem* item in self.items.containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
-      ComposeboxMenuSharedTab* tab =
-          [[ComposeboxMenuSharedTab alloc] initWithURL:item.tabURL
-                                                 title:item.title
-                                           serverToken:item.serverToken
-                                               favicon:item.leadingIconImage];
-      [sharedTabs addObject:tab];
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    for (ComposeboxInputItem* item in self.items.containedItems) {
+      if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+        ComposeboxMenuSharedTab* tab =
+            [[ComposeboxMenuSharedTab alloc] initWithURL:item.tabURL
+                                                   title:item.title
+                                             serverToken:item.serverToken
+                                                 favicon:item.leadingIconImage];
+        [sharedTabs addObject:tab];
+      }
     }
   }
   state.sharedTabs = sharedTabs;

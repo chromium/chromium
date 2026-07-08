@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 @class ComposeboxAttachmentSelection;
 @class ComposeboxMenuCoordinator;
 @class ComposeboxUIInputState;
@@ -38,6 +42,15 @@
 // Called when the user picks or removes attachments in embedded mode.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
              didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments;
+
+// Called when the user removes a tab with the given server token in assistant
+// aim composebox menu.
+- (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
+      didRemoveTabWithServerToken:(const base::UnguessableToken&)serverToken;
+
+// Returns the current UI input state from the input plate context.
+- (ComposeboxUIInputState*)currentUIInputStateForMenuCoordinator:
+    (ComposeboxMenuCoordinator*)coordinator;
 
 @end
 

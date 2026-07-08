@@ -10,6 +10,7 @@
 #import <set>
 #import <vector>
 
+#import "base/unguessable_token.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/contextual_tasks/public/features.h"
@@ -33,13 +34,17 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -403,6 +408,28 @@ CGFloat const kSheetTopPadding = 40.0f;
 
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
+}
+
+- (void)composeboxMenuSharedTabsViewController:
+            (ComposeboxMenuSharedTabsViewController*)viewController
+                   didRemoveTabWithServerToken:
+                       (const base::UnguessableToken&)serverToken {
+  [self.inputPlateDelegate composeboxMenuCoordinator:self
+                         didRemoveTabWithServerToken:serverToken];
+
+  ComposeboxUIInputState* newState =
+      [self.inputPlateDelegate currentUIInputStateForMenuCoordinator:self];
+  if (newState) {
+    _inputState = newState;
+    [_mediator updateUIInputState:_inputState];
+  }
+
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TAB_NO_LONGER_SHARED);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - ComposeboxPickerPresenterDelegate

@@ -41,6 +41,10 @@ class ProfileIOS;
 class TemplateURLService;
 class WebStateList;
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
@@ -70,6 +74,8 @@ class ContextualSearchSessionHandle;
 // The current real-time attachment selection.
 @property(nonatomic, readonly)
     ComposeboxAttachmentSelection* currentAttachmentSelection;
+// The current computed UI input state.
+@property(nonatomic, readonly) ComposeboxUIInputState* currentUIInputState;
 // The composebox URL loader.
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;
 // The delegate for this mediator.
@@ -123,6 +129,10 @@ class ContextualSearchSessionHandle;
 
 // Unpacks and attaches all items within the selection wrapper.
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments;
+
+// Removes the shared tab with the given `serverToken`.
+- (void)removeSharedTabWithServerToken:
+    (const base::UnguessableToken&)serverToken;
 
 // Applies the focus parameters to initialize the session state.
 - (void)applyFocusParams:(ComposeboxFocusParams*)params;
