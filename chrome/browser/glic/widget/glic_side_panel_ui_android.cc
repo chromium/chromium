@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -38,7 +39,13 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
                                  GlicUiEmbedder::Delegate& delegate,
                                  GlicInstanceMetrics& instance_metrics)
-    : tab_(tab), delegate_(delegate), instance_metrics_(instance_metrics) {
+    : web_contents_delegate_android::WebContentsDelegateAndroid(
+          base::android::AttachCurrentThread(),
+          /*obj=*/nullptr),  // Null peer is safely handled and falls back to
+                             // base behavior.
+      tab_(tab),
+      delegate_(delegate),
+      instance_metrics_(instance_metrics) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;

@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "content/public/browser/web_contents_delegate.h"
+#include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
@@ -39,10 +39,11 @@ namespace glic {
 
 class GlicInstanceMetrics;
 
-class GlicSidePanelUi : public GlicUiEmbedder,
-                        public Host::EmbedderDelegate,
-                        public BrowserCollectionObserver,
-                        public content::WebContentsDelegate {
+class GlicSidePanelUi
+    : public GlicUiEmbedder,
+      public Host::EmbedderDelegate,
+      public BrowserCollectionObserver,
+      public web_contents_delegate_android::WebContentsDelegateAndroid {
  public:
   GlicSidePanelUi(Profile* profile,
                   base::WeakPtr<tabs::TabInterface> tab,
@@ -79,7 +80,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
-  // content::WebContentsDelegate:
+  // web_contents_delegate_android::WebContentsDelegateAndroid:
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
