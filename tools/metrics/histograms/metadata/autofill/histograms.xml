@@ -2283,6 +2283,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.SuggestionAcceptedInSession" enum="Boolean"
+    expires_after="2027-03-09">
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether at least one suggestion was accepted in response to AtMemory
+    UI showing, independently of how many queries were submitted (including
+    none). Recorded when the popup is hidden.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.SuggestionFilled" enum="Boolean"
     expires_after="2027-03-09">
   <owner>sygiet@google.com</owner>

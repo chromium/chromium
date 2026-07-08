@@ -130,6 +130,10 @@ class AtMemoryMetricsRecorder {
     std::optional<accessibility_annotator::MemoryDataType> accepted_data_type;
   } suggestion_acceptance_;
 
+  // Whether any suggestion has been accepted during the lifetime of `this`
+  // recorder.
+  bool suggestion_accepted_in_session_ = false;
+
   // Counts the number of queries submitted during this session.
   size_t query_count_ = 0;
 

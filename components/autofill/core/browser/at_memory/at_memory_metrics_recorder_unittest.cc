@@ -133,6 +133,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.AcceptedSuggestionDataType",
       MemoryDataType::kAddressFull, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.SuggestionAcceptedInSession", true, 1);
 }
 
 // Tests that the metric is NOT logged if no query was submitted.
@@ -149,6 +151,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
   histogram_tester_.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
   histogram_tester_.ExpectTotalCount(
       "Autofill.AtMemory.AcceptedSuggestionDataType", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.SuggestionAcceptedInSession", false, 1);
 }
 
 // Tests that the destructor correctly logs that no suggestion was accepted
@@ -167,6 +171,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
 
   histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                        false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.SuggestionAcceptedInSession", false, 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.AtMemory.AcceptedSuggestionDataType", 0);
 }

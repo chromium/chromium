@@ -65,17 +65,21 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   // This avoids polluting the "No Query Submitted" data with cases where the
   // popup was hidden immediately after initialization (e.g., due to focus
   // loss) before the user could see or interact with it.
-  if (source_.has_value()) {
-    base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
-                              query_submitted_);
-    MaybeLogSuggestionAccepted();
-    if (suggestion_acceptance_.accepted_data_type.has_value()) {
-      base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
-                                was_filled_);
-      if (fetch_pii_duration_) {
-        base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
-                                *fetch_pii_duration_);
-      }
+  if (!source_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
+                            query_submitted_);
+  MaybeLogSuggestionAccepted();
+  base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionAcceptedInSession",
+                            suggestion_accepted_in_session_);
+  if (suggestion_acceptance_.accepted_data_type.has_value()) {
+    base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
+                              was_filled_);
+    if (fetch_pii_duration_) {
+      base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
+                              *fetch_pii_duration_);
     }
   }
 }
@@ -171,6 +175,7 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         metadata) {
   suggestion_acceptance_.accepted_data_type = memory_data_type;
+  suggestion_accepted_in_session_ = true;
 
   if (metadata.has_value() && !metadata->multi_index.empty()) {
     base::UmaHistogramSparse("Autofill.AtMemory.AcceptedSuggestionIndex",
