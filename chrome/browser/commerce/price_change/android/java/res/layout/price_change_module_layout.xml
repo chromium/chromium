@@ -13,7 +13,6 @@ found in the LICENSE file.
     android:id="@+id/price_change_module_layout"
     android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
     android:layout_marginStart="@dimen/mvt_container_lateral_margin"
-    android:layout_marginTop="@dimen/price_change_module_margin_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout

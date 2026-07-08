@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/safety_hub_magic_stack_container_marginHorizontal"
-    android:layout_marginTop="@dimen/safety_hub_magic_stack_container_marginTop"
     android:paddingHorizontal="@dimen/safety_hub_magic_stack_container_paddingHorizontal"
     android:paddingVertical="@dimen/safety_hub_magic_stack_container_paddingVertical"
     android:orientation="vertical"
