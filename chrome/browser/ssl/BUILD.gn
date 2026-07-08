@@ -211,6 +211,20 @@ source_set("test_support") {
     "//services/network/public/mojom",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    public += [ "ssl_browsertest_base.h" ]
+    sources += [ "ssl_browsertest_base.cc" ]
+    deps += [
+      ":ssl",
+      "//chrome/browser/interstitials:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/policy/core/browser",
+      "//components/policy/core/common:test_support",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core",
+    ]
+  }
 }
 
 # Foundational cert-verification browser-test base classes, used across many
@@ -344,14 +358,18 @@ if (!is_android) {
 
     sources = [
       "ask_before_http_dialog_controller_interactive_uitest.cc",
+      "ssl_interactive_uitest.cc",
       "typed_navigation_upgrade_throttle_interactive_uitest.cc",
     ]
 
     deps = [
       ":ssl",
+      ":test_support",
       "//base",
       "//chrome/browser/history:test_support",
       "//chrome/browser/interstitials:test_support",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//content/test:browsertest_support",
