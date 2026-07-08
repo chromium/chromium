@@ -194,6 +194,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -3691,7 +3692,19 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
       break;
     case mojom::blink::MediaPlayerActionType::kCopyVideoFrame:
       if (auto* video = DynamicTo<HTMLVideoElement>(media_element); video) {
-        auto image = video->CreateStaticBitmapImage();
+        std::optional<gfx::Size> size;
+        // A site could theoretically apply the CSS `content: url(...)` property
+        // to a <video> element. In this edge case,
+        // HTMLVideoElement::CreateLayoutObject instantiates a LayoutImage
+        // instead of a LayoutVideo, which is safely caught by the DynamicTo
+        // here.
+        if (auto* layout_video =
+                DynamicTo<LayoutVideo>(video->GetLayoutObject())) {
+          size = layout_video->ReplacedContentRect().PixelSnappedSize();
+        }
+        auto image = video->CreateStaticBitmapImage(
+            size, /*reinterpret_as_srgb=*/false,
+            /*respect_orientation=*/kDoNotRespectImageOrientation);
         if (image) {
           GetEditor().CopyImage(result, image);
         }

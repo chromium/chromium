@@ -663,4 +663,51 @@ TEST_P(HTMLVideoElementTest, RequestSaveVideoFrame) {
   EXPECT_EQ(FrameHost()->BlobURLStore()->resolved_url(), params->url);
 }
 
+TEST_P(HTMLVideoElementTest, CreateStaticBitmapImage_Rotated) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  gfx::Size coded_size(1280, 720);
+  gfx::Rect visible_rect(coded_size);
+  gfx::Size natural_size = coded_size;
+
+  auto frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, coded_size, visible_rect, natural_size,
+      base::TimeDelta());
+
+  frame->metadata().transformation =
+      media::VideoTransformation(media::VIDEO_ROTATION_90);
+
+  MockMediaPlayer()->SetCurrentFrame(frame);
+
+  auto image = video()->CreateStaticBitmapImage(std::nullopt, false,
+                                                kDoNotRespectImageOrientation);
+
+  ASSERT_TRUE(image);
+  EXPECT_EQ(image->Size(), gfx::Size(720, 1280));
+}
+
+TEST_P(HTMLVideoElementTest, CreateStaticBitmapImage_Rotated_WYSIWYG) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  gfx::Size coded_size(1280, 720);
+  gfx::Rect visible_rect(coded_size);
+  gfx::Size natural_size = coded_size;
+
+  auto frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, coded_size, visible_rect, natural_size,
+      base::TimeDelta());
+
+  frame->metadata().transformation =
+      media::VideoTransformation(media::VIDEO_ROTATION_90);
+
+  MockMediaPlayer()->SetCurrentFrame(frame);
+
+  auto image = video()->CreateStaticBitmapImage(gfx::Size(270, 480), false,
+                                                kDoNotRespectImageOrientation);
+
+  ASSERT_TRUE(image);
+  EXPECT_EQ(image->Size(), gfx::Size(270, 480));
+}
 }  // namespace blink

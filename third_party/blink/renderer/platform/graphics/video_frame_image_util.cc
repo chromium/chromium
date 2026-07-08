@@ -98,7 +98,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     std::optional<CanvasSnapshotInfo> sw_draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
-    bool reinterpret_video_as_srgb) {
+    bool reinterpret_video_as_srgb,
+    std::optional<media::VideoTransformation> transformation_override) {
   CHECK(sw_draw_info || snapshot_provider);
   CHECK(!sw_draw_info || !snapshot_provider);
 
@@ -108,8 +109,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     prefer_tagged_orientation = false;
   }
 
-  const auto transform =
-      frame->metadata().transformation.value_or(media::kNoTransformation);
+  const auto transform = transformation_override.value_or(
+      frame->metadata().transformation.value_or(media::kNoTransformation));
 
   // If not doing an accelerated draw, avoid GPU round trips to upload frame
   // data from MappableSI-backed frames.
@@ -279,11 +280,13 @@ scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
-    bool reinterpret_video_as_srgb) {
+    bool reinterpret_video_as_srgb,
+    std::optional<media::VideoTransformation> transformation_override) {
   CHECK(snapshot_provider);
   return CreateImageFromVideoFrame(
       std::move(frame), snapshot_provider, /*sw_draw_info=*/std::nullopt,
-      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb);
+      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb,
+      transformation_override);
 }
 
 scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
@@ -291,10 +294,12 @@ scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
     const CanvasSnapshotInfo& draw_info,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
-    bool reinterpret_video_as_srgb) {
+    bool reinterpret_video_as_srgb,
+    std::optional<media::VideoTransformation> transformation_override) {
   return CreateImageFromVideoFrame(
       std::move(frame), /*snapshot_provider=*/nullptr, draw_info,
-      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb);
+      video_renderer, prefer_tagged_orientation, reinterpret_video_as_srgb,
+      transformation_override);
 }
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,

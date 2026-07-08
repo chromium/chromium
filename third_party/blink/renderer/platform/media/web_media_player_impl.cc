@@ -1385,6 +1385,11 @@ gfx::Size WebMediaPlayerImpl::VisibleSize() const {
   return video_frame->visible_rect().size();
 }
 
+media::VideoTransformation WebMediaPlayerImpl::GetVideoTransformation() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return pipeline_metadata_.video_decoder_config.video_transformation();
+}
+
 media::VideoSpatialFormat WebMediaPlayerImpl::GetSpatialFormat() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return pipeline_metadata_.video_decoder_config.spatial_format();

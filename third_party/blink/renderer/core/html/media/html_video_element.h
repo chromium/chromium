@@ -115,7 +115,9 @@ class CORE_EXPORT HTMLVideoElement final
   // though it is in sRGB color space.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
       std::optional<gfx::Size> size = std::nullopt,
-      bool reinterpret_as_srgb = false);
+      bool reinterpret_as_srgb = false,
+      RespectImageOrientationEnum respect_orientation =
+          kRespectImageOrientation);
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
