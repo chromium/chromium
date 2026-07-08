@@ -57,6 +57,21 @@ public class LocationProviderAndroid implements LocationProvider {
     @Override
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
+
+        // When Chrome is granted with app-level precise permission, we cannot generate
+        // approximate (coarse) location using Criteria. To avoid leaking precise location
+        // when coarse location is requested, report a position error.
+        // See crbug.com/502587667.
+        if (PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+                && !enableHighAccuracy
+                && mContext.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+            unregisterFromLocationUpdates();
+            LocationProviderAdapter.newErrorAvailable("Cannot generate approximate location.");
+            return;
+        }
+
         final boolean requestedHighAccuracy = enableHighAccuracy;
         mEffectiveHighAccuracy = requestedHighAccuracy;
 

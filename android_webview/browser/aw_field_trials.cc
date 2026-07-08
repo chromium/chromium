@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/features.h"
 #include "components/input/features.h"
 #include "components/metrics/persistent_histograms.h"
@@ -337,4 +338,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // experiment on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kPrefetchRequestStatusListenerAsync);
+
+  // Disable approximate geolocation permission on WebView for now because the
+  // workaround for crbug.com/502587667 will break CTS tests for Geolocation.
+  aw_feature_overrides.DisableFeature(
+      content_settings::features::kApproximateGeolocationPermission);
 }
