@@ -38,10 +38,10 @@ class FlashDeviceTest(unittest.TestCase):
         self._sdk_hash_mock = sdk_hash_patcher.start()
         self._swarming_mock = swarming_patcher.start()
         self._time_sleep = time_sleep.start()
-        self.addCleanup(self._ffx_mock.stop)
-        self.addCleanup(self._sdk_hash_mock.stop)
-        self.addCleanup(self._swarming_mock.stop)
-        self.addCleanup(self._time_sleep.stop)
+        self.addCleanup(ffx_patcher.stop)
+        self.addCleanup(sdk_hash_patcher.stop)
+        self.addCleanup(swarming_patcher.stop)
+        self.addCleanup(time_sleep.stop)
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
