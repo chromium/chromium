@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_registry_simple.h"

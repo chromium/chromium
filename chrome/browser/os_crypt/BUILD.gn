@@ -16,7 +16,7 @@ source_set("os_crypt") {
     "//chrome/install_static:install_static_util",
     "//components/os_crypt/async/browser:key_provider_interface",
     "//components/prefs",
-    "//content/public/browser",
+    "//crypto",
   ]
 
   public_deps = [ ":app_bound_api" ]
