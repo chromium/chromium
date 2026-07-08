@@ -186,6 +186,10 @@ void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
   Close();
 }
 
+void ShelfTooltipManager::OnShelfShuttingDown() {
+  bubble_ = nullptr;
+}
+
 void ShelfTooltipManager::OnShelfVisibilityStateChanged(
     ShelfVisibilityState new_state) {
   if (new_state == SHELF_HIDDEN)

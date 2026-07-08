@@ -67,6 +67,7 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShelfObserver overrides:
+  void OnShelfShuttingDown() override;
   void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
@@ -83,7 +84,7 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   int timer_delay_;
   base::OneShotTimer timer_;
   raw_ptr<Shelf> shelf_ = nullptr;
-  raw_ptr<ShelfBubble, DanglingUntriaged> bubble_ = nullptr;
+  raw_ptr<ShelfBubble> bubble_ = nullptr;
 
   raw_ptr<ShelfTooltipDelegate> shelf_tooltip_delegate_ = nullptr;
 
