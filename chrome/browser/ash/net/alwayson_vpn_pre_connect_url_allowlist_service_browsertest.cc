@@ -69,12 +69,12 @@ class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
     // profile needs to be disassociated with the null object so that a new
     // instance of the service is created.
     ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetInstance()
-        ->RecreateServiceInstanceForTesting(browser()->profile());
+        ->RecreateServiceInstanceForTesting(browser()->GetProfile());
 
     // The service should be created for a managed profile.
     ASSERT_TRUE(
         ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   void TearDownOnMainThread() override {
@@ -120,7 +120,7 @@ class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
 
   bool IsPreConnectListEnforced() {
     return ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetForProfile(
-               browser()->profile())
+               browser()->GetProfile())
         ->enforce_alwayson_pre_connect_url_allowlist();
   }
 

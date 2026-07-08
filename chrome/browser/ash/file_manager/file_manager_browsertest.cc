@@ -223,7 +223,7 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
   // extensions::ExtensionApiTest:
   void SetUpOnMainThread() override {
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(
-        browser()->profile());
+        browser()->GetProfile());
 
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());

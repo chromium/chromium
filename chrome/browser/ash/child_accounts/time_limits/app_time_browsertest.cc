@@ -86,8 +86,8 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Started());
     logged_in_user_mixin_.LogInUser();
 
-    arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
-    arc_app_list_prefs_ = ArcAppListPrefs::Get(browser()->profile());
+    arc::SetArcPlayStoreEnabledForProfile(browser()->GetProfile(), true);
+    arc_app_list_prefs_ = ArcAppListPrefs::Get(browser()->GetProfile());
     EXPECT_TRUE(arc_app_list_prefs_);
 
     base::RunLoop run_loop;

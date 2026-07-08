@@ -288,7 +288,7 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
  public:
   void SetUpOnMainThread() override {
     TestProfileTypeMixin<InProcessBrowserTest>::SetUpOnMainThread();
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
     test_controller()->SetUpOnMainThread(this);
   }
@@ -312,7 +312,7 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
 
       // task_verifier callback is invoked synchronously from
       // FindAllTypesOfTasks.
-      FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
+      FindAllTypesOfTasks(browser()->GetProfile(), entries, file_urls,
                           dlp_source_urls,
                           base::BindOnce(&VerifyTasks, &remaining, test));
     }
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
   TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
 
   UpdateDefaultTask(
-      browser()->profile(),
+      browser()->GetProfile(),
       TaskDescriptor(extension_id, StringToTaskType("app"), "tiffAction"),
       {"tiff"}, {"image/tiff"});
   if (profile_type() == TestProfileType::kIncognito) {
@@ -760,7 +760,7 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
       ConvertExpectation(test, entries, file_urls, dlp_source_urls);
 
       base::test::TestFuture<std::unique_ptr<ResultingTasks>> tasks_future;
-      FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
+      FindAllTypesOfTasks(browser()->GetProfile(), entries, file_urls,
                           dlp_source_urls, tasks_future.GetCallback());
       ASSERT_TRUE(tasks_future.Get()) << test.file_extensions;
       ResultingTasks& resulting_tasks = *tasks_future.Get();
@@ -858,7 +858,7 @@ class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
         /*volume_filter=*/{});
     ash::SystemAppLaunchParams params;
     params.url = files_swa_url;
-    ash::LaunchSystemWebAppAsync(browser()->profile(),
+    ash::LaunchSystemWebAppAsync(browser()->GetProfile(),
                                  ash::SystemWebAppType::FILE_MANAGER, params);
     ui_test_utils::WaitForBrowserToOpen();
   }
@@ -869,7 +869,7 @@ class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
     logged_in_user_mixin_->LogInUser();
 
     // Needed to launch Files app as the dialog's modal parent.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 
@@ -886,20 +886,20 @@ class NonManagedAccount : public TestAccountBrowserTest {
 
   void SetUpOnMainThread() override {
     TestAccountBrowserTest::SetUpOnMainThread();
-    app_service_test_.SetUp(browser()->profile());
+    app_service_test_.SetUp(browser()->GetProfile());
 
     auto fake_provider =
         ash::file_system_provider::FakeExtensionProvider::Create(
             extension_misc::kODFSExtensionId);
     const auto kProviderId = fake_provider->GetId();
     auto* service =
-        ash::file_system_provider::Service::Get(browser()->profile());
+        ash::file_system_provider::Service::Get(browser()->GetProfile());
     service->RegisterProvider(std::move(fake_provider));
   }
 
   apps::AppServiceProxy* app_service_proxy() {
     apps::AppServiceProxy* app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
     CHECK(app_service_proxy);
     return app_service_proxy;
   }
@@ -913,8 +913,8 @@ class NonManagedAccount : public TestAccountBrowserTest {
 // non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class WithEnterpriseFlag : public TestAccountBrowserTest {
@@ -939,8 +939,8 @@ class NonManagedAccountWithEnterpriseFlag : public WithEnterpriseFlag {
 // non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class WithEnterpriseFlagAndPrefs
@@ -956,7 +956,7 @@ class WithEnterpriseFlagAndPrefs
 
   void SetUpOnMainThread() override {
     TestAccountBrowserTest::SetUpOnMainThread();
-    app_service_test_.SetUp(browser()->profile());
+    app_service_test_.SetUp(browser()->GetProfile());
 
     if (std::get<2>(GetParam())) {
       auto fake_provider =
@@ -964,7 +964,7 @@ class WithEnterpriseFlagAndPrefs
               extension_misc::kODFSExtensionId);
       const auto kProviderId = fake_provider->GetId();
       auto* service =
-          ash::file_system_provider::Service::Get(browser()->profile());
+          ash::file_system_provider::Service::Get(browser()->GetProfile());
       service->RegisterProvider(std::move(fake_provider));
     }
   }
@@ -1061,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
         fake_office_file_type.file_extension);
 
     std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
-        file_manager::test::GetTasksForFile(browser()->profile(),
+        file_manager::test::GetTasksForFile(browser()->GetProfile(),
                                             test_file_path);
 
     for (FullTaskDescriptor& task : tasks) {
@@ -1086,8 +1086,8 @@ class EnterpriseAccount : public TestAccountBrowserTest {
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
@@ -1105,8 +1105,8 @@ class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_TRUE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class ChildAccount : public TestAccountBrowserTest {
@@ -1123,8 +1123,8 @@ class ChildAccount : public TestAccountBrowserTest {
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
 // child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
@@ -1142,8 +1142,8 @@ class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 // child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 class NonManagedAccountNoFlag : public TestAccountBrowserTest {
@@ -1161,8 +1161,8 @@ class NonManagedAccountNoFlag : public TestAccountBrowserTest {
 // non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 // |InProcessBrowserTest| which allows a user to login to Guest mode.
@@ -1183,8 +1183,8 @@ class GuestMode : public MixinBasedInProcessBrowserTest {
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when
 // |kUploadOfficeToCloud| is enabled but the user is in Guest mode.
 IN_PROC_BROWSER_TEST_F(GuestMode, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+  ASSERT_FALSE(chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
+      browser()->GetProfile()));
 }
 
 // TODO(cassycc or petermarshall) share this class with other test files for
@@ -2565,7 +2565,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsReauthRequired,
       1);
 
-  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
       ->RemoveObserver(this);
 }
 
@@ -2611,7 +2611,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsAccessDenied, 1);
 
-  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
       ->RemoveObserver(this);
 }
 
@@ -2706,7 +2706,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kMS365NotInstalled, 1);
 
-  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
       ->RemoveObserver(this);
 }
 
@@ -2744,7 +2744,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSWhenLaunchFails) {
 
   web_app_publisher_->set_fail_launch(false);
 
-  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
       ->RemoveObserver(this);
 }
 
@@ -3100,7 +3100,8 @@ IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurveyClippyOn, OpenInQuickOffice) {
   ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
       hats_survey_executed_future.GetCallback());
 
-  file_manager::file_tasks::LaunchQuickOffice(browser()->profile(), file_url);
+  file_manager::file_tasks::LaunchQuickOffice(browser()->GetProfile(),
+                                              file_url);
 
   const auto [app_id, launching_app] = hats_survey_executed_future.Get();
   ASSERT_EQ(app_id, std::string());
@@ -3130,7 +3131,8 @@ IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurveyClippyOff,
   ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
       hats_survey_executed_future.GetCallback());
 
-  file_manager::file_tasks::LaunchQuickOffice(browser()->profile(), file_url);
+  file_manager::file_tasks::LaunchQuickOffice(browser()->GetProfile(),
+                                              file_url);
 
   const auto [app_id, launching_app] = hats_survey_executed_future.Get();
   ASSERT_EQ(app_id, std::string());

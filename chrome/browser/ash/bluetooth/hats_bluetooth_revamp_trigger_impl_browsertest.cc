@@ -66,7 +66,7 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
   void TryToShowSurvey() { bluetooth_revamp_trigger_->TryToShowSurvey(); }
 
   void SetProfileForTesting() {
-    bluetooth_revamp_trigger_->set_profile_for_testing(browser()->profile());
+    bluetooth_revamp_trigger_->set_profile_for_testing(browser()->GetProfile());
   }
 
   void SetNullProfileForTesting() {
@@ -109,7 +109,7 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest, ShouldShowSurveyTrue) {
-  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(notification_id));
   TryToShowSurvey();
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest, ShouldShowSurveyTrue) {
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfSessionLocked) {
-  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
   session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(notification_id));
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfPrefIsFalse) {
-  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
   browser()->profile()->GetPrefs()->SetBoolean(
       ash::prefs::kUserPairedWithFastPair, true);
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfTimerRunning) {
-  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
   TryToShowSurvey();
 
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
 
 IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledWithNoActiveProfile) {
-  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(notification_id));
 

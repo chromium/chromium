@@ -237,7 +237,7 @@ class MagicBoostBrowserTest
   // Showing "chrome-untrusted://mako/" help me write bubble.
   bool IsShowingMakoBubble() const {
     return ash::input_method::EditorMediatorFactory::GetForProfile(
-               browser()->profile())
+               browser()->GetProfile())
         ->mako_bubble_coordinator_for_testing()
         .IsShowingUI();
   }
@@ -309,7 +309,7 @@ class MagicBoostBrowserTest
     ASSERT_TRUE(https_server_.Start());
 
     // Sets the editor mode.
-    input_method::EditorMediatorFactory::GetForProfile(browser()->profile())
+    input_method::EditorMediatorFactory::GetForProfile(browser()->GetProfile())
         ->OverrideEditorModeForTesting(GetEditorMode());
 
     // Sets the Orca consent status.

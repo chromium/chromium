@@ -198,7 +198,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   std::optional<GURL> GetLastActivePageUrl() {
     auto feedback_delegate =
-        ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+        ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
     return feedback_delegate.GetLastActivePageUrl();
   }
 
@@ -262,7 +262,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   Browser* LaunchFeedbackAppAndGetBrowser() {
     // Install system apps, namely the Feedback App.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
 
     GURL feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
@@ -281,7 +281,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     navigation_observer.Wait();
 
     ash::BrowserDelegate* feedback_browser_delegate =
-        ash::FindSystemWebAppBrowser(browser()->profile(),
+        ash::FindSystemWebAppBrowser(browser()->GetProfile(),
                                      ash::SystemWebAppType::OS_FEEDBACK,
                                      ash::BrowserType::kApp);
     Browser* feedback_browser = feedback_browser_delegate
@@ -297,7 +297,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
   void LaunchFeedbackDialog() {
     extensions::FeedbackPrivateAPI* api =
         extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
-            browser()->profile());
+            browser()->GetProfile());
 
     auto info = api->CreateFeedbackInfo(
         "testing", std::string(), "Login", std::string(), GURL(),
@@ -312,7 +312,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
     base::test::TestFuture<void> test_future;
     // Open the feedback dialog.
-    OsFeedbackDialog::ShowDialogAsync(browser()->profile(), *info,
+    OsFeedbackDialog::ShowDialogAsync(browser()->GetProfile(), *info,
                                       test_future.GetCallback());
     EXPECT_TRUE(test_future.Wait());
   }
@@ -340,7 +340,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 // Test GetApplicationLocale returns a valid locale.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetApplicationLocale) {
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_EQ(feedback_delegate.GetApplicationLocale(), "en-US");
 }
 
@@ -356,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetLastActivePageUrl) {
 // Test GetSignedInUserEmail returns primary account of signed in user if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(identity_manager);
 
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_EQ(feedback_delegate.GetSignedInUserEmail(), "");
 
   signin::MakePrimaryAccountAvailable(identity_manager, kSignedInUserEmail,
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("all"));
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("wifi"));
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("wifi").Append("bluetooth"));
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   browser()->profile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed, base::ListValue());
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_FALSE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
@@ -423,14 +423,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("other"));
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_FALSE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
 // Test GetPerformanceTraceId returns id for performance trace data if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   EXPECT_EQ(feedback_delegate.GetPerformanceTraceId(), 0);
   std::unique_ptr<ContentTracingManager> tracing_manager =
       ContentTracingManager::Create();
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // Test GetScreenshot returns correct data when there is a screenshot.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, HasScreenshot) {
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
 
   OsFeedbackScreenshotManager::GetInstance()->SetPngDataForTesting(
       CreateFakePngData());
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, HasScreenshot) {
 // Test GetScreenshot returns empty array when there is not a screenshot.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
   base::test::TestFuture<const std::vector<uint8_t>&> future;
   feedback_delegate.GetScreenshotPng(future.GetCallback());
 
@@ -698,8 +698,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   CHECK(feedback_browser);
 
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   browser_created_observer.Wait();
 
   ash::BrowserDelegate* app_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS,
+      browser()->GetProfile(), ash::SystemWebAppType::DIAGNOSTICS,
       ash::BrowserType::kApp);
 
   EXPECT_TRUE(app_browser);
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   // Initialize the delegate.
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
 
   feedback_delegate.OpenDiagnosticsApp();
 
@@ -741,8 +741,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // Test if Explore app is opened.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
   browser_created_observer.Wait();
 
   ash::BrowserDelegate* app_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::HELP,
+      browser()->GetProfile(), ash::SystemWebAppType::HELP,
       ash::BrowserType::kApp);
 
   EXPECT_TRUE(app_browser);
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
 
   // Initialize the delegate.
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
 
   feedback_delegate.OpenMetricsDialog();
 
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   // Initialize the delegate.
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
 
   feedback_delegate.OpenSystemInfoDialog();
 
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   // Initialize the delegate.
   auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
 
   feedback_delegate.OpenSystemInfoDialog();
 

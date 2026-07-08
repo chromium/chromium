@@ -83,7 +83,7 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(
             &DlpFilesControllerAshBrowserTest::SetDlpRulesManager,
             base::Unretained(this)));
@@ -138,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   auto fake_provider = ash::file_system_provider::FakeExtensionProvider::Create(
       extension_misc::kODFSExtensionId);
   const auto providerId = fake_provider->GetId();
-  auto* service = ash::file_system_provider::Service::Get(browser()->profile());
+  auto* service =
+      ash::file_system_provider::Service::Get(browser()->GetProfile());
   service->RegisterProvider(std::move(fake_provider));
 
   const auto mount_options = ash::file_system_provider::MountOptions(

@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   ASSERT_TRUE(incognito_browser);
 
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile = incognito_browser->GetProfile();
   ASSERT_NE(incognito_profile, profile);
   ASSERT_EQ(incognito_profile->GetOriginalProfile(), profile);
 

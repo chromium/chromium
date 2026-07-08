@@ -51,8 +51,8 @@ SessionID BrowserDelegateImpl::GetSessionID() const {
 }
 
 const AccountId& BrowserDelegateImpl::GetAccountId() const {
-  const AccountId* id =
-      ash::AnnotatedAccountId::Get(browser_->profile()->GetOriginalProfile());
+  const AccountId* id = ash::AnnotatedAccountId::Get(
+      browser_->GetProfile()->GetOriginalProfile());
   if (id) {
     CHECK(id->is_valid());
   } else {
@@ -62,7 +62,7 @@ const AccountId& BrowserDelegateImpl::GetAccountId() const {
 }
 
 bool BrowserDelegateImpl::IsOffTheRecord() const {
-  return browser_->profile()->IsOffTheRecord();
+  return browser_->GetProfile()->IsOffTheRecord();
 }
 
 bool BrowserDelegateImpl::IsCreatedByStartupCreator() const {

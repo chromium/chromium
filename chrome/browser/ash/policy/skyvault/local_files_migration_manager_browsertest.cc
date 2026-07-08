@@ -133,7 +133,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     manager()->AddObserver(&observer_);
 
     notification_manager_ = std::make_unique<MockMigrationNotificationManager>(
-        browser()->profile());
+        browser()->GetProfile());
     manager()->SetNotificationManagerForTesting(notification_manager_.get());
 
     ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
@@ -145,7 +145,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
     manager()->SetNotificationManagerForTesting(
         MigrationNotificationManagerFactory::GetInstance()
-            ->GetForBrowserContext(browser()->profile()));
+            ->GetForBrowserContext(browser()->GetProfile()));
     notification_manager_.reset();
 
     policy::PolicyTest::TearDownOnMainThread();
@@ -175,19 +175,19 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
   // Creates mount point for My files and registers local filesystem.
   void SetUpMyFiles() {
-    my_files_dir_ = GetMyFilesPath(browser()->profile());
+    my_files_dir_ = GetMyFilesPath(browser()->GetProfile());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
     }
     std::string mount_point_name =
-        file_manager::util::GetDownloadsMountPointName(browser()->profile());
+        file_manager::util::GetDownloadsMountPointName(browser()->GetProfile());
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
         mount_point_name);
     CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         mount_point_name, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), my_files_dir_));
-    file_manager::VolumeManager::Get(browser()->profile())
+    file_manager::VolumeManager::Get(browser()->GetProfile())
         ->RegisterDownloadsDirectoryForTesting(my_files_dir_);
   }
 
@@ -215,7 +215,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
   LocalFilesMigrationManager* manager() {
     return LocalFilesMigrationManagerFactory::GetInstance()
-        ->GetForBrowserContext(browser()->profile());
+        ->GetForBrowserContext(browser()->GetProfile());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       .Times(2);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       });
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       });
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -452,7 +452,8 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   MigrationDestination provider;
   // Disable the cloud storage before setting SkyVault policies.
   if (destination == download_dir_util::kLocationGoogleDrive) {
-    drive::DriveIntegrationServiceFactory::FindForProfile(browser()->profile())
+    drive::DriveIntegrationServiceFactory::FindForProfile(
+        browser()->GetProfile())
         ->SetEnabled(false);
     provider = MigrationDestination::kGoogleDrive;
   } else {
@@ -518,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(),
@@ -560,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(), Run(MigrationDestination::kOneDrive, _,
@@ -615,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(), Run(MigrationDestination::kOneDrive, _,

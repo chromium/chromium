@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, PRE_RendererLocale) {
 // Regression test for the "Choose File" button not being localized.
 // https://crbug.com/41188654
 IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, RendererLocale) {
-  EXPECT_EQ(kSpanishLocale, browser()->profile()->GetPrefs()->GetString(
+  EXPECT_EQ(kSpanishLocale, browser()->GetProfile()->GetPrefs()->GetString(
                                 language::prefs::kApplicationLocale));
 
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);

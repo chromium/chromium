@@ -169,7 +169,8 @@ class LauncherContinueSectionTest
                                   const base::Time& last_access_time,
                                   const base::Time& last_modified_time) {
     const base::FilePath mount_path =
-        file_manager::util::GetDownloadsFolderForProfile(browser()->profile());
+        file_manager::util::GetDownloadsFolderForProfile(
+            browser()->GetProfile());
     base::FilePath absolute_path = mount_path.AppendASCII(file_name);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -190,7 +191,7 @@ class LauncherContinueSectionTest
     open_events.push_back(std::move(e));
 
     ash::FileSuggestKeyedServiceFactory::GetInstance()
-        ->GetService(browser()->profile())
+        ->GetService(browser()->GetProfile())
         ->local_file_suggestion_provider_for_test()
         ->OnFilesOpened(open_events);
 
@@ -203,7 +204,7 @@ class LauncherContinueSectionTest
 
     drive::DriveIntegrationService* drive_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     EXPECT_TRUE(drive_service->IsMounted());
     base::FilePath mount_path = drive_service->GetMountPointPath();
 
@@ -218,7 +219,7 @@ class LauncherContinueSectionTest
     metadata.alternate_url = alternate_url;
 
     drivefs::FakeDriveFs* drive_fs =
-        GetFakeDriveFsForProfile(browser()->profile());
+        GetFakeDriveFsForProfile(browser()->GetProfile());
     drive_fs->SetMetadata(std::move(metadata));
 
     std::vector<drivefs::mojom::FileChangePtr> changes;
@@ -333,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveFiles) {
   base::FilePath file_4 =
       AddTestDriveFile("Test File 4.gdoc", "http://fake/test_file_4");
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(
       *fake_drivefs,
       StartSearchQuery(
@@ -429,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
       "Test Local File.txt", GetReferenceTime() - base::Days(4),
       GetReferenceTime() - base::Days(5));
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(
       *fake_drivefs,
       StartSearchQuery(

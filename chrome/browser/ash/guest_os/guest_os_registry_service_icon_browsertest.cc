@@ -47,7 +47,8 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
 
   guest_os::GuestOsRegistryService* service() {
     if (!service_) {
-      service_ = std::make_unique<GuestOsRegistryService>(browser()->profile());
+      service_ =
+          std::make_unique<GuestOsRegistryService>(browser()->GetProfile());
     }
     return service_.get();
   }

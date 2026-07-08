@@ -51,7 +51,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
     AppListSearchBrowserTest::SetUpOnMainThread();
     AppListClientImpl::GetInstance()->UpdateProfile();
     web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile()));
   }
 
   void ShowAppListAndWaitForHelpAppZeroStateResults() {

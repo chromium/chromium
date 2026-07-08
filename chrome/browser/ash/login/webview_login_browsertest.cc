@@ -831,12 +831,12 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
 
   // AddRecoveryMethod() logic is deferred until refresh tokens are loaded.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser->profile());
+      IdentityManagerFactory::GetForProfile(browser->GetProfile());
   signin::WaitForRefreshTokensLoaded(identity_manager);
 
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser->profile());
+          browser->GetProfile());
   trusted_vault::TrustedVaultClient* trusted_vault_client =
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 

@@ -35,14 +35,16 @@ class CrostiniBrowserTest : public CrostiniBrowserTestBase {
     app_list.set_container_name(kCrostiniDefaultContainerName);
     *app_list.add_apps() = app;
 
-    guest_os::GuestOsRegistryServiceFactory::GetForProfile(browser()->profile())
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(
+        browser()->GetProfile())
         ->UpdateApplicationList(app_list);
   }
 
   void LaunchApp() {
     base::test::TestFuture<bool, const std::string&> result_future;
-    LaunchCrostiniApp(browser()->profile(), kAppId, display::kInvalidDisplayId,
-                      {}, result_future.GetCallback());
+    LaunchCrostiniApp(browser()->GetProfile(), kAppId,
+                      display::kInvalidDisplayId, {},
+                      result_future.GetCallback());
     EXPECT_TRUE(result_future.Get<0>()) << result_future.Get<1>();
   }
 

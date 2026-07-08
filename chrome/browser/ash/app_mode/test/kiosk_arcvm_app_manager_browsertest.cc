@@ -88,7 +88,7 @@ class KioskArcvmAppManagerTest : public InProcessBrowserTest {
     // TODO(crbug.com/418900186): Setup policy properly for this test.
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
-        settings_helper_.CreateOwnerSettingsService(browser()->profile());
+        settings_helper_.CreateOwnerSettingsService(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

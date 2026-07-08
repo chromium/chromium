@@ -160,7 +160,7 @@ void MahiUiBrowserTestBase::SetUpOnMainThread() {
       std::make_unique<ui::test::EventGenerator>(Shell::GetPrimaryRootWindow());
 
   manta::MantaServiceFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(), base::BindRepeating(&CreateMockMantaService));
+      browser()->GetProfile(), base::BindRepeating(&CreateMockMantaService));
 
   // Configure `https_server_` so that the test page is accessible.
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
@@ -213,7 +213,7 @@ void MahiUiBrowserTestBase::WaitForSettingsToLoad() {
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   ash::SettingsAppManager::Get()->Open(
       CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          browser()->profile())),
+          browser()->GetProfile())),
       {});
   auto* const web_contents = waiter.Wait();
   ASSERT_TRUE(web_contents);

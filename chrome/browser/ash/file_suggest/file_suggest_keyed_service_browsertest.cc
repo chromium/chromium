@@ -121,7 +121,7 @@ class FileSuggestKeyedServiceBrowserTest
     const base::FilePath absolute_path = GetTestFilePath(file_id);
     base::FilePath drive_path;
     if (!drive::DriveIntegrationServiceFactory::FindForProfile(
-             browser()->profile())
+             browser()->GetProfile())
              ->GetRelativeDrivePath(absolute_path, &drive_path)) {
       return drivefs::mojom::QueryItemPtr();
     }
@@ -174,7 +174,7 @@ class FileSuggestKeyedServiceBrowserTest
     base::RunLoop suggest_file_data_waiter;
     FileSuggestKeyedService* const service =
         FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-            browser()->profile());
+            browser()->GetProfile());
     service->GetSuggestFileData(
         FileSuggestionType::kDriveFile,
         base::BindLambdaForTesting(
@@ -184,7 +184,7 @@ class FileSuggestKeyedServiceBrowserTest
   }
 
   mojo::Remote<drivefs::mojom::DriveFsDelegate>& drivefs_delegate() {
-    return GetFakeDriveFsForProfile(browser()->profile())->delegate();
+    return GetFakeDriveFsForProfile(browser()->GetProfile())->delegate();
   }
 
  private:
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
                        QueryWithEmptyDriveRecentFiles) {
   base::HistogramTester histogram_tester;
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _))
       .Times(3)
       .WillRepeatedly([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery>
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
 
   FileSuggestKeyedService* service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-          browser()->profile());
+          browser()->GetProfile());
   service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindLambdaForTesting(
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
 
   ASSERT_GE(available_files().size(), 2u);
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(
       *fake_drivefs,
       StartSearchQuery(
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   FileSuggestKeyedService* service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _))
       .Times(3)
       .WillRepeatedly([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery>
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   ASSERT_GE(available_files().size(), 1u);
   const std::string file_id = available_files()[0];
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->GetProfile());
   EXPECT_CALL(
       *fake_drivefs,
       StartSearchQuery(

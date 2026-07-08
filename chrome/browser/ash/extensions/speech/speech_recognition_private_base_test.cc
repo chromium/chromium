@@ -31,7 +31,7 @@ void SpeechRecognitionPrivateBaseTest::SetUpCommandLine(
 }
 
 void SpeechRecognitionPrivateBaseTest::SetUpOnMainThread() {
-  test_helper_.SetUp(browser()->profile());
+  test_helper_.SetUp(browser()->GetProfile());
   ExtensionApiTest::SetUpOnMainThread();
 }
 

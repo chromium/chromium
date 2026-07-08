@@ -173,7 +173,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DataTransferDlpAshBrowserTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -218,7 +218,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
 
     // Setup CrostiniManager for testing.
     crostini::CrostiniManager* crostini_manager =
-        crostini::CrostiniManager::GetForProfile(browser()->profile());
+        crostini::CrostiniManager::GetForProfile(browser()->GetProfile());
     crostini_manager->set_skip_restart_for_testing();
     crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
     crostini_manager->AddRunningContainerForTesting(

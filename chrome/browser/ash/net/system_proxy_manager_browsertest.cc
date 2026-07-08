@@ -165,7 +165,7 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     GetSystemProxyManager()->StartObservingPrimaryProfilePrefs(
-        browser()->profile());
+        browser()->GetProfile());
     GetSystemProxyManager()->SetSystemProxyEnabledForTest(true);
   }
 

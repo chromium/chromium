@@ -164,7 +164,7 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
         std::make_unique<TestAshProxyMonitorObserver>();
     g_browser_process->platform_part()
         ->ash_proxy_monitor()
-        ->SetProfileForTesting(browser()->profile());
+        ->SetProfileForTesting(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

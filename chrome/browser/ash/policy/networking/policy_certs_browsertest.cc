@@ -571,12 +571,12 @@ class PolicyProvidedClientCertsTest : public DevicePolicyCrosBrowserTest {
 IN_PROC_BROWSER_TEST_F(PolicyProvidedClientCertsTest, ClientCertsImported) {
   // Sanity check: we don't expect the client certificate to be present before
   // setting the user ONC policy.
-  EXPECT_FALSE(
-      IsCertInNSSDatabase(browser()->profile(), kClientCertSubjectCommonName));
+  EXPECT_FALSE(IsCertInNSSDatabase(browser()->GetProfile(),
+                                   kClientCertSubjectCommonName));
 
-  SetClientCertONCPolicy(browser()->profile());
-  EXPECT_TRUE(
-      IsCertInNSSDatabase(browser()->profile(), kClientCertSubjectCommonName));
+  SetClientCertONCPolicy(browser()->GetProfile());
+  EXPECT_TRUE(IsCertInNSSDatabase(browser()->GetProfile(),
+                                  kClientCertSubjectCommonName));
 }
 
 // TODO(crbug.com/40589684): Add a test case for a kiosk session.

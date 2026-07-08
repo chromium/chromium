@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
   // Verify that the Settings page is opened in a new window.
   const BrowserWindowInterface* const settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(settings_browser);
   EXPECT_NE(browser(), settings_browser);
   EXPECT_EQ(
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(PendingConsentStatusMahiUiBrowserTest,
   // Verify that the Settings page is opened in a new window.
   const BrowserWindowInterface* const settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(settings_browser);
   EXPECT_NE(browser(), settings_browser);
   EXPECT_EQ(

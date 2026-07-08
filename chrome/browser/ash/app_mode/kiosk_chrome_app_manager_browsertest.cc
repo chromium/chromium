@@ -206,7 +206,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
-        settings_helper_.CreateOwnerSettingsService(browser()->profile());
+        settings_helper_.CreateOwnerSettingsService(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, UpdateAppDataFromProfile) {
 
   scoped_refptr<extensions::Extension> updated_app =
       MakeKioskApp("Updated App1 Name", "2.0", "app_1", "1234");
-  manager()->UpdateAppDataFromProfile("app_1", browser()->profile(),
+  manager()->UpdateAppDataFromProfile("app_1", browser()->GetProfile(),
                                       updated_app.get());
 
   waiter.Reset();

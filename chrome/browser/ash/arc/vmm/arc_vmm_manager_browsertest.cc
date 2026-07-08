@@ -57,9 +57,9 @@ class ArcVmmManagerBrowserTest : public InProcessBrowserTest {
 
   // ArcVmmManagerBrowserTest:
   void EnableArc() {
-    arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
+    arc::SetArcPlayStoreEnabledForProfile(browser()->GetProfile(), true);
 
-    arc_app_list_prefs_ = ArcAppListPrefs::Get(browser()->profile());
+    arc_app_list_prefs_ = ArcAppListPrefs::Get(browser()->GetProfile());
     DCHECK(arc_app_list_prefs_);
 
     base::RunLoop run_loop;
@@ -82,7 +82,7 @@ class ArcVmmManagerBrowserTest : public InProcessBrowserTest {
   }
 
   ArcVmmManager* vmm_manager() {
-    return ArcVmmManager::GetForBrowserContext(browser()->profile());
+    return ArcVmmManager::GetForBrowserContext(browser()->GetProfile());
   }
 
   bool arc_connected() { return vmm_manager()->arc_connected_; }

@@ -70,16 +70,16 @@ class FilesPolicyDialogBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Setup the Files app.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
  protected:
   Browser* FindFilesApp() {
     ash::BrowserDelegate* delegate = FindSystemWebAppBrowser(
-        browser()->profile(), ash::SystemWebAppType::FILE_MANAGER,
+        browser()->GetProfile(), ash::SystemWebAppType::FILE_MANAGER,
         ash::BrowserType::kApp);
     return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
                     : nullptr;
@@ -88,8 +88,9 @@ class FilesPolicyDialogBrowserTest
   Browser* OpenFilesApp() {
     base::RunLoop run_loop;
     file_manager::util::ShowItemInFolder(
-        browser()->profile(),
-        file_manager::util::GetDownloadsFolderForProfile(browser()->profile()),
+        browser()->GetProfile(),
+        file_manager::util::GetDownloadsFolderForProfile(
+            browser()->GetProfile()),
         base::BindLambdaForTesting(
             [&run_loop](platform_util::OpenOperationResult result) {
               EXPECT_EQ(platform_util::OpenOperationResult::OPEN_SUCCEEDED,

@@ -141,7 +141,7 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     // Turn on testing mode so we don't kill the browser.
     AutotestPrivateAPI::GetFactoryInstance()
-        ->Get(browser()->profile())
+        ->Get(browser()->GetProfile())
         ->set_test_mode(true);
   }
 
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
 #endif
 IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
                        MAYBE_AutotestPrivateArcEnabled) {
-  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(browser()->profile());
+  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(browser()->GetProfile());
   ASSERT_TRUE(prefs);
 
   arc::ArcSessionManager::Get()->SetArcSessionRunnerForTesting(
@@ -376,7 +376,7 @@ class AutotestPrivateApiOverviewTest
     AutotestPrivateApiTest::SetUpOnMainThread();
 
     // Create one additional browser window to make total of 2 windows.
-    CreateBrowser(browser()->profile());
+    CreateBrowser(browser()->GetProfile());
 
     // Enters tablet overview mode.
     ash::ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -753,11 +753,11 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
       ash::personalization_app::mojom::AmbientTheme::kFloatOnBy;
   ash::personalization_app::mojom::AmbientTheme default_theme =
       ash::AmbientUiSettings::ReadFromPrefService(
-          *browser()->profile()->GetPrefs())
+          *browser()->GetProfile()->GetPrefs())
           .theme();
   ASSERT_NE(kTestTheme, default_theme);
   ash::AmbientUiSettings(kTestTheme)
-      .WriteToPrefService(*browser()->profile()->GetPrefs());
+      .WriteToPrefService(*browser()->GetProfile()->GetPrefs());
 
   base::ListValue suite_args;
   suite_args.Append(base::Value(ash::ambient::prefs::kAmbientUiSettings));
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
       << message_;
   // Value read back should be the default.
   EXPECT_EQ(ash::AmbientUiSettings::ReadFromPrefService(
-                *browser()->profile()->GetPrefs())
+                *browser()->GetProfile()->GetPrefs())
                 .theme(),
             default_theme);
 }

@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
   base::test::TestFuture<base::FilePath, std::string> future;
   auto download = std::make_unique<SimpleURLLoaderDownload>(
       *g_browser_process->local_state());
-  download->StartDownload(browser()->profile(), GURL("bad url"),
+  download->StartDownload(browser()->GetProfile(), GURL("bad url"),
                           future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
@@ -152,14 +152,14 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest, TestHappyPath) {
       "f54d00e6d24844ee3b1d0d8c2b9d2ed80b967e94eb1055bb1fd43eb9522908cc");
 
   // Make the browser use the ClientCertStoreStub instead of the regular one.
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateStubClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
   auto download = std::make_unique<SimpleURLLoaderDownload>(
       *g_browser_process->local_state());
-  download->StartDownload(browser()->profile(), url_, future.GetCallback());
+  download->StartDownload(browser()->GetProfile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
   auto hash = future.Get<std::string>();
@@ -183,14 +183,14 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest, TestHappyPath) {
 IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
                        TestDownloadNoMatchingCert) {
   // Make the browser use an empty client cert store
-  ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+  ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
       ->set_client_cert_store_factory_for_testing(
           base::BindRepeating(&CreateEmptyClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
   auto download = std::make_unique<SimpleURLLoaderDownload>(
       *g_browser_process->local_state());
-  download->StartDownload(browser()->profile(), url_, future.GetCallback());
+  download->StartDownload(browser()->GetProfile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
   auto hash = future.Get<std::string>();
