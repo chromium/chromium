@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ScopedRasterTimer {
  public:
   // Classes with methods that use ScopedRasterTimer must inherit
   // ScopedRasterTimer::Host
-  class Host {
+  class PLATFORM_EXPORT Host {
    public:
     void CheckGpuTimers(gpu::raster::RasterInterface* raster_interface);
     void AddGpuTimer(std::unique_ptr<AsyncGpuRasterTimer>);
