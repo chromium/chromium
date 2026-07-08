@@ -504,6 +504,11 @@ class AssistantAIMUIStateProvider
                               isInLargestDetent:isInLargestDetent];
 }
 
+- (BOOL)assistantContainer:(AssistantContainerViewController*)container
+    shouldInterceptPanGesture:(UIPanGestureRecognizer*)gesture {
+  return [_viewController shouldInterceptPanGesture:gesture];
+}
+
 #pragma mark - AssistantAIMViewControllerDelegate
 
 - (void)assistantAIMViewControllerDidRequestSRPLogs:

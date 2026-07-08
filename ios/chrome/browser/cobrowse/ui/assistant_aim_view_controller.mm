@@ -54,6 +54,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   NSString* _greetingMessage;
   // Whether the asisstant view is fully mimimized.
   BOOL _isMinimized;
+  // Tracks the gesture recognizer panning the input plate.
+  __weak UIPanGestureRecognizer* _panGestureInInputPlate;
 }
 
 @synthesize delegate = _delegate;
@@ -152,12 +154,53 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [_headerView adjustForPercentage:effectPercentage];
 }
 
+- (BOOL)shouldInterceptPanGesture:(UIPanGestureRecognizer*)gesture {
+  if (!gesture) {
+    return NO;
+  }
+
+  if (!_inputViewController.isViewLoaded) {
+    return NO;
+  }
+
+  // Intercept all pan gestures happening in the input plate.
+  switch (gesture.state) {
+    case UIGestureRecognizerStateBegan: {
+      UIView* inputPlateView = _inputViewController.view;
+      CGPoint touchLocation = [gesture locationInView:inputPlateView];
+      BOOL panningInInputPlate =
+          CGRectContainsPoint(inputPlateView.bounds, touchLocation);
+      if (panningInInputPlate) {
+        _panGestureInInputPlate = gesture;
+      }
+
+      return panningInInputPlate;
+    }
+    case UIGestureRecognizerStateChanged: {
+      return gesture == _panGestureInInputPlate;
+    }
+    default: {
+      if (gesture == _panGestureInInputPlate) {
+        _panGestureInInputPlate = nil;
+      }
+      return NO;
+    }
+  }
+}
+
 - (BOOL)shouldPauseScrollView:(UIScrollView*)scrollView
                    forGesture:(UIGestureRecognizer*)gesture
             isInLargestDetent:(BOOL)isInLargestDetent {
   // Only handle gestures in the assistant content.
   BOOL inAssistantContent = [scrollView isDescendantOfView:self.view];
   if (!inAssistantContent) {
+    return NO;
+  }
+
+  // Exclude the scroll happening in the input plate, such as scrolling the text
+  // field.
+  BOOL inInputPlate = [scrollView isDescendantOfView:_inputViewController.view];
+  if (inInputPlate) {
     return NO;
   }
 

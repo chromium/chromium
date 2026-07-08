@@ -70,6 +70,9 @@
                    forGesture:(UIGestureRecognizer*)gesture
             isInLargestDetent:(BOOL)isInLargestDetent;
 
+// Weather to intercept the given pan gesture.
+- (BOOL)shouldInterceptPanGesture:(UIPanGestureRecognizer*)gesture;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_UI_ASSISTANT_AIM_VIEW_CONTROLLER_H_
