@@ -520,6 +520,39 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
     std::unique_ptr<SidePanelNativeViewAndroid> native_view) {
   SPLOG("StartReplacingPanelContent.");
 
+  // Always clear the current tab's active entry before replacing the current
+  // entry.
+  //
+  // This implements requirements for cross-registry entry replacement:
+  //
+  // (a) If a window-scoped entry replaces a tab-scoped entry, the tab-scoped
+  // entry should become _inactive_.
+  //
+  // (b) If a tab-scoped entry replaces a window-scoped entry, the window-scoped
+  // entry should remain _active_.
+  //
+  // (c) If a tab-scoped entry replaces another tab-scoped entry in a different
+  // tab, StartReplacingPanelContent() is called _after_ the active tab has
+  // changed, so clearing the active entry for the new active tab's registry is
+  // fine: the new entry will be set as the new tab's active entry when
+  // `OnEntryShown()` is called below.
+  //
+  // Please see https://crbug.com/508402076#comment5 for more details on
+  // cross-registry entry replacement.
+  //
+  // Note that this _doesn't_ break same-registry entry replacement:
+  //
+  // (a) If both the old entry and the new entry belong to the same tab-scoped
+  // registry, the new entry's `OnEntryShown()` function will set the new entry
+  // as the active entry.
+  //
+  // (b) If both the old entry and the new entry belong to the same
+  // window-scoped registry, clearing the active entry for the active tab's
+  // registry is a no-op.
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
+    contextual_registry->ResetActiveEntry();
+  }
+
   UniqueKey current_key = GetCurrentKeyNonNull();
   pending_replaced_entry_ = GetEntryForUniqueKey(current_key);
   CHECK(pending_replaced_entry_) << "No SidePanelEntry to replace";

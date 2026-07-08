@@ -2710,3 +2710,105 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
   EXPECT_EQ(1, entry_observer.num_on_entry_hidden_with_reason_received_);
 }
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestCrossRegistryEntryReplacement_WindowScopedEntryReplacesTabScopedEntry_TabScopedEntryBecomesInactive) {
+  // Arrange: Open 2 tabs.
+  tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_2 =
+      tab_list_->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  // Arrange: Register a tab_1-scoped entry.
+  auto tab_1_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(tab_1_scoped_entry_key, browser_));
+
+  // Arrange: Register a window-scoped entry.
+  auto window_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  SidePanelRegistry::From(browser_)->Register(
+      CreateSidePanelEntry(window_scoped_entry_key, browser_));
+
+  // Arrange: On tab_1, open the tab-scoped entry.
+  tab_list_->ActivateTab(tab_1->GetHandle());
+  coordinator_->SidePanelUIBase::Show(tab_1_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(tab_1_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: On tab_1, open the window-scoped entry. This will replace the
+  // tab-scoped entry.
+  coordinator_->SidePanelUIBase::Show(window_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(window_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: Switch to tab_2, the window-scoped entry is still shown.
+  tab_list_->ActivateTab(tab_2->GetHandle());
+  EXPECT_EQ(window_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: Close the window-scoped entry.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/true);
+  WaitUntilClosed(coordinator_);
+
+  // Act: Switch to tab_1.
+  tab_list_->ActivateTab(tab_1->GetHandle());
+
+  // Assert: tab_1's tab-scoped entry is NOT re-shown, since it
+  // became inactive when it was replaced by the window-scoped entry.
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestCrossRegistryEntryReplacement_TabScopedEntryReplacesWindowScopedEntry_WindowScopedEntryRemainsActive) {
+  // Arrange: Open 2 tabs.
+  tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_2 =
+      tab_list_->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  // Arrange: Register a tab_1-scoped entry.
+  auto tab_1_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(tab_1_scoped_entry_key, browser_));
+
+  // Arrange: Register a window-scoped entry.
+  auto window_scoped_entry_key =
+      SidePanelEntryKey(SidePanelEntryId::kBookmarks);
+  SidePanelRegistry::From(browser_)->Register(
+      CreateSidePanelEntry(window_scoped_entry_key, browser_));
+
+  // Arrange: Open tab_1 and the window-scoped entry.
+  tab_list_->ActivateTab(tab_1->GetHandle());
+  coordinator_->SidePanelUIBase::Show(window_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(window_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: In the same tab, open the tab-scoped entry. This will replace the
+  // window-scoped entry.
+  coordinator_->SidePanelUIBase::Show(tab_1_scoped_entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(tab_1_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: Open tab_2. The window-scoped entry should re-appear. This because the
+  // window-scoped entry remains active even if it's replaced in tab_1.
+  tab_list_->ActivateTab(tab_2->GetHandle());
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(window_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+
+  // Act: Go back to tab_1.
+  tab_list_->ActivateTab(tab_1->GetHandle());
+
+  // Assert: Tab_1's tab-scoped entry should re-appear.
+  EXPECT_EQ(tab_1_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+}
