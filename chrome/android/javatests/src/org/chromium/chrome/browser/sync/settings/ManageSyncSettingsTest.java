@@ -46,6 +46,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,6 +62,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -469,6 +471,9 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(historyAndTabsToggle.isChecked());
 
         mSyncTestRule.signOut();
+        // Signing out indirectly closes the settings activity. (when
+        // ManageSyncSettings detects the primary account change).
+        ApplicationTestUtils.waitForActivityState(mSettingsActivity, Stage.DESTROYED);
 
         // Sign-in again with the same account, and open the sync settings to check that history
         // opt-in did carry over through sign-out & sign-in.
