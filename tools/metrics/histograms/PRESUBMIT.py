@@ -343,16 +343,17 @@ def CheckRemovedSegmentationHistograms(input_api, output_api):
     return []
 
   removed_histograms = set()
+  variants_doc = print_histogram_names._parse_default_variants()
   for f in affected_xml_files:
     old_histograms = set()
     if f.Action() != 'A':
       old_histograms = print_histogram_names.get_names_from_contents(
-          f.OldContents())
+          f.OldContents(), variants_doc)
 
     new_histograms = set()
     if f.Action() != 'D':
       new_histograms = print_histogram_names.get_names_from_contents(
-          f.NewContents())
+          f.NewContents(), variants_doc)
 
     removed_histograms.update(old_histograms - new_histograms)
 
