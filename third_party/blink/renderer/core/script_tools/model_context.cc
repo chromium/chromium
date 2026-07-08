@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -244,8 +245,22 @@ class ModelContext::ToolFunctionFinishedCallback
       }
       model_context_->OnToolExecuted(invocation_id_, *result);
     } else {
-      V8ScriptRunner::ReportException(script_state->GetIsolate(),
-                                      value.V8Value());
+      v8::Isolate* isolate = script_state->GetIsolate();
+      v8::Local<v8::Message> message =
+          v8::Exception::CreateMessage(isolate, value.V8Value());
+      String message_text = ToCoreStringWithNullCheck(isolate, message->Get());
+      if (message_text.empty()) {
+        message_text = "Unknown error";
+      }
+      SourceLocation* location = CaptureSourceLocation(
+          isolate, message, model_context_->GetExecutionContext());
+
+      model_context_->GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError,
+              "WebMCP tool execution failed: " + message_text, location));
+
       model_context_->OnToolExecuted(
           invocation_id_,
           base::unexpected(std::make_pair(value, script_state)));

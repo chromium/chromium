@@ -1,4 +1,4 @@
-CONSOLE ERROR: Uncaught aborted after 500ms (this is expected)
+CONSOLE ERROR: WebMCP tool execution failed: Uncaught aborted after 500ms (this is expected)
 This tests that document.navigator.modelContextTesting works correctly.
 PASS
 PASS
