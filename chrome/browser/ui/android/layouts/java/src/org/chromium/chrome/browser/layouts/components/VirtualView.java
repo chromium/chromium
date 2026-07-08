@@ -7,7 +7,12 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * {@link VirtualView} is the minimal interface that provides information for building accessibility
@@ -15,6 +20,31 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface VirtualView {
+
+    /**
+     * The priority of the VirtualView. Higher values indicate higher priority when determining a11y
+     * focus. This is used to handle conflicts when VirtualViews overlap.
+     *
+     * <p>If two overlapping views have the same priority, then the first one added to the list of
+     * VirtualViews will be selected.
+     *
+     * <p>The {@link #INVALID} priority should not be used, except as a sentinel value when
+     * iterating through a set of priorities.
+     */
+    @IntDef({
+        VirtualViewPriority.INVALID,
+        VirtualViewPriority.LOW,
+        VirtualViewPriority.MEDIUM,
+        VirtualViewPriority.HIGH
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface VirtualViewPriority {
+        int INVALID = 0;
+        int LOW = 1;
+        int MEDIUM = 2;
+        int HIGH = 3;
+    }
+
     /**
      * @return A string with a description of the object for accessibility events.
      */
@@ -24,6 +54,13 @@ public interface VirtualView {
      * @param outTarget A rect that will be populated with the clickable area of the object in dp.
      */
     void getTouchTarget(RectF outTarget);
+
+    /**
+     * Returns the view's {@link VirtualViewPriority}. Higher values indicate higher priority when
+     * determining a11y focus.
+     */
+    @VirtualViewPriority
+    int getVirtualViewPriority();
 
     /**
      * @param x The x offset of the click in dp.

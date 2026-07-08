@@ -432,7 +432,7 @@ public abstract class StripLayoutView implements VirtualView {
 
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        return mTouchTargetBounds.contains(x, y);
+        return isVisible() && mTouchTargetBounds.contains(x, y);
     }
 
     @Override

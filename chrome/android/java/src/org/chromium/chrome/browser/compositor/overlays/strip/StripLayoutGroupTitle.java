@@ -146,6 +146,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     @Override
+    public int getVirtualViewPriority() {
+        // Shows beneath the foregrounded buttons when scrolling offscreen, and above tabs when the
+        // group is collapsed, so MEDIUM priority.
+        return VirtualViewPriority.MEDIUM;
+    }
+
+    @Override
     void onVisibilityChanged(boolean newVisibility) {
         if (newVisibility) {
             mDelegate.rebuildResourcesForGroupTitle(this);

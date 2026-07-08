@@ -594,6 +594,15 @@ public class StripLayoutTab extends StripLayoutView {
         if (mShowingCloseButton || mIsSelected) mCloseButton.getVirtualViews(views);
     }
 
+    @Override
+    public int getVirtualViewPriority() {
+        // Pinned tabs are foregrounded, meaning they show above all other views, so HIGH priority.
+        if (mIsPinned) return VirtualViewPriority.HIGH;
+        // Shows beneath the foregrounded buttons when scrolling offscreen, beneath groups when the
+        // group is collapsed, and beneath the tab's close button, so LOW priority.
+        return VirtualViewPriority.LOW;
+    }
+
     /**
      * Set strip tab and close button accessibility description.
      *

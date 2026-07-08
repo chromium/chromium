@@ -151,8 +151,30 @@ public class CompositorButton extends StripLayoutView {
     }
 
     @Override
+    public int getVirtualViewPriority() {
+        return switch (getType()) {
+            // Buttons that can't be scrolled off are always foregrounded, and thus HIGH priority.
+            case ButtonType.GLIC,
+                    ButtonType.GLIC_ACTOR,
+                    ButtonType.GLIC_DISMISS_NUDGE,
+                    ButtonType.INCOGNITO_SWITCHER,
+                    ButtonType.NEW_TAB,
+                    ButtonType.TAB_SEARCH ->
+                    VirtualViewPriority.HIGH;
+            // Close buttons can be scrolled off (and beneath the edge fades & buttons), but always
+            // show on top of their respective tabs, so are given a MEDIUM priority
+            case ButtonType.TAB_CLOSE -> VirtualViewPriority.MEDIUM;
+            // Any other type is unexpected, and thus INVALID.
+            default -> {
+                assert false : "Unexpected button type.";
+                yield VirtualViewPriority.INVALID;
+            }
+        };
+    }
+
+    @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        if (mOpacity < 1.f || !isVisible()) return false;
+        if (mOpacity < 1.f) return false;
         return super.checkClickedOrHovered(x, y);
     }
 

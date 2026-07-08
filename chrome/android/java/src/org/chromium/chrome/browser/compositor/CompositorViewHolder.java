@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.layouts.components.VirtualView.VirtualViewPriority;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -2375,12 +2376,22 @@ public class CompositorViewHolder extends FrameLayout
         @Override
         protected int getVirtualViewAt(float x, float y) {
             if (mVirtualViews == null) return INVALID_ID;
+
+            int id = INVALID_ID;
+            @VirtualViewPriority int priority = VirtualViewPriority.INVALID;
             for (int i = 0; i < mVirtualViews.size(); i++) {
-                if (mVirtualViews.get(i).checkClickedOrHovered(x / mDpToPx, y / mDpToPx)) {
-                    return i;
+                final VirtualView view = mVirtualViews.get(i);
+                if (view.getVirtualViewPriority() > priority
+                        && view.checkClickedOrHovered(x / mDpToPx, y / mDpToPx)) {
+                    id = i;
+                    priority = view.getVirtualViewPriority();
+
+                    // If the maximum priority is found, we can stop iterating.
+                    if (priority == VirtualViewPriority.HIGH) break;
                 }
             }
-            return INVALID_ID;
+
+            return id;
         }
 
         @Override
