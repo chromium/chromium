@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -202,8 +203,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/undo/bookmark_undo_service.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/common/profiling.h"
 #include "extensions/common/extension_urls.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 #endif
@@ -293,6 +296,79 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, pinnable_state);
+}
+
+bool IsInProgressiveWebApp(BrowserWindowInterface* bwi) {
+  const Browser* const browser = bwi->GetBrowserForMigrationOnly();
+  return browser && (browser->is_type_app() || browser->is_type_app_popup());
+}
+
+BrowserWindowInterface* FindNormalBrowser(const Profile* profile) {
+  BrowserWindowInterface* normal_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+            browser->GetProfile() == profile) {
+          normal_browser = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return normal_browser;
+}
+
+BrowserWindowInterface* GetTargetBrowserForNavigation(
+    BrowserWindowInterface* bwi,
+    WindowOpenDisposition& disposition) {
+  if (IsInProgressiveWebApp(bwi)) {
+    BrowserWindowInterface* const normal_browser =
+        FindNormalBrowser(bwi->GetProfile());
+    if (normal_browser) {
+      disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      return normal_browser;
+    } else {
+      disposition = WindowOpenDisposition::NEW_WINDOW;
+    }
+  }
+  return bwi;
+}
+
+void ExecOpenLink(BrowserWindowInterface* bwi,
+                  WindowOpenDisposition disposition,
+                  bool resolve_target_browser,
+                  const actions::ActionInvocationContext& context) {
+  const GURL* const link_url = context.GetProperty(chrome::kLinkUrlKey);
+  if (!link_url || !link_url->is_valid()) {
+    return;
+  }
+  const GURL* const frame_url = context.GetProperty(chrome::kFrameUrlKey);
+  const url::Origin* const frame_origin =
+      context.GetProperty(chrome::kFrameOriginKey);
+  int referrer_policy_raw = context.GetProperty(chrome::kReferrerPolicyKey);
+  auto referrer_policy =
+      static_cast<network::mojom::ReferrerPolicy>(referrer_policy_raw);
+
+  BrowserWindowInterface* target_bwi = bwi;
+  if (resolve_target_browser) {
+    target_bwi = GetTargetBrowserForNavigation(bwi, disposition);
+  }
+
+  GURL referrer_url;
+  if (disposition != WindowOpenDisposition::OFF_THE_RECORD && frame_url) {
+    referrer_url = frame_url->GetAsReferrer();
+  }
+
+  content::OpenURLParams params(
+      *link_url,
+      content::Referrer::SanitizeForRequest(
+          *link_url, content::Referrer(referrer_url, referrer_policy)),
+      disposition, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
+  if (frame_origin) {
+    params.initiator_origin = *frame_origin;
+  }
+  params.started_from_context_menu = true;
+  target_bwi->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 }  // namespace
@@ -4076,6 +4152,48 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             .Build());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecOpenLink(bwi, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                             /*resolve_target_browser=*/true, context);
+              },
+              bwi))
+          .SetActionId(kActionContentContextOpenLinkNewTab)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKNEWTAB))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecOpenLink(bwi, WindowOpenDisposition::NEW_WINDOW,
+                             /*resolve_target_browser=*/false, context);
+              },
+              bwi))
+          .SetActionId(kActionContentContextOpenLinkNewWindow)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ExecOpenLink(bwi, WindowOpenDisposition::OFF_THE_RECORD,
+                             /*resolve_target_browser=*/false, context);
+              },
+              bwi))
+          .SetActionId(kActionContentContextOpenLinkOffTheRecord)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD))
+          .Build());
 }
 
 void BrowserActions::AddListeners() {
