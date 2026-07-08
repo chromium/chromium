@@ -102,6 +102,10 @@ const char kSkipEnrollmentSuccessScreen[] = "skipEnrollmentSuccessScreen";
 // Boolean value, indicating that the update opt out screen should be skipped.
 const char kSkipUpdateOptOutScreen[] = "skipUpdateOptOutScreen";
 
+// Boolean value, indicating that the HID screen should be automatically
+// proceeded through.
+const char kSkipHIDScreen[] = "skipHidScreen";
+
 // String value, indicates origin of OOBE config (i.e. what agent/purpose
 // created the OOBE config and put it on the device).
 // Currently used values are:
@@ -149,6 +153,7 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_CPP},
     {kSkipUpdateOptOutScreen, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
+    {kSkipHIDScreen, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_CPP},
     {kSource, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {"desc", ValueType::STRING, ConfigurationHandlerSide::HANDLER_DOC},
     {"testValue", ValueType::STRING, ConfigurationHandlerSide::HANDLER_BOTH},

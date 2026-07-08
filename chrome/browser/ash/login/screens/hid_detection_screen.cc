@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -11,7 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
@@ -161,9 +164,18 @@ void HIDDetectionScreen::CheckIsScreenRequired(
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext& context) {
   if (!CanShowScreen(local_state_.get())) {
-    // TODO(https://crbug.com/1275960): Introduce Result::SKIPPED.
+    // TODO(crbug.com/260015105): Introduce Result::SKIPPED.
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;
+  }
+
+  if (ash::features::IsDeviceMoveConfigSaveEnabled()) {
+    const base::DictValue& config = OobeConfiguration::Get()->configuration();
+    if (config.FindBool(configuration::kSkipHIDScreen).value_or(false)) {
+      // TODO(crbug.com/260015105): Introduce Result::SKIPPED.
+      Exit(Result::SKIPPED_FOR_TESTS);
+      return true;
+    }
   }
 
   return false;
