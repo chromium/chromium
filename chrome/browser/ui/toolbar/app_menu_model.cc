@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -73,6 +74,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -124,6 +126,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -242,6 +245,11 @@ void AddSubMenuWithStringIdAndVectorIcon(ui::SimpleMenuModel* model,
       command_id, string_id, sub_menu,
       ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
+}
+
+const gfx::VectorIcon& GetSendTabToSelfIcon() {
+  return features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                           : kDevicesChromeRefreshOldIcon;
 }
 
 // Conditionally return the update app menu item title based on upgrade detector
@@ -909,7 +917,50 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
   SaveAndShareSubMenuModel(const SaveAndShareSubMenuModel&) = delete;
   SaveAndShareSubMenuModel& operator=(const SaveAndShareSubMenuModel&) = delete;
   ~SaveAndShareSubMenuModel() override = default;
+
+ private:
+  // Builds Send Tab to Self target device submenu when enhanced desktop UI is
+  // enabled.
+  void BuildSendTabToSelfSubmenu(Browser* browser,
+                                 content::WebContents* web_contents);
+
+  // Fallback helper to add simple Send Tab to Self menu item.
+  void BuildSendTabToSelfSimpleItem();
+
+  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
+      send_tab_to_self_submenu_delegate_;
+  std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 };
+
+void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
+    Browser* browser,
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  send_tab_to_self_submenu_delegate_ =
+      std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
+          web_contents, send_tab_to_self::ShareEntryPoint::kShareMenu);
+  send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
+      send_tab_to_self_submenu_delegate_.get());
+  send_tab_to_self_submenu_delegate_->PopulateSubmenu(
+      send_tab_to_self_submenu_.get());
+
+  AddSubMenuWithStringIdAndIcon(
+      IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
+      send_tab_to_self_submenu_.get(),
+      ui::ImageModel::FromVectorIcon(GetSendTabToSelfIcon()));
+
+  SetIsNewFeatureAt(GetItemCount() - 1,
+                    UserEducationService::MaybeShowNewBadge(
+                        browser->profile(),
+                        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI));
+}
+
+void SaveAndShareSubMenuModel::BuildSendTabToSelfSimpleItem() {
+  AddItemWithStringIdAndVectorIcon(this, IDC_SEND_TAB_TO_SELF,
+                                   IDS_MENU_SEND_TAB_TO_SELF,
+                                   GetSendTabToSelfIcon());
+}
 
 SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
@@ -957,10 +1008,29 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           this, IDC_COPY_URL, IDS_APP_MENU_COPY_LINK,
           features::IsRoundedIconsEnabled() ? kLinkIcon
                                             : kLinkChromeRefreshOldIcon);
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
-          features::IsRoundedIconsEnabled() ? kDevicesIcon
-                                            : kDevicesChromeRefreshOldIcon);
+
+      // WebContents is required to query target devices and display state for
+      // Send Tab to Self.
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+      std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+          web_contents
+              ? send_tab_to_self::GetEntryPointDisplayReason(web_contents)
+              : std::nullopt;
+
+      // When enhanced desktop UI v2 feature flag is enabled and feature is
+      // offered, build submenu with available devices. Otherwise, build simple
+      // command item.
+      if (web_contents &&
+          base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2) &&
+          reason ==
+              send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
+        BuildSendTabToSelfSubmenu(browser, web_contents);
+      } else {
+        BuildSendTabToSelfSimpleItem();
+      }
+
       AddItemWithStringIdAndVectorIcon(
           this, IDC_QRCODE_GENERATOR, IDS_APP_MENU_CREATE_QR_CODE,
           features::IsRoundedIconsEnabled() ? kQrCodeIcon
