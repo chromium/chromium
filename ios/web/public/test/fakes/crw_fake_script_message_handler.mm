@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/test/fakes/crw_fake_script_message_handler.h"
+#import "ios/web/public/test/fakes/crw_fake_script_message_handler.h"
 
 @implementation CRWFakeScriptMessageHandler
 

@@ -41,6 +41,8 @@ source_set("fakes") {
     "crw_fake_find_interaction.mm",
     "crw_fake_find_session.h",
     "crw_fake_find_session.mm",
+    "crw_fake_script_message_handler.h",
+    "crw_fake_script_message_handler.mm",
     "crw_fake_web_frames_manager_observer.h",
     "crw_fake_web_frames_manager_observer.mm",
     "crw_fake_web_state_observer.h",
