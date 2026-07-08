@@ -3925,6 +3925,98 @@ TEST_F(FormParserTest, ModelPredictions_WebAuthnRationalization) {
   });
 }
 
+TEST_F(FormParserTest, ConflictingUsernameAndPassword) {
+  CheckTestData({{
+      .description_for_logging =
+          "Conflicting model (USERNAME) and server (PASSWORD) predictions on "
+          "the same field.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::PASSWORD,
+               .model_predicted_type = autofill::USERNAME},
+              {.role = ElementRole::NEW_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::PASSWORD,
+               .model_predicted_type = autofill::MAX_VALID_FIELD_TYPE},
+          },
+  }});
+}
+
+TEST_F(FormParserTest, ConflictingPasswordAndNewPasswordWithConfirmation) {
+  CheckTestData({{
+      .description_for_logging =
+          "Conflicting model (NEW_PASSWORD) and server (PASSWORD) predictions "
+          "on the same field, with confirmation present.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::PASSWORD,
+               .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              {.role = ElementRole::NEW_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::CONFIRMATION_PASSWORD,
+               .model_predicted_type = autofill::MAX_VALID_FIELD_TYPE},
+          },
+  }});
+}
+
+TEST_F(FormParserTest, ConflictingPasswordAndNewPasswordWithoutConfirmation) {
+  CheckTestData({{
+      .description_for_logging =
+          "Conflicting model (NEW_PASSWORD) and server (PASSWORD) predictions "
+          "on the same field, without confirmation.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::PASSWORD,
+               .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              {.role = ElementRole::NEW_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::UNKNOWN_TYPE,
+               .model_predicted_type = autofill::MAX_VALID_FIELD_TYPE},
+          },
+  }});
+}
+
+TEST_F(FormParserTest, ConflictingNewPasswordAndConfirmationPassword) {
+  CheckTestData({{
+      .description_for_logging =
+          "Conflicting model (NEW_PASSWORD) and server (CONFIRMATION_PASSWORD) "
+          "predictions on the same field.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::CONFIRMATION_PASSWORD,
+               .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              {.role = ElementRole::NEW_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .server_predicted_type = autofill::UNKNOWN_TYPE,
+               .model_predicted_type = autofill::MAX_VALID_FIELD_TYPE},
+          },
+  }});
+}
+
+TEST_F(FormParserTest, HeuristicsConflictSanitizesRole) {
+  CheckTestData({{
+      .description_for_logging =
+          "Conflicting heuristic prediction (PASSWORD) and HTML context "
+          "prediction (USERNAME) on the same field.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword,
+               .predicted_username = 0},
+              {.role = ElementRole::NEW_PASSWORD,
+               .form_control_type = FormControlType::kInputPassword},
+          },
+  }});
+}
+
 }  // namespace
 
 }  // namespace password_manager

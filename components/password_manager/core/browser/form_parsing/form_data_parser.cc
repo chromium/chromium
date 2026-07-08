@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -37,6 +38,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
@@ -308,6 +310,58 @@ struct SignificantFields {
           // Password selection in a prompt will allow to correct the choice.
           password = passwords[0];
         }
+    }
+  }
+
+  // Returns true if the same field has been assigned to multiple non-null
+  // credential roles (username, password, new_password, confirmation_password).
+  bool HasConflicts() const {
+    absl::flat_hash_set<const FormFieldData*> seen;
+    return std::ranges::any_of(
+        std::initializer_list<const FormFieldData*>{
+            username.get(), password.get(), new_password.get(),
+            confirmation_password.get()},
+        [&seen](const FormFieldData* field) {
+          return field && !seen.insert(field).second;
+        });
+  }
+
+  // Checks if a conflict is present. If so, resets the state to empty
+  // and returns true. Otherwise, returns false.
+  bool ResetIfConflict() {
+    if (HasConflicts()) {
+      *this = SignificantFields();
+      return true;
+    }
+    return false;
+  }
+
+  // Resolves credential role conflicts on the same field by applying priority
+  // resolution rules based on input controls (e.g. input type).
+  void Sanitize() {
+    if (confirmation_password && (confirmation_password == new_password ||
+                                  confirmation_password == password)) {
+      confirmation_password = nullptr;
+    }
+
+    if (password && password == new_password) {
+      (confirmation_password ? password : new_password) = nullptr;
+    }
+
+    if (!username) {
+      return;
+    }
+    if (username->form_control_type() ==
+            autofill::FormControlType::kInputPassword &&
+        (username == password || username == new_password ||
+         username == confirmation_password)) {
+      username = nullptr;
+    } else if (username == password) {
+      password = nullptr;
+    } else if (username == new_password) {
+      new_password = nullptr;
+    } else if (username == confirmation_password) {
+      confirmation_password = nullptr;
     }
   }
 
@@ -1316,12 +1370,22 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   SignificantFields significant_fields;
   UsernameDetectionMethod method = UsernameDetectionMethod::kNoUsernameDetected;
 
+  // We expect model predictions to be complete and cover all fields in a form.
+  // If a prediction stage is incomplete or yields role conflicts when combined
+  // with other predictions, all accumulated predictions so far are discarded
+  // and reset to empty (`ResetIfConflict()`). Rather than evaluating which
+  // suboptimal prediction source is correct when sources contradict each other,
+  // the parser resets state completely so subsequent stages (such as local
+  // heuristics) can parse on a clean slate.
   // (1) Parse with model predictions if they are available.
   bool parsing_complete_with_model_predictions = false;
   if (model_predictions_.has_value()) {
     parsing_complete_with_model_predictions =
         ParseUsingModelPredictions(processed_fields, *model_predictions_, mode,
                                    ukm_source_id, &significant_fields);
+    if (significant_fields.ResetIfConflict()) {
+      parsing_complete_with_model_predictions = false;
+    }
     if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kModelPrediction;
     }
@@ -1334,6 +1398,9 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
                               significant_fields)) {
       ParseUsingServerPredictions(processed_fields, *server_predictions_, mode,
                                   &significant_fields);
+      if (significant_fields.ResetIfConflict()) {
+        method = UsernameDetectionMethod::kNoUsernameDetected;
+      }
       if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
         method = UsernameDetectionMethod::kServerSidePrediction;
       }
@@ -1341,6 +1408,8 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
       std::map<ProcessedField*, autofill::FieldType> overrides =
           ExtractServerOverrides(server_predictions_.value(), processed_fields);
       if (!overrides.empty()) {
+        // No conflict check needed here since ApplyServerOverrides self-clears
+        // conflicts.
         ApplyServerOverrides(overrides, &significant_fields);
       }
     }
@@ -1379,6 +1448,9 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   if (ShouldContinueParsing(parsing_complete_with_model_predictions,
                             significant_fields)) {
     ParseUsingAutocomplete(processed_fields, mode, &significant_fields);
+    if (significant_fields.ResetIfConflict()) {
+      method = UsernameDetectionMethod::kNoUsernameDetected;
+    }
     if (ShouldUpdateUsernameDetectionMethod(method, significant_fields)) {
       method = UsernameDetectionMethod::kAutocompleteAttribute;
     }
@@ -1432,6 +1504,10 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
           processed_fields, *significant_fields.new_password);
     }
   }
+
+  // Sanitize the significant fields to resolve any remaining role conflicts
+  // as a last resort before final classification.
+  significant_fields.Sanitize();
 
   // If no password is found, check if the form is UFF. For now, only consider
   // the case when username is found using autocomplete attribute.
