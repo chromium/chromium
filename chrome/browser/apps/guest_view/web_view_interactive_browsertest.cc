@@ -136,7 +136,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(),
+        browser()->GetProfile(),
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
@@ -167,7 +167,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   gfx::NativeWindow GetPlatformAppWindow() {
     const extensions::AppWindowRegistry::AppWindowList& app_windows =
-        extensions::AppWindowRegistry::Get(browser()->profile())->app_windows();
+        extensions::AppWindowRegistry::Get(browser()->GetProfile())->app_windows();
     return (*app_windows.begin())->GetNativeWindow();
   }
 

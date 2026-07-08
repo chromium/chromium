@@ -703,7 +703,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
 
   // Shortcut to return the current MenuManager.
   extensions::MenuManager* menu_manager() {
-    return extensions::MenuManager::Get(browser()->profile());
+    return extensions::MenuManager::Get(browser()->GetProfile());
   }
 
   // This gets all the items that any extension has registered for possible
@@ -876,7 +876,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(),
+        browser()->GetProfile(),
         ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
@@ -2715,7 +2715,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSafeBrowsingTest,
 // enabled doesn't crash nor shows error page.
 // Regression test for crbug.com/40781148
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
-  browser()->profile()->GetPrefs()->SetBoolean(::prefs::kHttpsOnlyModeEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(::prefs::kHttpsOnlyModeEnabled,
                                                true);
 
   https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -2740,7 +2740,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
 // Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
 // enabled doesn't crash and doesn't trigger the error page.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpWithoutError) {
-  browser()->profile()->GetPrefs()->SetBoolean(::prefs::kHttpsOnlyModeEnabled,
+  browser()->GetProfile()->GetPrefs()->SetBoolean(::prefs::kHttpsOnlyModeEnabled,
                                                true);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -3269,7 +3269,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   ASSERT_TRUE(embedder);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ash::SystemWebAppManager::Get(browser()->profile())
+  ash::SystemWebAppManager::Get(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 #endif
 
@@ -3533,7 +3533,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_TearDownTest) {
       LoadAndLaunchPlatformApp("web_view/simple", "WebViewTest.LAUNCHED");
   extensions::AppWindow* window = nullptr;
   if (!GetAppWindowCount())
-    window = CreateAppWindow(browser()->profile(), extension);
+    window = CreateAppWindow(browser()->GetProfile(), extension);
   else
     window = GetFirstAppWindow();
   CloseAppWindow(window);
@@ -3716,7 +3716,7 @@ class WebHidWebViewTest : public WebViewTest {
     base::test::TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>>
         devices_future;
     auto* chooser_context =
-        HidChooserContextFactory::GetForProfile(browser()->profile());
+        HidChooserContextFactory::GetForProfile(browser()->GetProfile());
     chooser_context->SetHidManagerForTesting(std::move(pending_remote),
                                              devices_future.GetCallback());
     EXPECT_TRUE(devices_future.Wait());
@@ -4816,7 +4816,7 @@ class WebViewCertificateSelectorTest : public WebViewTest {
   void SetUpOnMainThread() override {
     WebViewTest::SetUpOnMainThread();
 
-    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+    ProfileNetworkContextServiceFactory::GetForContext(browser()->GetProfile())
         ->set_client_cert_store_factory_for_testing(base::BindRepeating(
             &WebViewCertificateSelectorTest::CreateCertStore));
 
@@ -4985,7 +4985,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(guest_view);
 
   // Register rule for the guest.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
           guest_view->owner_rfh()->GetProcess()->GetDeprecatedID(),
@@ -5023,7 +5023,7 @@ IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
   guest_view::GuestViewBase* guest_view = GetGuestView();
   ASSERT_TRUE(guest_view);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   extensions::RulesRegistryService* registry_service =
       extensions::RulesRegistryService::Get(profile);
   int rules_registry_id =
@@ -5463,7 +5463,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
   EXPECT_FALSE(process_map->GetExtensionIdForProcess(guest_process->GetID()));
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(browser()->GetProfile());
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(guest_url.GetHost());
   EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
@@ -6222,7 +6222,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   extensions::declarative_net_request::RulesMonitorService*
       rules_monitor_service =
           extensions::declarative_net_request::RulesMonitorService::Get(
-              browser()->profile());
+              browser()->GetProfile());
   ASSERT_TRUE(rules_monitor_service);
   extensions::declarative_net_request::ActionTracker& action_tracker =
       rules_monitor_service->action_tracker();
@@ -8048,7 +8048,7 @@ class WebViewUsbTest : public WebViewTest {
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
-    UsbChooserContextFactory::GetForProfile(browser()->profile())
+    UsbChooserContextFactory::GetForProfile(browser()->GetProfile())
         ->SetDeviceManagerForTesting(std::move(device_manager));
 
     test_content_browser_client_.SetAsBrowserClient();
@@ -8155,7 +8155,7 @@ class WebViewSerialTest : public WebViewTest {
 
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   SerialChooserContext* context() {
-    return SerialChooserContextFactory::GetForProfile(browser()->profile());
+    return SerialChooserContextFactory::GetForProfile(browser()->GetProfile());
   }
 
   void CreatePortAndGrantPermissionToOrigin(const url::Origin& origin) {
@@ -8486,14 +8486,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, OpenLinkInNewTab) {
   // created.
   {
     int browser_count =
-        ProfileBrowserCollection::GetForProfile(browser()->profile())
+        ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
             ->GetSize();
     ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
     OpenContextMenu(guest_view2->GetGuestMainFrame());
     waiter.WaitForMenuOpenAndClose();
     EXPECT_TRUE(waiter.IsCommandExecuted().value());
     EXPECT_EQ(browser_count + 1,
-              ProfileBrowserCollection::GetForProfile(browser()->profile())
+              ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                   ->GetSize());
   }
 
@@ -8530,10 +8530,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, WebRequestListenersCleanup) {
 
   // Verify that the onBeforeRequest listener is added.
   auto* event_router =
-      extensions::WebRequestEventRouter::Get(browser()->profile());
+      extensions::WebRequestEventRouter::Get(browser()->GetProfile());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return event_router->GetListenerCountForTesting(
-               browser()->profile(), "webViewInternal.onBeforeRequest") == 1;
+               browser()->GetProfile(), "webViewInternal.onBeforeRequest") == 1;
   }));
 
   // Add a second tab to keep the browser open when we detach the first one.
@@ -8557,7 +8557,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, WebRequestListenersCleanup) {
   // Verify that the onBeforeRequest listener is added to second webcontents.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return event_router->GetListenerCountForTesting(
-               browser()->profile(), "webViewInternal.onBeforeRequest") == 2;
+               browser()->GetProfile(), "webViewInternal.onBeforeRequest") == 2;
   }));
 
   // 5. Cleanup the detached webcontents.
@@ -8566,7 +8566,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, WebRequestListenersCleanup) {
   // 6. Verify that the original listener is cleaned up, but the second one
   // isn't.
   EXPECT_EQ(1u, event_router->GetListenerCountForTesting(
-                    browser()->profile(), "webViewInternal.onBeforeRequest"));
+                    browser()->GetProfile(), "webViewInternal.onBeforeRequest"));
 
   // 7. Cleanup the second webcontents and verify the second listener is cleaned
   // up.
@@ -8575,7 +8575,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, WebRequestListenersCleanup) {
   destroyed_watcher2.Wait();
 
   EXPECT_EQ(0u, event_router->GetListenerCountForTesting(
-                    browser()->profile(), "webViewInternal.onBeforeRequest"));
+                    browser()->GetProfile(), "webViewInternal.onBeforeRequest"));
 }
 
 class ContextualTasksChannelWebViewTest : public WebViewChannelTest {

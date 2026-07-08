@@ -241,7 +241,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
   }
 
   void ShowUi(const std::string& name) override {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
 #if BUILDFLAG(IS_CHROMEOS)
     profile->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);

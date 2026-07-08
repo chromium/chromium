@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplPolicyDisabledBrowserTest,
                        AddFailsWhenPolicyDisabled) {
   // Verify the policy is disabled from startup
   ASSERT_FALSE(AreWebAppsUserInstallable(
-      Profile::FromBrowserContext(browser()->profile())));
+      Profile::FromBrowserContext(browser()->GetProfile())));
 
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);

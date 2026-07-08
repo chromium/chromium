@@ -148,7 +148,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
     prefs.SetList(prefs::kIsolatedWebAppInstallForceList,
                   std::move(app_install_force_list));
-    web_app::WebAppTestInstallObserver(browser()->profile())
+    web_app::WebAppTestInstallObserver(browser()->GetProfile())
         .BeginListeningAndWait(
             {web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                  app.bundle_id)

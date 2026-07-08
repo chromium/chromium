@@ -72,7 +72,7 @@ class ControlledFrameDisabledPermissionUsbTest
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
-    UsbChooserContextFactory::GetForProfile(browser()->profile())
+    UsbChooserContextFactory::GetForProfile(browser()->GetProfile())
         ->SetDeviceManagerForTesting(std::move(device_manager));
 
     test_content_browser_client_.SetAsBrowserClient();
@@ -144,7 +144,7 @@ class ControlledFrameDisabledPermissionSerialTest
 
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
   SerialChooserContext* context() {
-    return SerialChooserContextFactory::GetForProfile(browser()->profile());
+    return SerialChooserContextFactory::GetForProfile(browser()->GetProfile());
   }
 
   void CreatePortAndGrantPermissionToOrigin(const url::Origin& origin) {
