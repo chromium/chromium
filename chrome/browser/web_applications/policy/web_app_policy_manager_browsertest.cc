@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,7 +71,8 @@
 
 namespace web_app {
 
-class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
+class WebAppPolicyManagerBrowserTest : public base::test::WithFeatureOverride,
+                                       public WebAppBrowserTestBase {
  public:
   static constexpr char kDefaultAppName[] = "Simple web app";
   static constexpr char kDefaultCustomName[] = "Custom name";
@@ -91,10 +93,8 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
   static constexpr char kCustomIconUrlSuffix[] =
       "/web_apps/install_url/blue-192.png";
 
-  WebAppPolicyManagerBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kWebAppInstallDialog);
-  }
+  WebAppPolicyManagerBrowserTest()
+      : base::test::WithFeatureOverride(::features::kWebAppInstallDialog) {}
 
   void SetUpOnMainThread() override {
     embedded_https_test_server().RegisterRequestHandler(
@@ -221,12 +221,9 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
         base::ListValue().Append(std::move(app_config)));
     return observer.Wait() == *app_id;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomName) {
   ASSERT_TRUE(SetPolicyAndWaitForInstall(GetCustomAppNameItem()));
 
@@ -234,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   EXPECT_EQ(kDefaultCustomName, name);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomIcon) {
   ASSERT_TRUE(SetPolicyAndWaitForInstall(GetCustomAppIconItem()));
 
@@ -251,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
 // Ensure the manifest start_url is used as the manifest id when the manifest id
 // is not present.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
   WebAppProvider& provider = *WebAppProvider::GetForTest(profile());
 
   const GURL start_url =
@@ -283,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
 #else
 #define MAYBE_OverrideExistingInstall OverrideExistingInstall
 #endif
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        MAYBE_OverrideExistingInstall) {
   // Install app first by user, then policy should override.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetStartUrl()));
@@ -317,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
 // Cross-origin redirection should result in a placeholder app, but the name and
 // icon should work.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        RedirectedPlaceholderAppHasNameIcon) {
   base::DictValue app = GetCustomAppIconAndNameItem();
   app.Set(kUrlKey, GetRedirectingOtherOriginInstallUrl().spec());
@@ -340,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
 // Same-origin redirect should be 'followed' and the manifest should still be
 // overridden.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        RedirectedSameOriginAppHasNameIcon) {
   base::DictValue app = GetCustomAppIconAndNameItem();
   app.Set(kUrlKey, GetRedirectingSameOriginInstallUrl().spec());
@@ -364,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
 // Scenario: A policy installed web app is replacing an existing app causing it
 // to be uninstalled after the policy app is installed.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   // Install old app to replace.
   auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://some.app.com"));
@@ -391,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
 // A policy entry with a non-HTTP/S scheme URL (e.g. corp-app://) must be
 // silently rejected. The valid HTTPS entry in the same batch must still
 // install normally.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        InvalidSchemePolicyEntryDoesNotCrash) {
   auto policy = base::JSONReader::Read(R"([
     {
@@ -422,6 +419,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
             GURL("https://valid.example.com/"));
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppPolicyManagerBrowserTest);
+
 class WebAppPolicyManagerGuestModeTest : public WebAppPolicyManagerBrowserTest {
  public:
   WebAppPolicyManagerGuestModeTest() = default;
@@ -445,7 +444,7 @@ class WebAppPolicyManagerGuestModeTest : public WebAppPolicyManagerBrowserTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerGuestModeTest,
                        DoNotCreateAppsOnGuestMode) {
   const webapps::AppId app_id =
 #if BUILDFLAG(IS_CHROMEOS)
@@ -472,6 +471,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   EXPECT_FALSE(WebAppProvider::GetForTest(guest_profile));
 #endif
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppPolicyManagerGuestModeTest);
 
 class WebAppPolicyManagerBrowserTestWithAuthProxy
     : public WebAppPolicyManagerBrowserTest {
@@ -502,7 +503,7 @@ class WebAppPolicyManagerBrowserTestWithAuthProxy
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
   ASSERT_TRUE(SetPolicyAndWaitForInstall(GetCustomAppIconAndNameItem()));
 
   // Policy is for kInstallUrl, but we pretend to get a manifest
@@ -539,6 +540,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
       any_icons.at(192),
       gfx::test::EqualsBitmap(gfx::test::CreateBitmap(192, SK_ColorBLUE)));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebAppPolicyManagerBrowserTestWithAuthProxy);
 
 // This test suite verifies the WebAppInstallByUserEnabled policy behavior when
 // toggled between enabled/disabled states, including its effects on web app

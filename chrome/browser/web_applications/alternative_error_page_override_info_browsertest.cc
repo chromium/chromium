@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -30,12 +31,11 @@
 
 // Class to test browser error page display info.
 class AlternativeErrorPageOverrideInfoBrowserTest
-    : public web_app::WebAppBrowserTestBase {
+    : public base::test::WithFeatureOverride,
+      public web_app::WebAppBrowserTestBase {
  public:
-  AlternativeErrorPageOverrideInfoBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kWebAppInstallDialog);
-  }
+  AlternativeErrorPageOverrideInfoBrowserTest()
+      : base::test::WithFeatureOverride(::features::kWebAppInstallDialog) {}
 
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
@@ -70,12 +70,10 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   void TearDownOnMainThread() override {
     WebAppBrowserTestBase::TearDownOnMainThread();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Testing url outside the scope of an installed app.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        NoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/simple.html");
@@ -93,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 }
 
 // Testing manifest with app short name.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithAppShortName) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::mojom::AlternativeErrorPageOverrideInfoPtr info = GetErrorPageInfo(
@@ -107,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 }
 
 // Testing app manifest with no app short name.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithNoAppShortName) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::mojom::AlternativeErrorPageOverrideInfoPtr info = GetErrorPageInfo(
@@ -121,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 }
 
 // Testing app manifest with no app short name or app name.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithNoAppShortNameOrAppName) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::mojom::AlternativeErrorPageOverrideInfoPtr info = GetErrorPageInfo(
@@ -136,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
 // Testing app manifest with no app short name or app name, and HTML page
 // has no title
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithNoAppShortNameOrAppNameOrTitle) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/title1.html");
@@ -158,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 }
 
 // Testing manifest with icon.
-IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL(
@@ -200,3 +198,6 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_EQ(*info->alternative_error_page_params.Find("supplementary_icon"),
             "offlineIcon");
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AlternativeErrorPageOverrideInfoBrowserTest);
