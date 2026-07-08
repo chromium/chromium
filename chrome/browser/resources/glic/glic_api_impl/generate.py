@@ -33,6 +33,7 @@ GENERATE_GLIC_API_RE = re.compile(r'.*@generate glic_api')
 TYPE_OVERRIDE_RE = re.compile(r'.*@glic_type\s+(\S+)')
 GLIC_OPTIONAL_RE = re.compile(r'.*@glic_optional')
 GLIC_IGNORE_RE = re.compile(r'.*@glic_ignore')
+STRINGLIKE_ID_RE = re.compile(r'(tab|window)_id$')
 
 
 def _SnakeToCamelCase(name: str) -> str:
@@ -141,7 +142,7 @@ class Converter:
                 if not isinstance(v, ast.Enum):
                     continue
                 if v.comments_before and any(
-                    (GENERATE_GLIC_API_RE.match(comment.value)
+                    (GENERATE_GLIC_API_RE.search(comment.value)
                      for comment in v.comments_before)):
                     self.ConvertEnum(v, remappings.get(v.mojom_name.name, {}))
                     self.converted_enums.append((v.mojom_name.name, source))
@@ -173,7 +174,7 @@ class Converter:
                 if not isinstance(v, ast.Struct):
                     continue
                 if v.comments_before and any(
-                    (GENERATE_GLIC_API_RE.match(comment.value)
+                    (GENERATE_GLIC_API_RE.search(comment.value)
                      for comment in v.comments_before)):
                     self.ConvertStruct(v, type_mappings)
 
@@ -198,6 +199,15 @@ class Converter:
             return type_str
         return None
 
+    def MapMojoFieldTypeToTs(self, field, type_mappings):
+        typename = field.typename
+        is_int32 = (isinstance(typename.identifier, ast.Identifier)
+                    and typename.identifier.id == 'int32')
+
+        if is_int32 and STRINGLIKE_ID_RE.search(field.mojom_name.name):
+            return 'string'
+        return self.MapMojoTypeToTs(typename, type_mappings)
+
     def ConvertStruct(self, struct, type_mappings):
         struct_name = struct.mojom_name.name
         self.Print('///////////////////////////////////////////////')
@@ -218,7 +228,7 @@ class Converter:
                 if not isinstance(v, ast.Union):
                     continue
                 if v.comments_before and any(
-                    (GENERATE_GLIC_API_RE.match(comment.value)
+                    (GENERATE_GLIC_API_RE.search(comment.value)
                      for comment in v.comments_before)):
                     self.ConvertUnion(v, type_mappings)
 
@@ -266,15 +276,8 @@ class Converter:
                 continue
             self.PrintComments(field, 2)
             typename = field.typename
-            # Treat int32 "*_id" fields as strings (except for *node_id).
-            if not ts_type and field.mojom_name.name.endswith(
-                    '_id'
-            ) and not field.mojom_name.name.endswith('node_id') and isinstance(
-                    typename.identifier,
-                    ast.Identifier) and typename.identifier.id == 'int32':
-                ts_type = 'string'
             if not ts_type:
-                ts_type = self.MapMojoTypeToTs(typename, type_mappings)
+                ts_type = self.MapMojoFieldTypeToTs(field, type_mappings)
             if not ts_type:
                 raise Exception(
                     f"Unsupported Mojo type '{typename}' for field" +
