@@ -434,7 +434,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Whether the end of a drag fires a contextmenu event and possibly shows a
   // context-menu (depends on how the event is handled). Follows
-  // `touch_drag_drop_enabled` in Windows.
+  // `touch_drag_drop_enabled` on Linux and Windows.
   bool touch_dragend_context_menu = false;
 
   // By default, WebXR's immersive-ar session creation is allowed, but this can

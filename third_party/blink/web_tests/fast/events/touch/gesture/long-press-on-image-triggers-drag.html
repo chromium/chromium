@@ -16,8 +16,10 @@ event when touch drag and drop is enabled.</p>
 </div>
 <script>
 function runTest() {
-  if (window.internals)
+  if (window.internals) {
     internals.settings.setTouchDragDropEnabled(true);
+    internals.settings.setTouchDragEndContextMenu(true);
+  }
 
   promise_test(async t => {
     preventContextMenu(t);

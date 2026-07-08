@@ -124,6 +124,20 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
       }
       return ui::POST_DISPATCH_NONE;
     }
+    case ui::EventType::kTouchMoved: {
+      // XDND is pointer-based; synthesize pointer motion from the active touch
+      // point so touch drags continue to send XdndPosition updates.
+      const auto* touch_event = event->AsTouchEvent();
+      delegate_->OnMouseMovement(touch_event->root_location(),
+                                 touch_event->flags(),
+                                 touch_event->time_stamp());
+      return ui::POST_DISPATCH_NONE;
+    }
+    case ui::EventType::kTouchReleased:
+    case ui::EventType::kTouchCancelled: {
+      delegate_->OnMouseReleased();
+      return ui::POST_DISPATCH_NONE;
+    }
     case ui::EventType::kKeyPressed:
       if (event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE) {
         canceled_ = true;
