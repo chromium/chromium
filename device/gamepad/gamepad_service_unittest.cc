@@ -400,6 +400,7 @@ TEST_F(GamepadServiceTest, ConnectAndDisconnectWhileInactiveTest) {
     SetPadsConnected(/*connected_count=*/0);
     loop.Run();
   }
+  WaitForData();
 
   // Mark the second consumer active again. The second consumer is not notified
   // because the connected gamepads were disconnected while the consumer was
