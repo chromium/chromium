@@ -369,13 +369,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual void UpdateAfterLayout();
 
-  // Content-box offset and size getters (i.e. what's on the inside of borders,
-  // scrollbars, and padding).
-  LayoutUnit ContentLeft() const;
-  LayoutUnit ContentTop() const;
-  LayoutUnit ContentWidth() const;
-  LayoutUnit ContentHeight() const;
-
   // CSS intrinsic sizing getters.
   // https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override
   LayoutUnit OverrideIntrinsicContentInlineSize() const;

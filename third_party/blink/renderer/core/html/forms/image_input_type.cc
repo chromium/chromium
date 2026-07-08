@@ -185,8 +185,8 @@ unsigned ImageInputType::Height() const {
       &GetElement(), DocumentUpdateReason::kJavaScript);
 
   LayoutBox* box = GetElement().GetLayoutBox();
-  return box ? AdjustForAbsoluteZoom::AdjustInt(box->ContentHeight().ToInt(),
-                                                box)
+  return box ? AdjustForAbsoluteZoom::AdjustInt(
+                   box->PhysicalContentBoxRect().Height().ToInt(), box)
              : 0;
 }
 
@@ -209,8 +209,8 @@ unsigned ImageInputType::Width() const {
       &GetElement(), DocumentUpdateReason::kJavaScript);
 
   LayoutBox* box = GetElement().GetLayoutBox();
-  return box ? AdjustForAbsoluteZoom::AdjustInt(box->ContentWidth().ToInt(),
-                                                box)
+  return box ? AdjustForAbsoluteZoom::AdjustInt(
+                   box->PhysicalContentBoxRect().Width().ToInt(), box)
              : 0;
 }
 

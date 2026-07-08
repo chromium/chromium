@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -614,11 +615,14 @@ void DeleteSelectionCommand::RemoveNode(
 
     // Make sure empty cell has some height, if a placeholder can be inserted.
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-    LayoutObject* r = node->GetLayoutObject();
-    if (r && r->IsTableCell() && To<LayoutBox>(r)->ContentHeight() <= 0) {
-      Position first_editable_position = FirstEditablePositionInNode(node);
-      if (first_editable_position.IsNotNull())
-        InsertBlockPlaceholder(first_editable_position, editing_state);
+    if (const auto* cell =
+            DynamicTo<LayoutTableCell>(node->GetLayoutObject())) {
+      if (cell->PhysicalContentBoxRect().Height() == LayoutUnit()) {
+        Position first_editable_position = FirstEditablePositionInNode(node);
+        if (first_editable_position.IsNotNull()) {
+          InsertBlockPlaceholder(first_editable_position, editing_state);
+        }
+      }
     }
     return;
   }
@@ -773,13 +777,15 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
 
       // Make sure empty cell has some height, if a placeholder can be inserted.
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-      LayoutObject* layout_obj = node_to_be_removed->GetLayoutObject();
-      if (layout_obj && layout_obj->IsTableCell() &&
-          To<LayoutBox>(layout_obj)->ContentHeight() <= 0) {
-        Position first_editable_position =
-            FirstEditablePositionInNode(node_to_be_removed);
-        if (first_editable_position.IsNotNull())
-          InsertBlockPlaceholder(first_editable_position, editing_state);
+      if (const auto* cell = DynamicTo<LayoutTableCell>(
+              node_to_be_removed->GetLayoutObject())) {
+        if (cell->PhysicalContentBoxRect().Height() == LayoutUnit()) {
+          Position first_editable_position =
+              FirstEditablePositionInNode(node_to_be_removed);
+          if (first_editable_position.IsNotNull()) {
+            InsertBlockPlaceholder(first_editable_position, editing_state);
+          }
+        }
       }
       continue;
     }

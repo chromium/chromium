@@ -1183,30 +1183,6 @@ void LayoutBox::UpdateAfterLayout() {
   }
 }
 
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ContentLeft() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).X();
-}
-
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ContentTop() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).Y();
-}
-
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ContentWidth() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).Width();
-}
-
-DISABLE_CFI_PERF
-LayoutUnit LayoutBox::ContentHeight() const {
-  NOT_DESTROYED();
-  return PhysicalContractedBoxRect(kContractToContentEdge).Height();
-}
-
 LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {
   NOT_DESTROYED();
 

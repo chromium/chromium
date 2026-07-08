@@ -702,16 +702,16 @@ unsigned HTMLImageElement::naturalHeight() const {
 
 unsigned HTMLImageElement::LayoutBoxWidth() const {
   LayoutBox* box = GetLayoutBox();
-  return box ? AdjustForAbsoluteZoom::AdjustLayoutUnit(box->ContentWidth(),
-                                                       *box)
+  return box ? AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                   box->PhysicalContentBoxRect().Width(), *box)
                    .Round()
              : 0;
 }
 
 unsigned HTMLImageElement::LayoutBoxHeight() const {
   LayoutBox* box = GetLayoutBox();
-  return box ? AdjustForAbsoluteZoom::AdjustLayoutUnit(box->ContentHeight(),
-                                                       *box)
+  return box ? AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                   box->PhysicalContentBoxRect().Height(), *box)
                    .Round()
              : 0;
 }
