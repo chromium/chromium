@@ -19,11 +19,14 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -43,6 +46,8 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The main coordinator for the Tab Switcher Action Menu, responsible for creating the popup menu
@@ -82,9 +87,11 @@ public class TabSwitcherActionMenuCoordinator {
     public static OnLongClickListener createOnLongClickListener(
             Callback<Integer> onItemClicked,
             Profile profile,
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            TabWindowManager tabWindowManager) {
         return createOnLongClickListener(
-                new TabSwitcherActionMenuCoordinator(profile, tabModelSelectorSupplier),
+                new TabSwitcherActionMenuCoordinator(
+                        profile, tabModelSelectorSupplier, tabWindowManager),
                 profile,
                 onItemClicked);
     }
@@ -128,6 +135,7 @@ public class TabSwitcherActionMenuCoordinator {
 
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
+    private final TabWindowManager mTabWindowManager;
 
     // For test.
     private @Nullable View mContentView;
@@ -135,9 +143,11 @@ public class TabSwitcherActionMenuCoordinator {
     /** Construct a coordinator for the given {@link Profile}. */
     TabSwitcherActionMenuCoordinator(
             Profile profile,
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            TabWindowManager tabWindowManager) {
         mProfile = profile;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabWindowManager = tabWindowManager;
     }
 
     /**
@@ -321,7 +331,12 @@ public class TabSwitcherActionMenuCoordinator {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector != null) {
             TabModel tabModel = tabModelSelector.getCurrentModel();
-            return tabModel.getTabGroupCount() != 0;
+            boolean checkAllWindows = ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+            Collection<TabModelSelector> selectors =
+                    checkAllWindows
+                            ? mTabWindowManager.getAllTabModelSelectors()
+                            : Collections.emptyList();
+            return TabGroupUtils.hasTabGroups(tabModel, selectors);
         }
         return false;
     }

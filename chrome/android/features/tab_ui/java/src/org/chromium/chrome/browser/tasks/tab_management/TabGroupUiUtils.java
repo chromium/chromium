@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /** Helper methods for Tab Group UI components and string resources. */
 @NullMarked
@@ -51,13 +52,10 @@ public class TabGroupUiUtils {
         if (currentTabGroupId != null) {
             return R.string.menu_move_tab_to_group;
         }
-        Collection<TabModelSelector> selectors = null;
-        if (checkAllWindows) {
-            var wm = TabWindowManagerSingleton.getInstance();
-            if (wm != null) {
-                selectors = wm.getAllTabModelSelectors();
-            }
-        }
+        Collection<TabModelSelector> selectors =
+                checkAllWindows
+                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
+                        : Collections.emptyList();
         return getAddToGroupMenuItemString(
                 currentTabGroupId, TabGroupUtils.hasTabGroups(tabModel, selectors));
     }

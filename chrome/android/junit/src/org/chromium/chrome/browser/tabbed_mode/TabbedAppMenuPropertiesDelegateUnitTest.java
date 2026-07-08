@@ -68,6 +68,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -116,6 +117,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.AppMenuUnitTestUtils.MenuItem;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
@@ -4351,5 +4353,59 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem homepageItem = findItemById(modelList, R.id.homepage_menu_id);
         assertNull("Homepage menu item should not be visible", homepageItem);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS})
+    public void testAddToGroupMenuItemString_WithGroupsInAnotherWindow_FlagEnabled() {
+        TabModel tabModel = Mockito.mock(TabModel.class);
+        when(tabModel.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabGroupCount()).thenReturn(0);
+
+        TabWindowManager tabWindowManager = Mockito.mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+
+        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
+        TabModel anotherTabModel = Mockito.mock(TabModel.class);
+        when(anotherTabModel.isIncognito()).thenReturn(false);
+        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
+        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
+        when(anotherTabModel.getTabGroupCount()).thenReturn(1);
+
+        when(tabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
+
+        assertEquals(
+                R.string.menu_add_tab_to_group,
+                mTabbedAppMenuPropertiesDelegate.getAddToGroupMenuItemString(null));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS})
+    public void testAddToGroupMenuItemString_WithGroupsInAnotherWindow_FlagDisabled() {
+        TabModel tabModel = Mockito.mock(TabModel.class);
+        when(tabModel.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getTabGroupCount()).thenReturn(0);
+
+        TabWindowManager tabWindowManager = Mockito.mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+
+        TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
+        TabModel anotherTabModel = Mockito.mock(TabModel.class);
+        when(anotherTabModel.isIncognito()).thenReturn(false);
+        when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
+        when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
+        when(anotherTabModel.getTabGroupCount()).thenReturn(1);
+
+        when(tabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));
+
+        assertEquals(
+                R.string.menu_add_tab_to_new_group,
+                mTabbedAppMenuPropertiesDelegate.getAddToGroupMenuItemString(null));
     }
 }

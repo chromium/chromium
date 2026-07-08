@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -169,7 +170,9 @@ public class TabSwitcherActionMenuRenderTest {
                     Activity activity = mActivityTestRule.getActivity();
                     TabSwitcherActionMenuCoordinator coordinator =
                             new TabSwitcherActionMenuCoordinator(
-                                    mProfile, mTabModelSelectorSupplier);
+                                    mProfile,
+                                    mTabModelSelectorSupplier,
+                                    TabWindowManagerSingleton.getInstance());
 
                     coordinator.displayMenu(
                             activity,

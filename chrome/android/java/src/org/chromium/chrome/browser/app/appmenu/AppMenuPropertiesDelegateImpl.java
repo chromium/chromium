@@ -16,6 +16,7 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -26,6 +27,7 @@ import com.google.common.primitives.UnsignedLongs;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -58,7 +60,9 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
@@ -1160,6 +1164,13 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             default:
                 // Intentional noop.
         }
+    }
+
+    public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        boolean checkAllWindows = ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+        return TabGroupUiUtils.getAddToGroupMenuItemString(
+                tabModel, currentTabGroupId, checkAllWindows);
     }
 
     /** Returns whether to show the open in app menu item. */
