@@ -17,36 +17,21 @@ found in the LICENSE file.
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_add_current_tab"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:id="@+id/fusebox_add_current_tab"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_tabs_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:id="@+id/fusebox_pick_tabs_button"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_camera_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:id="@+id/fusebox_camera_button"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_picture_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:id="@+id/fusebox_pick_picture_button"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_file_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:id="@+id/fusebox_pick_file_button"/>
 </LinearLayout>
