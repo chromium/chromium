@@ -255,44 +255,10 @@ void AnchoredMessageBubbleView::UpdateContent(
   // an icon and/or non-empty text.
   CHECK(chip_has_icon || !model.GetText().empty());
 
-  icon_ = model.GetAnchoredMessageIcon();
-  if (icon_) {
-    icon_view_->SetImage(icon_.value());
-    icon_view_->SetVisible(true);
-  } else {
-    icon_view_->SetVisible(false);
-  }
-
-  label_text_ = model.GetAnchoredMessageText();
-  label_->SetText(label_text_);
-  label_->SetVisible(!label_text_.empty());
-
-  std::optional<ui::ImageModel> chip_icon =
-      chip_has_icon ? std::optional<ui::ImageModel>(model.GetImage())
-                    : std::nullopt;
-  bool show_chip = chip_icon || !model.GetText().empty();
-
-  chip_container_->Update(model.GetText(), chip_icon,
-                          model.GetAccessibleName());
-  chip_container_->SetVisible(show_chip);
-
-  AnchoredMessageActionIconType action_icon_type =
-      model.GetAnchoredMessageActionIconType();
-  show_close_button_ =
-      action_icon_type == AnchoredMessageActionIconType::kClose;
-  close_button_->SetVisible(show_close_button_);
-
-  ui::SimpleMenuModel* const menu_model = model.GetAnchoredMessageMenuModel();
-  if (menu_model_ != menu_model) {
-    if (menu_runner_ && menu_runner_->IsRunning()) {
-      menu_runner_->Cancel();
-    }
-    menu_runner_ = nullptr;
-    menu_model_ = menu_model;
-  }
-  bool show_menu_button =
-      action_icon_type == AnchoredMessageActionIconType::kMenu && menu_model_;
-  menu_button_->SetVisible(show_menu_button);
+  UpdateMainIconAndLabel(model);
+  UpdateChipContainer(model);
+  UpdateActionButtons(model);
+  UpdateExpandableContent(model);
 
   // Update margins dynamically to avoid excessive spacing when some components
   // are hidden.
@@ -304,102 +270,6 @@ void AnchoredMessageBubbleView::UpdateContent(
       gfx::Insets::TLBR(
           0, add_padding_before_chip ? kAnchoredMessageSpaceLeftOfChip : 0, 0,
           0));
-
-  expandable_content_ = model.GetAnchoredMessageExpandableContent();
-  if (expandable_content_) {
-    if (expandable_content_->expand_button_style ==
-        ExpandButtonStyle::kChevron) {
-      UpdateExpandButtonIcon();
-    } else {
-      std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
-      for (const auto& item : expandable_content_->items) {
-        if (item.icon) {
-          icons.emplace_back(*item.icon);
-        }
-      }
-      expand_button_->Update(icons);
-    }
-
-    if (expandable_content_->expand_button_accessible_name) {
-      expand_button_->GetViewAccessibility().SetName(
-          *expandable_content_->expand_button_accessible_name);
-    }
-    UpdateExpandButtonTooltip();
-    expand_button_->SetVisible(true);
-
-    bottom_container_->RemoveAllChildViews();
-
-    auto* separator =
-        bottom_container_->AddChildView(std::make_unique<views::Separator>());
-    separator->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 6, 0));
-
-    auto* items_container =
-        bottom_container_->AddChildView(std::make_unique<views::View>());
-    items_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        gfx::Insets::TLBR(0, kAnchoredMessageLeftInset, 8, 12), 0));
-
-    if (expandable_content_->heading) {
-      auto* heading_row =
-          items_container->AddChildView(std::make_unique<views::View>());
-      auto* heading_layout =
-          heading_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
-      heading_layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kCenter);
-      heading_layout->set_minimum_cross_axis_size(32);
-
-      auto* title_label = heading_row->AddChildView(
-          std::make_unique<views::Label>(*expandable_content_->heading));
-      title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
-      title_label->SetEnabledColor(ui::kColorSysOnSurface);
-      title_label->SetElideBehavior(gfx::ELIDE_TAIL);
-      // Set width to 0 so the text will fill available space, but not stretch
-      // the bubble.
-      title_label->SetPreferredSize(
-          gfx::Size(0, title_label->GetPreferredSize().height()));
-      heading_layout->SetFlexForView(title_label, 1);
-    }
-
-    for (const auto& item : expandable_content_->items) {
-      auto* item_row =
-          items_container->AddChildView(std::make_unique<views::View>());
-      auto* item_layout =
-          item_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
-      item_layout->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kCenter);
-      item_layout->set_minimum_cross_axis_size(32);
-
-      if (item.icon) {
-        auto* item_icon =
-            item_row->AddChildView(std::make_unique<views::ImageView>());
-        item_icon->SetImage(item.icon.value());
-        item_icon->SetImageSize(
-            gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
-        // Mark the favicon/icon as decorative since the text describes it.
-        item_icon->GetViewAccessibility().SetIsIgnored(true);
-      }
-
-      auto* item_label =
-          item_row->AddChildView(std::make_unique<views::Label>(item.text));
-      item_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      item_label->SetTextStyle(views::style::STYLE_BODY_4);
-      item_label->SetEnabledColor(ui::kColorSysOnSurface);
-      item_label->SetMultiLine(false);
-      item_label->SetElideBehavior(gfx::ELIDE_TAIL);
-      // Set width to 0 so the text will fill available space, but not stretch
-      // the bubble.
-      item_label->SetPreferredSize(
-          gfx::Size(0, item_label->GetPreferredSize().height()));
-      item_layout->SetFlexForView(item_label, 1);
-    }
-  } else {
-    expand_button_->SetVisible(false);
-    bottom_container_->RemoveAllChildViews();
-    bottom_container_->SetVisible(false);
-  }
 
   OnThemeChanged();
 }
@@ -547,6 +417,154 @@ void AnchoredMessageBubbleView::UpdateExpandButtonTooltip() {
     expand_button_->GetViewAccessibility().SetIsExpanded();
   } else {
     expand_button_->GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void AnchoredMessageBubbleView::UpdateMainIconAndLabel(
+    const PageActionModelInterface& model) {
+  icon_ = model.GetAnchoredMessageIcon();
+  if (icon_) {
+    icon_view_->SetImage(icon_.value());
+    icon_view_->SetVisible(true);
+  } else {
+    icon_view_->SetVisible(false);
+  }
+
+  label_text_ = model.GetAnchoredMessageText();
+  label_->SetText(label_text_);
+  label_->SetVisible(!label_text_.empty());
+}
+
+void AnchoredMessageBubbleView::UpdateChipContainer(
+    const PageActionModelInterface& model) {
+  const bool chip_has_icon = !model.GetAnchoredMessageIcon();
+  std::optional<ui::ImageModel> chip_icon =
+      chip_has_icon ? std::optional<ui::ImageModel>(model.GetImage())
+                    : std::nullopt;
+  bool show_chip = chip_icon || !model.GetText().empty();
+
+  chip_container_->Update(model.GetText(), chip_icon,
+                          model.GetAccessibleName());
+  chip_container_->SetVisible(show_chip);
+}
+
+void AnchoredMessageBubbleView::UpdateActionButtons(
+    const PageActionModelInterface& model) {
+  AnchoredMessageActionIconType action_icon_type =
+      model.GetAnchoredMessageActionIconType();
+  show_close_button_ =
+      action_icon_type == AnchoredMessageActionIconType::kClose;
+  close_button_->SetVisible(show_close_button_);
+
+  ui::SimpleMenuModel* const menu_model = model.GetAnchoredMessageMenuModel();
+  if (menu_model_ != menu_model) {
+    if (menu_runner_ && menu_runner_->IsRunning()) {
+      menu_runner_->Cancel();
+    }
+    menu_runner_ = nullptr;
+    menu_model_ = menu_model;
+  }
+  bool show_menu_button =
+      action_icon_type == AnchoredMessageActionIconType::kMenu && menu_model_;
+  menu_button_->SetVisible(show_menu_button);
+}
+
+void AnchoredMessageBubbleView::UpdateExpandableContent(
+    const PageActionModelInterface& model) {
+  expandable_content_ = model.GetAnchoredMessageExpandableContent();
+  if (expandable_content_) {
+    if (expandable_content_->expand_button_style ==
+        ExpandButtonStyle::kChevron) {
+      UpdateExpandButtonIcon();
+    } else {
+      std::vector<std::reference_wrapper<const ui::ImageModel>> icons;
+      for (const auto& item : expandable_content_->items) {
+        if (item.icon) {
+          icons.emplace_back(*item.icon);
+        }
+      }
+      expand_button_->Update(icons);
+    }
+
+    if (expandable_content_->expand_button_accessible_name) {
+      expand_button_->GetViewAccessibility().SetName(
+          *expandable_content_->expand_button_accessible_name);
+    }
+    UpdateExpandButtonTooltip();
+    expand_button_->SetVisible(true);
+
+    bottom_container_->RemoveAllChildViews();
+
+    auto* separator =
+        bottom_container_->AddChildView(std::make_unique<views::Separator>());
+    separator->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 6, 0));
+
+    auto* items_container =
+        bottom_container_->AddChildView(std::make_unique<views::View>());
+    items_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        gfx::Insets::TLBR(0, kAnchoredMessageLeftInset, 8, 12), 0));
+
+    if (expandable_content_->heading) {
+      auto* heading_row =
+          items_container->AddChildView(std::make_unique<views::View>());
+      auto* heading_layout =
+          heading_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
+      heading_layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      heading_layout->set_minimum_cross_axis_size(32);
+
+      auto* title_label = heading_row->AddChildView(
+          std::make_unique<views::Label>(*expandable_content_->heading));
+      title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
+      title_label->SetEnabledColor(ui::kColorSysOnSurface);
+      title_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      // Set width to 0 so the text will fill available space, but not stretch
+      // the bubble.
+      title_label->SetPreferredSize(
+          gfx::Size(0, title_label->GetPreferredSize().height()));
+      heading_layout->SetFlexForView(title_label, 1);
+    }
+
+    for (const auto& item : expandable_content_->items) {
+      auto* item_row =
+          items_container->AddChildView(std::make_unique<views::View>());
+      auto* item_layout =
+          item_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
+      item_layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      item_layout->set_minimum_cross_axis_size(32);
+
+      if (item.icon) {
+        auto* item_icon =
+            item_row->AddChildView(std::make_unique<views::ImageView>());
+        item_icon->SetImage(item.icon.value());
+        item_icon->SetImageSize(
+            gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
+        // Mark the favicon/icon as decorative since the text describes it.
+        item_icon->GetViewAccessibility().SetIsIgnored(true);
+      }
+
+      auto* item_label =
+          item_row->AddChildView(std::make_unique<views::Label>(item.text));
+      item_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      item_label->SetTextStyle(views::style::STYLE_BODY_4);
+      item_label->SetEnabledColor(ui::kColorSysOnSurface);
+      item_label->SetMultiLine(false);
+      item_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      // Set width to 0 so the text will fill available space, but not stretch
+      // the bubble.
+      item_label->SetPreferredSize(
+          gfx::Size(0, item_label->GetPreferredSize().height()));
+      item_layout->SetFlexForView(item_label, 1);
+    }
+  } else {
+    expand_button_->SetVisible(false);
+    bottom_container_->RemoveAllChildViews();
+    bottom_container_->SetVisible(false);
   }
 }
 

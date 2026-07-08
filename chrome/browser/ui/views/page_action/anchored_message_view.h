@@ -93,6 +93,11 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void UpdateExpandButtonIcon();
   void UpdateExpandButtonTooltip();
 
+  void UpdateMainIconAndLabel(const PageActionModelInterface& model);
+  void UpdateChipContainer(const PageActionModelInterface& model);
+  void UpdateActionButtons(const PageActionModelInterface& model);
+  void UpdateExpandableContent(const PageActionModelInterface& model);
+
   raw_ptr<views::View> top_row_ = nullptr;
   raw_ptr<views::View> bottom_container_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
