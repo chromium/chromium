@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -910,11 +911,12 @@ class MergeSessionTest : public OAuth2Test,
   GURL non_google_page_url_;
 };
 
-Browser* FindOrCreateVisibleBrowser(Profile* profile) {
+BrowserWindowInterface* FindOrCreateVisibleBrowser(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
-  if (browser->tab_strip_model()->count() == 0)
+  BrowserWindowInterface* browser = displayer.browser_window_interface();
+  if (browser->GetTabStripModel()->count() == 0) {
     chrome::AddTabAt(browser, GURL(), -1, true);
+  }
   return browser;
 }
 
@@ -923,14 +925,14 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
                       /*is_under_advanced_protection=*/false);
 
   // Try to open a page from google.com.
-  Browser* browser = FindOrCreateVisibleBrowser(GetProfile());
+  BrowserWindowInterface* browser = FindOrCreateVisibleBrowser(GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser, fake_google_page_url_, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // JavaScript dialog wait setup.
   content::WebContents* tab =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab);
   base::test::TestFuture<void> dialog_wait;
