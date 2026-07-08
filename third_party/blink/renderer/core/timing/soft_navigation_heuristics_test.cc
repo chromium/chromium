@@ -37,6 +37,7 @@ class SoftNavigationHeuristicsTest : public testing::Test {
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    task_environment_.AdvanceClock(base::Seconds(1));
   }
 
   SoftNavigationHeuristics* CreateSoftNavigationHeuristicsForTest() {
