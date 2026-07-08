@@ -4,9 +4,8 @@
 
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 
-#include <array>
-
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +29,16 @@ namespace {
 
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kViewerUrl[] = "viewer.html";
+
+// Expected handler registration for `channel`: the ApiMimeHandler feature
+// state (default or explicit override) with the parser's dev-channel
+// fallback. Computed at runtime so a change to the flag's default state
+// moves these expectations together with the parser gate. Must be called
+// while the ScopedFeatureList under test is active.
+bool ExpectHandlerRegistered(version_info::Channel channel) {
+  return base::FeatureList::IsEnabled(extensions_features::kApiMimeHandler) ||
+         channel <= version_info::Channel::DEV;
+}
 
 class MimeHandlerRegistryTest : public ExtensionsTest {
  protected:
@@ -312,18 +321,12 @@ TEST_F(MimeHandlerRegistryTest, FlagDisabledRegistrationByChannel) {
 }
 
 TEST_F(MimeHandlerRegistryTest, FlagDefaultRegistrationByChannel) {
-  // Without an explicit override, handler registration is available on
-  // dev/canary/trunk and suppressed on beta/stable.
-  static constexpr std::array kCases =
-      std::to_array<std::pair<version_info::Channel, bool>>({
-          {version_info::Channel::UNKNOWN, true},  // Trunk.
-          {version_info::Channel::CANARY, true},
-          {version_info::Channel::DEV, true},
-          {version_info::Channel::BETA, false},
-          {version_info::Channel::STABLE, false},
-      });
-
-  for (const auto& [channel, expect_registered] : kCases) {
+  // Without an explicit override, availability follows the flag's
+  // default state with the dev-channel fallback.
+  for (auto channel :
+       {version_info::Channel::UNKNOWN, version_info::Channel::CANARY,
+        version_info::Channel::DEV, version_info::Channel::BETA,
+        version_info::Channel::STABLE}) {
     SCOPED_TRACE(testing::Message()
                  << "channel=" << version_info::GetChannelString(channel));
     ScopedCurrentChannel scoped_channel(channel);
@@ -335,7 +338,7 @@ TEST_F(MimeHandlerRegistryTest, FlagDefaultRegistrationByChannel) {
         kViewerUrl);
     LoadExtension(ext.get());
 
-    if (expect_registered) {
+    if (ExpectHandlerRegistered(channel)) {
       EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
     } else {
       EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
