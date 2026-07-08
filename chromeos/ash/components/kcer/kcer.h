@@ -450,6 +450,13 @@ class COMPONENT_EXPORT(KCER) Kcer {
   virtual void GetCertProvisioningProfileId(
       PrivateKeyHandle key,
       GetCertProvisioningProfileIdCallback callback) = 0;
+  // Returns whether the `key` is tagged as being owned by the browser
+  // enterprise client certificate provisioning flow (CA Connector). Returns
+  // true when the tag is present, false when it is absent, and an error
+  // when the attribute could not be read.
+  virtual void GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      GetBrowserEnterpriseClientCertTagCallback callback) = 0;
 
   // Sets the `nickname` on the `key`. (Not to be confused with the nickname of
   // the certificate.) Returns an error on failure.
@@ -470,6 +477,11 @@ class COMPONENT_EXPORT(KCER) Kcer {
   virtual void SetCertProvisioningProfileId(PrivateKeyHandle key,
                                             std::string profile_id,
                                             StatusCallback callback) = 0;
+  // Tags the `key` as owned by the browser enterprise client certificate
+  // provisioning flow (CA Connector). Should be called once, immediately
+  // after key generation. Returns an error on failure.
+  virtual void SetBrowserEnterpriseClientCertTag(PrivateKeyHandle key,
+                                                 StatusCallback callback) = 0;
 };
 
 }  // namespace kcer

@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
   void GetCertProvisioningProfileId(
       PrivateKeyHandle key,
       GetCertProvisioningProfileIdCallback callback) override;
+  void GetBrowserEnterpriseClientCertTag(
+      PrivateKeyHandle key,
+      GetBrowserEnterpriseClientCertTagCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       StatusCallback callback) override;
@@ -99,6 +102,8 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
   void SetCertProvisioningProfileId(PrivateKeyHandle key,
                                     std::string profile_id,
                                     StatusCallback callback) override;
+  void SetBrowserEnterpriseClientCertTag(PrivateKeyHandle key,
+                                         StatusCallback callback) override;
 
  private:
   base::WeakPtr<KcerToken>& GetToken(Token token);
@@ -159,6 +164,10 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
       GetCertProvisioningProfileIdCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
+  void GetBrowserEnterpriseClientCertTagWithToken(
+      GetBrowserEnterpriseClientCertTagCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
   void SetKeyNicknameWithToken(
       std::string nickname,
       StatusCallback callback,
@@ -171,6 +180,10 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
 
   void SetCertProvisioningProfileIdWithToken(
       std::string profile_id,
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void SetBrowserEnterpriseClientCertTagWithToken(
       StatusCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 

@@ -658,6 +658,51 @@ void KcerImpl::GetCertProvisioningProfileIdWithToken(
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
+void KcerImpl::GetBrowserEnterpriseClientCertTag(
+    PrivateKeyHandle key,
+    GetBrowserEnterpriseClientCertTagCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (init_queue_) {
+    return init_queue_->push_back(base::BindOnce(
+        &KcerImpl::GetBrowserEnterpriseClientCertTag,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  if (key.GetTokenInternal().has_value()) {
+    return GetBrowserEnterpriseClientCertTagWithToken(std::move(callback),
+                                                      std::move(key));
+  }
+
+  auto on_find_key_done =
+      base::BindOnce(&KcerImpl::GetBrowserEnterpriseClientCertTagWithToken,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  return PopulateTokenForKey(std::move(key), std::move(on_find_key_done));
+}
+
+void KcerImpl::GetBrowserEnterpriseClientCertTagWithToken(
+    GetBrowserEnterpriseClientCertTagCallback callback,
+    base::expected<PrivateKeyHandle, Error> key_or_error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!key_or_error.has_value()) {
+    return std::move(callback).Run(base::unexpected(key_or_error.error()));
+  }
+  PrivateKeyHandle key = std::move(key_or_error).value();
+
+  const base::WeakPtr<KcerToken>& kcer_token =
+      GetToken(key.GetTokenInternal().value());
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::GetBrowserEnterpriseClientCertTag, kcer_token,
+                     std::move(key),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
 void KcerImpl::SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               StatusCallback callback) {
@@ -793,6 +838,50 @@ void KcerImpl::SetCertProvisioningProfileIdWithToken(
       FROM_HERE,
       base::BindOnce(&KcerToken::SetCertProvisioningProfileId, kcer_token,
                      std::move(key), std::move(profile_id),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+}
+
+void KcerImpl::SetBrowserEnterpriseClientCertTag(PrivateKeyHandle key,
+                                                 StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (init_queue_) {
+    return init_queue_->push_back(base::BindOnce(
+        &KcerImpl::SetBrowserEnterpriseClientCertTag,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  if (key.GetTokenInternal().has_value()) {
+    return SetBrowserEnterpriseClientCertTagWithToken(std::move(callback),
+                                                      std::move(key));
+  }
+
+  auto on_find_key_done =
+      base::BindOnce(&KcerImpl::SetBrowserEnterpriseClientCertTagWithToken,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  return PopulateTokenForKey(std::move(key), std::move(on_find_key_done));
+}
+
+void KcerImpl::SetBrowserEnterpriseClientCertTagWithToken(
+    StatusCallback callback,
+    base::expected<PrivateKeyHandle, Error> key_or_error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!key_or_error.has_value()) {
+    return std::move(callback).Run(base::unexpected(key_or_error.error()));
+  }
+  PrivateKeyHandle key = std::move(key_or_error).value();
+
+  const base::WeakPtr<KcerToken>& kcer_token =
+      GetToken(key.GetTokenInternal().value());
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::SetBrowserEnterpriseClientCertTag, kcer_token,
+                     std::move(key),
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
