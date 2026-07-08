@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 namespace media_router {
