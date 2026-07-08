@@ -32,6 +32,7 @@ interface TestComposeboxElement extends ComposeboxElement {
   composeboxSource: string;
 }
 
+// LINT.IfChange
 suite('ComposeboxTest', () => {
   let composebox: ComposeboxElement;
   let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
@@ -861,3 +862,4 @@ suite('composeboxSharedMountAutoRepositionDefault', () => {
     assertTrue(!!recordingWave);
   });
 });
+// LINT.ThenChange(//ui/webui/resources/cr_components/composebox/Componentization.md)

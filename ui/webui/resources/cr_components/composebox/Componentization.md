@@ -3,7 +3,8 @@
 ## Instruction for CL Authors
 
 If you are reading this, you likely have reached here because your CL updates
-`composebox.ts` and there is an IFTTT warning about this file.
+`composebox.ts` or `cr_components/composebox/composebox_test.ts` and there is an
+IFTTT warning about these files.
 
 If your change does not introduce any new logic (e.g., formatting the file or a
 cosmetic change), please add `NO_IFTTT=no logic added to composebox` tag and
@@ -12,6 +13,29 @@ continue the review.
 Otherwise, please follow the steps below to resolve the warning. For more
 information about why we are doing this, please read the
 [Context section](#context).
+
+## Instruction for Test Authors (`cr_components/.../composebox_test.ts`)
+
+We have established a strict engineering policy: **Do NOT add new unit tests to
+`cr_components/composebox/composebox_test.ts`.** Because `<cr-composebox>` is
+being componentized into a lightweight default container, any modern addition
+or bug fix naturally aligns with one of three distinct testing boundaries:
+
+1. **Shared Core Logic (Mixin Test)**: Add tests for state orchestration, IPC
+   communication, Smart Compose routing, and multi-modal attachments to
+   `chrome/test/data/webui/cr_components/composebox/composebox_mixin_test.ts`.
+2. **UI & DOM Rendering (Subcomponents)**: Add tests for component-specific
+   DOM rendering and user interaction to isolated unit test suites in
+   `cr_components/composebox/` (e.g., `file_carousel_test.ts`,
+   `file_thumbnail_test.ts`, `error_scrim_test.ts`).
+3. **End-to-End Surface Workflows (Embedders)**: Add tests for surface-specific
+   slottings, permissions, and host integrations directly to surface-specific
+   embedder test suites (e.g., `omnibox_popup/`, `contextual_tasks/`, or
+   `new_tab_page/composebox/composebox_test.ts`).
+
+`cr_components/composebox/composebox_test.ts` is in maintenance mode and will be
+deleted once remaining legacy test cases are absorbed into the mixin and
+embedders.
 
 ## Steps to Follow
 
