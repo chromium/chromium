@@ -238,6 +238,32 @@ FindNodeResult FindNodeWithText(
   GREYAssertNil(executionError, @"Action failed: %@", executionError);
 }
 
+// Executes the given `actions` and waits for completion.
+- (void)executeActions:(const optimization_guide::proto::Actions&)actions {
+  std::string serializedActions;
+  actions.SerializeToString(&serializedActions);
+  NSData* actionsData = [NSData dataWithBytes:serializedActions.data()
+                                       length:serializedActions.length()];
+
+  __block NSError* executionError = nil;
+  __block BOOL actionsCompleted = NO;
+
+  [ActorAppInterface executeActionsWithProto:actionsData
+                                  completion:^(NSError* error) {
+                                    executionError = error;
+                                    actionsCompleted = YES;
+                                  }];
+
+  BOOL success =
+      [[GREYCondition conditionWithName:@"Wait for actions completion"
+                                  block:^BOOL {
+                                    return actionsCompleted;
+                                  }] waitWithTimeout:10.0];
+
+  GREYAssertTrue(success, @"Actions timed out.");
+  GREYAssertNil(executionError, @"Actions failed: %@", executionError);
+}
+
 // Makes a JavaScript function that will find the center coordinates of the
 // element with the given selector.
 - (NSString*)findCenterJsForElementWithSelector:(const std::string&)selector {
@@ -1449,6 +1475,43 @@ FindNodeResult FindNodeWithText(
                        @"!!document.getElementById('%s')?.value",
                        "un", username, "pw"];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
+// Tests that a Click action that triggers navigation can be followed by a Wait
+// action in a single task without causing a double-teardown crash.
+// This is a regression test for crbug.com/532117001.
+- (void)testClickTool_navigationFollowedByWait_doesNotCrash {
+  GURL destinationURL = [self URLForHTML:"Hello"];
+  std::string linkHTML = base::StringPrintf(
+      "<a id='link' href='%s'>Go to B</a>", destinationURL.spec().c_str());
+  [ChromeEarlGrey loadURL:[self URLForHTML:linkHTML]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Go to B"];
+
+  // Create the Click and Wait actions.
+  base::Value linkCoordinates = [ChromeEarlGrey
+      evaluateJavaScript:[self findCenterJsForElementWithSelector:"#link"]];
+  GREYAssertTrue(linkCoordinates.is_dict(), @"Link coordinates is not a dict");
+  int x = static_cast<int>(linkCoordinates.GetDict().FindDouble("x").value());
+  int y = static_cast<int>(linkCoordinates.GetDict().FindDouble("y").value());
+
+  optimization_guide::proto::Actions actions;
+
+  optimization_guide::proto::Action* clickLinkAction = actions.add_actions();
+  optimization_guide::proto::ClickAction* clickLink =
+      clickLinkAction->mutable_click();
+  clickLink->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickLink->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickLink->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  clickLink->mutable_target()->mutable_coordinate()->set_x(x);
+  clickLink->mutable_target()->mutable_coordinate()->set_y(y);
+
+  optimization_guide::proto::Action* waitAction = actions.add_actions();
+  waitAction->mutable_wait()->set_wait_time_ms(500);
+
+  // Execute both actions in a single task. Under the hood, this creates and
+  // destructs of two ToolController objects. This verifies that the lifetimes
+  // are managed correctly and don't cause a crash.
+  [self executeActions:actions];
 }
 
 @end

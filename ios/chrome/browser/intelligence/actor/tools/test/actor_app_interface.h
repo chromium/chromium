@@ -28,6 +28,11 @@ typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
 + (void)executeActionWithProto:(NSData*)actionProto
                     completion:(void (^)(NSError* error))completion;
 
+// Executes a list of Actions defined by the serialized Actions proto.
+// The completion block is called when all actions finish or any action fails.
++ (void)executeActionsWithProto:(NSData*)actionsProto
+                     completion:(void (^)(NSError* error))completion;
+
 // Fetches the latest Annotated Page Content (APC) via the PageContextWrapper
 // and returns the serialized optimization_guide::proto::PageContext.
 + (NSData*)fetchLatestAPC;
