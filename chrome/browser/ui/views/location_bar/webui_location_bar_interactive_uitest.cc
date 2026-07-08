@@ -860,7 +860,13 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, FocusSearch2) {
 }
 
 // Test of Ctrl-L (and others) focus location bar.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, FocusLocation) {
+// TODO(crbug.com/532463469): Flaky on Linux debug builders.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_FocusLocation DISABLED_FocusLocation
+#else
+#define MAYBE_FocusLocation FocusLocation
+#endif
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_FocusLocation) {
   ui::Accelerator accelerator;
   EXPECT_TRUE(
       AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
