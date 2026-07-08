@@ -3631,6 +3631,16 @@ even if they fit the naming pattern. -->
   <summary>Records when a scroll happens.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.SettingsAction"
+    enum="ReadAnythingSettingsAction" expires_after="2027-03-01">
+  <owner>alfredohiguera@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when the user triggers an action from the settings menu in the Read
+    Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.SettingsChange"
     enum="ReadAnythingSettingsChange" expires_after="2026-12-06">
   <owner>abigailbklein@google.com</owner>

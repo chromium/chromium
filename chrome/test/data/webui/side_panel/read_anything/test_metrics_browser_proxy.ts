@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 // Test version of the BrowserProxy used in connecting Reading Mode to the color
@@ -28,6 +28,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSpeechPlaybackLengthLegacy',
       'recordSpeechSettingsChange',
       'recordSpeechStopSource',
+      'recordSettingsAction',
       'recordTextSettingsChange',
       'recordTime',
       'recordVoiceSpeed',
@@ -84,6 +85,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordLanguage(lang: string) {
     this.methodCalled('recordLanguage', lang);
+  }
+
+  recordSettingsAction(settingsAction: ReadAnythingSettingsAction) {
+    this.methodCalled('recordSettingsAction', settingsAction);
   }
 
   recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange) {

@@ -19,7 +19,7 @@ import type {SettingsPrefs} from '../content/read_anything_types.js';
 import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingSettingsAction, ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getCss} from './settings_menu.css.js';
@@ -343,6 +343,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
           });
           this.currentOpenId_ = null;
         }
+        this.logger_.logSettingsAction(
+            ReadAnythingSettingsAction.TRANSLATE_ACTION);
         this.fire(ToolbarEvent.TRANSLATION_REQUESTED);
         this.close();
       }

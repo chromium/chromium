@@ -5,7 +5,7 @@
 import {hasEspeakIdentifier, hasNaturalIdentifier} from '../read_aloud/voice_language_conversions.js';
 
 import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType, UmaName} from './metrics_browser_proxy.js';
-import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
+import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 
 export enum TimeFrom {
   APP = 'App',
@@ -178,6 +178,10 @@ export class ReadAnythingLogger {
       langToLog = langSplit[0];
     }
     this.metrics.recordLanguage(langToLog);
+  }
+
+  logSettingsAction(settingsAction: ReadAnythingSettingsAction) {
+    this.metrics.recordSettingsAction(settingsAction);
   }
 
   logTextSettingsChange(settingsChange: ReadAnythingSettingsChange) {

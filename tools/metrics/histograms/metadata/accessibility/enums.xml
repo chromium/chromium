@@ -2370,6 +2370,14 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingScrollEvent) -->
 
+<!-- LINT.IfChange(ReadAnythingSettingsAction) -->
+
+<enum name="ReadAnythingSettingsAction">
+  <int value="0" label="Translate entrypoint"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsAction) -->
+
 <!-- LINT.IfChange(ReadAnythingSettingsChange) -->
 
 <enum name="ReadAnythingSettingsChange">

@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {LinkStatus, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LinkStatus, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
@@ -115,6 +115,13 @@ suite('Logger', () => {
         ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(0, metrics.getCallCount('recordSpeechSettingsChange'));
+  });
+
+  test('settings actions', async () => {
+    logger.logSettingsAction(ReadAnythingSettingsAction.TRANSLATE_ACTION);
+    assertEquals(
+        ReadAnythingSettingsAction.TRANSLATE_ACTION,
+        await metrics.whenCalled('recordSettingsAction'));
   });
 
   test('speech settings', async () => {
