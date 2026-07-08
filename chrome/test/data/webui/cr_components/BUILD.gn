@@ -9,7 +9,7 @@ assert((!is_android && !is_ios) || is_desktop_android)
 build_webui_tests("build") {
   cc_test_files = [
     "cr_components_browsertest.cc",
-    "cr_components_interactive_test.cc",
+    "cr_components_interactive_uitest.cc",
   ]
 
   files = [
