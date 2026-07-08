@@ -46,7 +46,7 @@ source_set("model") {
     ":presentation_type",
     ":utils",
     "//base",
-    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
   ]
 }
 
@@ -74,7 +74,7 @@ source_set("overflow_menu_factory") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

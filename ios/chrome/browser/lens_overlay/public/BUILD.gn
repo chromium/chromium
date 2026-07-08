@@ -2,6 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("lens_overlay_availability") {
+  sources = [
+    "lens_overlay_availability.h",
+    "lens_overlay_availability.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/lens:enterprise_policy",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}
+
 source_set("public") {
   sources = [ "lens_overlay_constants.h" ]
   deps = []

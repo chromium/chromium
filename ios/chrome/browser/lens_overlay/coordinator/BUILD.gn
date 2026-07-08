@@ -2,22 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("lens_overlay_availability") {
-  sources = [
-    "lens_overlay_availability.h",
-    "lens_overlay_availability.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/lens:enterprise_policy",
-    "//components/prefs",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features",
-    "//ui/base",
-  ]
-}
-
 source_set("coordinator") {
   sources = [
     "lens_omnibox_client.h",
@@ -38,7 +22,6 @@ source_set("coordinator") {
     "lens_web_provider.h",
   ]
   deps = [
-    ":lens_overlay_availability",
     "//base",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
@@ -66,6 +49,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/lens_overlay/public",
+    "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/ui",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/omnibox/coordinator",
