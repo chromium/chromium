@@ -206,15 +206,21 @@ BASE_EXPORT void ReplaceSubstringsAfterOffset(std::wstring* str,
 
 BASE_EXPORT wchar_t* WriteInto(std::wstring* str, size_t length_with_null);
 
-BASE_EXPORT std::wstring JoinString(span<const std::wstring> parts,
-                                    std::wstring_view separator);
+constexpr std::wstring JoinString(span<const std::wstring> parts,
+                                  std::wstring_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
 
-BASE_EXPORT std::wstring JoinString(span<const std::wstring_view> parts,
-                                    std::wstring_view separator);
+constexpr std::wstring JoinString(span<const std::wstring_view> parts,
+                                  std::wstring_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
 
-BASE_EXPORT std::wstring JoinString(
+constexpr std::wstring JoinString(
     std::initializer_list<std::wstring_view> parts,
-    std::wstring_view separator);
+    std::wstring_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
 
 BASE_EXPORT std::wstring ReplaceStringPlaceholders(
     std::wstring_view format_string,

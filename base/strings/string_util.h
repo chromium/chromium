@@ -23,6 +23,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/join_string_internal.h"
 // For implicit conversions.
 #include "base/strings/string_util_internal.h"
 #include "base/strings/whitespace_constants.h"
@@ -576,23 +577,34 @@ BASE_EXPORT char16_t* WriteInto(std::u16string* str, size_t length_with_null);
 // copies of those strings are created until the final join operation.
 //
 // Use StrCat (in base/strings/strcat.h) if you don't need a separator.
-BASE_EXPORT std::string JoinString(span<const std::string> parts,
-                                   std::string_view separator);
-BASE_EXPORT std::u16string JoinString(span<const std::u16string> parts,
-                                      std::u16string_view separator);
-BASE_EXPORT std::string JoinString(span<const std::string_view> parts,
-                                   std::string_view separator);
-BASE_EXPORT std::u16string JoinString(span<const std::u16string_view> parts,
-                                      std::u16string_view separator);
+constexpr std::string JoinString(span<const std::string> parts,
+                                 std::string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
+constexpr std::u16string JoinString(span<const std::u16string> parts,
+                                    std::u16string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
+constexpr std::string JoinString(span<const std::string_view> parts,
+                                 std::string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
+constexpr std::u16string JoinString(span<const std::u16string_view> parts,
+                                    std::u16string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
 // decide between the string and std::string_view overloads).
-BASE_EXPORT std::string JoinString(
-    std::initializer_list<std::string_view> parts,
-    std::string_view separator);
-BASE_EXPORT std::u16string JoinString(
+constexpr std::string JoinString(std::initializer_list<std::string_view> parts,
+                                 std::string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
+constexpr std::u16string JoinString(
     std::initializer_list<std::u16string_view> parts,
-    std::u16string_view separator);
+    std::u16string_view separator) {
+  return strings_internal::JoinStringT(parts, separator);
+}
 
 // Replace $1-$2-$3..$9 in the format string with values from |subst|.
 // Additionally, any number of consecutive '$' characters is replaced by that

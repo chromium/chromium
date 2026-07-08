@@ -466,43 +466,6 @@ inline typename string_type::value_type* WriteIntoT(string_type* str,
   return str->data();
 }
 
-// Generic version for all JoinString overloads. |list_type| must be a sequence
-// (base::span or std::initializer_list) of strings/StringPieces (std::string,
-// std::u16string, std::string_view or std::u16string_view). |CharT| is either
-// char or char16_t.
-template <typename list_type,
-          typename T,
-          typename CharT = typename T::value_type>
-static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
-  if (std::empty(parts)) {
-    return std::basic_string<CharT>();
-  }
-
-  // Pre-allocate the eventual size of the string. Start with the size of all of
-  // the separators (note that this *assumes* parts.size() > 0).
-  size_t total_size = (parts.size() - 1) * sep.size();
-  for (const auto& part : parts) {
-    total_size += part.size();
-  }
-  std::basic_string<CharT> result;
-  result.reserve(total_size);
-
-  auto iter = parts.begin();
-  CHECK(iter != parts.end());
-  result.append(*iter);
-  UNSAFE_TODO(++iter);
-
-  for (; iter != parts.end(); UNSAFE_TODO(++iter)) {
-    result.append(sep);
-    result.append(*iter);
-  }
-
-  // Sanity-check that we pre-allocated correctly.
-  DCHECK_EQ(total_size, result.size());
-
-  return result;
-}
-
 // StringViewLike will match both std::basic_string_view<Char> and
 // std::basic_string<Char>. It ensures that the type satisfies the requirements
 // to be passed to std::basic_string::append().

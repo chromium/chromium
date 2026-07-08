@@ -909,6 +909,48 @@ TEST(StringUtilTest, JoinStringInitializerList16) {
   EXPECT_EQ(u"a, b", JoinString({kPieceA, kPieceB}, separator));
 }
 
+TEST(StringUtilTest, JoinStringConstexpr) {
+  static_assert([] {
+    const std::string_view parts[] = {"apple", "banana", "cherry"};
+    return JoinString(parts, ", ") == "apple, banana, cherry";
+  }());
+
+  static_assert([] {
+    const std::string_view parts[] = {"apple", "banana", "", "cherry"};
+    return JoinString(parts, ", ") == "apple, banana, , cherry";
+  }());
+  static_assert([] { return JoinString({}, ", ") == ""; }());
+
+  static_assert([] {
+    const std::u16string_view parts[] = {u"apple", u"banana", u"cherry"};
+    return JoinString(parts, u", ") == u"apple, banana, cherry";
+  }());
+
+  static_assert([] { return JoinString({"a", "b", "c"}, "|") == "a|b|c"; }());
+
+  static_assert(
+      [] { return JoinString({u"a", u"b", u"c"}, u"|") == u"a|b|c"; }());
+
+  static_assert([] {
+    const std::string_view parts[] = {"apple"};
+    return JoinString(parts, ", ") == "apple";
+  }());
+
+  static_assert([] {
+    const std::string parts[] = {"apple", "banana"};
+    return JoinString(parts, ", ") == "apple, banana";
+  }());
+
+  static_assert([] {
+    const std::u16string parts[] = {u"apple", u"banana"};
+    return JoinString(parts, u", ") == u"apple, banana";
+  }());
+
+  static_assert([] {
+    return JoinString(base::span<const std::string_view>(), ", ") == "";
+  }());
+}
+
 TEST(StringUtilTest, StartsWith) {
   EXPECT_TRUE(
       StartsWith("javascript:url", "javascript", base::CompareCase::SENSITIVE));

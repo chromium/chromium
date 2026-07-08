@@ -130,21 +130,6 @@ wchar_t* WriteInto(std::wstring* str, size_t length_with_null) {
   return internal::WriteIntoT(str, length_with_null);
 }
 
-std::wstring JoinString(span<const std::wstring> parts,
-                        std::wstring_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::wstring JoinString(span<const std::wstring_view> parts,
-                        std::wstring_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::wstring JoinString(std::initializer_list<std::wstring_view> parts,
-                        std::wstring_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
 std::wstring ReplaceStringPlaceholders(std::wstring_view format_string,
                                        base::span<const std::wstring> subst,
                                        std::vector<size_t>* offsets) {

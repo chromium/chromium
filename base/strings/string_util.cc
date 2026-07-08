@@ -386,36 +386,6 @@ char16_t* WriteInto(std::u16string* str, size_t length_with_null) {
   return internal::WriteIntoT(str, length_with_null);
 }
 
-std::string JoinString(span<const std::string> parts,
-                       std::string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::u16string JoinString(span<const std::u16string> parts,
-                          std::u16string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::string JoinString(span<const std::string_view> parts,
-                       std::string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::u16string JoinString(span<const std::u16string_view> parts,
-                          std::u16string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::string JoinString(std::initializer_list<std::string_view> parts,
-                       std::string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
-std::u16string JoinString(std::initializer_list<std::u16string_view> parts,
-                          std::u16string_view separator) {
-  return internal::JoinStringT(parts, separator);
-}
-
 std::u16string ReplaceStringPlaceholders(std::u16string_view format_string,
                                          base::span<const std::u16string> subst,
                                          std::vector<size_t>* offsets) {
