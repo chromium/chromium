@@ -2,6 +2,7 @@ _sandbox_mac_non_base = [
   "-base",
   "-third_party/abseil-cpp",
 
+  "+base/compiler_specific.h", # Header-only.
   "+base/posix/eintr_wrapper.h", # Header-only.
 ]
 

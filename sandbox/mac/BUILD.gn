@@ -23,7 +23,10 @@ component("seatbelt") {
     "seatbelt_exec.h",
   ]
   libs = [ "sandbox" ]
-  deps = [ ":seatbelt_export" ]
+  deps = [
+    ":seatbelt_export",
+    "//base:compiler_specific",
+  ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
 

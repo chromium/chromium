@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/policy/win/hook_util/hook_util.h"
 
 #include <assert.h>
 #include <versionhelpers.h>  // windows.h must be before
 
+#include "base/compiler_specific.h"
 #include "base/win/pe_image.h"
 
 namespace {
@@ -46,7 +42,7 @@ DWORD PatchMem(void* target, void* new_bytes, size_t length) {
   }
 
   // Write the data.
-  ::memcpy(target, new_bytes, length);
+  UNSAFE_TODO(::memcpy(target, new_bytes, length));
 
   // Restore old page protection.
   if (!::VirtualProtect(target, length, old_page_protection,

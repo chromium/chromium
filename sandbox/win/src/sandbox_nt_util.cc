@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sandbox_nt_util.h"
 
 #include <winternl.h>
@@ -72,7 +67,7 @@ void* AllocateNearTo(void* source, size_t size) {
   if (!base)
     return nullptr;
   // Set top address to be base + 2GiB.
-  const char* top_address = base + kMaxSize;
+  const char* top_address = UNSAFE_TODO(base + kMaxSize);
 
   while (base < top_address) {
     // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
@@ -167,10 +162,10 @@ void InitGlobalNt() {
   INIT_RTL(RtlDestroyHeap);
   INIT_RTL(RtlFreeHeap);
   INIT_RTL(RtlNtStatusToDosError);
-  INIT_RTL(_strnicmp);
-  INIT_RTL(strlen);
-  INIT_RTL(wcslen);
-  INIT_RTL(memcpy);
+  UNSAFE_TODO(INIT_RTL(_strnicmp));
+  UNSAFE_TODO(INIT_RTL(strlen));
+  UNSAFE_TODO(INIT_RTL(wcslen));
+  UNSAFE_TODO(INIT_RTL(memcpy));
   sandbox::g_nt.Initialized = true;
 }
 
@@ -230,14 +225,15 @@ bool MapGlobalMemory() {
     DCHECK_NT(g_shared_IPC_size > 0);
 
     if (g_shared_policy_size > 0) {
-      g_shared_policy_memory =
-          reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
+      g_shared_policy_memory = UNSAFE_TODO(
+          reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size);
     }
     // TODO(crbug.com/40265190) make this a read-only mapping in the child,
     // distinct from the IPC & policy memory as it should be const.
     if (g_delegate_data_size > 0) {
-      g_shared_delegate_data = reinterpret_cast<char*>(g_shared_IPC_memory) +
-                               g_shared_IPC_size + g_shared_policy_size;
+      g_shared_delegate_data =
+          UNSAFE_TODO(reinterpret_cast<char*>(g_shared_IPC_memory) +
+                      g_shared_IPC_size + g_shared_policy_size);
     }
   }
 
@@ -263,8 +259,9 @@ std::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
   if (!MapGlobalMemory()) {
     return std::nullopt;
   }
-  return base::span(reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
-                    g_delegate_data_size);
+  return UNSAFE_TODO(
+      base::span(reinterpret_cast<const uint8_t*>(g_shared_delegate_data),
+                 g_delegate_data_size));
 }
 
 const NtExports* GetNtExports() {
@@ -296,15 +293,15 @@ int TouchMemory(void* buffer, size_t size_bytes, RequiredAccess intent) {
   const int kPageSize = 4096;
   int dummy = 0;
   volatile char* start = reinterpret_cast<char*>(buffer);
-  volatile char* end = start + size_bytes - 1;
+  volatile char* end = UNSAFE_TODO(start + size_bytes - 1);
 
   if (WRITE == intent) {
-    for (; start < end; start += kPageSize) {
+    for (; start < end; UNSAFE_TODO(start += kPageSize)) {
       *start = *start;
     }
     *end = *end;
   } else {
-    for (; start < end; start += kPageSize) {
+    for (; start < end; UNSAFE_TODO(start += kPageSize)) {
       dummy += *start;
     }
     dummy += *end;
@@ -326,7 +323,7 @@ bool ValidParameter(void* buffer, size_t size, RequiredAccess intent) {
 NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
   NTSTATUS ret = STATUS_SUCCESS;
   __try {
-    GetNtExports()->memcpy(destination, source, bytes);
+    UNSAFE_TODO(GetNtExports()->memcpy(destination, source, bytes));
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     ret = (NTSTATUS)GetExceptionCode();
   }
@@ -419,7 +416,8 @@ bool IsValidImageSection(HANDLE section,
 
 UNICODE_STRING* AnsiToUnicode(const char* string) {
   ANSI_STRING ansi_string;
-  ansi_string.Length = static_cast<USHORT>(GetNtExports()->strlen(string));
+  ansi_string.Length =
+      static_cast<USHORT>(UNSAFE_TODO(GetNtExports()->strlen(string)));
   ansi_string.MaximumLength = ansi_string.Length + 1;
   ansi_string.Buffer = const_cast<char*>(string);
 
@@ -435,7 +433,7 @@ UNICODE_STRING* AnsiToUnicode(const char* string) {
     return nullptr;
 
   out_string->MaximumLength = ansi_string.MaximumLength * sizeof(wchar_t);
-  out_string->Buffer = reinterpret_cast<wchar_t*>(&out_string[1]);
+  out_string->Buffer = reinterpret_cast<wchar_t*>(UNSAFE_TODO(&out_string[1]));
 
   BOOLEAN alloc_destination = false;
   NTSTATUS ret = GetNtExports()->RtlAnsiStringToUnicodeString(
@@ -547,12 +545,13 @@ UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
   if (module_path->Length > 0) {
     size_t last_char = module_path->Length / sizeof(wchar_t) - 1;
     // Ends with path separator. Not a valid module name.
-    if (module_path->Buffer[last_char] == L'\\')
+    if (UNSAFE_TODO(module_path->Buffer[last_char]) == L'\\') {
       return nullptr;
+    }
     // Search backwards for path separator.
     for (size_t i = 0; i <= last_char; ++i) {
-      if (module_path->Buffer[last_char - i] == L'\\') {
-        start_ptr = &module_path->Buffer[last_char - i + 1];
+      if (UNSAFE_TODO(module_path->Buffer[last_char - i]) == L'\\') {
+        start_ptr = UNSAFE_TODO(&module_path->Buffer[last_char - i + 1]);
         break;
       }
     }
@@ -571,7 +570,7 @@ UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
     return nullptr;
 
   UNICODE_STRING* out_string = reinterpret_cast<UNICODE_STRING*>(str_buffer);
-  out_string->Buffer = reinterpret_cast<wchar_t*>(&out_string[1]);
+  out_string->Buffer = reinterpret_cast<wchar_t*>(UNSAFE_TODO(&out_string[1]));
   out_string->Length = static_cast<USHORT>(size_bytes - sizeof(wchar_t));
   out_string->MaximumLength = static_cast<USHORT>(size_bytes);
 
@@ -581,7 +580,7 @@ UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
     return nullptr;
   }
 
-  out_string->Buffer[out_string->Length / sizeof(wchar_t)] = L'\0';
+  UNSAFE_TODO(out_string->Buffer[out_string->Length / sizeof(wchar_t)]) = L'\0';
   return out_string;
 }
 
@@ -660,10 +659,11 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
     return false;
 
   if (file_info->FileName[0] != kPathPrefix[0] ||
-      file_info->FileName[1] != kPathPrefix[1] ||
-      file_info->FileName[2] != kPathPrefix[2] ||
-      file_info->FileName[3] != kPathPrefix[3])
+      UNSAFE_TODO(file_info->FileName[1]) != kPathPrefix[1] ||
+      UNSAFE_TODO(file_info->FileName[2]) != kPathPrefix[2] ||
+      UNSAFE_TODO(file_info->FileName[3]) != kPathPrefix[3]) {
     return false;
+  }
 
   return true;
 }

@@ -209,6 +209,7 @@ if (is_win) {
     ]
     deps = [
       "//base:base_static",  # pe_image
+      "//base:compiler_specific",
     ]
   }
 }

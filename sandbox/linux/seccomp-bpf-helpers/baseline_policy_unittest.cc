@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
 
 #include <errno.h>
@@ -32,6 +27,7 @@
 #include <tuple>
 
 #include "base/clang_profiling_buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock_impl.h"
@@ -89,13 +85,15 @@ void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   static const char kTestString[kTestTransferSize] = {'T', 'E', 'S', 'T'};
   ssize_t transfered = 0;
 
-  transfered =
-      HANDLE_EINTR(write(write_end.get(), kTestString, kTestTransferSize));
+  transfered = HANDLE_EINTR(
+      UNSAFE_TODO(write(write_end.get(), kTestString, kTestTransferSize)));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
   char read_buf[kTestTransferSize + 1] = {};
-  transfered = HANDLE_EINTR(read(read_end.get(), read_buf, sizeof(read_buf)));
+  transfered = HANDLE_EINTR(
+      UNSAFE_TODO(read(read_end.get(), read_buf, sizeof(read_buf))));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
-  BPF_ASSERT_EQ(0, memcmp(kTestString, read_buf, kTestTransferSize));
+  BPF_ASSERT_EQ(0,
+                UNSAFE_TODO(memcmp(kTestString, read_buf, kTestTransferSize)));
 }
 
 // Test that a few easy-to-test system calls are allowed.
@@ -187,8 +185,8 @@ BPF_TEST_C(BaselinePolicy, CloneVforkEperm, BaselinePolicy) {
                            MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
   BPF_ASSERT_NE(child_stack, nullptr);
   pid_t pid = syscall(__NR_clone, CLONE_VM | CLONE_VFORK | SIGCHLD,
-                      static_cast<char*>(child_stack) + kStackSize, nullptr,
-                      nullptr, nullptr);
+                      UNSAFE_TODO(static_cast<char*>(child_stack) + kStackSize),
+                      nullptr, nullptr, nullptr);
   const int clone_errno = errno;
   TestUtils::HandlePostForkReturn(pid);
 

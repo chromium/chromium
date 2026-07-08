@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/mac/seatbelt_exec.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/posix/eintr_wrapper.h"  //nogncheck
 #include "sandbox/mac/sandbox_logging.h"
 #include "sandbox/mac/sandbox_serializer.h"
@@ -57,8 +53,8 @@ bool ReadOrWrite(int fd,
 
   while (bytes_to_transact > 0) {
     ssize_t offset = size - bytes_to_transact;
-    ssize_t transacted_bytes =
-        HANDLE_EINTR(Traits::Operate(fd, buffer + offset, bytes_to_transact));
+    ssize_t transacted_bytes = HANDLE_EINTR(
+        Traits::Operate(fd, UNSAFE_TODO(buffer + offset), bytes_to_transact));
     if (transacted_bytes < 0) {
       logging::PError("SeatbeltExec: %s %s failed", operation_description,
                       Traits::kNameString);
@@ -153,10 +149,10 @@ SeatbeltExecServer::CreateFromArguments(const char* executable_path,
   CreateFromArgumentsResult result;
   int seatbelt_client_fd = -1;
   for (int i = 1; i < argc; ++i) {
-    if (strncmp(argv[i], switches::kSeatbeltClient,
-                strlen(switches::kSeatbeltClient)) == 0) {
+    if (UNSAFE_TODO(strncmp(argv[i], switches::kSeatbeltClient,
+                            strlen(switches::kSeatbeltClient))) == 0) {
       result.sandbox_required = true;
-      std::string arg(argv[i]);
+      std::string arg(UNSAFE_TODO(argv[i]));
       std::string fd_string = arg.substr(strlen(switches::kSeatbeltClient));
       seatbelt_client_fd = std::stoi(fd_string);
     }

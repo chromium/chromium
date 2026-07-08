@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sandbox_nt_util.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <ntstatus.h>
-#include <winternl.h>
 
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -74,7 +70,7 @@ void AllocateBlock(SIZE_T size,
       *base_address, size - free_size, MEM_RESERVE, PAGE_READWRITE)));
   ASSERT_NE(nullptr, ptr.get());
   mem_range->push_back(std::move(ptr));
-  *base_address += size;
+  UNSAFE_TODO(*base_address += size);
 }
 
 #define KIB(x) ((x)*1024ULL)
@@ -109,11 +105,12 @@ void AllocateTestRange(std::vector<unique_ptr_vmem>* mem_range) {
 // Test we can allocate appropriate blocks.
 void TestAlignedRange(char* base_address) {
   unique_ptr_vmem ptr_256k(new (sandbox::NT_PAGE, base_address) char[KIB(256)]);
-  EXPECT_EQ(base_address + GIB(1) + MIB(512) - KIB(256), ptr_256k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(1) + MIB(512) - KIB(256)),
+            ptr_256k.get());
   unique_ptr_vmem ptr_64k(new (sandbox::NT_PAGE, base_address) char[KIB(64)]);
-  EXPECT_EQ(base_address + MIB(512) - KIB(64), ptr_64k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + MIB(512) - KIB(64)), ptr_64k.get());
   unique_ptr_vmem ptr_128k(new (sandbox::NT_PAGE, base_address) char[KIB(128)]);
-  EXPECT_EQ(base_address + GIB(1) - KIB(128), ptr_128k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(1) - KIB(128)), ptr_128k.get());
   // We will have run out of space here so should also fail.
   unique_ptr_vmem ptr_64k_noalloc(
       new (sandbox::NT_PAGE, base_address) char[KIB(64)]);
@@ -128,27 +125,29 @@ void Test512kBlock(char* base_address) {
       new (sandbox::NT_PAGE, base_address) char[KIB(512)]);
   EXPECT_EQ(nullptr, ptr_512k_noalloc.get());
   // Check that moving base address we can allocate the 512k block.
-  unique_ptr_vmem ptr_512k(
-      new (sandbox::NT_PAGE, base_address + GIB(1)) char[KIB(512)]);
-  EXPECT_EQ(base_address + GIB(2), ptr_512k.get());
+  unique_ptr_vmem ptr_512k(new (
+      sandbox::NT_PAGE, UNSAFE_TODO(base_address + GIB(1))) char[KIB(512)]);
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(2)), ptr_512k.get());
   // Free pointer first.
   ptr_512k.reset();
-  ptr_512k.reset(new (sandbox::NT_PAGE, base_address + GIB(2)) char[KIB(512)]);
-  EXPECT_EQ(base_address + GIB(2), ptr_512k.get());
+  ptr_512k.reset(new (sandbox::NT_PAGE,
+                      UNSAFE_TODO(base_address + GIB(2))) char[KIB(512)]);
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(2)), ptr_512k.get());
 }
 
 // Test we can allocate appropriate blocks even when starting at an unaligned
 // address.
 void TestUnalignedRange(char* base_address) {
-  char* unaligned_base = base_address + 123456;
+  char* unaligned_base = UNSAFE_TODO(base_address + 123456);
   unique_ptr_vmem ptr_256k(
       new (sandbox::NT_PAGE, unaligned_base) char[KIB(256)]);
-  EXPECT_EQ(base_address + GIB(1) + MIB(512) - KIB(256), ptr_256k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(1) + MIB(512) - KIB(256)),
+            ptr_256k.get());
   unique_ptr_vmem ptr_64k(new (sandbox::NT_PAGE, unaligned_base) char[KIB(64)]);
-  EXPECT_EQ(base_address + MIB(512) - KIB(64), ptr_64k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + MIB(512) - KIB(64)), ptr_64k.get());
   unique_ptr_vmem ptr_128k(
       new (sandbox::NT_PAGE, unaligned_base) char[KIB(128)]);
-  EXPECT_EQ(base_address + GIB(1) - KIB(128), ptr_128k.get());
+  EXPECT_EQ(UNSAFE_TODO(base_address + GIB(1) - KIB(128)), ptr_128k.get());
 }
 
 // Test maximum number of available allocations within the predefined pattern.
@@ -216,13 +215,14 @@ TEST(SandboxNtUtil, ValidParameter) {
 
   // Fill the buffer with some data.
   for (unsigned int i = 0; i < buffer_size; i++)
-    ptr[i] = (i % 256);
+    UNSAFE_TODO(ptr[i]) = (i % 256);
 
   // Setup verify function.
   auto verify_buffer = [&]() {
     for (unsigned int i = 0; i < buffer_size; i++) {
-      if (ptr[i] != (i % 256))
+      if (UNSAFE_TODO(ptr[i]) != (i % 256)) {
         return false;
+      }
     }
 
     return true;
@@ -253,7 +253,7 @@ TEST(SandboxNtUtil, GetNtExports) {
   static_assert((sizeof(NtExports) % sizeof(void*)) == 0);
   // Verify that the structure is fully initialized.
   for (size_t i = 0; i < sizeof(NtExports) / sizeof(void*); i++)
-    EXPECT_TRUE(reinterpret_cast<void* const*>(exports)[i]);
+    EXPECT_TRUE(UNSAFE_TODO(reinterpret_cast<void* const*>(exports)[i]));
 }
 
 TEST(SandboxNtUtil, ExtractModuleName) {

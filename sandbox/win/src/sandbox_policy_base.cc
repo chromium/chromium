@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sandbox_policy_base.h"
 
 #include <winternl.h>
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -71,7 +67,7 @@ sandbox::PolicyGlobal* MakeBrokerPolicyMemory() {
   sandbox::PolicyGlobal* policy =
       static_cast<sandbox::PolicyGlobal*>(::operator new(kTotalPolicySz));
   DCHECK(policy);
-  memset(policy, 0, kTotalPolicySz);
+  UNSAFE_TODO(memset(policy, 0, kTotalPolicySz));
   policy->data_size = kTotalPolicySz - sizeof(sandbox::PolicyGlobal);
   return policy;
 }
@@ -204,8 +200,8 @@ std::optional<base::span<const uint8_t>> ConfigBase::policy_span() {
   if (policy_) {
     // Note: this is not policy().data_size as that relates to internal data,
     // not the entire allocated policy area.
-    return base::span<const uint8_t>(reinterpret_cast<uint8_t*>(policy_.get()),
-                                     kPolMemSize);
+    return UNSAFE_TODO(base::span<const uint8_t>(
+        reinterpret_cast<uint8_t*>(policy_.get()), kPolMemSize));
   }
   return std::nullopt;
 }
@@ -743,7 +739,7 @@ EvalResult PolicyBase::EvalPolicy(IpcTag service,
     return DENY_ACCESS;
   }
   for (size_t i = 0; i < params->count; i++) {
-    CHECK(params->parameters[i].IsValid());
+    CHECK(UNSAFE_TODO(params->parameters[i]).IsValid());
   }
   PolicyProcessor pol_evaluator(policy->GetService(service));
   PolicyResult result =
@@ -769,9 +765,10 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   PolicyGlobal* policy = config()->policy();
   if (policy) {
     for (size_t i = 0; i < kSandboxIpcCount; i++) {
-      if (policy->entry[i] &&
-          !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i)))
+      if (UNSAFE_TODO(policy->entry[i]) &&
+          !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i))) {
         return SBOX_ERROR_SETUP_INTERCEPTION_SERVICE;
+      }
     }
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/target_process.h"
 
 #include <windows.h>
@@ -21,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
@@ -48,17 +44,18 @@ void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
   if (!source.size()) {
     return;
   }
-  memcpy(dest, source.data(), source.size());
+  UNSAFE_TODO(memcpy(dest, source.data(), source.size()));
   sandbox::PolicyGlobal* policy =
       reinterpret_cast<sandbox::PolicyGlobal*>(dest);
 
   size_t offset = reinterpret_cast<size_t>(source.data());
 
   for (size_t i = 0; i < sandbox::kSandboxIpcCount; i++) {
-    size_t buffer = reinterpret_cast<size_t>(policy->entry[i]);
+    size_t buffer = reinterpret_cast<size_t>(UNSAFE_TODO(policy->entry[i]));
     if (buffer) {
       buffer -= offset;
-      policy->entry[i] = reinterpret_cast<sandbox::PolicyBuffer*>(buffer);
+      UNSAFE_TODO(policy->entry[i]) =
+          reinterpret_cast<sandbox::PolicyBuffer*>(buffer);
     }
   }
 }
@@ -173,15 +170,16 @@ ResultCode TargetProcess::Init(
   size_t current_offset = shared_IPC_size;
   // PolicyGlobal region.
   if (policy.has_value()) {
-    CopyPolicyToTarget(policy.value(),
-                       reinterpret_cast<char*>(shared_memory) + current_offset);
+    CopyPolicyToTarget(
+        policy.value(),
+        UNSAFE_TODO(reinterpret_cast<char*>(shared_memory) + current_offset));
     current_offset += policy->size();
   }
 
   // Delegate Data region.
   if (delegate_data.has_value()) {
-    memcpy(reinterpret_cast<char*>(shared_memory) + current_offset,
-           delegate_data->data(), delegate_data->size());
+    UNSAFE_TODO(memcpy(reinterpret_cast<char*>(shared_memory) + current_offset,
+                       delegate_data->data(), delegate_data->size()));
     current_offset += delegate_data->size();
   }
 
