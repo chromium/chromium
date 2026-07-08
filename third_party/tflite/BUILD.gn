@@ -321,7 +321,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/bitwise_xor.cc",
       "src/tensorflow/lite/kernels/broadcast_args.cc",
       "src/tensorflow/lite/kernels/bucketize.cc",
-      "src/tensorflow/lite/kernels/call_once.cc",
       "src/tensorflow/lite/kernels/complex_support.cc",
       "src/tensorflow/lite/kernels/conv3d.cc",
       "src/tensorflow/lite/kernels/conv3d_transpose.cc",
@@ -352,7 +351,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
       "src/tensorflow/lite/kernels/stablehlo_shift_left.cc",
       "src/tensorflow/lite/kernels/unsorted_segment.cc",
-      "src/tensorflow/lite/kernels/var_handle.cc",
     ]
 
     deps = [
@@ -466,6 +464,7 @@ if (!use_litert_tflite) {
     configs = [ ":tflite_shim_config" ] + _configs
     public = [
       "src/tensorflow/lite/core/kernels/register.h",
+      "src/tensorflow/lite/experimental/resource/initialization_status.h",
       "src/tensorflow/lite/experimental/resource/resource_base.h",
       "src/tensorflow/lite/experimental/resource/resource_variable.h",
       "src/tensorflow/lite/external_cpu_backend_context.h",
@@ -672,6 +671,7 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/bidirectional_sequence_rnn.cc",
       "src/tensorflow/lite/kernels/broadcast_to.cc",
       "src/tensorflow/lite/kernels/builtin_op_kernels.h",
+      "src/tensorflow/lite/kernels/call_once.cc",
       "src/tensorflow/lite/kernels/cast.cc",
       "src/tensorflow/lite/kernels/ceil.cc",
       "src/tensorflow/lite/kernels/comparisons.cc",
@@ -774,6 +774,7 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/unidirectional_sequence_rnn.cc",
       "src/tensorflow/lite/kernels/unique.cc",
       "src/tensorflow/lite/kernels/unpack.cc",
+      "src/tensorflow/lite/kernels/var_handle.cc",
       "src/tensorflow/lite/kernels/where.cc",
       "src/tensorflow/lite/kernels/while.cc",
       "src/tensorflow/lite/kernels/zeros_like.cc",

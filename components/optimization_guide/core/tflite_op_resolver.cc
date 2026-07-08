@@ -391,6 +391,14 @@ TFLiteOpResolver::TFLiteOpResolver() {
              /* max_version = */ 2);
   AddBuiltin(tflite::BuiltinOperator_CUMSUM,
              tflite::ops::builtin::Register_CUMSUM());
+  AddBuiltin(tflite::BuiltinOperator_CALL_ONCE,
+             tflite::ops::builtin::Register_CALL_ONCE());
+  AddBuiltin(tflite::BuiltinOperator_VAR_HANDLE,
+             tflite::ops::builtin::Register_VAR_HANDLE());
+  AddBuiltin(tflite::BuiltinOperator_READ_VARIABLE,
+             tflite::ops::builtin::Register_READ_VARIABLE());
+  AddBuiltin(tflite::BuiltinOperator_ASSIGN_VARIABLE,
+             tflite::ops::builtin::Register_ASSIGN_VARIABLE());
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   delegate_creators_.push_back([](TfLiteContext* context) {
