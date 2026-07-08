@@ -50,8 +50,7 @@ class FakeFileSystemAccessPermissionContext
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
 
-  bool IsFileTypeDangerous(const base::FilePath& path,
-                           const url::Origin& origin) override;
+  bool IsFileTypeDangerous(const base::FilePath& path) override;
 
   base::expected<void, std::string> CanShowFilePicker(
       content::RenderFrameHost* rfh) override;

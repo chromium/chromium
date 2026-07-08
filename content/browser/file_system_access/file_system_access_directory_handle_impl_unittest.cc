@@ -140,7 +140,7 @@ class FileSystemAccessDirectoryHandleImplTestBase : public testing::Test {
         FileSystemAccessManagerImpl::SharedHandleState(deny_grant_,
                                                        deny_grant_));
 
-    EXPECT_CALL(permission_context_, IsFileTypeDangerous_(_, _))
+    EXPECT_CALL(permission_context_, IsFileTypeDangerous_(_))
         .WillRepeatedly(testing::Return(false));
   }
 

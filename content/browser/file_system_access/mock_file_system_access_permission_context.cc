@@ -30,9 +30,8 @@ void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(
 }
 
 bool MockFileSystemAccessPermissionContext::IsFileTypeDangerous(
-    const base::FilePath& path,
-    const url::Origin& origin) {
-  return IsFileTypeDangerous_(path, origin);
+    const base::FilePath& path) {
+  return IsFileTypeDangerous_(path);
 }
 
 }  // namespace content

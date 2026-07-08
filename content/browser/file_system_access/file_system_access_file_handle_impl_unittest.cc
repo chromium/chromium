@@ -1217,8 +1217,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     auto origin = test_src_storage_key_.origin();
     auto target_basename = target.BaseName();
 
-    EXPECT_CALL(permission_context_,
-                IsFileTypeDangerous_(target_basename, origin))
+    EXPECT_CALL(permission_context_, IsFileTypeDangerous_(target_basename))
         .WillRepeatedly(testing::Return(!expects_safe_name));
 
     if (expected_status == FileSystemAccessStatus::kOk) {
@@ -1336,8 +1335,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     auto origin = test_src_storage_key_.origin();
     auto target_basename = target.BaseName();
 
-    EXPECT_CALL(permission_context_,
-                IsFileTypeDangerous_(target_basename, origin))
+    EXPECT_CALL(permission_context_, IsFileTypeDangerous_(target_basename))
         .WillRepeatedly(testing::Return(false));
     EXPECT_CALL(
         permission_context_,
@@ -1400,8 +1398,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     auto origin = test_src_storage_key_.origin();
     auto target_basename = target.BaseName();
 
-    EXPECT_CALL(permission_context_,
-                IsFileTypeDangerous_(target_basename, origin))
+    EXPECT_CALL(permission_context_, IsFileTypeDangerous_(target_basename))
         .WillRepeatedly(testing::Return(!expects_safe_name));
     if (expected_sensitive_entry_result.has_value()) {
       EXPECT_CALL(
@@ -2081,8 +2078,7 @@ TEST_F(FileSystemAccessFileHandleImplRenameOnlyInHomedirTest,
   auto source_handle =
       GetHandleWithPermissions(source, allow_grant_, allow_grant_);
   auto target_basename = target.BaseName();
-  EXPECT_CALL(permission_context_,
-              IsFileTypeDangerous_(target_basename, origin))
+  EXPECT_CALL(permission_context_, IsFileTypeDangerous_(target_basename))
       .WillOnce(testing::Return(false));
 
   // Mock the target file permission check. Returning `ask_grant_` (which is not
@@ -2148,8 +2144,7 @@ TEST_F(FileSystemAccessFileHandleImplRenameOnlyInHomedirTest,
   auto source_handle =
       GetHandleWithPermissions(source, allow_grant_, allow_grant_);
   auto target_basename = target.BaseName();
-  EXPECT_CALL(permission_context_,
-              IsFileTypeDangerous_(target_basename, origin))
+  EXPECT_CALL(permission_context_, IsFileTypeDangerous_(target_basename))
       .WillOnce(testing::Return(false));
   // Since target is outside homedir, it should fallback to checking target file
   // grants (legacy behavior).

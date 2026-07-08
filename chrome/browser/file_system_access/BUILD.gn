@@ -156,6 +156,10 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
   }
 
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies_test_support" ]
+  }
+
   if (!is_android) {
     deps +=
         [ "//chrome/browser/web_applications:web_applications_test_support" ]

@@ -2575,36 +2575,36 @@ TEST_F(FileSystemAccessManagerImplTest, IsSafePathComponent) {
   };
 
   for (const char* component : kSafePathComponents) {
-    EXPECT_TRUE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
+                                              component))
         << component;
-    EXPECT_TRUE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
+    EXPECT_TRUE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
         << component;
-    EXPECT_TRUE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                              component))
         << component;
   }
   for (const char* component : kAlwaysUnsafePathComponents) {
     EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
+        storage::kFileSystemTypeTemporary, component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
+    EXPECT_FALSE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                               component))
         << component;
   }
   for (const char* component : kUnsafeLocalPathComponents) {
-    EXPECT_TRUE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
+                                              component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
+    EXPECT_FALSE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                               component))
         << component;
   }
 }

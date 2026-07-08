@@ -53,8 +53,7 @@ void FakeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
 }
 
 bool FakeFileSystemAccessPermissionContext::IsFileTypeDangerous(
-    const base::FilePath& path,
-    const url::Origin& origin) {
+    const base::FilePath& path) {
   return false;
 }
 

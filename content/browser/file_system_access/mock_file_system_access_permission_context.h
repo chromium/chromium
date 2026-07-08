@@ -62,11 +62,8 @@ class MockFileSystemAccessPermissionContext
                GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
-  bool IsFileTypeDangerous(const base::FilePath& path,
-                           const url::Origin& origin) override;
-  MOCK_METHOD(bool,
-              IsFileTypeDangerous_,
-              (const base::FilePath& path, const url::Origin& origin));
+  bool IsFileTypeDangerous(const base::FilePath& path) override;
+  MOCK_METHOD(bool, IsFileTypeDangerous_, (const base::FilePath& path));
 
   MOCK_METHOD((base::expected<void, std::string>),
               CanShowFilePicker,

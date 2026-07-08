@@ -186,8 +186,7 @@ class FileSystemAccessPermissionContext {
 
   // Returns whether the file type is considered dangerous. This is used to
   // block file operations from creating or accessing these file types.
-  virtual bool IsFileTypeDangerous(const base::FilePath& path,
-                                   const url::Origin& origin) = 0;
+  virtual bool IsFileTypeDangerous(const base::FilePath& path) = 0;
 
   // Returns whether the given RFH can use file picker.
   virtual base::expected<void, std::string> CanShowFilePicker(

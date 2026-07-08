@@ -58,8 +58,7 @@ class AwFileSystemAccessPermissionContext
       content::RenderFrameHost* rfh) override;
   bool CanObtainReadPermission(const url::Origin& origin) override;
   bool CanObtainWritePermission(const url::Origin& origin) override;
-  bool IsFileTypeDangerous(const base::FilePath& path,
-                           const url::Origin& origin) override;
+  bool IsFileTypeDangerous(const base::FilePath& path) override;
   void SetLastPickedDirectory(const url::Origin& origin,
                               const std::string& id,
                               const content::PathInfo& path_info) override;
