@@ -483,9 +483,11 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   ? -kReducedTransparencyInputPlateBottomMargin
                   : -kBlurBottomMargin,
               0));
+      AddSameConstraintsToSides(_progressiveBlurEffect, self.view,
+                                LayoutSides::kTop);
       AddSameConstraintsToSides(
           _progressiveBlurEffect, safeAreaGuide,
-          LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+          LayoutSides::kLeading | LayoutSides::kTrailing);
 
       CGFloat leadingMargin = kInputPlateIpadMargin;
       if (!IsRegularXRegularSizeClass(self.traitCollection)) {

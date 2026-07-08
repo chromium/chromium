@@ -92,7 +92,10 @@
 - (void)start {
   ComposeboxTheme* theme = [self createTheme];
   _viewController = [[ComposeboxViewController alloc] initWithTheme:theme];
-  _viewController.modalPresentationStyle = UIModalPresentationCustom;
+  _viewController.modalPresentationStyle =
+      [self shouldUseIpadPresentationController]
+          ? UIModalPresentationCustom
+          : UIModalPresentationOverFullScreen;
   _viewController.transitioningDelegate = self;
   if (self.isOffTheRecord) {
     _viewController.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
@@ -355,6 +358,10 @@
 // Represents the coordinator's view controller with no animation.
 - (void)representViewController {
   _viewController.view.hidden = NO;
+  _viewController.modalPresentationStyle =
+      [self shouldUseIpadPresentationController]
+          ? UIModalPresentationCustom
+          : UIModalPresentationOverFullScreen;
   [self.baseViewController presentViewController:_viewController
                                         animated:NO
                                       completion:nil];
