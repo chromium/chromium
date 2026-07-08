@@ -61,6 +61,6 @@
 -SSLUITest.BadCertFollowedByGoodCert
 -StartupBrowserWithWebAppTest.LastUsedProfilesWithWebApp
 -TabRestoreTest.RestoreTabFromClosedWindowByID
--WebAppBrowserTest.WebAppCreateAndDeleteShortcut
+-All/WebAppBrowserTest.WebAppCreateAndDeleteShortcut/*
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization

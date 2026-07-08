@@ -34,7 +34,7 @@
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestCORSWithExtraHeaders/BackgroundResourceFetch*
 -SitePermissionsHelperBrowserTest.UpdateSiteAccess_AcceptReloadBubble
 -SitePermissionsHelperBrowserTest.UpdateSiteAccess_DismissReloadBubble_ReloadPageManually
--WebAppBrowserTest.ManifestShareTarget
--WebAppBrowserTest.ManifestShortcut
--WebAppWebDXManifestBrowserTest.UsageMeasured
+-All/WebAppBrowserTest.ManifestShareTarget/*
+-All/WebAppBrowserTest.ManifestShortcut/*
+-All/WebAppWebDXManifestBrowserTest.UsageMeasured/*
 -WebViewTest.SelectShowHide/*

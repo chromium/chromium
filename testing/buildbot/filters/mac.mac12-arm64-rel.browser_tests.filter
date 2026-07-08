@@ -174,10 +174,8 @@
 -TranslateModelServiceBrowserTest.LanguageDetectionWithBackgroundTab
 -UsbChooserBrowserTest.InvokeUi_NoDevicesBubble
 -UsbInternalsTest.WebUIValueRenderTest
--WebAppBrowserTest.AppInfoOpensPageInfo
--WebAppBrowserTest.WebAppCreateAndDeleteShortcut
--WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
--WebAppBrowserTest.WebAppCreateAndDeleteShortcut
+-All/WebAppBrowserTest.AppInfoOpensPageInfo/*
+-All/WebAppBrowserTest.WebAppCreateAndDeleteShortcut/*
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
 -WebContentsInteractionTestUtilTest.EvaluateString
 -WelcomeAppChooserTest.All

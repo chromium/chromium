@@ -29,9 +29,10 @@
 -ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
 -ReadAnythingReadAloudPhraseHighlightingMochaTest.*
 -SessionRestoreTest.RestoredTabsHaveCorrectInitialSize
--WebAppBrowserTest.PWASizeIsCorrectlyRestored
--WebAppBrowserTest.SetBounds
--WebAppBrowserTest.WindowOffsetsClampedToScreen
+-All/WebAppBrowserTest.PWASizeIsCorrectlyRestored/*
+-All/WebAppBrowserTest.SetBounds/*
+-All/WebAppBrowserTest.WindowOffsetsClampedToScreen/*
+
 -WebAppFrameToolbarBrowserTest_WindowControlsOverlay.DownloadIconVisibilityForAppDownload
 
 #################################################
