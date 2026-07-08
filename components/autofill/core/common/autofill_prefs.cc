@@ -303,6 +303,10 @@ void SetAutofillGmailOtpFillingActivationDismissalTimestamp(PrefService* prefs,
   prefs->SetTime(kAutofillGmailOtpFillingActivationDismissalTimestamp, time);
 }
 
+void ClearAutofillGmailOtpFillingActivationDismissalTimestamp(
+    PrefService* prefs) {
+  prefs->ClearPref(kAutofillGmailOtpFillingActivationDismissalTimestamp);
+}
 
 bool IsAutofillAiReauthBeforeFillingEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \

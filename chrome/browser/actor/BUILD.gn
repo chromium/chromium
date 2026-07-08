@@ -350,6 +350,7 @@ source_set("unit_tests") {
     "tools/attempt_form_filling_tool_request_unittest.cc",
     "tools/attempt_login_tool_request_unittest.cc",
     "tools/attempt_otp_filling_tool_request_unittest.cc",
+    "tools/attempt_otp_filling_tool_unittest.cc",
     "tools/click_tool_request_unittest.cc",
   ]
   deps = [
@@ -361,6 +362,7 @@ source_set("unit_tests") {
     "ui:event_dispatcher",
     "ui:test_support",
     "//base/test:test_support",
+    "//chrome/browser/autofill/actor",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",

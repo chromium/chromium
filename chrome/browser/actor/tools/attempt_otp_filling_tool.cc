@@ -11,26 +11,33 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace actor {
 
 namespace {
+
+constexpr base::TimeDelta kGmailOtpOptInCoolOffPeriod = base::Days(90);
 
 void OnOtpFrameOriginMatchEvaluated(
     bool should_use_strong_matching,
@@ -178,17 +185,99 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
 AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
 
 void AttemptOtpFillingTool::Validate(ToolCallback callback) {
-  // This could be a place to check (once more) if the feature is enabled and
-  // that the user has not permanently opted out.
-  // Note: There's also the method `TimeOfUseValidation` for checks that happen
-  // synchronously just before `Invoke()`.
+  PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
+  bool gmail_otp_filling_enabled =
+      autofill::prefs::IsAutofillGmailOtpFillingEnabled(prefs);
+  base::Time dismissal_timestamp =
+      autofill::prefs::GetAutofillGmailOtpFillingActivationDismissalTimestamp(
+          prefs);
+  base::TimeDelta time_since_last_dismissal =
+      base::Time::Now() - dismissal_timestamp;
+  bool within_cool_off_period =
+      time_since_last_dismissal < kGmailOtpOptInCoolOffPeriod;
 
+  LogJournalEvent(
+      "AttemptOtpFillingTool::Validate",
+      JournalDetailsBuilder()
+          .Add("trigger_fields_count", trigger_fields_.size())
+          .Add("gmail_otp_filling_enabled", gmail_otp_filling_enabled)
+          .Add("dismissal_timestamp", dismissal_timestamp)
+          .Add("time_since_last_dismissal in days",
+               time_since_last_dismissal.InDays())
+          .Add("within_cool_off_period", within_cool_off_period)
+          .Build());
+
+  if (gmail_otp_filling_enabled) {
+    std::move(callback).Run(MakeOkResult());
+    return;
+  }
+
+  if (within_cool_off_period) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+                   /*requires_page_stabilization=*/false,
+                   "Gmail OTP disabled and within cool-off period for Gmail "
+                   "OTP opt-in dialog."));
+  } else {
+    tool_delegate().RequestToShowGmailOtpOptInDialog(
+        base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpOptInResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
+    ToolCallback callback,
+    webui::mojom::GmailOtpOptInResultPtr response) {
+  if (!response || response.is_null()) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+                   /*requires_page_stabilization=*/false,
+                   "Gmail OTP opt-in dialog response is null"));
+    return;
+  }
+
+  if (response->is_error_reason()) {
+    LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpOptInResponse",
+                    JournalDetailsBuilder()
+                        .Add("error_reason", response->get_error_reason())
+                        .Build());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+                   /*requires_page_stabilization=*/false,
+                   "Error in Gmail OTP opt-in dialog response"));
+    return;
+  }
+
+  bool opt_in_permission_granted = response->get_permission_granted();
+
+  PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
+  if (!opt_in_permission_granted) {
+    autofill::prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+        prefs, base::Time::Now());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+                   /*requires_page_stabilization=*/false,
+                   "User declined Gmail OTP opt-in."));
+    return;
+  }
+
+  autofill::prefs::SetAutofillGmailOtpFillingEnabled(prefs, true);
+  autofill::prefs::ClearAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs);
   std::move(callback).Run(MakeOkResult());
 }
 
 mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     const optimization_guide::proto::AnnotatedPageContent* last_observation) {
   tabs::TabInterface* tab = GetTargetTab().Get();
+
+  LogJournalEvent("AttemptOtpFillingTool::TimeOfUseValidation",
+                  JournalDetailsBuilder()
+                      .Add("tab", !!tab)
+                      .Add("last_observation", !!last_observation)
+                      .Add("trigger_fields_count", trigger_fields_.size())
+                      .Build());
+
   if (!tab) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway,
                       /*requires_page_stabilization=*/false,
@@ -226,15 +315,19 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
 }
 
 void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
-  journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
-                JournalDetailsBuilder()
-                    .Add("trigger_fields_count", trigger_field_ids_.size())
-                    .Add("for_signin", for_signin_)
-                    .Build());
+  LogJournalEvent("AttemptOtpFillingTool::Invoke",
+                  JournalDetailsBuilder()
+                      .Add("trigger_fields_count", trigger_field_ids_.size())
+                      .Add("for_signin", for_signin_)
+                      .Build());
 
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetTab(), trigger_fields_);
   if (!otp_frame) {
+    LogJournalEvent("AttemptOtpFillingTool::Invoke",
+                    JournalDetailsBuilder()
+                        .Add("error", "No frame containing an OTP")
+                        .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -269,8 +362,8 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
 
 void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
                                                     bool is_actor_login) {
-  journal().Log(
-      JournalURL(), task_id(), "AttemptOtpFillingTool::OnActorLoginFlowChecked",
+  LogJournalEvent(
+      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
       JournalDetailsBuilder().Add("is_actor_login", is_actor_login).Build());
 
   if (is_actor_login) {
@@ -280,6 +373,10 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
         base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    LogJournalEvent("AttemptOtpFillingTool::OnActorLoginFlowChecked",
+                    JournalDetailsBuilder()
+                        .Add("error", "Not an Actor Login flow")
+                        .Build());
     // No recent login, origin mismatch, untracked frame, or sequence broken
     // by too many navigations: require confirmation UI (Post-MVP).
     // TODO(crbug.com/504573041): Implement confirmation UI.
@@ -295,13 +392,20 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
     ToolCallback callback,
     base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
         result) {
-  journal().Log(
-      JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpRetrieved",
+  LogJournalEvent(
+      "AttemptOtpFillingTool::OnOtpRetrieved",
       JournalDetailsBuilder().Add("otp_received", result.has_value()).Build());
 
   if (!result.has_value()) {
     mojom::ActionResultCode code = mojom::ActionResultCode::kOtpRetrievalError;
     std::string message = "An error occurred during OTP retrieval.";
+
+    LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
+                    JournalDetailsBuilder()
+                        .Add("error", message)
+                        .Add("error_code", result.error())
+                        .Build());
+
     using enum one_time_tokens::OneTimeTokenRetrievalError;
     switch (result.error()) {
       case kGmailOtpBackendSmartFeaturesInGmailConsentRequired:
@@ -357,8 +461,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
 }
 
 void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
-  journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpFilled",
-                JournalDetailsBuilder().Add("success", success).Build());
+  LogJournalEvent("AttemptOtpFillingTool::OnOtpFilled",
+                  JournalDetailsBuilder().Add("success", success).Build());
 
   if (success) {
     std::move(callback).Run(MakeOkResult());
@@ -367,6 +471,13 @@ void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
                                        /*requires_page_stabilization=*/false,
                                        "Failed to fill OTP."));
   }
+}
+
+void AttemptOtpFillingTool::LogJournalEvent(
+    std::string_view event_name,
+    std::vector<mojom::JournalDetailsPtr> journal_details) {
+  journal().Log(JournalURL(), task_id(), event_name,
+                std::move(journal_details));
 }
 
 void AttemptOtpFillingTool::UpdateTaskBeforeInvoke(

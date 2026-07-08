@@ -30,10 +30,12 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,6 +112,9 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
+
+    autofill::prefs::SetAutofillGmailOtpFillingEnabled(GetProfile()->GetPrefs(),
+                                                       true);
 
     observer_ = std::make_unique<TestJournalObserver>(
         &actor_keyed_service().GetJournal());
