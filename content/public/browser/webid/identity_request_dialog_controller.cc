@@ -186,8 +186,4 @@ void IdentityRequestDialogController::RequestIdPRegistrationPermision(
 
 void IdentityRequestDialogController::NotifyAutofillSourceReadyForTesting() {}
 
-bool IdentityRequestDialogController::DidShowUi() const {
-  return false;
-}
-
 }  // namespace content

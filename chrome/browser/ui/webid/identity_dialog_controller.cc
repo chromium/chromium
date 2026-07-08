@@ -565,10 +565,6 @@ void IdentityDialogController::RequestIdPRegistrationPermision(
                                                           std::move(callback)));
 }
 
-bool IdentityDialogController::DidShowUi() const {
-  return did_show_ui_;
-}
-
 void IdentityDialogController::SetAccountSelectionViewForTesting(
     std::unique_ptr<AccountSelectionView> account_view) {
   account_view_ = std::move(account_view);

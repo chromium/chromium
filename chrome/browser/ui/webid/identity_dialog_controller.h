@@ -144,7 +144,6 @@ class IdentityDialogController
   void RequestIdPRegistrationPermision(
       const url::Origin& origin,
       base::OnceCallback<void(bool accepted)> callback) override;
-  bool DidShowUi() const override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(

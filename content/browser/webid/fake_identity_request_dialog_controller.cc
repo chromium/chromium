@@ -70,7 +70,6 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
                                        /* is_sign_in= */ true));
   }
   std::move(accounts_displayed_callback).Run();
-  did_show_ui_ = true;
   return true;
 }
 
@@ -85,7 +84,6 @@ bool FakeIdentityRequestDialogController::ShowFailureDialog(
     LoginToIdPCallback login_callback) {
   title_ = "Confirm IDP Login";
   subtitle_ = "";
-  did_show_ui_ = true;
   return true;
 }
 
@@ -104,7 +102,6 @@ bool FakeIdentityRequestDialogController::ShowErrorDialog(
     std::move(dismiss_callback).Run(DismissReason::kOther);
     return false;
   }
-  did_show_ui_ = true;
   return true;
 }
 
@@ -131,7 +128,6 @@ bool FakeIdentityRequestDialogController::ShowVerifyingDialog(
                : "Verifying";
   subtitle_ = "";
   std::move(accounts_displayed_callback).Run();
-  did_show_ui_ = true;
   return true;
 }
 
@@ -177,7 +173,6 @@ WebContents* FakeIdentityRequestDialogController::ShowModalDialog(
   popup_window_ = web_contents_->GetDelegate()->OpenURLFromTab(
       web_contents_, params, /*navigation_handle_callback=*/{});
   Observe(popup_window_);
-  did_show_ui_ = true;
   return popup_window_;
 }
 
@@ -207,10 +202,6 @@ void FakeIdentityRequestDialogController::RequestIdPRegistrationPermision(
   if (!is_interception_enabled_) {
     PostTask(FROM_HERE, base::BindOnce(std::move(callback), true));
   }
-}
-
-bool FakeIdentityRequestDialogController::DidShowUi() const {
-  return did_show_ui_;
 }
 
 void FakeIdentityRequestDialogController::PostTask(

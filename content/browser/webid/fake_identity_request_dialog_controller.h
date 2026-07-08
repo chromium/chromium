@@ -98,8 +98,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       const url::Origin& origin,
       base::OnceCallback<void(bool accepted)> callback) override;
 
-  bool DidShowUi() const override;
-
  private:
   void PostTask(const base::Location& from_here, base::OnceClosure task);
 
@@ -111,7 +109,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   // We observe WebContentsDestroyed to ensure that this pointer is valid.
   raw_ptr<WebContents> popup_window_{nullptr};
   DismissCallback popup_dismiss_callback_;
-  bool did_show_ui_ = false;
 };
 
 }  // namespace content

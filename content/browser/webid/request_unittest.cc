@@ -734,7 +734,6 @@ class TestDialogController
         break;
     }
     std::move(accounts_displayed_callback).Run();
-    did_show_ui_ = true;
     return true;
   }
 
@@ -770,7 +769,6 @@ class TestDialogController
         state_->mismatch_dismiss_callback = std::move(dismiss_callback);
         break;
     }
-    did_show_ui_ = true;
     return true;
   }
 
@@ -813,7 +811,6 @@ class TestDialogController
       case ErrorDialogAction::kNone:
         break;
     }
-    did_show_ui_ = true;
     return true;
   }
 
@@ -855,11 +852,8 @@ class TestDialogController
     state_->sign_in_mode = sign_in_mode;
     state_->all_accounts_for_display = {account};
     std::move(accounts_displayed_callback).Run();
-    did_show_ui_ = true;
     return true;
   }
-
-  bool DidShowUi() const override { return did_show_ui_; }
 
   base::WeakPtr<TestDialogController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -872,7 +866,6 @@ class TestDialogController
       IdpSigninStatusMismatchDialogAction::kNone};
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
   LoadingDialogAction loading_dialog_action_{LoadingDialogAction::kNone};
-  bool did_show_ui_ = false;
   IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_;
 
   // Pointer so that the state can be queried after Request

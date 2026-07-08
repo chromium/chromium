@@ -266,6 +266,4 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
       /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/base::DoNothing(),
       /*accounts_displayed_callback=*/base::DoNothing()));
-
-  EXPECT_FALSE(controller->DidShowUi());
 }
