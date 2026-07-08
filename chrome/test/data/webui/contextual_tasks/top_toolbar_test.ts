@@ -28,7 +28,10 @@ suite('TopToolbarTest', () => {
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
-    loadTimeData.overrideValues({contextManagementInComposeboxEnabled: false});
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: false,
+      contextualTasksEnableSpatialModelToolbarLayout: false,
+    });
   });
 
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ? suite.skip : suite)(
@@ -439,6 +442,7 @@ suite('TopToolbarTest', () => {
         hideMenuOnAiPageEnabled: false,
         isAiPage: true,
         enablePinButton: false,
+        contextualTasksEnableSpatialModelToolbarLayout: false,
       });
 
       topToolbar = document.createElement('top-toolbar');
@@ -586,6 +590,7 @@ suite('TopToolbarTest', () => {
         expandButtonEnabled: false,
         hideMenuOnAiPageEnabled: true,
         isAiPage: true,
+        contextualTasksEnableSpatialModelToolbarLayout: false,
       });
 
       topToolbar = document.createElement('top-toolbar');

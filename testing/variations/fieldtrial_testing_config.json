@@ -7255,6 +7255,31 @@
             ]
         }
     ],
+    "ContextualTasks_EphemeralPinning_Desktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PermanentPinButtonHeader",
+                    "params": {
+                        "overflow-items": "all-without-new-thread"
+                    },
+                    "enable_features": [
+                        "ContextualTasksEnableSpatialModelToolbarLayout",
+                        "EnableContextualTasksPinButtonInToolbar"
+                    ],
+                    "disable_features": [
+                        "ContextualTasksHideMenuOnAiPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasks_ShowMenuIcon": [
         {
             "platforms": [

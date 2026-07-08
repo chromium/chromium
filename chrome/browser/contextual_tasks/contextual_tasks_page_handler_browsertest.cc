@@ -11,10 +11,12 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
@@ -76,6 +78,7 @@ class ContextualTasksPageHandlerBrowserTest : public ::InProcessBrowserTest {
     web_ui_.set_web_contents(web_contents_);
 
     contextual_tasks_ui_ = std::make_unique<ContextualTasksUI>(&web_ui_);
+    contextual_tasks_ui_->GetPageRemote().Bind(mock_page_.BindAndGetRemote());
 
     mock_contextual_tasks_service_ = static_cast<MockContextualTasksService*>(
         ContextualTasksServiceFactory::GetForProfile(profile_));
@@ -107,6 +110,7 @@ class ContextualTasksPageHandlerBrowserTest : public ::InProcessBrowserTest {
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
+  NiceMock<MockContextualTasksPage> mock_page_;
   std::unique_ptr<ContextualTasksUI> contextual_tasks_ui_;
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
   raw_ptr<MockContextualTasksService> mock_contextual_tasks_service_;
