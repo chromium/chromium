@@ -11,7 +11,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
@@ -434,8 +433,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // A vector of SharedImageRepresentations which hold references to this
   // backing. The first reference is considered the owner, and the vector is
   // ordered by the order in which references were taken.
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION std::vector<SharedImageRepresentation*> refs_
+  // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+  // MotionMark).
+  std::vector<raw_ptr<SharedImageRepresentation, kUnprotectedInRelease>> refs_
       GUARDED_BY(lock_);
 };
 

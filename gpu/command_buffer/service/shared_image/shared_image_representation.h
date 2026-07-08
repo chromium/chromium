@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
@@ -161,15 +160,19 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
     }
 
    private:
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION RepresentationClass* const representation_ = nullptr;
+    // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+    // MotionMark).
+    const raw_ptr<RepresentationClass, kUnprotectedInRelease> representation_ =
+        nullptr;
   };
 
  private:
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION SharedImageManager* const manager_ = nullptr;
-  RAW_PTR_EXCLUSION SharedImageBacking* backing_ = nullptr;
-  RAW_PTR_EXCLUSION MemoryTypeTracker* const tracker_ = nullptr;
+  // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+  // MotionMark).
+  const raw_ptr<SharedImageManager, kUnprotectedInRelease> manager_ = nullptr;
+  raw_ptr<SharedImageBacking, DanglingUntriaged | kUnprotectedInRelease>
+      backing_ = nullptr;
+  const raw_ptr<MemoryTypeTracker, kUnprotectedInRelease> tracker_ = nullptr;
   bool has_context_ = true;
   AccessMode access_mode_ = AccessMode::kNone;
 };

@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
@@ -180,8 +179,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
 
     bool Init(MappableBuffer* mappable_buffer, bool is_already_mapped);
 
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION MappableBuffer* buffer_ = nullptr;
+    // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+    // MotionMark).
+    raw_ptr<MappableBuffer, kUnprotectedInRelease> buffer_ = nullptr;
     gfx::Size size_;
     viz::SharedImageFormat format_;
   };

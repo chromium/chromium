@@ -10,7 +10,6 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -95,9 +94,9 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache,
    private:
     Value program_blob_;
 
-    // RAW_PTR_EXCLUSION: Performance (motionmark_ramp_composite_ganesh
-    // regression).
-    RAW_PTR_EXCLUSION PassthroughProgramCache* program_cache_;
+    // Uses kUnprotectedInRelease for performance
+    // (motionmark_ramp_composite_ganesh regression).
+    raw_ptr<PassthroughProgramCache, kUnprotectedInRelease> program_cache_;
   };
 
   void ClearBackend() override;
