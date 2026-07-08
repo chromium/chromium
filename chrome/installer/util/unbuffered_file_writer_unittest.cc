@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -109,12 +109,11 @@ TEST_F(UnbufferedFileWriterTest, CommitChunks) {
 
 // Tests writing a very large file.
 TEST_F(UnbufferedFileWriterTest, VeryLarge) {
-  static constexpr auto kFileSize = base::GiB(2.333);
+  static constexpr auto kFileSize = base::GiBU(2.333);
   base::FilePath path = temp_dir().Append(FILE_PATH_LITERAL("very_large"));
-  ASSERT_OK_AND_ASSIGN(
-      UnbufferedFileWriter writer,
-      UnbufferedFileWriter::Create(path, kFileSize.InBytesUnsigned()));
-  writer.Advance(kFileSize.InBytesUnsigned());
+  ASSERT_OK_AND_ASSIGN(UnbufferedFileWriter writer,
+                       UnbufferedFileWriter::Create(path, kFileSize.InBytes()));
+  writer.Advance(kFileSize.InBytes());
   ASSERT_THAT(writer.Commit(std::nullopt), HasValue());
   ASSERT_THAT(base::GetFileSize(path), testing::Optional(kFileSize.InBytes()));
 }
