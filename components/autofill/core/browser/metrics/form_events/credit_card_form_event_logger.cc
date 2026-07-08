@@ -322,6 +322,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       // and that card was selected.
       for (const Suggestion& suggestion : suggestions_) {
         // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
+        CHECK(std::holds_alternative<Suggestion::Guid>(suggestion.payload));
         const CreditCard* suggested_credit_card =
             client()
                 .GetPersonalDataManager()

@@ -977,6 +977,12 @@ BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, use the original suggestion payload. If disabled,
+// use a default GUID for payloads without a GUID [iOS specific].
+// TODO(crbug.com/525996248): Remove after M154 branchpoint if there are no
+// issues.
+BASE_FEATURE(kAutofillUseOriginalPayloadIos, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Replaces the secondary signature with the structural signature for Uploads.
 // For Queries still only the secondary (alternative) signature is used.
 // TODO(crbug.com/431737839): Clean up when roll out finishes successfully.

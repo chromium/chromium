@@ -976,6 +976,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kLoyaltyCardEntry: {
+      CHECK(std::holds_alternative<Suggestion::Guid>(suggestion.payload));
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           last_query_.form_id, last_query_.field_id, suggestion.main_text.value,
@@ -1088,6 +1089,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       return false;
     }
     case SuggestionType::kCreditCardEntry: {
+      CHECK(std::holds_alternative<Suggestion::Guid>(suggestion.payload));
       const std::string guid =
           std::get<Suggestion::Guid>(suggestion.payload).value();
       if (PaymentsDataManager& pdm = manager_->client()
@@ -1317,6 +1319,7 @@ void AutofillExternalDelegate::AutofillForm(
     }
     return;
   }
+  CHECK(std::holds_alternative<Suggestion::Guid>(payload));
   if (const CreditCard* credit_card =
           pdm.payments_data_manager().GetCreditCardByGUID(
               std::get<Suggestion::Guid>(payload).value())) {
