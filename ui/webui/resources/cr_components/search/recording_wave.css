@@ -101,3 +101,16 @@
   transform: translate(-50%, -50%);
   position: absolute;
 }
+
+@media (forced-colors: active) {
+  .bar-pill {
+    background-color: CanvasText;
+  }
+
+  /* Let the original container remain transparent,
+   * and color ::before instead.
+   */
+  .bar-pill.is-unspawned::before {
+    background-color: CanvasText;
+  }
+}
