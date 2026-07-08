@@ -415,7 +415,6 @@ ExternalTexture CreateExternalTexture(
   viz::RasterContextProvider* raster_context_provider =
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
-  scoped_refptr<CanvasResource> canvas_resource;
   if (use_copy_to_shared_image) {
     gpu::SyncToken sync_token;
 
@@ -431,7 +430,6 @@ ExternalTexture CreateExternalTexture(
         raster_context_provider, std::move(media_video_frame), client_si,
         sync_token, /*use_visible_rect=*/true);
     resource_provider->EndExternalWrite(sync_token);
-    canvas_resource = resource_provider->ProduceCanvasResource();
   } else {
     // Delegate video transformation to Dawn.
     if (media_video_frame->HasSharedImage()) {
@@ -449,22 +447,24 @@ ExternalTexture CreateExternalTexture(
 
     media::PaintCanvasVideoRenderer::PaintParams params;
     params.dest_rect = gfx::RectF(resource_provider->Size());
-    canvas_resource = resource_provider->DoExternalOverdrawAndProduceResource(
-        [&](cc::PaintCanvas& canvas) {
-          video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
-                                params, raster_context_provider);
-        });
+    resource_provider->DoExternalOverdraw([&](cc::PaintCanvas& canvas) {
+      video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
+                            params, raster_context_provider);
+    });
   }
 
-  if (!canvas_resource) {
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      resource_provider->GetSharedImage();
+  if (!shared_image) {
     return {};
   }
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          wgpu::TextureUsage::TextureBinding, canvas_resource->GetSharedImage(),
-          canvas_resource->sync_token(), std::move(recyclable_canvas_resource));
+          wgpu::TextureUsage::TextureBinding, std::move(shared_image),
+          resource_provider->GetSyncToken(),
+          std::move(recyclable_canvas_resource));
 
   wgpu::TextureViewDescriptor view_desc = {};
   wgpu::TextureView plane0 =

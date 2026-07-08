@@ -337,11 +337,10 @@ void WebGpuRecyclableResourceProvider::EndExternalWrite(
   resource()->EndExternalWrite(external_write_sync_token);
 }
 
-scoped_refptr<CanvasResource>
-WebGpuRecyclableResourceProvider::DoExternalOverdrawAndProduceResource(
+void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (IsGpuContextLost()) {
-    return nullptr;
+    return;
   }
 
   draw_callback(recorder_for_external_draws_->getRecordingCanvas());
@@ -353,8 +352,6 @@ WebGpuRecyclableResourceProvider::DoExternalOverdrawAndProduceResource(
   // backing SharedImage). Hence, we must give up the current write access
   // (if any).
   EndWriteAccess();
-
-  return resource_;
 }
 
 std::unique_ptr<gpu::RasterScopedAccess>
@@ -454,22 +451,6 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
   resource()->EndAccess(std::move(dst_access));
   is_cleared_ = true;
   return true;
-}
-
-scoped_refptr<CanvasResource>
-WebGpuRecyclableResourceProvider::ProduceCanvasResource() {
-  TRACE_EVENT0("blink",
-               "WebGpuRecyclableResourceProvider::ProduceCanvasResource");
-
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must give up any write access.
-  EndWriteAccess();
-
-  return resource_;
 }
 
 scoped_refptr<gpu::ClientSharedImage>

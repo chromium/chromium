@@ -73,7 +73,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource();
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
@@ -84,7 +83,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
                                   uint32_t src_x,
                                   uint32_t src_y);
 
-  scoped_refptr<CanvasResource> DoExternalOverdrawAndProduceResource(
+  void DoExternalOverdraw(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   // For WebGpu RecyclableCanvasResource.
