@@ -230,9 +230,12 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
 
   // In vertical tabs, we should show:
   // - IDC_TOGGLE_VERTICAL_TABS (to switch to horizontal tabs)
+  // - IDC_TOGGLE_VERTICAL_TABS_COLLAPSE
   // - IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
                               IDS_SWITCH_TO_HORIZONTAL_TAB));
+  EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+                              IDS_COLLAPSE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
                               std::nullopt));
 
@@ -247,6 +250,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
 
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
                               IDS_SWITCH_TO_HORIZONTAL_TAB));
+  EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+                              IDS_COLLAPSE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
                               std::nullopt));
 

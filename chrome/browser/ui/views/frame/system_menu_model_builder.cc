@@ -76,6 +76,8 @@ void AddItemWithIconMaybe(ui::SimpleMenuModel* model,
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemMenuModelBuilder,
                                       kToggleVerticalTabsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemMenuModelBuilder,
+                                      kToggleVerticalTabsCollapseElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     SystemMenuModelBuilder,
     kToggleVerticalTabsExpandOnHoverElementId);
@@ -183,6 +185,14 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     if (controller->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_HORIZONTAL_TAB);
+
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+                                 controller->IsCollapsed()
+                                     ? IDS_EXPAND_VERTICAL_TABS
+                                     : IDS_COLLAPSE_VERTICAL_TABS);
+      model->SetElementIdentifierAt(
+          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE).value(),
+          kToggleVerticalTabsCollapseElementId);
     } else {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_VERTICAL_TAB);

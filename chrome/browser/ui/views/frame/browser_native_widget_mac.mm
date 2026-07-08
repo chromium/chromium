@@ -496,14 +496,30 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
           is_vertical, tabs::VerticalTabStripEntryPoint::kMacViewMenu);
     }
   } else if (command == IDC_TOGGLE_VERTICAL_TABS_COLLAPSE) {
+    NSEvent* current_event = [NSApp currentEvent];
     if (auto* controller =
             tabs::VerticalTabStripStateController::From(browser)) {
-      if (controller->IsCollapsed()) {
-        base::RecordAction(base::UserMetricsAction(
-            "VerticalTabs_TabStrip_ViewMenuToggleUncollapsed"));
+      // NSEventTypeApplicationDefined is specifically for test cases.
+      const bool is_keyboard =
+          current_event &&
+          (current_event.type == NSEventTypeKeyDown ||
+           current_event.type == NSEventTypeApplicationDefined);
+      if (is_keyboard) {
+        if (controller->IsCollapsed()) {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_KeyboardShortcutToggleUncollapsed"));
+        } else {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed"));
+        }
       } else {
-        base::RecordAction(base::UserMetricsAction(
-            "VerticalTabs_TabStrip_ViewMenuToggleCollapsed"));
+        if (controller->IsCollapsed()) {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_ViewMenuToggleUncollapsed"));
+        } else {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_ViewMenuToggleCollapsed"));
+        }
       }
     }
   } else if (command == IDC_CLEAR_BROWSING_DATA) {

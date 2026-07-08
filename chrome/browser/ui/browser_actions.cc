@@ -969,6 +969,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi))
             .SetActionId(kActionToggleCollapseVertical)
+            .SetAccelerator(ui::Accelerator(
+                ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
             .Build());
   }
 

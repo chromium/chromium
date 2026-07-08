@@ -105,9 +105,8 @@ class AcceleratorsCocoaBrowserTestRTL : public AcceleratorsCocoaBrowserTest {
 
 // Checks that each NSMenuItem in the main menu has a corresponding accelerator,
 // and the keyEquivalent/modifiers match.
-// TODO(crbug.com/532001161): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
-                       DISABLED_MainMenuAcceleratorsInMapping) {
+                       MainMenuAcceleratorsInMapping) {
   NSMenu* menu = [NSApp mainMenu];
   NSMutableArray* array = [NSMutableArray array];
   AddAcceleratorItemsToArray(menu, array);
