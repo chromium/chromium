@@ -462,6 +462,11 @@ void RenderWidgetHostViewMac::InitAsPopup(
     const gfx::Rect& pos,
     const gfx::Rect& anchor_rect) {
   CHECK_EQ(widget_type_, WidgetType::kPopup, base::NotFatalUntil::M152);
+  // A popup cannot be parented by a child frame view. Its parent must be the
+  // top-level outer view (RenderWidgetHostViewMac). Match the Aura
+  // implementation and refuse to proceed if the parent is a child frame.
+  CHECK(!static_cast<RenderWidgetHostViewBase*>(parent_host_view)
+             ->IsRenderWidgetHostViewChildFrame());
 
   popup_parent_host_view_ =
       static_cast<RenderWidgetHostViewMac*>(parent_host_view);
