@@ -358,6 +358,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Creates a partial page context synchronously for a web state.
   GeminiPageContext* CreatePartialPageContext(web::WebState* web_state);
 
+  // Removes a tab from selected tabs and propagates attached tabs to Gemini.
+  void DetachTabWithID(NSString* tab_id);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 

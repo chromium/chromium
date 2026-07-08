@@ -253,6 +253,16 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->attached_tabs_;
   }
 
+  // Setter for raw `attached_tabs_` member.
+  void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* context) {
+    gemini_browser_agent_->attached_tabs_[id] = context;
+  }
+
+  // Wrapper for `DetachTabWithID`.
+  void DetachTabWithID(NSString* tab_id) {
+    gemini_browser_agent_->DetachTabWithID(tab_id);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -1121,6 +1131,11 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
   EXPECT_TRUE(other_id.valid());
   EXPECT_NE(active_id, other_id);
 
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
   gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
   EXPECT_EQ(GetRawAttachedTabs().size(), 2u);
   // GetSelectedWebStateIDs() may return size 1 in downstream unit tests if
@@ -1244,4 +1259,117 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchFromLiveToChatIneligible) {
   // The floaty should be dismissed, meaning it is no longer invoked.
   EXPECT_FALSE(IsFloatyInvoked());
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler);
+}
+
+// Tests that DetachTabWithID gracefully handles an invalid tab ID string.
+TEST_F(GeminiBrowserAgentTest, TestDetachInvalidTabId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+  size_t initial_size = GetRawAttachedTabs().size();
+
+  DetachTabWithID(@"invalid_id");
+
+  // The map size should be unchanged.
+  EXPECT_EQ(initial_size, GetRawAttachedTabs().size());
+}
+
+// Tests that DetachTabWithID gracefully early-exits when there is no active
+// web state.
+TEST_F(GeminiBrowserAgentTest, TestDetachTabWithoutActiveWebState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  // Clear raw_ptrs to prevent DanglingPtr crashes during TearDown when the
+  // WebState (and its associated frames/helpers) is destroyed.
+  web_state_ = nullptr;
+  fake_main_frame_ = nullptr;
+  gemini_tab_helper_ = nullptr;
+
+  // Close the active web state so that GetActiveWebState() returns nullptr.
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
+  ASSERT_EQ(nullptr, browser_->GetWebStateList()->GetActiveWebState());
+
+  DetachTabWithID(@"123");
+
+  // Should not crash.
+  EXPECT_EQ(0u, GetRawAttachedTabs().size());
+}
+
+// Tests that DetachTabWithID updates the attachment state of the active tab
+// without removing it.
+TEST_F(GeminiBrowserAgentTest, TestDetachActiveTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+
+  GeminiPageContext* mock_context = [[GeminiPageContext alloc] init];
+  mock_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, mock_context);
+
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+
+  // Verify it starts as attached.
+  auto tabs = GetRawAttachedTabs();
+  ASSERT_EQ(1u, tabs.size());
+  ASSERT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+            tabs[active_id].geminiPageContextAttachmentState);
+
+  NSString* tab_id_str =
+      [NSString stringWithFormat:@"%d", active_id.identifier()];
+  DetachTabWithID(tab_id_str);
+
+  // Verify it is still in the map but detached.
+  tabs = GetRawAttachedTabs();
+  EXPECT_EQ(1u, tabs.size());
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kDetached,
+            tabs[active_id].geminiPageContextAttachmentState);
+}
+
+// Tests that DetachTabWithID completely removes a shared tab from the cache.
+TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+
+  std::unique_ptr<web::FakeWebState> other_web_state =
+      std::make_unique<web::FakeWebState>();
+  other_web_state->SetBrowserState(profile_);
+  GeminiTabHelper::CreateForWebState(other_web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
+  web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(other_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+
+  auto tabs = GetRawAttachedTabs();
+  ASSERT_EQ(2u, tabs.size());
+
+  NSString* other_tab_id_str =
+      [NSString stringWithFormat:@"%d", other_id.identifier()];
+  DetachTabWithID(other_tab_id_str);
+
+  // Verify the shared tab is completely removed.
+  tabs = GetRawAttachedTabs();
+  EXPECT_EQ(1u, tabs.size());
+  EXPECT_EQ(0u, tabs.count(other_id));
 }

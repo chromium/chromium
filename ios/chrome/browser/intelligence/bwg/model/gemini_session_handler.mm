@@ -358,7 +358,9 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 - (void)didRequestToDetachTabWithID:(NSString*)tabID {
-  // TODO(crbug.com/525782842): Implement tab detachment logic.
+  if (self.tabDetachRequestCallback) {
+    self.tabDetachRequestCallback(tabID);
+  }
 }
 
 - (void)geminiLiveUserDidBargeIn {
