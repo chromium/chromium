@@ -42,6 +42,7 @@ const char kBaseSearchURL[] = "https://www.google.com/search?udm=50";
     _url = net::AppendOrReplaceQueryParameter(_url, "gsc", "2");
     _url = net::AppendOrReplaceQueryParameter(_url, "sourceid", "chrome-mobile");
     _url = net::AppendOrReplaceQueryParameter(_url, "gsas", "4");
+    _url = net::AppendOrReplaceQueryParameter(_url, "csuir", "1");
 
     std::string value;
     if (net::GetValueForKeyInQuery(_url, "mstk", &value)) {
