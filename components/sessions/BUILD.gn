@@ -184,7 +184,7 @@ static_library("test_support") {
     "//url",
   ]
 
-  if (use_blink) {
+  if (use_blink && !(is_ios && target_platform == "iphoneos")) {
     sources += [
       "content/content_test_helper.cc",
       "content/content_test_helper.h",
@@ -211,7 +211,7 @@ source_set("unit_tests") {
     "core/tab_restore_service_helper_unittest.cc",
   ]
 
-  if (use_blink) {
+  if (use_blink && !(is_ios && target_platform == "iphoneos")) {
     sources += [
       "content/content_serialized_navigation_builder_unittest.cc",
       "content/content_serialized_navigation_driver_unittest.cc",
@@ -238,7 +238,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (use_blink) {
+  if (use_blink && !(is_ios && target_platform == "iphoneos")) {
     deps += [
       "//content/public/common",
       "//content/test:test_support",

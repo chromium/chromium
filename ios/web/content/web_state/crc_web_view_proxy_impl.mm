@@ -20,9 +20,11 @@
   // The WebViewScrollViewProxy is a wrapper around the UIScrollView
   // to give components access in a limited and controlled manner.
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
+  BOOL _ignoreObscuredInsets;
 }
 @synthesize contentView = _contentView;
 @synthesize allowsLinkPreview = _allowsLinkPreview;
+@synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
 @dynamic keyboardVisible;
 
 - (instancetype)init {
