@@ -34,8 +34,6 @@ else:
       'suffixes, which may be out of date')
   TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES += [
       '_android_clank_chrome',
-      '_android_clank_trichrome_webview',
-      '_android_clank_trichrome_webview_bundle',
       '_android_clank_webview',
       '_android_clank_webview_64_32_bundle',
       '_android_clank_webview_bundle',

@@ -5133,10 +5133,7 @@ if (!is_android) {
           enable_chrome_android_internal) {
         # This suffix is used by all webview tests. Several different webview
         # APKs can be used, depending on the platform.
-        data_deps += [
-          "//tools/perf/:perf_android_clank_trichrome_webview_bundle",
-          "//tools/perf/:perf_android_clank_webview",
-        ]
+        data_deps += [ "//tools/perf/:perf_android_clank_webview" ]
       }
     }
   }
