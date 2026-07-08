@@ -81,7 +81,7 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     base::RunLoop run_loop;
     ash::TestPrintJobHistoryServiceObserver observer(
         ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
-            browser()->profile()),
+            browser()->GetProfile()),
         run_loop.QuitClosure());
 
     std::unique_ptr<ash::CupsPrintJob> print_job =
@@ -93,7 +93,7 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     ash::TestCupsPrintJobManager* print_job_manager =
         static_cast<ash::TestCupsPrintJobManager*>(
             ash::CupsPrintJobManagerFactory::GetForBrowserContext(
-                browser()->profile()));
+                browser()->GetProfile()));
     print_job_manager->CreatePrintJob(print_job.get());
     print_job_manager->CancelPrintJob(print_job.get());
     run_loop.Run();

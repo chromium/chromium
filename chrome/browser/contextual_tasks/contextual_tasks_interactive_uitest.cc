@@ -296,7 +296,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
           return false;
         }));
 
-    auto* mock_aim = GetMockAimEligibilityService(browser()->profile());
+    auto* mock_aim = GetMockAimEligibilityService(browser()->GetProfile());
     auto* config = &mock_aim->config();
     // Configure AimEligibility to recognize Browser Tabs as valid inputs to
     // populate context selection.

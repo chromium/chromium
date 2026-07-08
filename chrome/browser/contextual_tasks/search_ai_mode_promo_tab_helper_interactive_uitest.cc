@@ -107,7 +107,7 @@ class SearchAiModePromoTabHelperInteractiveUiTestBase
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

@@ -222,7 +222,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetModelQualityLogsUploaderServiceForTesting(
             std::make_unique<
                 optimization_guide::TestModelQualityLogsUploaderService>(
@@ -280,7 +280,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
   ContextualTasksContextService* service() {
     return ContextualTasksContextServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   FakeEmbedder& embedder() { return embedder_; }
@@ -297,7 +297,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     service()->model_handler_ =
         std::make_unique<ContextualTasksContextModelHandler>(
             OptimizationGuideKeyedServiceFactory::GetForProfile(
-                browser()->profile()),
+                browser()->GetProfile()),
             background_task_runner);
     service()->model_handler_->OnModelUpdated(optimization_target, model_info);
   }
@@ -305,27 +305,27 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   MockPageEmbeddingsService* page_embeddings_service() {
     return static_cast<MockPageEmbeddingsService*>(
         page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   MockPageContentExtractionService* page_content_extraction_service() {
     return static_cast<MockPageContentExtractionService*>(
         page_content_annotations::PageContentExtractionServiceFactory::
-            GetForProfile(browser()->profile()));
+            GetForProfile(browser()->GetProfile()));
   }
 
   optimization_guide::TestModelQualityLogsUploaderService* logs_uploader() {
     return static_cast<
         optimization_guide::TestModelQualityLogsUploaderService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile())
+            browser()->GetProfile())
             ->GetModelQualityLogsUploaderService());
   }
 
   page_content_annotations::PageContentAnnotationsService*
   page_content_annotations_service() {
     return PageContentAnnotationsServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void OverrideVisibilityScoresForTesting(
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
   // Create a new browser window.
   BrowserWindowInterface* new_browser =
       CreateBrowserWindow(BrowserWindowCreateParams(
-          *browser()->profile(), /*from_user_gesture=*/false));
+          *browser()->GetProfile(), /*from_user_gesture=*/false));
   ASSERT_TRUE(new_browser);
 
   {

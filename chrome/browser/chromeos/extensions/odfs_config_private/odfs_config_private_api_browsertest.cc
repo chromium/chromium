@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
                        OpenInOfficeAppIncognitoTab) {
   // Create a new incognito browser and initiate navigation
-  auto* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  auto* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   int tab_id = CreateNewTabAndNavigate(GURL(kExampleUrl), incognito_browser);
   EXPECT_EQ(GURL(kExampleUrl), incognito_browser->GetTabStripModel()
                                    ->GetActiveWebContents()

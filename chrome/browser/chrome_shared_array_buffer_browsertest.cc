@@ -42,7 +42,7 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
 
   void SetPolicyAndRestartBrowser() {
     // The preference is false by default.
-    EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+    EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
         prefs::kSharedArrayBufferUnrestrictedAccessAllowed));
 
     PolicyMap policies;
@@ -52,7 +52,7 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     UpdateProviderPolicy(policies);
 
     // Now the preference should be true.
-    EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+    EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
         prefs::kSharedArrayBufferUnrestrictedAccessAllowed));
 
     // The old browser has already created the ContentBrowserClient which reads
@@ -60,7 +60,7 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     // Create a new browser that will pick up the preference and enable SABs for
     // new renderer processes.
     BrowserWindowInterface* const new_browser =
-        CreateBrowser(browser()->profile());
+        CreateBrowser(browser()->GetProfile());
     CloseBrowserSynchronously(browser());
     SetBrowser(new_browser);
     ASSERT_EQ(browser(), new_browser);

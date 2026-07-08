@@ -43,7 +43,7 @@ class DataSharingSDKDelegateDesktopBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DataSharingSDKDelegateDesktopBrowserTest,
                        MAYBE_ReadGroupLoadsWebContents) {
   DataSharingService* service =
-      DataSharingServiceFactory::GetForProfile(browser()->profile());
+      DataSharingServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_FALSE(service->IsEmptyService());
   DataSharingSDKDelegateDesktop* delegate =
       static_cast<DataSharingSDKDelegateDesktop*>(service->GetSDKDelegate());

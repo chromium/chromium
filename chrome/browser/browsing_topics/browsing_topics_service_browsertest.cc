@@ -289,7 +289,7 @@ class BrowsingTopicsDisabledBrowserTest : public BrowsingTopicsBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledBrowserTest,
                        NoBrowsingTopicsService) {
   EXPECT_FALSE(
-      BrowsingTopicsServiceFactory::GetForProfile(browser()->profile()));
+      BrowsingTopicsServiceFactory::GetForProfile(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledBrowserTest, NoTopicsAPI) {
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsAnnotationGoldenDataBrowserTest,
                                        .AppendASCII("browsing_topics")
                                        .AppendASCII("golden_data_model.tflite");
 
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
           optimization_guide::TestModelInfoBuilder()
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsAnnotationGoldenDataBrowserTest,
               .Build());
 
   BrowsingTopicsService* service =
-      BrowsingTopicsServiceFactory::GetForProfile(browser()->profile());
+      BrowsingTopicsServiceFactory::GetForProfile(browser()->GetProfile());
 
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -498,12 +498,12 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
   history::HistoryService* history_service() {
     return HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+        browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
   }
 
   TesterBrowsingTopicsService* browsing_topics_service() {
     return static_cast<TesterBrowsingTopicsService*>(
-        BrowsingTopicsServiceFactory::GetForProfile(browser()->profile()));
+        BrowsingTopicsServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   const BrowsingTopicsState& browsing_topics_state() {
@@ -511,7 +511,8 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   }
 
   privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
-    return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+    return PrivacySandboxSettingsFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -732,9 +733,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, HasBrowsingTopicsService) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, NoServiceInIncognitoMode) {
-  CreateIncognitoBrowser(browser()->profile());
+  CreateIncognitoBrowser(browser()->GetProfile());
 
-  EXPECT_TRUE(browser()->profile()->HasPrimaryOTRProfile());
+  EXPECT_TRUE(browser()->GetProfile()->HasPrimaryOTRProfile());
 
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
@@ -1425,7 +1426,7 @@ IN_PROC_BROWSER_TEST_P(
       "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
                                                               replacement));
 
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetCookieSetting(resource_url, CONTENT_SETTING_BLOCK);
 
   EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
@@ -2060,7 +2061,7 @@ IN_PROC_BROWSER_TEST_F(
                     "page_with_custom_topics_header.html",
                     replacement));
 
-  CookieSettingsFactory::GetForProfile(browser()->profile())
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetCookieSetting(subframe_url, CONTENT_SETTING_BLOCK);
 
   CreateIframe(subframe_url, /*browsing_topics_attribute=*/true);
@@ -2425,7 +2426,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
                   content::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // Enable automated pop-ups.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(web_contents()->GetURL(), GURL(),
                                       ContentSettingsType::POPUPS,
                                       CONTENT_SETTING_ALLOW);
@@ -2588,7 +2589,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   // page and its redirect state won't be affected.
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(
-          browser()->profile()->GetDownloadManager(), /*wait_count=*/1,
+          browser()->GetProfile()->GetDownloadManager(), /*wait_count=*/1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
   ASSERT_FALSE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents(), download_url));

@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
   {
     ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     ProtocolHandlerChangeWaiter waiter(registry);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(handler_url)));
     ASSERT_TRUE(content::ExecJs(
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor,
     // Register a HTML handler with a user gesture.
     ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     ProtocolHandlerChangeWaiter waiter(registry);
     ASSERT_TRUE(content::ExecJs(web_contents, "registerHTMLHandler();"));
     waiter.Wait();
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerRegistryOTRBrowserTest,
   GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
 
   Browser* incognito_browser = CreateIncognitoBrowser();
-  AddProtocolHandler("news", handler_url, incognito_browser->profile());
+  AddProtocolHandler("news", handler_url, incognito_browser->GetProfile());
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(incognito_browser, GURL("news:test")));
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerRegistryOTRBrowserTest,
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   EXPECT_FALSE(
-      GetRegistry(incognito_browser->profile())->IsHandledProtocol("news"));
+      GetRegistry(incognito_browser->GetProfile())->IsHandledProtocol("news"));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(incognito_browser, GURL("news:test")));
   EXPECT_NE(handler_url, incognito_browser->tab_strip_model()

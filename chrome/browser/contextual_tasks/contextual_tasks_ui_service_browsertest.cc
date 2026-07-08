@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
 
   // Create a task and associate the tab with the new task.
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTask task = contextual_tasks_service->CreateTask();
   contextual_tasks_service->AssociateTabWithTask(
       task.GetTaskId(),
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Add a text fragment to the URL to mimic citation behavior.
   GURL citation_url = GURL(url.spec() + "#:~:text=highlight");
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
 
   // Create a task and associate the tab with the new task.
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTask task = contextual_tasks_service->CreateTask();
   contextual_tasks_service->AssociateTabWithTask(
       task.GetTaskId(),
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Add a text fragment to the URL that does not contain text found in the
   // page.
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksVideoCitationsBrowserTest,
   EXPECT_EQ(active_tab->GetContents()->GetVisibleURL(), url);
 
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTask task = contextual_tasks_service->CreateTask();
   contextual_tasks_service->AssociateTabWithTask(
       task.GetTaskId(),
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksVideoCitationsBrowserTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   TestContextualTasksUiService* test_ui_service =
       static_cast<TestContextualTasksUiService*>(ui_service);
@@ -299,7 +299,7 @@ class ContextualTasksUiServiceZeroStateTestBase : public InProcessBrowserTest {
   content::WebContents* OpenPanelAndGetContents(tabs::TabInterface* tab) {
     ContextualTasksUiService* ui_service =
         ContextualTasksUiServiceFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     GURL initial_url("https://example.com");
     ui_service->StartTaskUiInSidePanel(browser(), tab, initial_url, nullptr);
 
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceZeroStateEnabledTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   GURL zero_state_url = ui_service->GetDefaultAiPageUrl();
 
   content::TestNavigationObserver navigation_observer(panel_contents);
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceZeroStateDisabledTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   GURL zero_state_url = ui_service->GetDefaultAiPageUrl();
 
   content::TestNavigationObserver navigation_observer(panel_contents);

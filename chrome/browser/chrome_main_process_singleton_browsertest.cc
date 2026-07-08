@@ -83,9 +83,8 @@ class ChromeMainTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunch) {
   Relaunch(GetCommandLineForRelaunch());
   ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   // We should start with one normal window.
-  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->GetProfile()));
 
   // Run with --incognito switch and an URL specified.
   base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
@@ -119,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   Relaunch(new_command_line);
   ui_test_utils::WaitForBrowserToOpen();
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, GetTabbedBrowserCount(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileDir) {
   Relaunch(other_command_line);
   Browser* other_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(other_browser);
-  EXPECT_EQ(other_browser->profile(), other_profile);
+  EXPECT_EQ(other_browser->GetProfile(), other_profile);
   EXPECT_EQ(original_browser_count + 1,
             GlobalBrowserCollection::GetInstance()->GetSize());
 }
@@ -204,14 +203,14 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail1));
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(new_browser->profile(), profile1);
+  EXPECT_EQ(new_browser->GetProfile(), profile1);
   EXPECT_EQ(original_browser_count + 1,
             GlobalBrowserCollection::GetInstance()->GetSize());
   // Non-ASCII email.
   Relaunch(GetCommandLineForRelaunchWithEmail(kProfileEmail2));
   new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(new_browser->profile(), profile2);
+  EXPECT_EQ(new_browser->GetProfile(), profile2);
   EXPECT_EQ(original_browser_count + 2,
             GlobalBrowserCollection::GetInstance()->GetSize());
 }

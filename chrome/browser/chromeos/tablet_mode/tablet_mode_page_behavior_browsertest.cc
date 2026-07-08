@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest,
   ValidateWebPrefs(web_contents, true /* tablet_mode_enabled */);
 
   // Any newly added pages should have the correct tablet mode prefs.
-  Browser* browser_2 = CreateBrowser(browser()->profile());
+  Browser* browser_2 = CreateBrowser(browser()->GetProfile());
   auto* web_contents_2 = GetActiveWebContents(browser_2);
   ASSERT_TRUE(web_contents_2);
   ValidateWebPrefs(web_contents_2, true /* tablet_mode_enabled */);

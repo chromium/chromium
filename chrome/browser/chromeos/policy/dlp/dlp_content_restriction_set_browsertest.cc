@@ -68,7 +68,7 @@ class DlpContentRestrictionSetBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(
             &DlpContentRestrictionSetBrowserTest::SetDlpRulesManager,
             base::Unretained(this)));

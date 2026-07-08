@@ -220,7 +220,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
         CreateWithStorageModule();
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DataTransferDlpBrowserTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());

@@ -208,7 +208,7 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
     // Sign in the user so IdentityManager is ready.
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     identity_test_env_ =
         identity_test_environment_adaptor_->identity_test_env();
     identity_test_env_->MakePrimaryAccountAvailable(
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   // Create a WebContents not associated with a tab.
   std::unique_ptr<content::WebContents> side_panel_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   auto side_panel_web_ui = std::make_unique<content::TestWebUI>();
   side_panel_web_ui->set_web_contents(side_panel_contents.get());
 
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUICookieSyncBrowserTest,
   // Create inner contents to trigger the observer.
   std::unique_ptr<content::WebContents> inner_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   TriggerOnInnerWebContentsCreated(inner_contents.get());
 }
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create first inner contents.
   std::unique_ptr<content::WebContents> inner_contents1 =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   GURL url1 = embedded_test_server()->GetURL("/title1.html?1");
   inner_contents1->GetController().LoadURL(
       url1, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create second inner contents (should be ignored).
   std::unique_ptr<content::WebContents> inner_contents2 =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   GURL url2 = embedded_test_server()->GetURL("/title1.html?2");
   inner_contents2->GetController().LoadURL(
       url2, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a third inner contents (should be accepted now).
   std::unique_ptr<content::WebContents> inner_contents3 =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   GURL url3 = embedded_test_server()->GetURL("/title1.html?3");
   inner_contents3->GetController().LoadURL(
       url3, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   // Create inner contents to trigger the observer.
   std::unique_ptr<content::WebContents> inner_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   TriggerOnInnerWebContentsCreated(inner_contents.get());
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                        CannotZoomInSidePanel) {
   std::unique_ptr<content::WebContents> side_panel_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   auto side_panel_web_ui = std::make_unique<content::TestWebUI>();
   side_panel_web_ui->set_web_contents(side_panel_contents.get());
 
@@ -688,7 +688,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                                     /*replace_navigation_entry=*/false);
 
   content::HostZoomMap* zoom_map =
-      content::HostZoomMap::GetDefaultForBrowserContext(browser()->profile());
+      content::HostZoomMap::GetDefaultForBrowserContext(
+          browser()->GetProfile());
 
   // 1. Test Host -> WebUI sync.
   double target_zoom = 2.0;
@@ -713,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                        InitSidePanelWithGhostLoader_WaitUntilPanelOpen) {
   auto* service =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   auto* tab = TabListInterface::From(browser())->GetActiveTab();
 
   // Call InitSidePanelWithGhostLoader.
@@ -737,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
                        CanUpdateSuggestedTabContext_SidePanelLifecycle) {
   auto* service =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   auto* tab = TabListInterface::From(browser())->GetActiveTab();
 
   // 1. Open the side panel. This will load the ContextualTasksUI.
@@ -859,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   sib_param2->set_param_value("1");
 
   auto* contextual_search_service =
-      ContextualSearchServiceFactory::GetForProfile(browser()->profile());
+      ContextualSearchServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(contextual_search_service);
 
   auto session_handle = contextual_search_service->CreateSession(
@@ -909,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 
   std::unique_ptr<content::WebContents> inner_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   TriggerOnInnerWebContentsCreated(inner_contents.get());
 

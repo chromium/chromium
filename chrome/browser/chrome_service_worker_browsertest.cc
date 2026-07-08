@@ -169,7 +169,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
         blink::StorageKey::CreateFirstParty(
             url::Origin::Create(embedded_test_server()->base_url())));
-    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                    CONTENT_SETTING_BLOCK);
 
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   WriteFile(FILE_PATH_LITERAL("service_worker.js"), "");
   InitializeServer();
 
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 

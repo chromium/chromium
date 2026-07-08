@@ -92,8 +92,8 @@ class IncognitoBrowsingDataBrowserTest
     Browser* regular_browser = GetRegularBrowser();
     Browser* incognito_browser = GetIncognitoBrowser();
 
-    EXPECT_TRUE(regular_browser->profile()->IsRegularProfile());
-    EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+    EXPECT_TRUE(regular_browser->GetProfile()->IsRegularProfile());
+    EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
 
     // Ensure there is no prior data.
     EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(regular_browser)));
@@ -164,7 +164,7 @@ class IncognitoBrowsingDataBrowserTest
 
   inline void ExpectTotalModelCount(Browser* browser, size_t expected) {
     std::unique_ptr<BrowsingDataModel> browsing_data_model =
-        GetBrowsingDataModel(browser->profile());
+        GetBrowsingDataModel(browser->GetProfile());
 
     EXPECT_EQ(expected, browsing_data_model->size());
   }
@@ -213,11 +213,11 @@ class IncognitoBrowsingDataBrowserTest
 // Test BrowsingDataRemover for downloads.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Download) {
   DownloadAnItem();
-  VerifyDownloadCount(0u, GetRegularBrowser()->profile());
+  VerifyDownloadCount(0u, GetRegularBrowser()->GetProfile());
 
   // Restart Incognito, ensure no residue.
   RestartIncognitoBrowser();
-  VerifyDownloadCount(0u, GetIncognitoBrowser()->profile());
+  VerifyDownloadCount(0u, GetIncognitoBrowser()->GetProfile());
 }
 
 // Test that the salt for media device IDs is reset between Incognito sessions.
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
 
   // Regular profile should be unaffected.
   block_state = ExternalProtocolHandler::GetBlockState(
-      "tel", &test_origin, GetRegularBrowser()->profile());
+      "tel", &test_origin, GetRegularBrowser()->GetProfile());
   ASSERT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 
   RestartIncognitoBrowser();

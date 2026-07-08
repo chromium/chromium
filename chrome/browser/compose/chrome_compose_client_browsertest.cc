@@ -153,7 +153,7 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
 
     mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetForProfile(browser()->profile(), true));
+        HatsServiceFactory::GetForProfile(browser()->GetProfile(), true));
     EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
 
@@ -336,7 +336,7 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
   MockOptimizationGuideKeyedService& GetOptimizationGuide() {
     return *static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   optimization_guide::TestModelQualityLogsUploaderService& logs_uploader() {
@@ -356,7 +356,7 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
   MockSegmentationPlatformService& GetSegmentationPlatformService() {
     return *static_cast<MockSegmentationPlatformService*>(
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(browser()->profile()));
+            GetForProfile(browser()->GetProfile()));
   }
 
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {

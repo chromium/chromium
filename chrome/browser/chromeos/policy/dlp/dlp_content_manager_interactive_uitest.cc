@@ -126,7 +126,7 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   // Sets up mock rules manager.
   void SetupDlpRulesManager() {
     DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DlpContentManagerBrowserTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
 
   base::MockCallback<WarningCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
@@ -543,7 +544,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
 
   // Set up the mocks for directly calling CheckPrintingRestriction().
   base::MockCallback<WarningCallback> cb;
@@ -592,7 +594,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
 
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, GetPrintReported());
@@ -619,7 +622,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   SetupDlpRulesManager();
   SetupReportQueue();
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -688,7 +692,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        TabShareWarnedDuringAllowed) {
   SetupReporting();
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =

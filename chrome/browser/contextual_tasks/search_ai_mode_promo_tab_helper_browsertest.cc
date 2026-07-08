@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperBrowserTest,
 
   // 5. Simulate sign-in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperBrowserTest,
 
   // 4. Simulate sign-in from a different access point.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()

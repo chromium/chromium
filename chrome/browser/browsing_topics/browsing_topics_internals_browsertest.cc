@@ -301,7 +301,7 @@ result
   std::string BuildExpectedConsentInfoString(int consent_status_string_id,
                                              int consent_source_string_id) {
     auto* privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
+        PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile());
 
     auto consent_text = privacy_sandbox_service->TopicsConsentLastUpdateText();
 
@@ -450,7 +450,7 @@ class BrowsingTopicsInternalsBrowserTest
   FixedBrowsingTopicsService* fixed_browsing_topics_service() {
     return static_cast<FixedBrowsingTopicsService*>(
         browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
  protected:
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
+      PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile());
 
   privacy_sandbox_service->TopicsToggleChanged(true);
 
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
+      PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile());
 
   privacy_sandbox_service->TopicsToggleChanged(/*new_value=*/false);
 

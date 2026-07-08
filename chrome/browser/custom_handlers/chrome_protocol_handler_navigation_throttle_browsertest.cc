@@ -62,7 +62,7 @@ class ChromeProtocolHandlerNavigationThrottleBrowserBaseTest
 
   custom_handlers::ProtocolHandlerRegistry* registry() {
     return ProtocolHandlerRegistryFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();

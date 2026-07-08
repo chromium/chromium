@@ -334,7 +334,7 @@ class DlpScopedFileAccessDelegateBrowserTest : public InProcessBrowserTest {
 
     auto permission_context = std::make_unique<
         testing::NiceMock<TestFileSystemAccessPermissionContext>>(
-        browser()->profile(), embedded_test_server()->GetOrigin(),
+        browser()->GetProfile(), embedded_test_server()->GetOrigin(),
         content::PathInfo(file.DirName()));
 
     return PermissionContextHandle(web_contents->GetBrowserContext(),
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(DlpFileSystemAccessMoveTest,
       [this]() -> chromeos::DlpClient* { return fake_dlp_client_.get(); }));
 
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
+      browser()->GetProfile(),
       base::BindLambdaForTesting(
           [this](content::BrowserContext* context)
               -> std::unique_ptr<KeyedService> {

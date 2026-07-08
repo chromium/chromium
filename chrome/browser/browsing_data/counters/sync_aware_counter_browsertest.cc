@@ -254,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // Set up the fake web history service and the counter.
 
   browsing_data::HistoryCounter counter(
-      HistoryServiceFactory::GetForProfileWithoutCreating(browser()->profile()),
+      HistoryServiceFactory::GetForProfileWithoutCreating(
+          browser()->GetProfile()),
       base::BindRepeating(&SyncAwareCounterTest::GetFakeWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
       sync_service);

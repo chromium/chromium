@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   // Configures to check `logged_site_muted_ukm_` in
   // SoundContentSettingObserver.
   HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   content_settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
                                              CONTENT_SETTING_BLOCK);
 
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   // Configures SoundContentSettingObserver.
   GURL url = embedded_test_server()->GetURL("/simple.html");
   HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   content_settings->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
 
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverFencedFrameBrowserTest,
   // setting for the primary page's URL.
   GURL url = https_server().GetURL("/simple.html");
   HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   content_settings->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
 

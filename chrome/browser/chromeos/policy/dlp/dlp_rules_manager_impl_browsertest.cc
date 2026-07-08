@@ -38,7 +38,7 @@ class DlpRulesPolicyTest : public InProcessBrowserTest {
 
   void InitializeRulesManager() {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(&DlpRulesPolicyTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());

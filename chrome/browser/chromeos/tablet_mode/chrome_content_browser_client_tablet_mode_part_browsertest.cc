@@ -21,7 +21,7 @@ using ChromeContentBrowserClientTabletModePartTest = ::InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
                        SettingsWindowFontSize) {
   // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   const blink::web_pref::WebPreferences kDefaultPrefs;

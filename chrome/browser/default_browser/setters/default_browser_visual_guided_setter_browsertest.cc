@@ -19,7 +19,7 @@ namespace default_browser {
 using DefaultBrowserVisualGuidedSetterBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserVisualGuidedSetterBrowserTest, Execute) {
-  DefaultBrowserVisualGuidedSetter setter(*browser()->profile());
+  DefaultBrowserVisualGuidedSetter setter(*browser()->GetProfile());
   base::test::TestFuture<DefaultBrowserState> future;
 
   int initial_tab_count = browser()->tab_strip_model()->count();

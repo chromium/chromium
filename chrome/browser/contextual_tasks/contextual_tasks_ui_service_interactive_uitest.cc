@@ -86,10 +86,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // Add a new tab.
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Create task1 and associate with tab0.
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                        OnThreadLinkClicked_CreatesNewTabInSameGroup) {
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
 
   // Add a contextual-tasks tab and add it to a group.
   ContextualTask task1 = contextual_tasks_service->CreateTask();
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   RunTestSequence(Do([&]() {
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       browser(), GURL(chrome::kChromeUIContextualTasksURL)));
 
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
 
   // Add a contextual-tasks tab and add it to a group.
   ContextualTask task1 = contextual_tasks_service->CreateTask();
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Fake a link click interception.
@@ -261,10 +261,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   content::WaitForLoadStop(tab_list->GetTab(2)->GetContents());
 
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Associate the tabs with the task.
@@ -326,10 +326,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   content::WaitForLoadStop(tab_list->GetTab(2)->GetContents());
 
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Associate all but the version page with the task.
@@ -383,10 +383,10 @@ IN_PROC_BROWSER_TEST_F(
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
 
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Create two tasks.
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(
   // Call OnTaskChanged and verify that both tabs are now associated with
   // the second task.
   auto dummy_web_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
                          task2.GetTaskId(), /*is_shown_in_tab=*/false);
   EXPECT_EQ(
@@ -429,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
 
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Create two tasks.
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // Call OnTaskChanged and verify that the first tab is now associated
   // with an empty task.
   auto dummy_web_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
                          base::Uuid(), /*is_shown_in_tab=*/false);
   std::optional<ContextualTask> empty_task =
@@ -477,10 +477,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
 
   ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Create two tasks.
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // Call OnTaskChanged with is_shown_in_tab = true and verify that tabs
   // remain associated with the first task.
   auto dummy_web_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
                          task2.GetTaskId(), /*is_shown_in_tab=*/true);
   EXPECT_EQ(
@@ -522,10 +522,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
 
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   const GURL search_url("https://google.com/search");
@@ -560,10 +560,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
 
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   const GURL search_url("https://google.com/search");
@@ -606,10 +606,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
 
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
-      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
   ContextualTasksUiService* service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(service);
 
   // Create task1 and associate with tab0.
@@ -753,7 +753,7 @@ class MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(
     MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest,
     RedirectToAimDefaultUrl) {
-  EXPECT_CALL(*GetMockAimEligibilityService(browser()->profile()),
+  EXPECT_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
               IsCobrowseEligible())
       .WillRepeatedly(testing::Return(false));
 
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest,
     DoNotRedirectToAimDefaultUrl) {
-  EXPECT_CALL(*GetMockAimEligibilityService(browser()->profile()),
+  EXPECT_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
               IsCobrowseEligible())
       .WillRepeatedly(testing::Return(true));
 
