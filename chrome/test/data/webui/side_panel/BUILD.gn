@@ -6,7 +6,7 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   cc_test_files = [
-    "bookmarks/sp_bookmarks_interactive_test.cc",
+    "bookmarks/sp_bookmarks_interactive_uitest.cc",
     "commerce/commerce_browsertest.cc",
     "history_clusters/history_clusters_browsertest.cc",
     "reading_list/reading_list_browsertest.cc",

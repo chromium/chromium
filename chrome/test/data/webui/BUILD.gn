@@ -386,23 +386,23 @@ source_set("browser_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "cr_elements/cr_elements_focus_test.cc" ]
+  sources = [ "cr_elements/cr_elements_focus_interactive_uitest.cc" ]
 
   deps = [ "//chrome/browser/glic/test_support" ]
 
   if (!is_android) {
     sources += [
-      "bookmarks/bookmarks_focus_test.cc",
+      "bookmarks/bookmarks_focus_interactive_uitest.cc",
       "contextual_tasks/contextual_tasks_pixel_interactive_ui_test.cc",
       "cr_components/cr_components_interactive_test.cc",
-      "downloads/downloads_focus_test.cc",
-      "history/history_focus_test.cc",
+      "downloads/downloads_focus_interactive_uitest.cc",
+      "history/history_focus_interactive_uitest.cc",
       "lens/lens_side_panel_pixel_interactive_ui_test.cc",
-      "new_tab_page/new_tab_page_focus_test.cc",
+      "new_tab_page/new_tab_page_focus_interactive_uitest.cc",
       "password_manager/password_manager_focus_test.cc",
-      "settings/settings_focus_test.cc",
-      "side_panel/bookmarks/sp_bookmarks_interactive_test.cc",
-      "support_tool/support_tool_focus_test.cc",
+      "settings/settings_focus_interactive_uitest.cc",
+      "side_panel/bookmarks/sp_bookmarks_interactive_uitest.cc",
+      "support_tool/support_tool_focus_interactive_uitest.cc",
       "tab_search/split_new_tab_page_interactive_uitest.cc",
       "tab_search/tab_search_focus_test.cc",
       "webui_toolbar/webui_toolbar_js_interactive_uitest.cc",
@@ -412,12 +412,12 @@ source_set("interactive_ui_tests") {
   }
 
   if (enable_extensions_core) {
-    sources += [ "extensions/extensions_focus_test.cc" ]
+    sources += [ "extensions/extensions_focus_interactive_uitest.cc" ]
     deps += [ "//chrome/browser/ui/webui/extensions:test_support" ]
   }
 
   if (enable_print_preview && !is_chromeos) {
-    sources += [ "print_preview/print_preview_focus_test.cc" ]
+    sources += [ "print_preview/print_preview_focus_interactive_uitest.cc" ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -454,7 +454,7 @@ source_set("interactive_ui_tests") {
   }
 
   if (enable_compose) {
-    sources += [ "compose/compose_focus_test.cc" ]
+    sources += [ "compose/compose_focus_interactive_uitest.cc" ]
     deps += [
       "//chrome/browser/compose",
       "//components/compose/core/browser:features",

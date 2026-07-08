@@ -12,7 +12,7 @@ build_webui_tests("build") {
   cc_test_files = [
     "new_tab_page_a11y_browsertest.cc",
     "new_tab_page_browsertest.cc",
-    "new_tab_page_focus_test.cc",
+    "new_tab_page_focus_interactive_uitest.cc",
   ]
 
   files = [

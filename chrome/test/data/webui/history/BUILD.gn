@@ -6,7 +6,7 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   cc_test_files = [
-    "history_focus_test.cc",
+    "history_focus_interactive_uitest.cc",
     "history_supervised_user_browsertest.cc",
     "history_ui_browsertest.cc",
   ]

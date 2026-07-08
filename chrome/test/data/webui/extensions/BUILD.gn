@@ -10,7 +10,7 @@ assert(enable_extensions_core, "enable extensions check failed")
 build_webui_tests("build") {
   cc_test_files = [
     "extensions_browsertest.cc",
-    "extensions_focus_test.cc",
+    "extensions_focus_interactive_uitest.cc",
   ]
 
   files = [
