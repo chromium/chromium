@@ -1041,6 +1041,10 @@ class CrossbenchTest(object):
     env['CHROME_HEADLESS'] = '1'
     env['PATH'] = f"{GSUTIL_DIR}{';' if IsWindows() else ':'}{env['PATH']}"
 
+    if self._is_alum():
+      # TODO(crbug.com/525430279): A workaround to run perfetto per comment #16.
+      env['LD_LIBRARY_PATH'] = '/opt/glibc/lib'
+
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
     infra_failure = False
