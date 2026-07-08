@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/view_controller_catalog_view_controller.h"
+#import "ios/chrome/browser/catalogs/ui/view_controller_catalog_view_controller.h"
 
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 
 // Sections used in ViewController Catalog page.
 enum SectionIdentifier {
-  kSectionsIdentifierViewController = kSectionIdentifierEnumZero,
+  kSectionIdentifierViewController = kSectionIdentifierEnumZero,
 };
 
 // Item types used per ViewController section.
@@ -46,12 +45,12 @@ enum ItemType {
       [[TableViewTextItem alloc] initWithType:kItemTypeAlertViewController];
   alertItem.text = @"AlertViewController";
 
-  // Adding sections.
-  [model addSectionWithIdentifier:kSectionsIdentifierViewController];
+  // Add sections.
+  [model addSectionWithIdentifier:kSectionIdentifierViewController];
 
-  // Adding items.
+  // Add items.
   [model addItem:alertItem
-      toSectionWithIdentifier:kSectionsIdentifierViewController];
+      toSectionWithIdentifier:kSectionIdentifierViewController];
 }
 
 #pragma mark - UITableViewDelegate

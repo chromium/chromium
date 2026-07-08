@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/alert_view/ui_bundled",
+  "+ios/chrome/browser/authentication/ui_bundled/cells",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/reading_list/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
+  "+ios/chrome/browser/settings/ui_bundled/cells",
+  "+ios/chrome/browser/settings/ui_bundled/elements",
+  "+ios/chrome/browser/settings/ui_bundled/password",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
+]
