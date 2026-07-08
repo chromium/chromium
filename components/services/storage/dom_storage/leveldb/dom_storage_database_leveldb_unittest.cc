@@ -165,7 +165,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
   // slate).
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
   EXPECT_THAT(db->Get(base::byte_span_from_cstring(kTestKey)),
-              ErrorIs(Property(&DbStatus::IsNotFound, IsTrue)));
+              ErrorIs(Property(&DbStatus::IsNotFound, IsTrue())));
   db.reset();
 }
 
