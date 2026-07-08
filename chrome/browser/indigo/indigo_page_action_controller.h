@@ -74,6 +74,19 @@ enum class IndigoTransformationResult {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
 
+// Trigger sources for the Indigo page action.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoTriggerSource)
+enum class IndigoTriggerSource {
+  kUnknown = 0,
+  kForced = 1,
+  kOptimizationGuide = 2,
+  kLocalProductKeywordHeuristic = 3,
+  kMaxValue = kLocalProductKeywordHeuristic,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTriggerSource)
+
 enum class ResetType {
   kResetReplacementsAndContentScript,
   kResetReplacementsOnly,
@@ -194,6 +207,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
  private:
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
+
+  // Determines the source that triggered the Indigo page action, if it should
+  // be shown. Returns std::nullopt if the page action should not be shown.
+  std::optional<IndigoTriggerSource> DetermineTriggerSource() const;
 
   // Shows the onboarding dialog with the appropriate URL based on disposition.
   void ShowOnboardingDialog(OnboardingDisposition disposition,
