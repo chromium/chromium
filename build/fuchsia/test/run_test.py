@@ -32,6 +32,7 @@ from run_telemetry_test import TelemetryTestRunner
 from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
+from orchestrate_runner import run_tests_with_orchestrate
 from test_connection import test_connection, test_device_connection
 from test_runner import TestRunner
 
@@ -55,7 +56,7 @@ def _get_test_runner(runner_args: argparse.Namespace,
     return create_executable_test_runner(runner_args, test_args)
 
 
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements,too-many-branches
 def main():
     """E2E method for installing packages and running a test."""
     # Always add time stamps to the logs.
@@ -71,6 +72,12 @@ def main():
                         action='store_true',
                         default=False,
                         help='Use an existing device.')
+    parser.add_argument(
+        '--orchestrate',
+        action='store_true',
+        default=False,
+        help='Run tests via orchestrate instead of the legacy runner '
+        'framework.')
 
     # Register arguments
     register_common_args(parser)
@@ -91,13 +98,24 @@ def main():
 
     runner_args.device = runner_args.device or bool(runner_args.target_id)
 
+    if runner_args.orchestrate and runner_args.device:
+        logging.warning('Ignoring --orchestrate because running on a '
+                        'physical device is not supported yet.')
+        runner_args.orchestrate = False
+
     monitors.tag('fuchsia')
-    with ExitStack() as stack:
+    with ExitStack() as stack, monitors.time_consumption(
+            'orchestrate' if runner_args.orchestrate else 'homemade', 'run'):
         if runner_args.logs_dir:
             # TODO(crbug.com/343242386): Find a way to upload metric output when
             # logs_dir is not defined.
             stack.push(lambda *_: monitors.dump(
                 os.path.join(runner_args.logs_dir, 'invocations')))
+
+        if runner_args.orchestrate:
+            return run_tests_with_orchestrate(
+                runner_args.out_dir, runner_args.test_type, test_args,
+                runner_args.logs_dir)
         if running_unattended():
             # Only restart the daemon if 1) daemon will be run in a new isolate
             # dir, or 2) if there isn't a daemon running in the predefined

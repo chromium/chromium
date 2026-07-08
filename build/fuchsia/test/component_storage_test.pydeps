@@ -22,6 +22,7 @@ lockfile.py
 log_manager.py
 modification_waiter.py
 monitors.py
+orchestrate_runner.py
 publish_package.py
 repeating_log.py
 run_blink_test.py
