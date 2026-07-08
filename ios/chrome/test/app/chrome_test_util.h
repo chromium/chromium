@@ -54,9 +54,6 @@ Browser* GetCurrentBrowser();
 // possible.
 UIViewController* GetActiveViewController();
 
-// Returns whether the TabGridViewController's child views have been set up.
-bool IsTabGridSetUp();
-
 // Returns the dispatcher for the active Browser.
 id<SceneCommands,
    BrowserCommands,

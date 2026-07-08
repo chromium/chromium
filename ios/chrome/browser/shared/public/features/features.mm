@@ -34,29 +34,6 @@ BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
 BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGridSetupMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kTabGridSetupModeParamName[] = "tab_grid_setup_mode";
-
-const base::FeatureParam<std::string> kTabGridSetupModeParam(
-    &kTabGridSetupMode,
-    kTabGridSetupModeParamName,
-    "immediate");
-
-TabGridSetupMode GetTabGridSetupMode() {
-  if (!base::FeatureList::IsEnabled(kTabGridSetupMode)) {
-    return TabGridSetupMode::kImmediate;
-  }
-  std::string value = kTabGridSetupModeParam.Get();
-  if (value == "deferred") {
-    return TabGridSetupMode::kDeferred;
-  }
-  if (value == "lazy_for_testing") {
-    return TabGridSetupMode::kLazy_ForTesting;
-  }
-  return TabGridSetupMode::kImmediate;
-}
-
 BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);

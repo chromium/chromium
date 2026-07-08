@@ -145,10 +145,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 }
 
-- (BOOL)isTabGridSetUp {
-  return [ChromeEarlGreyAppInterface isTabGridSetUp];
-}
-
 - (BOOL)isRTL {
   return [ChromeEarlGreyAppInterface isRTL];
 }
