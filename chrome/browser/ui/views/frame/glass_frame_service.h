@@ -7,8 +7,9 @@
 
 #include <deque>
 
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include "base/callback_list.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
@@ -19,11 +20,6 @@ class BrowserWindowInterface;
 // a browser window should display the glass frame or not.
 class GlassFrameService : public BrowserCollectionObserver {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnGlassFrameStateChanged(GlassFrameService* service) = 0;
-  };
-
   static GlassFrameService* GetInstance();
 
   // Maximum number of windows that will display the glass frame at any given
@@ -33,8 +29,11 @@ class GlassFrameService : public BrowserCollectionObserver {
   GlassFrameService(const GlassFrameService&) = delete;
   GlassFrameService& operator=(const GlassFrameService&) = delete;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  using GlassFrameEligibilityChangedCallback =
+      base::RepeatingCallback<void(bool is_eligible)>;
+  base::CallbackListSubscription RegisterGlassFrameEligibilityChangedCallback(
+      BrowserWindowInterface* browser_window_interface,
+      GlassFrameEligibilityChangedCallback callback);
 
   bool IsBrowserWindowEligible(BrowserWindowInterface* browser);
 
@@ -46,8 +45,14 @@ class GlassFrameService : public BrowserCollectionObserver {
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
-  base::ObserverList<Observer> observers_;
+  // Returns the set of BrowserWindowInterfaces for the most recently activated
+  // browser window interfaces. The returned set has at most `kMaxGlassWindows`
+  // elements.
+  base::flat_set<BrowserWindowInterface*> MostRecentActivatedBrowsers();
 
+  base::RepeatingCallbackList<void(
+      const base::flat_set<BrowserWindowInterface*>&)>
+      callbacks_;
   // Deque of tracked browsers, ordered from most recently activated to
   // least recently activated.
   std::deque<BrowserWindowInterface*> activated_browsers_;

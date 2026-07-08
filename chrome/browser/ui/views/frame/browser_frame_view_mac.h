@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -102,6 +103,8 @@ class BrowserFrameViewMac : public BrowserFrameView,
   // Emits the duration of the current fullscreen session, if any.
   void EmitFullscreenSessionHistograms();
 
+  void OnGlassFrameEligibilityChanged(bool is_eligible);
+
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
   base::ScopedObservation<web_app::WebAppRegistrar,
@@ -126,6 +129,10 @@ class BrowserFrameViewMac : public BrowserFrameView,
   // Used to track the current toolbar style.
   std::optional<remote_cocoa::mojom::ToolbarVisibilityStyle>
       current_toolbar_style_;
+
+  bool is_glass_frame_eligible_ = false;
+
+  base::CallbackListSubscription glass_frame_service_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_MAC_H_

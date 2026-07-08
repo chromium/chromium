@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -49,24 +51,22 @@ GlassFrameService::GlassFrameService() {
 
 GlassFrameService::~GlassFrameService() = default;
 
-void GlassFrameService::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void GlassFrameService::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription
+GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
+    BrowserWindowInterface* browser_window_interface,
+    GlassFrameEligibilityChangedCallback callback) {
+  return callbacks_.Add(base::BindRepeating(
+      [](BrowserWindowInterface* target_browser,
+         GlassFrameEligibilityChangedCallback target_callback,
+         const base::flat_set<BrowserWindowInterface*>& eligible) {
+        target_callback.Run(eligible.contains(target_browser));
+      },
+      browser_window_interface, std::move(callback)));
 }
 
 bool GlassFrameService::IsBrowserWindowEligible(
     BrowserWindowInterface* browser) {
-  const size_t max_eligible_count =
-      std::min(activated_browsers_.size(), kMaxGlassWindows);
-  for (size_t i = 0; i < max_eligible_count; i++) {
-    if (browser == activated_browsers_[i]) {
-      return true;
-    }
-  }
-  return false;
+  return MostRecentActivatedBrowsers().contains(browser);
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
@@ -84,12 +84,36 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
   }
 
   activated_browsers_.push_front(browser);
+
+  const base::flat_set<BrowserWindowInterface*> new_eligible =
+      MostRecentActivatedBrowsers();
+  callbacks_.Notify(new_eligible);
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
+  const base::flat_set<BrowserWindowInterface*> old_eligible =
+      MostRecentActivatedBrowsers();
+
   auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
                       browser);
   if (it != activated_browsers_.end()) {
     activated_browsers_.erase(it);
   }
+
+  const base::flat_set<BrowserWindowInterface*> new_eligible =
+      MostRecentActivatedBrowsers();
+  if (old_eligible != new_eligible) {
+    callbacks_.Notify(new_eligible);
+  }
+}
+
+base::flat_set<BrowserWindowInterface*>
+GlassFrameService::MostRecentActivatedBrowsers() {
+  base::flat_set<BrowserWindowInterface*> eligible;
+  const size_t max_eligible_count =
+      std::min(activated_browsers_.size(), kMaxGlassWindows);
+  for (size_t i = 0; i < max_eligible_count; i++) {
+    eligible.insert(activated_browsers_[i]);
+  }
+  return eligible;
 }

@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 
 #import "base/apple/foundation_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -571,15 +572,6 @@ NativeWidgetMacNSWindow* BrowserNativeWidgetMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
   CHECK(browser_view_);
   NativeWidgetMacNSWindow* ns_window = NativeWidgetMac::CreateNSWindow(params);
-  if (features::IsGlassFrameEnabled()) {
-    [ns_window setOpaque:NO];
-    // A completely transparent background ([NSColor clearColor]) causes AppKit
-    // to continuously invalidate the window surface, resulting in high CPU
-    // and energy usage. Using an almost-transparent color (alpha 0.001) avoids
-    // this performance issue while remaining visually indistinguishable.
-    [ns_window setBackgroundColor:[[NSColor windowBackgroundColor]
-                                      colorWithAlphaComponent:0.001]];
-  }
   touch_bar_delegate_ = [[BrowserWindowTouchBarViewsDelegate alloc]
       initWithBrowser:browser_view_->browser()
                window:ns_window];
@@ -610,12 +602,22 @@ void BrowserNativeWidgetMac::OnWindowInitialized() {
 
 void BrowserNativeWidgetMac::OnWidgetInitDone() {
   NativeWidgetMac::OnWidgetInitDone();
-  UpdateBackground();
+  if (features::IsGlassFrameEnabled()) {
+    glass_frame_service_subscription_ =
+        GlassFrameService::GetInstance()
+            ->RegisterGlassFrameEligibilityChangedCallback(
+                browser_view_->browser(),
+                base::BindRepeating(&BrowserNativeWidgetMac::UpdateBackground,
+                                    base::Unretained(this)));
+    UpdateBackground(IsBrowserWidgetEligible());
+  }
 }
 
 void BrowserNativeWidgetMac::OnWidgetThemeChanged(views::Widget* widget) {
   NativeWidgetMac::OnWidgetThemeChanged(widget);
-  UpdateBackground();
+  if (features::IsGlassFrameEnabled()) {
+    UpdateBackground(IsBrowserWidgetEligible());
+  }
 }
 
 void BrowserNativeWidgetMac::OnWindowDestroying(
@@ -726,45 +728,65 @@ void BrowserNativeWidgetMac::AnnounceTextInInProcessWindow(
   }
 }
 
-void BrowserNativeWidgetMac::UpdateBackground() {
+bool BrowserNativeWidgetMac::IsBrowserWidgetEligible() const {
   if (!features::IsGlassFrameEnabled()) {
+    return false;
+  }
+
+  Browser* const browser = browser_view_ ? browser_view_->browser() : nullptr;
+  return GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser);
+}
+
+void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
+  NSWindow* const ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (!ns_window) {
     return;
   }
 
-  if (@available(macOS 26.0, *)) {
-    auto color_scheme =
-        browser_view_->GetNativeTheme()->preferred_color_scheme();
-    auto theme_color =
-        browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
+  [ns_window setOpaque:!is_eligible];
 
-    if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
-        last_theme_color_ == theme_color) {
-      return;
-    }
-
-    last_preferred_color_scheme_ = color_scheme;
-    last_theme_color_ = theme_color;
-
+  if (!is_eligible) {
     if (background_view_) {
+      [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
       [background_view_ removeFromSuperview];
+      background_view_ = nil;
+      last_preferred_color_scheme_.reset();
+      last_theme_color_.reset();
     }
-    background_view_ = nil;
+    return;
+  }
 
-    NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
-    if (!ns_window) {
-      return;
-    }
+  const ui::NativeTheme::PreferredColorScheme color_scheme =
+      browser_view_->GetNativeTheme()->preferred_color_scheme();
+  const SkColor theme_color =
+      browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
 
-    NSView* content_view = [ns_window contentView];
+  // Avoid updating the background view if the theme colors haven't changed.
+  if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
+      last_theme_color_ == theme_color) {
+    return;
+  }
 
-    NSGlassEffectView* glass_view =
+  // A completely transparent background ([NSColor clearColor]) causes AppKit
+  // to continuously invalidate the window surface, resulting in high CPU
+  // and energy usage. Using an almost-transparent color (alpha 0.001) avoids
+  // this performance issue while remaining visually indistinguishable.
+  [ns_window setBackgroundColor:[[NSColor windowBackgroundColor]
+                                    colorWithAlphaComponent:0.001]];
+
+  last_preferred_color_scheme_ = color_scheme;
+  last_theme_color_ = theme_color;
+
+  if (@available(macOS 26.0, *)) {
+    NSView* const content_view = [ns_window contentView];
+    NSGlassEffectView* const glass_view =
         [[GlassFrameBackgroundView alloc] initWithFrame:content_view.bounds];
     glass_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     glass_view.style = NSGlassEffectViewStyleRegular;
 
-    CGFloat r = SkColorGetR(theme_color) / 255.0;
-    CGFloat g = SkColorGetG(theme_color) / 255.0;
-    CGFloat b = SkColorGetB(theme_color) / 255.0;
+    const CGFloat r = SkColorGetR(theme_color) / 255.0;
+    const CGFloat g = SkColorGetG(theme_color) / 255.0;
+    const CGFloat b = SkColorGetB(theme_color) / 255.0;
 
     glass_view.tintColor = [NSColor colorWithSRGBRed:r
                                                green:g
