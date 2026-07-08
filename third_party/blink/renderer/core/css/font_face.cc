@@ -170,15 +170,14 @@ FontFace* FontFace::Create(ExecutionContext* context,
   font_face->SetFontFamilyNeedsQuoting(family);
 
   const CSSValue* src = ParseCSSValue(context, source, AtRuleDescriptorID::Src);
-  if (src && src->IsValueList()) {
-    font_face->InitCSSFontFace(context, *src);
-  } else {
+  if (!src || !src->IsValueList()) {
     font_face->SetError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError,
         StrCat({"The source provided ('", source,
                 "') could not be parsed as a value list."})));
   }
 
+  font_face->InitCSSFontFace(context, *src);
   return font_face;
 }
 

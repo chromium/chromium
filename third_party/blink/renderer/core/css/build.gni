@@ -1015,5 +1015,4 @@ blink_core_tests_css = [
   "threaded/font_object_threaded_test.cc",
   "threaded/text_renderer_threaded_test.cc",
   "white_space_test.cc",
-  "font_face_test.cc",
 ]
