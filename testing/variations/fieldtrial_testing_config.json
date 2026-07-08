@@ -7292,6 +7292,24 @@
             ]
         }
     ],
+    "ContextualTasksUploadChunking": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksUploadChunking"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasks_EphemeralPinning_Desktop": [
         {
             "platforms": [
