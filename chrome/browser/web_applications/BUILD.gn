@@ -809,8 +809,6 @@ source_set("web_applications_test_support") {
   sources = [
     "isolated_web_apps/test/bundle_versions_storage.cc",
     "isolated_web_apps/test/bundle_versions_storage.h",
-    "isolated_web_apps/test/fake_iwa_runtime_data_provider.cc",
-    "isolated_web_apps/test/fake_iwa_runtime_data_provider.h",
     "isolated_web_apps/test/integrity_block_data_matcher.h",
     "isolated_web_apps/test/isolated_web_app_builder.cc",
     "isolated_web_apps/test/isolated_web_app_builder.h",
@@ -878,6 +876,7 @@ source_set("web_applications_test_support") {
     "//components/webapps/common:mojo_bindings",
     "//components/webapps/isolated_web_apps/key_distribution",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
+    "//components/webapps/isolated_web_apps/test_support",
   ]
 
   deps = [
@@ -905,7 +904,6 @@ source_set("web_applications_test_support") {
     "//components/webapps/browser",
     "//components/webapps/common",
     "//components/webapps/isolated_web_apps",
-    "//components/webapps/isolated_web_apps/test_support",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",

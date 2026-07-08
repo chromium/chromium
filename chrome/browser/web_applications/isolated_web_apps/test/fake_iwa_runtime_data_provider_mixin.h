@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_FAKE_IWA_RUNTIME_DATA_PROVIDER_MIXIN_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_FAKE_IWA_RUNTIME_DATA_PROVIDER_MIXIN_H_
 
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_runtime_data_provider_mixin.h"
+#include "components/webapps/isolated_web_apps/test_support/fake_iwa_runtime_data_provider.h"
 
 namespace web_app {
 

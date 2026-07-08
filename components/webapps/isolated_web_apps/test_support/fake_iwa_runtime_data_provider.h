@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
+
+#include <concepts>
+#include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/one_shot_event.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
@@ -127,4 +132,4 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_FAKE_IWA_RUNTIME_DATA_PROVIDER_H_
