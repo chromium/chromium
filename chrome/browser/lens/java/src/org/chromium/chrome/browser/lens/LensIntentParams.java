@@ -25,6 +25,7 @@ public class LensIntentParams {
     private int mProactiveQueryId;
     private @LensEntryPoint int mLensEntryPoint;
     private @Nullable String mAccountName;
+    private boolean mForceUnlockOrientation;
 
     /** Builder class for LensIntentParams. */
     public static class Builder {
@@ -38,6 +39,7 @@ public class LensIntentParams {
         private int mProactiveQueryId;
         private @LensEntryPoint int mLensEntryPoint;
         private @Nullable String mAccountName;
+        private boolean mForceUnlockOrientation;
 
         public Builder() {}
 
@@ -130,6 +132,17 @@ public class LensIntentParams {
             return this;
         }
 
+        /**
+         * Sets whether to force unlock orientation in Lens which causes Lens to enter landscape
+         * mode when the device is rotated.
+         *
+         * @param forceUnlockOrientation Whether to force unlock orientation.
+         */
+        public Builder withForceUnlockOrientation(boolean forceUnlockOrientation) {
+            this.mForceUnlockOrientation = forceUnlockOrientation;
+            return this;
+        }
+
         /** Build LensIntentParams object from parameters set. */
         public LensIntentParams build() {
             LensIntentParams lensIntentParams = new LensIntentParams();
@@ -139,6 +152,7 @@ public class LensIntentParams {
             lensIntentParams.mProactiveSessionId = mProactiveSessionId;
             lensIntentParams.mProactiveQueryId = mProactiveQueryId;
             lensIntentParams.mAccountName = mAccountName;
+            lensIntentParams.mForceUnlockOrientation = mForceUnlockOrientation;
             if (!Uri.EMPTY.equals(mImageUri)) {
                 lensIntentParams.mImageUri = mImageUri;
                 if (mSrcUrl != null) {
@@ -203,5 +217,10 @@ public class LensIntentParams {
     /** Returns the accountName for this set of params. */
     public @Nullable String getAccountName() {
         return mAccountName;
+    }
+
+    /** Returns the forceUnlockOrientation for this set of params. */
+    public boolean getForceUnlockOrientation() {
+        return mForceUnlockOrientation;
     }
 }

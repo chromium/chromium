@@ -346,6 +346,9 @@ public class LensOverlayCoordinator implements UserData {
                         .withSrcUrl("")
                         .withImageTitleOrAltText("")
                         .withAccountName(LensIdentityUtils.getAccountName(mTab.getProfile()))
+                        // Unlocking orientation is mainly to help landscape mode (seen in Desktop
+                        // Android), but made unconditional here for simplicity and consistency.
+                        .withForceUnlockOrientation(true)
                         .build();
 
         LensController.getInstance().startLens(window, params);

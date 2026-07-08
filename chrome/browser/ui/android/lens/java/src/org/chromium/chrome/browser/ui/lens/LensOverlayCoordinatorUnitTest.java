@@ -272,6 +272,9 @@ public class LensOverlayCoordinatorUnitTest {
         LensIntentParams capturedParams = mLensIntentParamsCaptor.getValue();
         assertEquals(mockUri, capturedParams.getImageUri());
         assertEquals(testUrl.getSpec(), capturedParams.getPageUrl());
+        assertTrue(
+                "forceUnlockOrientation should be unconditionally true.",
+                capturedParams.getForceUnlockOrientation());
         assertFalse(capturedParams.getIsIncognito());
         assertEquals(
                 LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, capturedParams.getLensEntryPoint());
