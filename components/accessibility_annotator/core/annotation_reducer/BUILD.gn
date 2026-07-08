@@ -20,7 +20,10 @@ source_set("annotation_reducer") {
     "util.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/personal_context/proto:personal_context_proto",
+  ]
   deps = [
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
