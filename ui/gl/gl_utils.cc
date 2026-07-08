@@ -128,6 +128,15 @@ void SetGlWorkarounds(const GlWorkarounds& workarounds) {
 
 #if BUILDFLAG(IS_WIN)
 unsigned int DirectCompositionRootSurfaceBufferCount() {
+  if (switches::GetFakeVsyncIntervalFromCommandLine().has_value()) {
+    // We assume 2 swapchain buffers are intended for a standard 60Hz display.
+    // If we are simulating a high refresh rate, we increase the buffer count
+    // to 10 to prevent blocking on presentation if the actual hardware
+    // display refresh rate is slower.
+    // Note: The simulated refresh rate is used here as a heuristic for
+    // debugging high refresh rate behaviors and does not need to be exact.
+    return 10u;
+  }
   return 2u;
 }
 
