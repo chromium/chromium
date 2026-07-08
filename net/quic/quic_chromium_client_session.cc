@@ -1874,15 +1874,15 @@ void QuicChromiumClientSession::LogZeroRttStats() {
             base::Seconds(base::Microseconds(now_us - ticket_us).InSeconds());
         base::UmaHistogramCustomTimes(
             "Net.QuicSession.ResumeAttemptTicketAge.All", ticket_age,
-            base::Seconds(1), base::Days(7), 50);
+            base::Seconds(1), base::Days(14), 50);
         if (state == ZeroRttState::kAttemptedAndSucceeded) {
           base::UmaHistogramCustomTimes(
               "Net.QuicSession.ResumeAttemptTicketAge.Accepted", ticket_age,
-              base::Seconds(1), base::Days(7), 50);
+              base::Seconds(1), base::Days(14), 50);
         } else if (state == ZeroRttState::kAttemptedAndRejected) {
           base::UmaHistogramCustomTimes(
               "Net.QuicSession.ResumeAttemptTicketAge.Rejected", ticket_age,
-              base::Seconds(1), base::Days(7), 50);
+              base::Seconds(1), base::Days(14), 50);
         }
       }
     }
