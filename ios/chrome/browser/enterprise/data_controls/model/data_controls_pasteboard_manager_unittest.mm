@@ -61,6 +61,10 @@ class DataControlsPasteboardManagerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  void CallOnPasteboardChanged(UIPasteboard* pasteboard) {
+    manager_->OnPasteboardChanged(pasteboard);
+  }
+
   void RestoreItemsToGeneralPasteboard() {
     // Wait for the internal state to be updated. This is necessary as we access
     // the pasteboard async due to bugs in UIPasteboard that block the thread
@@ -292,6 +296,34 @@ TEST_F(
 
   // The original string should be in the pasteboard.
   EXPECT_TRUE(WaitForStringInPasteboard(@(kPasteboardString)));
+}
+
+// Tests that asynchronous pasteboard changes correctly handle concurrent external modifications.
+TEST_F(DataControlsPasteboardManagerTest, RaceConditionExternalChangeDuringAsync) {
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ false);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
+
+  // Simulate an asynchronous call to modify the pasteboard (e.g. restoring items).
+  // The actual writing happens on the ThreadPool, so it is queued in task_environment_.
+  base::test::TestFuture<void> future;
+  manager_->RestoreItemsToGeneralPasteboardIfNeeded(future.GetCallback());
+
+  // While the async modification is queued (before it executes), simulate a user
+  // copying new text in another app. This will trigger OnPasteboardChanged, which
+  // should advance the state to kUnknownSource.
+  UIPasteboard.generalPasteboard.string = @"User copied this from Notes app";
+  CallOnPasteboardChanged(UIPasteboard.generalPasteboard);
+
+  // Let the queued async modification complete.
+  EXPECT_TRUE(future.Wait());
+
+  // The async modification should have aborted because the state was no longer kKnownSource.
+  // The pasteboard should still contain the user's text, not the restored DLP data.
+  EXPECT_NSEQ(@"User copied this from Notes app", UIPasteboard.generalPasteboard.string);
 }
 
 // Tests that observers are notified when the pasteboard changes.

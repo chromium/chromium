@@ -141,7 +141,6 @@ class DataControlsPasteboardManager {
     kReplacingItems,
     // The manager knows the source for the current pasteboard items.
     kKnownSource,
-
   };
 
   DataControlsPasteboardManager();

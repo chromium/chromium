@@ -120,10 +120,17 @@ void DataControlsPasteboardManager::RestoreItemsToGeneralPasteboardIfNeeded(
   // Restore protected items to the pasteboard so they can be copied to
   // destinations allowed by Data Control rules.
   if (!pasteboard_state_.os_clipboard_allowed && pasteboard_state_.items) {
-    stage_ = Stage::kReplacingItems;
-    GetGeneralPasteboard(
-        base::BindOnce(&WriteItemsToPasteboard, pasteboard_state_.items)
-            .Then(std::move(callback)));
+    GetGeneralPasteboard(base::BindOnce(
+                             [](DataControlsPasteboardManager* manager,
+                                NSArray<NSDictionary<NSString*, id>*>* items,
+                                UIPasteboard* pasteboard) {
+                               if (manager->stage_ == Stage::kKnownSource) {
+                                 manager->stage_ = Stage::kReplacingItems;
+                                 WriteItemsToPasteboard(items, pasteboard);
+                               }
+                             },
+                             base::Unretained(this), pasteboard_state_.items)
+                             .Then(std::move(callback)));
   } else {
     std::move(callback).Run();
   }
@@ -172,9 +179,14 @@ void DataControlsPasteboardManager::
   }
 
   if (!pasteboard_state_.os_clipboard_allowed) {
-    stage_ = Stage::kReplacingItems;
-    GetGeneralPasteboard(
-        base::BindOnce(&ReplacePasteboardItemsWithPlaceholder));
+    GetGeneralPasteboard(base::BindOnce(
+        [](DataControlsPasteboardManager* manager, UIPasteboard* pasteboard) {
+          if (manager->stage_ == Stage::kKnownSource) {
+            manager->stage_ = Stage::kReplacingItems;
+            ReplacePasteboardItemsWithPlaceholder(pasteboard);
+          }
+        },
+        base::Unretained(this)));
   }
 }
 
