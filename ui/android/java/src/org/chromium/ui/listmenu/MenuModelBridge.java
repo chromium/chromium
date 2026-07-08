@@ -76,7 +76,8 @@ public class MenuModelBridge {
      * @param indexForModelActivation The index for {@link Natives#activatedAt(long, int)}.
      */
     @CalledByNative
-    private void addCommand(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void addCommand(
             @JniType("std::u16string") final String label,
             @JniType("std::optional<SkBitmap>") final @Nullable Bitmap bitmap,
             final boolean isEnabled,
@@ -106,7 +107,8 @@ public class MenuModelBridge {
      * @param indexForModelActivation The index for {@link Natives#activatedAt(long, int)}.
      */
     @CalledByNative
-    private void addCheck(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void addCheck(
             @JniType("std::u16string") final String label,
             final boolean isChecked,
             final boolean isEnabled,
@@ -136,7 +138,8 @@ public class MenuModelBridge {
      * @param indexForModelActivation The index for {@link Natives#activatedAt(long, int)}.
      */
     @CalledByNative
-    private void addRadioButton(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void addRadioButton(
             @JniType("std::u16string") final String label,
             final boolean isSelected,
             final boolean isEnabled,
@@ -166,7 +169,8 @@ public class MenuModelBridge {
      * @param submenuItems The items that will be under this submenu.
      */
     @CalledByNative
-    private void addSubmenu(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void addSubmenu(
             @JniType("std::u16string") final String label,
             @JniType("std::optional<SkBitmap>") final @Nullable Bitmap bitmap,
             final boolean isEnabled,
@@ -184,9 +188,13 @@ public class MenuModelBridge {
 
     /** Adds a divider to the context menu. */
     @CalledByNative
-    private void addDivider() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void addDivider() {
         // TODO(crbug.com/416222384): Update context menus to use incognito theming.
-        mItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
+        mItems.add(
+                new ListItem(
+                        ListItemType.DIVIDER,
+                        new PropertyModel(ListSectionDividerProperties.ALL_KEYS)));
     }
 
     @CalledByNative
