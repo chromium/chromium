@@ -10,12 +10,14 @@
 
 - (instancetype)initWithURL:(GURL)URL
                       title:(NSString*)title
-                serverToken:(base::UnguessableToken)serverToken {
+                serverToken:(base::UnguessableToken)serverToken
+                    favicon:(UIImage*)favicon {
   self = [super init];
   if (self) {
     _URL = URL;
     _title = [title copy];
     _serverToken = serverToken;
+    _favicon = favicon;
   }
   return self;
 }

@@ -11,6 +11,7 @@
 
 enum class ComposeboxMenuSectionIdentifier {
   kAttachments = 0,
+  kSharedTabs,
   kTools,
   kModels,
 };

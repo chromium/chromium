@@ -21,6 +21,7 @@ enum class ComposeboxMenuItemType {
   kAttachmentGallery,
   kAttachmentFiles,
   kAttachmentDrive,
+  kAttachmentSharedTabs,
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_TYPE_H_

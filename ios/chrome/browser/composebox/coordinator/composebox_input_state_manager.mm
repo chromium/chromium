@@ -522,7 +522,8 @@ ComposeboxStrings* ServerStringsFromInputState(
       ComposeboxMenuSharedTab* tab =
           [[ComposeboxMenuSharedTab alloc] initWithURL:item.tabURL
                                                  title:item.title
-                                           serverToken:item.serverToken];
+                                           serverToken:item.serverToken
+                                               favicon:item.leadingIconImage];
       [sharedTabs addObject:tab];
     }
   }

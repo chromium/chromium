@@ -27,7 +27,9 @@ source_set("ui") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:composebox_mode",
     "//ios/chrome/browser/composebox/public:features",

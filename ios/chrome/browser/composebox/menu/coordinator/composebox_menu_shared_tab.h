@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_SHARED_TAB_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_SHARED_TAB_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "url/gurl.h"
 
@@ -23,10 +23,13 @@ class UnguessableToken;
 // The server token for this tab.
 @property(nonatomic, readonly) base::UnguessableToken serverToken;
 
+// The favicon of the web page.
+@property(nonatomic, strong, readonly) UIImage* favicon;
+
 - (instancetype)initWithURL:(GURL)URL
                       title:(NSString*)title
                 serverToken:(base::UnguessableToken)serverToken
-    NS_DESIGNATED_INITIALIZER;
+                    favicon:(UIImage*)favicon NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

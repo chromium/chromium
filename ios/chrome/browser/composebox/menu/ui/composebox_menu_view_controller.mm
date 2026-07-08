@@ -6,6 +6,9 @@
 
 #import <optional>
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_cell.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_header_view.h"
@@ -247,6 +250,36 @@ UIImage* IconForModel(ComposeboxModelOption option) {
                 items:attachmentsItems
            identifier:ComposeboxMenuSectionIdentifier::kAttachments];
     [sections addObject:attachmentsSection];
+  }
+
+  // Shared Tabs Section
+  if (_inputState.sharedTabs.count > 0) {
+    NSMutableArray<NSString*>* tabDomains = [[NSMutableArray alloc] init];
+    for (ComposeboxMenuSharedTab* tab in _inputState.sharedTabs) {
+      if (tab.URL.is_valid() && !tab.URL.host().empty()) {
+        std::u16string elidedHost = url_formatter::
+            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                tab.URL);
+        [tabDomains addObject:base::SysUTF16ToNSString(elidedHost)];
+      }
+    }
+    NSString* subtitle = [tabDomains componentsJoinedByString:@", "];
+
+    ComposeboxMenuItem* sharedTabsItem = [[ComposeboxMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS)
+             subtitle:subtitle
+                count:_inputState.sharedTabs.count
+                image:_inputState.sharedTabs.firstObject.favicon
+                 type:ComposeboxMenuItemType::kAttachmentSharedTabs
+             disabled:NO
+              favicon:_inputState.sharedTabs.firstObject.favicon];
+
+    ComposeboxMenuSection* sharedTabsSection = [[ComposeboxMenuSection alloc]
+        initWithTitle:nil
+                items:@[ sharedTabsItem ]
+           identifier:ComposeboxMenuSectionIdentifier::kSharedTabs];
+    [sections addObject:sharedTabsSection];
   }
 
   ComposeboxStrings* strings = _inputState.strings;
@@ -648,6 +681,14 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   UIListContentConfiguration* configuration =
       [cell defaultContentConfiguration];
   configuration.text = item.title;
+  if (item.subtitle.length) {
+    configuration.secondaryText = item.subtitle;
+    configuration.secondaryTextProperties.color =
+        [UIColor colorNamed:kTextSecondaryColor];
+    configuration.secondaryTextProperties.numberOfLines = 1;
+    configuration.secondaryTextProperties.lineBreakMode =
+        NSLineBreakByTruncatingTail;
+  }
   configuration.image = item.image;
   cell.accessibilityLabel = item.title;
   cell.isAccessibilityElement = YES;
@@ -691,15 +732,22 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     isSelected = YES;
   }
 
+  NSMutableArray<UICellAccessory*>* accessories = [[NSMutableArray alloc] init];
   if (isSelected) {
-    UICellAccessoryCheckmark* checkmark =
-        [[UICellAccessoryCheckmark alloc] init];
-    cell.accessories = @[ checkmark ];
+    [accessories addObject:[[UICellAccessoryCheckmark alloc] init]];
     cell.accessibilityTraits |= UIAccessibilityTraitSelected;
   } else {
-    cell.accessories = @[];
     cell.accessibilityTraits &= ~UIAccessibilityTraitSelected;
   }
+
+  if (item.type == ComposeboxMenuItemType::kAttachmentSharedTabs) {
+    [accessories addObject:[[UICellAccessoryDisclosureIndicator alloc] init]];
+    UICellAccessoryLabel* labelAccessory = [[UICellAccessoryLabel alloc]
+        initWithText:[NSString
+                         stringWithFormat:@"%lu", (unsigned long)item.count]];
+    [accessories addObject:labelAccessory];
+  }
+  cell.accessories = accessories;
   cell.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);
 }
