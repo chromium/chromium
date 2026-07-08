@@ -497,6 +497,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
     // understand the possibility.
     return;
   }
+  request_it->second->MarkPrefetchAsServed();
   AddCacheEntry(navigation_url, request_it->second->prefetch_url());
   DeletePrefetch(canonical_search_url);
 }
