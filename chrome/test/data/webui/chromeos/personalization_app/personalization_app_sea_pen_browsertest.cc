@@ -96,7 +96,7 @@ class PersonalizationAppSeaPenBrowserTest
                                    uint32_t image_id) {
     auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
     DCHECK(sea_pen_wallpaper_manager);
-    const AccountId account_id = GetAccountId(browser()->profile());
+    const AccountId account_id = GetAccountId(browser()->GetProfile());
     const SeaPenImage sea_pen_image = {CreateJpgBytes(), image_id};
     base::test::TestFuture<bool> save_image_future;
     sea_pen_wallpaper_manager->SaveSeaPenImage(account_id, sea_pen_image,

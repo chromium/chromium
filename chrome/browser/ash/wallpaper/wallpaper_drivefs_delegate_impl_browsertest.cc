@@ -85,7 +85,7 @@ class WallpaperDriveFsDelegateImplBrowserTest
 
   const AccountId& GetAccountId() const {
     user_manager::User* user =
-        ProfileHelper::Get()->GetUserByProfile(browser()->profile());
+        ProfileHelper::Get()->GetUserByProfile(browser()->GetProfile());
     DCHECK(user);
     return user->GetAccountId();
   }
@@ -119,7 +119,7 @@ class WallpaperDriveFsDelegateImplBrowserTest
   std::vector<drivefs::mojom::FileChangePtr> CreateWallpaperFileChange() {
     std::vector<drivefs::mojom::FileChangePtr> file_changes;
     drive::DriveIntegrationService* drive_integration_service =
-        drive::util::GetIntegrationServiceByProfile(browser()->profile());
+        drive::util::GetIntegrationServiceByProfile(browser()->GetProfile());
 
     base::FilePath fake_wallpaper_notification_path(
         &base::FilePath::kSeparators[0]);
@@ -141,13 +141,13 @@ class WallpaperDriveFsDelegateImplBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        EmptyBaseTimeIfNoDriveFs) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
   SaveTestWallpaperFile(
       GetAccountId(),
       GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId()));
 
   drive::DriveIntegrationService* drive_integration_service =
-      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+      drive::util::GetIntegrationServiceByProfile(browser()->GetProfile());
   ASSERT_TRUE(drive_integration_service);
   drive_integration_service->SetEnabled(false);
 
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        RespondsWithModifiedAtTime) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   const base::FilePath drivefs_wallpaper_path =
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest, SaveWallpaper) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   base::FilePath drivefs_wallpaper_path =
       GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId());
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest, SaveWallpaper) {
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        SaveWallpaperDriveFsDisabled) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   // Write a jpg file to a tmp directory. This file will be copied into DriveFS.
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
   // Call `SaveWallpaper` while DriveFS is disabled. No file should be written.
   auto* drive_integration_service =
-      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+      drive::util::GetIntegrationServiceByProfile(browser()->GetProfile());
   drive_integration_service->SetEnabled(false);
   EXPECT_FALSE(SaveWallpaperSync(GetAccountId(), source_jpg));
   EXPECT_FALSE(base::PathExists(drivefs_wallpaper_path));
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        WaitForWallpaperChange) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   base::RunLoop loop;
 
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
   // Send the fake wallpaper file change notification.
   drivefs::FakeDriveFs* fake_drivefs =
-      GetFakeDriveFsForProfile(browser()->profile());
+      GetFakeDriveFsForProfile(browser()->GetProfile());
   fake_drivefs->delegate()->OnFilesChanged(CreateWallpaperFileChange());
 
   loop.Run();
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        WaitForWallpaperChangeWithDriveFsDisabled) {
   drive::DriveIntegrationService* drive_integration_service =
-      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+      drive::util::GetIntegrationServiceByProfile(browser()->GetProfile());
   drive_integration_service->SetEnabled(false);
 
   base::RunLoop loop;
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
                        WaitForWallpaperChangeMultipleTimes) {
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   base::RunLoop loop;
   // Make sure that closure is called twice before `loop` quits.
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
 
   // Send the fake wallpaper file change notification.
   drivefs::FakeDriveFs* fake_drivefs =
-      GetFakeDriveFsForProfile(browser()->profile());
+      GetFakeDriveFsForProfile(browser()->GetProfile());
   fake_drivefs->delegate()->OnFilesChanged(CreateWallpaperFileChange());
 
   loop.Run();
