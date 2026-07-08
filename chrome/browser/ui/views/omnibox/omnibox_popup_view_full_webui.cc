@@ -70,11 +70,11 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI() {
                             ? controller()->edit_model()->user_text()
                             : permanent_display_text;
   bool focus = controller()->edit_model()->has_focus();
-  // Default to select-all if focused on an unedited permanent URL so immediate
-  // typing replaces the URL. Otherwise, default to empty selection.
-  gfx::Range selection = (focus && !user_input_in_progress)
-                             ? gfx::Range(0, text.length())
-                             : gfx::Range(0, 0);
+  // Default to select-all if focused so that taking focus selects all text by
+  // default (whether permanent URL or draft). Otherwise default to empty
+  // selection.
+  gfx::Range selection =
+      focus ? gfx::Range(0, text.length()) : gfx::Range(0, 0);
   // If the user is actively typing a draft or has an active highlight from
   // mouse dragging or double-clicking, use the native view's selection range.
   if (auto* omnibox_view_views =
