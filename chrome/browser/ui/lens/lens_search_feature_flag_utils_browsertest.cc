@@ -96,7 +96,7 @@ class LensSearchFeatureFlagsUtilsBrowserTestBase : public InProcessBrowserTest {
                                   bool server_eligibility_enabled,
                                   bool is_cobrowse_eligible = false) {
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindLambdaForTesting(
             [is_locally_eligible, is_server_eligible,
              server_eligibility_enabled,
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
                              /*is_server_eligible=*/true,
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/true);
-  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
   // Returns true when server eligibility checking is disabled as long as the
   // local eligibility check passes.
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
                              /*is_server_eligible=*/false,
                              /*server_eligibility_enabled=*/false,
                              /*is_cobrowse_eligible=*/true);
-  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
                              /*is_server_eligible=*/true,
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/false);
-  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
 // Test fixture with kLensSearchAimM3 feature disabled.
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3DisabledTest,
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/true,
                              /*server_eligibility_enabled=*/true);
-  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
 // Test fixture with kLensSearchAimM3EnUs enabled and kLensSearchAimM3 default.
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
                              /*is_server_eligible=*/false,
                              /*server_eligibility_enabled=*/false,
                              /*is_cobrowse_eligible=*/true);
-  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
@@ -211,14 +211,14 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
   SetUpAimEligibilityService(/*is_locally_eligible=*/false,
                              /*is_server_eligible=*/false,
                              /*server_eligibility_enabled=*/false);
-  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
   // Returns false when server eligibility checking is enabled and the server
   // returns ineligible.
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/false,
                              /*server_eligibility_enabled=*/true);
-  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
   // Country is not US.
   {
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
     SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                                /*is_server_eligible=*/false,
                                /*server_eligibility_enabled=*/false);
-    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
   }
 
   // Locale is not en.
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
     SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                                /*is_server_eligible=*/false,
                                /*server_eligibility_enabled=*/false);
-    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
   }
 }
 
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest,
                              /*is_server_eligible=*/true,
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/true);
-  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
   // When the eligibility service returns ineligible, IsAimM3Enabled should be
   // false.
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest,
                              /*is_server_eligible=*/false,
                              /*server_eligibility_enabled=*/false,
                              /*is_cobrowse_eligible=*/true);
-  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
 }
 
 // Test fixture for verifying that other users follow the
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(
                                /*is_server_eligible=*/true,
                                /*server_eligibility_enabled=*/true,
                                /*is_cobrowse_eligible=*/true);
-    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
 
     // When the eligibility service returns ineligible, IsAimM3Enabled should be
     // false.
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(
                                /*is_server_eligible=*/false,
                                /*server_eligibility_enabled=*/false,
                                /*is_cobrowse_eligible=*/true);
-    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->GetProfile()));
   } else {
     // If not using the AIM service, the result depends on kLensSearchAimM3. In
     // this test fixture, we have it enabled.
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(
                                /*is_server_eligible=*/false,
                                /*server_eligibility_enabled=*/false,
                                /*is_cobrowse_eligible=*/true);
-    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->GetProfile()));
   }
 }
 
@@ -371,20 +371,25 @@ class LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest
 IN_PROC_BROWSER_TEST_F(
     LensSearchFeatureFlagsUtilsFrequencyCapEnabledTest,
     ShouldShowLensOverlayEduActionChip_ReturnsFalseAboveMaxShownCount) {
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
   // Expect false after max shown count exceeded.
-  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  EXPECT_FALSE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -395,14 +400,16 @@ IN_PROC_BROWSER_TEST_F(
       &GetMockTime, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
   // Wait less than the 1 second debounce interval.
   SetMockTime(GetMockTime() + base::Milliseconds(500));
 
   // Expect true since the debounce interval has not passed.
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -413,14 +420,16 @@ IN_PROC_BROWSER_TEST_F(
       &GetMockTime, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
   // Wait more than the 1 second debounce interval.
   SetMockTime(GetMockTime() + base::Milliseconds(1500));
 
   // Expect false since the debounce interval has passed.
-  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  EXPECT_FALSE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -431,14 +440,16 @@ IN_PROC_BROWSER_TEST_F(
       &GetMockTime, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
   // Wait less than the 6 hour interval.
   SetMockTime(GetMockTime() + base::Minutes(359));
 
   // Expect false since the interval has not passed.
-  EXPECT_FALSE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  EXPECT_FALSE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -449,14 +460,16 @@ IN_PROC_BROWSER_TEST_F(
       &GetMockTime, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
-  lens::RecordLensOverlayEduActionChipShown(browser()->profile());
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
+  lens::RecordLensOverlayEduActionChipShown(browser()->GetProfile());
 
   // Wait more than the 6 hour interval.
   SetMockTime(GetMockTime() + base::Minutes(361));
 
   // Expect true since the interval has passed.
-  EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+  EXPECT_TRUE(
+      lens::ShouldShowLensOverlayEduActionChip(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -468,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/false,
                              /*is_cobrowse_eligible=*/true);
   EXPECT_FALSE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -480,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -492,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/false);
   EXPECT_FALSE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }
 
 // Test fixture with kLensOverlayContextualSearchbox feature enabled.
@@ -520,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/false);
   EXPECT_FALSE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -533,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }
 
 // Test fixture with kLensOverlayContextualSearchbox feature disabled.
@@ -561,5 +574,5 @@ IN_PROC_BROWSER_TEST_F(
                              /*server_eligibility_enabled=*/true,
                              /*is_cobrowse_eligible=*/true);
   EXPECT_FALSE(
-      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->GetProfile()));
 }

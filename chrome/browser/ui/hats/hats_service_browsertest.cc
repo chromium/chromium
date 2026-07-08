@@ -100,7 +100,7 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
 
   HatsServiceDesktop* GetHatsService(Browser* browser = nullptr) {
     Profile* profile =
-        browser ? browser->profile() : this->browser()->profile();
+        browser ? browser->GetProfile() : this->browser()->profile();
     HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
         HatsServiceFactory::GetForProfile(profile, true));
     return service;

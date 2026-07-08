@@ -42,7 +42,7 @@ class RenderViewContextMenuMacBrowserTest : public InProcessBrowserTest {
   RenderViewContextMenuMacBrowserTest() = default;
 
   SpellcheckService* GetSpellcheckService() {
-    return SpellcheckServiceFactory::GetForContext(browser()->profile());
+    return SpellcheckServiceFactory::GetForContext(browser()->GetProfile());
   }
 
   std::unique_ptr<RenderViewContextMenuMac> CreateMenu(

@@ -95,7 +95,7 @@ class FramebustBlockBrowserTest
   Browser* browser() { return current_browser_; }
 
   void CreateAndSetBrowser() {
-    current_browser_ = CreateBrowser(browser()->profile());
+    current_browser_ = CreateBrowser(browser()->GetProfile());
   }
 
   bool NavigateIframeToUrlWithoutGesture(content::WebContents* contents,
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             settings_map->GetContentSetting(url, GURL(),
                                             ContentSettingsType::POPUPS));
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             settings_map->GetContentSetting(url, GURL(),
                                             ContentSettingsType::POPUPS));
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
 #endif
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 #if BUILDFLAG(IS_CHROMEOS)
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 #endif
 
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        FramebustAllowedByGlobalSetting) {
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetDefaultContentSetting(ContentSettingsType::POPUPS,
                                          CONTENT_SETTING_ALLOW);
 
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        FramebustAllowedBySiteSetting) {
   GURL top_level_url = embedded_test_server()->GetURL("/iframe.html");
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   settings_map->SetContentSettingDefaultScope(top_level_url, GURL(),
                                               ContentSettingsType::POPUPS,
                                               CONTENT_SETTING_ALLOW);

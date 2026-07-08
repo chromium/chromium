@@ -530,7 +530,8 @@ WebContents* NavigateApplicationWindow(Browser* browser,
                                        const apps::AppLaunchParams& params,
                                        const GURL& url,
                                        WindowOpenDisposition disposition) {
-  const Extension* const extension = GetExtension(browser->profile(), params);
+  const Extension* const extension =
+      GetExtension(browser->GetProfile(), params);
   ui::PageTransition transition =
       (extension ? ui::PAGE_TRANSITION_AUTO_BOOKMARK
                  : ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

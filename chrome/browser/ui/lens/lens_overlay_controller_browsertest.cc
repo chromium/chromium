@@ -712,7 +712,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+            browser()->GetProfile(),
+            base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDownOnMainThread() override {
@@ -4748,7 +4749,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
                        OverlayHidesEntrypoints) {
   // Lens is only shown if AIM is not.
   auto* aim_eligibility_service = static_cast<MockAimEligibilityService*>(
-      AimEligibilityServiceFactory::GetForProfile(browser()->profile()));
+      AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
   ON_CALL(*aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(false));
 
@@ -5185,7 +5186,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Set up the test extension event observer to monitor is the extension event
   // is sent correctly.
   extensions::TestEventRouterObserver observer(
-      extensions::EventRouter::Get(browser()->profile()));
+      extensions::EventRouter::Get(browser()->GetProfile()));
 
   // Call OnScrollToMessage.
   std::vector<std::string> text_fragments = {"text1", "text2"};
@@ -5535,7 +5536,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   // Set up the test extension event observer to monitor is the extension event
   // is sent correctly.
   extensions::TestEventRouterObserver observer(
-      extensions::EventRouter::Get(browser()->profile()));
+      extensions::EventRouter::Get(browser()->GetProfile()));
 
   // Call OnScrollToMessage.
   std::vector<std::string> text_fragments = {"text1", "text2"};
@@ -6220,7 +6221,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Set up the test extension event observer to monitor is the extension event
   // is sent correctly.
   extensions::TestEventRouterObserver observer(
-      extensions::EventRouter::Get(browser()->profile()));
+      extensions::EventRouter::Get(browser()->GetProfile()));
 
   // The results frame should be the only child frame of the side panel web
   // contents.

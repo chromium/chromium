@@ -62,7 +62,7 @@ class ControlledHomeDialogUITest
   auto ShowControlledHomeDialog(const std::string& extension_id) {
     return Do([&]() {
       extensions::ShowControlledHomeDialog(
-          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
+          browser()->GetProfile(), browser()->GetWindow()->GetNativeWindow(),
           std::make_unique<TestDialogController>(extension_id));
     });
   }
@@ -76,7 +76,7 @@ class ControlledHomeDialogUITest
 
  private:
   extensions::ExtensionRegistrar* extension_registrar() {
-    return extensions::ExtensionRegistrar::Get(browser()->profile());
+    return extensions::ExtensionRegistrar::Get(browser()->GetProfile());
   }
 };
 

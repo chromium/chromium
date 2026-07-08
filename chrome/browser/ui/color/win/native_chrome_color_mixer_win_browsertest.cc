@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
   auto* const accent_color_observer = ui::AccentColorObserver::Get();
   accent_color_observer->SetAccentColorForTesting(std::nullopt);
   auto* const theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   theme_service->UseDeviceTheme(false);
   const auto get_header_color = [&] {
     return BrowserWindow::FromBrowser(browser())->GetColorProvider()->GetColor(
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
   accent_color_observer->SetShouldUseAccentColorForWindowFrameForTesting(false);
 
   auto* const theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   theme_service->UseDeviceTheme(true);
 
   // Accent color should be available for internal Chrome UI and web content

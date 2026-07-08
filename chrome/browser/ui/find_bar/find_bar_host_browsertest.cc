@@ -1611,7 +1611,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, ActivateLinkNavigatesPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
-  Browser::CreateParams params(Browser::TYPE_POPUP, browser()->profile(), true);
+  Browser::CreateParams params(Browser::TYPE_POPUP, browser()->GetProfile(),
+                               true);
   params.initial_bounds = gfx::Rect(0, 0, 100, 500);
   Browser* popup = Browser::Create(params);
   chrome::AddSelectedTabWithURL(popup, GURL(url::kAboutBlankURL),

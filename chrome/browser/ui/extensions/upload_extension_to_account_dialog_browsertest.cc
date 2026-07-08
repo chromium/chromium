@@ -76,14 +76,14 @@ class UploadExtensionToAccountDialogBrowserTest
                     .Build();
 
     ASSERT_TRUE(extension);
-    ExtensionRegistrar::Get(browser()->profile())->AddExtension(extension);
+    ExtensionRegistrar::Get(browser()->GetProfile())->AddExtension(extension);
 
     // Sign in AFTER the extension has been added so there is an active account
     // for extensions to be uploaded to.
-    SignIn(browser()->profile());
+    SignIn(browser()->GetProfile());
 
     ShowUploadExtensionToAccountDialog(
-        browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
+        browser()->GetProfile(), browser()->GetWindow()->GetNativeWindow(),
         *extension,
         /*accept_callback=*/base::DoNothing(),
         /*cancel_callback=*/base::DoNothing());

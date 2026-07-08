@@ -36,7 +36,7 @@ bool IsAlwaysShowToolbarEnabled(const Browser* browser) {
         web_app::AppBrowserController::From(browser);
     return controller->AlwaysShowToolbarInFullscreen();
   }
-  return browser->profile()->GetPrefs()->GetBoolean(
+  return browser->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kShowFullscreenToolbar);
 }
 

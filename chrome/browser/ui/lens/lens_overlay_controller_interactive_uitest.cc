@@ -1102,7 +1102,7 @@ class LensOverlayControllerEduActionChipTest
   void SetupOptimizationFilter() {
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     // Simulate the URL being allowed by both the allowlist and the blocklist.
     optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
         GURL(embedded_test_server()->GetURL(kDocumentWithNamedElement)),

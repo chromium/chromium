@@ -34,7 +34,7 @@ class CollectedCookiesTest : public DialogBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Disable cookies.
-    CookieSettingsFactory::GetForProfile(browser()->profile())
+    CookieSettingsFactory::GetForProfile(browser()->GetProfile())
         ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
     // Load a page with cookies.

@@ -206,7 +206,7 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   const std::u16string kDefaultProfileName = u"DefaultProfile";
   profile_manager()
       ->profile_attributes_storage()
-      ->GetProfileAttributesWithPath(browser()->profile()->GetPath())
+      ->GetProfileAttributesWithPath(browser()->GetProfile()->GetPath())
       ->SetLocalProfileName(kDefaultProfileName, false);
 
   NSMenu* menu = controller().menu;

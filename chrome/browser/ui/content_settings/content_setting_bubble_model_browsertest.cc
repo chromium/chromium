@@ -116,7 +116,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
           /*constraints=*/{});
     }
     HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     content_settings::TestUtils::OverrideProvider(
         map, std::move(provider),
         content_settings::ProviderType::kSupervisedProvider);
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   GURL url = web_contents->GetLastCommittedURL();
 
   // Do not grant camera PTZ permission to current tab.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                                       CONTENT_SETTING_ASK);
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
                 url_formatter::FormatUrlForSecurityDisplay(url)));
 
   // Grant camera PTZ permission to current tab.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(url, GURL(),
                                       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                                       CONTENT_SETTING_ALLOW);

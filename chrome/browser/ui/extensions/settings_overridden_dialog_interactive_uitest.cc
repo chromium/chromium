@@ -133,7 +133,7 @@ class SettingsOverriddenDialogInteractiveUiTest
     InteractiveBrowserTest::SetUpOnMainThread();
     SetUpMockImageFetcher();
     search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   virtual void OnWillCreateBrowserContextServices(
@@ -154,7 +154,7 @@ class SettingsOverriddenDialogInteractiveUiTest
       }
 
       TemplateURLService* const template_url_service =
-          TemplateURLServiceFactory::GetForProfile(browser()->profile());
+          TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
       bool new_search_shows_in_default_list = true;
       // If the test requires a search engine that doesn't show in the default
@@ -284,7 +284,7 @@ class SettingsOverriddenDialogInteractiveUiTest
   void SetUpMockImageFetcher() {
     auto* service = static_cast<MockImageFetcherService*>(
         ImageFetcherServiceFactory::GetForKey(
-            browser()->profile()->GetProfileKey()));
+            browser()->GetProfile()->GetProfileKey()));
     // These icons are arbitrary. The goal is to ensure icons are fetched, vs.
     // falling back to generated placeholder icons.
     constexpr int kFaviconSize = 32;
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                        OnlyOneDialogShownAtATimeAcrossWindows) {
   // Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondWebContentsId);
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(), Do([this]() {
         HatsService* hats_service = HatsServiceFactory::GetForProfile(
-            browser()->profile(), /*create_if_necessary=*/true);
+            browser()->GetProfile(), /*create_if_necessary=*/true);
         CHECK(hats_service);
         MockHatsService* mock_hats_service =
             static_cast<MockHatsService*>(hats_service);
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(), Do([this]() {
         HatsService* hats_service = HatsServiceFactory::GetForProfile(
-            browser()->profile(), /*create_if_necessary=*/true);
+            browser()->GetProfile(), /*create_if_necessary=*/true);
         CHECK(hats_service);
         MockHatsService* mock_hats_service =
             static_cast<MockHatsService*>(hats_service);
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenLegacyDialogHatsInteractiveUiTest,
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
       WaitForDialogToShow(), Do([this]() {
         HatsService* hats_service = HatsServiceFactory::GetForProfile(
-            browser()->profile(), /*create_if_necessary=*/true);
+            browser()->GetProfile(), /*create_if_necessary=*/true);
         CHECK(hats_service);
         MockHatsService* mock_hats_service =
             static_cast<MockHatsService*>(hats_service);

@@ -111,7 +111,7 @@ class IOSPromoControllerBrowserTest : public InProcessBrowserTest {
   syncer::FakeDeviceInfoTracker* device_info_tracker() {
     return static_cast<syncer::FakeDeviceInfoSyncService*>(
                DeviceInfoSyncServiceFactory::GetForProfile(
-                   browser()->profile()))
+                   browser()->GetProfile()))
         ->GetDeviceInfoTracker();
   }
 
@@ -121,7 +121,8 @@ class IOSPromoControllerBrowserTest : public InProcessBrowserTest {
   }
 
   IOSPromoTriggerService* promo_service() {
-    return IOSPromoTriggerServiceFactory::GetForProfile(browser()->profile());
+    return IOSPromoTriggerServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
  protected:

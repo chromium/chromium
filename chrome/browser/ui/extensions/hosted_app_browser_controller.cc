@@ -71,14 +71,14 @@ ui::ImageModel HostedAppBrowserController::GetWindowAppIcon() const {
   // extensions tab helper to make icon load more immediate.
 #if BUILDFLAG(IS_CHROMEOS)
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          browser()->profile())) {
+          browser()->GetProfile())) {
     if (!app_icon_.isNull()) {
       return ui::ImageModel::FromImageSkia(app_icon_);
     }
 
     const Extension* extension = GetExtension();
     if (extension &&
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
                 ->AppRegistryCache()
                 .GetAppType(extension->id()) != apps::AppType::kUnknown) {
       LoadAppIcon(true /* allow_placeholder_icon */);
@@ -148,7 +148,7 @@ bool HostedAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 }
 
 const Extension* HostedAppBrowserController::GetExtension() const {
-  return ExtensionRegistry::Get(browser()->profile())
+  return ExtensionRegistry::Get(browser()->GetProfile())
       ->GetExtensionById(app_id(), ExtensionRegistry::EVERYTHING);
 }
 
@@ -174,7 +174,7 @@ bool HostedAppBrowserController::CanUserUninstall() const {
     return false;
   }
 
-  return extensions::ExtensionSystem::Get(browser()->profile())
+  return extensions::ExtensionSystem::Get(browser()->GetProfile())
       ->management_policy()
       ->UserMayModifySettings(extension, nullptr);
 }
@@ -188,7 +188,7 @@ void HostedAppBrowserController::Uninstall(
 
   DCHECK(!uninstall_dialog_);
   uninstall_dialog_ = ExtensionUninstallDialog::Create(
-      browser()->profile(),
+      browser()->GetProfile(),
       browser()->GetWindow() ? browser()->GetWindow()->GetNativeWindow()
                              : gfx::NativeWindow(),
       this);
@@ -226,7 +226,7 @@ void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
 
 void HostedAppBrowserController::LoadAppIcon(
     bool allow_placeholder_icon) const {
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+  apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LoadIcon(GetExtension()->id(), apps::IconType::kStandard,
                  extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
                  base::BindOnce(&HostedAppBrowserController::OnLoadIcon,

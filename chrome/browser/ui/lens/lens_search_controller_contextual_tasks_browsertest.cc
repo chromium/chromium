@@ -453,7 +453,7 @@ class ContextualTasksLensInteractionBrowserTestBase
 
     // Ensure the DSE is Google.
     TemplateURLService* service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     TemplateURLData data;
     data.SetShortName(u"Google");
     data.SetKeyword(u"google.com");
@@ -524,7 +524,7 @@ class ContextualTasksLensInteractionBrowserTestBase
   bool IsContextualTasksErrorPageOpen() {
     auto* ui_service = static_cast<TestingContextualTasksUiService*>(
         contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
     if (ui_service && ui_service->HasPendingErrorPage()) {
       return true;
     }

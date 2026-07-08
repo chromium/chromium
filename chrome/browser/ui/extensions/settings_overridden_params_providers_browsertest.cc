@@ -44,7 +44,7 @@ class SettingsOverriddenParamsProvidersBrowserTest
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

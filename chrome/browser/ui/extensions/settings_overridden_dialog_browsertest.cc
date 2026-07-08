@@ -90,7 +90,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();
     search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   void ShowUi(const std::string& name) override {
@@ -212,7 +212,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
     }
 
     TemplateURLService* const template_url_service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
     bool new_search_shows_in_default_list = true;
     // If the test requires a search engine that doesn't show in the default
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SearchOverriddenLegacyDialogBrowserTest,
 // controller that it was closed without any user action.
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        DialogWindowClosed) {
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   views::Widget* dialog = ShowSimpleDialog(false, second_browser);

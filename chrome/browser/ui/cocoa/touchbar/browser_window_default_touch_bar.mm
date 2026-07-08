@@ -138,7 +138,7 @@ class TouchBarNotificationBridge : public CommandObserver,
     command_controller->AddCommandObserver(IDC_FORWARD, this);
     owner.canGoForward = command_controller->IsCommandEnabled(IDC_FORWARD);
 
-    auto* profile = browser->profile();
+    auto* profile = browser->GetProfile();
     auto* prefs = profile->GetPrefs();
     show_home_button_.Init(
         prefs::kShowHomeButton, prefs,
@@ -561,7 +561,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 - (void)updateSearchTouchBarButton {
   TemplateURLService* templateUrlService =
-      TemplateURLServiceFactory::GetForProfile(_browser->profile());
+      TemplateURLServiceFactory::GetForProfile(_browser->GetProfile());
   const TemplateURL* defaultProvider =
       templateUrlService->GetDefaultSearchProvider();
   BOOL isGoogle = NO;

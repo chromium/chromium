@@ -178,7 +178,7 @@ FullscreenControllerTestWindow::GetExclusiveAccessContext() {
 }
 
 Profile* FullscreenControllerTestWindow::GetProfile() {
-  return browser_->profile();
+  return browser_->GetProfile();
 }
 
 content::WebContents*
@@ -860,7 +860,7 @@ TEST_F(FullscreenControllerStateUnitTest,
 
   // Create the second browser.
   const std::unique_ptr<Browser> second_browser(
-      CreateBrowser(browser()->profile(), browser()->type(), false));
+      CreateBrowser(browser()->GetProfile(), browser()->type(), false));
   AddTab(second_browser.get(), GURL(url::kAboutBlankURL));
   FullscreenController* second_fullscreen_controller =
       second_browser->GetFeatures()

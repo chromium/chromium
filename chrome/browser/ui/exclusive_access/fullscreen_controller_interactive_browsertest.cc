@@ -1028,7 +1028,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   void SetUpOnMainThread() override {
     FullscreenControllerInteractiveTest::SetUpOnMainThread();
     auto allow_automatic_fullscreen = [&](const GURL& url) {
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
           ->SetContentSettingDefaultScope(
               url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN,
               CONTENT_SETTING_ALLOW);
@@ -1046,10 +1046,10 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
               .BuildBundle();
       app->TrustSigningKey();
       web_app::IsolatedWebAppUrlInfo url_info =
-          app->InstallChecked(browser()->profile());
+          app->InstallChecked(browser()->GetProfile());
       allow_automatic_fullscreen(url_info.origin().GetURL());
-      auto* frame =
-          web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
+      auto* frame = web_app::OpenIsolatedWebApp(browser()->GetProfile(),
+                                                url_info.app_id());
       web_contents_ = content::WebContents::FromRenderFrameHost(frame);
     } else {
       GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
@@ -1441,7 +1441,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     // it shows the permission bubble before granting the permission, which will
     // cause content fullscreen to exit due to security reason.
     auto* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     content_settings->SetContentSettingDefaultScope(
         url, GURL(), ContentSettingsType::WINDOW_MANAGEMENT,
         CONTENT_SETTING_ALLOW);

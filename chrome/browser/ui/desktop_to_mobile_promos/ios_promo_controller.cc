@@ -60,7 +60,7 @@ IOSPromoController::IOSPromoController(Browser* browser)
     : browser_(browser),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   IOSPromoTriggerService* service =
-      IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
+      IOSPromoTriggerServiceFactory::GetForProfile(browser_->GetProfile());
   if (service) {
     promo_trigger_subscription_ =
         service->RegisterPromoCallback(base::BindRepeating(
@@ -162,14 +162,14 @@ void IOSPromoController::ShowIOSPromo(PromoType promo_type) {
 bool IOSPromoController::IsUserEligibleForPromo(PromoType promo_type) {
   // Don't show the promo if the user has a recent active Android device.
   if (ios_promos_utils::HasUserBeenActiveOnOS(
-          browser_->profile(), syncer::DeviceInfo::OsType::kAndroid)) {
+          browser_->GetProfile(), syncer::DeviceInfo::OsType::kAndroid)) {
     return false;
   }
 
   // Verify that the user has not exceeded impression limits for
   // desktop-to-mobile promos.
   if (!promos_utils::IsIOSDesktopPromoAllowedByGlobalImpressions(
-          browser_->profile())) {
+          browser_->GetProfile())) {
     return false;
   }
 
@@ -197,14 +197,15 @@ bool IOSPromoController::IsUserEligibleForPromo(PromoType promo_type) {
   }
 
   IOSPromoTriggerService* service =
-      IOSPromoTriggerServiceFactory::GetForProfile(browser_->profile());
+      IOSPromoTriggerServiceFactory::GetForProfile(browser_->GetProfile());
   if (!service) {
     return false;
   }
   const syncer::DeviceInfo* device = service->GetIOSDeviceToRemind();
 
   // Check if user is eligible for Reminder type promo.
-  if (device && !ios_promos_utils::IsUserActive16OnIOS(browser_->profile()) &&
+  if (device &&
+      !ios_promos_utils::IsUserActive16OnIOS(browser_->GetProfile()) &&
       MobilePromoOnDesktopTypeEnabled(
           feature_type, desktop_to_mobile_promos::BubbleType::kReminder)) {
     // For backwards compatibility with older iOS clients that only populate the

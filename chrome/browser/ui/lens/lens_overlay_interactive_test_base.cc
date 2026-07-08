@@ -117,7 +117,7 @@ void LensOverlayInteractiveTestBase::SetUpFeatureList() {
 
 void LensOverlayInteractiveTestBase::WaitForTemplateURLServiceToLoad() {
   auto* const template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
 }
 

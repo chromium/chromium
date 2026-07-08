@@ -168,12 +168,12 @@ void OnIOSPromoClassificationResult(
   // released in `IOSPromoBubble::IOSPromoBubbleDelegate::OnDismissal()`.
   if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result) &&
       feature_engagement::NonIphPromo::RequestPermissionToShow(
-          browser->profile(),
+          browser->GetProfile(),
           promos_utils::GetIOSDesktopPromoFeatureEngagement(promo_type))) {
     RunCallback(std::move(promo_will_be_shown_callback));
-    promos_utils::IOSDesktopPromoShown(browser->profile(), promo_type);
+    promos_utils::IOSDesktopPromoShown(browser->GetProfile(), promo_type);
     ShowIOSDesktopPromoBubble(
-        promo_type, bubble_type, browser->profile(),
+        promo_type, bubble_type, browser->GetProfile(),
         BrowserView::GetBrowserViewForBrowser(browser.get()));
     return;
   }
@@ -189,13 +189,13 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
         std::nullopt,
     std::optional<base::OnceClosure> promo_not_shown_callback = std::nullopt) {
   const syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(browser->profile());
+      SyncServiceFactory::GetForProfile(browser->GetProfile());
 
   // Verify that the user is currently syncing their preferences, hasn't
   // exceeded their impression limit, is not in the cooldown period or has not
   // opted-out from seeing the promo.
   if (sync_service && promos_utils::ShouldShowIOSDesktopPromo(
-                          browser->profile(), sync_service, promo_type)) {
+                          browser->GetProfile(), sync_service, promo_type)) {
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
@@ -209,7 +209,7 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
 
     // Get segmentation platform classification results and pass callback.
     segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-        browser->profile())
+        browser->GetProfile())
         ->GetClassificationResult(
             segmentation_platform::kDeviceSwitcherKey, options, input_context,
             base::BindOnce(&OnIOSPromoClassificationResult, promo_type,

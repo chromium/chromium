@@ -703,7 +703,7 @@ bool HatsServiceDesktop::IsRightBrowserType(
     case hats::SurveyConfig::RequestedBrowserType::kRegular:
       return profiles::IsRegularOrGuestSession(browser);
     case hats::SurveyConfig::RequestedBrowserType::kIncognito:
-      return browser->profile()->IsIncognitoProfile();
+      return browser->GetProfile()->IsIncognitoProfile();
   }
 }
 

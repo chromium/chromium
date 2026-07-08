@@ -52,7 +52,7 @@ namespace {
 // Shows the first GlobalError with associated UI associated with |browser|.
 void ShowPendingError(Browser* browser) {
   GlobalErrorService* service =
-      GlobalErrorServiceFactory::GetForProfile(browser->profile());
+      GlobalErrorServiceFactory::GetForProfile(browser->GetProfile());
   GlobalError* error = service->GetFirstGlobalErrorWithBubbleView();
   ASSERT_TRUE(error);
   error->ShowBubbleView(browser);

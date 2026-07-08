@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
   [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
   ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
 
   EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   BookmarkTabHelperObserver* observer =
       [[browser_touch_bar_controller() defaultTouchBar] bookmarkTabObserver];
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
 
   BookmarkTabHelper* tab_helper = BookmarkTabHelper::FromWebContents(
