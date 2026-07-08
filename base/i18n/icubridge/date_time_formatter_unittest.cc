@@ -10,6 +10,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/i18n/tags.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"

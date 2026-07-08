@@ -9,16 +9,16 @@
 
 namespace base::i18n {
 
-// "en-BR" is a valid BCP47 tag, but not in our known list of canonical tags in
+// "en-XX" is a valid BCP47 tag, but not in our known list of canonical tags in
 // Chromium.
 // expected-error@* {{not a constant expression}}
 // expected-error@* {{declaration requires an exit-time destructor}}
 // expected-note@* {{non-constexpr function 'ERROR_TagIsUnknown' cannot be used in a constant expression}}
-auto tag1 = GetKnownLanguageTag("en-BR");
+auto tag1 = GetKnownLanguageTag("en-XX");
 
 // expected-error@* {{not a constant expression}}
 // expected-error@* {{declaration requires an exit-time destructor}}
 // expected-note@* {{non-constexpr function 'ERROR_TagIsUnknown' cannot be used in a constant expression}}
-auto tag2 = GetKnownLanguageTag("");
+auto tag2 = GetKnownLanguageTag("xx");
 
 }  // namespace base::i18n

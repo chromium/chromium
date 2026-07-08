@@ -39,6 +39,17 @@ MATCHER_P(LanguageSubtagString, expected, "") {
       result_listener);
 }
 
+TEST(LanguageTagTest, CompileTimeTags) {
+  // Verifies that multi-subtag tags can be created at compile-time.
+  static_assert(GetKnownLanguageTag("ja-JP").tag_string() == "ja-JP");
+  static_assert(GetKnownLanguageTag("en-US").tag_string() == "en-US");
+
+  // Verifies GetKnownLanguageTag wrapper.
+  static_assert(GetKnownLanguageTag("en-US").tag_string() == "en-US");
+  constexpr LanguageTag ja_jp = GetKnownLanguageTag("ja-JP");
+  static_assert(ja_jp.tag_string() == "ja-JP");
+}
+
 TEST(LanguageTagTest, ParseAndToString) {
   EXPECT_THAT(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("en-US"));
 
@@ -652,17 +663,25 @@ TEST_P(LanguageTagAllCodesTest, VerifyAllLangCodeFunctions) {
   EXPECT_THAT(LanguageTagConverter::GetInstance().FromString(param.tag),
               Optional(param.language_tag));
 }
-constexpr LanguageTestData kTestData[] = {
+
+namespace {
+
+auto GetTestData() {
+  static constexpr auto kTestData = std::to_array<LanguageTestData>({
 #define IMPL_LANGUAGECODE_TAG_NAME(tag, name) \
   {tag, #name, GetKnownLanguageTag(tag)},
 #include "base/i18n/internal/canonical_language_tags.inc"
-};
 #undef IMPL_LANGUAGECODE_TAG_NAME
+  });
+  return kTestData;
+}
+
+}  // namespace
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     LanguageTagAllCodesTest,
-    testing::ValuesIn(kTestData),
+    testing::ValuesIn(GetTestData()),
     [](const testing::TestParamInfo<LanguageTestData>& info) {
       return std::string(info.param.name);
     });

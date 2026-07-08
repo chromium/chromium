@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/i18n/internal/bcp47_parser.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 
 // This file provides access to compile-time validated, canonical `LanguageTag`
@@ -46,23 +46,26 @@ namespace base::i18n {
 // Returns a LanguageTag checked at compile time. does not compile if tag is
 // not one of the predefined supported language tags.
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
-  // A set of all known language tags in Chromium.
-  static constexpr auto kKnownLanguageTags =
-      base::MakeFixedFlatSet<std::string_view, std::less<>>({
-#define IMPL_LANGUAGECODE_TAG_NAME(tag, name) tag,
-#include "base/i18n/internal/canonical_language_tags.inc"
-#undef IMPL_LANGUAGECODE_TAG_NAME
-      });
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag);
+  if (!parsed) {
+    void ERROR_TagIsMalformed();
+    ERROR_TagIsMalformed();
+  }
 
-  if (!kKnownLanguageTags.contains(tag)) {
-    // If the tag is not one of the known ones, this function is called to force
-    // a compilation error.
+  if (!i18n_internal::AreSubtagsKnown(*parsed)) {
     void ERROR_TagIsUnknown();
     ERROR_TagIsUnknown();
   }
 
-  return LanguageTagConverter::GetKnownLanguageTagConstEval(
-      LanguageTagConverter::KnownLanguageTagPassKey::GetPassKey(), tag);
+  // It is only possible to construct `LanguageTag`s at compile-time if they
+  // are small.
+  if (tag.size() > internal::ImmutableString::kSmallBufferSize) {
+    void ERROR_TagIsTooLarge();
+    ERROR_TagIsTooLarge();
+  }
+
+  return LanguageTag(base::span<const std::string_view>({tag}));
 }
 
 }  // namespace base::i18n

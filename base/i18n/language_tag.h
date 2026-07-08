@@ -25,6 +25,9 @@ class BASE_I18N_EXPORT LanguageTagConverter;
 class BASE_I18N_EXPORT LanguageSubtag;
 class BASE_I18N_EXPORT RegionSubtag;
 
+class LanguageTag;
+consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
+
 // A type-safe wrapper for BCP47 language tags (locales).
 //
 // Supported Format Specification:
@@ -124,6 +127,7 @@ class BASE_I18N_EXPORT LanguageTag {
 
  private:
   friend class LanguageTagConverter;
+  friend consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
 
   std::string_view GetExtensionStringInternal(char key) const;
   // This constructor is intended for internal use by `LanguageTagConverter`.
