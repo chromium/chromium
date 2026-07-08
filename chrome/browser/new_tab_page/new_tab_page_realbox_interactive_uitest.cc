@@ -421,12 +421,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Screenshots DISABLED_Screenshots
-#else
-#define MAYBE_Screenshots Screenshots
-#endif
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, MAYBE_Screenshots) {
+// TODO(crbug.com/454761015): Re-enable after fixing.
+IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
   // Page bounds.
   auto screen_size = gfx::Size(1000, 1200);
@@ -610,15 +606,9 @@ INSTANTIATE_TEST_SUITE_P(
         },
     }));
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ContextualEntrypointUploadTriggersComposebox \
-  DISABLED_ContextualEntrypointUploadTriggersComposebox
-#else
-#define MAYBE_ContextualEntrypointUploadTriggersComposebox \
-  ContextualEntrypointUploadTriggersComposebox
-#endif
+// TODO(crbug.com/524803939): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUploadInteractiveTest,
-                       MAYBE_ContextualEntrypointUploadTriggersComposebox) {
+                       DISABLED_ContextualEntrypointUploadTriggersComposebox) {
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);
