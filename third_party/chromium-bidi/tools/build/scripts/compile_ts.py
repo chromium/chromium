@@ -63,6 +63,8 @@ def main():
 
     if args.no_emit:
         config["compilerOptions"]["noEmit"] = True
+        config["compilerOptions"].pop("composite", None)
+        config.pop("references", None)
 
     # Explicitly define the flat absolute path for tsBuildInfoFile
     tsconfig_output_abs = os.path.abspath(args.tsconfig_output)
@@ -73,7 +75,8 @@ def main():
 
     # Map dependencies to tsconfig project references
     if args.deps:
-        config["references"] = [{"path": os.path.abspath(dep)} for dep in args.deps]
+        if not args.no_emit:
+            config["references"] = [{"path": os.path.abspath(dep)} for dep in args.deps]
 
     # Write target-specific generated tsconfig.json
     os.makedirs(os.path.dirname(args.tsconfig_output), exist_ok=True)

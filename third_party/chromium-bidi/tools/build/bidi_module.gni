@@ -25,7 +25,7 @@ template("bidi_foundation_module") {
 
   # First: node runner type-checking (no JS output emit)
   ts_library(_node_type_check_target) {
-    forward_variables_from(invoker, "*", [ "visibility", "deps" ])
+    forward_variables_from(invoker, "*", [ "visibility", "deps", "node_es_libs" ])
     if (defined(invoker.deps)) {
       # Node typecheck should reference node typecheck deps
       deps = []
@@ -35,13 +35,17 @@ template("bidi_foundation_module") {
     }
 
     es_target = "es2023"
-    es_libs = [ "es2023" ] # No DOM libs for pure Node runtimes
+    if (defined(invoker.node_es_libs)) {
+      es_libs = invoker.node_es_libs
+    } else {
+      es_libs = [ "es2023" ] # No DOM libs for pure Node runtimes
+    }
     no_emit = true
   }
 
   # Second: main browser compilation target
   ts_library(target_name) {
-    forward_variables_from(invoker, "*", [ "visibility" ])
+    forward_variables_from(invoker, "*", [ "visibility", "node_es_libs" ])
 
     es_target = "es2023"
     es_libs = [

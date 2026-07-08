@@ -40,7 +40,7 @@ const mapperTabConfig = {
       thirdParty: {
         allow: {
           test: (dependency) => {
-            let allowed_licenses = ['MIT', 'Apache 2.0'];
+            let allowed_licenses = ['MIT', 'Apache 2.0', 'Apache-2.0'];
             return allowed_licenses.includes(dependency.license);
           },
           failOnUnlicensed: true,
