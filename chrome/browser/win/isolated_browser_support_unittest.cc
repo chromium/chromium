@@ -6,28 +6,50 @@
 
 #include <objbase.h>
 
+#include <shlobj.h>
+#include <wrl/client.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/test/test_timeouts.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
+#include "base/win/com_init_util.h"
+#include "base/win/elevation_util.h"
+#include "base/win/scoped_bstr.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/elevation_service/elevation_service_idl.h"
+#include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
@@ -367,5 +389,209 @@ TEST_P(IsolatedBrowserSupportSystemTestWithFailures, InjectFailures) {
 INSTANTIATE_TEST_SUITE_P(,
                          IsolatedBrowserSupportSystemTestWithFailures,
                          ::testing::Bool());
+
+namespace {
+
+// Scoped mutex to prevent concurrent execution of test suites that manipulate
+// global system state (e.g. Windows services and COM CLSIDs) across different
+// test runner processes.
+class ScopedTestSuiteMutex {
+ public:
+  ScopedTestSuiteMutex() {
+    const std::wstring mutex_name = base::StrCat(
+        {L"Global\\", base::ASCIIToWide(::testing::UnitTest::GetInstance()
+                                            ->current_test_suite()
+                                            ->name())});
+
+    mutex_.Set(::CreateMutexW(nullptr, FALSE, mutex_name.c_str()));
+    if (mutex_.is_valid()) {
+      ::WaitForSingleObject(mutex_.get(), INFINITE);
+    }
+  }
+
+  ScopedTestSuiteMutex(const ScopedTestSuiteMutex&) = delete;
+  ScopedTestSuiteMutex& operator=(const ScopedTestSuiteMutex&) = delete;
+
+  ~ScopedTestSuiteMutex() {
+    if (mutex_.is_valid()) {
+      ::ReleaseMutex(mutex_.get());
+      mutex_.Close();
+    }
+  }
+
+ private:
+  base::win::ScopedHandle mutex_;
+};
+
+}  // namespace
+
+class IsolatedBrowserSupportLaunchTest : public ::testing::Test {
+ protected:
+  static void SetUpTestSuite() {
+    if (!::IsUserAnAdmin()) {
+      GTEST_SKIP() << "Test requires admin rights";
+    }
+
+    test_suite_mutex_.emplace();
+
+    service_environment_ = new ServiceEnvironment(
+        L"Test Elevation Service", FILE_PATH_LITERAL("elevation_service.exe"),
+        std::array<std::string_view, 3>{
+            elevation_service::switches::kAllowUntrustedPathForTesting,
+            elevation_service::switches::kElevatorClsIdForTestingSwitch,
+            elevation_service::switches::kAllowUntrustedSwitchesForTesting},
+        elevation_service::kTestElevatorClsid, __uuidof(IElevator2));
+    ASSERT_TRUE(service_environment_->is_valid());
+  }
+
+  static void TearDownTestSuite() {
+    delete std::exchange(service_environment_, nullptr);
+    test_suite_mutex_.reset();
+  }
+
+  // Returns a handle to the service process if it is running, or an invalid
+  // process otherwise.
+  base::Process GetRunningService() {
+    return service_environment_->GetRunningService();
+  }
+
+ private:
+  static inline ServiceEnvironment* service_environment_ = nullptr;
+  static inline std::optional<ScopedTestSuiteMutex> test_suite_mutex_;
+};
+
+base::expected<Microsoft::WRL::ComPtr<IElevator2>, HRESULT> GetElevator() {
+  base::win::AssertComInitialized();
+  Microsoft::WRL::ComPtr<IElevator2> elevator;
+  HRESULT hr =
+      ::CoCreateInstance(elevation_service::kTestElevatorClsid, nullptr,
+                         CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&elevator));
+
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to create IElevator2 instance: " << hr;
+    return base::unexpected(hr);
+  }
+
+  hr = ::CoSetProxyBlanket(
+      elevator.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
+      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
+      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to create security blanket.";
+    return base::unexpected(hr);
+  }
+
+  return elevator;
+}
+
+base::expected<base::Process, DWORD> RunInChildDeElevated(
+    std::string_view function_name) {
+  base::CommandLine command_line =
+      base::GetMultiProcessTestChildBaseCommandLine();
+  command_line.AppendSwitchASCII(switches::kTestChildProcess, function_name);
+
+  return base::win::RunDeElevated(command_line);
+}
+
+TEST_F(IsolatedBrowserSupportLaunchTest, RunIsolatedChromeLaunchUnisolated) {
+  auto child_or_error =
+      RunInChildDeElevated("RunIsolatedChromeLaunchUnisolatedInChild");
+
+  if (!child_or_error.has_value()) {
+    GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
+  }
+  int exit_code;
+  ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, 0);
+}
+
+MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInChild) {
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  EXPECT_TRUE(com_initializer.Succeeded());
+
+  const std::string event_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  auto elevator = GetElevator();
+  EXPECT_TRUE(elevator.has_value());
+
+  base::CommandLine cmd = base::GetMultiProcessTestChildBaseCommandLine();
+  cmd.AppendSwitchASCII(switches::kTestChildProcess,
+                        "RunIsolatedChromeLaunchUnisolatedInGrandchild");
+  cmd.AppendArg(event_name);
+
+  const auto command_line = cmd.GetCommandLineString();
+
+  base::WaitableEvent event(base::win::ScopedHandle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/FALSE,
+      /*bInitialState=*/FALSE, /*lpName=*/event_name.c_str())));
+
+  DWORD last_error = 0;
+  ULONG_PTR proc_handle;
+  base::win::ScopedBstr log;
+  auto res = elevator.value()->RunIsolatedChrome(
+      /*flags=*/0, command_line.c_str(), log.Receive(), &proc_handle,
+      &last_error);
+  EXPECT_HRESULT_SUCCEEDED(res);
+  EXPECT_EQ(DWORD{ERROR_SUCCESS}, last_error);
+  base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));
+
+  HANDLE handles[] = {event.handle(), process.Handle()};
+  DWORD wait_res = ::WaitForMultipleObjects(2, handles, FALSE, INFINITE);
+  if (wait_res == WAIT_OBJECT_0 + 1) {
+    int exit_code = 0;
+    process.WaitForExit(&exit_code);
+    LOG(ERROR) << "Child process exited prematurely with exit code: "
+               << exit_code;
+    ADD_FAILURE() << "Child process exited with code " << exit_code;
+  } else {
+    EXPECT_EQ(WAIT_OBJECT_0, wait_res);
+  }
+
+  EXPECT_TRUE(process.IsRunning());
+  EXPECT_TRUE(process.Terminate(0, /*wait=*/true));
+
+  return ::testing::Test::HasFailure() ? 1 : 0;
+}
+
+MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInGrandchild) {
+  base::CommandLine cmd = base::GetMultiProcessTestChildBaseCommandLine();
+  cmd.AppendSwitchASCII(switches::kTestChildProcess,
+                        "RunIsolatedChromeLaunchUnisolatedInGreatGrandchild");
+  base::LaunchOptions options;
+  options.wait = true;
+  const auto unisolated_token = chrome::GetUnisolatedAccessToken();
+  if (!unisolated_token.has_value()) {
+    return -103;
+  }
+  options.as_user = unisolated_token->get();
+  base::Process process = base::LaunchProcess(cmd, options);
+  if (!process.IsValid()) {
+    return -104;
+  }
+  int exit_code = -1;
+  if (!process.WaitForExit(&exit_code)) {
+    return -105;
+  }
+  if (exit_code != 0) {
+    return exit_code;
+  }
+
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  const auto args = cmd_line->GetArgs();
+  if (args.size() > 0) {
+    ::SetEvent(::OpenEventW(EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
+                            args[0].c_str()));
+  }
+  base::PlatformThread::Sleep(TestTimeouts::action_timeout());
+  return 0;
+}
+
+MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInGreatGrandchild) {
+  if (chrome::IsRunningIsolated()) {
+    return -102;
+  }
+  return 0;
+}
 
 }  // namespace chrome

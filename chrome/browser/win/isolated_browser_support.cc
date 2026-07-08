@@ -13,6 +13,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -225,13 +226,54 @@ bool IsRunningIsolated() {
   return false;
 }
 
+std::optional<base::win::AccessToken> GetUnisolatedAccessToken() {
+  std::optional<base::win::AccessToken> token;
+
+  if (!IsRunningIsolated()) {
+    token = base::win::AccessToken::FromCurrentProcess(
+        /*impersonation=*/false, TOKEN_DUPLICATE | TOKEN_QUERY);
+  } else {
+    base::ProcessId parent_pid =
+        base::GetParentProcessId(base::GetCurrentProcessHandle());
+    if (parent_pid == base::kNullProcessId) {
+      return std::nullopt;
+    }
+
+    // Note: there is no race here between obtaining the parent pid and the
+    // opening the handle. This is because the isolated stub process (parent)
+    // places the child process (browser) in a job object that ensures it always
+    // outlives the browser, so if this code is executing, it means the parent
+    // is still alive.
+    auto parent_process =
+        base::Process::OpenWithAccess(parent_pid, PROCESS_QUERY_INFORMATION);
+
+    if (!parent_process.IsValid()) {
+      return std::nullopt;
+    }
+
+    token = base::win::AccessToken::FromProcess(parent_process.Handle(),
+                                                /*impersonation=*/false,
+                                                TOKEN_DUPLICATE | TOKEN_QUERY);
+
+    // The parent process should never be running isolated, if it is, this API
+    // has been called from a child process, which should not be possible.
+    CHECK(!token->GetSecurityAttribute(installer::GetIsolationAttributeName())
+               .has_value());
+  }
+
+  if (!token) {
+    return std::nullopt;
+  }
+
+  return token->DuplicatePrimary(MAXIMUM_ALLOWED);
+}
+
 void SetIsolationState(
     IsolationState state,
     PrefService* local_state,
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (!install_static::IsSystemInstall()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

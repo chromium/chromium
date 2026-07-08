@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_WIN_ISOLATED_BROWSER_SUPPORT_H_
 #define CHROME_BROWSER_WIN_ISOLATED_BROWSER_SUPPORT_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/process/process.h"
 #include "base/types/expected.h"
+#include "base/win/access_token.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -33,6 +36,12 @@ bool IsIsolationEnabled(const base::CommandLine* command_line = nullptr);
 // not all `IsolatedBrowser` returned from the `Launch' function above will be
 // fully isolated, so checking the command line alone is not sufficient.
 bool IsRunningIsolated();
+
+// Returns a token that can be used for un-isolated operations such as starting
+// unisolated child processes. Returns std::nullopt if the token could not be
+// obtained. If the current process is not isolated, it will return the current
+// process token.
+std::optional<base::win::AccessToken> GetUnisolatedAccessToken();
 
 enum class IsolationState {
   kIsolationDisabled = 0,

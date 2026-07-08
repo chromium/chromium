@@ -223,6 +223,8 @@ source_set("unit_tests") {
     "uninstallation_via_os_settings_unittest.cc",
   ]
 
+  data_deps = [ "//chrome/elevation_service" ]
+
   deps = [
     ":impl",
     ":isolated_browser_support",
@@ -233,10 +235,12 @@ source_set("unit_tests") {
     "//chrome/browser/os_crypt",
     "//chrome/chrome_elf:constants",
     "//chrome/common:constants",
+    "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:with_no_strings",
     "//chrome/test:test_support",
+    "//chrome/windows_services/service_program/test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/variations",
