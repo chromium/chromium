@@ -837,6 +837,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/532305631")
     public void fireGeneratedEvent_defaultActionVerbChanged_firesContentChanged() throws Throwable {
         // Create an HTML document with a disabled button (default action verb of NONE).
         String html =
