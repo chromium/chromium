@@ -161,7 +161,7 @@ void ExtensionsMenuMainPageViewUnitTest::ClickSiteAccessToggle(
     ExtensionsMenuEntryView* menu_entry,
     bool active_tab_only) {
   extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->profile()));
+      PermissionsManager::Get(browser()->GetProfile()));
   ClickButton(menu_entry->site_access_toggle_for_testing());
   if (!active_tab_only) {
     waiter.WaitForExtensionPermissionsUpdate();
@@ -747,7 +747,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - site permissions button is visible, enabled, and has "on click" text.
   {
     extensions::PermissionsManagerWaiter waiter(
-        extensions::PermissionsManager::Get(browser()->profile()));
+        extensions::PermissionsManager::Get(browser()->GetProfile()));
     action_runner->GrantTabPermissions({extension.get()});
     waiter.WaitForActiveTabPermissionGranted(extension->id());
   }
@@ -1221,7 +1221,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   extensions::URLPatternSet default_blocked_hosts;
   default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
   extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
-      extensions::util::GetBrowserContextId(browser()->profile()),
+      extensions::util::GetBrowserContextId(browser()->GetProfile()),
       default_blocked_hosts, default_allowed_hosts);
 
   // Navigate to the policy-blocked site.
@@ -1296,7 +1296,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   extensions::URLPatternSet default_blocked_hosts;
   default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
   extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
-      extensions::util::GetBrowserContextId(browser()->profile()),
+      extensions::util::GetBrowserContextId(browser()->GetProfile()),
       default_blocked_hosts, default_allowed_hosts);
 
   // Install extensions requesting host permissions or activeTab.

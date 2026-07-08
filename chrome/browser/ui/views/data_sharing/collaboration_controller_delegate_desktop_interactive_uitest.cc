@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
                        OnBrowserClose) {
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   TestCollaborationControllerDelegateDesktop delegate(browser2);
   base::MockCallback<base::OnceCallback<void()>> exit_callback;
   base::MockCallback<
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
                        OnBrowserCloseWithOpenDialog) {
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   // Show a prompt dialog.
   collaboration::ServiceStatus status;

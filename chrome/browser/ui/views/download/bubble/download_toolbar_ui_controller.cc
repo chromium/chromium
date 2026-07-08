@@ -461,7 +461,7 @@ DownloadToolbarUIController::DownloadToolbarUIController(
       this, browser_view_->browser(), bubble_controller_.get());
 
   browser_collection_observation_.Observe(
-      ProfileBrowserCollection::GetForProfile(browser->profile()));
+      ProfileBrowserCollection::GetForProfile(browser->GetProfile()));
 }
 
 DownloadToolbarUIController::~DownloadToolbarUIController() = default;

@@ -117,7 +117,7 @@ class WebFileHandlersFileLaunchBrowserTest
     const int32_t event_flags =
         apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                             /*prefer_container=*/true);
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithIntent(extension_id, event_flags, std::move(intent),
                               apps::LaunchSource::kFromFileManager, nullptr,
                               std::move(callback));

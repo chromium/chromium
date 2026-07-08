@@ -58,7 +58,7 @@ class ConfirmProtocolHandlerDialogUITest : public InteractiveBrowserTest {
   }
 
   extensions::ExtensionRegistrar* extension_registrar() {
-    return extensions::ExtensionRegistrar::Get(browser()->profile());
+    return extensions::ExtensionRegistrar::Get(browser()->GetProfile());
   }
 
   // Installs programmatically (not through the UI) an extension for the given

@@ -208,15 +208,15 @@ void BrowserFrameViewChromeOS::Init() {
   window_observation_.Observe(GetFrameWindow());
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          browser->profile())) {
+          browser->GetProfile())) {
     app_registry_cache_observation_.Observe(
-        &apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+        &apps::AppServiceProxyFactory::GetForProfile(browser->GetProfile())
              ->AppRegistryCache());
   }
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
-  if (browser->profile()->IsOffTheRecord()) {
+  if (browser->GetProfile()->IsOffTheRecord()) {
     browser_widget()->GetNativeWindow()->SetProperty(
         chromeos::kBlockedForAssistantSnapshotKey, true);
   }
@@ -975,7 +975,7 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
   // between multi-user sessions. Note that you can't teleport an incognito
   // window.
   Browser* browser = GetBrowserView()->browser();
-  if (browser->profile()->IsIncognitoProfile()) {
+  if (browser->GetProfile()->IsIncognitoProfile()) {
     return false;
   }
 

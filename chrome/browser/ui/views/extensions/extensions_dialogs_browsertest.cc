@@ -18,7 +18,7 @@ scoped_refptr<const extensions::Extension>
 ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder(name).Build());
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
   views::test::WaitForAnimatingLayoutManager(extensions_container());
   return extension;

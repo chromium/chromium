@@ -504,7 +504,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
     base::FilePath test_data_dir;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
     scoped_refptr<const extensions::Extension> extension = loader.LoadExtension(
@@ -659,8 +659,9 @@ class ExtensionInstallDialogViewOnUninstallationTest
 void ExtensionInstallDialogViewOnUninstallationTest::UninstallExtension(
     const std::string& extension_id) {
   extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(browser()->profile()), extension_id);
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+      extensions::ExtensionRegistry::Get(browser()->GetProfile()),
+      extension_id);
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->UninstallExtension(
           extension_id,
           extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, nullptr);

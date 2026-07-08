@@ -40,7 +40,7 @@ class CrostiniUpdateFilesystemViewBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     PrepareShowCrostiniUpdateFilesystemView(
-        browser()->profile(), crostini::CrostiniUISurface::kAppList);
+        browser()->GetProfile(), crostini::CrostiniUISurface::kAppList);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   reply.set_status(vm_tools::cicerone::StartLxdContainerResponse::STARTING);
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
-  crostini::CrostiniManager::GetForProfile(browser()->profile())
+  crostini::CrostiniManager::GetForProfile(browser()->GetProfile())
       ->StartLxdContainer(kGuestId, base::DoNothing());
   ExpectNoView();
 }

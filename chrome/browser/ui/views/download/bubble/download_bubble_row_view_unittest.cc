@@ -48,7 +48,7 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
     TestWithBrowserView::SetUp();
 
     content::DownloadItemUtils::AttachInfoForTesting(
-        &download_item_, browser()->profile(), nullptr);
+        &download_item_, browser()->GetProfile(), nullptr);
     ON_CALL(download_item_, GetURL())
         .WillByDefault(ReturnRef(GURL::EmptyGURL()));
 

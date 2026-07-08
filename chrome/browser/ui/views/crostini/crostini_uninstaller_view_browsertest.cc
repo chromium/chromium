@@ -74,7 +74,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    crostini::ShowCrostiniUninstallerView(browser()->profile());
+    crostini::ShowCrostiniUninstallerView(browser()->GetProfile());
   }
 
   CrostiniUninstallerView* ActiveView() {

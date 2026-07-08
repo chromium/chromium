@@ -591,7 +591,7 @@ void BrowserDesktopWindowTreeHostWin::OnProfileAvatarChanged(
   // If we're currently badging the window icon (>1 available profile),
   // and this window's profile's avatar changed, update the window icon.
   CHECK(browser_view_);
-  if (browser_view_->browser()->profile()->GetPath() == profile_path &&
+  if (browser_view_->browser()->GetProfile()->GetPath() == profile_path &&
       g_browser_process->profile_manager()
               ->GetProfileAttributesStorage()
               .GetNumberOfProfiles() > 1) {
@@ -667,7 +667,7 @@ void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
   if (badged) {
     CHECK(browser_view_);
     icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
-        GetBadgedIconBitmapForProfile(browser_view_->browser()->profile()));
+        GetBadgedIconBitmapForProfile(browser_view_->browser()->GetProfile()));
   } else {
     icon_handle_.reset(GetAppIcon());
   }

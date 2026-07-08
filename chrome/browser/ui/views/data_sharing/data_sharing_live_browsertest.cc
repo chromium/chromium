@@ -121,7 +121,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
   tab_groups::TabGroupSyncService* tab_group_service() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void SignIn() {

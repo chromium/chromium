@@ -219,10 +219,11 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     }
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+        browser()->GetProfile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetStartURL());
     navigation_observer.StartWatchingNewWebContents();
-    app_browser_ = web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    app_browser_ =
+        web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     navigation_observer.WaitForNavigationFinished();
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
@@ -383,13 +384,13 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     web_app_info->display_override = display_overrides;
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+        browser()->GetProfile(), std::move(web_app_info));
 
     content::TestNavigationObserver navigation_observer(start_url);
     base::RunLoop loop;
     navigation_observer.StartWatchingNewWebContents();
     Browser* app_browser =
-        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+        web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
 
     // TODO(crbug.com/40174440): Register binder for BrowserInterfaceBroker
     // during testing.

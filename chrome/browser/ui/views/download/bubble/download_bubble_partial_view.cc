@@ -89,7 +89,7 @@ class SuppressBubbleSettingRow : public views::View,
     checkbox_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW));
     checkbox_->SetChecked(
-        !download::IsDownloadBubblePartialViewEnabled(browser_->profile()));
+        !download::IsDownloadBubblePartialViewEnabled(browser_->GetProfile()));
     auto targeter = std::make_unique<CheckboxTargeter>();
     checkbox_->SetEventTargeter(
         std::make_unique<views::ViewTargeter>(std::move(targeter)));
@@ -150,7 +150,7 @@ class SuppressBubbleSettingRow : public views::View,
  private:
   void CheckboxClicked() {
     if (navigation_handler_) {
-      download::SetDownloadBubblePartialViewEnabled(browser_->profile(),
+      download::SetDownloadBubblePartialViewEnabled(browser_->GetProfile(),
                                                     !checkbox_->GetChecked());
       settings_text_->SetVisible(true);
     }
@@ -206,7 +206,7 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     : on_interacted_closure_(std::move(on_interacted_closure)) {
   MaybeAddOtrInfoRow(browser.get());
 
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   const int impressions =
       download::DownloadBubblePartialViewImpressions(profile) + 1;
   int preferred_width = DefaultPreferredWidth();

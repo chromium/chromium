@@ -106,7 +106,7 @@ base::WeakPtr<views::Widget> WaitForLastExtensionPopupVisible() {
 base::WeakPtr<views::Widget> OpenExtensionPopup(
     Browser* browser,
     const extensions::Extension* extension) {
-  extensions::ExtensionHostTestHelper popup_waiter(browser->profile(),
+  extensions::ExtensionHostTestHelper popup_waiter(browser->GetProfile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
   ExtensionActionTestHelper::Create(browser)->Press(extension->id());
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   ASSERT_TRUE(extension);
 
   // Try to open an extension by API.
-  extensions::ExtensionHostTestHelper popup_waiter(browser()->profile(),
+  extensions::ExtensionHostTestHelper popup_waiter(browser()->GetProfile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
   BrowserView& browser_view = browser()->GetBrowserView();
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   ASSERT_TRUE(extension);
 
   // Try to open an extension.
-  extensions::ExtensionHostTestHelper popup_waiter(browser()->profile(),
+  extensions::ExtensionHostTestHelper popup_waiter(browser()->GetProfile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());

@@ -180,7 +180,7 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteAccess(
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess site_access) {
   extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->profile()));
+      PermissionsManager::Get(browser()->GetProfile()));
   permissions_helper_->UpdateSiteAccess(
       extension, web_contents, site_access,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());

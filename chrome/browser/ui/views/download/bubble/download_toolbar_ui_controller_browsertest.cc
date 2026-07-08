@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        HideDoesNotRemoveButtonIfPinned) {
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   // Pin downloads to the toolbar.
   EXPECT_EQ(toolbar_button(browser()), nullptr);
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   // Create another browser and set it as active so the button becomes dormant.
-  Browser* extra_browser = CreateBrowser(browser()->profile());
+  Browser* extra_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(extra_browser), nullptr);
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ButtonPressWithNoRecentDownloads) {
   // Pin the downloads button so it is available to press.
   PinnedToolbarActionsModel* const actions_model =
-      PinnedToolbarActionsModel::Get(browser()->profile());
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
   actions_model->UpdatePinnedState(kActionShowDownloads, true);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
@@ -225,11 +225,11 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   web_app_info->scope = GURL();
 
   webapps::AppId app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info),
+      browser()->GetProfile(), std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   ui_test_utils::DownloadURL(
       app_browser, chrome_test_utils::GetTestUrl(
                        base::FilePath().AppendASCII("downloads"),
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 
   // Reopen web app and verify download button appears.
   Browser* app_browser2 =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(app_browser2));
   EXPECT_NE(toolbar_button(app_browser2), nullptr);
   EXPECT_TRUE(toolbar_button(app_browser2)->GetVisible());
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   // Create another browser and set it as active so the button becomes dormant.
-  Browser* extra_browser = CreateBrowser(browser()->profile());
+  Browser* extra_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(extra_browser));
 

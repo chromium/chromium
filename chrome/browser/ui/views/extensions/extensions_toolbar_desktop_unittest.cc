@@ -307,7 +307,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
   };
 
   Browser* browser2 =
-      CreateBrowserWithBrowserView(browser()->profile(), browser()->type());
+      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
 
   // Verify extension is unpinned in both windows.
   EXPECT_FALSE(is_action_visible_on_toolbar(browser()));
@@ -323,7 +323,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
 
   Browser* browser3 =
-      CreateBrowserWithBrowserView(browser()->profile(), browser()->type());
+      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
 
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));
@@ -990,7 +990,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
   // button. However, request access button is not visible because we haven't
   // navigated to a site yet (and extensions haven't added any site access
   // requests).
-  SitePermissionsHelper permissions_helper(browser()->profile());
+  SitePermissionsHelper permissions_helper(browser()->GetProfile());
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
   EXPECT_TRUE(
@@ -1041,7 +1041,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_RequestDismissed) {
   // button. However, request access button is not visible because we haven't
   // navigated to a site yet (and extensions haven't added any site access
   // requests).
-  SitePermissionsHelper permissions_helper(browser()->profile());
+  SitePermissionsHelper permissions_helper(browser()->GetProfile());
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
   EXPECT_TRUE(

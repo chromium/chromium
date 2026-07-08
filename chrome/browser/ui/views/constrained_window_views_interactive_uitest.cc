@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   // Move the tab to a second browser window; but first create another tab.
   // That prevents the first browser window from closing when its tab is moved.
   CreateNewTabAndLayout(browser());
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   std::unique_ptr<tabs::TabModel> detached_tab =
       browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));

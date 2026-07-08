@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        OpaqueFrameColorForTransparentWebAppThemeColor) {
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   theme_service->UseDefaultTheme();
 
   app_theme_color_ = SkColorSetA(SK_ColorBLUE, 0x88);
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        BookmarkAppFrameColorSystemTheme) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   // Should be using the system theme by default, but this assert was not true
   // on the bots. Explicitly set.
   theme_service->UseSystemTheme();
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
   ui::MockOsSettingsProvider os_settings_provider;
   os_settings_provider.SetAccentColor(gfx::kGoogleBlue400);
 
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
 
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
   BrowserWidget* widget = view->browser_widget();
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        HTMLMetaThemeColorOverridesManifest) {
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   theme_service->UseDefaultTheme();
 
   InstallAndLaunchBookmarkApp();

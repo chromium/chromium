@@ -62,7 +62,7 @@ ExtensionsToolbarUITest::ForceInstallExtension(const std::string& name) {
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
   return extension;
 }
@@ -127,7 +127,7 @@ void ExtensionsToolbarUITest::AppendExtension(
 
 void ExtensionsToolbarUITest::DisableExtension(
     const extensions::ExtensionId& extension_id) {
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->DisableExtension(extension_id,
                          {extensions::disable_reason::DISABLE_USER_ACTION});
 }

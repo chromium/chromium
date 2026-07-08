@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuSitePermissionsPageViewInteractiveUITest,
 
   // By default, extension should have injected since site has "customize by
   // extension" site setting and is granted access.
-  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
+  auto* permissions_manager = PermissionsManager::Get(browser()->GetProfile());
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(url_origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(DidInjectScript(web_contents));

@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ASSERT_NE(std::nullopt, action_id);
   ASSERT_EQ(1u, GetVisibleToolbarActionViews().size());
 
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->DisableExtension(action_id.value(),
                          {extensions::disable_reason::DISABLE_USER_ACTION});
 
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ASSERT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   auto* extension_registrar =
-      extensions::ExtensionRegistrar::Get(browser()->profile());
+      extensions::ExtensionRegistrar::Get(browser()->GetProfile());
   extension_registrar->DisableExtension(
       id1, {extensions::disable_reason::DISABLE_USER_ACTION});
   extension_registrar->DisableExtension(
@@ -695,14 +695,14 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
 
   EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
-  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  extensions::SitePermissionsHelper permissions_helper(browser()->GetProfile());
   // A refresh should be needed in order to run the actions and inject the
   // content script.
   EXPECT_TRUE(permissions_helper.PageNeedsRefreshToRun(
       action_runner->GetBlockedActions(extension->id())));
 
   extensions::PermissionsManagerWaiter waiter(
-      extensions::PermissionsManager::Get(browser()->profile()));
+      extensions::PermissionsManager::Get(browser()->GetProfile()));
   TriggerSingleExtensionButton();
 
   auto* const action_bubble =

@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, MAYBE_GetConsentDialogBodyTest) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();
   policy::ScopedManagementServiceOverrideForTesting browser_management(
-      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::ManagementServiceFactory::GetForProfile(browser()->GetProfile()),
       policy::EnterpriseManagementAuthority::CLOUD);
 
   TestingProfile::Builder builder;

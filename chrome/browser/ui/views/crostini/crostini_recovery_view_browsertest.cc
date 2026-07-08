@@ -57,13 +57,13 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    ShowCrostiniRecoveryView(browser()->profile(), kUiSurface, app_id(),
+    ShowCrostiniRecoveryView(browser()->GetProfile(), kUiSurface, app_id(),
                              kDisplayId, {}, base::DoNothing());
   }
 
   void SetUncleanStartup() {
     auto* crostini_manager =
-        crostini::CrostiniManager::GetForProfile(browser()->profile());
+        crostini::CrostiniManager::GetForProfile(browser()->GetProfile());
     crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
     crostini_manager->SetUncleanStartupForTesting(true);
   }
@@ -102,7 +102,7 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
   bool IsUncleanStartup() {
-    return crostini::CrostiniManager::GetForProfile(browser()->profile())
+    return crostini::CrostiniManager::GetForProfile(browser()->GetProfile())
         ->IsUncleanStartup();
   }
 
@@ -111,7 +111,8 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
         crostini::CrostiniTestHelper::BasicAppList(
             kDesktopFileId, crostini::kCrostiniDefaultVmName,
             crostini::kCrostiniDefaultContainerName);
-    guest_os::GuestOsRegistryServiceFactory::GetForProfile(browser()->profile())
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(
+        browser()->GetProfile())
         ->UpdateApplicationList(app_list);
   }
 
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, NoViewOnNormalStartup) {
   base::HistogramTester histogram_tester;
   RegisterApp();
 
-  crostini::LaunchCrostiniApp(browser()->profile(), app_id(), kDisplayId);
+  crostini::LaunchCrostiniApp(browser()->GetProfile(), app_id(), kDisplayId);
   ExpectNoView();
 
   histogram_tester.ExpectUniqueSample(
@@ -144,19 +145,19 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   SetUncleanStartup();
   RegisterApp();
   // Ensure Terminal System App is installed.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   // First app should fail with 'cancelled for recovery'.
   crostini::LaunchCrostiniApp(
-      browser()->profile(), app_id(), kDisplayId, {},
+      browser()->GetProfile(), app_id(), kDisplayId, {},
       base::BindOnce(&ExpectFailure, "cancelled for recovery"));
   ExpectView();
 
   // Apps launched while dialog is shown should fail with 'recovery in
   // progress'.
   crostini::LaunchCrostiniApp(
-      browser()->profile(), app_id(), kDisplayId, {},
+      browser()->GetProfile(), app_id(), kDisplayId, {},
       base::BindOnce(&ExpectFailure, "recovery in progress"));
 
   // Click 'Cancel'.
@@ -165,13 +166,13 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
 
   // Terminal should launch after use clicks 'Cancel'.
   ash::BrowserDelegate* terminal_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::TERMINAL,
+      browser()->GetProfile(), ash::SystemWebAppType::TERMINAL,
       ash::BrowserType::kApp);
   EXPECT_NE(nullptr, terminal_browser);
 
   // Any new apps launched should show the dialog again.
   crostini::LaunchCrostiniApp(
-      browser()->profile(), app_id(), kDisplayId, {},
+      browser()->GetProfile(), app_id(), kDisplayId, {},
       base::BindOnce(&ExpectFailure, "cancelled for recovery"));
   ExpectView();
 
@@ -191,13 +192,13 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Accept) {
   SetUncleanStartup();
   RegisterApp();
 
-  crostini::LaunchCrostiniApp(browser()->profile(), app_id(), kDisplayId);
+  crostini::LaunchCrostiniApp(browser()->GetProfile(), app_id(), kDisplayId);
   ExpectView();
 
   // Apps launched while dialog is shown should fail with 'recovery in
   // progress'.
   crostini::LaunchCrostiniApp(
-      browser()->profile(), app_id(), kDisplayId, {},
+      browser()->GetProfile(), app_id(), kDisplayId, {},
       base::BindOnce(&ExpectFailure, "recovery in progress"));
 
   // Click 'Accept'.
@@ -214,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Accept) {
   EXPECT_FALSE(IsUncleanStartup());
 
   // Apps now launch successfully.
-  crostini::LaunchCrostiniApp(browser()->profile(), app_id(), kDisplayId);
+  crostini::LaunchCrostiniApp(browser()->GetProfile(), app_id(), kDisplayId);
   ExpectNoView();
 
   histogram_tester.ExpectUniqueSample(

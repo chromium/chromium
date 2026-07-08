@@ -246,7 +246,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
   };
 
   Browser* browser2 =
-      CreateBrowserWithBrowserView(browser()->profile(), browser()->type());
+      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
 
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
@@ -256,7 +256,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
 
   Browser* browser3 =
-      CreateBrowserWithBrowserView(browser()->profile(), browser()->type());
+      CreateBrowserWithBrowserView(browser()->GetProfile(), browser()->type());
 
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));

@@ -118,7 +118,7 @@ ExtensionsToolbarDesktop::ExtensionsToolbarDesktop(Browser* browser,
                                                    DisplayMode display_mode)
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_(browser),
-      model_(ToolbarActionsModel::Get(browser_->profile())),
+      model_(ToolbarActionsModel::Get(browser_->GetProfile())),
       display_mode_(display_mode),
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)),
@@ -173,7 +173,7 @@ ExtensionsToolbarDesktop::ExtensionsToolbarDesktop(Browser* browser,
                                        views::FlexSpecification());
   close_side_panel_button_ = AddChildView(std::move(close_side_panel_button));
   UpdateCloseSidePanelButtonIcon();
-  pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+  pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSidePanelHorizontalAlignment,
       base::BindRepeating(
@@ -649,13 +649,14 @@ void ExtensionsToolbarDesktop::WriteDragDataForView(View* sender,
   // Fill in the remaining info.
   size_t index = it - toolbar_view_model_->GetPinnedActionIds().cbegin();
   BrowserActionDragData drag_data(extension_view->view_model()->GetId(), index);
-  drag_data.Write(browser_->profile(), data);
+  drag_data.Write(browser_->GetProfile(), data);
 }
 
 int ExtensionsToolbarDesktop::GetDragOperationsForView(View* sender,
                                                        const gfx::Point& p) {
-  return browser_->profile()->IsOffTheRecord() ? ui::DragDropTypes::DRAG_NONE
-                                               : ui::DragDropTypes::DRAG_MOVE;
+  return browser_->GetProfile()->IsOffTheRecord()
+             ? ui::DragDropTypes::DRAG_NONE
+             : ui::DragDropTypes::DRAG_MOVE;
 }
 
 bool ExtensionsToolbarDesktop::CanStartDragForView(View* sender,
@@ -838,7 +839,7 @@ bool ExtensionsToolbarDesktop::AreDropTypesRequired() {
 }
 
 bool ExtensionsToolbarDesktop::CanDrop(const OSExchangeData& data) {
-  return BrowserActionDragData::CanDrop(data, browser_->profile());
+  return BrowserActionDragData::CanDrop(data, browser_->GetProfile());
 }
 
 void ExtensionsToolbarDesktop::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -1147,7 +1148,7 @@ void ExtensionsToolbarDesktop::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void ExtensionsToolbarDesktop::UpdateCloseSidePanelButtonIcon() {
-  const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
+  const bool is_right_aligned = browser_->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   close_side_panel_button_->SetVectorIcon(
       is_right_aligned                    ? features::IsRoundedIconsEnabled()
@@ -1197,7 +1198,7 @@ void ExtensionsToolbarDesktop::MaybeShowIPH() {
                    g_zero_state_promo_next_show_time_opt.value() &&
                ArePromotionsEnabled() &&
                !extensions::util::AnyCurrentlyInstalledExtensionIsFromWebstore(
-                   browser_->profile())) {
+                   browser_->GetProfile())) {
       g_zero_state_promo_next_show_time_opt =
           base::TimeTicks::Now() + kZeroStatePromoIntervalBetweenLaunchAttempt;
       BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(

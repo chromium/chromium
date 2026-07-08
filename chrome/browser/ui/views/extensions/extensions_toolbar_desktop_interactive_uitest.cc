@@ -143,10 +143,10 @@ class ExtensionsToolbarDesktopUITest : public ExtensionsToolbarUITest {
   void RemoveExtension(ExtensionRemovalMethod method,
                        const std::string& extension_id) {
     extensions::ExtensionService* const extension_service =
-        extensions::ExtensionSystem::Get(browser()->profile())
+        extensions::ExtensionSystem::Get(browser()->GetProfile())
             ->extension_service();
     extensions::ExtensionRegistrar* const registrar =
-        extensions::ExtensionRegistrar::Get(browser()->profile());
+        extensions::ExtensionRegistrar::Get(browser()->GetProfile());
     switch (method) {
       case ExtensionRemovalMethod::kDisable:
         registrar->DisableExtension(
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
     test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"),
                        base::StringPrintf(kPopupJsTemplate, extension_name));
     scoped_refptr<const extensions::Extension> extension =
-        extensions::ChromeTestExtensionLoader(browser()->profile())
+        extensions::ChromeTestExtensionLoader(browser()->GetProfile())
             .LoadExtension(test_dir.UnpackedPath());
     test_dirs.push_back(std::move(test_dir));
     return extension;
@@ -639,14 +639,14 @@ class IncognitoExtensionsToolbarDesktopUITest
 // Regression test for crbug.com/40085916.
 IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarDesktopUITest,
                        TestExtensionFirstLoadedInIncognitoMode) {
-  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
+  EXPECT_TRUE(browser()->GetProfile()->IsOffTheRecord());
 
   scoped_refptr<const extensions::Extension> extension =
       LoadTestExtension("extensions/api_test/browser_action_with_icon",
                         /*allow_incognito=*/true);
   ASSERT_TRUE(extension);
   Browser* second_browser = CreateBrowser(profile()->GetOriginalProfile());
-  EXPECT_FALSE(second_browser->profile()->IsOffTheRecord());
+  EXPECT_FALSE(second_browser->GetProfile()->IsOffTheRecord());
 
   CloseBrowserSynchronously(browser());
 
@@ -1060,9 +1060,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Verify request access button is visible because extensions A and B have
   // site access requests.
-  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  extensions::SitePermissionsHelper permissions_helper(browser()->GetProfile());
   auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser()->profile());
+      extensions::PermissionsManager::Get(browser()->GetProfile());
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(
       request_access_button()->GetExtensionIdsForTesting(),
@@ -1190,9 +1190,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(
       request_access_button()->GetExtensionIdsForTesting(),
       testing::UnorderedElementsAre(extensionA->id(), extensionB->id()));
-  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  extensions::SitePermissionsHelper permissions_helper(browser()->GetProfile());
   auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser()->profile());
+      extensions::PermissionsManager::Get(browser()->GetProfile());
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
             SiteInteraction::kWithheld);
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionB, web_contents),
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopFeatureUITest,
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJsTemplate);
   scoped_refptr<const extensions::Extension> extensionB =
-      extensions::ChromeTestExtensionLoader(browser()->profile())
+      extensions::ChromeTestExtensionLoader(browser()->GetProfile())
           .LoadExtension(test_dir.UnpackedPath());
 
   // Trigger the extension B action.
@@ -1499,7 +1499,7 @@ class ExtensionsToolbarDesktopFeatureRolloutInteractiveTest
                                bool is_installed) {
     return CheckResult(
         [&]() {
-          return extensions::ExtensionRegistry::Get(browser()->profile())
+          return extensions::ExtensionRegistry::Get(browser()->GetProfile())
                      ->GetInstalledExtension(extension_id) != nullptr;
         },
         is_installed);
@@ -1530,7 +1530,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarDesktopFeatureRolloutInteractiveTest,
       // extension in the test doesn't go through the full install flow.
       Do([&]() {
         extensions::TriggerPostInstallDialog(
-            browser()->profile(), extension, SkBitmap(),
+            browser()->GetProfile(), extension, SkBitmap(),
             base::BindOnce(
                 [](Browser* b) {
                   return b->tab_strip_model()->GetActiveWebContents();
@@ -1633,7 +1633,7 @@ class ExtensionsToolbarDesktopFeatureInteractiveTest
         extensions::HostAccessRequestsHelper::SetCooldownForTesting(
             base::TimeDelta()));
 
-    permissions_manager_ = PermissionsManager::Get(browser()->profile());
+    permissions_manager_ = PermissionsManager::Get(browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
@@ -1655,7 +1655,7 @@ class ExtensionsToolbarDesktopFeatureInteractiveTest
             })",
         name.c_str(), host_permission.c_str()));
     scoped_refptr<const extensions::Extension> extension =
-        extensions::ChromeTestExtensionLoader(browser()->profile())
+        extensions::ChromeTestExtensionLoader(browser()->GetProfile())
             .LoadExtension(extension_dir.UnpackedPath());
     return extension;
   }
@@ -1719,9 +1719,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopFeatureInteractiveTest,
       InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
   auto extensionB =
       InstallExtensionWithHostPermissions("Extension B", "<all_urls>");
-  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionA)
+  extensions::ScriptingPermissionsModifier(browser()->GetProfile(), extensionA)
       .SetWithholdHostPermissions(true);
-  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionB)
+  extensions::ScriptingPermissionsModifier(browser()->GetProfile(), extensionB)
       .SetWithholdHostPermissions(true);
 
   RunTestSequence(

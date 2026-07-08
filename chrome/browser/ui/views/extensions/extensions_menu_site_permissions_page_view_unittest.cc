@@ -316,7 +316,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   // Directly change the show access requests pref for extension, since it can
   // be changed when menu is open, and verify toggle is updated and extension is
   // not requesting access in the toolbar.
-  SitePermissionsHelper(browser()->profile())
+  SitePermissionsHelper(browser()->GetProfile())
       .SetShowAccessRequestsInToolbar(extension->id(), false);
   EXPECT_FALSE(
       site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
@@ -352,7 +352,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
   EXPECT_TRUE(on_all_sites_button->GetChecked());
 
   extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->profile()));
+      PermissionsManager::Get(browser()->GetProfile()));
   ClickButton(on_click_button);
   waiter.WaitForExtensionPermissionsUpdate();
 

@@ -34,10 +34,10 @@ namespace {
 constexpr int kMaxHeightForRowList = 450;
 
 bool IsOtrInfoRowEnabled(Browser* browser) {
-  if (!browser || !browser->profile()) {
+  if (!browser || !browser->GetProfile()) {
     return false;
   }
-  return browser->profile()->IsOffTheRecord();
+  return browser->GetProfile()->IsOffTheRecord();
 }
 
 }  // namespace

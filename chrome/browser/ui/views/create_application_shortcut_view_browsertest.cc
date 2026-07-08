@@ -24,7 +24,7 @@ class CreateAppShortcutDialogTest : public DialogBrowserTest,
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     constrained_window::CreateBrowserModalDialogViews(
-        new CreateChromeApplicationShortcutView(browser()->profile(),
+        new CreateChromeApplicationShortcutView(browser()->GetProfile(),
                                                 /*is_extension=*/GetParam(),
                                                 base::DoNothing()),
         browser()->GetWindow()->GetNativeWindow())

@@ -185,13 +185,14 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
             bubble_navigator_->GetWeakPtr(), bubble_delegate_));
 
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
-        browser_->profile(),
+        browser_->GetProfile(),
         base::BindRepeating(&BuildMockDownloadCoreService));
     MockDownloadCoreService* mock_dcs = static_cast<MockDownloadCoreService*>(
-        DownloadCoreServiceFactory::GetForBrowserContext(browser_->profile()));
+        DownloadCoreServiceFactory::GetForBrowserContext(
+            browser_->GetProfile()));
     ON_CALL(*mock_dcs, IsDownloadUiEnabled()).WillByDefault(Return(true));
     delegate_ =
-        std::make_unique<ChromeDownloadManagerDelegate>(browser_->profile());
+        std::make_unique<ChromeDownloadManagerDelegate>(browser_->GetProfile());
     ON_CALL(*mock_dcs, GetDownloadManagerDelegate())
         .WillByDefault(Return(delegate_.get()));
 

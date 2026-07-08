@@ -113,7 +113,7 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
     ASSERT_TRUE(bubble_view_widget->widget_delegate());
 
     // The sign in promo should be shown for a syncable extension.
-    EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->profile(),
+    EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->GetProfile(),
                                                        *extension));
 
     // Initiate a sign in from the promo.
