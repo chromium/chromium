@@ -14,7 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "url/url_canon.h"
 
 namespace url {
@@ -49,9 +49,9 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(size_t sz) override;
 
  protected:
-  // `str_` is not a raw_ptr<...> for performance reasons (based on analysis of
-  // sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION std::string* str_;
+  // `str_` uses kUnprotectedInRelease for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
+  raw_ptr<std::string, kUnprotectedInRelease> str_;
 };
 
 }  // namespace url
