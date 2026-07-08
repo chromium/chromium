@@ -285,11 +285,6 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
-  // This class holds the only ref to `resource_` internally.
-  return false;
-}
-
 void WebGpuRecyclableResourceProvider::PrepareForWebGPUDummyMailbox() {
   if (resource()) {
     resource()->PrepareForWebGPUDummyMailbox();
@@ -398,25 +393,7 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
 std::unique_ptr<gpu::RasterScopedAccess>
 WebGpuRecyclableResourceProvider::WillDrawInternal() {
   DCHECK(resource_);
-
-  if (!ShouldReplaceTargetBuffer()) {
-    return resource_->BeginAccess(/*readonly=*/false);
-  }
-
-  DCHECK(!current_resource_has_write_access_)
-      << "Write access must be released before sharing the resource";
-
-  resource_ = NewOrRecycledResource();
-  std::unique_ptr<gpu::RasterScopedAccess> dst_access =
-      resource_->BeginAccess(/*readonly=*/false);
-
-  // As the image might have just been created, we need to ensure that it is
-  // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
-  // requirements (note: as an optimization we could avoid doing this if the
-  // resource was recycled as in that case there are no security implications).
-  is_cleared_ = false;
-
-  return dst_access;
+  return resource_->BeginAccess(/*readonly=*/false);
 }
 
 bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(

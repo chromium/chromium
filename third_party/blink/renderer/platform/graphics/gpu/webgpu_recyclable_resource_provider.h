@@ -174,7 +174,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
-  bool ShouldReplaceTargetBuffer();
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
