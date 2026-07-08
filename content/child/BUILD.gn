@@ -47,6 +47,8 @@ target(link_target_type, "child") {
     "child_thread_impl.h",
     "field_trial.cc",
     "field_trial.h",
+    "host_receiver_batcher.cc",
+    "host_receiver_batcher.h",
     "image_decoder_utils.cc",
     "memory_coordinator/browser_memory_coordinator_bridge.cc",
     "memory_coordinator/browser_memory_coordinator_bridge.h",

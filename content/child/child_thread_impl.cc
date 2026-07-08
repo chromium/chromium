@@ -28,6 +28,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -46,6 +47,7 @@
 #include "content/child/child_performance_coordinator.h"
 #include "content/child/child_process.h"
 #include "content/child/child_process_synthetic_trial_syncer.h"
+#include "content/child/host_receiver_batcher.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_constants_internal.h"
@@ -666,6 +668,14 @@ void ChildThreadImpl::Init(const Options& options) {
   child_process_host_ = mojo::SharedRemote<mojom::ChildProcessHost>(
       std::move(remote_host), GetIOTaskRunner());
 
+  // Coalesces the burst of host-receiver binds issued below (and elsewhere
+  // during startup) into batched IPCs. Must exist before the first
+  // BindHostReceiverBatched() call.
+  host_receiver_batcher_ = std::make_unique<HostReceiverBatcher>(
+      base::BindRepeating(&ChildThreadImpl::SendHostReceivers,
+                          weak_factory_.GetWeakPtr()),
+      main_thread_runner_);
+
   // In single process mode, browser-side tracing and memory will cover the
   // whole process including renderers.
   if (!IsInBrowserProcess()) {
@@ -673,7 +683,7 @@ void ChildThreadImpl::Init(const Options& options) {
     mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess> process;
     auto process_receiver = process.InitWithNewPipeAndPassReceiver();
     mojo::Remote<memory_instrumentation::mojom::CoordinatorConnector> connector;
-    BindHostReceiver(connector.BindNewPipeAndPassReceiver());
+    BindHostReceiverBatched(connector.BindNewPipeAndPassReceiver());
     connector->RegisterCoordinatorClient(
         coordinator.InitWithNewPipeAndPassReceiver(), std::move(process));
     memory_instrumentation::ClientProcessImpl::CreateInstance(
@@ -693,16 +703,18 @@ void ChildThreadImpl::Init(const Options& options) {
     // communication from the browser process (see https://crbug.com/821790 for
     // details)
     mojo::PendingRemote<device::mojom::PowerMonitor> remote_power_monitor;
-    BindHostReceiver(remote_power_monitor.InitWithNewPipeAndPassReceiver());
+    BindHostReceiverBatched(
+        remote_power_monitor.InitWithNewPipeAndPassReceiver());
     source_ptr->Init(std::move(remote_power_monitor));
   }
 
   performance_coordinator_ = std::make_unique<ChildPerformanceCoordinator>();
-  BindHostReceiver(performance_coordinator_->InitializeAndPassReceiver());
+  BindHostReceiverBatched(
+      performance_coordinator_->InitializeAndPassReceiver());
 
   if (!IsInBrowserProcess()) {
     // Connect the global ChildMemoryCoordinator with the browser registry.
-    BindHostReceiver(ChildMemoryCoordinator::BindAndPassReceiver());
+    BindHostReceiverBatched(ChildMemoryCoordinator::BindAndPassReceiver());
   }
 
 #if BUILDFLAG(IS_POSIX)
@@ -762,7 +774,7 @@ void ChildThreadImpl::Init(const Options& options) {
   // browser process (because it's the same process).
   if (!IsInBrowserProcess()) {
     mojo::PendingRemote<mojom::FieldTrialRecorder> pending_remote;
-    BindHostReceiver(pending_remote.InitWithNewPipeAndPassReceiver());
+    BindHostReceiverBatched(pending_remote.InitWithNewPipeAndPassReceiver());
     mojo::SharedRemote<mojom::FieldTrialRecorder> shared_remote(
         std::move(pending_remote));
     field_trial_syncer_ =
@@ -848,6 +860,25 @@ void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
     child_process_host_->BindHostReceiver(std::move(receiver));
 }
 
+void ChildThreadImpl::BindHostReceiverBatched(
+    mojo::GenericPendingReceiver receiver) {
+  // `host_receiver_batcher_` is created early in Init(); guard against any bind
+  // that races ahead of it by falling back to an immediate (correct) send.
+  if (host_receiver_batcher_) {
+    host_receiver_batcher_->AddReceiver(std::move(receiver));
+  } else {
+    BindHostReceiver(std::move(receiver));
+  }
+}
+
+void ChildThreadImpl::SendHostReceivers(
+    std::vector<mojo::GenericPendingReceiver> receivers) {
+  if (!child_process_host_ || receivers.empty()) {
+    return;
+  }
+  child_process_host_->BindHostReceivers(std::move(receivers));
+}
+
 void ChildThreadImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
@@ -881,6 +912,9 @@ void ChildThreadImpl::GetBackgroundTracingAgentProvider(
 
 void ChildThreadImpl::DisconnectChildProcessHost() {
   child_process_host_.reset();
+  if (host_receiver_batcher_) {
+    host_receiver_batcher_->Clear();
+  }
 }
 
 void ChildThreadImpl::BindServiceInterface(

@@ -58,6 +58,7 @@ class BackgroundTracingAgentProviderImpl;
 namespace content {
 
 class ChildPerformanceCoordinator;
+class HostReceiverBatcher;
 class InProcessChildThreadParams;
 
 // The main thread of a child process derives from this class.
@@ -92,6 +93,18 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   void RecordAction(const base::UserMetricsAction& action) override;
   void RecordComputedAction(const std::string& action) override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
+
+  // Like BindHostReceiver(), but the bind request may be coalesced with other
+  // batched requests and sent to the browser as a single IPC on a later task,
+  // reducing per-startup IPC volume.
+  //
+  // IMPORTANT: only use this for receivers whose interface is used
+  // ASYNCHRONOUSLY. Because the bind is deferred, making a SYNCHRONOUS mojo
+  // call on the resulting interface before the batch is flushed would hang (the
+  // browser has not bound it yet). Such callers must use BindHostReceiver(),
+  // which sends immediately.
+  void BindHostReceiverBatched(mojo::GenericPendingReceiver receiver);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
@@ -165,6 +178,10 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   void EnsureConnected(int connection_timeout);
 
+  // Sends a coalesced batch of host-receiver bind requests to the browser (the
+  // flush target of `host_receiver_batcher_`). Runs on the main thread.
+  void SendHostReceivers(std::vector<mojo::GenericPendingReceiver> receivers);
+
 #if BUILDFLAG(IS_WIN)
   const mojo::Remote<mojom::FontCacheWin>& GetFontCacheWin();
 #endif
@@ -205,6 +222,10 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   // An interface to the browser's process host object.
   mojo::SharedRemote<mojom::ChildProcessHost> child_process_host_;
+
+  // Coalesces BindHostReceiverBatched() requests into batched IPCs. Created in
+  // Init(); flushes on the main thread via SendHostReceivers().
+  std::unique_ptr<HostReceiverBatcher> host_receiver_batcher_;
 
   // ChildThreadImpl state which lives on the IO thread, including its
   // implementation of the mojom ChildProcess interface.

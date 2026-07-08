@@ -1027,9 +1027,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // mojom::ChildProcessHost implementation:
     void Ping(PingCallback callback) override;
 
-    // To enforce security review for IPC, these 2 methods are defined in
+    // To enforce security review for IPC, these methods are defined in
     // render_process_host_impl_receiver_bindings.cc.
     void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
+    void BindHostReceivers(
+        std::vector<mojo::GenericPendingReceiver> receivers) override;
     static void BindHostReceiverOnUIThread(
         base::WeakPtr<RenderProcessHostImpl> weak_host,
         mojo::GenericPendingReceiver receiver);

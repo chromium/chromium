@@ -35,6 +35,14 @@ interface ChildProcessHost {
   // Whether or not the interface type encapsulated by |receiver| is supported
   // depends on the process type and potentially on the Content embedder.
   BindHostReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+
+  // Batched form of BindHostReceiver(). Each receiver in |receivers| is bound
+  // exactly as if passed individually to BindHostReceiver(), in array order.
+  // The child uses this to coalesce the burst of bind requests issued during
+  // process startup into a single IPC. Only used for receivers whose interface
+  // is used asynchronously (a synchronous call on a not-yet-bound interface
+  // must use BindHostReceiver() so the bind is sent immediately).
+  BindHostReceivers(array<mojo_base.mojom.GenericPendingReceiver> receivers);
 };
 
 // A control interface the browser uses to drive the behavior of all types of

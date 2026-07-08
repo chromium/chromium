@@ -73,7 +73,8 @@ void SandboxedProcessThreadTypeHandler::ConnectThreadTypeSwitcher() {
   DCHECK(main_thread);
   DCHECK(main_thread->main_thread_runner()->RunsTasksInCurrentSequence());
 
-  main_thread->BindHostReceiver(std::move(thread_type_switcher_receiver_));
+  main_thread->BindHostReceiverBatched(
+      std::move(thread_type_switcher_receiver_));
   OnSwitcherConnected(main_thread->main_thread_runner());
 }
 

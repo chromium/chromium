@@ -250,6 +250,14 @@ void ChildProcessHostImpl::BindHostReceiver(
   delegate_->BindHostReceiver(std::move(receiver));
 }
 
+void ChildProcessHostImpl::BindHostReceivers(
+    std::vector<mojo::GenericPendingReceiver> receivers) {
+  // Bind each receiver through the same per-item path.
+  for (auto& receiver : receivers) {
+    BindHostReceiver(std::move(receiver));
+  }
+}
+
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   // We ignore the `peer_pid` argument, which ultimately comes over IPC from the
   // remote process, in favor of the PID already known by the browser after

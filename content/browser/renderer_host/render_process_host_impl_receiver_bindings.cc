@@ -446,6 +446,16 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
                                 weak_host_, std::move(receiver)));
 }
 
+void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceivers(
+    std::vector<mojo::GenericPendingReceiver> receivers) {
+  // Bind each receiver through the same per-item path, preserving the
+  // interceptor, interface filtering, BinderRegistry, and UI-thread
+  // fallthrough.
+  for (auto& receiver : receivers) {
+    BindHostReceiver(std::move(receiver));
+  }
+}
+
 // static
 void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiverOnUIThread(
     base::WeakPtr<RenderProcessHostImpl> weak_host,

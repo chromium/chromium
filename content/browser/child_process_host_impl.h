@@ -86,6 +86,8 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // mojom::ChildProcessHost implementation:
   void Ping(PingCallback callback) override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
+  void BindHostReceivers(
+      std::vector<mojo::GenericPendingReceiver> receivers) override;
 
   // IPC::Listener methods:
   void OnChannelConnected(int32_t peer_pid) override;

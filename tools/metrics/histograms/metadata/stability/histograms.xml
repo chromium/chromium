@@ -28,6 +28,19 @@ chromium-metrics-reviews@google.com.
   <variant name="MediaFoundationServiceBroker"/>
 </variants>
 
+<histogram name="ChildProcess.BindHostReceiver.BatchSize" units="count"
+    expires_after="2027-06-29">
+  <owner>kmg@google.com</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    Number of ChildProcessHost.BindHostReceiver requests coalesced into a single
+    batched BindHostReceivers() IPC from a child process to the browser.
+    Recorded once per flush. A value of 1 means no coalescing happened for that
+    flush; larger values quantify how effectively the per-receiver bind IPCs are
+    batched during process startup.
+  </summary>
+</histogram>
+
 <histogram name="ChildProcess.Crashed.UtilityProcessExitCode"
     enum="WindowsExitCode" expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
