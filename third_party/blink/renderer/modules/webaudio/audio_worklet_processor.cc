@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -449,7 +452,11 @@ AudioWorkletProcessor::AudioWorkletProcessor(
     AudioWorkletGlobalScope* global_scope,
     const String& name,
     MessagePort* port)
-    : global_scope_(global_scope), processor_port_(port), name_(name) {
+    : global_scope_(global_scope),
+      processor_port_(port),
+      name_(name),
+      is_denormal_enabler_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kAudioWorkletJSDenormalEnabler)) {
   InstanceCounters::IncrementCounter(
       InstanceCounters::kAudioWorkletProcessorCounter);
 }
@@ -468,6 +475,14 @@ bool AudioWorkletProcessor::Process(
 
   CHECK(global_scope_->IsContextThread());
   DCHECK(!hasErrorOccurred());
+
+  // Overrides the outer destination-level FPU state (which runs under FTZ/DAZ
+  // for performance) during JavaScript execution, ensuring strict IEEE-754
+  // float semantics for user-defined processing code.
+  std::optional<DenormalEnabler> denormal_enabler;
+  if (is_denormal_enabler_enabled_) {
+    denormal_enabler.emplace();
+  }
 
   ScriptState* script_state =
       global_scope_->ScriptController()->GetScriptState();

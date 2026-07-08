@@ -8,8 +8,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -42,6 +44,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
@@ -122,6 +125,17 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
             &AudioWorkletGlobalScopeTest::RunSimpleProcessTestOnWorkletThread,
             CrossThreadUnretained(this), CrossThreadUnretained(thread),
             CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+
+  void RunDenormalProcessTest(WorkerThread* thread, bool expect_denormals) {
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletGlobalScopeTest::RunDenormalProcessTestOnWorkletThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread),
+            expect_denormals, CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
   }
 
@@ -346,6 +360,79 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     wait_event->Signal();
   }
 
+  void RunDenormalProcessTestOnWorkletThread(WorkerThread* thread,
+                                             bool expect_denormals,
+                                             base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+
+    ScriptState::Scope scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
+    EXPECT_TRUE(isolate);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+
+    String source_code =
+        R"JS(
+          class TestProcessor extends AudioWorkletProcessor {
+            constructor () { super(); }
+            process (inputs, outputs) {
+              let f64 = new Float64Array(1);
+              // The minimum positive normal 64-bit float is
+              // 2.225e-308. Therefore, 1.0e-309 is a denormal
+              // double. If FTZ/DAZ is enabled, it is treated
+              // as zero or flushed to zero, making f64[0]
+              // equal to 0.0. If disabled, the division
+              // computes 1.0e-310 (a valid denormal double
+              // > 0.0).
+              let denorm = 1.0e-309;
+              f64[0] = denorm / 10.0;
+              let outputChannel = outputs[0][0];
+              outputChannel[0] = f64[0] > 0.0 ? 1.0 : 0.0;
+            }
+          }
+          registerProcessor('testProcessor', TestProcessor);
+        )JS";
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+
+    auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
+    MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
+    AudioWorkletProcessor* processor =
+        global_scope->CreateProcessor("testProcessor",
+                                      dummy_port_channel,
+                                      SerializedScriptValue::NullValue());
+    EXPECT_TRUE(processor);
+
+    Vector<scoped_refptr<AudioBus>> input_buses;
+    Vector<scoped_refptr<AudioBus>> output_buses;
+    HashMap<String, std::unique_ptr<AudioFloatArray>> param_data_map;
+    scoped_refptr<AudioBus> input_bus =
+        AudioBus::Create(1, kRenderQuantumFrames);
+    scoped_refptr<AudioBus> output_bus =
+        AudioBus::Create(1, kRenderQuantumFrames);
+    AudioChannel* output_channel = output_bus->Channel(0);
+
+    input_buses.push_back(input_bus.get());
+    output_buses.push_back(output_bus.get());
+    output_bus->Zero();
+
+    // Simulate the audio thread rendering stack by instantiating
+    // DenormalDisabler.
+    DenormalDisabler scoped_disabler;
+
+    // processor->Process() internally instantiates DenormalEnabler, which
+    // disables FTZ/DAZ during V8 execution if enabled.
+    processor->Process(input_buses, output_buses, param_data_map);
+
+    // Verify that the JS execution was affected by the outer
+    // DenormalDisabler only if the feature is disabled.
+    EXPECT_EQ(output_channel->Span()[0], expect_denormals ? 1.0f : 0.0f);
+
+    wait_event->Signal();
+  }
+
   void RunParsingParameterDescriptorTestOnWorkletThread(
       WorkerThread* thread,
       base::WaitableEvent* wait_event) {
@@ -416,6 +503,30 @@ TEST_F(AudioWorkletGlobalScopeTest, BufferProcessing) {
   std::unique_ptr<OfflineAudioWorkletThread> thread
       = CreateAudioWorkletThread();
   RunSimpleProcessTest(thread.get());
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kAudioWorkletJSDenormalEnabler);
+
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunDenormalProcessTest(thread.get(), /*expect_denormals=*/true);
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kAudioWorkletJSDenormalEnabler);
+
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunDenormalProcessTest(thread.get(), /*expect_denormals=*/false);
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }

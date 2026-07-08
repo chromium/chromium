@@ -93,11 +93,13 @@ void RemoveForegroundedWorkerIsolate(v8::Isolate* isolate) {
 }
 
 bool IsDenormalDisabledThreadType(ThreadType type) {
-  // Disable denormals on WebAudio threads for performance reasons.  See:
-  // https://esdiscuss.org/topic/float-denormal-issue-in-javascript-processor-node-in-web-audio-api
-  return type == ThreadType::kOfflineAudioWorkletThread ||
-         type == ThreadType::kRealtimeAudioWorkletThread ||
-         type == ThreadType::kSemiRealtimeAudioWorkletThread;
+  if (type == ThreadType::kOfflineAudioWorkletThread ||
+      type == ThreadType::kRealtimeAudioWorkletThread ||
+      type == ThreadType::kSemiRealtimeAudioWorkletThread) {
+    return !base::FeatureList::IsEnabled(
+        blink::features::kAudioWorkletJSDenormalEnabler);
+  }
+  return false;
 }
 
 }  // namespace
