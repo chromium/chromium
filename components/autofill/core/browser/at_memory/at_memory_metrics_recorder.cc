@@ -86,6 +86,20 @@ void AtMemoryMetricsRecorder::OnPopupShown(
         parent_suggestion_metadata) {
   // TODO(crbug.com/526885251): Add metrics for flyout menu.
   if (parent_suggestion_metadata.has_value()) {
+    if (pending_log_entry_ &&
+        !parent_suggestion_metadata->multi_index.empty()) {
+      optimization_guide::proto::AtMemoryQuality* quality =
+          pending_log_entry_->log_ai_data_request()
+              ->mutable_at_memory()
+              ->mutable_quality();
+      size_t root_index = parent_suggestion_metadata->multi_index[0];
+      if (root_index < static_cast<size_t>(quality->suggestions_size())) {
+        auto* root_suggestion = quality->mutable_suggestions(root_index);
+        root_suggestion->set_action(
+            optimization_guide::proto::
+                AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_OPENED);
+      }
+    }
     return;
   }
   if (source_.has_value()) {

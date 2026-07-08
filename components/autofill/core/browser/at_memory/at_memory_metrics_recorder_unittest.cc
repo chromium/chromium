@@ -508,6 +508,10 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
     metrics.OnQueryResponseReceived(MemorySearchResults(
         MemorySearchStatus::kFinalResponseSuccess, {local_suggestion}));
 
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         AutofillSuggestionDelegate::SuggestionMetadata{
+                             .multi_index = {0}});
+
     metrics.OnSuggestionAccepted(
         MemoryDataType::kAddressFull,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0, 1}});
@@ -519,9 +523,54 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
       uploaded_logs[0]->at_memory().quality();
 
   ASSERT_EQ(quality.suggestions_size(), 1);
+  // The action should be set to the flyout menu attribute accepted action.
   EXPECT_EQ(quality.suggestions(0).action(),
             optimization_guide::proto::
                 AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_ATTRIBUTE_ACCEPTED);
+}
+
+// Tests that the ModelQualityLogEntry is correctly filled with the action
+// for a sub-suggestion (flyout menu) being opened for a suggestion but not
+// accepted.
+TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
+  TestingPrefServiceSimple local_state;
+  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+      local_state.registry());
+  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+      local_state.registry());
+  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
+      &local_state);
+
+  {
+    AtMemoryMetricsRecorder metrics(
+        &uploader_service, GURL("https://example.com"), u"Example Page",
+        FormSignature(123), FieldSignature(456));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt);
+    metrics.OnQuerySubmitted(u"test query");
+
+    MemorySearchResult local_suggestion(MemoryDataType::kAddressFull, u"key 1",
+                                        u"value1");
+    local_suggestion.sources.push_back(
+        MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+    metrics.OnQueryResponseReceived(MemorySearchResults(
+        MemorySearchStatus::kFinalResponseSuccess, {local_suggestion}));
+
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         AutofillSuggestionDelegate::SuggestionMetadata{
+                             .multi_index = {0}});
+  }
+
+  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  ASSERT_EQ(uploaded_logs.size(), 1u);
+  const optimization_guide::proto::AtMemoryQuality& quality =
+      uploaded_logs[0]->at_memory().quality();
+
+  ASSERT_EQ(quality.suggestions_size(), 1);
+  // The action should be set to the flyout menu attribute accepted action.
+  EXPECT_EQ(quality.suggestions(0).action(),
+            optimization_guide::proto::
+                AT_MEMORY_SUGGESTION_ACTION_FLYOUT_MENU_OPENED);
 }
 
 // Tests that `OnSuggestionAccepted` correctly logs the accepted suggestion
