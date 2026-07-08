@@ -87,6 +87,10 @@ class ContextHubService : public KeyedService {
   // Generates tab groups based on the provided `prompt`.
   void GenerateTabGroups(std::string prompt);
 
+  base::WeakPtr<ContextHubService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Handles the async response from the AutoTodos fetch.
   void OnAutoTodosFetched(AutoTodosCallback callback,

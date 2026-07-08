@@ -162,22 +162,25 @@ export class MemoryBanksElement extends CrLitElement {
 
 
   private getSelectedEntriesAsText_(): string {
-    const selectedEntries =
-        this.entries.filter(entry => this.selectedIds.has(entry.id));
-    return selectedEntries
+    return this.entries.filter(entry => this.selectedIds.has(entry.id))
         .map(entry => {
           const dateStr =
               this.convertMojoTimeToDate(entry.timestamp).toLocaleString();
-          if (entry.type === EntryType.kTextSelection) {
-            return `[Text Selection] "${
-                entry.selectedText || ''}"\nPage Title: ${
-                entry.tabTitle}\nURL: ${entry.url}\nSaved: ${dateStr}\n`;
-          } else {
-            return `[Tab] Title: ${entry.tabTitle}\nURL: ${entry.url}\nSaved: ${
-                dateStr}\n`;
+          const typeStr = entry.type === EntryType.kTextSelection ?
+              'Saved Text' :
+              'Saved Tab';
+          const lines = [
+            `[${typeStr}]`,
+            `Title: ${entry.tabTitle}`,
+            `URL: ${entry.url}`,
+          ];
+          if (entry.selectedText) {
+            lines.push(`Content: "${entry.selectedText}"`);
           }
+          lines.push(`Saved Date: ${dateStr}`);
+          return lines.join('\n');
         })
-        .join('\n---\n\n');
+        .join('\n\n---\n\n');
   }
 }
 

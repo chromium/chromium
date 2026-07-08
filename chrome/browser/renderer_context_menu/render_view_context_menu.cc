@@ -166,6 +166,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -2511,6 +2512,9 @@ void RenderViewContextMenu::AppendPageItems() {
       menu_model_.RemoveItemAt(menu_model_.GetItemCount() - 1);
     }
 
+    // Save to Memory Banks
+    AppendSaveToMemoryBanksItem();
+
     // Search with google lens
     if (IsRegionSearchEnabled()) {
       AppendRegionSearchItem();
@@ -2587,6 +2591,8 @@ void RenderViewContextMenu::AppendPageItems() {
       AppendReadAnythingItem();
     }
   }
+
+  AppendSaveToMemoryBanksItem();
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -4836,7 +4842,26 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
   if (!selected_text.empty()) {
     context_hub_service->SaveTextSelection(params_.page_url, tab_title,
                                            selected_text, base::DoNothing());
+    return;
   }
+
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
+
+  content_extraction::GetInnerText(
+      *render_frame_host, std::nullopt,
+      base::BindOnce(
+          [](base::WeakPtr<context_hub::ContextHubService> service, GURL url,
+             std::string title,
+             std::unique_ptr<content_extraction::InnerTextResult> result) {
+            if (service && result && !result->inner_text.empty()) {
+              service->SaveTab(url, title, result->inner_text,
+                               base::DoNothing());
+            }
+          },
+          context_hub_service->GetWeakPtr(), params_.page_url, tab_title));
 }
 
 void RenderViewContextMenu::ExecInspectElement() {
