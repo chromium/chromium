@@ -4,6 +4,7 @@
 
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_ui_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -246,6 +248,66 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   // Verify the prompt is dismissed.
   [[EarlGrey selectElementWithMatcher:AgeMismatchPrimaryButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that switching from an account that can sign in to one that cannot
+// triggers the age mismatch signout prompt.
+- (void)testSwitchToAccountCannotSignInTriggersAgeMismatch {
+  // Add two fake identities.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+
+  // Add the identities with their capabilities.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1
+                 withCapabilities:@{
+                   @(kCanSignInToChromeCapabilityName) : @YES,
+                 }];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2
+                 withCapabilities:@{
+                   @(kCanSignInToChromeCapabilityName) : @NO,
+                 }];
+
+  // Sign in with the first identity (can sign in).
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+
+  // Open Account Menu from NTP.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kNTPFeedHeaderIdentityDisc)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Wait for the account menu to appear and the secondary account button to be
+  // visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kAccountMenuSecondaryAccountButtonId)];
+
+  // Tap on the secondary account in the menu to switch.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+
+  // Verify Age Mismatch prompt is displayed.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:AgeMismatchPrimaryButton()];
+
+  // Verify that the "Use without an account" button is NOT displayed.
+  [[EarlGrey selectElementWithMatcher:AgeMismatchSecondaryButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Tap "Use another account" (Primary button).
+  [[EarlGrey selectElementWithMatcher:AgeMismatchPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Verify the prompt is dismissed.
+  [[EarlGrey selectElementWithMatcher:AgeMismatchPrimaryButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify the original user is still signed in (switch failed).
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 }
 
 @end
