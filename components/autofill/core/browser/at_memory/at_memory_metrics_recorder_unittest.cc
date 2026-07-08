@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
@@ -30,7 +32,15 @@ using ::accessibility_annotator::MemorySearchStatus;
 
 class AtMemoryMetricsRecorderTest : public testing::Test {
  public:
-  AtMemoryMetricsRecorderTest() = default;
+  AtMemoryMetricsRecorderTest() {
+    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        local_state_.registry());
+    uploader_service_ =
+        std::make_unique<optimization_guide::TestModelQualityLogsUploaderService>(
+            &local_state_);
+  }
 
  protected:
   void SendResponse(AtMemoryMetricsRecorder& metrics) {
@@ -43,6 +53,9 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      uploader_service_;
 };
 
 // Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
@@ -343,17 +356,9 @@ TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
   base::HistogramTester histogram_tester;
 
-  TestingPrefServiceSimple local_state;
-  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
-      local_state.registry());
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      local_state.registry());
-  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
-      &local_state);
-
   {
     AtMemoryMetricsRecorder metrics(
-        &uploader_service, GURL("https://example.com"), u"Example Page",
+        uploader_service_.get(), GURL("https://example.com"), u"Example Page",
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
@@ -373,7 +378,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
                             {local_suggestion, remote_suggestion}));
   }
 
-  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 1u);
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
@@ -399,31 +404,23 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
 // uploader service is available and is flushed on next query.
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
-  TestingPrefServiceSimple local_state;
-  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
-      local_state.registry());
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      local_state.registry());
-  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
-      &local_state);
-
   std::string quality1_session_id;
   {
     AtMemoryMetricsRecorder metrics(
-        &uploader_service, GURL("https://example.com"), u"Example Page",
+        uploader_service_.get(), GURL("https://example.com"), u"Example Page",
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
     metrics.OnQuerySubmitted(u"test query");
 
     // The first query should be pending, not uploaded yet.
-    EXPECT_TRUE(uploader_service.uploaded_logs().empty());
+    EXPECT_TRUE(uploader_service_->uploaded_logs().empty());
 
     // Submitting a new query should flush the first query.
     metrics.OnQuerySubmitted(u"next query");
-    ASSERT_EQ(uploader_service.uploaded_logs().size(), 1u);
+    ASSERT_EQ(uploader_service_->uploaded_logs().size(), 1u);
     const optimization_guide::proto::AtMemoryQuality& quality1 =
-        uploader_service.uploaded_logs()[0]->at_memory().quality();
+        uploader_service_->uploaded_logs()[0]->at_memory().quality();
     quality1_session_id = quality1.session_id();
     EXPECT_EQ(quality1.query(), "test query");
     EXPECT_EQ(quality1.url(), "https://example.com/");
@@ -434,7 +431,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
   }
 
   // The second query is flushed on destruction of the object.
-  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 2u);
   const optimization_guide::proto::AtMemoryQuality& quality2 =
       uploaded_logs[1]->at_memory().quality();
@@ -450,17 +447,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
 // Tests that the ModelQualityLogEntry is correctly filled with the action
 // for a root suggestion acceptance.
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
-  TestingPrefServiceSimple local_state;
-  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
-      local_state.registry());
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      local_state.registry());
-  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
-      &local_state);
-
   {
     AtMemoryMetricsRecorder metrics(
-        &uploader_service, GURL("https://example.com"), u"Example Page",
+        uploader_service_.get(), GURL("https://example.com"), u"Example Page",
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
@@ -478,7 +467,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
   }
 
-  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 1u);
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
@@ -491,17 +480,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
 // Tests that the ModelQualityLogEntry is correctly filled with the action
 // for a sub-suggestion (flyout menu) acceptance.
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
-  TestingPrefServiceSimple local_state;
-  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
-      local_state.registry());
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      local_state.registry());
-  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
-      &local_state);
-
   {
     AtMemoryMetricsRecorder metrics(
-        &uploader_service, GURL("https://example.com"), u"Example Page",
+        uploader_service_.get(), GURL("https://example.com"), u"Example Page",
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
@@ -523,7 +504,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0, 1}});
   }
 
-  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 1u);
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
@@ -539,17 +520,9 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
 // for a sub-suggestion (flyout menu) being opened for a suggestion but not
 // accepted.
 TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
-  TestingPrefServiceSimple local_state;
-  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
-      local_state.registry());
-  optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-      local_state.registry());
-  optimization_guide::TestModelQualityLogsUploaderService uploader_service(
-      &local_state);
-
   {
     AtMemoryMetricsRecorder metrics(
-        &uploader_service, GURL("https://example.com"), u"Example Page",
+        uploader_service_.get(), GURL("https://example.com"), u"Example Page",
         FormSignature(123), FieldSignature(456));
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
@@ -567,7 +540,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
                              .multi_index = {0}});
   }
 
-  const auto& uploaded_logs = uploader_service.uploaded_logs();
+  const auto& uploaded_logs = uploader_service_->uploaded_logs();
   ASSERT_EQ(uploaded_logs.size(), 1u);
   const optimization_guide::proto::AtMemoryQuality& quality =
       uploaded_logs[0]->at_memory().quality();
