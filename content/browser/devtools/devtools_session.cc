@@ -794,17 +794,17 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
     }
   }
 
-  // Do NOT use crdtp::Dispatchable here. It enforces the presence of both
-  // 'id' and 'method', which are not guaranteed in Responses and Notifications.
-  crdtp::span<uint8_t> extracted_session_id =
-      crdtp::cbor::GetString8ValueFromMap(span_message,
-                                          crdtp::SpanFrom("sessionId"));
-
   if (!expected_has_id &&
       crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("id"))) {
     DLOG(ERROR) << "Expected no id in the message but received one";
     return false;
   }
+
+  // Do NOT use crdtp::Dispatchable here. It enforces the presence of both
+  // 'id' and 'method', which are not guaranteed in Responses and Notifications.
+  crdtp::span<uint8_t> extracted_session_id =
+      crdtp::cbor::GetString8ValueFromMap(span_message,
+                                          crdtp::SpanFrom("sessionId"));
 
   if (expected_session_id.empty()) {
     if (!extracted_session_id.empty()) {
@@ -813,6 +813,12 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
                           ? ""
                           : std::string(extracted_session_id.begin(),
                                         extracted_session_id.end()));
+      return false;
+    }
+    // This additional check is necessary since GetString8ValueFromMap returns
+    // the empty span when encountering duplicate entries.
+    if (crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("sessionId"))) {
+      DLOG(ERROR) << "Root session expected no sessionId but received dupes.";
       return false;
     }
     return true;
