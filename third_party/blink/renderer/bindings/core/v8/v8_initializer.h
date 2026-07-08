@@ -67,6 +67,7 @@ class CORE_EXPORT V8Initializer {
 
   static void InitializeIsolateHolder(const intptr_t* reference_table,
                                       const std::string& js_command_line_flag);
+  static void InitializeInSandboxAllocator();
   static void InitializeV8Common(v8::Isolate*);
   static void InitializeContext(v8::Local<v8::Context>, ExecutionContext*);
 

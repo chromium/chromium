@@ -1032,6 +1032,35 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   size_t max_allocation_;
 };
 
+#ifdef V8_ENABLE_SANDBOX
+
+// The ArrayBuffer partition is placed inside the V8 sandbox and we can just
+// reuse the ArrayBufferContents as allocator that will delegate to
+// PartitionAlloc.
+class InSandboxAllocator final : public v8::Allocator {
+ public:
+  InSandboxAllocator() = default;
+  void* Allocate(size_t size) override {
+    return ArrayBufferContents::AllocateMemoryOrNull(
+        size, ArrayBufferContents::kZeroInitialize);
+  }
+  void* AllocateUninitialized(size_t size) override {
+    return ArrayBufferContents::AllocateMemoryOrNull(
+        size, ArrayBufferContents::kDontInitialize);
+  }
+  void* AllocateUninitializedOrCrash(size_t size) override {
+    void* result = ArrayBufferContents::AllocateMemoryOrNull(
+        size, ArrayBufferContents::kDontInitialize);
+    if (!result) {
+      OOM_CRASH(size);
+    }
+    return result;
+  }
+  void Free(void* data) override { ArrayBufferContents::FreeMemory(data); }
+};
+
+#endif  // V8_ENABLE_SANDBOX
+
 V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   if (Platform::Current()->IsTakingV8ContextSnapshot())
@@ -1055,6 +1084,12 @@ void V8Initializer::InitializeIsolateHolder(
       reference_table, js_command_line_flags,
       Platform::Current()->DisallowV8FeatureFlagOverrides(), ReportV8FatalError,
       ReportV8OOMError);
+}
+
+void V8Initializer::InitializeInSandboxAllocator() {
+#ifdef V8_ENABLE_SANDBOX
+  v8::V8::SetInSandboxAllocator(std::make_shared<InSandboxAllocator>());
+#endif
 }
 
 v8::Isolate* V8Initializer::InitializeMainThread() {

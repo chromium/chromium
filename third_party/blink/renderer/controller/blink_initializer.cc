@@ -175,6 +175,7 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // is enabled. For that reason, the partition can only be initialized after V8
   // has been initialized.
   Partitions::InitializeArrayBufferPartition();
+  V8Initializer::InitializeInSandboxAllocator();
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAndroidSystemFontPrewarming)) {
