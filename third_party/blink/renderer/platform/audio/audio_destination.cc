@@ -203,8 +203,8 @@ int AudioDestination::Render(base::TimeDelta delay,
         // budget.
         base::WaitableEvent* events[] = {&output_buffer_bypass_wait_event_,
                                          &output_buffer_bypass_stop_event_};
-        base::WaitableEvent::WaitMany(events);
-        if (output_buffer_bypass_stop_event_.IsSignaled()) {
+        size_t signaled_index = base::WaitableEvent::WaitMany(events);
+        if (signaled_index == 1) {
           state_change_underrun_in_bypass_mode_ = true;
         }
       } else {
@@ -298,6 +298,7 @@ void AudioDestination::Start() {
   if (device_state_ != DeviceState::kStopped) {
     return;
   }
+  output_buffer_bypass_stop_event_.Reset();
   SetDeviceState(DeviceState::kRunning);
   web_audio_device_->Start();
 }
@@ -336,6 +337,7 @@ void AudioDestination::Pause() {
   if (device_state_ != DeviceState::kRunning) {
     return;
   }
+  output_buffer_bypass_stop_event_.Signal();
   web_audio_device_->Pause();
   SetDeviceState(DeviceState::kPaused);
 }
@@ -348,6 +350,7 @@ void AudioDestination::Resume() {
   if (device_state_ != DeviceState::kPaused) {
     return;
   }
+  output_buffer_bypass_stop_event_.Reset();
   SetDeviceState(DeviceState::kRunning);
   web_audio_device_->Resume();
 }

@@ -273,11 +273,11 @@ class PLATFORM_EXPORT AudioDestination final
   // flag enabled.
   base::WaitableEvent output_buffer_bypass_wait_event_;
 
-  // Signaled by Stop() to unblock any Render() callback already waiting on
-  // output_buffer_bypass_wait_event_ via WaitMany(). Uses manual reset so the
-  // stop wakeup cannot be lost to a concurrent Reset() of
-  // output_buffer_bypass_wait_event_. Reset at the end of Stop() after the
-  // device has been torn down.
+  // Signaled by Stop() and Pause() to unblock any Render() callback already
+  // waiting on output_buffer_bypass_wait_event_ via WaitMany(). Uses manual
+  // reset so the stop/pause wakeup cannot be lost to a concurrent Reset() of
+  // output_buffer_bypass_wait_event_. Reset during Start(), Resume(), and
+  // Stop() after the device has been torn down.
   base::WaitableEvent output_buffer_bypass_stop_event_{
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED};

@@ -493,6 +493,112 @@ TEST_F(AudioDestinationTest, BypassOutputBufferingOrphanedTask) {
   audio_destination->Stop();
 }
 
+// Verifies that the tab does not crash due to a race condition when the audio
+// destination is stopped immediately after a pause/resume cycle.
+// Without the fix, the old audio thread (leaked on pause) wakes up when the
+// new session task signals the wait event, consumes the FIFO frames, and leaves
+// the new thread to wake up on Stop() and encounter a CHECK crash due to an
+// empty FIFO and no stop state propagation.
+TEST_F(AudioDestinationTest, BypassOutputBufferingCrash) {
+  base::test::TaskEnvironment task_environment;
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioBypassOutputBuffering", true);
+  ScopedTestingPlatformSupport<TestPlatform> platform;
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
+
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Pause).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Resume).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
+
+  const std::optional<float> context_sample_rate = 44100;
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      context_sample_rate,
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+
+  auto worklet_task_runner =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  audio_destination->SetWorkletTaskRunner(worklet_task_runner);
+
+  auto audio_bus = media::AudioBus::Create(
+      Platform::Current()->AudioHardwareOutputChannels(),
+      audio_destination->FramesPerBuffer());
+
+  auto wait_for_pending_tasks =
+      [](scoped_refptr<base::TestSimpleTaskRunner> runner, size_t expected) {
+        while (runner->NumPendingTasks() < expected) {
+          base::PlatformThread::Sleep(base::Milliseconds(10));
+        }
+      };
+
+  // Start the destination.
+  audio_destination->Start();
+
+  std::unique_ptr<NonMainThread> audio_thread1 =
+      NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kTestThread));
+  std::unique_ptr<NonMainThread> audio_thread2 =
+      NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kTestThread));
+
+  base::WaitableEvent render1_finished_event;
+  base::WaitableEvent render2_finished_event;
+
+  // Post Render 1 on Thread 1. It will block in WaitMany().
+  audio_thread1->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AudioDestination> destination,
+             media::AudioBus* bus, base::WaitableEvent* event) {
+            destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                                media::AudioGlitchInfo(), bus);
+            event->Signal();
+          },
+          audio_destination, audio_bus.get(), &render1_finished_event));
+
+  // Wait until Thread 1 has posted its task to the worklet and is blocking.
+  wait_for_pending_tasks(worklet_task_runner, 1u);
+
+  // Pause. This signals the stop event and unblocks Thread 1.
+  audio_destination->Pause();
+
+  // Wait for Thread 1 to finish. This ensures Thread 1 is fully unblocked
+  // and exited before we resume, avoiding any thread leaks or races.
+  render1_finished_event.Wait();
+
+  // Run the discarded task from the first render session.
+  EXPECT_EQ(worklet_task_runner->NumPendingTasks(), 1u);
+  worklet_task_runner->RunPendingTasks();
+
+  // Resume.
+  audio_destination->Resume();
+
+  // Post Render 2 on Thread 2. It will also block.
+  audio_thread2->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AudioDestination> destination,
+             media::AudioBus* bus, base::WaitableEvent* event) {
+            destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                                media::AudioGlitchInfo(), bus);
+            event->Signal();
+          },
+          audio_destination, audio_bus.get(), &render2_finished_event));
+
+  // Wait until Thread 2 has also posted its task and is blocking.
+  wait_for_pending_tasks(worklet_task_runner, 1u);
+
+  // Run the task to let the second Render() complete.
+  worklet_task_runner->RunPendingTasks();
+
+  // Wait for Thread 2 to finish.
+  render2_finished_event.Wait();
+
+  // Clean up.
+  audio_destination->Stop();
+}
+
 }  // namespace
 
 }  // namespace blink
