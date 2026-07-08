@@ -240,7 +240,8 @@ LayoutUnit AlignContentOffset(
     LayoutUnit intrinsic_size,
     LayoutUnit container_size,
     LayoutUnit baseline_offset,
-    const StyleContentAlignmentData& content_alignment) {
+    const StyleContentAlignmentData& content_alignment,
+    bool is_fill_reverse) {
   // Note: There is only ever one alignment subject for these properties in the
   // stacking axis, so the unique align-content / justify-content values boil
   // down to start, center, end, and baseline alignment. (The behavior of normal
@@ -257,10 +258,15 @@ LayoutUnit AlignContentOffset(
     free_space = free_space.ClampNegativeToZero();
   }
 
+  // With `fill-reverse`, items are instead positioned at the end edge of the
+  // container, so the initial offset of our content is `free_space`, which
+  // means we need to subtract `free_space` from our end result.
+  LayoutUnit adjusted_offset;
   switch (content_alignment.Distribution()) {
     case ContentDistributionType::kSpaceAround:
     case ContentDistributionType::kSpaceEvenly:
-      return (free_space / 2);
+      adjusted_offset = free_space / 2;
+      return is_fill_reverse ? adjusted_offset - free_space : adjusted_offset;
     case ContentDistributionType::kSpaceBetween:
     case ContentDistributionType::kStretch:
     case ContentDistributionType::kDefault:
@@ -272,18 +278,22 @@ LayoutUnit AlignContentOffset(
     case ContentPosition::kStart:
     case ContentPosition::kFlexStart:
     case ContentPosition::kNormal:
-      return LayoutUnit();
+      adjusted_offset = LayoutUnit();
+      break;
     case ContentPosition::kCenter:
-      return (free_space / 2);
+      adjusted_offset = free_space / 2;
+      break;
     case ContentPosition::kRight:
     case ContentPosition::kEnd:
     case ContentPosition::kFlexEnd:
-      return free_space;
+      adjusted_offset = free_space;
+      break;
     case ContentPosition::kBaseline:
     case ContentPosition::kLastBaseline:
-      return baseline_offset;
+      adjusted_offset = baseline_offset;
+      break;
   }
-  NOTREACHED();
+  return is_fill_reverse ? adjusted_offset - free_space : adjusted_offset;
 }
 
 // Returns the margin on the baseline side of `item` for baseline alignment
@@ -496,24 +506,17 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
       apply_fill_reverse_to_children) {
     const LayoutUnit intrinsic_inline_size =
         is_for_columns ? grid_axis_size : stacking_axis_size_;
+    const LayoutUnit content_stacking_axis_size =
+        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size;
 
     // For definite stacking axis, use the container's available size to
     // compute alignment. For indefinite stacking axis, use the intrinsic
     // stacking-axis size (alignment will have no free space unless the
     // resolved container size differs due to min-height/etc).
-    LayoutUnit align_content_offset = AlignContentOffset(
-        is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size,
-        effective_stacking_axis_size,
+    const LayoutUnit align_content_offset = AlignContentOffset(
+        content_stacking_axis_size, effective_stacking_axis_size,
         baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
-        content_alignment);
-
-    // In fill-reverse, items either already are, or will be, positioned at the
-    // end of the stacking axis. The content alignment offset computed above
-    // assumes items start at the beginning of the tracks, so we negate it to
-    // shift items in the correct direction.
-    if (is_fill_reverse) {
-      align_content_offset *= -1;
-    }
+        content_alignment, is_fill_reverse);
 
     const LayoutUnit border_scrollbar_padding_start =
         is_for_columns ? BorderScrollbarPadding().block_start
