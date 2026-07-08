@@ -23,7 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   data_provider_->Update([&](auto& update) {
     update.AddToUserInstallAllowlist(
         app->web_bundle_id(),
-        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+        IwaRuntimeDataProvider::UserInstallAllowlistItemData(
             /*enterprise_name=*/"fancy comp"));
   });
 
@@ -203,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   data_provider_->Update([&](auto& update) {
     update.AddToUserInstallAllowlist(
         app->web_bundle_id(),
-        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+        IwaRuntimeDataProvider::UserInstallAllowlistItemData(
             /*enterprise_name=*/"fancy comp"));
   });
 

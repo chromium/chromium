@@ -11,6 +11,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "content/public/test/browser_test.h"
 
 using testing::_;
@@ -30,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppTrustCheckerBrowserTest,
   data_provider_->Update([&](auto& update) {
     update.AddToUserInstallAllowlist(
         allowlisted_bundle_id,
-        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+        IwaRuntimeDataProvider::UserInstallAllowlistItemData(
             /*enterprise_name=*/"Google LLC"));
   });
 

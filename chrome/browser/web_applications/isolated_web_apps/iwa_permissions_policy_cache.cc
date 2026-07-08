@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -27,6 +26,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/public/iwa_entitlements.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
@@ -184,7 +184,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
 }
 
 using IwaRuntimeAllowlistData =
-    ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData;
+    IwaRuntimeDataProvider::UserInstallAllowlistItemData;
 
 bool IsEntitlementGranted(const IwaRuntimeAllowlistData& allowlist_data,
                           const IwaVersion& app_version,
@@ -227,7 +227,7 @@ bool IsEntitlementGranted(const IwaRuntimeAllowlistData& allowlist_data,
 // administrator or developer.
 //
 // Algorithm:
-// 1. Retrieve the allowed entitlements from the `ChromeIwaRuntimeDataProvider`
+// 1. Retrieve the allowed entitlements from the `IwaRuntimeDataProvider`
 //    based on the Web Bundle ID.
 // 2. Iterate through each permissions policy feature requested by the app:
 //    a. Check if the feature maps to a specific IWA entitlement.
@@ -247,7 +247,7 @@ std::vector<IwaPermissionsPolicyCache::Entry> ApplyEntitlements(
   std::vector<IwaPermissionsPolicyCache::Entry> result;
 
   const IwaRuntimeAllowlistData* allowlist_data =
-      ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
+      IwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
           web_bundle_id.id());
 
   const auto is_feature_allowed = [&allowlist_data,
@@ -280,7 +280,7 @@ IwaPermissionsPolicyCache::IwaPermissionsPolicyCache(WebAppProvider& provider)
   install_manager_observation_.Observe(&provider_->install_manager());
 
   runtime_data_subscription_ =
-      ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+      IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(
               &IwaPermissionsPolicyCache::UpdateFilteredPolicies,
               weak_ptr_factory_.GetWeakPtr()));

@@ -46,7 +46,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -65,6 +64,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
@@ -492,8 +492,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
-  ASSERT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
-                   .IsManagedUpdatePermitted(GetWebBundleId().id()));
+  ASSERT_FALSE(
+      web_app::IwaRuntimeDataProvider::GetInstance().IsManagedUpdatePermitted(
+          GetWebBundleId().id()));
   EXPECT_THAT(provider()
                   .isolated_web_app_update_manager()
                   .DiscoverAndPrepareUpdatesNow(),
@@ -1203,7 +1204,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerUserInstallBrowserTest,
   data_provider_->Update([&](auto& update) {
     update.AddToUserInstallAllowlist(
         app->web_bundle_id(),
-        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+        IwaRuntimeDataProvider::UserInstallAllowlistItemData(
             /*enterprise_name=*/"fancy comp"));
   });
 

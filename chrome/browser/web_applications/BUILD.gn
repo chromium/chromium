@@ -714,7 +714,6 @@ source_set("web_applications") {
     ":iwa_types",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
-    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//chrome/browser/web_applications/proto:proto_extras",
@@ -810,8 +809,8 @@ source_set("web_applications_test_support") {
   sources = [
     "isolated_web_apps/test/bundle_versions_storage.cc",
     "isolated_web_apps/test/bundle_versions_storage.h",
-    "isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.cc",
-    "isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h",
+    "isolated_web_apps/test/fake_iwa_runtime_data_provider.cc",
+    "isolated_web_apps/test/fake_iwa_runtime_data_provider.h",
     "isolated_web_apps/test/integrity_block_data_matcher.h",
     "isolated_web_apps/test/isolated_web_app_builder.cc",
     "isolated_web_apps/test/isolated_web_app_builder.h",

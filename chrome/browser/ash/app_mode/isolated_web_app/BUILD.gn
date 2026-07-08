@@ -19,12 +19,12 @@ static_library("isolated_web_app") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications/isolated_web_apps/runtime_data",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/web_package",
     "//components/webapps/isolated_web_apps",
+    "//components/webapps/isolated_web_apps/public",
     "//url",
   ]
 }

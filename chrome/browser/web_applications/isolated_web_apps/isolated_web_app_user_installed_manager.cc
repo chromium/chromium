@@ -10,13 +10,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
 
@@ -29,7 +29,7 @@ IsolatedWebAppUserInstalledManager::~IsolatedWebAppUserInstalledManager() =
 
 void IsolatedWebAppUserInstalledManager::Start() {
   runtime_data_subscription_ =
-      ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+      IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(
               &IsolatedWebAppUserInstalledManager::OnRuntimeDataChanged,
               weak_factory_.GetWeakPtr()));
@@ -47,7 +47,7 @@ void IsolatedWebAppUserInstalledManager::Install(
     const std::optional<IwaVersion>& expected_version,
     InstallIsolatedWebAppCallback callback) {
   // That would be caught later anyway. This check just saves resources.
-  if (!ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
+  if (!IwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
           url_info.web_bundle_id().id())) {
     std::move(callback).Run(base::unexpected(InstallIsolatedWebAppCommandError{
         "IWA with WebAppManagement::Type::kIwaUserInstalled must be on the "
@@ -62,8 +62,7 @@ void IsolatedWebAppUserInstalledManager::Install(
 }
 
 void IsolatedWebAppUserInstalledManager::OnRuntimeDataChanged() {
-  ChromeIwaRuntimeDataProvider& data_provider =
-      ChromeIwaRuntimeDataProvider::GetInstance();
+  IwaRuntimeDataProvider& data_provider = IwaRuntimeDataProvider::GetInstance();
 
   for (const WebApp& iwa : provider_->registrar_unsafe().GetApps(
            WebAppFilter::UserInstalledIsolatedWebApp())) {

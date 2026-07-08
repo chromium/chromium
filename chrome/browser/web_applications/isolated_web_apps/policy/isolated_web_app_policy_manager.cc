@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -50,6 +49,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -170,9 +170,8 @@ void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
     return;
   }
 
-  ChromeIwaRuntimeDataProvider::GetInstance()
-      .OnBestEffortRuntimeDataReady()
-      .Post(FROM_HERE, std::move(callback));
+  IwaRuntimeDataProvider::GetInstance().OnBestEffortRuntimeDataReady().Post(
+      FROM_HERE, std::move(callback));
 }
 
 }  // namespace
@@ -260,7 +259,7 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
           .Set("start_time",
                base::TimeFormatFriendlyDateAndTime(base::Time::Now()))
           .Set("info", "IsolatedWebAppPolicyManager::Start()");
-  ChromeIwaRuntimeDataProvider::GetInstance().WriteDebugMetadata(debug_log);
+  IwaRuntimeDataProvider::GetInstance().WriteDebugMetadata(debug_log);
   process_logs_.AppendCompletedStep(std::move(debug_log));
 
   OnComponentDataReady(profile_->GetPrefs(),
@@ -319,7 +318,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
 
 void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
   runtime_data_changed_subscription_ =
-      ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+      IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(
               &IsolatedWebAppPolicyManager::OnRuntimeDataChanged,
               weak_ptr_factory_.GetWeakPtr()));
@@ -350,7 +349,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(AllAppsLock& lock,
   MaybeRecordFirstPolicyProcessingDelay(profile_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  ChromeIwaRuntimeDataProvider::GetInstance().WriteDebugMetadata(debug_info);
+  IwaRuntimeDataProvider::GetInstance().WriteDebugMetadata(debug_info);
 
   CHECK(provider_);
   CHECK(install_tasks_.empty());
@@ -368,7 +367,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(AllAppsLock& lock,
   std::erase_if(
       apps_in_policy,
       [](const IsolatedWebAppExternalInstallOptions& install_options) {
-        return ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+        return IwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
             install_options.web_bundle_id().id());
       });
 
@@ -428,9 +427,8 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(AllAppsLock& lock,
         break;
 
       case WebAppManagement::kIwaUserInstalled:
-        if (!ChromeIwaRuntimeDataProvider::GetInstance()
-                 .IsManagedInstallPermitted(
-                     install_options.web_bundle_id().id())) {
+        if (!IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+                install_options.web_bundle_id().id())) {
           DLOG(WARNING) << "The IWA " << install_options.web_bundle_id()
                         << " is not in the managed allowlist. ";
           continue;

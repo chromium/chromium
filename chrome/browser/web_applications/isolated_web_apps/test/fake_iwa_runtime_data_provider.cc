@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider.h"
 
 #include <algorithm>
 
-#include "base/base64.h"
-#include "base/check.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
@@ -137,13 +134,13 @@ ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetUserInstallAllowlist(
 FakeIwaRuntimeDataProvider::FakeIwaRuntimeDataProvider() = default;
 FakeIwaRuntimeDataProvider::~FakeIwaRuntimeDataProvider() = default;
 
-const ChromeIwaRuntimeDataProvider::KeyRotationInfo*
+const IwaRuntimeDataProvider::KeyRotationInfo*
 FakeIwaRuntimeDataProvider::GetKeyRotationInfo(
     const std::string& web_bundle_id) const {
   return base::FindOrNull(key_rotations_, web_bundle_id);
 }
 
-const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
+const IwaRuntimeDataProvider::UserInstallAllowlistItemData*
 FakeIwaRuntimeDataProvider::GetUserInstallAllowlistData(
     const std::string& web_bundle_id) const {
   return base::FindOrNull(user_install_allowlist_, web_bundle_id);
@@ -167,7 +164,7 @@ bool FakeIwaRuntimeDataProvider::IsBundleBlocklisted(
                                &web_package::SignedWebBundleId::id);
 }
 
-const ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo*
+const IwaRuntimeDataProvider::SpecialAppPermissionsInfo*
 FakeIwaRuntimeDataProvider::GetSpecialAppPermissionsInfo(
     const std::string& web_bundle_id) const {
   return base::FindOrNull(special_permissions_, web_bundle_id);

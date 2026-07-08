@@ -8,8 +8,8 @@
 
 #include "base/containers/span.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
 
@@ -28,7 +28,7 @@ std::optional<KeyRotationData> GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data) {
   const auto* kr_info =
-      ChromeIwaRuntimeDataProvider::GetInstance().GetKeyRotationInfo(
+      IwaRuntimeDataProvider::GetInstance().GetKeyRotationInfo(
           web_bundle_id.id());
   if (!kr_info) {
     return std::nullopt;

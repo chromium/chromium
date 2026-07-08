@@ -40,7 +40,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_rotation_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
@@ -57,6 +56,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -378,7 +378,7 @@ void IsolatedWebAppUpdateManager::Start() {
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
   runtime_data_changed_subscription_ =
-      ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+      IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(
               &IsolatedWebAppUpdateManager::OnRuntimeDataChanged,
               weak_factory_.GetWeakPtr()));

@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
 #include "chrome/browser/web_applications/model/dialog_image_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 
@@ -134,11 +134,10 @@ void SignedWebBundleMetadata::Create(
         std::move(callback).Run(install_info.transform(
             [&url_info, &source](const WebAppInstallInfo& install_info)
                 -> SignedWebBundleMetadata {
-              const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
-                  user_install_data =
-                      ChromeIwaRuntimeDataProvider::GetInstance()
-                          .GetUserInstallAllowlistData(
-                              url_info.web_bundle_id().id());
+              const IwaRuntimeDataProvider::UserInstallAllowlistItemData*
+                  user_install_data = IwaRuntimeDataProvider::GetInstance()
+                                          .GetUserInstallAllowlistData(
+                                              url_info.web_bundle_id().id());
               return SignedWebBundleMetadata(
                   url_info, source, install_info.title.value(),
                   install_info.isolated_web_app_version(),

@@ -25,13 +25,13 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "url/origin.h"
 
 namespace ash {
@@ -77,7 +77,7 @@ KioskIwaManager::KioskIwaManager(PrefService& local_state,
   CHECK(!g_kiosk_iwa_manager_instance);  // Only one instance is allowed.
   g_kiosk_iwa_manager_instance = this;
   runtime_data_changed_subscription_ =
-      web_app::ChromeIwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
+      web_app::IwaRuntimeDataProvider::GetInstance().OnRuntimeDataChanged(
           base::BindRepeating(&KioskIwaManager::OnRuntimeDataChanged,
                               weak_ptr_factory_.GetWeakPtr()));
   UpdateAppsFromPolicy();
@@ -230,7 +230,7 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
   // cannot be installed nor launched, instead it will show the splash
   // screen with the error message.
   // TODO(crbug.com/470341229): Find out if can be refactored as in description
-  if (web_app::ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+  if (web_app::IwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
           new_iwa_data->web_bundle_id().id())) {
     if (GetAutoLoginIdSetting() == account.account_id) {
       maybe_blocked_auto_launch_app_ = std::move(new_iwa_data);

@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/storage_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/trust_and_signature_verifier.h"
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
@@ -54,6 +53,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -177,7 +177,7 @@ void InstallIsolatedWebAppCommand::CheckCanBeInstalled(
   // Although IWA installation may be blocked earlier for performance reasons,
   // this is the final check for all installation paths to ensure that apps are
   // not installed if they are on the blocklist.
-  if (ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+  if (IwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
           url_info_.web_bundle_id().id())) {
     ReportFailure(InstallIwaError::kAppNotPermitted,
                   webapps::InstallResultCode::kNotInstallable,

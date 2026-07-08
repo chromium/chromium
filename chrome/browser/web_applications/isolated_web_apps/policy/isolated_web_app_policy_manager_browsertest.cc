@@ -59,6 +59,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -515,9 +516,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
   // Empty the allowlist, so the app install is not allowed.
   SetIwaAllowlist(/*managed_allowlist=*/{});
 
-  EXPECT_FALSE(
-      ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
-          kWebBundleId1.id()));
+  EXPECT_FALSE(IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+      kWebBundleId1.id()));
 
   base::RunLoop run_loop;
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
@@ -554,10 +554,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
         .SetBlocklist({kWebBundleId1});
   });
 
-  EXPECT_TRUE(
-      ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
-          kWebBundleId1.id()));
-  EXPECT_TRUE(ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+  EXPECT_TRUE(IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+      kWebBundleId1.id()));
+  EXPECT_TRUE(IwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
       kWebBundleId1.id()));
 
   base::RunLoop run_loop;

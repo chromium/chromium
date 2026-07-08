@@ -18,12 +18,12 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -170,7 +170,7 @@ IwaInstaller::IwaInstaller(IsolatedWebAppExternalInstallOptions install_options,
 IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
-  if (!ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+  if (!IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
           install_options_.web_bundle_id().id())) {
     base::UmaHistogramEnumeration(
         kNonAllowlistedAppInstallationRejectedHistogramName,
