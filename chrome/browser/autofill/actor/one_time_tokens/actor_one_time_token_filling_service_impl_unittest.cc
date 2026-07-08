@@ -378,14 +378,16 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, AbortLoginTracking) {
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_NoSecurityStateHelper) {
+       ValidateFormFillingContext_NoSecurityStateHelper) {
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
 }
 
-TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_Success) {
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_Success) {
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -407,11 +409,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_Success) {
 
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
-  EXPECT_TRUE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kSecure);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_InsecureFormAction) {
+       ValidateFormFillingContext_InsecureFormAction) {
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -432,12 +435,13 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       SeeForm({.fields = {{.server_type = ONE_TIME_CODE}},
                .action = "http://example.com/submit.html"});
   FieldGlobalId insecure_field_id = insecure_form.fields()[0].global_id();
-  EXPECT_FALSE(
-      service().IsFormFillingSecure(tab().GetHandle(), {insecure_field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(),
+                                                 {insecure_field_id}),
+            FormFillingContextStatus::kInsecureContext);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_MixedContentPage) {
+       ValidateFormFillingContext_MixedContentPage) {
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -460,10 +464,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // Simulating mixed content (`DISPLAYED_INSECURE_CONTENT`) in `content_status`
   // downgrades `SecurityLevel` and returns false.
   ssl.content_status |= content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
-  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
 }
 
-TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_HttpPage) {
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_HttpPage) {
   NavigateAndCommit(GURL("http://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("http://example.com"));
@@ -472,11 +478,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, IsFormFillingSecure_HttpPage) {
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_InvalidCertificate) {
+       ValidateFormFillingContext_InvalidCertificate) {
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -498,11 +505,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
   FieldGlobalId field_id = form.fields()[0].global_id();
 
-  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_FormNotFound) {
+       ValidateFormFillingContext_FormNotFound) {
   NavigateAndCommit(GURL("https://example.com"));
   client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -527,13 +535,15 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   manager().OnFormsSeen(/*updated_forms=*/{},
                         /*removed_forms=*/{form.global_id()});
 
-  EXPECT_FALSE(service().IsFormFillingSecure(tab().GetHandle(), {field_id}));
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kFormNotFound);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       IsFormFillingSecure_InvalidTabHandle) {
-  EXPECT_FALSE(service().IsFormFillingSecure(tabs::TabHandle::Null(),
-                                             {test::MakeFieldGlobalId()}));
+       ValidateFormFillingContext_InvalidTabHandle) {
+  EXPECT_EQ(service().ValidateFormFillingContext(tabs::TabHandle::Null(),
+                                                 {test::MakeFieldGlobalId()}),
+            FormFillingContextStatus::kTabNotAvailable);
 }
 
 }  // namespace

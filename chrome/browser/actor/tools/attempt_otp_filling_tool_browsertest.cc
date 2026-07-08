@@ -517,8 +517,29 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingFieldNotFound);
 }
 
-// TODO(crbug.com/502907795): Differentiate between no form on the page and
-// filling insecure and add a test for it.
+// The tool fails when targeting a field (e.g. a button) that is not associated
+// with a form structure in autofill's cache.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolFailsWhenFormNotFoundForField) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
+
+  // Target the submit button instead of the OTP field.
+  ASSERT_OK_AND_ASSIGN(
+      DomNode submit_button,
+      GetDomNodeOnPage(*main_frame(), "#single-submit-button"));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{submit_button},
+          /*for_signin=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingFieldNotFound);
+}
 
 // `AttemptOtpFillingTool` fails when the form filling context is insecure (e.g.
 // mixed content form submission).
@@ -542,8 +563,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpInsecureContext);
 }
 
 // Tests verifying if the OTP filling attempt is part of an ongoing actor login

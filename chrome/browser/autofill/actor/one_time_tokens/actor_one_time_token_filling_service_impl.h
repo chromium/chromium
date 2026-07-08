@@ -63,7 +63,7 @@ class ActorOneTimeTokenFillingServiceImpl
                const std::vector<FieldGlobalId>& trigger_field_ids,
                const std::string& otp,
                base::OnceCallback<void(bool)> callback) override;
-  bool IsFormFillingSecure(
+  FormFillingContextStatus ValidateFormFillingContext(
       tabs::TabHandle tab_handle,
       base::span<const FieldGlobalId> trigger_field_ids) const override;
   base::WeakPtr<ActorOneTimeTokenFillingService> GetWeakPtr() override;

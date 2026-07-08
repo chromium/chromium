@@ -49,6 +49,8 @@ using ::one_time_tokens::OneTimeTokenRetrievalError;
 
 namespace {
 
+using one_time_tokens::OneTimeTokenRetrievalError;
+
 // Retrieves the `AutofillManager` of the `tab`'s primary main frame.
 [[nodiscard]] base::expected<std::reference_wrapper<BrowserAutofillManager>,
                              ActorFormFillingError>
@@ -368,20 +370,21 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool ActorOneTimeTokenFillingServiceImpl::IsFormFillingSecure(
+FormFillingContextStatus
+ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     tabs::TabHandle tab_handle,
     base::span<const FieldGlobalId> trigger_field_ids) const {
   CHECK(!trigger_field_ids.empty());
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
-    return false;
+    return FormFillingContextStatus::kTabNotAvailable;
   }
 
   content::WebContents* web_contents = tab->GetContents();
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
   if (!helper) {
-    return false;
+    return FormFillingContextStatus::kInsecureContext;
   }
 
   const security_state::SecurityLevel security_level =
@@ -393,14 +396,14 @@ bool ActorOneTimeTokenFillingServiceImpl::IsFormFillingSecure(
   // and has a valid certificate without mixed content.
   if (!entry || !entry->GetURL().SchemeIsCryptographic() ||
       !security_state::IsSslCertificateValid(security_level)) {
-    return false;
+    return FormFillingContextStatus::kInsecureContext;
   }
 
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
       maybe_manager = GetAutofillManager(*tab);
   if (!maybe_manager.has_value()) {
-    return false;
+    return FormFillingContextStatus::kFormNotFound;
   }
   BrowserAutofillManager& autofill_manager = maybe_manager.value();
 
@@ -408,16 +411,18 @@ bool ActorOneTimeTokenFillingServiceImpl::IsFormFillingSecure(
   // `trigger_field_ids`.
   const FormStructure* const form_structure =
       autofill_manager.FindCachedFormById(trigger_field_ids.front());
-  // TODO(crbug.com/502907795): Maybe handle this check ahead of time and return
-  // a filling error instead.
   if (!form_structure) {
-    return false;
+    return FormFillingContextStatus::kFormNotFound;
   }
 
   // Ensure `form_structure` does not submit to an insecure mixed content
   // action.
-  return !autofill::IsFormMixedContent(autofill_manager.client(),
-                                       form_structure->ToFormData());
+  if (autofill::IsFormMixedContent(autofill_manager.client(),
+                                   form_structure->ToFormData())) {
+    return FormFillingContextStatus::kInsecureContext;
+  }
+
+  return FormFillingContextStatus::kSecure;
 }
 
 base::WeakPtr<ActorOneTimeTokenFillingService>

@@ -53,8 +53,8 @@ class MockActorOneTimeTokenFillingService
   MockActorOneTimeTokenFillingService() = default;
   ~MockActorOneTimeTokenFillingService() override = default;
 
-  MOCK_METHOD(bool,
-              IsFormFillingSecure,
+  MOCK_METHOD(autofill::FormFillingContextStatus,
+              ValidateFormFillingContext,
               (tabs::TabHandle, base::span<const autofill::FieldGlobalId>),
               (const, override));
   MOCK_METHOD(
@@ -181,8 +181,8 @@ class AttemptOtpFillingToolTest : public testing::Test {
         web_contents_, GURL("https://example.com"));
     EXPECT_CALL(*mock_tab_, GetContents())
         .WillRepeatedly(Return(web_contents_));
-    EXPECT_CALL(delegate_->mock_otp_service(), IsFormFillingSecure)
-        .WillRepeatedly(Return(true));
+    EXPECT_CALL(delegate_->mock_otp_service(), ValidateFormFillingContext)
+        .WillRepeatedly(Return(autofill::FormFillingContextStatus::kSecure));
   }
 
   PrefService* prefs() { return profile_->GetPrefs(); }
@@ -399,6 +399,31 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_HappyPath) {
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
   EXPECT_EQ(kOk, result->code);
+}
+
+// Time of use validation returns `kOtpInsecureContext` when form filling
+// context is insecure.
+TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_InsecureContext) {
+  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
+      .WillOnce(Return(autofill::FormFillingContextStatus::kInsecureContext));
+  auto* user_data = DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
+      web_contents_->GetPrimaryMainFrame());
+  std::string doc_token = user_data->serialized_token();
+  AttemptOtpFillingTool tool(
+      TaskId(1), delegate(), mock_tab().GetHandle(),
+      {PageTarget(DomNode{.node_id = 1234, .document_identifier = doc_token})},
+      /*for_signin=*/true);
+  AnnotatedPageContent observation;
+  observation.mutable_main_frame_data()
+      ->mutable_document_identifier()
+      ->set_serialized_token(doc_token);
+  observation.mutable_root_node()
+      ->mutable_content_attributes()
+      ->set_common_ancestor_dom_node_id(1234);
+
+  ActionResultPtr result = tool.TimeOfUseValidation(&observation);
+
+  EXPECT_EQ(mojom::ActionResultCode::kOtpInsecureContext, result->code);
 }
 
 // Invoke() returns kOk when all conditions are met.

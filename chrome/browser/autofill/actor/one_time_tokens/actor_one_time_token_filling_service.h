@@ -22,6 +22,19 @@
 
 namespace autofill {
 
+// Describes the status of the target form filling context during validation.
+enum class FormFillingContextStatus {
+  // The tab, form, and security state are valid and cryptographic HTTPS is
+  // verified.
+  kSecure,
+  // The page or form is insecure (e.g., mixed content or HTTP submission).
+  kInsecureContext,
+  // The form structure or Autofill manager could not be found.
+  kFormNotFound,
+  // The target tab is null or has no WebContents.
+  kTabNotAvailable,
+};
+
 // Interface for the Actor tooling to interact with One-Time Tokens (OTT) or
 // one-time passwords (OTP) filling.
 //
@@ -86,10 +99,15 @@ class ActorOneTimeTokenFillingService {
                        const std::string& otp,
                        base::OnceCallback<void(bool)> callback) = 0;
 
-  // Returns true if the page in `tab_handle` and its subresources are all
-  // loaded over secure HTTPS (no mixed content or certificate errors) and the
-  // form identified by `trigger_field_ids` does not submit to HTTP.
-  virtual bool IsFormFillingSecure(
+  // Validates whether the page in `tab_handle` and its subresources are
+  // loaded over secure HTTPS, whether the `BrowserAutofillManager` cache
+  // contains a `FormStructure` for `trigger_field_ids`, and whether the form
+  // submits to a secure endpoint. Note that the last check is more of an early
+  // warning system, rather than a strong security guarantee, since it is not
+  // impossible to bypass. The actual security restrictions are enforced via
+  // other means (e.g `InsecureFormNavigationThrottle` and
+  // `MixedContentChecker`).
+  virtual FormFillingContextStatus ValidateFormFillingContext(
       tabs::TabHandle tab_handle,
       base::span<const FieldGlobalId> trigger_field_ids) const = 0;
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -157,6 +158,22 @@ void IsActorLoginFlow(affiliations::DomainRelationChecker* checker,
       context.should_use_strong_matching, std::move(callback));
 }
 
+// Returns the `mojom::ActionResultPtr` for a given
+// `FormFillingContextStatus`.
+mojom::ActionResultPtr GetResultFromFormFillingStatus(
+    autofill::FormFillingContextStatus status) {
+  switch (status) {
+    case autofill::FormFillingContextStatus::kSecure:
+      return MakeOkResult();
+    case autofill::FormFillingContextStatus::kInsecureContext:
+      return MakeResult(mojom::ActionResultCode::kOtpInsecureContext);
+    case autofill::FormFillingContextStatus::kFormNotFound:
+      return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound);
+    case autofill::FormFillingContextStatus::kTabNotAvailable:
+      return MakeResult(mojom::ActionResultCode::kTabWentAway);
+  }
+}
+
 }  // namespace
 
 AttemptOtpFillingTool::AttemptOtpFillingTool(
@@ -303,15 +320,10 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     trigger_field_ids_.push_back(field_id);
   }
 
-  if (!tool_delegate().GetActorOneTimeTokenFillingService().IsFormFillingSecure(
-          GetTargetTab(), trigger_field_ids_)) {
-    // TODO(b/502908360): Introduce new ActionResultCode for insecure context.
-    return MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
-                      /*requires_page_stabilization=*/false,
-                      "Failed to fill OTP.");
-  }
-
-  return MakeOkResult();
+  return GetResultFromFormFillingStatus(
+      tool_delegate()
+          .GetActorOneTimeTokenFillingService()
+          .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
 }
 
 void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
@@ -441,16 +453,12 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
     return;
   }
 
-  // While this has been checked before invoking the tool as an early exit
-  // signal, it is possible that the page changed in the meantime, so checking
-  // should be done again right before filling. Note: this depends on the form
-  // structure cache having been updated.
-  if (!tool_delegate().GetActorOneTimeTokenFillingService().IsFormFillingSecure(
-          GetTargetTab(), trigger_field_ids_)) {
-    // TODO(b/502908360): Introduce new ActionResultCode for insecure context.
-    std::move(callback).Run(MakeResult(
-        mojom::ActionResultCode::kFormFillingUnknownAutofillError,
-        /*requires_page_stabilization=*/false, "Failed to fill OTP."));
+  mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
+      tool_delegate()
+          .GetActorOneTimeTokenFillingService()
+          .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
+  if (!IsOk(*validation_result)) {
+    std::move(callback).Run(std::move(validation_result));
     return;
   }
 
