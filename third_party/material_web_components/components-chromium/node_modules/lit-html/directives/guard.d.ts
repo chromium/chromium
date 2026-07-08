@@ -3,12 +3,15 @@
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { Part } from '../lit-html.js';
-import { Directive, DirectiveParameters } from '../directive.js';
-declare class GuardDirective extends Directive {
+import { noChange, Part } from '../lit-html.js';
+import { Directive, DirectiveParameters, DirectiveResult } from '../directive.js';
+declare class GuardDirective<T> extends Directive {
     private _previousValue;
-    render(_value: unknown, f: () => unknown): unknown;
-    update(_part: Part, [value, f]: DirectiveParameters<this>): unknown;
+    render(_value: unknown, f: () => T): T;
+    update(_part: Part, [value, f]: DirectiveParameters<this>): typeof noChange | T;
+}
+interface Guard {
+    <T>(vals: unknown[], f: () => T): DirectiveResult<typeof GuardDirective<T>>;
 }
 /**
  * Prevents re-render of a template function until a single value or an array of
@@ -51,7 +54,7 @@ declare class GuardDirective extends Directive {
  * @param value the value to check before re-rendering
  * @param f the template function
  */
-export declare const guard: (_value: unknown, f: () => unknown) => import("../directive.js").DirectiveResult<typeof GuardDirective>;
+export declare const guard: Guard;
 /**
  * The type of the class that powers this directive. Necessary for naming the
  * directive's return type.

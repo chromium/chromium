@@ -17,7 +17,7 @@ type StandardPropertyContext<C, V> = (ClassAccessorDecoratorContext<C, V> | Clas
  * Wraps a class accessor or setter so that `requestUpdate()` is called with the
  * property name and old value when the accessor is set.
  */
-export declare const standardProperty: <C extends Interface<ReactiveElement>, V>(options: PropertyDeclaration<unknown, unknown> | undefined, target: ClassAccessorDecoratorTarget<C, V> | ((value: V) => void), context: StandardPropertyContext<C, V>) => ClassAccessorDecoratorResult<C, V> | ((this: C, value: V) => void);
+export declare const standardProperty: <C extends Interface<ReactiveElement>, V>(options: PropertyDeclaration | undefined, target: ClassAccessorDecoratorTarget<C, V> | ((value: V) => void), context: StandardPropertyContext<C, V>) => ClassAccessorDecoratorResult<C, V> | ((this: C, value: V) => void);
 /**
  * A class field or accessor decorator which creates a reactive property that
  * reflects a corresponding attribute value. When a decorated property is set

@@ -28,5 +28,5 @@
  * }
  * ```
  */
-export declare const choose: <T, V, K extends T = T>(value: T, cases: [K, () => V][], defaultCase?: (() => V) | undefined) => V | undefined;
+export declare const choose: <T, V, K extends T = T>(value: T, cases: Array<[K, () => V]>, defaultCase?: () => V) => V | undefined;
 //# sourceMappingURL=choose.d.ts.map

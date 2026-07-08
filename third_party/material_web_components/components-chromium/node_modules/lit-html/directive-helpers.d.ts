@@ -17,6 +17,7 @@ export declare const isPrimitive: (value: unknown) => value is Primitive;
 export declare const TemplateResultType: {
     readonly HTML: 1;
     readonly SVG: 2;
+    readonly MATHML: 3;
 };
 export type TemplateResultType = (typeof TemplateResultType)[keyof typeof TemplateResultType];
 type IsTemplateResult = {
@@ -34,7 +35,7 @@ export declare const isCompiledTemplateResult: (value: unknown) => value is Comp
 /**
  * Tests if a value is a DirectiveResult.
  */
-export declare const isDirectiveResult: (value: unknown) => value is DirectiveResult<DirectiveClass>;
+export declare const isDirectiveResult: (value: unknown) => value is DirectiveResult;
 /**
  * Retrieves the Directive class for a DirectiveResult
  */
@@ -77,7 +78,7 @@ export declare const insertPart: (containerPart: ChildPart, refPart?: ChildPart,
  * @param index For `AttributePart`s, the index to set
  * @param directiveParent Used internally; should not be set by user
  */
-export declare const setChildPartValue: <T extends import("./lit-html.js").ChildPart>(part: T, value: unknown, directiveParent?: DirectiveParent) => T;
+export declare const setChildPartValue: <T extends ChildPart>(part: T, value: unknown, directiveParent?: DirectiveParent) => T;
 /**
  * Sets the committed value of a ChildPart directly without triggering the
  * commit stage of the part.
@@ -106,7 +107,12 @@ export declare const setCommittedValue: (part: Part, value?: unknown) => unknown
  */
 export declare const getCommittedValue: (part: ChildPart) => unknown;
 /**
- * Removes a ChildPart from the DOM, including any of its content.
+ * Removes a ChildPart from the DOM, including any of its content and markers.
+ *
+ * Note: The only difference between this and clearPart() is that this also
+ * removes the part's start node. This means that the ChildPart must own its
+ * start node, ie it must be a marker node specifically for this part and not an
+ * anchor from surrounding content.
  *
  * @param part The Part to remove
  */

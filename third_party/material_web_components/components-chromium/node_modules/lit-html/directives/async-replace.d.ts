@@ -3,7 +3,7 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { ChildPart, noChange } from '../lit-html.js';
+import { ChildPart } from '../lit-html.js';
 import { AsyncDirective, DirectiveParameters } from '../async-directive.js';
 type Mapper<T> = (v: T, index?: number) => unknown;
 export declare class AsyncReplaceDirective extends AsyncDirective {
@@ -11,7 +11,7 @@ export declare class AsyncReplaceDirective extends AsyncDirective {
     private __weakThis;
     private __pauser;
     render<T>(value: AsyncIterable<T>, _mapper?: Mapper<T>): symbol;
-    update(_part: ChildPart, [value, mapper]: DirectiveParameters<this>): typeof noChange | undefined;
+    update(_part: ChildPart, [value, mapper]: DirectiveParameters<this>): symbol;
     protected commitValue(value: unknown, _index: number): void;
     disconnected(): void;
     reconnected(): void;

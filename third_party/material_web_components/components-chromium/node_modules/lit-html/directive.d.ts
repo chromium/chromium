@@ -51,7 +51,7 @@ export type PartInfo = ChildPartInfo | AttributePartInfo | ElementPartInfo;
  * Creates a user-facing directive function from a Directive class. This
  * function has the same parameters as the directive's render() method.
  */
-export declare const directive: <C extends DirectiveClass>(c: C) => (...values: Parameters<InstanceType<C>["render"]>) => DirectiveResult<C>;
+export declare const directive: <C extends DirectiveClass>(c: C) => (...values: DirectiveParameters<InstanceType<C>>) => DirectiveResult<C>;
 /**
  * Base class for creating custom directives. Users should extend this class,
  * implement `render` and/or `update`, and then pass their subclass to

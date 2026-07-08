@@ -3,11 +3,14 @@
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { Directive, ChildPart, DirectiveParameters } from '../directive.js';
-declare class Keyed extends Directive {
+import { Directive, ChildPart, DirectiveParameters, DirectiveResult } from '../directive.js';
+declare class Keyed<T> extends Directive {
     key: unknown;
-    render(k: unknown, v: unknown): unknown;
-    update(part: ChildPart, [k, v]: DirectiveParameters<this>): unknown;
+    render(k: unknown, v: T): T;
+    update(part: ChildPart, [k, v]: DirectiveParameters<this>): T;
+}
+interface KeyedFunc {
+    <V>(k: unknown, v: V): DirectiveResult<typeof Keyed<V>>;
 }
 /**
  * Associates a renderable value with a unique key. When the key changes, the
@@ -18,7 +21,7 @@ declare class Keyed extends Directive {
  * with code that expects new data to generate new HTML elements, such as some
  * animation techniques.
  */
-export declare const keyed: (k: unknown, v: unknown) => import("../directive.js").DirectiveResult<typeof Keyed>;
+export declare const keyed: KeyedFunc;
 /**
  * The type of the class that powers this directive. Necessary for naming the
  * directive's return type.

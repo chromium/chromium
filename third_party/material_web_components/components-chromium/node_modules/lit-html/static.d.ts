@@ -3,13 +3,13 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { html as coreHtml, svg as coreSvg, TemplateResult } from './lit-html.js';
+import { html as coreHtml, svg as coreSvg, mathml as coreMathml, TemplateResult } from './lit-html.js';
 export interface StaticValue {
     /** The value to interpolate as-is into the template. */
     _$litStatic$: string;
     /**
      * A value that can't be decoded from ordinary JSON, make it harder for
-     * a attacker-controlled data that goes through JSON.parse to produce a valid
+     * an attacker-controlled data that goes through JSON.parse to produce a valid
      * StaticValue.
      */
     r: typeof brand;
@@ -63,7 +63,7 @@ export declare const literal: (strings: TemplateStringsArray, ...values: unknown
 /**
  * Wraps a lit-html template tag (`html` or `svg`) to add static value support.
  */
-export declare const withStatic: (coreTag: typeof coreHtml | typeof coreSvg) => (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
+export declare const withStatic: (coreTag: typeof coreHtml | typeof coreSvg | typeof coreMathml) => (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
 /**
  * Interprets a template literal as an HTML template that can efficiently
  * render to and update a container.
@@ -78,5 +78,12 @@ export declare const html: (strings: TemplateStringsArray, ...values: unknown[])
  * Includes static value support from `lit-html/static.js`.
  */
 export declare const svg: (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
+/**
+ * Interprets a template literal as MathML fragment that can efficiently render
+ * to and update a container.
+ *
+ * Includes static value support from `lit-html/static.js`.
+ */
+export declare const mathml: (strings: TemplateStringsArray, ...values: unknown[]) => TemplateResult;
 export {};
 //# sourceMappingURL=static.d.ts.map

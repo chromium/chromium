@@ -12,8 +12,8 @@ rootWebArea name='Material Design Version Information'
 ++++++++++staticText name='Material Design Info: Material Design Components v2.3.0'
 ++++++++++++inlineTextBox name='Material Design Info: Material Design Components v2.3.0'
 ++++++++genericContainer
-++++++++++staticText name='Lit Framework: 3.1.0'
-++++++++++++inlineTextBox name='Lit Framework: 3.1.0'
+++++++++++staticText name='Lit Framework: 3.3.0'
+++++++++++++inlineTextBox name='Lit Framework: 3.3.0'
 ++++++++genericContainer
 ++++++++++staticText name='Source: third_party/material_web_components'
 ++++++++++++inlineTextBox name='Source: third_party/material_web_components'

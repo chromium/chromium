@@ -7,7 +7,7 @@
 ++++[section]
 ++++++[static] name='Material Design Info: Material Design Components v2.3.0'
 ++++[section]
-++++++[static] name='Lit Framework: 3.1.0'
+++++++[static] name='Lit Framework: 3.3.0'
 ++++[section]
 ++++++[static] name='Source: third_party/material_web_components'
 ++[section] name='Ready'

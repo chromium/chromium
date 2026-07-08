@@ -20,12 +20,12 @@ rootWebArea htmlTag='#document' name='Material Web Checkboxes'
 ++++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled unselected prev-unselected ' htmlTag='div'
+++++++++genericContainer className='container  disabled unselected prev-unselected prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=false
 ++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled selected checked prev-checked ' htmlTag='div'
+++++++++genericContainer className='container  disabled selected checked prev-checked prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=true
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
@@ -58,12 +58,12 @@ rootWebArea htmlTag='#document' name='Material Web Checkboxes'
 ++++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled unselected prev-unselected ' htmlTag='div'
+++++++++genericContainer className='container  disabled unselected prev-unselected prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=false
 ++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled selected checked prev-checked ' htmlTag='div'
+++++++++genericContainer className='container  disabled selected checked prev-checked prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=true
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
@@ -99,12 +99,12 @@ rootWebArea htmlTag='#document' name='Material Web Checkboxes'
 ++++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled unselected prev-unselected ' htmlTag='div'
+++++++++genericContainer className='container  disabled unselected prev-unselected prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=false
 ++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled selected checked prev-checked ' htmlTag='div'
+++++++++genericContainer className='container  disabled selected checked prev-checked prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=true
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
@@ -143,12 +143,12 @@ rootWebArea htmlTag='#document' name='Material Web Checkboxes'
 ++++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled unselected prev-unselected ' htmlTag='div'
+++++++++genericContainer className='container  disabled unselected prev-unselected prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=false
 ++++++++++genericContainer className='outline' htmlTag='div'
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible
-++++++++genericContainer className='container  disabled selected checked prev-checked ' htmlTag='div'
+++++++++genericContainer className='container  disabled selected checked prev-checked prev-disabled ' htmlTag='div'
 ++++++++++checkBox htmlTag='input' restriction=disabled checkedState=true
 ++++++++++genericContainer className='background' htmlTag='div'
 ++++++++++genericContainer ignored invisible

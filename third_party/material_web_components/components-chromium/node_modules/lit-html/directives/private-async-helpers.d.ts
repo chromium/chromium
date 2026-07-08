@@ -41,7 +41,7 @@ export declare class Pauser {
     /**
      * When paused, returns a promise to be awaited; when unpaused, returns
      * undefined. Note that in the microtask between the pauser being resumed
-     * an an await of this promise resolving, the pauser could be paused again,
+     * an await of this promise resolving, the pauser could be paused again,
      * hence callers should check the promise in a loop when awaiting.
      * @returns A promise to be awaited when paused or undefined
      */

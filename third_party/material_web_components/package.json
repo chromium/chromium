@@ -5,7 +5,7 @@
   "dependencies": {
     "@material/web": "2.3.0",
     "@lit/task": "1.0.0",
-    "lit": "3.1.0"
+    "lit": "3.3.0"
   },
   "devDependencies": {
     "acorn": "8.8.2",

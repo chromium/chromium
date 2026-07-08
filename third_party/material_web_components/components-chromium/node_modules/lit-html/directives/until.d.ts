@@ -4,16 +4,20 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 import { Part } from '../lit-html.js';
-import { AsyncDirective } from '../async-directive.js';
-export declare class UntilDirective extends AsyncDirective {
+import { AsyncDirective, DirectiveResult } from '../async-directive.js';
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+export declare class UntilDirective<T> extends AsyncDirective {
     private __lastRenderedIndex;
     private __values;
     private __weakThis;
     private __pauser;
-    render(...args: Array<unknown>): unknown;
+    render(...args: Array<T>): UnwrapPromise<T>;
     update(_part: Part, args: Array<unknown>): unknown;
     disconnected(): void;
     reconnected(): void;
+}
+interface Until {
+    <T extends Array<unknown>>(...args: T): DirectiveResult<typeof UntilDirective<T[number]>>;
 }
 /**
  * Renders one of a series of values, including Promises, to a Part.
@@ -36,7 +40,8 @@ export declare class UntilDirective extends AsyncDirective {
  * html`${until(content, html`<span>Loading...</span>`)}`
  * ```
  */
-export declare const until: (...values: unknown[]) => import("../directive.js").DirectiveResult<typeof UntilDirective>;
+export declare const until: Until;
+export {};
 /**
  * The type of the class that powers this directive. Necessary for naming the
  * directive's return type.
