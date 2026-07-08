@@ -148,6 +148,7 @@ source_set("unit_tests") {
   sources = [
     "get_logins_with_affiliations_request_handler_unittest.cc",
     "password_form_converters_unittest.cc",
+    "password_store_unittest.cc",
     "psl_matching_helper_unittest.cc",
   ]
 
@@ -159,7 +160,6 @@ source_set("unit_tests") {
       "login_database_unittest.cc",
       "password_notes_table_unittest.cc",
       "password_store_built_in_backend_unittest.cc",
-      "password_store_unittest.cc",
       "statistics_table_unittest.cc",
     ]
     if (is_ios) {
