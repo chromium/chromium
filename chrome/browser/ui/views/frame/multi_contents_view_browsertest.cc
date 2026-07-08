@@ -384,9 +384,13 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
 
   void CheckNoResizeHappened() {
     auto* tab_strip_model = browser()->tab_strip_model();
+    const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
     for (int i = 0; i < tab_strip_model->count(); i++) {
       auto* web_contents = tab_strip_model->GetWebContentsAt(i);
       EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+      if (web_contents->GetLastCommittedURL() != test_url) {
+        continue;
+      }
       EXPECT_EQ(false, content::EvalJs(web_contents, "window.has_resized"));
     }
   }
@@ -489,9 +493,14 @@ IN_PROC_BROWSER_TEST_F(
   // Focus on the split tab.
   tab_strip_model->GetWebContentsAt(1)->Focus();
 
-  // Add a new tab and open split view.
+  // Add a dummy non-split tab to prevent NTP redirection.
   EXPECT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  tab_strip_model->GetWebContentsAt(1)->Focus();
+
+  // Add a new tab and open split view.
+  EXPECT_TRUE(
+      AddTabAtIndex(3, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   CreateSplitView();
 
   // Change the size.
@@ -508,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(
              TabStripUserGestureDetails::GestureType::kOther));
   RunScheduledLayouts();
   tab_strip_model->ActivateTabAt(
-      2, TabStripUserGestureDetails(
+      3, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   RunScheduledLayouts();
 
