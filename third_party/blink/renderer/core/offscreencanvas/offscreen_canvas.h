@@ -218,6 +218,7 @@ class CORE_EXPORT OffscreenCanvas final
         : abort_raf_(false), begin_frame_args_(args) {}
 
     bool AddOffscreenCanvas(OffscreenCanvas* canvas) {
+      CHECK(canvas->HasPlaceholderCanvas());
       DCHECK(!abort_raf_);
       DCHECK(!canvas->inside_worker_raf_);
       if (canvas->GetOrCreateResourceDispatcher()) {
@@ -241,6 +242,7 @@ class CORE_EXPORT OffscreenCanvas final
         // If we have skipped raf, don't push frames.
         if (abort_raf_)
           continue;
+        CHECK(canvas->HasPlaceholderCanvas());
         if (canvas->GetOrCreateResourceDispatcher()) {
           canvas->GetOrCreateResourceDispatcher()->ReplaceBeginFrameAck(
               begin_frame_args_);
@@ -265,7 +267,7 @@ class CORE_EXPORT OffscreenCanvas final
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
 
-  DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
+  const DOMNodeId placeholder_canvas_id_;
   bool is_parent_visible_ = true;
   std::optional<TextDirection> text_direction_;
 

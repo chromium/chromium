@@ -88,8 +88,9 @@ WorkerAnimationFrameProvider::GetCompositorTaskRunner() {
 }
 
 void WorkerAnimationFrameProvider::RegisterOffscreenCanvas(
-    OffscreenCanvas* context) {
-  auto result = offscreen_canvases_.insert(context);
+    OffscreenCanvas* canvas) {
+  CHECK(canvas->HasPlaceholderCanvas());
+  auto result = offscreen_canvases_.insert(canvas);
   DCHECK(result.is_new_entry);
 }
 
