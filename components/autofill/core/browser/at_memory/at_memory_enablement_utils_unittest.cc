@@ -85,8 +85,6 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
   AtMemoryEnablementUtilsTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAutofillAtMemory, {{"at_memory_eligible_tiers", ""}});
-    autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
-        "browser.gemini_settings", 0);
     // Enable the toggle by default in tests since it represents the default
     // active state.
     autofill_client().GetPrefs()->SetUserPref(
@@ -136,26 +134,6 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 }
 
-// Tests that `MayPerformAtMemoryAction` returns false when the Gemini settings
-// enterprise policy disables Gemini.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_GeminiPolicyDisabled) {
-  EXPECT_CALL(personal_context_service_, GetEligibilityState)
-      .WillRepeatedly(
-          Return(personal_context::PersonalContextEligibilityState::kEligible));
-
-  // Value 1 means not available.
-  // components/policy/resources/templates/policy_definitions/GenerativeAI/GeminiSettings.yaml
-  autofill_client().GetPrefs()->SetInteger("browser.gemini_settings", 1);
-
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kTriggerSearchUI, autofill_client(),
-      autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-  EXPECT_FALSE(MayPerformAtMemoryAction(AtMemoryAction::kShowAtMemoryInSettings,
-                                        autofill_client()));
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
-}
 
 // Tests that `MayPerformAtMemoryAction` returns false when
 // `personal_context_service` is null.
@@ -205,7 +183,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NullPrefService) {
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
       nullptr, GURL("https://example.com")));
-  EXPECT_FALSE(MayPerformAtMemoryAction(
+  EXPECT_TRUE(MayPerformAtMemoryAction(
       AtMemoryAction::kShowAtMemoryInSettings, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
       nullptr));
@@ -438,7 +416,6 @@ TEST_F(AtMemoryEnablementUtilsTest,
   registry->RegisterBooleanPref(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       true);
-  registry->RegisterIntegerPref("browser.gemini_settings", 0);
   auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
 
   base::test::ScopedFeatureList disabled_features;
@@ -470,7 +447,6 @@ TEST_F(AtMemoryEnablementUtilsTest,
   registry->RegisterBooleanPref(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       true);
-  registry->RegisterIntegerPref("browser.gemini_settings", 0);
   auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
 
   base::test::ScopedFeatureList disabled_features;
@@ -503,7 +479,6 @@ TEST_F(AtMemoryEnablementUtilsTest,
   registry->RegisterBooleanPref(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       true);
-  registry->RegisterIntegerPref("browser.gemini_settings", 0);
   auto pref_service = std::make_unique<TestPrefService>(pref_store, registry);
 
   base::test::ScopedFeatureList disabled_features;

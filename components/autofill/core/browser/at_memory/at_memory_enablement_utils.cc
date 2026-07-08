@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 
-#include <string_view>
-
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +13,6 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -100,33 +97,12 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   return eligible_tiers.contains(tier);
 }
 
-// Returns whether enterprise policies allow AtMemory trigger.
-//
-// AtMemory is disabled for the Enterprise accounts and these are blocked in the
-// `PersonalContextService`. Additional checks are performed here to ensure
-// correct behavior for consumer accounts on enterprise devices.
-[[nodiscard]] bool SatisfiesEnterprisePolicies(
-    const PrefService* pref_service) {
-  if (!pref_service) {
-    return false;
-  }
-
-  // TODO(crbug.com/521270638) Add a check for the AtMemory specific policy on
-  // top of the enterprise policy for Gemini.
-
-  constexpr int kGeminiSettingsAvailable = 0;
-  // TODO(crbug.com/393537628) Move the pref values enum to components and use
-  // this value here.
-  return pref_service->GetInteger(optimization_guide::prefs::kGeminiSettings) ==
-         kGeminiSettingsAvailable;
-}
-
 // Returns true if AtMemory is supported for the user.
 //
 // Checks that AtMemory feature flags are enabled, At-Memory eligibility
 // criteria and PersonalContext eligibility criteria are met.
 // Contrary to `MayPerformAtMemoryAction`, does not check user-controlled
-// nor admin-controlled toggles.
+// toggles.
 [[nodiscard]] bool IsAtMemorySupported(
     personal_context::PersonalContextEnablementService*
         personal_context_service,
@@ -144,6 +120,8 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   if (!IsPersonalContextEligible(personal_context_service)) {
     return false;
   }
+
+  // TODO(crbug.com/521270638) Check enterprise policy implementation.
 
   if (!IsSubscriptionTierEligible(subscription_eligibility_service)) {
     return false;
@@ -216,10 +194,6 @@ bool MayPerformAtMemoryAction(
     base::optional_ref<const GURL> url) {
   if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service)) {
-    return false;
-  }
-
-  if (!SatisfiesEnterprisePolicies(pref_service)) {
     return false;
   }
 
