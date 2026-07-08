@@ -191,6 +191,11 @@ void LayoutBoxModelObject::StyleDidChange(
     }
   }
 
+  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+      StyleRef().GetTextEmphasisMark() != TextEmphasisMark::kNone) {
+    View()->SetContainsAnnotations();
+  }
+
   PaintLayerType type = LayerTypeRequired();
   if (type != kNoPaintLayer) {
     if (!Layer()) {

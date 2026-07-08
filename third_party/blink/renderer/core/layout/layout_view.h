@@ -244,6 +244,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return layout_list_item_count_;
   }
 
+  // This should be called when the style of any LayoutObject changes to have
+  // ruby annotations or text-emphasis marks.
+  void SetContainsAnnotations();
+
   // Return true if re-laying out the specified node (as a cached layout result)
   // with a new initial containing block size. Subsequent calls for the same
   // node within the same lifecycle update will return false.
@@ -425,6 +429,15 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   int vertical_scrollbar_width_for_viewport_units_ = 0;
   int horizontal_scrollbar_height_for_viewport_units_ = 0;
+
+  // True if the document contains any ruby annotations or emphasis marks.
+  // The flag enables annotation space computation for all IFCs.
+  //
+  // TODO(layout-dev): We may want to make the flag precise.
+  // * The flag should become `false` if the document no longer contains
+  //   annotations.
+  // * The flag should be moved to flow-roots for better scoping.
+  bool contains_annotations_ = false;
 };
 
 template <>

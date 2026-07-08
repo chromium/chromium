@@ -234,6 +234,7 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
   WritingMode mode = style.GetWritingMode();
   ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
                                  /* is_new_fc */ true);
+  builder.SetContainsAnnotations(contains_annotations_);
   return BlockNode(this)
       .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
                           builder.ToConstraintSpace())
@@ -879,6 +880,7 @@ void LayoutView::LayoutRoot() {
                                    /* is_new_fc */ true);
     builder.SetAvailableSize({kIndefiniteSize, original_size.block_size});
     builder.SetIsFixedBlockSize(true);
+    builder.SetContainsAnnotations(contains_annotations_);
     min_size = BlockNode(this)
                    .ComputeMinMaxSizes(writing_mode, SizeType::kIntrinsic,
                                        builder.ToConstraintSpace())
@@ -903,6 +905,7 @@ void LayoutView::LayoutRoot() {
   builder.SetAvailableSize(initial_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);
+  builder.SetContainsAnnotations(contains_annotations_);
 
   BlockNode(this).Layout(builder.ToConstraintSpace());
   initial_containing_block_resize_handled_list_ = nullptr;
@@ -1143,6 +1146,15 @@ bool LayoutView::SetScrollbarSizesForViewportUnits(const gfx::Size& size) {
     changed = true;
   }
   return changed;
+}
+
+void LayoutView::SetContainsAnnotations() {
+  NOT_DESTROYED();
+  if (contains_annotations_) {
+    return;
+  }
+  contains_annotations_ = true;
+  SetNeedsLayout(layout_invalidation_reason::kStyleChange);
 }
 
 }  // namespace blink

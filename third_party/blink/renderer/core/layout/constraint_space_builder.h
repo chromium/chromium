@@ -59,6 +59,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     if (parent_space.ShouldRepeat())
       SetShouldRepeat(true);
     SetIsInsideRepeatableContent(parent_space.IsInsideRepeatableContent());
+    SetContainsAnnotations(parent_space.ContainsAnnotations());
   }
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
@@ -399,6 +400,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     space_.bitfields_.cache_slot = static_cast<unsigned>(slot);
   }
 
+  void SetContainsAnnotations(bool b) {
+    space_.bitfields_.contains_annotations = b;
+  }
   void SetBlockStartAnnotationSpace(LayoutUnit space) {
     if (space)
       EnsureRareData()->SetBlockStartAnnotationSpace(space);

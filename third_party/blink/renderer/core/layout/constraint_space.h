@@ -633,6 +633,9 @@ class CORE_EXPORT ConstraintSpace final {
   LayoutUnit BlockStartAnnotationSpace() const {
     return rare_data_ ? rare_data_->BlockStartAnnotationSpace() : LayoutUnit();
   }
+  // Returns true if the layout object (and its descendants) have any ruby
+  // annotations or text-emphasis marks.
+  bool ContainsAnnotations() const { return bitfields_.contains_annotations; }
 
   MarginStrut GetMarginStrut() const {
     return rare_data_ ? rare_data_->GetMarginStrut() : MarginStrut();
@@ -1577,7 +1580,8 @@ class CORE_EXPORT ConstraintSpace final {
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
                  other.ancestor_has_clearance_past_adjoining_floats &&
-             baseline_algorithm_type == other.baseline_algorithm_type;
+             baseline_algorithm_type == other.baseline_algorithm_type &&
+             contains_annotations == other.contains_annotations;
     }
 
     bool AreInlineSizeConstraintsEqual(const Bitfields& other) const {
@@ -1624,6 +1628,8 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_initial_block_size_indefinite : 1 = false;
     unsigned is_table_cell_child : 1 = false;
     unsigned is_restricted_block_size_table_cell_child : 1 = false;
+
+    unsigned contains_annotations : 1 = false;
   };
 
   explicit ConstraintSpace(WritingDirectionMode writing_direction)

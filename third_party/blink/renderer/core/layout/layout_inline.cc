@@ -172,6 +172,10 @@ void LayoutInline::StyleDidChange(
       SetNeedsCollectInlines();
     }
   }
+  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+      IsInlineRubyText()) {
+    View()->SetContainsAnnotations();
+  }
 
   PropagateStyleToAnonymousChildren();
 }
