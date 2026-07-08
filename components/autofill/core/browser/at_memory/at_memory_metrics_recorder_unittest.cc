@@ -130,6 +130,9 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
 
   histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                        true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataType",
+      MemoryDataType::kAddressFull, 1);
 }
 
 // Tests that the metric is NOT logged if no query was submitted.
@@ -144,6 +147,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
   }
 
   histogram_tester_.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.AtMemory.AcceptedSuggestionDataType", 0);
 }
 
 // Tests that the destructor correctly logs that no suggestion was accepted
@@ -162,6 +167,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
 
   histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                        false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.AtMemory.AcceptedSuggestionDataType", 0);
 }
 
 // Tests that suggestion accepted metric is logged for multiple queries.
@@ -194,6 +201,27 @@ TEST_F(AtMemoryMetricsRecorderTest,
                                       true, 1);
   histogram_tester_.ExpectBucketCount("Autofill.AtMemory.SuggestionAccepted",
                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataType",
+      MemoryDataType::kAddressFull, 1);
+}
+
+// Tests that AcceptedSuggestionDataType logs the correct memory data type when
+// a suggestion is accepted.
+TEST_F(AtMemoryMetricsRecorderTest, AcceptedSuggestionDataType) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, GURL(), std::u16string(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt);
+    metrics.OnQuerySubmitted(u"query");
+    SendResponse(metrics);
+    metrics.OnSuggestionAccepted(MemoryDataType::kPassportNumber);
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataType",
+      MemoryDataType::kPassportNumber, 1);
 }
 
 // Tests that QueryCountBeforeAcceptance logs 1 if only one query was submitted
@@ -211,6 +239,9 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_OneQuery) {
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.QueryCountBeforeAcceptance", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataType",
+      MemoryDataType::kAddressFull, 1);
 }
 
 // Tests that QueryCountBeforeAcceptance logs the correct count if multiple
@@ -231,6 +262,9 @@ TEST_F(AtMemoryMetricsRecorderTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.QueryCountBeforeAcceptance", 2, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.AcceptedSuggestionDataType",
+      MemoryDataType::kAddressFull, 1);
 }
 
 // Tests that QueryCountBeforeAcceptance is not logged if no suggestion was
@@ -250,6 +284,8 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_NoAcceptance) {
 
   histogram_tester_.ExpectTotalCount(
       "Autofill.AtMemory.QueryCountBeforeAcceptance", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.AtMemory.AcceptedSuggestionDataType", 0);
 }
 
 // Tests that `MarkFilled` correctly logs whether a suggestion was filled.

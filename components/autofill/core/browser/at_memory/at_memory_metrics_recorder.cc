@@ -254,6 +254,9 @@ void AtMemoryMetricsRecorder::MaybeLogSuggestionAccepted() {
         suggestion_acceptance_.accepted_data_type.has_value());
   }
   if (suggestion_acceptance_.accepted_data_type.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AtMemory.AcceptedSuggestionDataType",
+        *suggestion_acceptance_.accepted_data_type);
     base::UmaHistogramCounts100("Autofill.AtMemory.QueryCountBeforeAcceptance",
                                 query_count_);
   }

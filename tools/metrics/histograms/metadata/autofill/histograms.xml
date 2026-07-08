@@ -2168,6 +2168,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.AcceptedSuggestionDataType"
+    enum="MemoryDataType" expires_after="2027-03-09">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the data type of the accepted AtMemory search result. Emitted every
+    time a user accepts a search result.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.AcceptedSuggestionIndex" units="position"
     expires_after="2027-03-09">
   <owner>ireneuszszulc@google.com</owner>
