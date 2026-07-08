@@ -515,6 +515,9 @@ allow_unsafe = true
 [crate.ixdtf.extra_kv]
 allow_unsafe = false
 
+[crate.jpeg-encoder]
+extra_kv = { allow_unsafe = true }
+
 [crate.jxl.extra_kv]
 allow_unsafe = true
 # JXL decoding requires optimizations even in Debug builds for reasonable performance.
@@ -1060,4 +1063,10 @@ extra_kv = { allow_unsafe = true }
 
 [crate.zoneinfo64]
 extra_input_roots = ["data/zoneinfo64.res"]
+extra_kv = { allow_unsafe = true }
+
+[crate.zune-core]
+extra_kv = { allow_unsafe = false }
+
+[crate.zune-jpeg]
 extra_kv = { allow_unsafe = true }

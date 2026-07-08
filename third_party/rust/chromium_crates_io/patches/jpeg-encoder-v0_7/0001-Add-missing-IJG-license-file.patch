@@ -1,0 +1,94 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Wed, 8 Jul 2026 00:00:00 +0000
+Subject: [PATCH] Add missing IJG license file
+
+jpeg-encoder declares license "(MIT OR Apache-2.0) AND IJG", but the
+published crate does not include a top-level IJG license file. Add a
+Chromium-local LICENSE-IJG file documenting the IJG terms for the
+crate's IJG-derived portions until the upstream crate includes one.
+
+Upstream PR: https://github.com/vstroebel/jpeg-encoder/pull/37
+
+---
+ .../vendor/jpeg-encoder-v0_7/LICENSE-IJG      | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-IJG
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-IJG b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-IJG
+new file mode 100644
+index 0000000000000..a39a4aa6e5c52
+--- /dev/null
++++ b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-IJG
+@@ -0,0 +1,69 @@
++jpeg-encoder IJG License
++========================
++
++The jpeg-encoder crate declares license "(MIT OR Apache-2.0) AND IJG".
++The published crate includes MIT and Apache license files, but it does not
++currently include a top-level IJG license file. This Chromium-local file
++documents the IJG terms for the IJG-derived portions of jpeg-encoder until the
++crate publishes the missing license file upstream.
++
++The IJG-derived portions include, at least:
++
++- src/fdct.rs, which is ported from mozjpeg to Rust and states that it was part
++  of the Independent JPEG Group's software.
++- src/avx2/fdct.rs, which is ported from mozjpeg / jfdctint-avx2.asm to Rust
++  and states that it is based on the x86 SIMD extension for the IJG JPEG
++  library.
++
++In the IJG terms below, "this software" refers to the IJG-derived portions of
++jpeg-encoder listed above, not to the jpeg-encoder crate as a whole. The rest
++of jpeg-encoder remains covered by the crate's MIT OR Apache-2.0 terms.
++
++Conditions of distribution and use
++==================================
++
++In plain English:
++
++1. We don't promise that this software works.  (But if you find any bugs,
++   please let us know!)
++2. You can use this software for whatever you want.  You don't have to pay us.
++3. You may not pretend that you wrote this software. If you use it in a
++   program, you must acknowledge somewhere in your documentation that
++   you've used the IJG code.
++
++In legalese:
++
++The authors make NO WARRANTY or representation, either express or implied,
++with respect to this software, its quality, accuracy, merchantability, or
++fitness for a particular purpose.  This software is provided "AS IS", and you,
++its user, assume the entire risk as to its quality and accuracy.
++
++This software is copyright (C) 1991-2020, Thomas G. Lane, Guido Vollbeding.
++All Rights Reserved except as specified below.
++
++Permission is hereby granted to use, copy, modify, and distribute this
++software (or portions thereof) for any purpose, without fee, subject to these
++conditions:
++(1) If any part of the source code for this software is distributed, then this
++README file must be included, with this copyright and no-warranty notice
++unaltered; and any additions, deletions, or changes to the original files
++must be clearly indicated in accompanying documentation.
++(2) If only executable code is distributed, then the accompanying
++documentation must state that "this software is based in part on the work of
++the Independent JPEG Group".
++(3) Permission for use of this software is granted only if the user accepts
++full responsibility for any undesirable consequences; the authors accept
++NO LIABILITY for damages of any kind.
++
++These conditions apply to any software derived from or based on the IJG code,
++not just to the unmodified library.  If you use our work, you ought to
++acknowledge us.
++
++Permission is NOT granted for the use of any IJG author's name or company name
++in advertising or publicity relating to this software or products derived from
++it. This software may be referred to only as "the Independent JPEG Group's
++software".
++
++We specifically permit and encourage the use of this software as the basis of
++commercial products, provided that all warranty or liability claims are
++assumed by the product vendor.
+-- 
+2.34.1

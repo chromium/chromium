@@ -255,6 +255,7 @@ dependencies = [
  "image",
  "indexmap",
  "itertools",
+ "jpeg-encoder",
  "jxl",
  "lazy_static",
  "libafl",
@@ -290,6 +291,7 @@ dependencies = [
  "temporal_rs",
  "xml",
  "zip",
+ "zune-jpeg",
 ]
 
 [[package]]
@@ -1030,6 +1032,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "ixdtf"
 version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "jpeg-encoder"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -2570,4 +2577,17 @@ dependencies = [
  "potential_utf",
  "resb",
  "serde",
+]
+
+[[package]]
+name = "zune-core"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "zune-jpeg"
+version = "0.5.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "zune-core",
 ]

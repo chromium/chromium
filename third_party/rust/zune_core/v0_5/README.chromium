@@ -1,0 +1,11 @@
+Name: zune-core
+URL: https://crates.io/crates/zune-core
+Version: 0.5.1
+Revision: bf30e1ecb9034964bfa251189173328a8a1380a8
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/zune-core-v0_5/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Core utilities for image processing in the zune family of crates

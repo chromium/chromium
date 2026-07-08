@@ -1,0 +1,11 @@
+Name: jpeg-encoder
+URL: https://crates.io/crates/jpeg-encoder
+Version: 0.7.0
+Revision: 4e7b1e1b07093f62be1478131ca5d50b2b910413
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0, IJG
+License File: //third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-APACHE,//third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/LICENSE-IJG
+Shipped: yes
+Security Critical: yes
+
+Description: JPEG encoder
