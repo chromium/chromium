@@ -660,8 +660,8 @@ void OffscreenCanvas::DidDraw(const gfx::Rect& rect) {
 }
 
 bool OffscreenCanvas::BeginFrame() {
-  DCHECK(HasPlaceholderCanvas());
-  GetOrCreateResourceDispatcher()->SetNeedsBeginFrame(false);
+  CHECK(frame_dispatcher_);
+  frame_dispatcher_->SetNeedsBeginFrame(false);
   return PushFrameIfNeeded();
 }
 
