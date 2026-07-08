@@ -168,6 +168,17 @@ struct ActivationParams {
   bool is_input_constant;
 };
 
+struct ArgMinMaxParams {
+  OperandDataType input_data_type;
+  OperandDataType output_data_type;
+  mojom::ArgMinMax::Kind kind;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  uint32_t axis;
+  bool keep_dimensions;
+  bool is_input_constant;
+};
+
 struct BatchNormalizationParams {
   OperandDataType data_type;
   uint32_t rank;
@@ -944,6 +955,22 @@ auto AnyActivationParams(base::span<const ActivationKind> kinds) {
           fuzztest::ElementOf<ActivationKind>(std::move(kinds_vec)),
           fuzztest::Arbitrary<bool>()  // is_input_constant
           ));
+}
+
+auto AnyArgMinMaxParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<ArgMinMaxParams>(
+      AnyOperandDataTypeFor(limits.arg_min_max_input.data_types),
+      AnyOperandDataTypeFor(limits.arg_min_max_output.data_types),
+      fuzztest::ElementOf<mojom::ArgMinMax::Kind>(
+          {mojom::ArgMinMax::Kind::kMin,
+           mojom::ArgMinMax::Kind::kMax}),  // kind
+      AnyTensorRank(),                      // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),   // input_dims
+      fuzztest::InRange<uint32_t>(0, 7),    // axis
+      fuzztest::Arbitrary<bool>(),          // keep_dimensions
+      fuzztest::Arbitrary<bool>()           // is_input_constant
+  );
 }
 
 auto AnyBatchNormalizationParams() {
@@ -2831,6 +2858,7 @@ class WebNNGraphImplFuzzerImpl
     : public fuzztest::PerFuzzTestFixtureAdapter<BaseFixture> {
  public:
   void Activation(ActivationParams params, uint8_t seed_for_data);
+  void ArgMinMax(ArgMinMaxParams params, uint8_t seed_for_data);
   void BatchNormalization(BatchNormalizationParams params,
                           uint8_t seed_for_data);
   void Clamp(ClampParams params, uint8_t seed_for_data);
@@ -2876,6 +2904,11 @@ class WebNNGraphImplFuzzerImpl
                      uint8_t seed_for_input,
                      float seed_for_scale,
                      uint8_t seed_for_zero_point);
+  void DQArgMax(ArgMinMaxParams params,
+                OperandDataType quantized_type,
+                uint8_t seed_for_input,
+                float seed_for_scale,
+                uint8_t seed_for_zero_point);
   void DQClampQ(ClampParams clamp_params,
                 QuantizationParams quantization_params,
                 uint32_t channel_axis,
@@ -2994,6 +3027,49 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Activation(ActivationParams params,
       builder.BuildOutput("output", input_desc.shape(), input_desc.data_type());
 
   BuildActivation(builder, params.kind, input_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::ArgMinMax(ArgMinMaxParams params,
+                                                      uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  params.axis = params.axis % params.rank;
+
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.input_data_type, input_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(
+      auto output_desc,
+      ValidateArgMinMaxAndInferOutput(this->context_properties(), input_desc,
+                                      "", params.axis, params.output_data_type,
+                                      params.keep_dimensions));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildArgMinMax(params.kind, input_id, output_id, params.axis,
+                         params.keep_dimensions);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -4860,6 +4936,69 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQActivationQ(
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQArgMax(
+    ArgMinMaxParams params,
+    OperandDataType quantized_type,
+    uint8_t seed_for_input,
+    float seed_for_scale,
+    uint8_t seed_for_zero_point) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  params.axis = params.axis % params.rank;
+  // Only argMax has the dequantize fusion.
+  params.kind = mojom::ArgMinMax::Kind::kMax;
+
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.input_data_type, input_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(
+      auto output_desc,
+      ValidateArgMinMaxAndInferOutput(this->context_properties(), input_desc,
+                                      "", params.axis, params.output_data_type,
+                                      params.keep_dimensions));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // backend:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=3804;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage.
+  QuantizationParams per_tensor_quantization_params{
+      .quantized_type = quantized_type,
+      .quantization_kind = QuantizationKind::kPerTensor,
+      .channel_block_size = 1};
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto input_id,
+      BuildDequantizeInput(
+          builder, this->context_properties(), params.is_input_constant,
+          "input", input_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildArgMinMax(params.kind, input_id, output_id, params.axis,
+                         params.keep_dimensions);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQClampQ(
     ClampParams clamp_params,
     QuantizationParams quantization_params,
@@ -6052,6 +6191,21 @@ WEBNN_FUZZ_TEST_F(Activation,
                                    /*seed_for_data=*/4}}));
 
 WEBNN_FUZZ_TEST_F(
+    ArgMinMax,
+    .WithDomains(AnyArgMinMaxParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ArgMinMaxParams{
+                         /*input_data_type=*/OperandDataType::kFloat32,
+                         /*output_data_type=*/OperandDataType::kInt32,
+                         /*kind=*/mojom::ArgMinMax::Kind::kMin,
+                         /*rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*axis=*/1,
+                         /*keep_dimensions=*/false,
+                         /*is_input_constant=*/false,
+                     },
+                     /*seed_for_data=*/2}}));
+
+WEBNN_FUZZ_TEST_F(
     BatchNormalization,
     .WithDomains(AnyBatchNormalizationParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{BatchNormalizationParams{
@@ -6555,6 +6709,49 @@ WEBNN_FUZZ_TEST_F(Triangular,
                                    /*seed_for_data=*/5}}));
 
 WEBNN_FUZZ_TEST_F(
+    DQActivationQ,
+    .WithDomains(AnyActivationParams(kAllActivationQuantizedKinds),
+                 AnyQuantizedDataType(),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ActivationParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*rank=*/4,
+                         /*input_dims=*/{4, 5, 5, 6, 1, 1, 1, 1},
+                         /*kind=*/ActivationKind::kTanh,
+                         /*is_input_constant=*/false,
+                     },
+                     /*quantized_type=*/OperandDataType::kInt8,
+                     /*seed_for_input=*/4,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
+    DQArgMax,
+    .WithDomains(AnyArgMinMaxParams(),
+                 AnyQuantizedDataType(),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ArgMinMaxParams{
+                         /*input_data_type=*/OperandDataType::kFloat32,
+                         /*output_data_type=*/OperandDataType::kInt32,
+                         /*kind=*/mojom::ArgMinMax::Kind::kMax,
+                         /*rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*axis=*/1,
+                         /*keep_dimensions=*/false,
+                         /*is_input_constant=*/false,
+                     },
+                     /*quantized_type=*/OperandDataType::kUint8,
+                     /*seed_for_input=*/2,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
     DQClampQ,
     .WithDomains(AnyClampParams(),
                  AnyQuantizationParams(),
@@ -6890,26 +7087,6 @@ WEBNN_FUZZ_TEST_F(
                          /*rank=*/4,
                          /*input_dims=*/{4, 5, 5, 6, 1, 1, 1, 1},
                          /*axis=*/2,
-                         /*is_input_constant=*/false,
-                     },
-                     /*quantized_type=*/OperandDataType::kInt8,
-                     /*seed_for_input=*/4,
-                     /*seed_for_scale=*/0.25f,
-                     /*seed_for_zero_point=*/0}}));
-
-WEBNN_FUZZ_TEST_F(
-    DQActivationQ,
-    .WithDomains(AnyActivationParams(kAllActivationQuantizedKinds),
-                 AnyQuantizedDataType(),
-                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
-                 /*seed_for_scale=*/
-                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
-                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
-        .WithSeeds({{ActivationParams{
-                         /*data_type=*/OperandDataType::kFloat32,
-                         /*rank=*/4,
-                         /*input_dims=*/{4, 5, 5, 6, 1, 1, 1, 1},
-                         /*kind=*/ActivationKind::kTanh,
                          /*is_input_constant=*/false,
                      },
                      /*quantized_type=*/OperandDataType::kInt8,
