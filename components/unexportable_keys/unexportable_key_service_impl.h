@@ -6,6 +6,7 @@
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_IMPL_H_
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 
 #include "base/containers/span.h"
@@ -28,6 +29,13 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace unexportable_keys {
+
+// Concept defining the valid wrapper classes that can be stored and managed
+// within the spare key pool.
+template <typename T>
+concept SparePoolKeyType =
+    std::same_as<T, RefCountedUnexportableSigningKey> ||
+    std::same_as<T, RefCountedUnexportableAttestationKey>;
 
 // LINT.IfChange(SpareKeyPoolRetrievalResult)
 // These values are persisted to logs. Entries should not be renumbered and
@@ -155,6 +163,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // of idle pre-generated keys (of a specific key type) to mitigate the
   // significant latency (~1s) of on-demand Windows TPM key generation.
   template <typename KeyType>
+    requires SparePoolKeyType<KeyType>
   class SpareKeyPool;
 
   using SpareSigningKeyPool = SpareKeyPool<RefCountedUnexportableSigningKey>;

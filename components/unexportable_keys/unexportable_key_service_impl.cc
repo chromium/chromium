@@ -43,6 +43,15 @@ namespace unexportable_keys {
 
 namespace {
 
+// Concept defining the valid identifier types for the spare key pool.
+// This is used specifically to enable automatic Template Argument Deduction
+// (TAD) at callsites (e.g. for `ServiceErrorOr<KeyIdType>`), because trying
+// to deduce the wrapper class from `ServiceErrorOr<typename KeyType::IdType>`
+// results in a non-deduced context in C++.
+template <typename T>
+concept SparePoolKeyIdType = std::same_as<T, UnexportableSigningKeyId> ||
+                             std::same_as<T, UnexportableAttestationKeyId>;
+
 // The default list of signature algorithms to use for generating spare keys.
 constexpr std::array kSpareKeyAlgorithms = {
     crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
@@ -61,16 +70,13 @@ constexpr base::TimeDelta kSpareKeyPoolDelay = base::Minutes(2);
 // The task_manager and config must outlive the callback as they are stored in
 // the bind state by a reference.
 template <typename KeyType>
+  requires SparePoolKeyType<KeyType>
 base::RepeatingCallback<
     void(crypto::UnexportableKeyProvider::Config,
          base::span<const crypto::SignatureVerifier::SignatureAlgorithm>,
          base::OnceCallback<void(ServiceErrorOr<scoped_refptr<KeyType>>)>)>
 CreateGenerateKeyCallbackForSparePool(UnexportableKeyTaskManager* task_manager,
                                       BackgroundTaskOrigin origin) {
-  static_assert(std::same_as<KeyType, RefCountedUnexportableSigningKey> ||
-                    std::same_as<KeyType, RefCountedUnexportableAttestationKey>,
-                "Unsupported KeyType");
-
   return base::BindRepeating(
       [](UnexportableKeyTaskManager* task_manager, BackgroundTaskOrigin origin,
          crypto::UnexportableKeyProvider::Config config,
@@ -135,11 +141,8 @@ std::pair<std::vector<uint8_t>, std::string> GetWrappedKeyAndTag(
 //
 // LINT.IfChange(GetSpareKeyPoolHistogramName)
 template <typename KeyType>
+  requires SparePoolKeyType<KeyType>
 std::string GetSpareKeyPoolHistogramName(std::string_view suffix) {
-  static_assert(std::same_as<KeyType, RefCountedUnexportableSigningKey> ||
-                    std::same_as<KeyType, RefCountedUnexportableAttestationKey>,
-                "Unsupported KeyType for spare key pool metrics");
-
   static constexpr std::string_view kSpareKeyPoolHistogramPrefix =
       "Crypto.UnexportableKeys.SparePool";
   return base::JoinString(
@@ -155,14 +158,10 @@ std::string GetSpareKeyPoolHistogramName(std::string_view suffix) {
 // This records the duration from when the request was initiated until it is
 // fulfilled (either from the spare pool or via hardware generation).
 template <typename KeyIdType>
+  requires SparePoolKeyIdType<KeyIdType>
 base::OnceCallback<void(ServiceErrorOr<KeyIdType>)>
 WrapCallbackWithSpareKeyLatencyHistogram(
     base::OnceCallback<void(ServiceErrorOr<KeyIdType>)> callback) {
-  // Only `UnexportableSigningKeyId` and `UnexportableAttestationKeyId` are
-  // supported by the spare key pool.
-  static_assert(std::same_as<KeyIdType, UnexportableSigningKeyId> ||
-                std::same_as<KeyIdType, UnexportableAttestationKeyId>);
-
   using KeyType =
       std::conditional_t<std::same_as<KeyIdType, UnexportableSigningKeyId>,
                          RefCountedUnexportableSigningKey,
@@ -256,6 +255,7 @@ class MaybePendingKeyId {
 // initiation to completion, reporting this duration via the completion
 // callback.
 template <typename KeyType>
+  requires SparePoolKeyType<KeyType>
 class SpareKeyPoolRequest {
  public:
   void Start(
@@ -456,6 +456,7 @@ class UnexportableKeyServiceImpl::KeyRepository {
 // on-demand Windows TPM key generation. Encapsulates all UMA telemetry
 // logging and algorithm selection logic for the spare pool.
 template <typename KeyType>
+  requires SparePoolKeyType<KeyType>
 class UnexportableKeyServiceImpl::SpareKeyPool {
  public:
   SpareKeyPool(
