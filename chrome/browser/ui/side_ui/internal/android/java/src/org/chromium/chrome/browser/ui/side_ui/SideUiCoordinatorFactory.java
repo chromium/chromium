@@ -12,6 +12,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -27,6 +28,8 @@ public final class SideUiCoordinatorFactory {
      * @param parentActivity The {@link Activity} containing all Side UIs.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for {@code
      *     parentActivity}.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
+     *     top controls changes.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
@@ -40,6 +43,7 @@ public final class SideUiCoordinatorFactory {
     public static SideUiCoordinator create(
             Activity parentActivity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
+            BrowserControlsStateProvider browserControlsStateProvider,
             @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
@@ -61,6 +65,7 @@ public final class SideUiCoordinatorFactory {
         return new SideUiCoordinatorImpl(
                 parentActivity,
                 lifecycleDispatcher,
+                browserControlsStateProvider,
                 anchorContainerParent,
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
