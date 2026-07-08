@@ -4776,10 +4776,13 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
 
 const FeatureEntry::FeatureParam kGlassFrameEoH95[] = {
     {"BackgroundBlurOpacity", "0.95"}};
+const FeatureEntry::FeatureParam kGlassFrameEoH925[] = {
+    {"BackgroundBlurOpacity", "0.925"}};
 const FeatureEntry::FeatureParam kGlassFrameEoH90[] = {
     {"BackgroundBlurOpacity", "0.90"}};
 const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
     {"expand-on-hover 5% glass", kGlassFrameEoH95, nullptr},
+    {"expand-on-hover 7.5% glass", kGlassFrameEoH925, nullptr},
     {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:
