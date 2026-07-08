@@ -1544,8 +1544,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       int32_t tab_id,
       const std::vector<std::string>& names,
       SubscribeToPageMetadataCallback callback) override {
-    page_metadata_manager_->SubscribeToPageMetadata(tab_id, names,
-                                                    std::move(callback));
+    // TODO(b/480418718): Not sure how this happens but we sometimes get here
+    // with a null page_metadata_manager_. The mojo pipe is cleared on mojo
+    // disconnect and destruction (which also closes the mojo pipe) so suspect
+    // this is more likely because we receive the message before the
+    // WebClientCreated message is received (and thus before a manager is
+    // created). This is a bandaid but better than crashing the browser.
+    if (page_metadata_manager_) {
+      page_metadata_manager_->SubscribeToPageMetadata(tab_id, names,
+                                                      std::move(callback));
+    } else {
+      std::move(callback).Run(/*success=*/false);
+    }
   }
 
   void OnPinnedTabDataChanged(const TabDataChange& change) {
