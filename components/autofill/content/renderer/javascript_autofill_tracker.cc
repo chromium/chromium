@@ -153,16 +153,18 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
       return;
   }
 
-  auto get_owning_form_id = [](blink::WebFormControlElement element) {
-    return form_util::GetFormRendererId(element.GetOwningFormForAutofill());
-  };
+  blink::WebFormControlElement first_modified_field =
+      form_util::GetFormControlByRendererId(logs.front().modified_field_id);
+  if (!first_modified_field) {
+    return;
+  }
 
-  FormRendererId target_form_id = get_owning_form_id(
-      form_util::GetFormControlByRendererId(logs.front().modified_field_id));
+  blink::WebFormElement target_form =
+      first_modified_field.GetOwningFormForAutofill();
   std::erase_if(logs, [&](const JsChangeRecord& record) {
     blink::WebFormControlElement element =
         form_util::GetFormControlByRendererId(record.modified_field_id);
-    return !element || get_owning_form_id(element) != target_form_id;
+    return !element || element.GetOwningFormForAutofill() != target_form;
   });
 
   base::flat_set<FieldRendererId> unique_fields =
@@ -175,7 +177,7 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
   }
 
   callback_.Run(
-      target_form_id, logs.front().focused_field_id,
+      form_util::GetFormRendererId(target_form), logs.front().focused_field_id,
       std::vector<FieldRendererId>(unique_fields.begin(), unique_fields.end()));
 }
 
