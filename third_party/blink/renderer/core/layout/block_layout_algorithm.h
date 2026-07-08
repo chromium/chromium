@@ -579,6 +579,10 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // margins for end margin trimming.
   bool is_relayout_for_margin_end_trim_ : 1 = false;
 
+  // Set to true if the child is already laid out to measure the `text-fit`
+  // scaling factor, preventing infinite recursion.
+  bool is_measuring_text_fit_ : 1 = false;
+
   // Set if last_non_self_collapsing_child_ should be left as-is, because we're
   // in a relayout pass (but not necessarily in a relayout pass for margin
   // trimming).

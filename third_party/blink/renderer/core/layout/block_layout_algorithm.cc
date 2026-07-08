@@ -664,7 +664,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
   ParagraphScale paragraph_scale;
-  if (RuntimeEnabledFeatures::CssTextFitEnabled()) {
+  if (!is_measuring_text_fit_ && RuntimeEnabledFeatures::CssTextFitEnabled()) {
     const TextFit& text_fit = Style().GetTextFit();
     const bool grow_consistent =
         text_fit.Type() == TextFitType::kGrow &&
@@ -708,6 +708,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
           is_relayout_for_margin_end_trim_;
       cloned_algorithm.pending_margin_end_trim_child_ =
           pending_margin_end_trim_child_;
+      cloned_algorithm.is_measuring_text_fit_ = true;
       const LayoutResult* result =
           cloned_algorithm.LayoutInlineChild(node, nullptr);
       // The layout might abort with non-success status. For example, it may
