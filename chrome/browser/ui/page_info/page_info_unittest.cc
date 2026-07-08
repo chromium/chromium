@@ -83,14 +83,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/android_theme_resources.h"
-#include "media/base/media_switches.h"
-#else
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/android_theme_resources.h"
+#else
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1965,6 +1966,44 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
   }
   // Test class expects PageInfo to exist during Teardown.
   page_info();
+}
+
+// Tests that "Re-Enable Warnings" button on PageInfo is shown when HTTPS-First
+// Balanced Mode is bypassed, and that clicking it revokes the bypass decision.
+TEST_F(PageInfoTest, ReEnableWarningsHttpsFirstBalancedMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+
+  StatefulSSLHostStateDelegate* ssl_state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  auto* storage_partition =
+      web_contents()->GetPrimaryMainFrame()->GetStoragePartition();
+
+  std::string host = "example.test";
+  ssl_state->AllowHttpForHost(host, storage_partition);
+
+  ResetMockUI();
+  SetURL("http://" + host);
+
+  security_level_ = security_state::WARNING;
+  visible_security_state_.url = GURL("http://" + host);
+  visible_security_state_.connection_info_initialized = false;
+
+  PageInfoUI::IdentityInfo identity_info;
+  EXPECT_CALL(*mock_ui(), SetIdentityInfo(_))
+      .WillOnce(::testing::SaveArg<0>(&identity_info));
+
+  // Instantiating page_info() triggers UI initialization and calls SetIdentityInfo.
+  page_info();
+  EXPECT_TRUE(identity_info.show_ssl_decision_revoke_button);
+
+  // Click the button
+  page_info()->OnRevokeSSLErrorBypassButtonPressed();
+
+  // Verify exception is removed
+  EXPECT_FALSE(ssl_state->HasAllowException(host, storage_partition));
 }
 
 // Tests that the duration of time the PageInfo is open is recorded for pages

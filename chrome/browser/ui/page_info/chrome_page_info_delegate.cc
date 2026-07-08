@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -495,15 +496,8 @@ const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
 }
 #endif
 
-bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
-  bool https_first_mode_fully_enabled =
-      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_first_mode_enabled_in_incognito =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
-  return https_first_mode_fully_enabled ||
-         (GetProfile()->IsIncognitoProfile() &&
-          https_first_mode_enabled_in_incognito);
+bool ChromePageInfoDelegate::IsHttpsFirstModeEnabledForUrl(const GURL& url) {
+  return IsInterstitialEnabled(ComputeInterstitialState(web_contents_, url));
 }
 
 bool ChromePageInfoDelegate::IsIncognitoProfile() {

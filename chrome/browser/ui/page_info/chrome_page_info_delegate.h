@@ -99,7 +99,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   const std::u16string GetClientApplicationName() override;
 #endif
 
-  bool IsHttpsFirstModeEnabled() override;
+  bool IsHttpsFirstModeEnabledForUrl(const GURL& url) override;
   bool IsIncognitoProfile() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
