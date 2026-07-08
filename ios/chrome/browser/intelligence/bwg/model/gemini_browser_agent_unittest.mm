@@ -1374,3 +1374,31 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
   EXPECT_EQ(1u, tabs.size());
   EXPECT_EQ(0u, tabs.count(other_id));
 }
+
+// Tests that disabling the page content sharing pref clears attached tabs.
+TEST_F(GeminiBrowserAgentTest, TestClearAttachedTabsOnPageContentPrefDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  // Add the active tab.
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  // Add a shared tab.
+  web::WebStateID other_id = web::WebStateID::NewUnique();
+  GeminiPageContext* other_context = [[GeminiPageContext alloc] init];
+  other_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(other_id, other_context);
+
+  EXPECT_EQ(2u, GetRawAttachedTabs().size());
+
+  // Toggle the preference to disabled.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+
+  // Verify that `attached_tabs_` was cleared.
+  EXPECT_EQ(0u, GetRawAttachedTabs().size());
+}
