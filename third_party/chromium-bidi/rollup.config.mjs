@@ -72,7 +72,9 @@ const mapperTabConfig = {
         },
       },
     }),
-    nodeResolve(),
+    nodeResolve({
+      modulePaths: [path.join(process.cwd(), 'node_modules')],
+    }),
   ],
 };
 

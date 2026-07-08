@@ -173,7 +173,6 @@ bidi_bundle("mapper_bundle") {
   output_file = "$target_gen_dir/mapperTab.js"
   deps = [
     ":bidi_tab",
-    ":link_node_modules",
   ]
 }
 
@@ -269,24 +268,5 @@ group("all") {
     ":unit_tests",
     ":bidi_server",
     ":chromium_bidi",
-    ":link_node_modules",
   ]
 }
-
-action("link_node_modules") {
-  script = "//build/symlink.py"
-  inputs = [
-    "../package.json",
-  ]
-  outputs = [
-    "$target_gen_dir/package.json",
-    "$target_gen_dir/node_modules",
-  ]
-  args = [
-    "-f",
-    rebase_path("../package.json", "$target_gen_dir"),
-    rebase_path("../node_modules", "$target_gen_dir"),
-    rebase_path("$target_gen_dir", root_build_dir),
-   ]
-}
-
