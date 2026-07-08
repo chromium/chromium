@@ -804,7 +804,8 @@ cbor::Value RedactEnclaveResponse(const cbor::Value& cbor) {
   return fido_parsing_utils::RedactCbor(
       cbor,
       std::array{fido_parsing_utils::ToCborVector("ok", "ok", "largeBlob"),
-                 fido_parsing_utils::ToCborVector("ok", "ok", "prf")});
+                 fido_parsing_utils::ToCborVector("ok", "ok", "prf"),
+                 fido_parsing_utils::ToCborVector("ok", "ok", "wrapped", "certs_in_path")});
 }
 
 }  // namespace device::enclave

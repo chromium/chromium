@@ -885,6 +885,53 @@ TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveResponse) {
   EXPECT_EQ(prf_value.GetString(), "[redacted]");
 }
 
+TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveResponseCertsInPath) {
+  cbor::Value::MapValue wrapped_map;
+  wrapped_map.emplace("certs_in_path", cbor::Value("dummy_certs"));
+
+  cbor::Value::MapValue ok_success_map;
+  ok_success_map.emplace("wrapped", cbor::Value(std::move(wrapped_map)));
+
+  cbor::Value::MapValue inner_map;
+  inner_map.emplace("ok", cbor::Value(std::move(ok_success_map)));
+
+  cbor::Value::ArrayValue array;
+  array.emplace_back(cbor::Value(std::move(inner_map)));
+
+  cbor::Value::MapValue response_map;
+  response_map.emplace("ok", cbor::Value(std::move(array)));
+
+  cbor::Value response(std::move(response_map));
+
+  const cbor::Value redacted = RedactEnclaveResponse(response);
+  ASSERT_TRUE(redacted.is_map());
+  const cbor::Value::MapValue& redacted_map = redacted.GetMap();
+  const auto ok_it = redacted_map.find(cbor::Value("ok"));
+  ASSERT_NE(ok_it, redacted_map.end());
+  ASSERT_TRUE(ok_it->second.is_array());
+  ASSERT_FALSE(ok_it->second.GetArray().empty());
+
+  const cbor::Value& inner_val = ok_it->second.GetArray()[0];
+  ASSERT_TRUE(inner_val.is_map());
+  const cbor::Value::MapValue& redacted_inner_map = inner_val.GetMap();
+  const auto inner_ok_it = redacted_inner_map.find(cbor::Value("ok"));
+  ASSERT_NE(inner_ok_it, redacted_inner_map.end());
+  ASSERT_TRUE(inner_ok_it->second.is_map());
+
+  const cbor::Value::MapValue& redacted_ok_success_map =
+      inner_ok_it->second.GetMap();
+  const auto wrapped_it = redacted_ok_success_map.find(cbor::Value("wrapped"));
+  ASSERT_NE(wrapped_it, redacted_ok_success_map.end());
+  ASSERT_TRUE(wrapped_it->second.is_map());
+
+  const cbor::Value::MapValue& redacted_wrapped_map =
+      wrapped_it->second.GetMap();
+  const auto certs_it =
+      redacted_wrapped_map.find(cbor::Value("certs_in_path"));
+  ASSERT_NE(certs_it, redacted_wrapped_map.end());
+  EXPECT_EQ(certs_it->second.GetString(), "[redacted]");
+}
+
 TEST_F(EnclaveProtocolUtilsTest, RedactErroneousEnclaveResponse) {
   cbor::Value response = cbor::Value("not a valid response");
   EXPECT_EQ(cbor::Writer::Write(RedactEnclaveResponse(response)),

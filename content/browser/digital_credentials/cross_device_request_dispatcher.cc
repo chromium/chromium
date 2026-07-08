@@ -136,10 +136,7 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::string reserialized;
-  base::JSONWriter::WriteWithOptions(
-      *json, base::JsonOptions::OPTIONS_PRETTY_PRINT, &reserialized);
-  FIDO_LOG(EVENT) << "-> " << reserialized;
+  FIDO_LOG(EVENT) << "-> [large JSON payload: " << response->size() << " bytes]";
 
   const base::DictValue* response_dict = json->FindDict("response");
   if (!response_dict) {
