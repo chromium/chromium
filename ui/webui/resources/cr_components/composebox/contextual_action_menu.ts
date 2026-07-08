@@ -291,7 +291,12 @@ export class ContextualActionMenuElement extends
       this.updateScrollable_();
 
       if (this.open && this.anchor_) {
-        this.showAt(this.anchor_);
+        if (changedProperties.has('tabSuggestions') &&
+            !this.shareTabsFlyoutOpen) {
+          this.showAt(this.anchor_);
+        } else {
+          this.reposition_();
+        }
       }
       if (this.shareTabsFlyoutOpen) {
         this.updateFlyoutPosition_();
@@ -315,6 +320,10 @@ export class ContextualActionMenuElement extends
       return;
     }
     const rect = this.anchor_.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0 && rect.top === 0 &&
+        rect.left === 0) {
+      return;
+    }
     const height = rect.height;
 
     const doc = document.scrollingElement || document.documentElement;
@@ -393,6 +402,12 @@ export class ContextualActionMenuElement extends
 
   showAt(anchor: HTMLElement) {
     this.anchor_ = anchor;
+    const rect = anchor.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0 && rect.top === 0 &&
+        rect.left === 0) {
+      return;
+    }
+
     const menuWidth = this.computeMenuWidth_();
     // Clear any previous max height limit before measuring natural full height.
     this.$.menu.style.removeProperty('--contextual-menu-max-height');
@@ -404,8 +419,6 @@ export class ContextualActionMenuElement extends
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
-
-    const rect = anchor.getBoundingClientRect();
     const iconElement = anchor.querySelector('#entrypointIcon') || anchor;
     const iconRect = iconElement.getBoundingClientRect();
 
