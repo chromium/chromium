@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="@dimen/autofill_personal_context_settings_notice_vertical_padding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/autofill_personal_context_settings_notice_item_margin_bottom"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/personal_context_autofill_settings_when_used_title_android" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_personal_context_settings_notice_item_margin_bottom"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/finance"
+        android:drawablePadding="@dimen/autofill_personal_context_settings_notice_icon_padding"
+        app:drawableWidth="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:drawableHeight="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:text="@string/personal_context_autofill_settings_logs_notice_android" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/personal_recommendations"
+        android:drawablePadding="@dimen/autofill_personal_context_settings_notice_icon_padding"
+        app:drawableWidth="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:drawableHeight="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:text="@string/personal_context_autofill_settings_analyzed_notice_android" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/autofill_personal_context_settings_notice_item_margin_bottom"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/personal_context_autofill_settings_things_to_consider_title_android" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_personal_context_settings_notice_item_margin_bottom"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/insight_spark"
+        android:drawablePadding="@dimen/autofill_personal_context_settings_notice_icon_padding"
+        app:drawableWidth="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:drawableHeight="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:text="@string/personal_context_autofill_settings_humans_notice_android" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_personal_context_settings_notice_item_margin_bottom"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/account_box"
+        android:drawablePadding="@dimen/autofill_personal_context_settings_notice_icon_padding"
+        app:drawableWidth="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:drawableHeight="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:text="@string/personal_context_autofill_settings_never_seen_notice_android" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_domain"
+        android:drawablePadding="@dimen/autofill_personal_context_settings_notice_icon_padding"
+        app:drawableWidth="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:drawableHeight="@dimen/autofill_personal_context_settings_notice_icon_size"
+        app:chromeDrawableTint="@color/default_icon_color_tint_list"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:text="@string/personal_context_autofill_settings_footer_notice_android" />
+
+</LinearLayout>

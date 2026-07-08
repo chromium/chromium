@@ -90,6 +90,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextFragment.java",
     "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextMediator.java",
+    "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextNoticePreference.java",
     "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextViewBinder.java",
   ]
@@ -181,7 +182,6 @@ android_library("test_support_java") {
   srcjar_deps = [ ":jni_test_headers" ]
 }
 
-
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
@@ -205,10 +205,15 @@ android_resources("java_resources") {
   deps = [
     "//components/browser_ui/settings/android:java_resources",
     "//components/strings:components_strings_grd",
+    "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/drawable/account_box.xml",
     "java/res/drawable/autofill_editor_notice_background.xml",
+    "java/res/drawable/finance.xml",
     "java/res/drawable/google_24dp.xml",
+    "java/res/drawable/insight_spark.xml",
+    "java/res/drawable/personal_recommendations.xml",
     "java/res/drawable/store_locally_tooltip_background.xml",
     "java/res/layout/autofill_ai_attribute_info.xml",
     "java/res/layout/autofill_ai_attribute_info_with_edit_button.xml",
@@ -226,6 +231,7 @@ android_resources("java_resources") {
     "java/res/layout/autofill_local_card_editor.xml",
     "java/res/layout/autofill_local_iban_editor.xml",
     "java/res/layout/autofill_migrate_address_profile_prompt.xml",
+    "java/res/layout/autofill_personal_context_expandable_notice.xml",
     "java/res/layout/autofill_save_address_profile_prompt.xml",
     "java/res/layout/autofill_update_address_profile_prompt.xml",
     "java/res/layout/autofill_vcn_enroll_bottom_sheet_content.xml",
@@ -253,6 +259,7 @@ android_library("test_java") {
     "javatest/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/address/AddressEditorRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/personal_context/AutofillPersonalContextSettingsRenderTest.java",
   ]
 
   deps = [

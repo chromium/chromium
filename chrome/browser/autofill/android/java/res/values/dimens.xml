@@ -26,4 +26,10 @@ found in the LICENSE file.
     <!-- Autofill AI preference dimensions -->
     <dimen name="autofill_ai_preference_info_item_icon_size">20dp</dimen>
     <dimen name="autofill_ai_preference_info_item_icon_padding">16dp</dimen>
+
+    <!-- Autofill Personal Context dimensions -->
+    <dimen name="autofill_personal_context_settings_notice_icon_size">18dp</dimen>
+    <dimen name="autofill_personal_context_settings_notice_icon_padding">16dp</dimen>
+    <dimen name="autofill_personal_context_settings_notice_item_margin_bottom">16dp</dimen>
+    <dimen name="autofill_personal_context_settings_notice_vertical_padding">16dp</dimen>
 </resources>

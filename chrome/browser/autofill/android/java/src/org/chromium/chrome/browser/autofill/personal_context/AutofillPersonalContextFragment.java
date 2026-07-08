@@ -36,6 +36,8 @@ public class AutofillPersonalContextFragment extends ChromeBaseSettingsFragment 
             "autofill_personal_context_switch";
     public static final String PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS =
             "autofill_personal_context_manage_connected_apps";
+    public static final String PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE =
+            "personal_context_notice_preference";
 
     // User action constants for external entry points
     public static final String ACTION_ENTRY_FROM_IDENTITY_DOCS =

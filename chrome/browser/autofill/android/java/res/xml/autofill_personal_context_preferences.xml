@@ -9,19 +9,30 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:id="@+id/autofill_personal_context_switch"
-        android:key="autofill_personal_context_switch"
-        android:order="0"
-        android:title="@string/personal_context_autofill_settings_switch_title_android"
-        android:summary="@string/personal_context_autofill_settings_switch_summary_android" />
+    <PreferenceCategory
+        android:key="autofill_personal_context_main_category"
+        android:order="0">
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:id="@+id/autofill_personal_context_switch"
+            android:key="autofill_personal_context_switch"
+            android:order="0"
+            android:title="@string/personal_context_autofill_settings_switch_title_android"
+            android:summary="@string/personal_context_autofill_settings_switch_summary_android" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:id="@+id/autofill_personal_context_manage_connected_apps"
-        android:key="autofill_personal_context_manage_connected_apps"
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:id="@+id/autofill_personal_context_manage_connected_apps"
+            android:key="autofill_personal_context_manage_connected_apps"
+            android:order="1"
+            android:title="@string/personal_context_autofill_settings_manage_connected_apps_title_android"
+            android:summary="@string/personal_context_autofill_settings_manage_connected_apps_summary_android"
+            android:widgetLayout="@layout/preference_widget_open_in_new" />
+    </PreferenceCategory>
+
+    <org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextNoticePreference
+        android:key="personal_context_notice_preference"
         android:order="1"
-        android:title="@string/personal_context_autofill_settings_manage_connected_apps_title_android"
-        android:summary="@string/personal_context_autofill_settings_manage_connected_apps_summary_android"
-        android:widgetLayout="@layout/preference_widget_open_in_new" />
+        android:title="@string/personal_context_autofill_settings_helping_improve_notice_android"
+        app:backgroundStyle="card"
+        app:expandedContentLayout="@layout/autofill_personal_context_expandable_notice" />
 
 </PreferenceScreen>

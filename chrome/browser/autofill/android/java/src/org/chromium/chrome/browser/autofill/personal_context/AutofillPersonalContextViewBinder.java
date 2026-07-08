@@ -25,6 +25,8 @@ class AutofillPersonalContextViewBinder {
             if (switchPref != null) {
                 switchPref.setChecked(model.get(PERSONAL_CONTEXT_ENABLED));
             }
+            // TODO(crbug.com/531644749): Update enterprise policy message visibility in the
+            // personal context notice preference when the toggle changes.
         } else if (key == ON_PERSONAL_CONTEXT_TOGGLE_CHANGED) {
             ChromeSwitchPreference switchPref = view.getAutofillPersonalContextSwitch();
             if (switchPref != null) {
