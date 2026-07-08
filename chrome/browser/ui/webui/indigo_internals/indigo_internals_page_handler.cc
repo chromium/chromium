@@ -35,6 +35,8 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
       return indigo_internals::mojom::LocalEligibility::kManagedDomain;
     case indigo::LocalEligibility::kGlicDisabledForProfile:
       return indigo_internals::mojom::LocalEligibility::kGlicDisabledForProfile;
+    case indigo::LocalEligibility::kEnterpriseDisallowed:
+      return indigo_internals::mojom::LocalEligibility::kEnterpriseDisallowed;
   }
 }
 

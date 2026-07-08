@@ -614,9 +614,10 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
           policy::ManagementServiceFactory::GetForProfile(&profile_),
           policy::EnterpriseManagementAuthority::CLOUD);
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kDisabledByPolicy
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 
 TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
@@ -627,14 +628,16 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
           policy::ManagementServiceFactory::GetForProfile(&profile_),
           policy::EnterpriseManagementAuthority::CLOUD);
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kEligible
+                                  : LocalEligibility::kEnterpriseDisallowed));
 
   SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kDisabledByPolicy
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 
 TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, ManagedDomain) {
@@ -662,9 +665,10 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, ManagedProfileCloud) {
           policy::ManagementServiceFactory::GetForProfile(&profile_),
           policy::EnterpriseManagementAuthority::CLOUD);
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kEligible
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 
 TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
@@ -675,9 +679,10 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
           policy::ManagementServiceFactory::GetForProfile(&profile_),
           policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kEligible
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -685,14 +690,16 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, EnterpriseDeviceWin) {
   CreateService();
   auto scoped_device_override = base::SetIsEnterpriseDeviceForTesting(true);
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kEligible
+                                  : LocalEligibility::kEnterpriseDisallowed));
 
   SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kDisabledByPolicy
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 #endif
 
@@ -703,14 +710,16 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
   profile_.ScopedCrosSettingsTestHelper()->InstallAttributes()->SetCloudManaged(
       "example.com", "device_id");
   MakeAccountAvailableAndCapable();
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kEligible
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kEligible
+                                  : LocalEligibility::kEnterpriseDisallowed));
 
   SetPolicySettings(prefs::Policy::kDisallowed);
-  EXPECT_TRUE(LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
-                                          ? LocalEligibility::kDisabledByPolicy
-                                          : LocalEligibility::kManagedDomain));
+  EXPECT_TRUE(
+      LocalEligibilityBecomes(IsIndigoAllowedForEnterprise()
+                                  ? LocalEligibility::kDisabledByPolicy
+                                  : LocalEligibility::kEnterpriseDisallowed));
 }
 #endif
 

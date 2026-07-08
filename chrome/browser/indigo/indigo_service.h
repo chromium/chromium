@@ -41,6 +41,9 @@ enum class LocalEligibility {
   kMissingScript,
   kManagedDomain,
   kGlicDisabledForProfile,
+  // TODO(b:512247450): Deprecate this enum when the enterprise clients are
+  // allowed to use indigo.
+  kEnterpriseDisallowed,
 };
 
 // Combined eligibility status including local constraints (features, profile
