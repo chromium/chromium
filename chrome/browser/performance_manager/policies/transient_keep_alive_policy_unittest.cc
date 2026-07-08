@@ -299,4 +299,25 @@ TEST_F(TransientKeepAlivePolicyTest, DestroyContentsWhileKeepAliveActive) {
   histogram_tester_.ExpectTotalCount(kKeepAliveResultHistogramName, 0);
 }
 
+// Tests that disabling ref counts (e.g. during profile destruction or shutdown)
+// while a keep-alive is active does not crash when the process node is
+// subsequently removed.
+TEST_F(TransientKeepAlivePolicyTest, DisableRefCountsWhileKeepAliveActive) {
+  NavigateAndCommit(GURL(kTestUrl1));
+  content::RenderProcessHost* rph1 = process();
+  EXPECT_EQ(1, rph1->GetPendingReuseRefCountForTesting());
+
+  // Navigate away so rph1 becomes empty and gets a keep-alive timer.
+  NavigateAndCommit(GURL(kTestUrl2));
+  EXPECT_EQ(1, rph1->GetPendingReuseRefCountForTesting());
+
+  // Disable ref counts on the host.
+  rph1->DisableRefCounts();
+
+  // Destroy everything. This triggers OnProcessNodeRemoved, which should safely
+  // untrack the process node without attempting to decrement the ref count.
+  DeleteContents();
+  FlushUIThreadTasks();
+}
+
 }  // namespace performance_manager::policies
