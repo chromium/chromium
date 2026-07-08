@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
@@ -22,6 +23,7 @@
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
+#include "components/multistep_filter/core/verification/filter_application_verifier.h"
 
 namespace multistep_filter {
 
@@ -73,6 +75,68 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
   MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                        LogEventType::kSuggestionGenerationStarted,
                        metadata.url.GetHost());
+}
+void LogSuggestionApplicationOutcome(
+    MultistepFilterLogRouter* log_router,
+    const FilterNavigationMetadata& metadata,
+    const std::optional<UrlFilterSuggestion>& suggested_filters,
+    const std::optional<FilterAnnotation>& extracted_annotation) {
+  if (!suggested_filters) {
+    return;
+  }
+
+  bool is_unsupported_scheme = !metadata.is_cryptographic_scheme &&
+                               !metadata.is_http_allowed_for_testing;
+  if (metadata.is_error_page_navigation || is_unsupported_scheme) {
+    MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                         LogEventType::kSuggestionApplied,
+                         metadata.url.GetHost())
+        << LogDetail{"application_outcome", "failure"}
+        << LogDetail{"is_error_page", metadata.is_error_page_navigation}
+        << LogDetail{"net_error_code", metadata.net_error_code}
+        << LogDetail{"http_response_code", metadata.http_response_code};
+    return;
+  }
+
+  if (!extracted_annotation) {
+    MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                         LogEventType::kSuggestionApplied,
+                         metadata.url.GetHost())
+        << LogDetail{"application_outcome", "error_no_extracted_annotations"};
+    return;
+  }
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(*suggested_filters,
+                                        *extracted_annotation);
+
+  switch (result.outcome) {
+    case FilterApplicationVerifier::Result::Outcome::kNoExtractedAnnotations:
+      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                           LogEventType::kSuggestionApplied,
+                           metadata.url.GetHost())
+          << LogDetail{"application_outcome", "error_no_extracted_annotations"};
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kCountMismatch:
+      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                           LogEventType::kSuggestionApplied,
+                           metadata.url.GetHost())
+          << LogDetail{"application_outcome", "error_filter_count_mismatch"};
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kSuccess:
+      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                           LogEventType::kSuggestionApplied,
+                           metadata.url.GetHost())
+          << LogDetail{"application_outcome", "success"};
+      break;
+    case FilterApplicationVerifier::Result::Outcome::kAttributeMismatch:
+      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                           LogEventType::kSuggestionApplied,
+                           metadata.url.GetHost())
+          << LogDetail{"application_outcome", "error_attribute_mismatch"}
+          << LogDetail{"missing_filter_keys",
+                       base::JoinString(result.missing_keys, ", ")};
+      break;
+  }
 }
 }  // namespace
 
@@ -212,6 +276,8 @@ void FilterTabController::OnSuggestionGenerated(
 void FilterTabController::OnExtractionFinished(
     const FilterNavigationMetadata& metadata,
     std::optional<FilterAnnotation> annotation) {
+  LogSuggestionApplicationOutcome(log_router_, metadata,
+                                  metadata.applied_suggestion, annotation);
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinishedForTest(  // IN-TEST
         annotation ? std::optional(annotation->id) : std::nullopt);
