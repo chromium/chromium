@@ -52,6 +52,7 @@ public class SearchUtils {
         SearchView searchView = (SearchView) searchItem.getActionView();
         assumeNonNull(searchView);
 
+        searchView.setFocusable(false);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
         // Restore the search view if a query was recovered.
