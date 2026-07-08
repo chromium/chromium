@@ -6,6 +6,7 @@
 #define IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 
 #import <map>
+#import <optional>
 #import <string>
 
 #import "base/cancelable_callback.h"
@@ -20,11 +21,37 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
+@class NSError;
+@class NSString;
 @class WKFrameInfo;
 
 namespace web {
 
 class JavaScriptContentWorld;
+class WebFrameImpl;
+
+// A structure to represent a JavaScript execution and its error, if any.
+struct ScriptContext {
+  ScriptContext(base::WeakPtr<web::WebState> web_state,
+                base::WeakPtr<web::WebFrameImpl> web_frame,
+                url::Origin security_origin,
+                bool is_main_frame,
+                NSString* script = nil,
+                std::optional<std::string> api = std::nullopt);
+  ScriptContext(const ScriptContext&);
+  ScriptContext(ScriptContext&&);
+  ScriptContext& operator=(const ScriptContext&);
+  ScriptContext& operator=(ScriptContext&&);
+  ~ScriptContext();
+
+  base::WeakPtr<web::WebState> web_state;
+  base::WeakPtr<web::WebFrameImpl> web_frame;
+  url::Origin security_origin;
+  bool is_main_frame;
+  NSString* script = nil;
+  std::optional<std::string> api = std::nullopt;
+  NSError* error = nil;
+};
 
 class WebFrameImpl final : public WebFrame,
                            public WebFrameInternal,
