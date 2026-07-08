@@ -14,7 +14,10 @@ xr_module_desc = {
     "//third_party/androidx:androidx_xr_runtime_runtime_openxr_java",
     "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
   ]
-  uses_split = "chrome"
+
+  # Depends on exoplayer, which lives in on_demand.
+  uses_split = "on_demand"
+
   loadable_modules_64_bit = [
     "$root_out_dir/obj/third_party/androidx/androidx_xr_arcore_arcore_openxr_java/jni/arm64-v8a/libandroidx.xr.arcore.openxr.so",
     "$root_out_dir/obj/third_party/androidx/androidx_xr_runtime_runtime_openxr_java/jni/arm64-v8a/libandroidx.xr.runtime.openxr.so",

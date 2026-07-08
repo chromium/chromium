@@ -20,7 +20,7 @@
     <dist:fusing dist:include="false"/>
   </dist:module>  # DIFF-ANCHOR: 3f74a994
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
-  <uses-split android:name="chrome"/>
+  <uses-split android:name="on_demand"/>
   <application>
     <activity  # DIFF-ANCHOR: 1f566b69
         android:name="org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackActivity"

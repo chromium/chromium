@@ -132,10 +132,16 @@ template("chrome_bundle") {
       min_sdk_version = _min_sdk_version
 
       if (defined(_module_desc.uses_split)) {
-        assert(
-            _module_desc.uses_split == "chrome",
-            "Build logic supports only uses_split=chrome. Found uses_split=${_module_desc.uses_split}")
-        parent_module_target = ":${_bundle_target_name}__chrome_bundle_module"
+        if (_module_desc.uses_split == "chrome") {
+          parent_module_target = ":${_bundle_target_name}__chrome_bundle_module"
+        } else if (_module_desc.uses_split == "on_demand") {
+          parent_module_target =
+              ":${_bundle_target_name}__on_demand_bundle_module"
+        } else {
+          assert(
+              false,
+              "Build logic supports only uses_split=chrome|on_demand. Found uses_split=${_module_desc.uses_split}")
+        }
       }
 
       if (android_64bit_target_cpu) {
