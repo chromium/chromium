@@ -12701,9 +12701,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kSearchEngineUnconditionalDialog)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-    {"enable-webmcp-testing", flag_descriptions::kWebMCPTestingName,
-     flag_descriptions::kWebMCPTestingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kWebMCPTesting)},
+    {"enable-webmcp-testing", flag_descriptions::kWebMCPName,
+     flag_descriptions::kWebMCPDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kWebMCP)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"persist-across-reboots-debug-logs",

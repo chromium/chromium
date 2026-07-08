@@ -46,12 +46,7 @@ bool IsScriptToolRequestedByOrigin(
 }
 
 bool IsWebMCPEnabled(RenderFrameHost& rfh) {
-  // In the renderer, the WebMCP feature is implied by WebMCPTesting (in
-  // runtime_enabled_features.json5). Since this implication does not propagate
-  // automatically to the browser's base::FeatureList, we must explicitly check
-  // both features here to prevent renderer termination (bad IPC message).
-  return (base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
-          base::FeatureList::IsEnabled(blink::features::kWebMCPTesting)) &&
+  return base::FeatureList::IsEnabled(blink::features::kWebMCP) &&
          rfh.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kTools);
 }
 

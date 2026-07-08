@@ -22,7 +22,8 @@
 
 <script>
 promise_test(async t => {
-  await waitForTool('fill_text');
+  const tool = await waitForTool('fill_text');
+  assert_true(!!tool, 'Tool should be registered');
 
   let form = document.querySelector('form');
   let inputs = form.querySelectorAll('input, textarea, select');
@@ -45,7 +46,7 @@ promise_test(async t => {
     select: "opt2"
   });
 
-  await navigator.modelContextTesting.executeTool('fill_text', inputArgs);
+  await document.modelContext.executeTool(tool, inputArgs);
 
   assert_equals(document.getElementById('myinput').value, 'regular text');
   assert_true(events['myinput'].inputFired, 'text input event should fire');

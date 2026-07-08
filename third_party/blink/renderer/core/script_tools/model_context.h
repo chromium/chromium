@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
@@ -161,10 +160,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   bool CancelTool(const base::UnguessableToken& invocation_id);
 
-  void SetToolChangeCallback(std::optional<base::RepeatingClosure> cb) {
-    tool_change_closure_ = std::move(cb);
-  }
-
   void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
   void PauseExecution();
 
@@ -232,7 +227,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;
 
-  std::optional<base::RepeatingClosure> tool_change_closure_;
   Member<Document> document_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -1,3 +1,0 @@
-This tests that navigator.modelContextTesting.getCrossDocumentScriptToolResult works correctly.
-PASS
-

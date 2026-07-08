@@ -11,7 +11,8 @@
 
 <script>
 promise_test(async t => {
-  await waitForTool('submit_test');
+  const tool = await waitForTool('submit_test');
+  assert_true(!!tool, 'Tool should be registered');
 
   let form = document.querySelector('form');
   let submitFired = false;
@@ -23,8 +24,7 @@ promise_test(async t => {
   });
 
   // Call executeTool. If it throws, the test fails automatically.
-  // The old bug was that this would reject with a "programming error" string.
-  await navigator.modelContextTesting.executeTool('submit_test', '{}');
+  await document.modelContext.executeTool(tool, '{}');
 
   assert_true(submitFired, 'submit event should have fired');
 }, 'executeTool resolves successfully when submit handler calls form.submit()');

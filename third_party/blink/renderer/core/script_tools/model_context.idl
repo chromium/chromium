@@ -21,7 +21,14 @@ dictionary ModelContextRegisterToolOptions {
   sequence<USVString> exposedTo;
 };
 
-dictionary RegisteredTool : RegisteredToolDeprecated {
+dictionary ExecuteToolOptions {
+  AbortSignal signal;
+};
+
+dictionary RegisteredTool {
+  required DOMString name;
+  required DOMString description;
+  DOMString inputSchema;
   // `title` can be exposed as a `DOMString` since it was taken in by a
   // `USVString`, meaning all unmatched surrogate processing has already been
   // done, and there's no need to do it again on tool exposure.

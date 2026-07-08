@@ -5,9 +5,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
-// TODO(https://crbug.com/506393880): Once the official Promise-returning
-// `getTools()` API exists, we can move this test from `wpt_internal` to
-// `external/wpt/webmcp`.
 promise_test(async t => {
   const iframe = document.createElement('iframe');
   iframe.src = '/';
@@ -15,24 +12,24 @@ promise_test(async t => {
   // Register a tool with the initial about:blank Document [1].
   //
   // [1]: https://html.spec.whatwg.org/#is-initial-about:blank.
-  console.log(iframe.contentWindow.document.modelContext);
   iframe.contentWindow.document.modelContext.registerTool({
     name: "default-tool",
     description: "default desc",
     execute: async () => "hello"
   });
   assert_equals(iframe.contentDocument.URL, "about:blank");
-  assert_equals(
-      iframe.contentWindow.navigator.modelContextTesting.listTools()[0].name,
-      "default-tool");
+
+  let tools = await iframe.contentWindow.document.modelContext.getTools();
+  assert_equals(tools.length, 1);
+  assert_equals(tools[0].name, "default-tool");
 
   // Wait for the iframe navigation to complete.
   await new Promise(resolve => iframe.onload = resolve);
   assert_not_equals(iframe.contentDocument.URL, "about:blank");
   // Note that the tool still incorrectly persists, even though we've navigated
   // away from the initial about:blank Document.
-  assert_array_equals(
-      iframe.contentWindow.navigator.modelContextTesting.listTools(), []);
+  tools = await iframe.contentWindow.document.modelContext.getTools();
+  assert_array_equals(tools, []);
 }, "tools registered with the initial about:blank Document do not survive navigation");
 </script>
 </body>

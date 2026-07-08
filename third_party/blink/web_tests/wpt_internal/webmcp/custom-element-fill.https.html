@@ -8,8 +8,8 @@
     static formAssociated = true;
     constructor() {
       super();
-      this._internals = this.attachInternals();
-      this._internals.setToolParamSchema(`{ "type":"string" }`);
+      this._elementInternals = this.attachInternals();
+      this._elementInternals.setToolParamSchema(`{ "type":"string" }`);
       this.attachShadow({ mode: 'open' });
       let div = document.createElement('div');
       this.shadowRoot.append(div);
@@ -44,14 +44,14 @@
 
 <script>
 promise_test(async t => {
-  await waitForTool('fill_text');
+  const tool = await waitForTool('fill_text');
 
   let inputArgs = JSON.stringify({
     text: "regular text",
     mytext: "very custom text"
   });
 
-  await navigator.modelContextTesting.executeTool('fill_text', inputArgs);
+  await document.modelContext.executeTool(tool, inputArgs);
 
   let inner_div = document.querySelector('my-input').shadowRoot.querySelector('div');
   assert_equals(inner_div.textContent, 'Custom text: very custom text');

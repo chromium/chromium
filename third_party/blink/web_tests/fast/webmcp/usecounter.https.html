@@ -59,8 +59,10 @@ promise_test(async () => {
 
     // We use invalid JSON to trigger an early return and avoid PauseExecution()
     // which might crash in content_shell if ScriptToolHost is not available.
+    const tools = await document.modelContext.getTools();
+    const tool = tools.find(t => t.name === "imperative");
     try {
-        await navigator.modelContextTesting.executeTool("imperative", "invalid json");
+        await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
     assert_true(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
     assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
@@ -89,8 +91,10 @@ promise_test(async () => {
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
 
+    const tools = await document.modelContext.getTools();
+    const tool = tools.find(t => t.name === "declarative1");
     try {
-        await navigator.modelContextTesting.executeTool("declarative1", "invalid json");
+        await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
     assert_false(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
@@ -108,8 +112,10 @@ promise_test(async () => {
 
     await waitForTool("declarative2");
 
+    const tools = await document.modelContext.getTools();
+    const tool = tools.find(t => t.name === "declarative2");
     try {
-        await navigator.modelContextTesting.executeTool("declarative2", "invalid json");
+        await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
     assert_false(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');

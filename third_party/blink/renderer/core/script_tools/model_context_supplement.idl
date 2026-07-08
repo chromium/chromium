@@ -10,7 +10,6 @@
   ImplementedAs=ModelContextSupplement
 ] partial interface Navigator {
   [SecureContext, SameObject] readonly attribute ModelContext modelContext;
-  [Replaceable, RuntimeEnabled=WebMCPTesting] readonly attribute ModelContextTesting modelContextTesting;
 };
 
 [

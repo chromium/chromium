@@ -792,13 +792,6 @@ void ModelContext::PauseExecution() {
 }
 
 void ModelContext::NotifyToolChange() {
-  if (tool_change_closure_) {
-    (*tool_change_closure_).Run();
-  }
-
-  // The above closure fires the `toolchange` on the `ModelContextTesting`
-  // interface. Even if it detaches the document, it is still safe to dispatch
-  // the event on `this` as well.
   DispatchEvent(*Event::Create(event_type_names::kToolchange));
 }
 

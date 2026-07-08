@@ -22,13 +22,10 @@ promise_test(async t => {
   const form = document.getElementById('f1');
 
   // Wait for initial registration to complete.
-  await waitForTool('my_tool');
-
-  let tools = await navigator.modelContext.getTools();
-  assert_equals(tools.length, 1, "Initially registered tool");
-  assert_equals(tools[0].name, 'my_tool');
-  assert_equals(tools[0].title, 'My Title');
-  assert_equals(tools[0].description, 'desc');
+  const tool = await waitForTool('my_tool');
+  assert_equals(tool.name, 'my_tool');
+  assert_equals(tool.title, 'My Title');
+  assert_equals(tool.description, 'desc');
 
   // Test updating tooltitle attribute
   {

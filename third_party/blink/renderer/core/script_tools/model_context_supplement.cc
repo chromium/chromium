@@ -51,22 +51,11 @@ ModelContext* ModelContextSupplement::modelContext(Document& document) {
   return From(document).modelContext();
 }
 
-// static
-ModelContextTesting* ModelContextSupplement::modelContextTesting(
-    Navigator& navigator) {
-  auto* window = navigator.DomWindow();
-  if (!window || !window->document()) {
-    return nullptr;
-  }
-  return From(*window->document()).modelContextTesting();
-}
-
 ModelContextSupplement::ModelContextSupplement(Document& document)
     : Supplement<Document>(document) {}
 
 void ModelContextSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(model_context_);
-  visitor->Trace(model_context_testing_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -77,14 +66,6 @@ ModelContext* ModelContextSupplement::modelContext() {
     model_context_ = MakeGarbageCollected<ModelContext>(*document);
   }
   return model_context_.Get();
-}
-
-ModelContextTesting* ModelContextSupplement::modelContextTesting() {
-  if (!model_context_testing_ && modelContext()) {
-    model_context_testing_ =
-        MakeGarbageCollected<ModelContextTesting>(*modelContext());
-  }
-  return model_context_testing_.Get();
 }
 
 }  // namespace blink

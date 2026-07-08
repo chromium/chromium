@@ -56,8 +56,11 @@
 
         async function abortable_tool(obj) {
           return new Promise((resolve, reject) => {
-            // Wait for a long time, so it can be aborted
-            setTimeout(() => resolve({text_was: obj.text}), 10000);
+            // TODO(https://crbug.com/481899636): Revert this back to the longer
+            // (10-second) timeout once support for tool execution abort signals
+            // has been implemented, and the test no longer expects this
+            // would-be "long-running tool" to actually run to completion.
+            setTimeout(() => resolve({text_was: obj.text}), 50);
           });
         }
         document.modelContext.registerTool({
@@ -67,45 +70,70 @@
           inputSchema
         });
 
+        async function getTool(name) {
+          let tools = await document.modelContext.getTools();
+          let tool = tools.find(t => t.name === name);
+          if (tool) return tool;
+          return new Promise(resolve => {
+            const handler = async () => {
+              tools = await document.modelContext.getTools();
+              tool = tools.find(t => t.name === name);
+              if (tool) {
+                document.modelContext.removeEventListener('toolchange', handler);
+                resolve(tool);
+              }
+            };
+            document.modelContext.addEventListener('toolchange', handler);
+          });
+        }
+
         window.executeImperative = async function() {
-          await navigator.modelContextTesting.executeTool("imperative_tool", JSON.stringify({text: "hello"}));
+          const tool = await getTool("imperative_tool");
+          await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
         };
 
         window.executeDeclarative = async function() {
-          await navigator.modelContextTesting.executeTool("declarative_tool", JSON.stringify({text: "hello"}));
+          const tool = await getTool("declarative_tool");
+          await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
         };
 
         window.executeDeclarativeArray = async function() {
-          const result = await navigator.modelContextTesting.executeTool("declarative_array_tool", JSON.stringify({text: "hello"}));
+          const tool = await getTool("declarative_array_tool");
+          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
           return JSON.stringify(result);
         };
 
         window.executeDeclarativeString = async function() {
-          const result = await navigator.modelContextTesting.executeTool("declarative_string_tool", JSON.stringify({text: "hello"}));
+          const tool = await getTool("declarative_string_tool");
+          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
           return JSON.stringify(result);
         };
 
         window.executeDeclarativeNumber = async function() {
-          const result = await navigator.modelContextTesting.executeTool("declarative_number_tool", JSON.stringify({text: "hello"}));
+          const tool = await getTool("declarative_number_tool");
+          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
           return JSON.stringify(result);
         };
 
         window.executeFailingJS = async function() {
           try {
-            await navigator.modelContextTesting.executeTool("failing_js_tool", JSON.stringify({text: "hello"}));
+            const tool = await getTool("failing_js_tool");
+            await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
           } catch(e) {}
         };
 
         window.executeFailingModelContext = async function() {
           try {
-            await navigator.modelContextTesting.executeTool("imperative_tool", "invalid json");
+            const tool = await getTool("imperative_tool");
+            await document.modelContext.executeTool(tool, "invalid json");
           } catch(e) {}
         };
 
         window.executeCancelled = async function() {
           try {
             const controller = new AbortController();
-            const promise = navigator.modelContextTesting.executeTool("abortable_tool", JSON.stringify({text: "hello"}), {signal: controller.signal});
+            const tool = await getTool("abortable_tool");
+            const promise = document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}), {signal: controller.signal});
             controller.abort();
             await promise;
           } catch(e) {}

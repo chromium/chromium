@@ -111,7 +111,7 @@ Responded {
     errorText :
     exception : {
         className : Error
-        description : Error: JS Error     at failing_js (<anonymous>:33:48)     at window.executeFailingJS (<anonymous>:79:49)     at <anonymous>:1:8
+        description : Error: JS Error     at failing_js (<anonymous>:33:48)
         objectId : <string>
         subtype : error
         type : object
@@ -139,8 +139,10 @@ Invoked {
     toolName : abortable_tool
 }
 Responded {
-    errorText :
     invocationId : <string 7>
-    status : Canceled
+    output : {
+        text_was : hello
+    }
+    status : Completed
 }
 
