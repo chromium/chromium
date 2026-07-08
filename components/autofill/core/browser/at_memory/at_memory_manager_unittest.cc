@@ -394,8 +394,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
 }
 
 // Tests that when filling a full entity (e.g. Passport Full), the manager
@@ -467,8 +467,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);
 }
@@ -531,8 +531,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", false, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      false, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 0);
 }
@@ -717,8 +717,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
 }
 
 // Tests that funnel metrics are recorded correctly even if multiple are shown.
@@ -775,8 +775,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // are not logged yet because Popup 1's async fill is still pending.
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
-  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Funnel.SuggestionFilled",
-                                    0);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionFilled", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 0);
 
@@ -818,9 +817,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
       histogram_tester.GetAllSamples("Autofill.AtMemory.SuggestionAccepted"),
       BucketsAre(Bucket(true, 1)));
   // - SuggestionFilled should be logged as true.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.AtMemory.Funnel.SuggestionFilled"),
-              BucketsAre(Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AtMemory.SuggestionFilled"),
+      BucketsAre(Bucket(true, 1)));
   // - TimeToFetchUnmasked should be logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);

@@ -2194,17 +2194,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.AtMemory.Funnel.SuggestionFilled" enum="Boolean"
-    expires_after="2027-03-09">
-  <owner>sygiet@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether a suggestion was filled after accepting the AtMemory
-    suggestion. Recorded after the popup is hidden and all fetching and
-    authentication calls finished.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.AtMemory.Funnel.TimeToFetchUnmasked" units="ms"
     expires_after="2027-03-09">
   <owner>picarella@google.com</owner>
@@ -2280,6 +2269,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records whether a suggestion was accepted for a query in the AtMemory search
     bar. Emitted for every submitted user query.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.AtMemory.SuggestionFilled" enum="Boolean"
+    expires_after="2027-03-09">
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether a suggestion was filled after accepting the AtMemory
+    suggestion. Recorded after the popup is hidden and all fetching and
+    authentication calls finished.
   </summary>
 </histogram>
 

@@ -249,8 +249,8 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
     metrics.MarkFilled();
   }
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                       true, 1);
 
   {
     AtMemoryMetricsRecorder metrics2(nullptr, GURL(), std::u16string(),
@@ -259,8 +259,8 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
     metrics2.OnSuggestionAccepted(MemoryDataType::kAddressFull);
   }
 
-  histogram_tester_.ExpectBucketCount(
-      "Autofill.AtMemory.Funnel.SuggestionFilled", false, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.AtMemory.SuggestionFilled",
+                                      false, 1);
 }
 
 // Tests that the unmasking duration metric is recorded correctly.

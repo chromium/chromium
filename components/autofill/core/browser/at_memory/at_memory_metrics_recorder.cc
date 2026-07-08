@@ -70,8 +70,7 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
                               query_submitted_);
     MaybeLogSuggestionAccepted();
     if (suggestion_acceptance_.accepted_data_type.has_value()) {
-      // TODO(crbug.com/530438524): Fix and rename.
-      base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
+      base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
                                 was_filled_);
       if (fetch_pii_duration_) {
         base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
