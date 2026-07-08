@@ -181,6 +181,10 @@ extern const base::FeatureParam<bool> kComposeboxDriveIdentityFallback;
 // Whether to enable Google Drive context menu option's disclaimer flow in the
 // composebox.
 BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer);
+extern const base::FeatureParam<int> kComposeboxDriveConsentFlowId;
+extern const base::FeatureParam<int> kComposeboxDriveConsentProductId;
+extern const base::FeatureParam<std::string>
+    kComposeboxDriveConsentEntrypointId;
 
 // Whether to force the Google Drive disclaimer to be accepted.
 BASE_DECLARE_FEATURE(kForceDriveDisclaimerAccepted);
