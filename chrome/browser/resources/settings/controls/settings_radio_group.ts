@@ -19,13 +19,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
 import {getTemplate} from './settings_radio_group.html.js';
 
 const SettingsRadioGroupElementBase =
-    PrefServiceObserverMixin(PrefControlMixin(PolymerElement));
+    PrefKeyObserverMixin(PrefControlMixin(PolymerElement));
 
 export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   static get is() {
@@ -61,12 +61,6 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
         type: Boolean,
         value: false,
       },
-
-      prefKey: {
-        type: String,
-        value: '',
-        observer: 'onPrefKeyChanged_',
-      },
     };
   }
 
@@ -81,7 +75,6 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   declare selected?: string;
   declare selectableElements: string;
   declare nestedSelectable: boolean;
-  declare prefKey: string;
 
   override ready() {
     super.ready();
@@ -124,16 +117,6 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     }
     this.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
-  }
-
-  private onPrefKeyChanged_(newKey: string, oldKey: string) {
-    if (newKey === '' && oldKey === undefined) {
-      return;
-    }
-
-    // Disallow re-assigning the prefKey after initial assignment.
-    assert(!oldKey);
-    this.mirrorPref(newKey, 'pref');
   }
 }
 

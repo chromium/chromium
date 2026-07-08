@@ -20,8 +20,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 import {getCss} from './settings_dropdown_menu.css.js';
 import {getHtml} from './settings_dropdown_menu.html.js';
 
@@ -46,7 +46,7 @@ export interface SettingsDropdownMenuElement {
 }
 
 const SettingsDropdownMenuElementBase =
-    CrPolicyPrefMixinLit(PrefServiceObserverMixinLit(CrLitElement));
+    CrPolicyPrefMixinLit(PrefKeyObserverMixinLit(CrLitElement));
 
 export class SettingsDropdownMenuElement extends
     SettingsDropdownMenuElementBase {
@@ -73,7 +73,6 @@ export class SettingsDropdownMenuElement extends
         reflect: true,
       },
 
-      prefKey: {type: String},
       pref: {type: Object},
 
       /**
@@ -96,26 +95,12 @@ export class SettingsDropdownMenuElement extends
 
   accessor menuOptions: DropdownMenuOption[] = [];
   accessor disabled: boolean = false;
-  accessor prefKey: string = '';
   override accessor pref: chrome.settingsPrivate.PrefObject|undefined =
       undefined;
   accessor noSetPref: boolean = false;
   accessor notFoundValue: string = 'SETTINGS_DROPDOWN_NOT_FOUND_ITEM';
   accessor label: string = '';
   accessor value: string|undefined = undefined;
-
-  override willUpdate(changedProperties: PropertyValues) {
-    super.willUpdate(changedProperties as PropertyValues<this>);
-
-    if (changedProperties.has('prefKey')) {
-      const oldValue = changedProperties.get('prefKey');
-      // Disallow re-assigning the prefKey after initial assignment.
-      assert(oldValue === undefined || oldValue === '');
-      if (this.prefKey !== '') {
-        this.mirrorPref(this.prefKey, 'pref');
-      }
-    }
-  }
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties as PropertyValues<this>);

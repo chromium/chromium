@@ -18,10 +18,10 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrPolicyPrefMixinLit} from '/shared/settings/controls/cr_policy_pref_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 import {getCss} from './settings_slider.css.js';
 import {getHtml} from './settings_slider.html.js';
 
@@ -32,7 +32,7 @@ export interface SettingsSliderElement {
 }
 
 const SettingsSliderElementBase =
-    CrPolicyPrefMixinLit(PrefServiceObserverMixinLit(CrLitElement));
+    CrPolicyPrefMixinLit(PrefKeyObserverMixinLit(CrLitElement));
 
 export class SettingsSliderElement extends SettingsSliderElementBase {
   static get is() {
@@ -74,12 +74,10 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
       updateValueInstantly: {type: Boolean},
       sliderValue_: {type: Number},
       markerCount_: {type: Number},
-      prefKey: {type: String},
       pref: {type: Object},
     };
   }
 
-  accessor prefKey: string = '';
   override accessor pref: chrome.settingsPrivate.PrefObject<number>|undefined =
       undefined;
 
@@ -101,15 +99,6 @@ export class SettingsSliderElement extends SettingsSliderElementBase {
 
   override willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties as PropertyValues<this>);
-
-    if (changedProperties.has('prefKey')) {
-      const oldValue = changedProperties.get('prefKey');
-      // Disallow re-assigning the prefKey after initial assignment.
-      assert(oldValue === undefined || oldValue === '');
-      if (this.prefKey !== '') {
-        this.mirrorPref(this.prefKey, 'pref');
-      }
-    }
 
     if (changedProperties.has('disabled') || changedProperties.has('pref')) {
       this.disableSlider_ = this.computeDisableSlider_();
