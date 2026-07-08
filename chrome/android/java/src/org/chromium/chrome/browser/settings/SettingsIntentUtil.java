@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -16,6 +17,8 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 @NullMarked
 public class SettingsIntentUtil {
+    private static final String TAG = "SettingsIntentUtil";
+
     private SettingsIntentUtil() {}
 
     /**
@@ -67,6 +70,11 @@ public class SettingsIntentUtil {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
+        // TODO(crbug.com/521895796): Once all settings-in-a-tab subpages are fixed to open inside
+        // the page, promote this to an assert that the feature is off.
+        if (ChromeFeatureList.sSettingsInTab.isEnabled()) {
+            Log.w(TAG, "SettingsInTab is enabled, but creating a SettingsActivity intent.");
+        }
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
         if (isStandaloneFragment(context, fragmentName)) {

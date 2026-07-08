@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -413,14 +412,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             .getString(R.string.autofill_create_first_credit_card_button_text));
             addFirstCardPref.setOnButtonClick(
                     () -> {
-                        Intent intent =
-                                SettingsNavigationFactory.createSettingsNavigation()
-                                        .createSettingsIntent(
-                                                getActivity(),
-                                                AutofillLocalCardEditor.class,
-                                                /* fragmentArgs= */ null,
-                                                /* addToBackStack= */ true);
-                        startActivity(intent);
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .startSettings(
+                                        getActivity(),
+                                        AutofillLocalCardEditor.class,
+                                        /* fragmentArgs= */ null,
+                                        /* addToBackStack= */ true);
                     });
             getPreferenceScreen().addPreference(addFirstCardPref);
             RecordHistogram.recordBooleanHistogram(
