@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -175,6 +176,27 @@ base::expected<std::unique_ptr<ParsedNetLog>, std::string> ReadNetLogFromDisk(
   return result;
 }
 
+base::expected<std::vector<base::Value>, std::string> ReadNdjsonNetLogFromDisk(
+    const base::FilePath& log_path) {
+  std::string input;
+  if (!base::ReadFileToString(log_path, &input)) {
+    return base::unexpected("Failed reading file: " +
+                            base::UTF16ToUTF8(log_path.LossyDisplayName()));
+  }
+
+  std::vector<base::Value> records;
+  for (const std::string& line : base::SplitString(
+           input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    auto parsed = base::JSONReader::ReadAndReturnValueWithError(
+        line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!parsed.has_value()) {
+      return base::unexpected(parsed.error().message);
+    }
+    records.push_back(std::move(parsed.value()));
+  }
+  return records;
+}
+
 // Checks that |log| contains events as emitted by AddEntries() above.
 // |num_events_emitted| corresponds to |num_entries| of AddEntries(). Whereas
 // |num_events_saved| is the expected number of events that have actually been
@@ -197,6 +219,49 @@ void VerifyEventsInLog(const ParsedNetLog* log,
     std::optional<int> id_value = event->FindIntByDottedPath("source.id");
     ASSERT_EQ(static_cast<int>(expected_source_id), id_value);
   }
+}
+
+void VerifyEventsInNdjsonLog(const std::vector<base::Value>& records,
+                             size_t num_events_emitted,
+                             size_t num_events_saved,
+                             bool expect_polled_data = true) {
+  ASSERT_LE(num_events_saved, num_events_emitted);
+  // The total number of records is:
+  // - num_events_saved Event records.
+  // - 2 baseline records: "constants" (always first) and "end" (always last).
+  // - 1 optional "polledData" record (second-to-last, if expected).
+  ASSERT_EQ(num_events_saved + (expect_polled_data ? 3 : 2), records.size());
+
+  size_t pos = 0;
+  EXPECT_THAT(records[pos],
+              base::test::DictionaryHasValue("type", base::Value("constants")));
+  ASSERT_TRUE(records[pos].GetIfDict());
+  EXPECT_TRUE(records[pos].GetIfDict()->FindDict("constants"));
+
+  for (size_t i = 0; i < num_events_saved; ++i) {
+    ++pos;
+    ASSERT_THAT(records[pos],
+                base::test::DictionaryHasValue("type", base::Value("event")));
+    const base::DictValue* event = records[pos].GetIfDict()->FindDict("event");
+    ASSERT_TRUE(event);
+
+    size_t expected_source_id = num_events_emitted - num_events_saved + i;
+    std::optional<int> id_value = event->FindIntByDottedPath("source.id");
+    ASSERT_EQ(static_cast<int>(expected_source_id), id_value);
+  }
+
+  if (expect_polled_data) {
+    ++pos;
+    // The polled data record should be immediately before the "end" marker.
+    EXPECT_THAT(records[pos], base::test::DictionaryHasValue(
+                                  "type", base::Value("polledData")));
+  }
+
+  ++pos;
+  EXPECT_THAT(records[pos],
+              base::test::DictionaryHasValue("type", base::Value("end")));
+
+  ASSERT_EQ(pos + 1, records.size());
 }
 
 // Helper that checks whether |dict| has a string property at |key| having
@@ -309,12 +374,14 @@ class FileNetLogObserverBoundedTest : public ::testing::Test,
     RunUntilIdle();
   }
 
-  void CreateAndStartObserving(std::unique_ptr<base::DictValue> constants,
-                               uint64_t total_file_size,
-                               int num_files) {
+  void CreateAndStartObserving(
+      std::unique_ptr<base::DictValue> constants,
+      uint64_t total_file_size,
+      int num_files,
+      NetLogFileFormat file_format = NetLogFileFormat::kJson) {
     logger_ = FileNetLogObserver::CreateBoundedForTests(
         log_path_, total_file_size, num_files, NetLogCaptureMode::kDefault,
-        std::move(constants));
+        std::move(constants), file_format);
     logger_->StartObserving(NetLog::Get());
   }
 
@@ -468,6 +535,70 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEvent) {
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
                        ReadNetLogFromDisk(log_path_));
   ASSERT_EQ(1u, log->events->size());
+}
+
+TEST_P(FileNetLogObserverTest, GeneratesValidNdjsonWithOneEventAndPolledData) {
+  TestClosure closure;
+
+  if (IsBounded()) {
+    logger_ = FileNetLogObserver::CreateBoundedForTests(
+        log_path_, kLargeFileSize, kTotalNumFiles, NetLogCaptureMode::kDefault,
+        nullptr, NetLogFileFormat::kNdjson);
+  } else {
+    logger_ = FileNetLogObserver::CreateUnbounded(
+        log_path_, NetLogCaptureMode::kDefault, nullptr,
+        NetLogFileFormat::kNdjson);
+  }
+  logger_->StartObserving(NetLog::Get());
+
+  AddEntries(logger_.get(), 1, kDummyEventSize);
+
+  base::DictValue dummy_polled_data;
+  dummy_polled_data.SetByDottedPath("dummy_path", "dummy_info");
+  logger_->StopObserving(
+      std::make_unique<base::Value>(std::move(dummy_polled_data)),
+      closure.closure());
+
+  closure.WaitForResult();
+
+  ASSERT_OK_AND_ASSIGN(std::vector<base::Value> records,
+                       ReadNdjsonNetLogFromDisk(log_path_));
+  // VerifyEventsInNdjsonLog() asserts the size and format of the records.
+  // Use ASSERT_NO_FATAL_FAILURE to prevent a crash in the next step if
+  // verification failed and records is too small.
+  ASSERT_NO_FATAL_FAILURE(VerifyEventsInNdjsonLog(records, 1, 1));
+
+  // The second-to-last record contains the polled data. the last is "end"
+  // record.
+  const base::DictValue* polled_data =
+      records[records.size() - 2].GetDict().FindDict("polledData");
+  ASSERT_TRUE(polled_data);
+  ExpectDictionaryContainsProperty(*polled_data, "dummy_path", "dummy_info");
+}
+
+TEST_P(FileNetLogObserverTest, GeneratesValidNdjsonWithNoPolledData) {
+  TestClosure closure;
+
+  if (IsBounded()) {
+    logger_ = FileNetLogObserver::CreateBoundedForTests(
+        log_path_, kLargeFileSize, kTotalNumFiles, NetLogCaptureMode::kDefault,
+        nullptr, NetLogFileFormat::kNdjson);
+  } else {
+    logger_ = FileNetLogObserver::CreateUnbounded(
+        log_path_, NetLogCaptureMode::kDefault, nullptr,
+        NetLogFileFormat::kNdjson);
+  }
+  logger_->StartObserving(NetLog::Get());
+
+  AddEntries(logger_.get(), 1, kDummyEventSize);
+
+  logger_->StopObserving(nullptr, closure.closure());
+
+  closure.WaitForResult();
+
+  ASSERT_OK_AND_ASSIGN(std::vector<base::Value> records,
+                       ReadNdjsonNetLogFromDisk(log_path_));
+  VerifyEventsInNdjsonLog(records, 1, 1, /*expect_polled_data=*/false);
 }
 
 TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEventPreExisting) {
@@ -941,6 +1072,41 @@ TEST_F(FileNetLogObserverBoundedTest, PartiallyOverwriteFiles) {
                        ReadNetLogFromDisk(log_path_));
   VerifyEventsInLog(log.get(), kNumEvents,
                     static_cast<size_t>(num_events_in_files));
+}
+
+TEST_F(FileNetLogObserverBoundedTest, NdjsonOverwritesOldEventFilesInOrder) {
+  const int kTotalFileSize = 450;
+  const int kTotalNumEventFiles = 3;
+  const int kNumEvents = 4;
+  const int kEventSize = 160;
+  TestClosure closure;
+
+  CreateAndStartObserving(nullptr, kTotalFileSize, kTotalNumEventFiles,
+                          NetLogFileFormat::kNdjson);
+
+  AddEntries(logger_.get(), kNumEvents, kEventSize);
+
+  base::DictValue dummy_polled_data;
+  dummy_polled_data.SetByDottedPath("dummy_path", "dummy_info");
+  logger_->StopObserving(
+      std::make_unique<base::Value>(std::move(dummy_polled_data)),
+      closure.closure());
+
+  closure.WaitForResult();
+
+  ASSERT_OK_AND_ASSIGN(std::vector<base::Value> records,
+                       ReadNdjsonNetLogFromDisk(log_path_));
+  // VerifyEventsInNdjsonLog() asserts the size and format of the records.
+  // Use ASSERT_NO_FATAL_FAILURE to prevent a crash in the next step if
+  // verification failed and records is too small.
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyEventsInNdjsonLog(records, kNumEvents, kTotalNumEventFiles));
+
+  // The second-to-last record contains the polled data (the last is "end").
+  const base::DictValue* polled_data =
+      records[records.size() - 2].GetDict().FindDict("polledData");
+  ASSERT_TRUE(polled_data);
+  ExpectDictionaryContainsProperty(*polled_data, "dummy_path", "dummy_info");
 }
 
 // Start logging in bounded mode. Create directories in places where the logger

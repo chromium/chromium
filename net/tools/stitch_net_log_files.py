@@ -9,6 +9,7 @@ create a single NetLog file.
 '''
 
 import glob
+import json
 import os
 import re
 import sys
@@ -46,6 +47,80 @@ def get_ordered_event_files():
   return paths
 
 
+def is_ndjson_constants_file(path):
+  try:
+    file = open(path)
+    with file:
+      first_line = file.readline().lstrip()
+  except IOError:
+    sys.stderr.write('Failed reading "%s".\n' % path)
+    sys.exit(1)
+  try:
+    data = json.loads(first_line)
+    return isinstance(data, dict) and data.get('type') == 'constants'
+  except ValueError:
+    return False
+
+
+def append_file(input_path, output_file):
+  try:
+    file = open(input_path)
+    with file:
+      for line in file:
+        output_file.write(line)
+  except IOError:
+    sys.stderr.write('Failed reading "%s".\n' % input_path)
+    sys.exit(1)
+
+
+def stitch_ndjson_net_log(output_file):
+  append_file("constants.json", output_file)
+  for event_file_path in get_ordered_event_files():
+    append_file(event_file_path, output_file)
+  if os.path.exists("end_netlog.json"):
+    append_file("end_netlog.json", output_file)
+
+
+def stitch_json_net_log(output_file):
+  append_file("constants.json", output_file)
+
+  events_written = False
+  line = ""
+  for event_file_path in get_ordered_event_files():
+    try:
+      file = open(event_file_path)
+      with file:
+        if not events_written:
+          line = file.readline()
+          events_written = True
+        for next_line in file:
+          if next_line.strip() == "":
+            line += next_line
+          else:
+            output_file.write(line)
+            line = next_line
+    except IOError:
+      sys.stderr.write('Failed reading "%s"\n' % event_file_path)
+      sys.exit(1)
+  # Remove hanging comma from last event.
+  # TODO(dconnol): Check if the last line is a valid JSON object. If not,
+  # do not write the line to file. This handles incomplete logs.
+  line = line.strip()
+  if line[-1:] == ",":
+    output_file.write(line[:-1])
+  elif line:
+    raise ValueError('Last event is not properly formed')
+
+  if os.path.exists("end_netlog.json"):
+    append_file("end_netlog.json", output_file)
+  else:
+    # end_netlog.json won't exist when using this tool to stitch logging
+    # sessions that didn't shutdown gracefully.
+    #
+    # Close the events array and then the log (no polled_data).
+    output_file.write("]}\n")
+
+
 def main():
   if len(sys.argv) != 2 and len(sys.argv) != 3:
     sys.stderr.write(USAGE)
@@ -72,56 +147,10 @@ def main():
   os.chdir(inprogress_dir)
 
   with open(output_path, "w") as stitched_file:
-    try:
-      file = open("constants.json")
-      with file:
-        for line in file:
-          stitched_file.write(line)
-    except IOError:
-      sys.stderr.write("Failed reading \"constants.json\".\n")
-      sys.exit(1)
-
-    events_written = False;
-    for event_file_path in get_ordered_event_files():
-      try:
-        file = open(event_file_path)
-        with file:
-          if not events_written:
-            line = file.readline();
-            events_written = True
-          for next_line in file:
-            if next_line.strip() == "":
-              line += next_line
-            else:
-              stitched_file.write(line)
-              line = next_line
-      except IOError:
-        sys.stderr.write("Failed reading \"%s\"\n" % event_file_path)
-        sys.exit(1)
-    # Remove hanging comma from last event
-    # TODO(dconnol): Check if the last line is a valid JSON object. If not,
-    # do not write the line to file. This handles incomplete logs.
-    line = line.strip()
-    if line[-1:] == ",":
-      stitched_file.write(line[:-1])
-    elif line:
-      raise ValueError('Last event is not properly formed')
-
-    if os.path.exists("end_netlog.json"):
-      try:
-        file = open("end_netlog.json")
-        with file:
-          for line in file:
-            stitched_file.write(line)
-      except IOError:
-          sys.stderr.write("Failed reading \"end_netlog.json\".\n")
-          sys.exit(1)
+    if is_ndjson_constants_file("constants.json"):
+      stitch_ndjson_net_log(stitched_file)
     else:
-      # end_netlog.json won't exist when using this tool to stitch logging
-      # sessions that didn't shutdown gracefully.
-      #
-      # Close the events array and then the log (no polled_data).
-      stitched_file.write("]}\n")
+      stitch_json_net_log(stitched_file)
 
 
 if __name__ == "__main__":
