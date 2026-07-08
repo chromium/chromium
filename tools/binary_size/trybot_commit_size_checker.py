@@ -495,6 +495,10 @@ def main():
       '--local-test',
       action='store_true',
       help='Allow input directories to be diagnose_bloat.py ones.')
+  parser.add_argument('--changed-file',
+                      action='append',
+                      dest='changed_files',
+                      help='List of changed files in the commit')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.INFO,
