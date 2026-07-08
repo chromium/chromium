@@ -113,7 +113,8 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   openAutocompleteMatch(
       line: number, url: Url, areMatchesShowing: boolean, mouseButton: number,
-      altKey: boolean, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean) {
+      altKey: boolean, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean,
+      viaKeyboard: boolean) {
     this.methodCalled('openAutocompleteMatch', {
       line,
       url,
@@ -123,6 +124,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       ctrlKey,
       metaKey,
       shiftKey,
+      viaKeyboard,
     });
   }
 

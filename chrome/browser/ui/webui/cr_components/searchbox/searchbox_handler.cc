@@ -1200,7 +1200,8 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                                              bool alt_key,
                                              bool ctrl_key,
                                              bool meta_key,
-                                             bool shift_key) {
+                                             bool shift_key,
+                                             bool via_keyboard) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match) {
     // This can happen due to asynchronous updates changing the result while
@@ -1216,7 +1217,7 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
     OpenMatch(*match, disposition, timestamp);
   } else {
     edit_model()->OpenSelection(OmniboxPopupSelection(line), timestamp,
-                                disposition);
+                                disposition, via_keyboard);
   }
 }
 

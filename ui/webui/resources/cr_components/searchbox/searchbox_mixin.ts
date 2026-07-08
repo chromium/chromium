@@ -172,7 +172,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.pageHandler().openAutocompleteMatch(
           matchIndex, match.destinationUrl, this.dropdownIsVisible,
           (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
-          e.shiftKey);
+          e.shiftKey, e instanceof KeyboardEvent);
       this.getInputElement().setInput({
         text: match.fillIntoEdit,
         inline: '',

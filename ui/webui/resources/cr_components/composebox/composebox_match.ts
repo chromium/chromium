@@ -111,7 +111,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     this.searchboxHandler_.openAutocompleteMatch(
         this.matchIndex, this.match.destinationUrl,
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
-        e.metaKey, e.shiftKey);
+        e.metaKey, e.shiftKey, /*via_keyboard=*/ false);
 
     this.fire('match-click', {
       ctrlKey: e.ctrlKey,

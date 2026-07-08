@@ -475,7 +475,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   // Handle keyboard events on the suggestions dropdown.
   protected onDropdownKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      this.navigateToMatch_(this.selectedMatchIndex_);
+      this.navigateToMatch_(this.selectedMatchIndex_, /*viaKeyboard=*/ true);
       e.preventDefault();
       e.stopPropagation();
     }
@@ -492,7 +492,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.selectedMatchIndex_ = e.detail.index;
   }
 
-  private navigateToMatch_(index: number) {
+  private navigateToMatch_(index: number, viaKeyboard: boolean) {
     const match = this.zeroStateSuggestions_?.matches[index];
 
     if (match) {
@@ -504,7 +504,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           /*altKey=*/ false,
           /*ctrlKey=*/ false,
           /*metaKey=*/ false,
-          /*shiftKey=*/ false);
+          /*shiftKey=*/ false,
+          /*viaKeyboard=*/ viaKeyboard);
     }
     this.clearInputAndFocus(/* querySubmitted= */ true);
     this.selectedMatchIndex_ = -1;

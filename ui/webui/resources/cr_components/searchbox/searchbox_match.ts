@@ -297,7 +297,7 @@ export class SearchboxMatchElement extends CrLitElement {
     this.pageHandler_.openAutocompleteMatch(
         this.matchIndex, this.match.destinationUrl,
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
-        e.metaKey, e.shiftKey);
+        e.metaKey, e.shiftKey, /*via_keyboard=*/ false);
 
     // Duplicates the logic in `ui::DispositionFromClick()`.
     const backgroundTab = (e.metaKey || e.ctrlKey) && e.shiftKey;

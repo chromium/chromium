@@ -1795,10 +1795,11 @@ export const ComposeboxEmbedderMixin =
             assert(match);
             this.getSearchboxHandler().setSmartComposeStats(
                 this.smartComposeStats);
+            const viaKeyboard = !!e && e instanceof KeyboardEvent;
             this.getSearchboxHandler().openAutocompleteMatch(
                 this.selectedMatchIndex, match.destinationUrl,
                 /* are_matches_showing */ true, mouseButton, altKey, ctrlKey,
-                metaKey, shiftKey);
+                metaKey, shiftKey, viaKeyboard);
           } else {
             this.getSearchboxHandler().submitQuery(
                 this.input.trim(), mouseButton, altKey, ctrlKey, metaKey,
