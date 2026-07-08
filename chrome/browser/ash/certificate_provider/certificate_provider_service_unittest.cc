@@ -338,7 +338,7 @@ TEST_F(CertificateProviderServiceTest, LookUpCertificate) {
     task_runner_->RunUntilIdle();
   }
 
-  EXPECT_TRUE(CheckLookUpCertificate(cert_info1_, true /* is known */,
+  EXPECT_TRUE(CheckLookUpCertificate(cert_info1_, false /* is known */,
                                      false /* is currently not provided */,
                                      std::string()));
 
@@ -362,7 +362,7 @@ TEST_F(CertificateProviderServiceTest, LookUpCertificate) {
                                      true /* is currently provided */,
                                      kExtension1));
 
-  EXPECT_TRUE(CheckLookUpCertificate(cert_info2_, true /* is known */,
+  EXPECT_TRUE(CheckLookUpCertificate(cert_info2_, false /* is known */,
                                      false /* is currently not provided */,
                                      std::string()));
 
@@ -377,11 +377,10 @@ TEST_F(CertificateProviderServiceTest, LookUpCertificate) {
   {
     bool is_currently_provided = true;
     std::string extension_id;
-    // |cert_info1_.certificate| was provided before, so this must return true.
-    EXPECT_TRUE(service_->LookUpCertificate(
+    // |cert_info1_.certificate| is no longer provided, so it is removed
+    // from the map and this must return false.
+    EXPECT_FALSE(service_->LookUpCertificate(
         *cert_info1_.certificate, &is_currently_provided, &extension_id));
-    EXPECT_FALSE(is_currently_provided);
-    EXPECT_TRUE(extension_id.empty());
   }
 
   {
@@ -393,7 +392,7 @@ TEST_F(CertificateProviderServiceTest, LookUpCertificate) {
     EXPECT_EQ(kExtension1, extension_id);
   }
 
-  EXPECT_TRUE(CheckLookUpCertificate(cert_info1_, true /* is known */,
+  EXPECT_TRUE(CheckLookUpCertificate(cert_info1_, false /* is known */,
                                      false /* is currently not provided */,
                                      std::string()));
 

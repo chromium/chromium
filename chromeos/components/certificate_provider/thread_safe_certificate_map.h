@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
 #define CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -44,7 +45,8 @@ class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) ThreadSafeCertificateMap {
   // extension's id and |info| will be set to the stored info. Otherwise, if
   // this certificate was not provided in the the most recent Update() call,
   // sets |is_currently_provided| to false and doesn't modify |info| and
-  // |extension_id|.
+  // |extension_id|. If multiple extensions provide the certificate, the one
+  // that started providing it first is returned.
   bool LookUpCertificate(const net::X509Certificate& cert,
                          bool* is_currently_provided,
                          CertificateInfo* info,
@@ -58,8 +60,8 @@ class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) ThreadSafeCertificateMap {
   // will be populated according to the data that have been mapped to this
   // |subject_public_key_info|. Otherwise, if this certificate was not provided
   // in the most recent Update() call, sets |is_currently_provided| to false and
-  // doesn't modify |info| and |extension_id|. If multiple entries are found, it
-  // is unspecified which one will be returned.
+  // doesn't modify |info| and |extension_id|. If multiple extensions provide
+  // the certificate, the one that started providing it first is returned.
   bool LookUpCertificateBySpki(const std::string& subject_public_key_info,
                                bool* is_currently_provided,
                                CertificateInfo* info,
@@ -70,11 +72,19 @@ class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) ThreadSafeCertificateMap {
   void RemoveExtension(const std::string& extension_id);
 
  private:
+  struct SequencedCertificateEntry {
+    CertificateInfo info;
+    // Used to break ties when multiple extensions provide the same
+    // certificate; the extension that started providing it first wins.
+    uint64_t sequence = 0;
+  };
+  using ExtensionToCertificateMap =
+      base::flat_map<std::string, SequencedCertificateEntry>;
+
   void RemoveCertificatesProvidedByExtension(const std::string& extension_id);
 
   base::Lock lock_;
-  using ExtensionToCertificateMap =
-      base::flat_map<std::string, CertificateInfo>;
+  uint64_t next_sequence_ = 0;
   // A map that has the certificates' fingerprints as keys.
   base::flat_map<net::SHA256HashValue, ExtensionToCertificateMap>
       fingerprint_to_extension_and_cert_;

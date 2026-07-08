@@ -4,11 +4,13 @@
 
 #include "chromeos/components/certificate_provider/thread_safe_certificate_map.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
 #include "net/base/hash_value.h"
@@ -40,17 +42,50 @@ void ThreadSafeCertificateMap::UpdateCertificatesForExtension(
     const std::string& extension_id,
     const CertificateInfoList& certificates) {
   base::AutoLock auto_lock(lock_);
-  RemoveCertificatesProvidedByExtension(extension_id);
 
+  base::flat_set<net::SHA256HashValue> current_fingerprints;
+  base::flat_set<std::string> current_spkis;
   for (const CertificateInfo& cert_info : certificates) {
     const net::SHA256HashValue fingerprint =
         net::X509Certificate::CalculateFingerprint256(
             cert_info.certificate->cert_buffer());
-    fingerprint_to_extension_and_cert_[fingerprint][extension_id] = cert_info;
+    current_fingerprints.insert(fingerprint);
+    auto [fingerprint_it, fingerprint_inserted] =
+        fingerprint_to_extension_and_cert_[fingerprint].try_emplace(
+            extension_id);
+    if (fingerprint_inserted) {
+      fingerprint_it->second.sequence = next_sequence_++;
+    }
+    fingerprint_it->second.info = cert_info;
 
     const std::string spki = GetSubjectPublicKeyInfo(*cert_info.certificate);
-    spki_to_extension_and_cert_[spki][extension_id] = cert_info;
+    current_spkis.insert(spki);
+    auto [spki_it, spki_inserted] =
+        spki_to_extension_and_cert_[spki].try_emplace(extension_id);
+    if (spki_inserted) {
+      spki_it->second.sequence = next_sequence_++;
+    }
+    spki_it->second.info = cert_info;
   }
+
+  // Remove entries for certificates that the extension no longer provides.
+  for (auto& [fingerprint, map] : fingerprint_to_extension_and_cert_) {
+    if (!current_fingerprints.contains(fingerprint)) {
+      map.erase(extension_id);
+    }
+  }
+
+  base::EraseIf(fingerprint_to_extension_and_cert_,
+                [](const auto& entry) { return entry.second.empty(); });
+
+  for (auto& [spki, map] : spki_to_extension_and_cert_) {
+    if (!current_spkis.contains(spki)) {
+      map.erase(extension_id);
+    }
+  }
+
+  base::EraseIf(spki_to_extension_and_cert_,
+                [](const auto& entry) { return entry.second.empty(); });
 }
 
 std::vector<scoped_refptr<net::X509Certificate>>
@@ -65,7 +100,7 @@ ThreadSafeCertificateMap::GetCertificates() {
       // same certificate as SHA256 should not have collisions.
       // Since we need each certificate only once, we can return any entry.
       certificates.push_back(
-          extension_to_certificate_map->begin()->second.certificate);
+          extension_to_certificate_map->begin()->second.info.certificate);
     }
   }
   return certificates;
@@ -87,10 +122,10 @@ bool ThreadSafeCertificateMap::LookUpCertificate(
 
   ExtensionToCertificateMap* const map = &it->second;
   if (!map->empty()) {
-    // If multiple entries are found, it is unspecified which is returned.
-    const auto map_entry = map->begin();
+    const auto map_entry = std::ranges::min_element(
+        *map, {}, [](const auto& entry) { return entry.second.sequence; });
     *is_currently_provided = true;
-    *info = map_entry->second;
+    *info = map_entry->second.info;
     *extension_id = map_entry->first;
   }
   return true;
@@ -109,10 +144,12 @@ bool ThreadSafeCertificateMap::LookUpCertificateBySpki(
 
   ExtensionToCertificateMap* const map = &it->second;
   if (!map->empty()) {
-    // If multiple entries are found, it is unspecified which is returned.
-    const auto map_entry = map->begin();
+    // If multiple extensions provide the same certificate, return the one
+    // that started providing it first.
+    const auto map_entry = std::ranges::min_element(
+        *map, {}, [](const auto& entry) { return entry.second.sequence; });
     *is_currently_provided = true;
-    *info = map_entry->second;
+    *info = map_entry->second.info;
     *extension_id = map_entry->first;
   }
   return true;

@@ -25,3 +25,17 @@ component("certificate_provider") {
     "//net",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "thread_safe_certificate_map_unittest.cc" ]
+
+  deps = [
+    ":certificate_provider",
+    "//base",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/boringssl",
+  ]
+}
