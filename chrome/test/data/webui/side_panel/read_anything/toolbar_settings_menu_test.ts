@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SettingsOption} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -328,4 +328,15 @@ suite('Toolbar Settings Menu', () => {
         assertTrue(actionMenu.open);
         assertTrue(fontSubmenu.$.menu.$.lazyMenu.get().open);
       });
+
+  test('translate event from settings menu invokes readingMode', () => {
+    chrome.readingMode.isReadAnythingTranslateEntryPointEnabled = true;
+    let translateCalled = false;
+    chrome.readingMode.onTranslationRequested = () => {
+      translateCalled = true;
+    };
+    settingsMenu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.TRANSLATION_REQUESTED));
+    assertTrue(translateCalled);
+  });
 });

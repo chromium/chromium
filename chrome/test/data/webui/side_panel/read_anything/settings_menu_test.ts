@@ -460,4 +460,50 @@ suite('SettingsMenuElement', () => {
     assertTrue(!!pinnedPrevious);
     assertNotEquals('HR', pinnedPrevious.tagName);
   });
+
+  test('translate action fires event when clicked', async () => {
+    chrome.readingMode.isReadAnythingTranslateEntryPointEnabled = true;
+    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+    await microtasksFinished();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const translateItem = menuItems.find(
+        item => item.id === SettingsOption.TRANSLATION_REQUESTED);
+    assertTrue(!!translateItem);
+
+    const whenFired =
+        eventToPromise(ToolbarEvent.TRANSLATION_REQUESTED, settingsMenu);
+    translateItem.click();
+    await whenFired;
+    assertFalse(actionMenu.open);
+  });
+
+  test('clicking translate closes open submenu', async () => {
+    chrome.readingMode.isReadAnythingTranslateEntryPointEnabled = true;
+    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+    await microtasksFinished();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const fontItem = menuItems.find(item => item.id === SettingsOption.FONT);
+    const translateItem = menuItems.find(
+        item => item.id === SettingsOption.TRANSLATION_REQUESTED);
+    assertTrue(!!fontItem);
+    assertTrue(!!translateItem);
+
+    // Click fontItem to open its submenu.
+    fontItem.click();
+    await microtasksFinished();
+
+    const whenFired = eventToPromise<CustomEvent<{previousId: SettingsOption}>>(
+        ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
+
+    // Now click the Translate action item.
+    translateItem.click();
+    const event = await whenFired;
+    assertEquals(SettingsOption.FONT, event.detail.previousId);
+  });
 });

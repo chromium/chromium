@@ -300,7 +300,7 @@ export class FakeReadingMode {
     this.linksEnabled = !this.linksEnabled;
   }
 
-  // Called when a user triggers translate via the webui toolbar.
+  // Called when a user requests translation via the webui toolbar.
   onTranslationRequested() {}
 
   // Called when a user toggles images via the webui toolbar.

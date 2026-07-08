@@ -36,6 +36,7 @@ export const SUBMENU_SHOW_DELAY_MS = 800;
 export enum SettingsItemType {
   MENU = 1,
   TOGGLE = 2,
+  ACTION = 3,
 }
 
 interface SettingsItem {
@@ -113,6 +114,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     icon: 'read-anything:view',
     title: 'viewLabel',
     itemType: SettingsItemType.MENU,
+  },
+  [SettingsOption.TRANSLATION_REQUESTED]: {
+    id: SettingsOption.TRANSLATION_REQUESTED,
+    icon: 'read-anything:translate',
+    title: 'translateLabel',
+    itemType: SettingsItemType.ACTION,
   },
   [SettingsOption.VOICE_SELECTION]: {
     id: SettingsOption.VOICE_SELECTION,
@@ -227,6 +234,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     optionIDs.push(SettingsOption.PRESENTATION);
+    if (chrome.readingMode.isReadAnythingTranslateEntryPointEnabled) {
+      optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
+    }
     optionIDs.push(SettingsOption.LINKS);
 
     if (chrome.readingMode.imagesFeatureEnabled) {
@@ -273,20 +283,21 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       };
     });
 
-    // There should be a separator between the menu items and the toggle items.
-    // The base combination is on the Links toggle, but that's not
-    // always the first toggle.
+    // There should be a separator between the menu items and the action/toggle
+    // items. The base combination is on the Translate action or Links toggle.
     this.options_.forEach(option => {
-      if (option.itemType === SettingsItemType.TOGGLE) {
+      if (option.itemType === SettingsItemType.TOGGLE ||
+          option.itemType === SettingsItemType.ACTION) {
         option.showSeparator = false;
       }
     });
 
-    // Add the separator to the first toggle.
-    const firstToggle =
-        this.options_.find(item => item.itemType === SettingsItemType.TOGGLE);
-    if (firstToggle) {
-      firstToggle.showSeparator = true;
+    // Add the separator to the first action or toggle item.
+    const firstActionOrToggle = this.options_.find(
+        item => item.itemType === SettingsItemType.TOGGLE ||
+            item.itemType === SettingsItemType.ACTION);
+    if (firstActionOrToggle) {
+      firstActionOrToggle.showSeparator = true;
     }
   }
 
@@ -320,6 +331,21 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
     if (!item || item.disabled) {
+      return;
+    }
+
+    if (item.itemType === SettingsItemType.ACTION) {
+      if (item.id === SettingsOption.TRANSLATION_REQUESTED) {
+        // Close any open submenus before firing the translate event.
+        if (this.currentOpenId_) {
+          this.fire(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, {
+            previousId: this.currentOpenId_,
+          });
+          this.currentOpenId_ = null;
+        }
+        this.fire(ToolbarEvent.TRANSLATION_REQUESTED);
+        this.close();
+      }
       return;
     }
 
@@ -387,7 +413,15 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
-    if (!item || item.itemType === SettingsItemType.TOGGLE) {
+    if (!item || item.itemType === SettingsItemType.TOGGLE ||
+        item.itemType === SettingsItemType.ACTION) {
+      // If there is an open submenu, close it.
+      if (this.currentOpenId_) {
+        this.fire(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, {
+          previousId: this.currentOpenId_,
+        });
+        this.currentOpenId_ = null;
+      }
       return;
     }
 
@@ -623,7 +657,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
       const index = Number.parseInt(focused.dataset['index']!);
       const item = this.options_[index];
-      if (!item || item.itemType === SettingsItemType.TOGGLE) {
+      if (!item || item.itemType === SettingsItemType.TOGGLE ||
+          item.itemType === SettingsItemType.ACTION) {
         return;
       }
 

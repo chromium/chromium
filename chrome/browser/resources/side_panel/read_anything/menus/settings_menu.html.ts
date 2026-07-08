@@ -46,7 +46,7 @@ export function getHtml(this: SettingsMenuElement) {
               ?checked="${item.checked || false}"
               data-index="${index}">
             </cr-toggle>
-        ` : html`
+        ` : item.itemType === SettingsItemType.ACTION ? html`` : html`
             <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
         `}
       </button>

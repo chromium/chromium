@@ -145,7 +145,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .isSpeechActive="${this.isSpeechActive}"
       @close-submenu-requested="${this.onCloseSubmenuRequested_}"
       @close-all-menus="${this.onCloseAllMenus_}"
-      @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
+      @open-settings-submenu="${this.onOpenSettingsSubmenu_}"
+      @translation-requested="${this.onTranslationRequested_}">
     </settings-menu>
     <presentation-menu id="presentationMenu"
       class="settings-submenu"
