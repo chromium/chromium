@@ -182,5 +182,39 @@ TEST_F(ContextHubServiceTest, DeleteEntries) {
   EXPECT_TRUE(get_entries_future2.Get().empty());
 }
 
+TEST_F(ContextHubServiceTest, GroupTabs_NoTabs) {
+  base::test::TestFuture<std::vector<TabGroupData>, std::vector<TabData>>
+      future;
+  service_.GroupTabs(
+      {},
+      future.GetCallback<std::vector<TabGroupData>, std::vector<TabData>>());
+  auto [groups, ungrouped_tabs] = future.Take();
+  EXPECT_TRUE(groups.empty());
+  EXPECT_TRUE(ungrouped_tabs.empty());
+}
+
+TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
+  std::vector<TabData> input_tabs = {
+      {1, "Tab 1", GURL("https://example1.com")},
+      {2, "Tab 2", GURL("https://example2.com")},
+      {3, "Tab 3", GURL("https://example3.com")},
+      {4, "Tab 4", GURL("https://example4.com")},
+      {5, "Tab 5", GURL("https://example5.com")}};
+
+  base::test::TestFuture<std::vector<TabGroupData>, std::vector<TabData>>
+      future;
+  service_.GroupTabs(
+      std::move(input_tabs),
+      future.GetCallback<std::vector<TabGroupData>, std::vector<TabData>>());
+  auto [groups, ungrouped_tabs] = future.Take();
+
+  size_t total_tabs = ungrouped_tabs.size();
+  for (const auto& group : groups) {
+    total_tabs += group.tabs.size();
+    EXPECT_GE(group.tabs.size(), 2u);
+  }
+  EXPECT_EQ(total_tabs, 5u);
+}
+
 }  // namespace
 }  // namespace context_hub

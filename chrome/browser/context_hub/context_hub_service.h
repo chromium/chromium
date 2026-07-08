@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
@@ -15,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -27,6 +30,16 @@ class PersonalContextService;
 }  // namespace personal_context
 
 namespace context_hub {
+struct TabData {
+  int32_t id;
+  std::string title;
+  GURL url;
+};
+
+struct TabGroupData {
+  std::string label;
+  std::vector<TabData> tabs;
+};
 
 class ContextHubService : public KeyedService {
  public:
@@ -46,6 +59,12 @@ class ContextHubService : public KeyedService {
   // Generates auto-todos and invokes `callback` on completion, whether it's
   // successful or not.
   void GenerateAutoTodos(AutoTodosCallback callback);
+
+  using GroupTabsCallback =
+      base::OnceCallback<void(std::vector<TabGroupData> groups,
+                              std::vector<TabData> ungrouped_tabs)>;
+  // Groups tabs based on the provided `tabs` list.
+  void GroupTabs(std::vector<TabData> tabs, GroupTabsCallback callback);
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
