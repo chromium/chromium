@@ -11,6 +11,8 @@
 
 namespace content::webid {
 
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+
 // static
 AutofillSource* AutofillSource::FromPage(Page& page) {
   auto* request =

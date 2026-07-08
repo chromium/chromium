@@ -17,6 +17,8 @@
 
 namespace content::webid {
 
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+
 DOCUMENT_USER_DATA_KEY_IMPL(IdentityCredentialSourceImpl);
 
 IdentityCredentialSourceImpl::IdentityCredentialSourceImpl(RenderFrameHost* rfh)
