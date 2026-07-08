@@ -3779,8 +3779,6 @@ chromium-metrics-reviews@google.com.
   <token key="SurveyName">
     <variant name="BeforeFirstRunDesktopRefreshSurvey"/>
     <variant name="FirstRunDesktopRefreshSurvey"/>
-    <variant name="FirstRunDesktopRevampNoFeatureShowcaseSurvey"/>
-    <variant name="FirstRunDesktopRevampSurvey"/>
     <variant name="PerformanceControlsPPMSurvey"/>
   </token>
 </histogram>
