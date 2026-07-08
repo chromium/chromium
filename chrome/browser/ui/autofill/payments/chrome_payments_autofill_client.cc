@@ -1299,9 +1299,7 @@ void ChromePaymentsAutofillClient::HideOmniboxAutofillChip() {
 
 #endif
 
-void ChromePaymentsAutofillClient::ShowPaymentsChurnedUsersUI(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback) {
+void ChromePaymentsAutofillClient::ShowPaymentsChurnedUsersUI() {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
@@ -1310,7 +1308,7 @@ void ChromePaymentsAutofillClient::ShowPaymentsChurnedUsersUI(
   }
   if (PaymentsChurnedUsersBubbleController* controller =
           PaymentsChurnedUsersBubbleController::From(*tab_interface)) {
-    controller->Show(std::move(accept_callback), std::move(cancel_callback));
+    controller->Show();
   }
 #endif
 }

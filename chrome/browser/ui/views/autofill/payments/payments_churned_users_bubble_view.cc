@@ -17,14 +17,7 @@ PaymentsChurnedUsersBubbleView::PaymentsChurnedUsersBubbleView(
     content::WebContents* web_contents,
     PaymentsChurnedUsersBubbleController* controller)
     : AutofillLocationBarBubble(anchor, web_contents), controller_(controller) {
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
-             static_cast<int>(ui::mojom::DialogButton::kCancel));
-  SetAcceptCallback(
-      base::BindOnce(&PaymentsChurnedUsersBubbleView::OnDialogAccepted,
-                     base::Unretained(this)));
-  SetCancelCallback(
-      base::BindOnce(&PaymentsChurnedUsersBubbleView::OnDialogDeclined,
-                     base::Unretained(this)));
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -57,18 +50,6 @@ void PaymentsChurnedUsersBubbleView::WindowClosing() {
 void PaymentsChurnedUsersBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-}
-
-void PaymentsChurnedUsersBubbleView::OnDialogAccepted() {
-  if (controller_) {
-    controller_->OnBubbleAccepted();
-  }
-}
-
-void PaymentsChurnedUsersBubbleView::OnDialogDeclined() {
-  if (controller_) {
-    controller_->OnBubbleCancelled();
-  }
 }
 
 }  // namespace autofill
