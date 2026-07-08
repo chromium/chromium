@@ -407,6 +407,11 @@ struct Suggestion {
     // Payment method icons
     kCardGeneric,
     kCardGenericSpark,
+    // A vector representation of the generic card icon, which is used when a
+    // vector icon is preferred over a raster image (e.g., in the AtMemory UI
+    // on both Android and Desktop). In contrast, kCardGeneric maps to a raster
+    // image.
+    kCardGenericVector,
     kCardAmericanExpress,
     kCardDiners,
     kCardDiscover,

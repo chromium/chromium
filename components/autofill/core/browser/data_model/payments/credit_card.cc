@@ -336,6 +336,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
                                       : IDR_AUTOFILL_METADATA_CC_GENERIC_OLD;
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kCardGenericSpark:
+    case Suggestion::Icon::kCardGenericVector:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:

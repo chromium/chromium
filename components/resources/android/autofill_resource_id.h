@@ -153,6 +153,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ID_CARD_2_SPARK,
                     R.drawable.id_card_2_spark)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CARD_GENERIC_SPARK,
                     R.drawable.card_generic_spark)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CARD_GENERIC_VECTOR,
+                    R.drawable.card_generic_vector)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_LOCATION, R.drawable.location)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_LOCATION_SPARK,
                     R.drawable.location_spark)

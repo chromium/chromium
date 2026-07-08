@@ -169,6 +169,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kCardGeneric";
     case Suggestion::Icon::kCardGenericSpark:
       return "kCardGenericSpark";
+    case Suggestion::Icon::kCardGenericVector:
+      return "kCardGenericVector";
     case Suggestion::Icon::kCardAmericanExpress:
       return "kCardAmericanExpress";
     case Suggestion::Icon::kCardDiners:

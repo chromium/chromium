@@ -274,7 +274,7 @@ Suggestion::Icon GetIcon(
     case MemoryDataType::kCreditCardNickname:
     case MemoryDataType::kIban:
     case MemoryDataType::kIbanNickname:
-      return is_autofill_only ? Suggestion::Icon::kCardGeneric
+      return is_autofill_only ? Suggestion::Icon::kCardGenericVector
                               : Suggestion::Icon::kCardGenericSpark;
     case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:

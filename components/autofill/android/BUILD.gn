@@ -198,6 +198,7 @@ android_resources("autofill_browser_resources") {
     "browser/java/res/drawable/autofill_sad_tab.xml",
     "browser/java/res/drawable/car_spark.xml",
     "browser/java/res/drawable/card_generic_spark.xml",
+    "browser/java/res/drawable/card_generic_vector.xml",
     "browser/java/res/drawable/chrome_product.xml",
     "browser/java/res/drawable/directions_car.xml",
     "browser/java/res/drawable/flight.xml",
