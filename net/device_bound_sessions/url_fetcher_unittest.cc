@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -210,12 +211,50 @@ TEST_P(URLFetcherDeferralBypassTest, ModeIsAllowedWhenNotRefresh) {
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(URLFetcherDeferralBypassTest);
 
-TEST_F(URLFetcherTest, CertificateSelectionCancelled) {
-  auto builder = CreateTestURLRequestContextBuilder();
-  builder->set_has_device_bound_session_service(true);
-  builder->set_unexportable_key_service(
-      std::make_unique<unexportable_keys::FakeUnexportableKeyService>());
+class URLFetcherClientCertTest : public TestWithTaskEnvironment {
+ public:
+  using ClientCertHandlerCallback =
+      base::RepeatingCallback<void(const GURL&,
+                                   scoped_refptr<SSLCertRequestInfo>,
+                                   SelectClientCertificateCallback)>;
 
+  URLFetcherClientCertTest()
+      : test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+        builder_(CreateTestURLRequestContextBuilder()) {
+    builder_->set_unexportable_key_service(
+        std::make_unique<unexportable_keys::FakeUnexportableKeyService>());
+  }
+
+  void SetUpServerAndContext(ClientCertHandlerCallback client_cert_handler,
+                             bool has_session_service,
+                             const EmbeddedTestServer::HandleRequestCallback&
+                                 request_handler = base::NullCallback()) {
+    builder_->set_has_device_bound_session_service(has_session_service);
+    if (!client_cert_handler.is_null()) {
+      builder_->set_device_bound_sessions_client_cert_handler(
+          std::move(client_cert_handler));
+    }
+    net::SSLServerConfig ssl_config;
+    ssl_config.client_cert_type =
+        SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    test_server_.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
+    if (!request_handler.is_null()) {
+      test_server_.RegisterRequestHandler(request_handler);
+    }
+    ASSERT_TRUE(test_server_.Start());
+    context_ = builder_->Build();
+  }
+
+  URLRequestContext* context() { return context_.get(); }
+  EmbeddedTestServer& test_server() { return test_server_; }
+
+ private:
+  EmbeddedTestServer test_server_;
+  std::unique_ptr<URLRequestContextBuilder> builder_;
+  std::unique_ptr<URLRequestContext> context_;
+};
+
+TEST_F(URLFetcherClientCertTest, CertificateSelectionCancelled) {
   base::MockRepeatingCallback<void(const GURL&,
                                    scoped_refptr<SSLCertRequestInfo>,
                                    SelectClientCertificateCallback)>
@@ -224,21 +263,12 @@ TEST_F(URLFetcherTest, CertificateSelectionCancelled) {
   EXPECT_CALL(client_cert_handler, Run)
       .WillOnce(RunOnceCallback<2>(nullptr, nullptr, /*cancel=*/true));
 
-  builder->set_device_bound_sessions_client_cert_handler(
-      client_cert_handler.Get());
-  std::unique_ptr<URLRequestContext> context = builder->Build();
-  ASSERT_NE(context->device_bound_session_service(), nullptr);
+  ASSERT_NO_FATAL_FAILURE(SetUpServerAndContext(client_cert_handler.Get(),
+                                                /*has_session_service=*/true));
+  ASSERT_NE(context()->device_bound_session_service(), nullptr);
 
-  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig ssl_config;
-  ssl_config.client_cert_type =
-      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
-  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  ASSERT_TRUE(test_server.Start());
-
-  auto fetcher =
-      std::make_unique<URLFetcher>(context.get(), test_server.GetURL("/"),
-                                   std::nullopt, /*is_refresh=*/false);
+  auto fetcher = std::make_unique<URLFetcher>(
+      context(), test_server().GetURL("/"), std::nullopt, /*is_refresh=*/false);
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -247,7 +277,7 @@ TEST_F(URLFetcherTest, CertificateSelectionCancelled) {
   EXPECT_EQ(fetcher->net_error(), ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
 }
 
-TEST_F(URLFetcherTest, CertificateSelectionWithCert) {
+TEST_F(URLFetcherClientCertTest, CertificateSelectionWithCert) {
   std::unique_ptr<FakeClientCertIdentity> identity =
       FakeClientCertIdentity::CreateFromCertAndKeyFiles(
           GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
@@ -257,11 +287,6 @@ TEST_F(URLFetcherTest, CertificateSelectionWithCert) {
   scoped_refptr<X509Certificate> cert = identity->certificate();
   scoped_refptr<SSLPrivateKey> private_key = identity->ssl_private_key();
 
-  auto builder = CreateTestURLRequestContextBuilder();
-  builder->set_has_device_bound_session_service(true);
-  builder->set_unexportable_key_service(
-      std::make_unique<unexportable_keys::FakeUnexportableKeyService>());
-
   base::MockRepeatingCallback<void(const GURL&,
                                    scoped_refptr<SSLCertRequestInfo>,
                                    SelectClientCertificateCallback)>
@@ -269,30 +294,23 @@ TEST_F(URLFetcherTest, CertificateSelectionWithCert) {
 
   EXPECT_CALL(client_cert_handler, Run)
       .WillOnce(RunOnceCallback<2>(cert, private_key, /*cancel=*/false));
-  builder->set_device_bound_sessions_client_cert_handler(
-      client_cert_handler.Get());
 
-  std::unique_ptr<URLRequestContext> context = builder->Build();
-  ASSERT_NE(context->device_bound_session_service(), nullptr);
-
-  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig ssl_config;
-  ssl_config.client_cert_type =
-      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
-  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.RegisterRequestHandler(
+  auto request_handler =
       base::BindRepeating([](const test_server::HttpRequest& request)
                               -> std::unique_ptr<test_server::HttpResponse> {
         auto response = std::make_unique<test_server::BasicHttpResponse>();
         response->set_code(HTTP_OK);
         response->set_content("secure data");
         return response;
-      }));
-  ASSERT_TRUE(test_server.Start());
+      });
 
-  auto fetcher =
-      std::make_unique<URLFetcher>(context.get(), test_server.GetURL("/"),
-                                   std::nullopt, /*is_refresh=*/false);
+  ASSERT_NO_FATAL_FAILURE(SetUpServerAndContext(client_cert_handler.Get(),
+                                                /*has_session_service=*/true,
+                                                request_handler));
+  ASSERT_NE(context()->device_bound_session_service(), nullptr);
+
+  auto fetcher = std::make_unique<URLFetcher>(
+      context(), test_server().GetURL("/"), std::nullopt, /*is_refresh=*/false);
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -302,34 +320,20 @@ TEST_F(URLFetcherTest, CertificateSelectionWithCert) {
   EXPECT_EQ(fetcher->TakeDataReceived(), "secure data");
 }
 
-TEST_F(URLFetcherTest, CertificateSelectionWithoutCert) {
-  auto builder = CreateTestURLRequestContextBuilder();
-  builder->set_has_device_bound_session_service(true);
-  builder->set_unexportable_key_service(
-      std::make_unique<unexportable_keys::FakeUnexportableKeyService>());
-
+TEST_F(URLFetcherClientCertTest, CertificateSelectionWithoutCert) {
   base::MockRepeatingCallback<void(const GURL&,
                                    scoped_refptr<SSLCertRequestInfo>,
                                    SelectClientCertificateCallback)>
       client_cert_handler;
   EXPECT_CALL(client_cert_handler, Run)
       .WillOnce(RunOnceCallback<2>(nullptr, nullptr, /*cancel=*/false));
-  builder->set_device_bound_sessions_client_cert_handler(
-      client_cert_handler.Get());
 
-  std::unique_ptr<URLRequestContext> context = builder->Build();
-  ASSERT_NE(context->device_bound_session_service(), nullptr);
+  ASSERT_NO_FATAL_FAILURE(SetUpServerAndContext(client_cert_handler.Get(),
+                                                /*has_session_service=*/true));
+  ASSERT_NE(context()->device_bound_session_service(), nullptr);
 
-  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig ssl_config;
-  ssl_config.client_cert_type =
-      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
-  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  ASSERT_TRUE(test_server.Start());
-
-  auto fetcher =
-      std::make_unique<URLFetcher>(context.get(), test_server.GetURL("/"),
-                                   std::nullopt, /*is_refresh=*/false);
+  auto fetcher = std::make_unique<URLFetcher>(
+      context(), test_server().GetURL("/"), std::nullopt, /*is_refresh=*/false);
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -339,22 +343,13 @@ TEST_F(URLFetcherTest, CertificateSelectionWithoutCert) {
               fetcher->net_error() == ERR_SOCKET_NOT_CONNECTED);
 }
 
-TEST_F(URLFetcherTest, CertificateSelectionNoSessionService) {
-  auto builder = CreateTestURLRequestContextBuilder();
-  builder->set_has_device_bound_session_service(false);
-  std::unique_ptr<URLRequestContext> context = builder->Build();
-  ASSERT_EQ(context->device_bound_session_service(), nullptr);
+TEST_F(URLFetcherClientCertTest, CertificateSelectionNoSessionService) {
+  ASSERT_NO_FATAL_FAILURE(SetUpServerAndContext(base::NullCallback(),
+                                                /*has_session_service=*/false));
+  ASSERT_EQ(context()->device_bound_session_service(), nullptr);
 
-  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig ssl_config;
-  ssl_config.client_cert_type =
-      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
-  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
-  ASSERT_TRUE(test_server.Start());
-
-  auto fetcher =
-      std::make_unique<URLFetcher>(context.get(), test_server.GetURL("/"),
-                                   std::nullopt, /*is_refresh=*/false);
+  auto fetcher = std::make_unique<URLFetcher>(
+      context(), test_server().GetURL("/"), std::nullopt, /*is_refresh=*/false);
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
