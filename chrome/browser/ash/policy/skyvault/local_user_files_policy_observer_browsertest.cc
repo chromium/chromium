@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -20,17 +21,20 @@ namespace policy::local_user_files {
 
 namespace {
 
-class TestObserver : LocalUserFilesPolicyObserver {
+class TestObserver : public LocalUserFilesPolicyObserver {
  public:
+  explicit TestObserver(PrefService* local_state)
+      : LocalUserFilesPolicyObserver(local_state) {}
+
   void OnLocalUserFilesPolicyChanged() override {
-    local_user_files_allowed_ = g_browser_process->local_state()->GetBoolean(
-        ash::prefs::kLocalUserFilesAllowed);
+    local_user_files_allowed_ =
+        local_state_->GetBoolean(ash::prefs::kLocalUserFilesAllowed);
   }
 
   bool local_user_files_allowed() { return local_user_files_allowed_; }
 
  private:
-  bool local_user_files_allowed_;
+  bool local_user_files_allowed_ = false;
 };
 
 }  // namespace
@@ -55,7 +59,7 @@ class LocalUserFilesPolicyObserverTest : public policy::PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LocalUserFilesPolicyObserverTest, CheckPolicyValue) {
-  TestObserver observer;
+  TestObserver observer(g_browser_process->local_state());
 
   SetPolicyValue(/*local_user_files_allowed=*/true);
   ASSERT_TRUE(observer.local_user_files_allowed());

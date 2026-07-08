@@ -5,20 +5,18 @@
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/check_is_test.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/browser_process.h"
+#include "components/prefs/pref_service.h"
 
 namespace policy::local_user_files {
 
-LocalUserFilesPolicyObserver::LocalUserFilesPolicyObserver()
-    : pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
-  if (!g_browser_process->local_state()) {
-    // Can be NULL in tests.
-    CHECK_IS_TEST();
-    return;
-  }
-  pref_change_registrar_->Init(g_browser_process->local_state());
+LocalUserFilesPolicyObserver::LocalUserFilesPolicyObserver(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  pref_change_registrar_->Init(&local_state_.get());
   const base::RepeatingClosure cb = base::BindRepeating(
       &LocalUserFilesPolicyObserver::OnLocalUserFilesPolicyChanged,
       base::Unretained(this));

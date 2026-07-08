@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_USER_FILES_POLICY_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_USER_FILES_POLICY_OBSERVER_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
 
 namespace policy::local_user_files {
 
@@ -13,11 +16,18 @@ namespace policy::local_user_files {
 // observer interface.
 class LocalUserFilesPolicyObserver {
  public:
-  LocalUserFilesPolicyObserver();
+  // `local_state` must be non-null and outlive `this`.
+  explicit LocalUserFilesPolicyObserver(PrefService* local_state);
+  LocalUserFilesPolicyObserver(const LocalUserFilesPolicyObserver&) = delete;
+  LocalUserFilesPolicyObserver& operator=(const LocalUserFilesPolicyObserver&) =
+      delete;
   virtual ~LocalUserFilesPolicyObserver();
 
   // Called when the value of the observed policy changes.
   virtual void OnLocalUserFilesPolicyChanged() {}
+
+ protected:
+  const raw_ref<PrefService> local_state_;
 
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

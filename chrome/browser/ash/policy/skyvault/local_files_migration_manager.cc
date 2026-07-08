@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -190,7 +191,9 @@ bool IsMigrationMisconfigured(Profile* profile, MigrationDestination provider) {
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
     content::BrowserContext* context)
-    : context_(context),
+    // TODO(crbug.com/404133022): Avoid using g_browser_process.
+    : LocalUserFilesPolicyObserver(g_browser_process->local_state()),
+      context_(context),
       coordinator_(std::make_unique<MigrationCoordinator>(
           Profile::FromBrowserContext(context))),
       scheduling_timer_(std::make_unique<base::WallClockTimer>()) {

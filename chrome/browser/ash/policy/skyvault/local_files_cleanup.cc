@@ -10,12 +10,15 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/browser_process.h"
 
 namespace policy::local_user_files {
 
 constexpr char kCleanupCountHistogram[] = "SkyVault.LocalUserFilesCleanupCount";
 
-LocalFilesCleanup::LocalFilesCleanup() = default;
+LocalFilesCleanup::LocalFilesCleanup()
+    // TODO(crbug.com/404133022): Avoid using g_browser_process.
+    : LocalUserFilesPolicyObserver(g_browser_process->local_state()) {}
 
 LocalFilesCleanup::~LocalFilesCleanup() = default;
 
