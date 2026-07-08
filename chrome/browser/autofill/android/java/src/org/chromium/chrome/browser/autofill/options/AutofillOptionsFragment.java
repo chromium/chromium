@@ -69,6 +69,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         AutofillOptionsReferrer.AUTOFILL_IDENTITY_DOCS_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_TRAVEL_FRAGMENT,
         AutofillOptionsReferrer.AUTOFILL_SHOPPING_FRAGMENT,
+        AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -97,7 +98,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Shopping fragment in Chrome settings. */
         int AUTOFILL_SHOPPING_FRAGMENT = 7;
 
-        int COUNT = 8;
+        /** Private inference notice. */
+        int PRIVATE_INFERENCE_NOTICE = 8;
+
+        int COUNT = 9;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillOptionsReferrer)

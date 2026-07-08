@@ -37,6 +37,11 @@ void ShowAutofillShoppingSettings(content::WebContents* web_contents) {
       base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
 }
 
+void ShowAutofillSettings(content::WebContents* web_contents) {
+  Java_SettingsNavigationHelper_showAutofillSettings(
+      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(SettingsNavigationHelper)

@@ -12,6 +12,10 @@
 #include "base/types/pass_key.h"
 #include "components/messages/android/message_wrapper.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace autofill {
 
 class AutofillMessageControllerImpl;
@@ -61,8 +65,8 @@ class AutofillMessageModel {
   CreateForVirtualCardEnrollFailure(std::u16string card_label);
   static std::unique_ptr<AutofillMessageModel>
   CreateForPersonalContextFetchingFailure();
-  static std::unique_ptr<AutofillMessageModel>
-  CreateForPrivateInferenceNotice();
+  static std::unique_ptr<AutofillMessageModel> CreateForPrivateInferenceNotice(
+      content::WebContents* web_contents);
 
   // Converts a message model type to a string for debugging and metrics.
   static std::string_view TypeToString(Type message_type);

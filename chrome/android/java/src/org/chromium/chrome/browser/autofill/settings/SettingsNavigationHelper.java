@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -121,6 +122,27 @@ public class SettingsNavigationHelper {
     }
 
     /**
+     * Tries showing the settings page for Autofill options.
+     *
+     * @param context The {@link Context} required to start the settings page. Noop without it.
+     * @return True if the context is valid and `startSettings` was called.
+     */
+    public static boolean showAutofillSettings(@Nullable Context context) {
+        if (context == null) {
+            return false;
+        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        context,
+                        AutofillOptionsFragment.class,
+                        AutofillOptionsFragment.createRequiredArgs(
+                                AutofillOptionsFragment.AutofillOptionsReferrer
+                                        .PRIVATE_INFERENCE_NOTICE),
+                        /* addToBackStack= */ true);
+        return true;
+    }
+
+    /**
      * Tries showing the settings page for Addresses.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
@@ -220,5 +242,12 @@ public class SettingsNavigationHelper {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return;
         showAutofillShoppingSettings(windowAndroid.getActivity().get());
+    }
+
+    @CalledByNative
+    private static void showAutofillSettings(WebContents webContents) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
+        showAutofillSettings(windowAndroid.getActivity().get());
     }
 }

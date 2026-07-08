@@ -26,6 +26,9 @@ void ShowAutofillTravelSettings(content::WebContents* web_contents);
 // Opens the autofill settings page for shopping.
 void ShowAutofillShoppingSettings(content::WebContents* web_contents);
 
+// Open the autofill settings page.
+void ShowAutofillSettings(content::WebContents* web_contents);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_AUTOFILL_SETTINGS_NAVIGATION_HELPER_H_

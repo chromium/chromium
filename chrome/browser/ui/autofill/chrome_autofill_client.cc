@@ -1579,7 +1579,7 @@ void ChromeAutofillClient::ShowAutofillAiPreFetchFailureNotification() {
 void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
 #if BUILDFLAG(IS_ANDROID)
   GetAutofillMessageController()->Show(
-      AutofillMessageModel::CreateForPrivateInferenceNotice());
+      AutofillMessageModel::CreateForPrivateInferenceNotice(web_contents()));
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)

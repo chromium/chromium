@@ -2985,6 +2985,8 @@ Called by update_autofill_enums.py.-->
   <int value="7"
       label="User entered the autofill options via autofill shopping
              fragment."/>
+  <int value="8"
+      label="User entered the autofill options via private inference notice."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java:AutofillOptionsReferrer) -->
