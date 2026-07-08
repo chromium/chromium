@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "xxhash-rust"
-version = "0.8.15"
+version = "0.8.16"
 authors = ["Douman <douman@gmx.se>"]
 build = false
 include = [
@@ -52,6 +52,15 @@ features = [
     "const_xxh3",
 ]
 
+[features]
+const_xxh3 = []
+const_xxh32 = []
+const_xxh64 = []
+std = []
+xxh3 = []
+xxh32 = []
+xxh64 = []
+
 [lib]
 name = "xxhash_rust"
 path = "src/lib.rs"
@@ -73,16 +82,7 @@ name = "test-vectors"
 path = "tests/test-vectors.rs"
 
 [dev-dependencies.getrandom]
-version = "0.2"
+version = "0.3"
 
 [dev-dependencies.xxhash-c-sys]
 version = "0.8.6"
-
-[features]
-const_xxh3 = []
-const_xxh32 = []
-const_xxh64 = []
-std = []
-xxh3 = []
-xxh32 = []
-xxh64 = []

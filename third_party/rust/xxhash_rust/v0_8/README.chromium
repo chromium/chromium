@@ -1,7 +1,7 @@
 Name: xxhash-rust
 URL: https://crates.io/crates/xxhash-rust
-Version: 0.8.15
-Revision: 7026cd705195f502283f97aafc9ea41930099c68
+Version: 0.8.16
+Revision: 200cadb1a442c7f6cd9747e7d4297379b6b74200
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: BSL-1.0
 License File: //third_party/rust/chromium_crates_io/vendor/xxhash-rust-v0_8/LICENSE

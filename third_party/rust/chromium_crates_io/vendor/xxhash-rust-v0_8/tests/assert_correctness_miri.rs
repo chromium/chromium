@@ -1,7 +1,7 @@
 #[cfg(all(miri, feature = "xxh64"))]
 #[test]
 fn assert_xxh64_miri() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_rust::xxh64::xxh64;
 
     const SEED_1: u64 = 0;
@@ -32,7 +32,7 @@ fn assert_xxh64_miri() {
 #[cfg(all(miri, feature = "xxh32"))]
 #[test]
 fn assert_xxh32_miri() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_rust::xxh32::xxh32;
 
     const SEED_1: u32 = 0;
@@ -63,7 +63,7 @@ fn assert_xxh32_miri() {
 #[cfg(all(miri, feature = "xxh3"))]
 #[test]
 fn assert_xxh3_miri() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_rust::xxh3::{xxh3_64, xxh3_128, xxh3_64_with_seed, xxh3_128_with_seed, Xxh3};
 
     let mut hasher_1 = Xxh3::new();

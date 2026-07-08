@@ -2,7 +2,7 @@
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_xxh64() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::xxh64::xxh64;
 
@@ -43,7 +43,7 @@ fn assert_xxh64() {
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_xxh32() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::xxh32::xxh32;
 
@@ -84,7 +84,7 @@ fn assert_xxh32() {
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_const_xxh32() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::const_xxh32::xxh32;
 
@@ -114,7 +114,7 @@ fn assert_const_xxh32() {
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_const_xxh64() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::const_xxh64::xxh64;
 
@@ -144,7 +144,7 @@ fn assert_const_xxh64() {
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_const_xxh3() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::const_xxh3::{xxh3_64, xxh3_128, xxh3_64_with_seed, xxh3_128_with_seed};
 
@@ -187,7 +187,7 @@ fn assert_const_xxh3() {
 #[cfg_attr(miri, ignore)]
 #[test]
 fn assert_xxh3() {
-    use getrandom::getrandom;
+    use getrandom::fill as getrandom;
     use xxhash_c_sys as sys;
     use xxhash_rust::xxh3::{xxh3_64, xxh3_128, xxh3_64_with_seed, xxh3_128_with_seed, Xxh3, Xxh3Default};
 

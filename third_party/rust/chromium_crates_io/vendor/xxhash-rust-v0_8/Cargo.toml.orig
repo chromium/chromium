@@ -1,6 +1,6 @@
 [package]
 name = "xxhash-rust"
-version = "0.8.15"
+version = "0.8.16"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
 description = "Implementation of xxhash"
@@ -30,7 +30,7 @@ xxh3 = [] # Enable xxh3 implementation
 const_xxh3 = [] # Enable const xxh3 implementation
 
 [dev-dependencies]
-getrandom = "0.2"
+getrandom = "0.3"
 xxhash-c-sys = "0.8.6"
 
 [package.metadata.docs.rs]
