@@ -340,6 +340,9 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
     std::unique_ptr<WDTypedResult> result) {
   DCHECK(result);
   DCHECK_EQ(AUTOFILL_CLEANUP_RESULT, result->GetType());
+  if (!static_cast<const WDResult<bool>*>(result.get())->GetValue()) {
+    DLOG(WARNING) << "Autofill cleanup returned false. This should not happen.";
+  }
 
   // Cleanup was successful, update the latest run milestone.
   pref_service_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,

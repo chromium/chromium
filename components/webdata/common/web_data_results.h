@@ -28,7 +28,7 @@ typedef enum {
   WEB_APP_IMAGES,                    // WDResult<WDAppImagesResult>
   TOKEN_RESULT,                      // WDResult<TokenResult>
   AUTOFILL_VALUE_RESULT,             // WDResult<std::vector<AutofillEntry>>
-  AUTOFILL_CLEANUP_RESULT,           // WDResult<size_t>
+  AUTOFILL_CLEANUP_RESULT,           // WDResult<bool>
   AUTOFILL_CHANGES,                  // WDResult<std::vector<AutofillChange>>
   AUTOFILL_PROFILES_RESULT,          // WDResult<std::vector<AutofillProfile>>
   AUTOFILL_ENTITY_INSTANCE_RESULT,   // WDResult<std::vector<EntityInstance>>

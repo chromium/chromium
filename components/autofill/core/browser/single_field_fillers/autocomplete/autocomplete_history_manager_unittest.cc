@@ -952,13 +952,13 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
   EXPECT_EQ(-1,
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
 
-  size_t cleanup_result = 10;
+  bool cleanup_result = true;
   base::HistogramTester histogram_tester;
   MockSuggestionsReturnedCallback mock_callback;
 
   autocomplete_manager_->OnAutofillCleanupReturned(
-      1, std::make_unique<WDResult<size_t>>(AUTOFILL_CLEANUP_RESULT,
-                                            cleanup_result));
+      1, std::make_unique<WDResult<bool>>(AUTOFILL_CLEANUP_RESULT,
+                                          cleanup_result));
 
   EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
