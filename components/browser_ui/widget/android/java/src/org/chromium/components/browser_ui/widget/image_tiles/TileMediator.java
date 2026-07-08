@@ -46,25 +46,17 @@ class TileMediator {
     }
 
     private void getVisuals(ImageTile tile, Callback<List<Bitmap>> callback) {
-        final long startTime = System.currentTimeMillis();
         mTileVisualsProvider.getVisuals(
                 tile,
                 visuals -> {
                     boolean visualsAvailable = visuals != null && !visuals.isEmpty();
-                    recordTileVisuals(visualsAvailable, System.currentTimeMillis() - startTime);
+                    recordTileVisuals(visualsAvailable);
                     callback.onResult(visuals);
                 });
     }
 
-    private void recordTileVisuals(boolean visualsAvailable, long durationMs) {
+    private void recordTileVisuals(boolean visualsAvailable) {
         RecordHistogram.recordBooleanHistogram(
                 "Search." + mConfig.umaPrefix + ".Bitmap.Available", visualsAvailable);
-
-        String fetchDurationHistogramName =
-                "Search."
-                        + mConfig.umaPrefix
-                        + (visualsAvailable ? ".Bitmap" : ".NoBitmap")
-                        + ".FetchDuration";
-        RecordHistogram.recordTimesHistogram(fetchDurationHistogramName, durationMs);
     }
 }

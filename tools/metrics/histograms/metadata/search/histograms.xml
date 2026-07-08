@@ -1519,28 +1519,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.QueryTiles.{TileUiSurface}Bitmap.FetchDuration"
-    units="ms" expires_after="2022-04-01">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken to fetch a bitmap for a tile when a bitmap could be
-    found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap. {TileUiSurface}
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.{TileUiSurface}NoBitmap.FetchDuration"
-    units="ms" expires_after="2022-04-01">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the time taken by the bitmap request for a tile when no bitmap could
-    be found. It includes the time starting from the UI layer requesting the
-    backend till the backend returns the associated bitmap. {TileUiSurface}
-  </summary>
-</histogram>
-
 <histogram name="Search.QueryTiles.{TileUiSurface}Tile.Clicked" units="index"
     expires_after="2023-08-31">
   <owner>shaktisahu@chromium.org</owner>
