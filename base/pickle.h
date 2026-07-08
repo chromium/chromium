@@ -20,7 +20,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/stack_allocated.h"
 #include "base/strings/string_view_util.h"
@@ -187,7 +187,7 @@ class BASE_EXPORT Pickle {
   // TODO(crbug.com/478784025): Deprecated: use AsBytes().data() instead if you
   // really need a raw pointer.
   const uint8_t* data() const {
-    return reinterpret_cast<const uint8_t*>(header_);
+    return reinterpret_cast<const uint8_t*>(header_.get());
   }
 
   // Returns the data for this Pickle. This is equivalent to the implicit
@@ -294,7 +294,7 @@ class BASE_EXPORT Pickle {
     // hierarchy).
     static_assert(std::is_trivial_v<T>, "T must be a trivial class");
     DCHECK_EQ(header_size_, sizeof(T));
-    return static_cast<T*>(header_);
+    return static_cast<T*>(header_.get());
   }
   template <class T>
   const T* headerT() const {
@@ -353,9 +353,9 @@ class BASE_EXPORT Pickle {
   // TODO(https://crbug.com/478784025): Use `SpanWriter` for writing data
   // instead of manual management.
 
-  // `header_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
-  RAW_PTR_EXCLUSION Header* header_;
+  // `header_` uses kUnprotectedInRelease for performance reasons (based on
+  // analysis of sampling profiler data).
+  raw_ptr<Header, kUnprotectedInRelease> header_;
   size_t header_size_;  // Supports extra data between header and payload.
   // Allocation size of payload (or -1 if allocation is const). Note: this
   // doesn't count the header.

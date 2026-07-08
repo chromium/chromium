@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
@@ -92,9 +93,9 @@ class BASE_EXPORT WorkQueue {
 
     explicit TaskPusher(WorkQueue* work_queue);
 
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
-    // profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION WorkQueue* work_queue_ = nullptr;
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // sampling profiler data and tab_search:top100:2020).
+    raw_ptr<WorkQueue, kUnprotectedInRelease> work_queue_ = nullptr;
 
     const bool was_empty_;
   };
@@ -170,8 +171,13 @@ class BASE_EXPORT WorkQueue {
   bool InsertFenceImpl(Fence fence);
 
   TaskQueueImpl::TaskDeque tasks_;
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
-  RAW_PTR_EXCLUSION WorkQueueSets* work_queue_sets_ = nullptr;   // NOT OWNED.
+  // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+  // speedometer3).
+  raw_ptr<WorkQueueSets, kUnprotectedInRelease> work_queue_sets_ =
+      nullptr;  // NOT OWNED.
+  // RAW_PTR_EXCLUSION: TaskQueueImpl is in the raw_ptr-unsupported types list
+  // in raw_ptr.h (perf-sensitive; see crbug.com/335556942). It is excluded
+  // globally, so we cannot use raw_ptr/raw_ref even with kUnprotectedInRelease.
   RAW_PTR_EXCLUSION TaskQueueImpl* const task_queue_ = nullptr;  // NOT OWNED.
   size_t work_queue_set_index_ = 0;
 

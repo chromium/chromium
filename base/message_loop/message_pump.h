@@ -11,7 +11,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -132,9 +132,9 @@ class BASE_EXPORT MessagePump {
         work_item_depth_ = outer_->RunDepth();
       }
 
-      // `outer_` is not a raw_ptr<...> for performance reasons (based on
+      // `outer_` uses kUnprotectedInRelease for performance reasons (based on
       // analysis of sampling profiler data and tab_search:top100:2020).
-      RAW_PTR_EXCLUSION Delegate* outer_;
+      raw_ptr<Delegate, kUnprotectedInRelease> outer_;
 
       // Records the run level at which this DoWorkItem was created to allow
       // detection of exits of nested loops.

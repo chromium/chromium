@@ -13,7 +13,6 @@
 #include "base/containers/intrusive_heap.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_order.h"
@@ -109,8 +108,9 @@ class BASE_EXPORT WorkQueueSets {
  private:
   struct OldestTaskOrder {
     TaskOrder key;
-    // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler stacks.
-    RAW_PTR_EXCLUSION WorkQueue* value = nullptr;
+    // Uses kUnprotectedInRelease: Performance: visible in sampling profiler
+    // stacks.
+    raw_ptr<WorkQueue, kUnprotectedInRelease> value = nullptr;
 
     // Used for a min-heap.
     bool operator>(const OldestTaskOrder& other) const {

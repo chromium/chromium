@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
@@ -215,9 +214,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   struct RunState {
     explicit RunState(Delegate* delegate) : delegate(delegate) {}
 
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
-    // profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION Delegate* const delegate;
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // sampling profiler data and tab_search:top100:2020).
+    const raw_ptr<Delegate, kUnprotectedInRelease> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;

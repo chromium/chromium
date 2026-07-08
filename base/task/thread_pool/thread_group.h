@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -251,9 +250,9 @@ class BASE_EXPORT ThreadGroup {
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
 
-    // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
-    // scoped, also a back-pointer to the owning object.
-    RAW_PTR_EXCLUSION ThreadGroup* outer_ = nullptr;
+    // Uses kUnprotectedInRelease: Performance: visible in sampling profiler and
+    // stack scoped, also a back-pointer to the owning object.
+    raw_ptr<ThreadGroup, kUnprotectedInRelease> outer_ = nullptr;
 
    protected:
     // Performs BaseScopedCommandsExecutor-related tasks, must be called in this

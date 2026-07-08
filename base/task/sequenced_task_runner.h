@@ -10,7 +10,7 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
@@ -381,9 +381,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
                          MayAlreadyExist);
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
     // speedometer3).
-    RAW_PTR_EXCLUSION CurrentDefaultHandle* previous_handle_ = nullptr;
+    raw_ptr<CurrentDefaultHandle, kUnprotectedInRelease> previous_handle_ =
+        nullptr;
   };
 
  protected:

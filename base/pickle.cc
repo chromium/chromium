@@ -406,7 +406,7 @@ Pickle::Pickle(const Pickle& other)
 
 Pickle::~Pickle() {
   if (capacity_after_header_ != kCapacityReadOnly) {
-    free(header_);
+    free(header_.ExtractAsDangling());
   }
 }
 
@@ -419,8 +419,7 @@ Pickle& Pickle::operator=(const Pickle& other) {
     capacity_after_header_ = 0;
   }
   if (header_size_ != other.header_size_) {
-    free(header_);
-    header_ = nullptr;
+    free(header_.ExtractAsDangling());
     header_size_ = other.header_size_;
   }
   if (other.header_) {
@@ -487,7 +486,7 @@ bool Pickle::HasAttachments() const {
 void Pickle::Resize(size_t new_capacity) {
   CHECK_NE(capacity_after_header_, kCapacityReadOnly);
   capacity_after_header_ = bits::AlignUp(new_capacity, kPayloadUnit);
-  void* p = realloc(header_, GetTotalAllocatedSize());
+  void* p = realloc(header_.ExtractAsDangling(), GetTotalAllocatedSize());
   CHECK(p);
   header_ = reinterpret_cast<Header*>(p);
 }
@@ -512,7 +511,8 @@ span<uint8_t> Pickle::AsWritableBytes() {
       << "oops: pickle is readonly";
   // SAFETY: `header_` always points to at least `size()` valid bytes if
   // non-null, and otherwise `size()` returns zero.
-  return UNSAFE_BUFFERS(span(reinterpret_cast<uint8_t*>(header_), size()));
+  return UNSAFE_BUFFERS(
+      span(reinterpret_cast<uint8_t*>(header_.get()), size()));
 }
 
 // static
@@ -570,8 +570,8 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
     Resize(std::max(new_capacity, new_size));
   }
 
-  char* write = UNSAFE_TODO(reinterpret_cast<char*>(header_) + header_size_ +
-                            write_offset_);
+  char* write = UNSAFE_TODO(reinterpret_cast<char*>(header_.get()) +
+                            header_size_ + write_offset_);
   std::fill(UNSAFE_TODO(write + length), UNSAFE_TODO(write + data_len),
             0);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);

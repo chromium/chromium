@@ -83,7 +83,7 @@ std::string Location::ToString() const {
     return std::string(function_name_) + "@" + file_name_ + ":" +
            NumberToString(line_number_);
   }
-  return StringPrintf("pc:%p", program_counter_);
+  return StringPrintf("pc:%p", program_counter_.get());
 }
 
 void Location::WriteIntoTrace(perfetto::TracedValue context) const {

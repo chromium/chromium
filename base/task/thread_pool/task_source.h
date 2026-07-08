@@ -10,7 +10,7 @@
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/stack_allocated.h"
 #include "base/sequence_token.h"
@@ -354,9 +354,9 @@ class BASE_EXPORT RegisteredTaskSource {
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<TaskSource> task_source_;
-  // RAW_PTR_EXCLUSION: Performance reasons (visible in sampling profiler
-  // stacks).
-  RAW_PTR_EXCLUSION TaskTracker* task_tracker_ = nullptr;
+  // Uses kUnprotectedInRelease: Performance reasons (visible in sampling
+  // profiler stacks).
+  raw_ptr<TaskTracker, kUnprotectedInRelease> task_tracker_ = nullptr;
 };
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
@@ -107,9 +107,9 @@ class BASE_EXPORT Location {
   const char* file_name_ = nullptr;
   int line_number_ = -1;
 
-  // `program_counter_` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION const void* program_counter_ = nullptr;
+  // `program_counter_` uses kUnprotectedInRelease for performance reasons
+  // (based on analysis of sampling profiler data and tab_search:top100:2020).
+  raw_ptr<const void, kUnprotectedInRelease> program_counter_ = nullptr;
 };
 
 BASE_EXPORT const void* GetProgramCounter();
