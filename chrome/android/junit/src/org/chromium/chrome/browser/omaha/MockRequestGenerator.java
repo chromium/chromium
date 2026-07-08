@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Mocks out the RequestGenerator for tests. */
 public class MockRequestGenerator extends RequestGenerator {
-    public enum DeviceType {
-        HANDSET,
-        TABLET
+    @IntDef({DeviceType.HANDSET, DeviceType.TABLET})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DeviceType {
+        int HANDSET = 0;
+        int TABLET = 1;
     }
 
     public static final String UUID_PHONE = "uuid_phone";
@@ -23,7 +30,7 @@ public class MockRequestGenerator extends RequestGenerator {
 
     private final boolean mIsOnTablet;
 
-    public MockRequestGenerator(DeviceType deviceType) {
+    public MockRequestGenerator(@DeviceType int deviceType) {
         mIsOnTablet = deviceType == DeviceType.TABLET;
     }
 

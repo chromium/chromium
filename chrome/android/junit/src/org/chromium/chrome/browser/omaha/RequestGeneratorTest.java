@@ -104,7 +104,8 @@ public class RequestGeneratorTest {
     }
 
     /** Checks that the XML is being created properly. */
-    private RequestGenerator createAndCheckXML(DeviceType deviceType, boolean sendInstallEvent) {
+    private RequestGenerator createAndCheckXML(
+            @DeviceType int deviceType, boolean sendInstallEvent) {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));

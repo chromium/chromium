@@ -87,7 +87,7 @@ public class OmahaBaseTest {
         private TimestampPair mTimestampsOnRegisterNewRequest;
         private TimestampPair mTimestampsOnSaveState;
 
-        MockOmahaDelegate(DeviceType deviceType, @InstallSource int installSource) {
+        MockOmahaDelegate(@DeviceType int deviceType, @InstallSource int installSource) {
             mIsOnTablet = deviceType == DeviceType.TABLET;
             mIsInForeground = true;
             mIsInSystemImage = installSource == InstallSource.SYSTEM_IMAGE;
@@ -196,7 +196,9 @@ public class OmahaBaseTest {
     }
 
     private MockOmahaBase createOmahaBase(
-            @ServerResponse int response, @ConnectionStatus int status, DeviceType deviceType) {
+            @ServerResponse int response,
+            @ConnectionStatus int status,
+            @DeviceType int deviceType) {
         MockOmahaBase omahaClient = new MockOmahaBase(mDelegate, response, status, deviceType);
         return omahaClient;
     }
@@ -225,7 +227,7 @@ public class OmahaBaseTest {
                 OmahaDelegate delegate,
                 @ServerResponse int serverResponse,
                 @ConnectionStatus int connectionStatus,
-                DeviceType deviceType) {
+                @DeviceType int deviceType) {
             super(delegate);
             mSendValidResponse = serverResponse == ServerResponse.SUCCESS;
             mConnectionTimesOut = connectionStatus == ConnectionStatus.TIMES_OUT;
@@ -800,10 +802,12 @@ public class OmahaBaseTest {
                 response += "<urls><url codebase=\"" + MARKET_URL + "\"/></urls>";
                 response += "<manifest version=\"" + mUpdateVersion + "\">";
                 response += "<packages>";
-                response += "<package hash=\"0\" name=\"dummy.apk\" required=\"true\" size=\"0\"/>";
+                response +=
+                        "<package hash=\"0\" name=\"placeholder.apk\" required=\"true\""
+                                + " size=\"0\"/>";
                 response += "</packages>";
                 response += "<actions>";
-                response += "<action event=\"install\" run=\"dummy.apk\"/>";
+                response += "<action event=\"install\" run=\"placeholder.apk\"/>";
                 response += "<action event=\"postinstall\"/>";
                 response += "</actions>";
                 response += "</manifest>";
