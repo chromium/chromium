@@ -208,6 +208,7 @@ android_resources("autofill_browser_resources") {
     "browser/java/res/drawable/id_card_spark.xml",
     "browser/java/res/drawable/local_shipping.xml",
     "browser/java/res/drawable/local_shipping_spark.xml",
+    "browser/java/res/drawable/location.xml",
     "browser/java/res/drawable/location_spark.xml",
     "browser/java/res/drawable/passport.xml",
     "browser/java/res/drawable/passport_spark.xml",
