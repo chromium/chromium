@@ -25,7 +25,6 @@
 #include "chrome/common/channel_info.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_service_impl.h"
@@ -38,16 +37,6 @@ namespace skills {
 
 namespace {
 static constexpr char kClickFn[] = "el => el.click()";
-
-base::DictValue SkillToDict(const skills::proto::Skill& skill) {
-  base::DictValue dict;
-  dict.Set("id", skill.id());
-  dict.Set("name", skill.name());
-  dict.Set("icon", skill.icon());
-  dict.Set("prompt", skill.prompt());
-  dict.Set("description", skill.description());
-  return dict;
-}
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
@@ -68,8 +57,7 @@ SkillsInteractiveUiTestBase::SkillsInteractiveUiTestBase() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kGlicRollout,
                             features::kSkillsEnabled,
-                            features::kGlicMultitabUnderlines,
-                            features::kSkillsServiceApi},
+                            features::kGlicMultitabUnderlines},
       /*disabled_features=*/{features::kGlicWarming});
   // TODO(b:504651450): Consider adding support for the new FRE.
 }
@@ -124,17 +112,6 @@ SkillsInteractiveUiTestBase::CheckToastIsShowing(ToastId toast_id) {
 
 void SkillsInteractiveUiTestBase::SetUpOnMainThread() {
   skills::SkillsFunctionalBrowserTestBase::SetUpOnMainThread();
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    AccountInfo::Builder builder(signin::MakePrimaryAccountAvailable(
-        identity_manager, "glic-test@example.com",
-        signin::ConsentLevel::kSignin));
-    builder.SetFullName("Glic Testing").SetGivenName("Glic");
-    signin::UpdateAccountInfoForAccount(identity_manager, builder.Build());
-  }
-  signin::SetAutomaticIssueOfAccessTokens(identity_manager, true);
 
   skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
@@ -348,7 +325,6 @@ ui::test::InteractiveTestApi::StepBuilder
 SkillsInteractiveUiTestBase::Seed1PSkills(
     const std::vector<skills::proto::Skill>& skills) {
   return Do([this, skills]() {
-    // 1. Mock Gstatic (Protobuf)
     skills::proto::SkillsList skills_list;
     for (const auto& skill : skills) {
       *skills_list.add_skills() = skill;
@@ -359,20 +335,6 @@ SkillsInteractiveUiTestBase::Seed1PSkills(
 
     GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
     test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
-                                         net::HTTP_OK);
-
-    // 2. Mock API (JSON)
-    base::DictValue root;
-    base::ListValue skills_list_val;
-    for (const auto& skill : skills) {
-      skills_list_val.Append(SkillToDict(skill));
-    }
-    root.Set("skills", std::move(skills_list_val));
-    std::optional<std::string> json_data = base::WriteJson(root);
-    ASSERT_TRUE(json_data.has_value());
-
-    GURL api_url(features::kSkillsServiceApiUrl.Get());
-    test_url_loader_factory_.AddResponse(api_url.spec(), *json_data,
                                          net::HTTP_OK);
   });
 }
