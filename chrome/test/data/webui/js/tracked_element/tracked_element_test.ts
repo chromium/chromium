@@ -8,7 +8,7 @@ import {TrackedElementProxyImpl} from 'chrome://resources/js/tracked_element/tra
 import type {RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {TrackedElementHandlerInterface, TrackedElementIdentifier, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -70,10 +70,15 @@ suite('TrackedElementTest', function() {
   let manager: TrackedElementManager;
   let handler: MockTrackedElementHandler;
   let element: HTMLElement;
+  let element2: HTMLElement;
   let managerRemote: TrackedElementManagerRemote;
   const ELEMENT_ID: TrackedElementIdentifier = {
     nativeIdentifier: 'kElementId',
     secondaryIdentifier: '3',
+  };
+  const OTHER_ELEMENT_SAME_ID: TrackedElementIdentifier = {
+    nativeIdentifier: 'kElementId',
+    secondaryIdentifier: '5',
   };
   const NOT_ELEMENT_ID: TrackedElementIdentifier = {
     nativeIdentifier: 'kElementId2',
@@ -112,6 +117,12 @@ suite('TrackedElementTest', function() {
     element.style.width = '10px';
     element.style.height = '10px';
     document.body.appendChild(element);
+
+    element2 = document.createElement('div');
+    element2.id = 'element2';
+    element2.style.width = '10px';
+    element2.style.height = '10px';
+    document.body.appendChild(element2);
   });
 
   teardown(() => {
@@ -509,5 +520,114 @@ suite('TrackedElementTest', function() {
     const result = await clickPromise;
     assertTrue(result.success);
     assertTrue(clicked);
+  });
+
+  // Tests for multiple elements with the same native identifier:
+
+  test(
+      'startTracking two elements with same native ID sends visibility',
+      async () => {
+        manager.startTracking(
+            element, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        manager.startTracking(
+            element2, OTHER_ELEMENT_SAME_ID.nativeIdentifier,
+            {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+        assertGT(handler.getCallCount('trackedElementVisibilityChanged'), 1);
+        assertEquals(
+            0, handler.getCallCount('trackedElementCanHighlightChanged'));
+
+        const allArgs = handler.getArgs('trackedElementVisibilityChanged');
+        const args = allArgs.find(
+            a => a[0].secondaryIdentifier === ELEMENT_ID.secondaryIdentifier)!;
+        assertDeepEquals(ELEMENT_ID, args[0]);
+        assertTrue(args[1]);  // visible
+        const rect = element.getBoundingClientRect();
+        assertDeepEquals(
+            {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
+            args[2]);
+
+        const args2 = allArgs.find(
+            a => a[0].secondaryIdentifier ===
+                OTHER_ELEMENT_SAME_ID.secondaryIdentifier)!;
+        assertDeepEquals(OTHER_ELEMENT_SAME_ID, args2[0]);
+        assertTrue(args2[1]);  // visible
+        const rect2 = element2.getBoundingClientRect();
+        assertDeepEquals(
+            {x: rect2.x, y: rect2.y, width: rect2.width, height: rect2.height},
+            args2[2]);
+
+        assertEquals(
+            manager.getTrackedElement(element),
+            manager.getTrackedElementById(ELEMENT_ID));
+        assertEquals(
+            manager.getTrackedElement(element2),
+            manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
+        assertNotEquals(
+            manager.getTrackedElement(element),
+            manager.getTrackedElement(element2));
+      });
+
+  test(
+      'stopTracking only makes one element with the same ID go away',
+      async () => {
+        manager.startTracking(
+            element, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        manager.startTracking(
+            element2, OTHER_ELEMENT_SAME_ID.nativeIdentifier,
+            {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+        manager.stopTracking(element);
+        assertEquals(undefined, manager.getTrackedElement(element));
+        assertEquals(undefined, manager.getTrackedElementById(ELEMENT_ID));
+        assertNotEquals(undefined, manager.getTrackedElement(element2));
+        assertNotEquals(
+            undefined, manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
+        assertEquals(
+            manager.getTrackedElement(element2),
+            manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
+      });
+
+  test('notifyElementActivated calls handler for correct element', () => {
+    manager.startTracking(
+        element, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    manager.startTracking(
+        element2, OTHER_ELEMENT_SAME_ID.nativeIdentifier,
+        {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
+
+    manager.notifyElementActivated(element);
+    assertEquals(1, handler.getCallCount('trackedElementActivated'));
+    assertDeepEquals(ELEMENT_ID, handler.getArgs('trackedElementActivated')[0]);
+
+    manager.notifyElementActivated(element2);
+    assertEquals(2, handler.getCallCount('trackedElementActivated'));
+    assertDeepEquals(
+        OTHER_ELEMENT_SAME_ID, handler.getArgs('trackedElementActivated')[1]);
+  });
+
+  test('notifyCustomEvent calls handler for correct element', () => {
+    const eventName = 'test-event';
+    manager.startTracking(
+        element, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    manager.startTracking(
+        element2, OTHER_ELEMENT_SAME_ID.nativeIdentifier,
+        {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
+
+    manager.notifyCustomEvent(element, eventName);
+    assertEquals(1, handler.getCallCount('trackedElementCustomEvent'));
+    assertDeepEquals(
+        ELEMENT_ID, handler.getArgs('trackedElementCustomEvent')[0][0]);
+    assertEquals(eventName, handler.getArgs('trackedElementCustomEvent')[0][1]);
+
+    manager.notifyCustomEvent(element2, eventName);
+    assertEquals(2, handler.getCallCount('trackedElementCustomEvent'));
+    assertDeepEquals(
+        OTHER_ELEMENT_SAME_ID,
+        handler.getArgs('trackedElementCustomEvent')[1][0]);
+    assertEquals(eventName, handler.getArgs('trackedElementCustomEvent')[1][1]);
   });
 });

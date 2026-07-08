@@ -246,7 +246,7 @@ export class TrackedElementManager {
       for (const mutation of mutations) {
         // Style or class attribute changed on a tracked element.
         const target = mutation.target as HTMLElement;
-        if (this.getTrackedElement_(target)) {
+        if (this.getTrackedElement(target)) {
           this.onElementVisibilityChanged_(target, computeIsVisible(target));
         }
       }
@@ -257,13 +257,13 @@ export class TrackedElementManager {
       nodes.forEach(node => {
         if (node instanceof HTMLElement) {
           // Check if the node is a tracked element.
-          if (this.getTrackedElement_(node)) {
+          if (this.getTrackedElement(node)) {
             this.onElementVisibilityChanged_(node, computeIsVisible(node));
           }
           // Check if any descendants are tracked elements.
           node.querySelectorAll('*').forEach(descendant => {
             if (descendant instanceof HTMLElement &&
-                this.getTrackedElement_(descendant)) {
+                this.getTrackedElement(descendant)) {
               this.onElementVisibilityChanged_(
                   descendant, computeIsVisible(descendant));
             }
@@ -289,7 +289,7 @@ export class TrackedElementManager {
         document, {childList: true, subtree: true});
   }
 
-  private getTrackedElement_(element: HTMLElement): TrackedElement|undefined {
+  getTrackedElement(element: HTMLElement): TrackedElement|undefined {
     const nativeId = element.dataset['nativeId'];
     const secondaryId = element.dataset['secondaryId'];
     if (!nativeId || !secondaryId) {
@@ -305,7 +305,7 @@ export class TrackedElementManager {
     return undefined;
   }
 
-  private getTrackedElementById_(id: TrackedElementIdentifier): TrackedElement
+  getTrackedElementById(id: TrackedElementIdentifier): TrackedElement
       |undefined {
     const nativeId = id.nativeIdentifier;
     const secondaryId = id.secondaryIdentifier;
@@ -352,7 +352,7 @@ export class TrackedElementManager {
       onVisibilityChanged?: (visible: boolean, bounds: RectF) => void) {
     // Remove tracking of the old element before registering the nativeId to a
     // new element.
-    if (this.getTrackedElement_(element)) {
+    if (this.getTrackedElement(element)) {
       this.stopTracking(element);
     }
     const secondaryId = options?.secondaryId ||
@@ -404,7 +404,7 @@ export class TrackedElementManager {
    * @param element The element to stop tracking.
    */
   stopTracking(element: HTMLElement) {
-    const trackedElement = this.getTrackedElement_(element);
+    const trackedElement = this.getTrackedElement(element);
     if (!trackedElement) {
       return;
     }
@@ -432,14 +432,14 @@ export class TrackedElementManager {
   }
 
   notifyElementActivated(element: HTMLElement) {
-    const el = this.getTrackedElement_(element);
+    const el = this.getTrackedElement(element);
     assert(el);
     this.trackedElementHandler_.trackedElementActivated(
         TrackedElementManager.elementToIdentifier_(el));
   }
 
   notifyCustomEvent(element: HTMLElement, customEventName: string) {
-    const el = this.getTrackedElement_(element);
+    const el = this.getTrackedElement(element);
     assert(el);
     this.trackedElementHandler_.trackedElementCustomEvent(
         TrackedElementManager.elementToIdentifier_(el), customEventName);
@@ -447,7 +447,7 @@ export class TrackedElementManager {
 
   private onElementVisibilityChanged_(
       element: HTMLElement, isVisible: boolean) {
-    const trackedElement = this.getTrackedElement_(element);
+    const trackedElement = this.getTrackedElement(element);
     if (!trackedElement) {
       // When we stop tracking an element we continue to get events for it. Just
       // ignore these events.
@@ -485,7 +485,7 @@ export class TrackedElementManager {
     rect.width = bounds.width;
     rect.height = bounds.height;
 
-    const trackedElement = this.getTrackedElement_(element);
+    const trackedElement = this.getTrackedElement(element);
     if (trackedElement) {
       const padding = trackedElement.padding;
       rect.x -= padding.left;
@@ -499,7 +499,7 @@ export class TrackedElementManager {
   /* Called from browser to add/remove highlights. */
   private onElementHighlightChanged_(
       id: TrackedElementIdentifier, highlighted: boolean) {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     const maybeCallback = trackedElement?.onHighlightChanged;
     if (maybeCallback) {
       maybeCallback(highlighted);
@@ -535,7 +535,7 @@ export class TrackedElementManager {
 
   private async clickElement_(id: TrackedElementIdentifier):
       Promise<{success: boolean}> {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(`TrackedElementManager: Click failed, element not found: ${
           TrackedElementManager.idToString_(id)}`);
@@ -614,7 +614,7 @@ export class TrackedElementManager {
   }
 
   private focusElement_(id: TrackedElementIdentifier): {success: boolean} {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(`TrackedElementManager: Focus failed, element not found: ${
           TrackedElementManager.idToString_(id)}`);
@@ -626,7 +626,7 @@ export class TrackedElementManager {
 
   private selectTab_(id: TrackedElementIdentifier, index: number):
       {success: boolean} {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: SelectTab failed, element not found: ${
@@ -663,7 +663,7 @@ export class TrackedElementManager {
 
   private selectDropdownItem_(id: TrackedElementIdentifier, index: number):
       {success: boolean} {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: SelectDropdownItem failed, element not found: ${
@@ -714,7 +714,7 @@ export class TrackedElementManager {
   private enterText_(
       id: TrackedElementIdentifier, text: string,
       mode: TextEntryMode): {success: boolean} {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: EnterText failed, element not found: ${
@@ -767,7 +767,7 @@ export class TrackedElementManager {
   }
 
   private confirm_(id: TrackedElementIdentifier): {success: boolean} {
-    const trackedElement = this.getTrackedElementById_(id);
+    const trackedElement = this.getTrackedElementById(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: Confirm failed, element not found: ${
