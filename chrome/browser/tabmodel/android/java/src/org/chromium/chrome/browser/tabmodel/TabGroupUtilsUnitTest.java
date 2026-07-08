@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -280,5 +282,29 @@ public class TabGroupUtilsUnitTest {
             when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
         }
+    }
+
+    @Test
+    public void testHasTabGroups_hasGroupsInCurrentModel() {
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
+        assertTrue(TabGroupUtils.hasTabGroups(mTabModel));
+        assertTrue(TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector)));
+    }
+
+    @Test
+    public void testHasTabGroups_hasGroupsInOtherWindow() {
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(otherSelector.getModel(false)).thenReturn(otherModel);
+        when(otherModel.getTabGroupCount()).thenReturn(2);
+
+        assertTrue(
+                TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector, otherSelector)));
+        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, (Collection<TabModelSelector>) null));
     }
 }

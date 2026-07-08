@@ -27,6 +27,7 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -357,5 +358,31 @@ public class TabGroupUtils {
                         context, colorId, isIncognito));
         drawable.setSize(circleSize, circleSize);
         return drawable;
+    }
+
+    /**
+     * Returns whether any tab groups exist in the provided model or across all selectors.
+     *
+     * @param tabModel The current {@link TabModel}.
+     * @param selectorsForAllWindows Collection of {@link TabModelSelector}s across windows, or
+     *     null.
+     */
+    public static boolean hasTabGroups(
+            @Nullable TabModel tabModel,
+            @Nullable Collection<TabModelSelector> selectorsForAllWindows) {
+        if (tabModel != null && tabModel.getTabGroupCount() > 0) return true;
+        if (selectorsForAllWindows != null) {
+            boolean isIncognito = tabModel != null && tabModel.isIncognito();
+            for (TabModelSelector selector : selectorsForAllWindows) {
+                if (selector == null) continue;
+                TabModel model = selector.getModel(isIncognito);
+                if (model != null && model.getTabGroupCount() > 0) return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasTabGroups(@Nullable TabModel tabModel) {
+        return hasTabGroups(tabModel, /* selectorsForAllWindows= */ null);
     }
 }
