@@ -19,6 +19,7 @@ class WebContents;
 
 namespace multistep_filter {
 
+class FilterTabController;
 class MultistepFilterLogRouter;
 class MultistepFilterService;
 class MultistepFilterUiDelegate;
@@ -49,17 +50,13 @@ class ContentFilterNavigationObserver : public content::WebContentsObserver {
       base::TerminationStatus status) override;
 
  private:
-  // The MultistepFilterService to use for generating
-  // suggestions. This service must outlive this observer.
-  // TODO (crbug.com/498901792): Use raw_ref for service when the feature is
-  // completely launched.
-  raw_ptr<MultistepFilterService> service_;
-
-  // Log router for tracing navigation decisions.
-  raw_ptr<MultistepFilterLogRouter> log_router_;
+  friend class ContentFilterNavigationObserverTestApi;
 
   // Delegate to provide contextual information and interact with the UI.
   std::unique_ptr<MultistepFilterUiDelegate> delegate_;
+
+  // Orchestrates the suggestion and extraction flow.
+  std::unique_ptr<FilterTabController> tab_controller_;
 };
 
 }  // namespace multistep_filter

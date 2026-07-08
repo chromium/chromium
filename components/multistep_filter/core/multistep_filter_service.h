@@ -135,6 +135,14 @@ class MultistepFilterService : public KeyedService,
                                         int64_t navigation_id,
                                         std::string_view host);
 
+  // Returns the FilterStore owned by this service.
+  FilterStore* GetFilterStore() const { return filter_store_.get(); }
+
+  // Returns the AnnotationIndexClient owned by this service.
+  AnnotationIndexClient* GetAnnotationIndexClient() const {
+    return annotation_index_client_.get();
+  }
+
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;

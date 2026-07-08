@@ -8,15 +8,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/multistep_filter/chrome_filter_navigation_observer_test_api.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/multistep_filter/content/content_filter_navigation_observer_test_api.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
+#include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/filter_tab_controller.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -63,30 +68,7 @@ class MockMultistepFilterService : public MultistepFilterService {
           params.log_router = nullptr;
           return params;
         }()) {}
-
-  MOCK_METHOD(void,
-              ExtractAnnotation,
-              (int64_t navigation_id,
-               const GURL& url,
-               std::optional<UrlFilterSuggestion> applied_suggestion),
-              (override));
-  MOCK_METHOD(
-      void,
-      GenerateFilterSuggestions,
-      (int64_t navigation_id,
-       const GURL& url,
-       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
-      (override));
-};
-
-// Helper class for ChromeFilterNavigationObserverTest.
-// Exposes the internal observer for verification.
-class ChromeFilterNavigationObserverWrapper
-    : public ChromeFilterNavigationObserver {
- public:
-  using ChromeFilterNavigationObserver::ChromeFilterNavigationObserver;
-
-  ContentFilterNavigationObserver* observer() { return observer_.get(); }
+  ~MockMultistepFilterService() override = default;
 };
 
 // Verifies the lifecycle management of the internal
@@ -112,7 +94,7 @@ class ChromeFilterNavigationObserverTest
         .WillByDefault(testing::ReturnRef(user_data_host_));
 
     chrome_observer_ =
-        std::make_unique<ChromeFilterNavigationObserverWrapper>(*mock_tab_);
+        std::make_unique<ChromeFilterNavigationObserver>(*mock_tab_);
   }
 
   void TearDown() override {
@@ -127,42 +109,36 @@ class ChromeFilterNavigationObserverTest
         MultistepFilterServiceFactory::GetForProfile(profile()));
   }
 
-  base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-  NavigateAndGetCallback(const GURL& url) {
-    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-        captured_callback;
-    EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(_, url, _))
-        .WillOnce(MoveArg<2>(&captured_callback));
-    auto simulator =
-        content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
-    simulator->SetHasUserGesture(true);
-    simulator->Commit();
-    return captured_callback;
-  }
-
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   ui::UnownedUserDataHost user_data_host_;
-  std::unique_ptr<ChromeFilterNavigationObserverWrapper> chrome_observer_;
+  std::unique_ptr<ChromeFilterNavigationObserver> chrome_observer_;
 };
 
+// Tests that the observer can be retrieved from the TabInterface's user data.
 TEST_F(ChromeFilterNavigationObserverTest, FromReturnsInstance) {
   EXPECT_EQ(ChromeFilterNavigationObserver::From(mock_tab_.get()),
             chrome_observer_.get());
 }
 
+// Tests that retrieving the observer returns null if it has not been created
+// yet.
 TEST_F(ChromeFilterNavigationObserverTest, FromReturnsNullIfNotFound) {
   chrome_observer_.reset();
   EXPECT_EQ(ChromeFilterNavigationObserver::From(mock_tab_.get()), nullptr);
 }
 
+// Tests that the inner observer is destroyed when the tab discards its
+// WebContents.
 TEST_F(ChromeFilterNavigationObserverTest, HandlesNullWebContents) {
-  EXPECT_TRUE(chrome_observer_->observer());
+  EXPECT_TRUE(test_api(*chrome_observer_).GetObserver());
 
   chrome_observer_->OnDiscardContents(mock_tab_.get(), web_contents(), nullptr);
 
-  EXPECT_FALSE(chrome_observer_->observer());
+  EXPECT_FALSE(test_api(*chrome_observer_).GetObserver());
 }
 
+// Tests that the inner observer is recreated when the tab is updated with new
+// WebContents.
 TEST_F(ChromeFilterNavigationObserverTest,
        UpdatesObserverOnDiscardWithRealImpl) {
   std::unique_ptr<content::WebContents> new_contents =
@@ -171,59 +147,30 @@ TEST_F(ChromeFilterNavigationObserverTest,
   chrome_observer_->OnDiscardContents(mock_tab_.get(), web_contents(),
                                       new_contents.get());
 
-  ASSERT_TRUE(chrome_observer_->observer());
-  EXPECT_EQ(chrome_observer_->observer()->web_contents(), new_contents.get());
+  ContentFilterNavigationObserver* observer =
+      test_api(*chrome_observer_).GetObserver();
+  ASSERT_TRUE(observer);
+  EXPECT_EQ(observer->web_contents(), new_contents.get());
 }
 
+// Tests that the outer observer survives the destruction of its observed
+// WebContents.
 TEST_F(ChromeFilterNavigationObserverTest, WebContentsDestruction) {
   DeleteContents();
   EXPECT_TRUE(chrome_observer_);
 }
 
-TEST_F(ChromeFilterNavigationObserverTest, SameDocumentNavigation) {
-  auto mock_controller =
-      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
-
-  const GURL url("https://www.example.com");
-  NavigateAndGetCallback(url);
-
-  // Subsequent same-document navigation should NOT clear the suggestion in the
-  // controller.
-  const GURL same_doc_url("https://www.example.com/#test");
-  EXPECT_CALL(*mock_controller, ClearSuggestion(_)).Times(0);
-  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(_, same_doc_url, _));
-  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      same_doc_url, main_rfh());
-  navigation->CommitSameDocument();
-}
-
-TEST_F(ChromeFilterNavigationObserverTest, NavigationClearsSuggestion) {
-  auto mock_controller =
-      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
-
-  NavigateAndGetCallback(GURL("https://www.example.com"));
-
-  // Navigate to a new URL, which should trigger ClearSuggestion on the
-  // delegate.
-  EXPECT_CALL(*mock_controller,
-              ClearSuggestion(SuggestionUserDecision::kIgnored));
-  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(
-                                   _, GURL("https://www.example2.com"), _));
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://www.example2.com"), main_rfh());
-  simulator->SetHasUserGesture(true);
-  simulator->Commit();
-}
-
+// Tests that the UI delegate correctly forwards generated suggestions to the
+// tab's UI controller.
 TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
   auto mock_controller =
       std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
 
-  base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-      captured_callback =
-          NavigateAndGetCallback(GURL("https://www.example.com"));
-
-  ASSERT_TRUE(captured_callback);
+  ContentFilterNavigationObserver* observer =
+      test_api(*chrome_observer_).GetObserver();
+  ASSERT_TRUE(observer);
+  MultistepFilterUiDelegate* delegate = test_api(*observer).GetDelegate();
+  ASSERT_TRUE(delegate);
 
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
@@ -236,36 +183,25 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
       .task_type = "task1"});
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
-  std::move(captured_callback).Run(suggestion);
+  delegate->OnSuggestionGenerated(suggestion);
 }
 
-TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullController) {
-  base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
-      captured_callback =
-          NavigateAndGetCallback(GURL("https://www.example.com"));
+// Tests that the UI delegate handles a null UI controller on the tab without
+// crashing.
+TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullUiController) {
+  ContentFilterNavigationObserver* observer =
+      test_api(*chrome_observer_).GetObserver();
+  ASSERT_TRUE(observer);
+  MultistepFilterUiDelegate* delegate = test_api(*observer).GetDelegate();
+  ASSERT_TRUE(delegate);
 
-  ASSERT_TRUE(captured_callback);
-
-  // No controller is attached to the tab, so calls should be gracefully
-  // handled without crashing.
-  std::move(captured_callback).Run(std::nullopt);
+  // Verify that the delegate call is handled gracefully without crashing when
+  // no UI controller is attached to the tab.
+  delegate->OnSuggestionGenerated(std::nullopt);
 }
 
-TEST_F(ChromeFilterNavigationObserverTest, NavigationWithController) {
-  std::optional<FilterUiController> filter_ui_controller;
-  filter_ui_controller.emplace(*mock_tab_);
-
-  const GURL url("https://www.example.com");
-  EXPECT_CALL(*mock_service(), ExtractAnnotation(_, url, _));
-  NavigateAndGetCallback(url);
-}
-
-TEST_F(ChromeFilterNavigationObserverTest, NavigationWithNullController) {
-  const GURL url("https://www.example.com");
-  EXPECT_CALL(*mock_service(), ExtractAnnotation(_, url, _));
-  NavigateAndGetCallback(url);
-}
-
+// Tests that the observer behaves safely and doesn't crash when the
+// MultistepFilterService is null.
 TEST_F(ChromeFilterNavigationObserverTest, HandlesNullService) {
   chrome_observer_.reset();
   MultistepFilterServiceFactory::GetInstance()->SetTestingFactory(
@@ -274,7 +210,7 @@ TEST_F(ChromeFilterNavigationObserverTest, HandlesNullService) {
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
 
   chrome_observer_ =
-      std::make_unique<ChromeFilterNavigationObserverWrapper>(*mock_tab_);
+      std::make_unique<ChromeFilterNavigationObserver>(*mock_tab_);
 
   std::optional<FilterUiController> filter_ui_controller;
   filter_ui_controller.emplace(*mock_tab_);

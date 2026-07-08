@@ -55,8 +55,13 @@ void ChromeFilterNavigationObserver::UpdateObserver(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  MultistepFilterService* service =
+      MultistepFilterServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
   observer_ = std::make_unique<ContentFilterNavigationObserver>(
-      web_contents, MultistepFilterServiceFactory::GetForProfile(profile),
+      web_contents, service,
       MultistepFilterLogRouterFactory::GetForProfile(profile),
       std::make_unique<MultistepFilterUiDelegateImpl>(tab()));
 }

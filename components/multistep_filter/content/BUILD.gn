@@ -22,15 +22,27 @@ source_set("content") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [ "content_filter_navigation_observer_test_api.h" ]
+  deps = [
+    ":content",
+    "//base",
+    "//components/multistep_filter/core",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "content_filter_navigation_observer_unittest.cc" ]
   deps = [
     ":content",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/multistep_filter/core",
     "//components/multistep_filter/core:switches",
+    "//components/multistep_filter/core:test_support",
     "//components/multistep_filter/core/annotation_index:test_support",
     "//components/unified_consent",
     "//content/test:test_support",

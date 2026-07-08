@@ -45,7 +45,7 @@ class MockMultistepFilterService : public MultistepFilterService {
 
 class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
  public:
-  MockMultistepFilterUiDelegate() : weak_factory_(this) {}
+  MockMultistepFilterUiDelegate() = default;
   ~MockMultistepFilterUiDelegate() override = default;
 
   MOCK_METHOD(void,
@@ -55,11 +55,11 @@ class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
   MOCK_METHOD(void, ClearSuggestion, (), (override));
 
   base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<MockMultistepFilterUiDelegate> weak_factory_;
+  base::WeakPtrFactory<MockMultistepFilterUiDelegate> weak_ptr_factory_{this};
 };
 
 class MockFilterExtractor : public FilterExtractor {
@@ -130,8 +130,8 @@ class FilterTabControllerTest : public testing::Test {
     mock_delegate_ =
         std::make_unique<StrictMock<MockMultistepFilterUiDelegate>>();
     controller_ = std::make_unique<FilterTabController>(
-        mock_service_.get(), /*log_router=*/nullptr,
-        mock_delegate_->GetWeakPtr(), filter_store_, mock_annotation_client_);
+        mock_service_.get(), /*log_router=*/nullptr, mock_delegate_.get(),
+        filter_store_, mock_annotation_client_);
     test_api(*controller_).SetObserverForTest(&observer_);
 
     auto mock_extractor = std::make_unique<StrictMock<MockFilterExtractor>>(
@@ -488,6 +488,28 @@ TEST_F(FilterTabControllerTest, HttpNavigationWithTestingSwitch) {
               OnExtractionFinishedForTest(std::optional(expected_id)));
   EXPECT_CALL(observer_,
               OnSuggestionGeneratedForTest(std::optional(expected_suggestion)));
+
+  controller_->OnNavigationFinished(metadata);
+}
+
+// Tests that FilterTabController aborts immediately when there is no user
+// gesture on a new navigation.
+TEST_F(FilterTabControllerTest,
+       SuppressExtractionAndGenerationOnNoUserGesture) {
+  FilterNavigationMetadata metadata;
+  metadata.navigation_id = 11;
+  metadata.url = GURL("https://example.com/");
+  metadata.is_cryptographic_scheme = true;
+  metadata.has_user_gesture = false;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_delegate_,
+              OnSuggestionGenerated(testing::Eq(std::nullopt)));
+
+  EXPECT_CALL(observer_,
+              OnExtractionFinishedForTest(testing::Eq(std::nullopt)));
+  EXPECT_CALL(observer_,
+              OnSuggestionGeneratedForTest(testing::Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(metadata);
 }

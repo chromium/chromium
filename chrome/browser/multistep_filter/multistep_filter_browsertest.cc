@@ -15,6 +15,8 @@
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
+#include "chrome/browser/multistep_filter/chrome_filter_navigation_observer_test_api.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller_test_api.h"
@@ -35,12 +37,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/multistep_filter/content/content_filter_navigation_observer_test_api.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_test_utils.h"
 #include "components/multistep_filter/core/annotation_index/fake_annotation_index_server.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/filter_tab_controller_test_api.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
-#include "components/multistep_filter/core/multistep_filter_service_test_api.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/switches.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -91,11 +94,28 @@ constexpr char kTestAttributeKey2[] = "size";
 constexpr char kTestAttributeValue2[] = "large";
 constexpr char kAllowedDomainsParam[] = "allowed_domains";
 
+FilterTabController* GetTabController(Browser* browser) {
+  tabs::TabInterface* active_tab = browser->tab_strip_model()->GetActiveTab();
+  if (!active_tab) {
+    return nullptr;
+  }
+  ChromeFilterNavigationObserver* chrome_observer =
+      ChromeFilterNavigationObserver::From(active_tab);
+  if (!chrome_observer) {
+    return nullptr;
+  }
+  ContentFilterNavigationObserver* content_observer =
+      test_api(*chrome_observer).GetObserver();
+  if (!content_observer) {
+    return nullptr;
+  }
+  return test_api(*content_observer).GetTabController();
+}
+
 }  // namespace
 
-class MultistepFilterBrowserTest
-    : public InProcessBrowserTest,
-      public MultistepFilterService::ObserverForTest {
+class MultistepFilterBrowserTest : public InProcessBrowserTest,
+                                   public FilterTabController::ObserverForTest {
  public:
   MultistepFilterBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -151,14 +171,16 @@ class MultistepFilterBrowserTest
 
     service_ =
         MultistepFilterServiceFactory::GetForProfile(browser()->profile());
-    if (service_) {
-      test_api(*service_).SetObserverForTest(this);
+    FilterTabController* controller = GetTabController(browser());
+    if (controller) {
+      test_api(*controller).SetObserverForTest(this);
     }
   }
 
   void TearDownOnMainThread() override {
-    if (service_) {
-      test_api(*service_).SetObserverForTest(nullptr);
+    FilterTabController* controller = GetTabController(browser());
+    if (controller) {
+      test_api(*controller).SetObserverForTest(nullptr);
     }
     service_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
@@ -175,11 +197,12 @@ class MultistepFilterBrowserTest
   FakeAnnotationIndexServer& fake_server() { return fake_server_; }
 
   // MultistepFilterService::ObserverForTest:
-  void OnExtractionFinished(std::optional<base::Uuid> annotation_id) override {
+  void OnExtractionFinishedForTest(
+      std::optional<base::Uuid> annotation_id) override {
     extraction_future_.SetValue(annotation_id);
   }
 
-  void OnSuggestionGenerated(
+  void OnSuggestionGeneratedForTest(
       std::optional<UrlFilterSuggestion> suggestion) override {
     suggestion_future_.SetValue(suggestion);
   }
@@ -305,10 +328,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
 
   // Verify data is actually in the store
   base::test::TestFuture<std::vector<FilterAnnotation>> get_future1;
-  test_api(*service_)
-      .filter_store()
-      ->GetAnnotationsForTasksSortedByCreationTimestamp(
-          {kTestTaskType}, get_future1.GetCallback(), 10, base::Time());
+  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
+      {kTestTaskType}, get_future1.GetCallback(), 10, base::Time());
   EXPECT_THAT(get_future1.Get(), testing::SizeIs(1));
 
   // Now clear history!
@@ -326,10 +347,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
 
   // Verify data is GONE from the store
   base::test::TestFuture<std::vector<FilterAnnotation>> get_future2;
-  test_api(*service_)
-      .filter_store()
-      ->GetAnnotationsForTasksSortedByCreationTimestamp(
-          {kTestTaskType}, get_future2.GetCallback(), 10, base::Time());
+  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
+      {kTestTaskType}, get_future2.GetCallback(), 10, base::Time());
   EXPECT_THAT(get_future2.Get(), testing::SizeIs(0));
 }
 
@@ -445,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
 
 class MultistepFilterOptimizationGuideBrowserTest
     : public InProcessBrowserTest,
-      public MultistepFilterService::ObserverForTest {
+      public FilterTabController::ObserverForTest {
  public:
   MultistepFilterOptimizationGuideBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
@@ -495,8 +514,9 @@ class MultistepFilterOptimizationGuideBrowserTest
 
     service_ =
         MultistepFilterServiceFactory::GetForProfile(browser()->profile());
-    if (service_) {
-      test_api(*service_).SetObserverForTest(this);
+    FilterTabController* controller = GetTabController(browser());
+    if (controller) {
+      test_api(*controller).SetObserverForTest(this);
     }
     optimization_guide_decider_ =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -504,8 +524,9 @@ class MultistepFilterOptimizationGuideBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    if (service_) {
-      test_api(*service_).SetObserverForTest(nullptr);
+    FilterTabController* controller = GetTabController(browser());
+    if (controller) {
+      test_api(*controller).SetObserverForTest(nullptr);
     }
     service_ = nullptr;
     optimization_guide_decider_ = nullptr;
@@ -520,12 +541,13 @@ class MultistepFilterOptimizationGuideBrowserTest
   }
 #endif
 
-  // MultistepFilterService::ObserverForTest:
-  void OnExtractionFinished(std::optional<base::Uuid> annotation_id) override {
+  // FilterTabController::ObserverForTest:
+  void OnExtractionFinishedForTest(
+      std::optional<base::Uuid> annotation_id) override {
     extraction_future_.SetValue(annotation_id);
   }
 
-  void OnSuggestionGenerated(
+  void OnSuggestionGeneratedForTest(
       std::optional<UrlFilterSuggestion> suggestion) override {
     suggestion_future_.SetValue(suggestion);
   }
@@ -660,10 +682,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
   EXPECT_TRUE(extraction_future_.Take().has_value());
 
   base::test::TestFuture<std::vector<FilterAnnotation>> get_future1;
-  test_api(*service_)
-      .filter_store()
-      ->GetAnnotationsForTasksSortedByCreationTimestamp(
-          {kTestTaskType}, get_future1.GetCallback(), 10, base::Time());
+  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
+      {kTestTaskType}, get_future1.GetCallback(), 10, base::Time());
   EXPECT_THAT(get_future1.Get(), testing::SizeIs(1));
 
   base::test::TestFuture<void> history_future;
@@ -678,10 +698,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterOptimizationGuideBrowserTest,
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   base::test::TestFuture<std::vector<FilterAnnotation>> get_future2;
-  test_api(*service_)
-      .filter_store()
-      ->GetAnnotationsForTasksSortedByCreationTimestamp(
-          {kTestTaskType}, get_future2.GetCallback(), 10, base::Time());
+  service_->GetFilterStore()->GetAnnotationsForTasksSortedByCreationTimestamp(
+      {kTestTaskType}, get_future2.GetCallback(), 10, base::Time());
   EXPECT_THAT(get_future2.Get(), testing::SizeIs(0));
 }
 

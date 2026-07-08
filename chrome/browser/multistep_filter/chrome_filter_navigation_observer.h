@@ -53,6 +53,7 @@ class ChromeFilterNavigationObserver
   std::unique_ptr<ContentFilterNavigationObserver> observer_;
 
  private:
+  friend class ChromeFilterNavigationObserverTestApi;
   ui::ScopedUnownedUserData<ChromeFilterNavigationObserver>
       scoped_unowned_user_data_;
 };

@@ -143,15 +143,14 @@ void LogSuggestionApplicationOutcome(
 FilterTabController::FilterTabController(
     MultistepFilterService* service,
     MultistepFilterLogRouter* log_router,
-    base::WeakPtr<MultistepFilterUiDelegate> delegate,
+    MultistepFilterUiDelegate* delegate,
     FilterStore* filter_store,
     AnnotationIndexClient* annotation_client)
     : service_(CHECK_DEREF(service)),
       filter_store_(CHECK_DEREF(filter_store)),
       annotation_client_(CHECK_DEREF(annotation_client)),
       log_router_(log_router),
-      delegate_(delegate) {
-  DCHECK(delegate_);
+      delegate_(CHECK_DEREF(delegate)) {
   filter_extractor_ = std::make_unique<FilterExtractor>(
       *annotation_client_, *filter_store_, log_router_);
   filter_suggestion_generator_ = std::make_unique<FilterSuggestionGenerator>(
@@ -162,6 +161,7 @@ FilterTabController::~FilterTabController() = default;
 
 void FilterTabController::OnNavigationFinished(
     const FilterNavigationMetadata& metadata) {
+  per_navigation_weak_ptr_factory.InvalidateWeakPtrs();
   // Set up ScopedClosureRunners to ensure that the test observer is always
   // notified of pipeline completion (with std::nullopt results) even if the
   // navigation is determined to be ineligible and returns early. This is an
@@ -170,16 +170,16 @@ void FilterTabController::OnNavigationFinished(
   // Exception: For same-url reloads (same_url_non_same_document), we explicitly
   // release these runners because we want to preserve any existing suggestion
   // rather than triggering the fallback cleanups.
-  base::ScopedClosureRunner extraction_runner_fallback(
-      base::BindOnce(&FilterTabController::OnExtractionFinished,
-                     weak_ptr_factory_.GetWeakPtr(), metadata, std::nullopt));
-  base::ScopedClosureRunner generation_runner_fallback(
-      base::BindOnce(&FilterTabController::OnSuggestionGenerated,
-                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+  base::ScopedClosureRunner extraction_runner_fallback(base::BindOnce(
+      &FilterTabController::OnExtractionFinished,
+      per_navigation_weak_ptr_factory.GetWeakPtr(), metadata, std::nullopt));
+  base::ScopedClosureRunner generation_runner_fallback(base::BindOnce(
+      &FilterTabController::OnSuggestionGenerated,
+      per_navigation_weak_ptr_factory.GetWeakPtr(), std::nullopt));
 
   bool is_same_page =
       metadata.is_same_document_navigation || metadata.url == metadata.prev_url;
-  if (!is_same_page && delegate_) {
+  if (!is_same_page) {
     LogSuggestionCleared(log_router_, metadata);
     delegate_->ClearSuggestion();
   }
@@ -223,7 +223,7 @@ void FilterTabController::OnNavigationFinished(
   annotation_client_->GetSupportedTasks(
       metadata.url,
       base::BindOnce(&FilterTabController::OnSupportedTasksFetched,
-                     weak_ptr_factory_.GetWeakPtr(), metadata,
+                     per_navigation_weak_ptr_factory.GetWeakPtr(), metadata,
                      std::move(extraction_runner_fallback),
                      std::move(generation_runner_fallback)),
       metadata.navigation_id);
@@ -244,7 +244,7 @@ void FilterTabController::OnSupportedTasksFetched(
   filter_extractor_->ExtractAnnotationFromUrl(
       metadata.url,
       base::BindOnce(&FilterTabController::OnExtractionFinished,
-                     weak_ptr_factory_.GetWeakPtr(), metadata),
+                     per_navigation_weak_ptr_factory.GetWeakPtr(), metadata),
       metadata.navigation_id);
   std::ignore = extraction_runner_fallback.Release();
 
@@ -258,16 +258,14 @@ void FilterTabController::OnSupportedTasksFetched(
   filter_suggestion_generator_->GenerateSuggestion(
       metadata.url, supported_task_types,
       base::BindOnce(&FilterTabController::OnSuggestionGenerated,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     per_navigation_weak_ptr_factory.GetWeakPtr()),
       metadata.navigation_id);
   std::ignore = generation_runner_fallback.Release();
 }
 
 void FilterTabController::OnSuggestionGenerated(
     std::optional<UrlFilterSuggestion> suggestion) {
-  if (delegate_) {
-    delegate_->OnSuggestionGenerated(suggestion);
-  }
+  delegate_->OnSuggestionGenerated(suggestion);
   if (observer_for_test_) {
     observer_for_test_->OnSuggestionGeneratedForTest(suggestion);  // IN-TEST
   }
