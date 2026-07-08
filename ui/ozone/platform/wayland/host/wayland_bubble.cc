@@ -34,8 +34,15 @@ void WaylandBubble::Show(bool inactive) {
     return;
   }
 
+  auto weak_this = AsWeakPtr();
   UpdateWindowScale(false);
+  if (!weak_this) {
+    return;
+  }
   AddToParentAsSubsurface();
+  if (!weak_this) {
+    return;
+  }
   WaylandWindow::Show(inactive);
 }
 
@@ -96,7 +103,11 @@ void WaylandBubble::Deactivate() {
 }
 
 void WaylandBubble::UpdateWindowScale(bool update_bounds) {
+  auto weak_this = AsWeakPtr();
   WaylandWindow::UpdateWindowScale(update_bounds);
+  if (!weak_this) {
+    return;
+  }
   if (subsurface_) {
     SetSubsurfacePosition();
   }
@@ -131,7 +142,11 @@ void WaylandBubble::AddToParentAsSubsurface() {
   CHECK(parent_window());
 
   // We need to make sure that window scale matches the parent window.
+  auto weak_this = AsWeakPtr();
   UpdateWindowScale(true);
+  if (!weak_this) {
+    return;
+  }
 
   subsurface_ =
       root_surface()->CreateSubsurface(parent_window()->root_surface());

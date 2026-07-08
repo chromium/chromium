@@ -510,7 +510,11 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   // xdg_toplevel::activated is a paint-only hint, separate from input
   // activation which is driven by keyboard focus in UpdateActivationState.
   if (prev_xdg_active != is_xdg_active_) {
+    auto weak_this = AsWeakPtr();
     delegate()->OnPaintAsActiveChanged(is_xdg_active_);
+    if (!weak_this) {
+      return;
+    }
   }
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
@@ -525,7 +529,11 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   if (window_states.tiled_edges != applied_state().tiled_edges) {
     // This configure changes the decoration insets.  We should adjust the
     // bounds appropriately.
+    auto weak_this = AsWeakPtr();
     delegate()->OnWindowTiledStateChanged(window_states.tiled_edges);
+    if (!weak_this) {
+      return;
+    }
   }
 
   pending_configure_state_.tiled_edges = window_states.tiled_edges;
@@ -871,7 +879,11 @@ void WaylandToplevelWindow::TriggerStateChanges(
   // TODO(crbug.com/40276379): Remove this once this is async.
   auto previous_state = applied_state().window_state;
   ForceApplyWindowStateDoNotUse(window_state);
+  auto weak_this = AsWeakPtr();
   delegate()->OnWindowStateChanged(previous_state, window_state);
+  if (!weak_this) {
+    return;
+  }
   connection()->Flush();
 }
 
