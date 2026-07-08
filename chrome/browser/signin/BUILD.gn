@@ -587,8 +587,25 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = []
-    deps = []
+    sources = [ "remove_local_account_browsertest.cc" ]
+    deps = [
+      ":signin",
+      ":test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
+      "//google_apis",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    if (is_mac || is_win || is_linux) {
+      sources += [ "signin_hats_util_browsertest.cc" ]
+      deps += [ "//chrome/browser/ui/hats:test_support" ]
+    }
 
     if (enable_dice_support) {
       sources += [
