@@ -31,7 +31,7 @@ class CastContextualMenuBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     // Pin the Cast icon to the toolbar.
-    PinnedToolbarActionsModel::Get(browser()->profile())
+    PinnedToolbarActionsModel::Get(browser()->GetProfile())
         ->UpdatePinnedState(kActionRouteMedia, true);
   }
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
   EXPECT_TRUE(std::ranges::contains(model_actions,
                                     kActionMediaToolbarContextReportCastIssue));
 
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
 
   PinnedActionToolbarButtonMenuModel incognito_menu(incognito_browser,
                                                     kActionRouteMedia);
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, ToggleMediaRemotingItem) {
 
 IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
                        PinUnpinItemRespectsPolicyPref) {
-  PinnedToolbarActionsModel::Get(browser()->profile())
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
       ->UpdatePinnedState(kActionRouteMedia, false);
   // Set cast to be pinned based on policy.
   policy::PolicyMap policy_map;

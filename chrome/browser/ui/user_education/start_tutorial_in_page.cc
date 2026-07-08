@@ -78,7 +78,7 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
     if (browser_) {
       UserEducationService* const service =
           UserEducationServiceFactory::GetForBrowserContext(
-              browser_->profile());
+              browser_->GetProfile());
       if (service) {
         return &service->tutorial_service();
       }

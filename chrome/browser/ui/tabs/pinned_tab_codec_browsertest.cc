@@ -29,10 +29,10 @@ IN_PROC_BROWSER_TEST_F(PinnedTabCodecBrowserTest, NoPinnedTabs) {
       browser(), url1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  PinnedTabCodec::WritePinnedTabs(browser()->profile());
+  PinnedTabCodec::WritePinnedTabs(browser()->GetProfile());
 
   std::string result = PinnedTabTestUtils::TabsToString(
-      PinnedTabCodec::ReadPinnedTabs(browser()->profile()));
+      PinnedTabCodec::ReadPinnedTabs(browser()->GetProfile()));
   EXPECT_EQ("", result);
 }
 
@@ -54,24 +54,24 @@ IN_PROC_BROWSER_TEST_F(PinnedTabCodecBrowserTest, PinnedAndNonPinned) {
 
   browser()->tab_strip_model()->SetTabPinned(0, true);
 
-  PinnedTabCodec::WritePinnedTabs(browser()->profile());
+  PinnedTabCodec::WritePinnedTabs(browser()->GetProfile());
 
   StartupTabs pinned_tabs =
-      PinnedTabCodec::ReadPinnedTabs(browser()->profile());
+      PinnedTabCodec::ReadPinnedTabs(browser()->GetProfile());
   std::string result = PinnedTabTestUtils::TabsToString(pinned_tabs);
   EXPECT_EQ("https://www.google.com/:pinned", result);
 
   // Update pinned tabs and restore back the old value directly.
   browser()->tab_strip_model()->SetTabPinned(1, true);
 
-  PinnedTabCodec::WritePinnedTabs(browser()->profile());
+  PinnedTabCodec::WritePinnedTabs(browser()->GetProfile());
   result = PinnedTabTestUtils::TabsToString(
-      PinnedTabCodec::ReadPinnedTabs(browser()->profile()));
+      PinnedTabCodec::ReadPinnedTabs(browser()->GetProfile()));
   EXPECT_EQ("https://www.google.com/:pinned https://www.google.com/2:pinned",
             result);
 
-  PinnedTabCodec::WritePinnedTabs(browser()->profile(), pinned_tabs);
+  PinnedTabCodec::WritePinnedTabs(browser()->GetProfile(), pinned_tabs);
   result = PinnedTabTestUtils::TabsToString(
-      PinnedTabCodec::ReadPinnedTabs(browser()->profile()));
+      PinnedTabCodec::ReadPinnedTabs(browser()->GetProfile()));
   EXPECT_EQ("https://www.google.com/:pinned", result);
 }

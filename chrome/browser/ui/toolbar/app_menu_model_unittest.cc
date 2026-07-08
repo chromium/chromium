@@ -117,9 +117,10 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    safety_hub_test_util::CreateRevokedPermissionsService(browser()->profile());
+    safety_hub_test_util::CreateRevokedPermissionsService(
+        browser()->GetProfile());
     safety_hub_test_util::CreateNotificationPermissionsReviewService(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   AppMenuModelTest(const AppMenuModelTest&) = delete;
@@ -191,7 +192,7 @@ TEST_F(AppMenuModelTest, Basics) {
   EXPECT_TRUE(detector->notify_upgrade());
 
   FakeIconDelegate fake_delegate;
-  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
                                                  &fake_delegate);
   TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
   model.Init();
@@ -251,7 +252,7 @@ TEST_F(AppMenuModelTest, Basics) {
 TEST_F(AppMenuModelTest, GlobalError) {
   // Make sure services required for tests are initialized.
   GlobalErrorService* service =
-      GlobalErrorServiceFactory::GetForProfile(browser()->profile());
+      GlobalErrorServiceFactory::GetForProfile(browser()->GetProfile());
   const int command1 = 1234567;
   MenuError* error1 = new MenuError(command1);
   service->AddGlobalError(base::WrapUnique(error1));
@@ -281,7 +282,7 @@ TEST_F(AppMenuModelTest, GlobalError) {
 TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   FakeIconDelegate fake_delegate;
-  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
                                                  &fake_delegate);
   TestAppMenuModel model(this, browser(), &app_menu_icon_controller);
   model.Init();
@@ -352,13 +353,14 @@ TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
   ASSERT_NE(submenu, nullptr);
 
   size_t expected_item_count = 7;
-  if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile()) ||
-      sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+  if (!sharing_hub::SharingIsDisabledByPolicy(browser()->GetProfile()) ||
+      sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->GetProfile())) {
     expected_item_count += 2;
-    if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile())) {
+    if (!sharing_hub::SharingIsDisabledByPolicy(browser()->GetProfile())) {
       expected_item_count += 3;
     }
-    if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+    if (sharing_hub::DesktopScreenshotsFeatureEnabled(
+            browser()->GetProfile())) {
       expected_item_count += 1;
     }
   }
@@ -549,7 +551,7 @@ TEST_F(AppMenuModelTest, YourSavedInfoSubmenusDisabled) {
 
 TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                       signin::ConsentLevel::kSync);
   signin::SetRefreshTokenForPrimaryAccount(identity_manager);
@@ -662,7 +664,7 @@ class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
 TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
   base::HistogramTester histogram_tester;
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                       signin::ConsentLevel::kSignin);
   AppMenuModel model(this, browser());
@@ -714,7 +716,7 @@ TEST_F(AppMenuModelTest,
   syncer::TestSyncService* test_sync_service =
       static_cast<syncer::TestSyncService*>(
           SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              browser()->profile(),
+              browser()->GetProfile(),
               base::BindRepeating([](content::BrowserContext* context)
                                       -> std::unique_ptr<KeyedService> {
                 return std::make_unique<syncer::TestSyncService>();
@@ -722,7 +724,7 @@ TEST_F(AppMenuModelTest,
   test_sync_service->SetBookmarksLimitExceeded(true);
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                       signin::ConsentLevel::kSync);
 
@@ -752,7 +754,7 @@ TEST_F(AppMenuModelTest,
   syncer::TestSyncService* test_sync_service =
       static_cast<syncer::TestSyncService*>(
           SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              browser()->profile(),
+              browser()->GetProfile(),
               base::BindRepeating([](content::BrowserContext* context)
                                       -> std::unique_ptr<KeyedService> {
                 return std::make_unique<syncer::TestSyncService>();
@@ -760,7 +762,7 @@ TEST_F(AppMenuModelTest,
   test_sync_service->SetBookmarksLimitExceeded(true);
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                       signin::ConsentLevel::kSignin);
 

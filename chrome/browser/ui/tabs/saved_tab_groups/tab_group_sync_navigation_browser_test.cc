@@ -125,7 +125,7 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
   content::WebContents* AddTabToBrowser(int index) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
+            content::WebContents::CreateParams(browser()->GetProfile()));
 
     content::WebContents* web_contents_ptr = web_contents.get();
 
@@ -137,7 +137,7 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
   }
 
   TabGroupSyncService* service() {
-    return TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+    return TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   void Wait() { sync_bridge_model_observer_.WaitForPostedTasks(); }

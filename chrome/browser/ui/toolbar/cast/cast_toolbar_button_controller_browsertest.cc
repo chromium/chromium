@@ -37,7 +37,7 @@ class CastToolbarButtonControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
     controller_ = std::make_unique<CastToolbarButtonController>(
-        browser()->profile(), router_.get());
+        browser()->GetProfile(), router_.get());
 
     local_mirroring_route_ = MediaRoute("routeId1", mirroring_source_,
                                         "sinkId1", "description", true);
@@ -80,7 +80,7 @@ class CastToolbarButtonControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    PinnedToolbarActionsModel::Get(browser()->profile())
+    PinnedToolbarActionsModel::Get(browser()->GetProfile())
         ->UpdatePinnedState(kActionRouteMedia, always_show);
   }
 

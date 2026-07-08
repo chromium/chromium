@@ -74,7 +74,7 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
         kShowBookmarkBarMenuItem);
   } else {
     AddItemWithStringId(IDC_SHOW_BOOKMARK_BAR,
-                        browser->profile()->GetPrefs()->GetBoolean(
+                        browser->GetProfile()->GetPrefs()->GetBoolean(
                             bookmarks::prefs::kShowBookmarkBar)
                             ? IDS_HIDE_BOOKMARK_BAR
                             : IDS_SHOW_BOOKMARK_BAR);

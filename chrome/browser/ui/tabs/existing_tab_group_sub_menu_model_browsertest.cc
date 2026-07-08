@@ -38,9 +38,10 @@ namespace {
 std::unique_ptr<TabMenuModelDelegate> CreateTabMenuModelDelegate(
     Browser* browser) {
   tab_groups::TabGroupSyncService* tgss =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
   return std::make_unique<chrome::BrowserTabMenuModelDelegate>(
-      browser->session_id(), browser->profile(),
+      browser->session_id(), browser->GetProfile(),
       web_app::AppBrowserController::From(browser), tgss);
 }
 
@@ -164,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
 // Verify tabs can be added to tab groups in other browser windows.
 IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
                        AddAllSelectedTabsToAnotherWindow) {
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  Browser* new_browser = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_NORMAL, browser()->GetProfile(), true));
   new_browser->GetWindow()->Show();
 
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
@@ -234,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
 
 IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
                        ShouldShowExistingTabGroups) {
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  Browser* new_browser = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_NORMAL, browser()->GetProfile(), true));
   new_browser->GetWindow()->Show();
 
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
@@ -316,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
   EXPECT_EQ(model_1->count(), 3);
 
   // Window 2: 5 tabs, 3 pinned; tabs 0, 2, and 4 are selected.
-  Browser* browser_2 = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  Browser* browser_2 = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_NORMAL, browser()->GetProfile(), true));
 
   chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
                    /*foreground=*/true);
@@ -379,7 +380,7 @@ class ExistingTabGroupSubMenuModelClosedSavedGroupsTest
 
   tab_groups::TabGroupSyncService* tab_group_sync_service() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }

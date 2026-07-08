@@ -158,13 +158,13 @@ RecentTabsSubMenuModel::RecentTabsSubMenuModel(
       browser_(browser),
       session_sync_service_(
           SessionSyncServiceFactory::GetInstance()->GetForProfile(
-              browser->profile())),
+              browser->GetProfile())),
       next_menu_id_(kFirstMenuEntryCommandId) {
   // Invoke asynchronous call to load tabs from local last session, which does
   // nothing if the tabs have already been loaded or they shouldn't be loaded.
   // TabRestoreServiceChanged() will be called after the tabs are loaded.
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+      TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
   if (service) {
     service->LoadTabsFromLastSession();
     tab_restore_service_observation_.Observe(service);
@@ -190,7 +190,7 @@ RecentTabsSubMenuModel::RecentTabsSubMenuModel(
   }
 
   // Register for preference changes
-  pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+  pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSavingBrowserHistoryDisabled,
       base::BindRepeating(
@@ -199,7 +199,7 @@ RecentTabsSubMenuModel::RecentTabsSubMenuModel(
 }
 
 bool RecentTabsSubMenuModel::ShouldShowRecentTabEntries() const {
-  return !browser_->profile()->GetPrefs()->GetBoolean(
+  return !browser_->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSavingBrowserHistoryDisabled);
 }
 
@@ -297,12 +297,13 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
     return false;
   }
   if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL &&
-      !HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+      !HistoryClustersSidePanelCoordinator::IsSupported(
+          browser_->GetProfile())) {
     return false;
   }
   if (command_id == IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL &&
       !TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
-          browser_->profile())) {
+          browser_->GetProfile())) {
     return false;
   }
   if (log_menu_metrics_callback_) {
@@ -325,7 +326,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   DCHECK_NE(kRecentTabsNoDeviceTabsId, command_id);
 
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+      TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
   CHECK(service);
   sessions::LiveTabContext* context =
       browser_->GetFeatures().live_tab_context();
@@ -418,7 +419,8 @@ void RecentTabsSubMenuModel::Build() {
                      ? vector_icons::kHistoryIcon
                      : vector_icons::kHistoryChromeRefreshOldIcon);
   if (browser_->GetFeatures().side_panel_ui()) {
-    if (HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+    if (HistoryClustersSidePanelCoordinator::IsSupported(
+            browser_->GetProfile())) {
       InsertItemWithStringIdAt(next_command_id++,
                                IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                                IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
@@ -428,7 +430,7 @@ void RecentTabsSubMenuModel::Build() {
                          : vector_icons::kHistoryChromeRefreshOldIcon);
     }
     if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
-            browser_->profile())) {
+            browser_->GetProfile())) {
       InsertItemWithStringIdAt(next_command_id++,
                                IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
                                IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES);
@@ -463,7 +465,7 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
   // from Constructor(), inserting when local entries change subsequently i.e.
   // invoked from TabRestoreServiceChanged().
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+      TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
 
   if (!service || service->entries().empty()) {
     // This is to show a disabled restore tab entry with the accelerator to
@@ -518,7 +520,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(browser_->profile());
+        SyncServiceFactory::GetForProfile(browser_->GetProfile());
     if (!sync_service) {
       return;
     }
@@ -530,7 +532,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     }
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_->profile());
+        IdentityManagerFactory::GetForProfile(browser_->GetProfile());
     switch (signin_util::GetSignedInState(identity_manager)) {
       case signin_util::SignedInState::kSignedIn:
       case signin_util::SignedInState::kSignInPending:
@@ -1016,7 +1018,7 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
     // Request only from local storage to avoid leaking user data.
     favicon::FaviconService* favicon_service =
         FaviconServiceFactory::GetForProfile(
-            browser_->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+            browser_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
     // Can be null for tests.
     if (!favicon_service) {
       return;
@@ -1030,7 +1032,7 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
     favicon::HistoryUiFaviconRequestHandler*
         history_ui_favicon_request_handler =
             HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(
-                browser_->profile());
+                browser_->GetProfile());
     // Can be null for tests.
     if (!history_ui_favicon_request_handler) {
       return;

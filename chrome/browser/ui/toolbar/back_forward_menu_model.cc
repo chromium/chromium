@@ -447,7 +447,7 @@ void BackForwardMenuModel::FetchFavicon(NavigationEntry* entry) {
 
   requested_favicons_.insert(entry->GetUniqueID());
   favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(browser_->profile(),
+      FaviconServiceFactory::GetForProfile(browser_->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (!favicon_service) {
     return;
@@ -708,5 +708,5 @@ std::string BackForwardMenuModel::BuildActionName(
 }
 
 bool BackForwardMenuModel::ShouldShowFullHistoryBeVisible() const {
-  return !browser_->profile()->IsOffTheRecord();
+  return !browser_->GetProfile()->IsOffTheRecord();
 }

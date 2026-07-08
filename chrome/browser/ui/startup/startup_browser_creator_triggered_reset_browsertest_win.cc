@@ -178,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
-  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
+  launch.Launch(browser()->GetProfile(),
+                chrome::startup::IsProcessStartup::kYes,
                 /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
@@ -198,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
                        TestMultiProfile) {
   SessionStartupPref pref(SessionStartupPref::DEFAULT);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   // Keep the browser process running while browsers are closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
@@ -216,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
-    launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
+    launch.Launch(browser()->GetProfile(),
+                  chrome::startup::IsProcessStartup::kNo,
                   /*restore_tabbed_browser=*/true);
   }
 

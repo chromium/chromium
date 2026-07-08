@@ -302,7 +302,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   // |browser|. While we may not end up actually using |browser| (since it
   // could be a popup window), we can at least use the profile.
   if (!profile_ && browser) {
-    profile_ = browser->profile();
+    profile_ = browser->GetProfile();
   }
 
   if (!browser || !browser->is_type_normal()) {

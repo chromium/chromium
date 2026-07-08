@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
 
         // Restore recently closed window.
         ui_test_utils::BrowserCreatedObserver browser_created_observer;
-        chrome::OpenWindowWithRestoredTabs(browser()->profile());
+        chrome::OpenWindowWithRestoredTabs(browser()->GetProfile());
         set_target_browser(browser_created_observer.Wait());
       }),
       CheckTabCountInBrowser(4), CheckActiveTabInBrowser(3),

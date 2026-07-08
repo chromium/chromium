@@ -43,12 +43,12 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelStateControllerBrowserTest,
 
   // Disable Glic capability. Displaying Gemini chats should no longer be
   // allowed.
-  glic::SetGlicCapability(browser()->profile(), false);
+  glic::SetGlicCapability(browser()->GetProfile(), false);
   EXPECT_FALSE(controller()->CanShowGeminiThreads());
   EXPECT_EQ(1, call_count);
 
   // Enable Glic capability. Displaying Gemini chats should be allowed again.
-  glic::SetGlicCapability(browser()->profile(), true);
+  glic::SetGlicCapability(browser()->GetProfile(), true);
   EXPECT_TRUE(controller()->CanShowGeminiThreads());
   EXPECT_EQ(2, call_count);
 }

@@ -99,8 +99,8 @@ class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    model_ =
-        PinnedToolbarActionsModelFactory::GetForProfile(browser()->profile());
+    model_ = PinnedToolbarActionsModelFactory::GetForProfile(
+        browser()->GetProfile());
     model_observer_ =
         std::make_unique<PinnedToolbarActionsModelTestObserver>(model_);
   }
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify it is pinned now.
   EXPECT_TRUE(model()->Contains(kActionSidePanelShowTabsFromOtherDevices));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kTabsFromOtherDevicesAutoPinnedMigration));
 
   // Simulate the user un-pinning the action.

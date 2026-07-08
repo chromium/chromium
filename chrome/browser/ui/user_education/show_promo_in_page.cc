@@ -108,9 +108,9 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
     // opened in another window. It's an edge case but an important one since a
     // HelpBubbleFactoryRegistry is needed to create the help bubble.
     if (browser_) {
-      auto& factory =
-          UserEducationServiceFactory::GetForBrowserContext(browser_->profile())
-              ->help_bubble_factory_registry();
+      auto& factory = UserEducationServiceFactory::GetForBrowserContext(
+                          browser_->GetProfile())
+                          ->help_bubble_factory_registry();
       help_bubble_ =
           factory.CreateHelpBubble(anchor_element, std::move(bubble_params_));
       DCHECK(help_bubble_);

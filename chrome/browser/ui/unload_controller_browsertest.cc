@@ -118,7 +118,7 @@ class UnloadControllerWithOnTaskTest : public InProcessBrowserTest {
  protected:
   webapps::AppId InstallMockApp() {
     return web_app::test::InstallDummyWebApp(
-        browser()->profile(), /*app_name=*/"Mock app",
+        browser()->GetProfile(), /*app_name=*/"Mock app",
         /*app_url=*/GURL("https://www.example.com/"));
   }
 };
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(true);
 
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(false);
 

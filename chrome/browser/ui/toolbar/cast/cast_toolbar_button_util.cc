@@ -77,7 +77,7 @@ void CastToolbarButtonUtil::AddCastChildActions(
           base::BindRepeating(
               [](Browser* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                PrefService* pref_service = browser->profile()->GetPrefs();
+                PrefService* pref_service = browser->GetProfile()->GetPrefs();
                 bool checked = !pref_service->GetBoolean(
                     media_router::prefs::kMediaRouterMediaRemotingEnabled);
                 pref_service->SetBoolean(
@@ -88,7 +88,7 @@ void CastToolbarButtonUtil::AddCastChildActions(
           .SetActionId(kActionMediaRouterToggleMediaRemoting)
           .SetText(
               l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING))
-          .SetChecked(browser->profile()->GetPrefs()->GetBoolean(
+          .SetChecked(browser->GetProfile()->GetPrefs()->GetBoolean(
               media_router::prefs::kMediaRouterMediaRemotingEnabled))
           .Build());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

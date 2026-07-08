@@ -1534,7 +1534,7 @@ void StartupBrowserCreator::OpenStartupPages(
       base::FilePath(), command_line, is_first_run);
   SessionStartupPref session_startup_pref =
       StartupBrowserCreator::GetSessionStartupPref(command_line,
-                                                   browser->profile());
+                                                   browser->GetProfile());
   startup_browser_creator_impl.OpenURLsInBrowser(browser, process_startup,
                                                  session_startup_pref.urls);
 }

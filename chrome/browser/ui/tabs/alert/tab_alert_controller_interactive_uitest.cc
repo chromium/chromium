@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
   }
 #endif
 
-  Browser* const browser2 = CreateBrowser(browser()->profile());
+  Browser* const browser2 = CreateBrowser(browser()->GetProfile());
   RunTestSequence(
       LoadStartingPage(kFirstTabId, 0, browser()),
       LoadStartingPage(kSecondTabId, 0, browser2),
@@ -144,15 +144,15 @@ IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
       LoadStartingPage(kFirstTabId, 0, browser()),
       ObserveState(kTab1AlertState, browser(), 0), Do([this]() {
         TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
-        CHECK(glic::GlicKeyedService::Get(browser()->profile()));
-        glic::GlicKeyedService::Get(browser()->profile())
+        CHECK(glic::GlicKeyedService::Get(browser()->GetProfile()));
+        glic::GlicKeyedService::Get(browser()->GetProfile())
             ->active_instance_sharing_manager()
             .PinTabs({tab_strip_model->GetTabAtIndex(0)->GetHandle()});
       }),
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicSharing)),
       Do([this]() {
-        glic::GlicKeyedService::Get(browser()->profile())
+        glic::GlicKeyedService::Get(browser()->GetProfile())
             ->active_instance_sharing_manager()
             .UnpinAllTabs();
       }),

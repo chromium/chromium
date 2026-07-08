@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
 // activation instead.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
   // 1. Create a second browser window and activate it.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   std::unique_ptr<views::Widget> widget;
 

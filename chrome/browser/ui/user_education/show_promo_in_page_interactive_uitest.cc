@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageUiTest, ShowPromoInNewPage) {
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageUiTest, ShowPromoInNewWindow) {
   const GURL url(chrome::kChromeUIUserEducationInternalsURL);
-  Browser* const other = CreateBrowser(browser()->profile());
+  Browser* const other = CreateBrowser(browser()->GetProfile());
   RunTestSequence(SetOnIncompatibleAction(
                       OnIncompatibleAction::kIgnoreAndContinue,
                       "Window activation is iffy on Linux with Wayland."),

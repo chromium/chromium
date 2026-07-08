@@ -319,7 +319,7 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
                                            data_sharing::FlowType::kManage);
     collaboration::CollaborationService* service =
         collaboration::CollaborationServiceFactory::GetForProfile(
-            browser->profile());
+            browser->GetProfile());
     std::unique_ptr<CollaborationControllerDelegateDesktop> delegate =
         std::make_unique<CollaborationControllerDelegateDesktop>(browser);
     service->StartShareOrManageFlow(

@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, Popup) {
   tab_strip_model->SetTabPinned(0, true);
 
   // Create a popup browser.
-  Browser* popup_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  Browser* popup_browser = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_POPUP, browser()->GetProfile(), true));
   ASSERT_TRUE(popup_browser->is_type_popup());
 
   // Close the browser. This should trigger saving the tabs. No need to destroy

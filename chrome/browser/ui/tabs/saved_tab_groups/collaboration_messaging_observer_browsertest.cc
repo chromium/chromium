@@ -147,7 +147,7 @@ class CollaborationMessagingObserverBrowserTest
   CollaborationMessagingObserver* observer() {
     // All browsers in these tests share the same profile.
     return CollaborationMessagingObserverFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   TabStripRegionView* GetTabStripView(Browser* target_browser) {
@@ -192,7 +192,7 @@ class CollaborationMessagingObserverBrowserTest
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+                browser()->GetProfile()));
     observer->Wait();
   }
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
 
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
   tab_groups::TabGroupSyncService* tab_group_service =
-      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+      TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   tab_group_service->MakeTabGroupSharedForTesting(
       group_id, syncer::CollaborationId("fake_collaboration_id"));
   base::MockCallback<SuccessCallback> cb;
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   AddTab(browser());
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
   tab_groups::TabGroupSyncService* tab_group_service =
-      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+      TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   auto sync_tab_group_id = tab_group_service->GetGroup(group_id)->saved_guid();
   tab_group_service->MakeTabGroupSharedForTesting(
       group_id, syncer::CollaborationId("fake_collaboration_id"));

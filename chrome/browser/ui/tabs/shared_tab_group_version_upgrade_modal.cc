@@ -111,7 +111,8 @@ void MaybeShowSharedTabGroupVersionOutOfDateModal(Browser* browser) {
   }
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
   if (!tab_group_sync_service) {
     return;
   }
@@ -136,7 +137,8 @@ void MaybeShowSharedTabGroupVersionUpToDateToast(Browser* browser) {
   }
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile());
   if (!tab_group_sync_service) {
     return;
   }

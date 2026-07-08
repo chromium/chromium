@@ -138,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerGlicDisabledInteractiveUiTest,
       browser()->tab_strip_model()->GetWebContentsAt(0);
 
   glic::GlicKeyedService* service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          browser()->GetProfile());
   ASSERT_TRUE(service);
   service->SetContextAccessIndicator(true);
 

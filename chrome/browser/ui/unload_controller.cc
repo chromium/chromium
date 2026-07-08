@@ -304,7 +304,7 @@ bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
   // be doing any work if it's removed.
   GURL url = contents->GetLastCommittedURL();
   if (url.SchemeIs(extensions::kExtensionScheme) &&
-      !extensions::ExtensionRegistry::Get(browser_->profile())
+      !extensions::ExtensionRegistry::Get(browser_->GetProfile())
            ->enabled_extensions()
            .GetExtensionOrAppByURL(url)) {
     return false;

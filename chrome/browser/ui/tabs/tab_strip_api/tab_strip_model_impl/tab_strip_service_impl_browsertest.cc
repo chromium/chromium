@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, GetAllTabsForProfile) {
   tab_strip_service_->AcceptExperimental(
       experiment_remote.BindNewPipeAndPassReceiver());
 
-  CreateBrowser(browser()->profile());
+  CreateBrowser(browser()->GetProfile());
 
   base::RunLoop run_loop;
   experiment_remote->GetAllTabsForProfile(base::BindLambdaForTesting(

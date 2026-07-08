@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(TabAttachmentTrackerBrowserTest,
   EXPECT_EQ(tracker->attachment_count(), 1);
 
   // 2. Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(browser2);
 
   // 3. Move the tab from the first browser to the second browser.
