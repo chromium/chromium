@@ -11,7 +11,7 @@
 
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 
 namespace content {
 namespace webid {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/common/webid/identity_url_loader_throttle.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/common/features.h"
@@ -13,7 +14,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/origin.h"
 
 using blink::mojom::IdpSigninStatus;

@@ -206,7 +206,7 @@
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/blink/public/mojom/webrtc/rtc_logging.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"

@@ -55,7 +55,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"

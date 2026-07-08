@@ -185,7 +185,7 @@
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"

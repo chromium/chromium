@@ -20,7 +20,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace content {

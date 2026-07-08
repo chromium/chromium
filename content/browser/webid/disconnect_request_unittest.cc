@@ -25,7 +25,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

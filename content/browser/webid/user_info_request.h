@@ -16,7 +16,7 @@
 #include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

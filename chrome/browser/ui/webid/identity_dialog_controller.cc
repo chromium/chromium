@@ -28,7 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
 
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.

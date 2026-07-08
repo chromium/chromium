@@ -13,7 +13,7 @@
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"

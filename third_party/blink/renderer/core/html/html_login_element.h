@@ -8,7 +8,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"

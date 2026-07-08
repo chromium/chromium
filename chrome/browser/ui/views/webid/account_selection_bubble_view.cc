@@ -28,7 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"

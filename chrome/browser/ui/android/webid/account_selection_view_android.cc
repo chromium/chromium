@@ -17,7 +17,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"

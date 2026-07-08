@@ -28,7 +28,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content::webid {

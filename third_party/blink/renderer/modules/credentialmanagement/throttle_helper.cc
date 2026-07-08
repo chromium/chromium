@@ -5,7 +5,7 @@
 #include "third_party/blink/public/web/modules/credentialmanagement/throttle_helper.h"
 
 #include "base/functional/callback_helpers.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"

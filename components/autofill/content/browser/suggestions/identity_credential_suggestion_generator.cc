@@ -16,7 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {

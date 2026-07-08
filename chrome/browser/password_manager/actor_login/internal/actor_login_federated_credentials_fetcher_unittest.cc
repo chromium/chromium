@@ -23,7 +23,7 @@
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"

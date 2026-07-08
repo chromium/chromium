@@ -24,7 +24,7 @@
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
 

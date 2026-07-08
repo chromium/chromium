@@ -21,7 +21,7 @@
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

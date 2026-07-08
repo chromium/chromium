@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

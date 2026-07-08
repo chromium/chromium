@@ -17,7 +17,7 @@
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 
 namespace content {
 

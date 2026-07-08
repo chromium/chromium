@@ -25,7 +25,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/origin.h"
 
 namespace content::webid {

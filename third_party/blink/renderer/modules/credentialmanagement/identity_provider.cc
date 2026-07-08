@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_provider.h"
 
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

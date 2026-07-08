@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "crypto/keypair.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -37,8 +37,8 @@
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

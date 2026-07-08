@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

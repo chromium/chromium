@@ -28,7 +28,7 @@ Here is the basic process in Chromium for a FedCM request:
         identifies an OAuth request being passed over a top-level navigation.
 
 1. Renderer process passes this request to the browser process via the
-   [`federated_auth_request.mojo`](../../../third_party/blink/public/mojom/webid/federated_auth_request.mojom)
+   [`federated_auth_request.mojo`](../../../third_party/blink/public/mojom/webid/federated_request.mojom)
    mojo interface.
 1. Browser process handles the requests. This handling often requires multiple fetch requests to the
    IDP and showing appropriate UI (e.g., account chooser, permission dialog) to the user. Most of

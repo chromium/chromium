@@ -11,7 +11,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
 class RenderFrameHost;

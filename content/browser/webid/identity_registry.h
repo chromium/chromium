@@ -7,7 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {

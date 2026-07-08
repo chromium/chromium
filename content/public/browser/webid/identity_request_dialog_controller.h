@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/identity_request_account.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 #include "url/origin.h"

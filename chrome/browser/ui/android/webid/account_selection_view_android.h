@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =

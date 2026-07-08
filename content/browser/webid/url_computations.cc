@@ -14,7 +14,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
 namespace webid {

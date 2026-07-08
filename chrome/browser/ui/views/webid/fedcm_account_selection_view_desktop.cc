@@ -42,7 +42,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_ui_types.h"
