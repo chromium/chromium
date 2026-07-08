@@ -95,7 +95,8 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPersonalContextLogNonEligibilityUma};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   testing::NiceMock<account_settings::MockAccountSettingService>
       mock_account_settings_service_;

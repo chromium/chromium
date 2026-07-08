@@ -242,7 +242,9 @@ void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
         &PersonalContextEnablementService::Observer::OnEnablementStateChanged,
         enablement_state_);
   }
-  if (non_eligibility_reason != last_non_eligibility_reason_) {
+  if (base::FeatureList::IsEnabled(
+          personal_context::features::kPersonalContextLogNonEligibilityUma) &&
+      non_eligibility_reason != last_non_eligibility_reason_) {
     last_non_eligibility_reason_ = non_eligibility_reason;
     MaybeLogPersonalContextNonEligibility(non_eligibility_reason);
   }

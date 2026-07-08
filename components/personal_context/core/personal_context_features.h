@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kPersonalContextFirstRunOptIn);
 // Returns true if the opt-in flow for the first run experience is enabled.
 bool IsPersonalContextFirstRunOptInEnabled();
 
+// Controls whether the Personal Context non-eligibility UMA metric is logged.
+BASE_DECLARE_FEATURE(kPersonalContextLogNonEligibilityUma);
+
 }  // namespace personal_context::features
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FEATURES_H_
