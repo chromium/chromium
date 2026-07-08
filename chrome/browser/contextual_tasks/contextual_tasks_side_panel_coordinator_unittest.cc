@@ -317,6 +317,29 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kOther,
+            coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::
+                         DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kLensOverlay,
+            coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(
+      false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kOther,
+            coordinator_->GetActiveEntrySource());
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
   ContextualTask task(base::Uuid::GenerateRandomV4());
   ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
