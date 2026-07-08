@@ -49,14 +49,13 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
       const std::vector<int64_t>& ids,
       DeleteMemoryBankEntriesCallback callback) override;
   void GetTabs(GetTabsCallback callback) override;
+  void RetrieveAndGroupTabs(RetrieveAndGroupTabsCallback callback) override;
   void SwitchToTab(int32_t tab_id) override;
-  void ClusterTabs(ClusterTabsCallback callback) override;
 
  private:
   void OnAutoTodosGenerated(
       GenerateAutoTodosCallback callback,
       std::optional<personal_context::proto::AutoTodosResponse> result);
-  std::vector<browser::context_hub::mojom::TabInfoPtr> GetTabsInternal();
 
   mojo::Receiver<browser::context_hub::mojom::PageHandler> receiver_;
   std::unique_ptr<TabProvider> tab_provider_;

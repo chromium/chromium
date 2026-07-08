@@ -5,7 +5,9 @@
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '/strings.m.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from '../browser_proxy.js';
@@ -40,6 +42,7 @@ export class TabGroupsElement extends CrLitElement {
       ungroupedTabs_: {type: Array},
       isGrouped_: {type: Boolean},
       isGrouping_: {type: Boolean},
+      autoTabGroupsEnabled_: {type: Boolean},
     };
   }
 
@@ -48,6 +51,8 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor ungroupedTabs_: TabInfo[] = [];
   protected accessor isGrouped_: boolean = false;
   protected accessor isGrouping_: boolean = false;
+  protected accessor autoTabGroupsEnabled_: boolean =
+      loadTimeData.getBoolean('kAutoTabGroups');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -55,46 +60,44 @@ export class TabGroupsElement extends CrLitElement {
   }
 
   private async fetchTabs_() {
+    if (!this.autoTabGroupsEnabled_) {
+      return;
+    }
     const {tabs} = await BrowserProxyImpl.getInstance().handler.getTabs();
     this.tabs_ = tabs;
+    this.groups_ = [];
     this.isGrouped_ = false;
     this.ungroupedTabs_ = [];
     this.isGrouping_ = false;
   }
 
   protected async onGroupTabsClick_() {
+    if (!this.autoTabGroupsEnabled_) {
+      return;
+    }
     if (this.isGrouped_) {
-      this.isGrouped_ = false;
-      this.groups_ = [];
-      this.ungroupedTabs_ = [];
+      this.fetchTabs_();
       return;
     }
 
     this.isGrouping_ = true;
 
     try {
-      const {clusters, ungroupedTabIds} =
-          await BrowserProxyImpl.getInstance().handler.clusterTabs();
+      const {groups, ungroupedTabs} =
+          await BrowserProxyImpl.getInstance().handler.retrieveAndGroupTabs();
 
-      const tabMap = new Map(this.tabs_.map(tab => [tab.id, tab]));
+      this.groups_ = groups
+                         .map(group => ({
+                                label: group.label,
+                                tabs: group.tabs,
+                                expanded: false,
+                              }))
+                         .filter(group => group.tabs.length > 0);
 
-      this.groups_ =
-          clusters
-              .map(cluster => ({
-                     label: cluster.label,
-                     tabs: cluster.tabIds.map(id => tabMap.get(id))
-                               .filter((t): t is TabInfo => t !== undefined),
-                     expanded: false,
-                   }))
-              // Filter out any groups that ended up empty
-              .filter(group => group.tabs.length > 0);
-
-      this.ungroupedTabs_ = ungroupedTabIds.map(id => tabMap.get(id))
-                                .filter((t): t is TabInfo => t !== undefined);
-
+      this.ungroupedTabs_ = ungroupedTabs;
       this.isGrouped_ = true;
     } catch (e) {
-      console.error('Failed to cluster tabs:', e);
+      console.error('Failed to retrieve and group tabs:', e);
     } finally {
       this.isGrouping_ = false;
     }

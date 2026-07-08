@@ -13,7 +13,7 @@ export function getHtml(this: TabGroupsElement) {
         <section class="header-section">
             <h1>Tab Groups</h1>
             <cr-button class="action-button"
-                ?disabled="${this.isGrouping_}"
+                ?disabled="${this.isGrouping_ || !this.autoTabGroupsEnabled_}"
                 @click="${this.onGroupTabsClick_}">
                 ${this.isGrouping_ ? 'Grouping...' :
                   (this.isGrouped_ ? 'Ungroup tabs' : 'Group tabs')}

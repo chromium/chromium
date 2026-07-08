@@ -210,86 +210,80 @@ void ContextHubPageHandler::DeleteMemoryBankEntries(
   service->DeleteEntries(ids, std::move(callback));
 }
 
-std::vector<browser::context_hub::mojom::TabInfoPtr>
-ContextHubPageHandler::GetTabsInternal() {
-  std::vector<browser::context_hub::mojom::TabInfoPtr> tabs;
+namespace {
+
+std::vector<context_hub::TabData> GetOpenTabs(
+    ContextHubPageHandler::TabProvider* tab_provider,
+    content::WebContents* web_contents) {
+  std::vector<context_hub::TabData> tabs;
 #if !BUILDFLAG(IS_ANDROID)
-  if (!tab_provider_) {
-    return tabs;
-  }
-  for (content::WebContents* tab_contents :
-       tab_provider_->GetTabs(web_contents_)) {
-    SessionID session_id =
-        sessions::SessionTabHelper::IdForTab(tab_contents);
-    if (!session_id.is_valid()) {
-      continue;
+  if (tab_provider) {
+    for (content::WebContents* tab_contents :
+         tab_provider->GetTabs(web_contents)) {
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(tab_contents);
+      if (session_id.is_valid()) {
+        tabs.push_back({session_id.id(),
+                        base::UTF16ToUTF8(tab_contents->GetTitle()),
+                        tab_contents->GetLastCommittedURL()});
+      }
     }
-    auto tab_info = browser::context_hub::mojom::TabInfo::New();
-    tab_info->id = session_id.id();
-    tab_info->title = base::UTF16ToUTF8(tab_contents->GetTitle());
-    tab_info->url = tab_contents->GetLastCommittedURL();
-    tabs.push_back(std::move(tab_info));
   }
 #endif
   return tabs;
 }
 
+std::vector<browser::context_hub::mojom::TabInfoPtr> ToMojoTabs(
+    const std::vector<context_hub::TabData>& tabs) {
+  std::vector<browser::context_hub::mojom::TabInfoPtr> mojo_tabs;
+  mojo_tabs.reserve(tabs.size());
+  for (const auto& tab : tabs) {
+    auto mojo_tab = browser::context_hub::mojom::TabInfo::New();
+    mojo_tab->id = tab.id;
+    mojo_tab->title = tab.title;
+    mojo_tab->url = tab.url;
+    mojo_tabs.push_back(std::move(mojo_tab));
+  }
+  return mojo_tabs;
+}
+
+}  // namespace
+
 void ContextHubPageHandler::GetTabs(GetTabsCallback callback) {
-  std::move(callback).Run(GetTabsInternal());
+  std::move(callback).Run(
+      ToMojoTabs(GetOpenTabs(tab_provider_.get(), web_contents_)));
+}
+
+void ContextHubPageHandler::RetrieveAndGroupTabs(
+    RetrieveAndGroupTabsCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run({}, {});
+    return;
+  }
+
+  service->GroupTabs(
+      GetOpenTabs(tab_provider_.get(), web_contents_),
+      base::BindOnce(
+          [](RetrieveAndGroupTabsCallback callback,
+             std::vector<context_hub::TabGroupData> groups,
+             std::vector<context_hub::TabData> ungrouped_tabs) {
+            std::vector<browser::context_hub::mojom::TabGroupPtr> mojo_groups;
+            for (const auto& group : groups) {
+              auto mojo_group = browser::context_hub::mojom::TabGroup::New();
+              mojo_group->label = group.label;
+              mojo_group->tabs = ToMojoTabs(group.tabs);
+              mojo_groups.push_back(std::move(mojo_group));
+            }
+
+            std::move(callback).Run(std::move(mojo_groups),
+                                    ToMojoTabs(ungrouped_tabs));
+          },
+          std::move(callback)));
 }
 
 void ContextHubPageHandler::SwitchToTab(int32_t tab_id) {
   if (tab_provider_) {
     tab_provider_->SwitchToTab(web_contents_, tab_id);
   }
-}
-
-void ContextHubPageHandler::ClusterTabs(ClusterTabsCallback callback) {
-  // TODO(crbug.com/526733497): Replace this with the real model-based
-  // clustering logic once the MES setup is ready.
-  std::vector<browser::context_hub::mojom::TabInfoPtr> tabs = GetTabsInternal();
-  if (tabs.size() < 2) {
-    std::move(callback).Run({}, {});
-    return;
-  }
-
-  std::vector<browser::context_hub::mojom::TabClusterPtr> clusters;
-  std::vector<int32_t> ungrouped_tab_ids;
-
-  static constexpr std::array<const char*, 5> kLabels = {
-      "Work", "Shopping", "Research", "Social", "News"};
-
-  size_t current_tab_index = 0;
-  size_t cluster_group_number = 1;
-
-  // Cluster tabs sequentially into randomized groups of 2 or 3 tabs.
-  while (current_tab_index < tabs.size()) {
-    size_t remaining_tabs_count = tabs.size() - current_tab_index;
-    // If there is only 1 tab remaining, it cannot form a group. Move it to
-    // ungrouped.
-    if (remaining_tabs_count == 1) {
-      ungrouped_tab_ids.push_back(tabs[current_tab_index]->id);
-      break;
-    }
-
-    // Randomly select a group size of 2 or 3, bounded by remaining tabs.
-    size_t group_size =
-        std::min(remaining_tabs_count,
-                 static_cast<size_t>(2 + base::RandIntInclusive(0, 1)));
-
-    auto cluster = browser::context_hub::mojom::TabCluster::New();
-    // Generate a random label using base::StrCat for cleaner concatenation.
-    const char* label_prefix =
-        kLabels[base::RandIntInclusive(0, kLabels.size() - 1)];
-    cluster->label = base::StrCat(
-        {label_prefix, " ", base::NumberToString(cluster_group_number++)});
-
-    for (size_t offset = 0; offset < group_size; ++offset) {
-      cluster->tab_ids.push_back(tabs[current_tab_index + offset]->id);
-    }
-    clusters.push_back(std::move(cluster));
-    current_tab_index += group_size;
-  }
-
-  std::move(callback).Run(std::move(clusters), std::move(ungrouped_tab_ids));
 }

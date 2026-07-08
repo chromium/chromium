@@ -7,6 +7,11 @@ module browser.context_hub.mojom;
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+feature kAutoTabGroups {
+  const string name = "AutoTabGroups";
+  const bool default_state = false;
+};
+
 struct GmailReference {
   url.mojom.Url message_url;
 };
@@ -44,22 +49,22 @@ struct MemoryBankEntry {
   array<string> tags;
 };
 
-// Factory used by the WebUI page (caller) to create a PageHandler in the
-// browser process (callee) for the Context Hub page.
-interface PageHandlerFactory {
-  // Creates a PageHandler instance and binds it to the given receiver.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
-};
-
 struct TabInfo {
   int32 id;
   string title;
   url.mojom.Url url;
 };
 
-struct TabCluster {
+struct TabGroup {
   string label;
-  array<int32> tab_ids;
+  array<TabInfo> tabs;
+};
+
+// Factory used by the WebUI page (caller) to create a PageHandler in the
+// browser process (callee) for the Context Hub page.
+interface PageHandlerFactory {
+  // Creates a PageHandler instance and binds it to the given receiver.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
 };
 
 // Provides access to context hub features.
@@ -76,11 +81,13 @@ interface PageHandler {
   DeleteMemoryBankEntries(array<int64> ids) => ();
 
   // Returns the list of tabs in the current window.
+  [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);
 
-  // Performs clustering of tabs
-  ClusterTabs() =>
-      (array<TabCluster> clusters, array<int32> ungrouped_tab_ids);
+  // Retrieves and groups related open tabs.
+  [RuntimeFeature=kAutoTabGroups]
+  RetrieveAndGroupTabs() =>
+      (array<TabGroup> groups, array<TabInfo> ungrouped_tabs);
 
   // Switches to the specified tab.
   SwitchToTab(int32 tab_id);

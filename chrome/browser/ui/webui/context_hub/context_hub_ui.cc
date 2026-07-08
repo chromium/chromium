@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/context_hub_resources.h"
@@ -31,6 +32,10 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kContextHubResources,
                               IDR_CONTEXT_HUB_CONTEXT_HUB_HTML);
+
+  source->AddBoolean("kAutoTabGroups",
+                     base::FeatureList::IsEnabled(
+                         browser::context_hub::mojom::kAutoTabGroups));
 
 #if !BUILDFLAG(IS_ANDROID)
   content::URLDataSource::Add(

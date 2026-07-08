@@ -320,64 +320,65 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ContextHubPageHandlerTest, GetTabs) {
-  std::unique_ptr<content::WebContents> tab1 =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  content::WebContentsTester::For(tab1.get())->SetTitle(u"Tab One");
-  sessions::SessionTabHelper::CreateForWebContents(
-      tab1.get(), sessions::SessionTabHelper::DelegateLookup());
+TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
+  EXPECT_CALL(*mock_tab_provider_, SwitchToTab(_, 42)).Times(1);
 
-  std::unique_ptr<content::WebContents> tab2 =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  content::WebContentsTester::For(tab2.get())->SetTitle(u"Tab Two");
-  sessions::SessionTabHelper::CreateForWebContents(
-      tab2.get(), sessions::SessionTabHelper::DelegateLookup());
+  handler_->SwitchToTab(42);
+}
 
+TEST_F(ContextHubPageHandlerTest, GetTabs_NoTabs) {
   EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
-      .WillOnce(testing::Return(std::vector<content::WebContents*>{tab1.get(), tab2.get()}));
+      .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
   handler_->GetTabs(future.GetCallback());
 
   std::vector<browser::context_hub::mojom::TabInfoPtr> tabs = future.Take();
-  ASSERT_EQ(tabs.size(), 2u);
-
-  EXPECT_EQ(tabs[0]->title, "Tab One");
-  EXPECT_EQ(tabs[0]->url, tab1->GetLastCommittedURL());
-  EXPECT_NE(tabs[0]->id, 0);
-
-  EXPECT_EQ(tabs[1]->title, "Tab Two");
-  EXPECT_EQ(tabs[1]->url, tab2->GetLastCommittedURL());
-  EXPECT_NE(tabs[1]->id, 0);
+  EXPECT_TRUE(tabs.empty());
 }
 
-TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
-  EXPECT_CALL(*mock_tab_provider_, SwitchToTab(_, 42))
-      .Times(1);
+TEST_F(ContextHubPageHandlerTest, GetTabs_WithTabs) {
+  std::vector<std::unique_ptr<content::WebContents>> test_tabs;
+  std::vector<content::WebContents*> raw_test_tabs;
+  for (int i = 0; i < 3; ++i) {
+    auto tab =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    sessions::SessionTabHelper::CreateForWebContents(
+        tab.get(), sessions::SessionTabHelper::DelegateLookup());
+    raw_test_tabs.push_back(tab.get());
+    test_tabs.push_back(std::move(tab));
+  }
 
-  handler_->SwitchToTab(42);
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(raw_test_tabs));
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabInfoPtr>>
+      future;
+  handler_->GetTabs(future.GetCallback());
+
+  std::vector<browser::context_hub::mojom::TabInfoPtr> tabs = future.Take();
+  EXPECT_EQ(tabs.size(), 3u);
 }
 
-TEST_F(ContextHubPageHandlerTest, ClusterTabs_NoTabs) {
+TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
   EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
       .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::TabClusterPtr>,
-      std::vector<int32_t>>
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
-  handler_->ClusterTabs(
+  handler_->RetrieveAndGroupTabs(
       future
-          .GetCallback<std::vector<browser::context_hub::mojom::TabClusterPtr>,
-                       const std::vector<int32_t>&>());
+          .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                       std::vector<browser::context_hub::mojom::TabInfoPtr>>());
 
-  auto [clusters, ungrouped_tab_ids] = future.Take();
-  EXPECT_TRUE(clusters.empty());
-  EXPECT_TRUE(ungrouped_tab_ids.empty());
+  auto [groups, ungrouped_tabs] = future.Take();
+  EXPECT_TRUE(groups.empty());
+  EXPECT_TRUE(ungrouped_tabs.empty());
 }
 
-TEST_F(ContextHubPageHandlerTest, ClusterTabs_WithTabs) {
+TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
   std::vector<std::unique_ptr<content::WebContents>> test_tabs;
   std::vector<content::WebContents*> raw_test_tabs;
   for (int i = 0; i < 5; ++i) {
@@ -391,23 +392,21 @@ TEST_F(ContextHubPageHandlerTest, ClusterTabs_WithTabs) {
   EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
       .WillOnce(testing::Return(raw_test_tabs));
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::TabClusterPtr>,
-      std::vector<int32_t>>
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
-  handler_->ClusterTabs(
+  handler_->RetrieveAndGroupTabs(
       future
-          .GetCallback<std::vector<browser::context_hub::mojom::TabClusterPtr>,
-                       const std::vector<int32_t>&>());
+          .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                       std::vector<browser::context_hub::mojom::TabInfoPtr>>());
 
-  auto [clusters, ungrouped_tab_ids] = future.Take();
-
-  size_t clustered_tabs_count = 0;
-  for (const auto& cluster : clusters) {
-    clustered_tabs_count += cluster->tab_ids.size();
-    EXPECT_GE(cluster->tab_ids.size(), 2u);
+  auto [groups, ungrouped_tabs] = future.Take();
+  size_t total_tabs = ungrouped_tabs.size();
+  for (const auto& group : groups) {
+    total_tabs += group->tabs.size();
+    EXPECT_GE(group->tabs.size(), 2u);
   }
-  EXPECT_EQ(clustered_tabs_count + ungrouped_tab_ids.size(), 5u);
+  EXPECT_EQ(total_tabs, 5u);
 }
 #endif
 
