@@ -102,8 +102,9 @@ CanvasRenderingContext* OffscreenCanvasRenderingContext2D::Factory::Create(
   return rendering_context;
 }
 
-OffscreenCanvasRenderingContext2D::~OffscreenCanvasRenderingContext2D() =
-    default;
+OffscreenCanvasRenderingContext2D::~OffscreenCanvasRenderingContext2D() {
+  FlushForImageListener::Get()->RemoveObserver(this);
+}
 
 OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     OffscreenCanvas* canvas,
@@ -112,6 +113,7 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
                              attrs,
                              canvas->GetTopExecutionContext()->GetTaskRunner(
                                  TaskType::kInternalDefault)) {
+  FlushForImageListener::Get()->AddObserver(this);
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->GetFrame() && window->GetFrame()->GetSettings() &&
@@ -578,6 +580,17 @@ std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     return bitmap_provider_->Flush(reason);
   }
   return std::nullopt;
+}
+
+void OffscreenCanvasRenderingContext2D::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {
+  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    if (shared_image_provider_->Recorder().getRecordingCanvas().IsCachingImage(
+            content_id)) {
+      FlushCanvas(FlushReason::kOther);
+    }
+    shared_image_provider_->OnFlushForImage(content_id);
+  }
 }
 
 bool OffscreenCanvasRenderingContext2D::IsResourceProviderValid() const {

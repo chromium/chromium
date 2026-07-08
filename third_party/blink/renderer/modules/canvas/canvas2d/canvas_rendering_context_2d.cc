@@ -211,13 +211,16 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
   SetShouldAntialias(true);
+  FlushForImageListener::Get()->AddObserver(this);
 }
 
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
 
-CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
+CanvasRenderingContext2D::~CanvasRenderingContext2D() {
+  FlushForImageListener::Get()->RemoveObserver(this);
+}
 
 void CanvasRenderingContext2D::ResetInternal() {
   if (IsHibernating()) {
@@ -589,6 +592,17 @@ std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     return bitmap_provider_->Flush(reason);
   }
   return std::nullopt;
+}
+
+void CanvasRenderingContext2D::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {
+  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    if (shared_image_provider_->Recorder().getRecordingCanvas().IsCachingImage(
+            content_id)) {
+      FlushCanvas(FlushReason::kOther);
+    }
+    shared_image_provider_->OnFlushForImage(content_id);
+  }
 }
 
 bool CanvasRenderingContext2D::WillSetFont() const {

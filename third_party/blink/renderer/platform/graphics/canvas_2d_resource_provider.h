@@ -136,7 +136,6 @@ class PLATFORM_EXPORT CanvasResourceProviderDelegate {
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client,
-      public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver,
@@ -230,6 +229,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   base::ByteSize EstimatedSizeInBytes() const;
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource();
+  void OnFlushForImage(cc::PaintImage::ContentId content_id);
 
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
@@ -304,8 +304,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void EndWriteAccess();
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   // MemoryManagedPaintRecorder::Client implementation.
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;

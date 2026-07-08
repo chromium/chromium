@@ -711,9 +711,6 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
 
 void Canvas2DResourceProvider::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (Recorder().getRecordingCanvas().IsCachingImage(content_id)) {
-    Flush();
-  }
   if (cached_snapshot_ &&
       cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
           content_id) {
@@ -1039,7 +1036,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  FlushForImageListener::Get()->AddObserver(this);
 
   if (resource_) {
     EnsureWriteAccess();
@@ -1135,10 +1131,6 @@ Canvas2DResourceProvider::~Canvas2DResourceProvider() {
   }
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
-  }
-
-  if (!is_software_) {
-    FlushForImageListener::Get()->RemoveObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.

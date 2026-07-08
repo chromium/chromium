@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
@@ -28,7 +29,8 @@ class MemoryManagedPaintCanvas;
 
 class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     : public ScriptWrappable,
-      public BaseRenderingContext2D {
+      public BaseRenderingContext2D,
+      public FlushForImageObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -104,6 +106,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                 CanvasPerformanceMonitor::DrawType) final;
 
   void FlushIfRecordingLimitExceeded();
+
+  // FlushForImageObserver implementation
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -94,7 +95,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     : public ScriptWrappable,
       public BaseRenderingContext2D,
       public SVGResourceClient,
-      public CanvasHibernationHandler::Delegate {
+      public CanvasHibernationHandler::Delegate,
+      public FlushForImageObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -149,6 +151,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // SVGResourceClient implementation
   void ResourceContentChanged(SVGResource*) override;
+
+  // FlushForImageObserver implementation
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   void UpdateFilterReferences(const FilterOperations&);
   void ClearFilterReferences();
