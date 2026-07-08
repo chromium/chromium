@@ -174,12 +174,28 @@ static_library("chrome_test_launcher") {
   }
 }
 
+# TODO(crbug.com/353332589): Move to //chrome/test/base when that module is
+# componentized.
 source_set("test_switches") {
   testonly = true
   sources = [
     "base/test_switches.cc",
     "base/test_switches.h",
   ]
+}
+
+if (toolkit_views) {
+  # TODO(crbug.com/353332589): Move to //chrome/test/base when that module is
+  # componentized.
+  source_set("test_theme_provider") {
+    testonly = true
+    sources = [
+      "base/test_theme_provider.cc",
+      "base/test_theme_provider.h",
+    ]
+    public_deps = [ "//ui/base" ]
+    deps = [ "//ui/gfx" ]
+  }
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -1026,8 +1042,6 @@ static_library("test_support") {
       "../browser/ui/views/profiles/profiles_pixel_test_utils.h",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h",
-      "base/test_theme_provider.cc",
-      "base/test_theme_provider.h",
       "views/accessibility_checker.cc",
       "views/accessibility_checker.h",
       "views/chrome_test_views_delegate.h",
@@ -1040,6 +1054,7 @@ static_library("test_support") {
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/test:test_theme_provider",
       "//ui/native_theme:test_support",
       "//ui/views:test_support",
     ]
