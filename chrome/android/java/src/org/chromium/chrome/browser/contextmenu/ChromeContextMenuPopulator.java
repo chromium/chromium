@@ -1236,7 +1236,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             ShareOrigin.CONTEXT_MENU);
         } else if (itemId == R.id.contextmenu_search_image_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
-            if (shouldShowLensOverlay()) {
+            // The Image Entry Point only triggers the Lens Overlay flow when the "WebUI"
+            // implementation is explicitly enabled via flags. Otherwise, it falls back
+            // to the AGSA Intent-based flow.
+            if (shouldShowLensOverlay() && LensOverlayCoordinator.isWebUiImplementationEnabled()) {
                 Tab tab = getTab();
                 if (tab != null) {
                     LensOverlayCoordinator.getOrCreateForTab(tab)

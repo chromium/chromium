@@ -63,6 +63,16 @@ public class LensOverlayCoordinator implements UserData {
 
     private static final String LENS_OVERLAY_JS_BRIDGE_NAME = "lensOverlay";
 
+    /**
+     * Returns whether the WebUI implementation of the Lens Overlay is enabled via feature params.
+     */
+    public static boolean isWebUiImplementationEnabled() {
+        String implType =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.LENS_OVERLAY_ANDROID, "implementation_type");
+        return LENS_OVERLAY_IMPL_WEBUI.equals(implType);
+    }
+
     private static final String LENS_OVERLAY_DEFAULT_HTML =
             """
             <!DOCTYPE html>
