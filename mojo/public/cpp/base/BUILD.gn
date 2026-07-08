@@ -118,8 +118,6 @@ component("shared_typemap_traits") {
   sources = [
     "big_buffer_mojom_traits.cc",
     "big_buffer_mojom_traits.h",
-    "byte_count_mojom_traits.cc",
-    "byte_count_mojom_traits.h",
     "byte_size_mojom_traits.cc",
     "byte_size_mojom_traits.h",
     "byte_string_mojom_traits.cc",

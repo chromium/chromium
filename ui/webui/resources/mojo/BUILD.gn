@@ -17,7 +17,6 @@ mojo_ts_files = [
   "mojo/public/mojom/base/absl_status.mojom-webui.ts",
   "mojo/public/mojom/base/big_buffer.mojom-webui.ts",
   "mojo/public/mojom/base/big_string.mojom-webui.ts",
-  "mojo/public/mojom/base/byte_count.mojom-webui.ts",
   "mojo/public/mojom/base/byte_string.mojom-webui.ts",
   "mojo/public/mojom/base/empty.mojom-webui.ts",
   "mojo/public/mojom/base/error.mojom-webui.ts",
