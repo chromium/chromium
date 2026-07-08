@@ -71,72 +71,70 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 }  // namespace
 
 @interface SharingStatusViewController () <UITextViewDelegate>
-
-// Container view for the animation.
-@property(nonatomic, strong) UIView* animationView;
-
-// Profile image of the sender.
-@property(nonatomic, strong) UIImageView* senderImageView;
-@property(nonatomic, strong) UIImage* senderImage;
-
-// Profile image of the recipient (or merged avatar of multiple recipients).
-@property(nonatomic, strong) UIImageView* recipientImageView;
-@property(nonatomic, strong) UIImage* recipientImage;
-
-// Lock image displayed in the animation.
-@property(nonatomic, strong) UIImageView* lockImage;
-
-// Rectangle view with fixed length and height containing fixed amount of
-// circles.
-@property(nonatomic, strong) UIView* progressBarView;
-
-// The container for the favicon view that is displayed below the recipient and
-// sender images in successful status view.
-@property(nonatomic, strong) FaviconContainerView* faviconContainerView;
-
-// Stack view containing animation container view, title, subtitle and footer.
-@property(nonatomic, strong) UIStackView* stackView;
-
-// Animates profile image of the sender sliding to the left and profile images
-// of recipients sliding to the right.
-@property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingOutAnimation;
-
-// Animates lock appearing in the middle between profile images.
-@property(nonatomic, strong) UIViewPropertyAnimator* lockAppearingAnimation;
-
-// Animates the progress bar going from the left to right image.
-@property(nonatomic, strong)
-    UIViewPropertyAnimator* progressBarLoadingAnimation;
-
-// Animates progress bar and lock disappearing and profile images sliding to the
-// middle.
-@property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingInAnimation;
-
-// Animates favicon appearing below recipient and sender image.
-@property(nonatomic, strong) UIViewPropertyAnimator* faviconAppearingAnimation;
-
-// Animates profile images sliding to the middle on cancel button tap.
-@property(nonatomic, strong) UIViewPropertyAnimator* sharingCancelledAnimation;
-
-// Contains the information that sharing is in progress at first and then is
-// modified to convey the result status.
-@property(nonatomic, strong) UILabel* titleLabel;
-
-// Subtitle string that will be displayed when the sharing is succesful.
-@property(nonatomic, copy) NSString* subtitleString;
-
-// Footer string that will be displayed when the sharing is succesful.
-@property(nonatomic, copy) NSString* footerString;
-
-// The button that cancels the sharing process.
-@property(nonatomic, strong) UIButton* cancelButton;
-
-// Url of the site for which the password is being shared.
-@property(nonatomic, readonly) GURL URL;
-
 @end
 
 @implementation SharingStatusViewController {
+  // Container view for the animation.
+  UIView* _animationView;
+
+  // Profile image of the sender.
+  UIImageView* _senderImageView;
+  UIImage* _senderImage;
+
+  // Profile image of the recipient (or merged avatar of multiple recipients).
+  UIImageView* _recipientImageView;
+  UIImage* _recipientImage;
+
+  // Lock image displayed in the animation.
+  UIImageView* _lockImage;
+
+  // Rectangle view with fixed length and height containing fixed amount of
+  // circles.
+  UIView* _progressBarView;
+
+  // The container for the favicon view that is displayed below the recipient and
+  // sender images in successful status view.
+  FaviconContainerView* _faviconContainerView;
+
+  // Stack view containing animation container view, title, subtitle and footer.
+  UIStackView* _stackView;
+
+  // Animates profile image of the sender sliding to the left and profile images
+  // of recipients sliding to the right.
+  UIViewPropertyAnimator* _imagesSlidingOutAnimation;
+
+  // Animates lock appearing in the middle between profile images.
+  UIViewPropertyAnimator* _lockAppearingAnimation;
+
+  // Animates the progress bar going from the left to right image.
+  UIViewPropertyAnimator* _progressBarLoadingAnimation;
+
+  // Animates progress bar and lock disappearing and profile images sliding to the
+  // middle.
+  UIViewPropertyAnimator* _imagesSlidingInAnimation;
+
+  // Animates favicon appearing below recipient and sender image.
+  UIViewPropertyAnimator* _faviconAppearingAnimation;
+
+  // Animates profile images sliding to the middle on cancel button tap.
+  UIViewPropertyAnimator* _sharingCancelledAnimation;
+
+  // Contains the information that sharing is in progress at first and then is
+  // modified to convey the result status.
+  UILabel* _titleLabel;
+
+  // Subtitle string that will be displayed when the sharing is succesful.
+  NSString* _subtitleString;
+
+  // Footer string that will be displayed when the sharing is succesful.
+  NSString* _footerString;
+
+  // The button that cancels the sharing process.
+  UIButton* _cancelButton;
+
+  // Url of the site for which the password is being shared.
+  GURL _URL;
+
   // CenterX constraints for the images of sender and recipients.
   NSLayoutConstraint* _senderImageCenterXConstraint;
   NSLayoutConstraint* _recipientImageCenterXConstraint;
@@ -152,18 +150,20 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   // Add vertical stack view for the animation and all labels.
+  _animationView = [self createAnimationContainerView];
+  _titleLabel = [self createTitleLabel];
   UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    [self createAnimationContainerView], [self createTitleLabel]
+    _animationView, _titleLabel
   ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.spacing = kVerticalSpacing;
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  self.stackView = verticalStack;
+  _stackView = verticalStack;
   [view addSubview:verticalStack];
 
   // Add cancel button below the stack.
-  UIButton* cancelButton = [self createCancelButton];
-  [view addSubview:cancelButton];
+  _cancelButton = [self createCancelButton];
+  [view addSubview:_cancelButton];
 
   [NSLayoutConstraint activateConstraints:@[
     // Vertical stack constraints.
@@ -176,12 +176,12 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
     [verticalStack.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
     // Cancel button constraints.
-    [cancelButton.topAnchor
+    [_cancelButton.topAnchor
         constraintGreaterThanOrEqualToAnchor:verticalStack.bottomAnchor
                                     constant:kVerticalSpacing],
-    [cancelButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+    [_cancelButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
                                               constant:-kBottomPadding],
-    [cancelButton.centerXAnchor
+    [_cancelButton.centerXAnchor
         constraintEqualToAnchor:verticalStack.centerXAnchor],
   ]];
 
@@ -193,17 +193,16 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
   // Make sure that the title is focused when the view appears.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.titleLabel);
-  [self.imagesSlidingOutAnimation
-      startAnimationAfterDelay:kImagesSlidingOutDelay];
+                                  _titleLabel);
+  [_imagesSlidingOutAnimation startAnimationAfterDelay:kImagesSlidingOutDelay];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   // Stop the ongoing animations so that their completion is not called.
-  [self.imagesSlidingOutAnimation stopAnimation:YES];
-  [self.lockAppearingAnimation stopAnimation:YES];
-  [self.progressBarLoadingAnimation stopAnimation:YES];
-  [self.imagesSlidingInAnimation stopAnimation:YES];
+  [_imagesSlidingOutAnimation stopAnimation:YES];
+  [_lockAppearingAnimation stopAnimation:YES];
+  [_progressBarLoadingAnimation stopAnimation:YES];
+  [_imagesSlidingInAnimation stopAnimation:YES];
   [super viewDidDisappear:animated];
 }
 
@@ -275,20 +274,18 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 // Helper for creating sender image view.
 - (UIImageView*)createSenderImageView {
   UIImageView* senderImageView =
-      [[UIImageView alloc] initWithImage:self.senderImage];
+      [[UIImageView alloc] initWithImage:_senderImage];
   senderImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.senderImageView = senderImageView;
   return senderImageView;
 }
 
 // Helper for creating recipient image view.
 - (UIImageView*)createRecipientImageView {
   UIImageView* recipientImageView =
-      [[UIImageView alloc] initWithImage:self.recipientImage];
+      [[UIImageView alloc] initWithImage:_recipientImage];
   recipientImageView.translatesAutoresizingMaskIntoConstraints = NO;
   recipientImageView.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
-  self.recipientImageView = recipientImageView;
   return recipientImageView;
 }
 
@@ -298,7 +295,6 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   progressBarView.translatesAutoresizingMaskIntoConstraints = NO;
   progressBarView.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
-  self.progressBarView = progressBarView;
   return progressBarView;
 }
 
@@ -310,13 +306,11 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   lockImage.translatesAutoresizingMaskIntoConstraints = NO;
   lockImage.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   lockImage.hidden = YES;
-  self.lockImage = lockImage;
   return lockImage;
 }
 
 // Creates `kProgressBarCirclesAmount` blue circles in the progress bar view.
 - (void)createProgressBarSubviews {
-  UIView* progressBarView = self.progressBarView;
   for (NSInteger i = 0; i < kProgressBarCirclesAmount; i++) {
     UIView* circleView =
         [[UIView alloc] initWithFrame:CGRectMake((kProgressBarCircleDiameter +
@@ -328,7 +322,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
     circleView.backgroundColor = [UIColor colorNamed:kBlueColor];
     circleView.alpha = 0.0;
     circleView.layer.cornerRadius = kProgressBarCircleDiameter / 2;
-    [progressBarView addSubview:circleView];
+    [_progressBarView addSubview:circleView];
   }
 }
 
@@ -360,100 +354,96 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       [[FaviconContainerView alloc] init];
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconContainerView.hidden = YES;
-  self.faviconContainerView = faviconContainerView;
   return faviconContainerView;
 }
 
 // Creates the container view for the animation.
 - (UIView*)createAnimationContainerView {
   UIView* animationView = [[UIView alloc] init];
-  animationView = [[UIView alloc] init];
   animationView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Add progress bar view.
-  UIView* progressBarView = [self createProgressBarView];
-  [animationView addSubview:progressBarView];
+  _progressBarView = [self createProgressBarView];
+  [animationView addSubview:_progressBarView];
 
   // Add progress bar circles.
   [self createProgressBarSubviews];
 
   // Add lock image.
-  UIImageView* lockImage = [self createLockImage];
-  [progressBarView addSubview:lockImage];
+  _lockImage = [self createLockImage];
+  [_progressBarView addSubview:_lockImage];
 
   // Add sender profile image.
-  UIImageView* senderImageView = [self createSenderImageView];
-  [animationView addSubview:senderImageView];
+  _senderImageView = [self createSenderImageView];
+  [animationView addSubview:_senderImageView];
 
   // Add recipient profile image.
-  UIImageView* recipientImageView = [self createRecipientImageView];
-  [animationView addSubview:recipientImageView];
+  _recipientImageView = [self createRecipientImageView];
+  [animationView addSubview:_recipientImageView];
 
   // Add favicon and its container.
-  FaviconContainerView* faviconContainerView =
-      [self createFaviconContainerView];
-  [animationView addSubview:faviconContainerView];
+  _faviconContainerView = [self createFaviconContainerView];
+  [animationView addSubview:_faviconContainerView];
   FaviconView* faviconView = [self createFaviconView];
-  [faviconContainerView addSubview:faviconView];
+  [_faviconContainerView addSubview:faviconView];
 
   [NSLayoutConstraint activateConstraints:@[
     // Sender image constraints.
-    [senderImageView.topAnchor constraintEqualToAnchor:animationView.topAnchor
-                                              constant:kVerticalSpacing],
-    [senderImageView.bottomAnchor
+    [_senderImageView.topAnchor constraintEqualToAnchor:animationView.topAnchor
+                                               constant:kVerticalSpacing],
+    [_senderImageView.bottomAnchor
         constraintEqualToAnchor:animationView.bottomAnchor
                        constant:-kVerticalSpacing],
-    [senderImageView.widthAnchor constraintEqualToConstant:kProfileImageSize],
-    [senderImageView.heightAnchor constraintEqualToConstant:kProfileImageSize],
+    [_senderImageView.widthAnchor constraintEqualToConstant:kProfileImageSize],
+    [_senderImageView.heightAnchor constraintEqualToConstant:kProfileImageSize],
 
     // Recipient image constraints.
-    [recipientImageView.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [recipientImageView.widthAnchor
+    [_recipientImageView.centerYAnchor
+        constraintEqualToAnchor:_senderImageView.centerYAnchor],
+    [_recipientImageView.widthAnchor
         constraintEqualToConstant:kProfileImageSize],
-    [recipientImageView.heightAnchor
+    [_recipientImageView.heightAnchor
         constraintEqualToConstant:kProfileImageSize],
 
     // Progress bar constraints.
-    [progressBarView.centerXAnchor
+    [_progressBarView.centerXAnchor
         constraintEqualToAnchor:animationView.centerXAnchor],
-    [progressBarView.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
-    [progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
+    [_progressBarView.centerYAnchor
+        constraintEqualToAnchor:_senderImageView.centerYAnchor],
+    [_progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
+    [_progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
 
     // Lock image constraints.
-    [lockImage.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [lockImage.centerXAnchor
+    [_lockImage.centerYAnchor
+        constraintEqualToAnchor:_senderImageView.centerYAnchor],
+    [_lockImage.centerXAnchor
         constraintEqualToAnchor:animationView.centerXAnchor],
 
     // Favicon constraints.
-    [faviconContainerView.topAnchor
-        constraintEqualToAnchor:senderImageView.bottomAnchor
+    [_faviconContainerView.topAnchor
+        constraintEqualToAnchor:_senderImageView.bottomAnchor
                        constant:-kFaviconProfileImageVerticalOverlap],
-    [faviconContainerView.centerXAnchor
+    [_faviconContainerView.centerXAnchor
         constraintEqualToAnchor:animationView.centerXAnchor],
-    [faviconContainerView.widthAnchor
+    [_faviconContainerView.widthAnchor
         constraintEqualToConstant:kFaviconContainerSize],
-    [faviconContainerView.heightAnchor
+    [_faviconContainerView.heightAnchor
         constraintEqualToConstant:kFaviconContainerSize],
     [faviconView.centerXAnchor
-        constraintEqualToAnchor:faviconContainerView.centerXAnchor],
+        constraintEqualToAnchor:_faviconContainerView.centerXAnchor],
     [faviconView.centerYAnchor
-        constraintEqualToAnchor:faviconContainerView.centerYAnchor],
+        constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
     [faviconView.widthAnchor constraintEqualToConstant:kFaviconSize],
     [faviconView.heightAnchor constraintEqualToConstant:kFaviconSize],
   ]];
 
-  _senderImageCenterXConstraint = [senderImageView.centerXAnchor
+  _senderImageCenterXConstraint = [_senderImageView.centerXAnchor
       constraintEqualToAnchor:animationView.centerXAnchor];
   _senderImageCenterXConstraint.active = YES;
-  _recipientImageCenterXConstraint = [recipientImageView.centerXAnchor
+  _recipientImageCenterXConstraint = [_recipientImageView.centerXAnchor
       constraintEqualToAnchor:animationView.centerXAnchor];
   _recipientImageCenterXConstraint.active = YES;
 
-  self.animationView = animationView;
   return animationView;
 }
 
@@ -469,7 +459,6 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.textAlignment = NSTextAlignmentCenter;
   title.accessibilityIdentifier = kSharingStatusTitleLabelID;
-  self.titleLabel = title;
   return title;
 }
 
@@ -483,7 +472,6 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
                    action:@selector(cancelButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
   cancelButton.accessibilityIdentifier = kSharingStatusCancelButtonID;
-  self.cancelButton = cancelButton;
   return cancelButton;
 }
 
@@ -493,80 +481,73 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       [[UICubicTimingParameters alloc]
           initWithControlPoint1:CGPointMake(0.7, 0.0)
                   controlPoint2:CGPointMake(0.45, 1.45)];
-  self.imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
+  _imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingOutDuration
       timingParameters:imagesSlidingTimingParams];
   __weak __typeof(self) weakSelf = self;
-  [self.imagesSlidingOutAnimation addAnimations:^{
+  [_imagesSlidingOutAnimation addAnimations:^{
     [weakSelf setImagesCenterXConstraint:kImagesSlidedOutCenterXConstant];
   }];
-  [self.imagesSlidingOutAnimation
+  [_imagesSlidingOutAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
-        [weakSelf.lockAppearingAnimation startAnimation];
+        [weakSelf startLockAppearingAnimation];
       }];
 
-  self.lockAppearingAnimation = [[UIViewPropertyAnimator alloc]
+  _lockAppearingAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kLockAppearingDuration
                  curve:UIViewAnimationCurveEaseIn
             animations:^{
-              weakSelf.lockImage.hidden = NO;
+              [weakSelf showLockImage];
             }];
-  [self.lockAppearingAnimation
+  [_lockAppearingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
-        [weakSelf.progressBarLoadingAnimation startAnimation];
+        [weakSelf startProgressBarLoadingAnimation];
       }];
 
-  self.progressBarLoadingAnimation = [[UIViewPropertyAnimator alloc]
+  _progressBarLoadingAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kProgressBarLoadingDuration
                  curve:UIViewAnimationCurveLinear
             animations:^{
               [weakSelf animateProgressBarLoading];
             }];
-  [self.progressBarLoadingAnimation
+  [_progressBarLoadingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
-        [weakSelf.imagesSlidingInAnimation startAnimation];
+        [weakSelf startImagesSlidingInAnimation];
       }];
 
-  self.imagesSlidingInAnimation = [[UIViewPropertyAnimator alloc]
+  _imagesSlidingInAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingInDuration
       timingParameters:imagesSlidingTimingParams];
-  [self.imagesSlidingInAnimation addAnimations:^{
-    weakSelf.progressBarView.hidden = YES;
-    [weakSelf sendRecipientImageToBack];
-    [weakSelf setImagesCenterXConstraint:kImagesSlidedInCenterXConstant];
+  [_imagesSlidingInAnimation addAnimations:^{
+    [weakSelf animateImagesSlidingIn];
   }];
-  [self.imagesSlidingInAnimation
+  [_imagesSlidingInAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
-        [weakSelf.faviconAppearingAnimation
-            startAnimationAfterDelay:kFaviconAppearingDelay];
+        [weakSelf startFaviconAppearingAnimation];
       }];
 
-  self.faviconAppearingAnimation = [[UIViewPropertyAnimator alloc]
+  _faviconAppearingAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kFaviconAppearingDuration
                  curve:UIViewAnimationCurveEaseIn
             animations:^{
-              weakSelf.faviconContainerView.hidden = NO;
+              [weakSelf showFaviconContainer];
             }];
-  __weak __typeof(self.delegate) weakDelegate = self.delegate;
-  [self.faviconAppearingAnimation
+  [_faviconAppearingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
-        [weakSelf displaySuccessStatus];
-        [weakDelegate startPasswordSharing];
+        [weakSelf onFaviconAppearingAnimationCompleted];
       }];
 
   UICubicTimingParameters* animationCancelledTimingParams =
       [[UICubicTimingParameters alloc]
           initWithControlPoint1:CGPointMake(0.7, -0.45)
                   controlPoint2:CGPointMake(0.45, 1.0)];
-  self.sharingCancelledAnimation = [[UIViewPropertyAnimator alloc]
+  _sharingCancelledAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kSharingCancelledDuration
       timingParameters:animationCancelledTimingParams];
-  [self.sharingCancelledAnimation addAnimations:^{
-    weakSelf.progressBarView.hidden = YES;
-    [weakSelf sendRecipientImageToBack];
-    [weakSelf setImagesCenterXConstraint:0];
+  [_sharingCancelledAnimation addAnimations:^{
+    [weakSelf animateSharingCancelled];
   }];
-  [self.sharingCancelledAnimation
+  [_sharingCancelledAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displayCancelledStatus];
       }];
@@ -582,16 +563,74 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
                                 i
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
-                       weakSelf.progressBarView.subviews[i].alpha = 1.0;
+                       [weakSelf setProgressBarSubviewsAlphaAtIndex:i];
                      }
                      completion:nil];
+  }
+}
+
+// Helper for starting lock appearing animation.
+- (void)startLockAppearingAnimation {
+  [_lockAppearingAnimation startAnimation];
+}
+
+// Helper for making lock image visible.
+- (void)showLockImage {
+  _lockImage.hidden = NO;
+}
+
+// Helper for starting progress bar loading animation.
+- (void)startProgressBarLoadingAnimation {
+  [_progressBarLoadingAnimation startAnimation];
+}
+
+// Helper for starting images sliding in animation.
+- (void)startImagesSlidingInAnimation {
+  [_imagesSlidingInAnimation startAnimation];
+}
+
+// Helper for starting favicon appearing animation.
+- (void)startFaviconAppearingAnimation {
+  [_faviconAppearingAnimation startAnimationAfterDelay:kFaviconAppearingDelay];
+}
+
+// Helper for animating profile images sliding in.
+- (void)animateImagesSlidingIn {
+  _progressBarView.hidden = YES;
+  [self sendRecipientImageToBack];
+  [self setImagesCenterXConstraint:kImagesSlidedInCenterXConstant];
+}
+
+// Helper for making favicon container visible.
+- (void)showFaviconContainer {
+  _faviconContainerView.hidden = NO;
+}
+
+// Helper for displaying success status and notifying delegate when favicon
+// appearing animation completes.
+- (void)onFaviconAppearingAnimationCompleted {
+  [self displaySuccessStatus];
+  [self.delegate startPasswordSharing];
+}
+
+// Helper for animating sharing cancelled.
+- (void)animateSharingCancelled {
+  _progressBarView.hidden = YES;
+  [self sendRecipientImageToBack];
+  [self setImagesCenterXConstraint:0];
+}
+
+// Helper for setting alpha of progress bar circle at `index` to 1.
+- (void)setProgressBarSubviewsAlphaAtIndex:(NSUInteger)index {
+  if (index < _progressBarView.subviews.count) {
+    _progressBarView.subviews[index].alpha = 1.0;
   }
 }
 
 // Moves the recipient image to the back so that it's below the sender image
 // when they overlap.
 - (void)sendRecipientImageToBack {
-  [self.animationView sendSubviewToBack:self.recipientImageView];
+  [_animationView sendSubviewToBack:_recipientImageView];
 }
 
 // Sets constant for sender and recipients centerX constraint so that the sender
@@ -656,7 +695,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   StringWithTags stringWithBolds =
-      ParseStringWithTags(self.subtitleString, kBeginBoldTag, kEndBoldTag);
+      ParseStringWithTags(_subtitleString, kBeginBoldTag, kEndBoldTag);
   subtitle.text = stringWithBolds.string;
 
   for (const NSRange& range : stringWithBolds.ranges) {
@@ -673,7 +712,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   footer.textColor = [UIColor colorNamed:kTextSecondaryColor];
   footer.accessibilityIdentifier = kSharingStatusFooterId;
 
-  StringWithTags stringWithTags = ParseStringWithLinks(self.footerString);
+  StringWithTags stringWithTags = ParseStringWithLinks(_footerString);
   footer.text = stringWithTags.string;
   if (!stringWithTags.ranges.empty()) {
     [self addLinkAttributeToTextView:footer range:stringWithTags.ranges[0]];
@@ -706,7 +745,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
     [doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
                                               constant:-kHorizontalPadding],
     [doneButton.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.stackView.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:_stackView.bottomAnchor
                                     constant:kVerticalSpacing],
     [doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
                                             constant:-kBottomPadding],
@@ -716,41 +755,40 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 // Replaces text of the title label, cancel button with done button and adds a
 // subtitle and a footer.
 - (void)displaySuccessStatus {
-  self.titleLabel.text =
+  _titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
-  self.cancelButton.hidden = YES;
+  _cancelButton.hidden = YES;
 
-  UIStackView* stackView = self.stackView;
-  [stackView addArrangedSubview:[self createSubtitle]];
-  [stackView addArrangedSubview:[self createFooter]];
+  [_stackView addArrangedSubview:[self createSubtitle]];
+  [_stackView addArrangedSubview:[self createFooter]];
 
   [self addDoneButtonWithBottomPadding];
   [self recalculatePreferredHeightDetent];
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  self.titleLabel);
+                                  _titleLabel);
 }
 
 // Replaces text of the title label and adds a done button.
 - (void)displayCancelledStatus {
-  self.titleLabel.text =
+  _titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);
-  self.cancelButton.hidden = YES;
+  _cancelButton.hidden = YES;
 
   [self addDoneButtonWithBottomPadding];
   [self recalculatePreferredHeightDetent];
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  self.titleLabel);
+                                  _titleLabel);
 }
 
 // Stops any ongoing animations and starts a new one (profile images sliding to
 // the middle).
 - (void)cancelButtonTapped {
-  [self.imagesSlidingOutAnimation stopAnimation:YES];
-  [self.progressBarLoadingAnimation stopAnimation:YES];
-  [self.imagesSlidingInAnimation stopAnimation:YES];
-  [self.faviconAppearingAnimation stopAnimation:YES];
+  [_imagesSlidingOutAnimation stopAnimation:YES];
+  [_progressBarLoadingAnimation stopAnimation:YES];
+  [_imagesSlidingInAnimation stopAnimation:YES];
+  [_faviconAppearingAnimation stopAnimation:YES];
 
-  [self.sharingCancelledAnimation startAnimation];
+  [_sharingCancelledAnimation startAnimation];
 
   LogPasswordSharingInteraction(
       PasswordSharingInteraction::kSharingConfirmationCancelClicked);
