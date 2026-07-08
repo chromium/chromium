@@ -9483,3 +9483,6 @@ crbug.com/531851750 http/tests/inspector-protocol/fetch-later/activate-post-when
 
 # TODO(crbug.com/531865773): Flaky. Reenable it.
 crbug.com/531865773 external/wpt/webrtc-stats/supported-stats.https.html [ Failure Timeout Pass ]
+
+# Gardener 2026-07-07
+crbug.com/532186979 [ Linux ] external/wpt/css/css-image-animation/image-animation-video-poster-paused-normal-mixed.html [ Failure ]
