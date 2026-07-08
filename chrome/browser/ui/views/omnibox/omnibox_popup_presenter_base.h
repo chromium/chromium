@@ -161,6 +161,7 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
  private:
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
+  friend class OmniboxPopupPresenterBaseTest;
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 

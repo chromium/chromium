@@ -676,7 +676,8 @@ void OmniboxPopupViewViews::OnPopupFirstPaintPresented(
 
   if (request_start_time.is_null()) {
     omnibox::LogResultToContentReadyEarlyExitReason(
-        omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime);
+        omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
+        "Omnibox.Popup");
     return;
   }
 
