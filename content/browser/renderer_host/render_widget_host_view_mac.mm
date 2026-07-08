@@ -110,6 +110,21 @@ BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
 // resize.
 BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Extract any events in `visible_time_request` that should go to the
+// DelegatedFrameHost and sends them to `delegated_frame_host`. Modifies
+// `visible_time_request` in place.
+void SendVisibleTimeRequestToDelegatedFrameHost(
+    blink::RecordContentToVisibleTimeRequest& visible_time_request,
+    DelegatedFrameHost* delegated_frame_host) {
+  CHECK(delegated_frame_host);
+  std::optional<blink::RecordContentToVisibleTimeRequest> delegated_request =
+      visible_time_request.ExtractTabSwitchEventsWithSavedFrame();
+  if (delegated_request) {
+    delegated_frame_host->RequestSuccessfulPresentationTimeForNextFrame(
+        std::move(*delegated_request));
+  }
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -540,14 +555,8 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
   // SetRenderWidgetHostIsHidden above will show the DelegatedFrameHost
   // in this state, but doesn't include the presentation time request.
   if (tab_switch_start_state) {
-    if (std::optional<blink::RecordContentToVisibleTimeRequest>
-            delegated_visible_time_request =
-                tab_switch_start_state
-                    ->ExtractTabSwitchEventsWithSavedFrame()) {
-      browser_compositor_->GetDelegatedFrameHost()
-          ->RequestSuccessfulPresentationTimeForNextFrame(
-              std::move(*delegated_visible_time_request));
-    }
+    SendVisibleTimeRequestToDelegatedFrameHost(
+        *tab_switch_start_state, browser_compositor_->GetDelegatedFrameHost());
   }
 
   host()->WasShown(std::move(tab_switch_start_state));
@@ -560,13 +569,8 @@ void RenderWidgetHostViewMac::
 
   // If the frame for the renderer is already available, then the tab-switching
   // time is the presentation time for the browser-compositor.
-  if (std::optional<blink::RecordContentToVisibleTimeRequest>
-          delegated_visible_time_request =
-              visible_time_request.ExtractTabSwitchEventsWithSavedFrame()) {
-    browser_compositor_->GetDelegatedFrameHost()
-        ->RequestSuccessfulPresentationTimeForNextFrame(
-            std::move(*delegated_visible_time_request));
-  }
+  SendVisibleTimeRequestToDelegatedFrameHost(
+      visible_time_request, browser_compositor_->GetDelegatedFrameHost());
 
   if (!visible_time_request.events.empty()) {
     host()->RequestSuccessfulPresentationTimeForNextFrame(
