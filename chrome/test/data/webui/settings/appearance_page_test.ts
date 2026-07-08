@@ -7,7 +7,7 @@ import type {CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement
 import {AppearanceBrowserProxyImpl, ColorSchemeMode, CrSettingsPrefs, customizeColorSchemeModeBrowserProxyFactory, CustomizeColorSchemeModeHandlerRemote, loadTimeData, MetricsBrowserProxyImpl, PrefsBrowserProxy, PrefService, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
-import {fakeDataBind, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -25,6 +25,7 @@ let metricsBrowserProxy: TestMetricsBrowserProxy;
 
 let settingsPrefs: SettingsPrefsElement;
 let settingsPrivate: FakeSettingsPrivate;
+let prefService: PrefService;
 
 async function createAppearancePage() {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -180,6 +181,11 @@ async function createAppearancePage() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     },
+    {
+      key: 'browser.ctrl_tab_mru',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
   ];
   const prefsBrowserProxy = new TestPrefsBrowserProxy(fakePrefs);
   PrefsBrowserProxy.setInstance(prefsBrowserProxy);
@@ -192,10 +198,13 @@ async function createAppearancePage() {
   PrefService.resetInstanceForTesting();
   await PrefService.getInstance().whenInitialized();
   await CrSettingsPrefs.initialized;
+  prefService = PrefService.getInstance();
 
   appearancePage = document.createElement('settings-appearance-page');
   appearancePage.prefs = settingsPrefs.prefs!;
   fakeDataBind(settingsPrefs, appearancePage, 'prefs');
+
+  document.body.appendChild(settingsPrefs);
   document.body.appendChild(appearancePage);
 }
 
@@ -322,13 +331,18 @@ suite('AppearancePage', function() {
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
     // "Reset to default" button doesn't appear as result of a policy theme.
-    appearancePage.set(POLICY_THEME_COLOR_PREF, {controlledBy: 'PRIMARY_USER'});
+    appearancePage.set(
+        `${POLICY_THEME_COLOR_PREF}.controlledBy`, 'PRIMARY_USER');
+    appearancePage.set(
+        `${POLICY_THEME_COLOR_PREF}.enforcement`,
+        chrome.settingsPrivate.Enforcement.ENFORCED);
     flush();
 
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
     // Unset policy theme and set custom theme to get button to show.
-    appearancePage.set(POLICY_THEME_COLOR_PREF, {});
+    appearancePage.set(`${POLICY_THEME_COLOR_PREF}.controlledBy`, undefined);
+    appearancePage.set(`${POLICY_THEME_COLOR_PREF}.enforcement`, undefined);
     appearancePage.set(THEME_ID_PREF, 'fake theme id');
     flush();
 
@@ -338,7 +352,11 @@ suite('AppearancePage', function() {
 
     // Clicking "Reset to default" button when a policy theme is applied
     // causes the managed theme dialog to appear.
-    appearancePage.set(POLICY_THEME_COLOR_PREF, {controlledBy: 'PRIMARY_USER'});
+    appearancePage.set(
+        `${POLICY_THEME_COLOR_PREF}.controlledBy`, 'PRIMARY_USER');
+    appearancePage.set(
+        `${POLICY_THEME_COLOR_PREF}.enforcement`,
+        chrome.settingsPrivate.Enforcement.ENFORCED);
     flush();
 
     button =
@@ -413,7 +431,7 @@ suite('AppearancePage', function() {
     appearanceBrowserProxy.reset();
 
     // Trigger observer by changing the pref.
-    appearancePage.setPrefValue('browser.pin_split_tab_button', true);
+    await prefService.setPrefValue('browser.pin_split_tab_button', true);
 
     await appearanceBrowserProxy.whenCalled('pinnedToolbarActionsAreDefault');
     await microtasksFinished();
@@ -437,7 +455,7 @@ suite('AppearancePage', function() {
     appearanceBrowserProxy.reset();
 
     // Trigger observer by changing the pref.
-    appearancePage.setPrefValue('browser.pin_contextual_task_button', true);
+    await prefService.setPrefValue('browser.pin_contextual_task_button', true);
 
     await appearanceBrowserProxy.whenCalled('pinnedToolbarActionsAreDefault');
     await microtasksFinished();
@@ -503,9 +521,8 @@ suite('AppearancePage', function() {
     assertFalse(
         !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
-
-    appearancePage.setPrefValue('browser.show_home_button', true);
-    await flushTasks();
+    await prefService.setPrefValue('browser.show_home_button', true);
+    await microtasksFinished();
 
     assertTrue(
         !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
@@ -538,7 +555,7 @@ suite('AppearancePage', function() {
       showSplitViewDragAndDropSetting: true,
     });
     await createAppearancePage();
-    appearancePage.setPrefValue(
+    await prefService.setPrefValue(
         'browser.split_view_drag_and_drop_enabled', true);
     await microtasksFinished();
 
@@ -550,8 +567,9 @@ suite('AppearancePage', function() {
 
     toggle.click();
     await microtasksFinished();
-    assertFalse(appearancePage.get(
-        'prefs.browser.split_view_drag_and_drop_enabled.value'));
+    assertFalse(
+        prefService.getPref<boolean>('browser.split_view_drag_and_drop_enabled')
+            .value);
   });
 
   test('ShowSavedTabGroupsHiddenWithProjectsPanel', async function() {

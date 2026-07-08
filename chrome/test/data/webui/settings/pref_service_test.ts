@@ -4,6 +4,7 @@
 
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -46,6 +47,19 @@ suite('PrefService', function() {
     assertThrows(() => {
       service.getPref('unknown.pref');
     });
+  });
+
+  test('AddObserverThrowsForUnknownPref', async function() {
+    const rejectionPromise = eventToPromise('unhandledrejection', window);
+
+    service.addObserver('unknown.pref', () => {});
+
+    const rejectionEvent = await rejectionPromise;
+    rejectionEvent.preventDefault();
+    const error = rejectionEvent.reason as Error;
+    assertEquals(
+        'Assertion failed: pref \'unknown.pref\' not found in cache',
+        error.message);
   });
 
   test('SetPrefValueSuccess', async function() {

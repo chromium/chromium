@@ -194,7 +194,7 @@ suite('SettingsDropdownMenu', function() {
         'key2': 'value2',
       },
     };
-    dropdown.prefKey = 'key2';
+    dropdown.dictionaryPrefPath = 'key2';
     dropdown.menuOptions = [
       {value: 'value2', name: 'Option 2'},
       {value: 'value3', name: 'Option 3'},

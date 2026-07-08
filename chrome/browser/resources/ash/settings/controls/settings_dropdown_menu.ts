@@ -74,7 +74,7 @@ export class SettingsDropdownMenuElement extends
          If this is a dictionary pref, this is the key for the item
           we are interested in.
        */
-      prefKey: {
+      dictionaryPrefPath: {
         type: String,
         value: null,
       },
@@ -95,13 +95,13 @@ export class SettingsDropdownMenuElement extends
 
   static get observers() {
     return [
-      'updateSelected_(menuOptions, pref.value.*, prefKey)',
+      'updateSelected_(menuOptions, pref.value.*, dictionaryPrefPath)',
     ];
   }
 
   menuOptions: DropdownMenuOptionList;
   disabled: boolean;
-  prefKey: string|null;
+  dictionaryPrefPath: string|null;
   notFoundValue: string;
   label: string;
 
@@ -120,8 +120,8 @@ export class SettingsDropdownMenuElement extends
     }
 
     assert(this.pref);
-    if (this.prefKey) {
-      this.set(`pref.value.${this.prefKey}`, selected);
+    if (this.dictionaryPrefPath) {
+      this.set(`pref.value.${this.dictionaryPrefPath}`, selected);
     } else {
       const prefValue = stringToPrefValue(selected, this.pref);
       if (prefValue !== undefined) {
@@ -140,7 +140,7 @@ export class SettingsDropdownMenuElement extends
    */
   private updateSelected_(): void {
     if (this.menuOptions === undefined || this.pref === undefined ||
-        this.prefKey === undefined) {
+        this.dictionaryPrefPath === undefined) {
       return;
     }
 
@@ -165,9 +165,9 @@ export class SettingsDropdownMenuElement extends
    * Gets the current value of the preference as a string.
    */
   private prefStringValue_(): string {
-    if (this.prefKey) {
+    if (this.dictionaryPrefPath) {
       // Dictionary pref, values are always strings.
-      return this.pref!.value[this.prefKey];
+      return this.pref!.value[this.dictionaryPrefPath];
     } else {
       assert(this.pref);
       return prefToString(this.pref);

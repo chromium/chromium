@@ -29,6 +29,7 @@ export const PrefControlMixin = dedupingMixin(
         }
 
         declare pref?: chrome.settingsPrivate.PrefObject;
+        declare prefKey?: string;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -40,11 +41,15 @@ export const PrefControlMixin = dedupingMixin(
          * found.
          */
         private validatePref_() {
+          if (this.prefKey) {
+            return;
+          }
+
           CrSettingsPrefs.initialized.then(() => {
             if (this.pref === undefined) {
-              console.error(this.getErrorInfo('not found'));
+              console.error(this.getErrorInfo_('not found'));
             } else if (typeof this.pref === 'string') {
-              console.error(this.getErrorInfo('incorrect type string'));
+              console.error(this.getErrorInfo_('incorrect type string'));
             } else if (
                 this.pref.enforcement ===
                 chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {
@@ -58,7 +63,7 @@ export const PrefControlMixin = dedupingMixin(
          * Produce an error message with additional information about the
          * element and host causing the error.
          */
-        private getErrorInfo(message: string): string {
+        private getErrorInfo_(message: string): string {
           let error = `Pref error [${message}] for element ${this.tagName}`;
           if (this.id) {
             error += `#${this.id}`;
@@ -73,4 +78,5 @@ export const PrefControlMixin = dedupingMixin(
 
 export interface PrefControlMixinInterface {
   pref?: chrome.settingsPrivate.PrefObject;
+  prefKey?: string;
 }

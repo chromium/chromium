@@ -143,13 +143,19 @@ export const SettingsBooleanControlMixin = dedupingMixin(
           if (this.pref!.type === chrome.settingsPrivate.PrefType.NUMBER) {
             assert(!this.inverted);
             assert(this.numericUncheckedValues.length > 0);
-            this.set(
-                'pref.value',
+            this.sendPrefChangeInternal(
                 this.checked ? this.numericCheckedValue :
                                this.numericUncheckedValues[0]);
             return;
           }
-          this.set('pref.value', this.inverted ? !this.checked : this.checked);
+          this.sendPrefChangeInternal(
+              this.inverted ? !this.checked : this.checked);
+        }
+
+        // Method to be overridden by classes that are migrating to the
+        // PrefService mechanism.
+        sendPrefChangeInternal(value: boolean|number) {
+          this.set('pref.value', value);
         }
 
         private prefValueChanged_(prefValue: number|boolean) {
@@ -192,4 +198,5 @@ export interface SettingsBooleanControlMixinInterface extends
   notifyChangedByUserInteraction(): void;
   resetToPrefValue(): void;
   sendPrefChange(): void;
+  sendPrefChangeInternal(value: boolean|number): void;
 }

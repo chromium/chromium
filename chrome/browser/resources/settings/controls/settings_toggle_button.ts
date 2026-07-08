@@ -17,6 +17,8 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsBooleanControlMixin} from '/shared/settings/controls/settings_boolean_control_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
@@ -31,7 +33,7 @@ export interface SettingsToggleButtonElement {
 }
 
 const SettingsToggleButtonElementBase =
-    SettingsBooleanControlMixin(PolymerElement);
+    PrefServiceObserverMixin(SettingsBooleanControlMixin(PolymerElement));
 
 export class SettingsToggleButtonElement extends
     SettingsToggleButtonElementBase {
@@ -99,6 +101,12 @@ export class SettingsToggleButtonElement extends
         type: Boolean,
         value: false,
       },
+
+      prefKey: {
+        type: String,
+        value: '',
+        observer: 'onPrefKeyChanged_',
+      },
     };
   }
 
@@ -118,6 +126,7 @@ export class SettingsToggleButtonElement extends
   declare subLabelWithLink: string;
   declare subLabelIcon: string;
   declare noToggleOnHostClick: boolean;
+  declare prefKey: string;
 
   override ready() {
     super.ready();
@@ -224,6 +233,27 @@ export class SettingsToggleButtonElement extends
     this.checked = checked;
     this.notifyChangedByUserInteraction();
     this.fire_('change', this.checked);
+  }
+
+  private onPrefKeyChanged_(newKey: string, oldKey: string) {
+    if (newKey === '' && oldKey === undefined) {
+      return;
+    }
+
+    // Disallow re-assigning the prefKey after initial assignment.
+    assert(!oldKey);
+    this.mirrorPref(newKey, 'pref');
+  }
+
+  override sendPrefChangeInternal(value: boolean|number) {
+    if (this.prefKey) {
+      PrefService.getInstance().setPrefValue(this.prefKey, value);
+      return;
+    }
+
+    // Fallback to the old 'prefs' mechanism if this element hasn't been
+    // migrated to use prefKey yet.
+    super.sendPrefChangeInternal(value);
   }
 }
 

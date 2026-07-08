@@ -108,7 +108,7 @@
     </div>
     <settings-dropdown-menu label="[[lang.language]]"
         pref="{{prefs.settings.tts.lang_to_voice_name}}"
-        pref-key="[[lang.code]]"
+        dictionary-pref-path="[[lang.code]]"
         menu-options="[[menuOptionsForLang_(lang)]]"
         disabled="[[hasOneLanguage_(lang)]]">
     </settings-dropdown-menu>
@@ -130,7 +130,7 @@
       </div>
       <settings-dropdown-menu label="[[lang.language]]"
           pref="{{prefs.settings.tts.lang_to_voice_name}}"
-          pref-key="[[lang.code]]"
+          dictionary-pref-path="[[lang.code]]"
           menu-options="[[menuOptionsForLang_(lang)]]"
           disabled="[[hasOneLanguage_(lang)]]"
           on-settings-control-change="onDefaultTtsVoicePicked_">
