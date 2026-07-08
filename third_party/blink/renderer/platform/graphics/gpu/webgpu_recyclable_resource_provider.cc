@@ -148,36 +148,21 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
           gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
-      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
+      auto client_shared_image = sii->CreateSharedImage(
+          {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+           shared_image_usage_flags, "CanvasResourceRaster"},
+          gpu::kNullSurfaceHandle);
 
-      gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
-                                color_space, kTopLeft_GrSurfaceOrigin,
-                                alpha_type, buffer_usage,
-                                /*is_software=*/false);
-
-      std::optional<base::TimeDelta> expiration_time =
-          (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-              ? std::make_optional(
-                    Canvas2DResourceProvider::kUnusedResourceExpirationTime)
-              : std::nullopt;
-      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
-          expiration_time);
-    }
-  }
-
-  if (image_pool_) {
-    auto resource = image_pool_->GetImage();
-    if (resource) {
-      if (!resource->IsInitialized()) {
-        resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                             hdr_metadata_, /*is_accelerated=*/true);
+      if (client_shared_image) {
+        resource_ = base::MakeRefCounted<CanvasResourceSharedImage>(
+            std::move(client_shared_image));
+        resource_->Initialize(CreateWeakPtr(), context_provider_wrapper_,
+                              hdr_metadata_, /*is_accelerated=*/true);
         ++num_inflight_resources_;
         if (num_inflight_resources_ > max_inflight_resources_) {
           max_inflight_resources_ = num_inflight_resources_;
         }
       }
-      resource_ = std::move(resource);
     }
   }
 
@@ -228,15 +213,11 @@ void WebGpuRecyclableResourceProvider::OnContextLost() {
   if (notified_context_lost_) {
     return;
   }
-  ClearUnusedResources();
   notified_context_lost_ = true;
 }
 
 void WebGpuRecyclableResourceProvider::OnContextDestroyed() {
   canvas_image_provider_.reset();
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
 }
 
 // For WebGpu RecyclableCanvasResource.
@@ -249,18 +230,8 @@ void WebGpuRecyclableResourceProvider::OnDestroyRecyclableCanvasResource(
   resource()->WaitSyncToken(sync_token);
 }
 
-void WebGpuRecyclableResourceProvider::ClearUnusedResources() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
 void WebGpuRecyclableResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {
-  if (image_pool_) {
-    image_pool_->ReleaseImage(std::move(resource));
-  }
-}
+    scoped_refptr<CanvasResourceSharedImage>&& resource) {}
 
 gpu::raster::RasterInterface*
 WebGpuRecyclableResourceProvider::RasterInterface() const {
@@ -518,9 +489,6 @@ void WebGpuRecyclableResourceProvider::OnMemoryDump(
                                         reinterpret_cast<uintptr_t>(this));
 
   resource()->OnMemoryDump(pmd, path);
-
-  std::string cached_path = path + "/cached";
-  image_pool_->OnMemoryDump(pmd, cached_path);
 }
 
 size_t WebGpuRecyclableResourceProvider::GetSize() const {

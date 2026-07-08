@@ -17,7 +17,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -154,9 +153,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   gpu::raster::RasterInterface* RasterInterface() const;
   base::WeakPtr<WebGpuRecyclableResourceProvider> CreateWeakPtr();
 
-  // The maximum number of in-flight resources waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 3;
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -185,9 +181,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |image_pool_| will not recycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
