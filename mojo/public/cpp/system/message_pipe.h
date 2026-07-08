@@ -79,7 +79,9 @@ WriteMessageRaw(MessagePipeHandle message_pipe,
 //
 // See documentation for MojoReadMessage for return code details. In addition to
 // those return codes, this may return |MOJO_RESULT_ABORTED| if the message was
-// unable to be serialized into the provided containers.
+// unable to be serialized into the provided containers. It may also return
+// |MOJO_RESULT_RESOURCE_EXHAUSTED| if |handles| is null but the message carries
+// one or more handles.
 MOJO_CPP_SYSTEM_EXPORT MojoResult
 ReadMessageRaw(MessagePipeHandle message_pipe,
                std::vector<uint8_t>* payload,

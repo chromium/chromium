@@ -271,6 +271,47 @@ TEST(CoreCppTest, Basic) {
   }
 }
 
+// Regression test: reading a message that carries handles while passing
+// |handles| == nullptr must return an error.
+TEST(CoreCppTest, ReadMessageRawNullHandlesWithHandleBearingMessage) {
+  ScopedMessagePipeHandle h0;
+  ScopedMessagePipeHandle h1;
+  CreateMessagePipe(nullptr, &h0, &h1);
+
+  // Create a second pipe so we have a handle to attach to the message.
+  MessagePipe mp;
+
+  // Attach |mp.handle1| to a message written from h1 -> h0.
+  const char kHello[] = "hello";
+  const uint32_t kHelloSize = static_cast<uint32_t>(sizeof(kHello) - 1);
+  MojoHandle handles[1];
+  handles[0] = mp.handle1.release().value();
+  EXPECT_NE(kInvalidHandleValue, handles[0]);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            WriteMessageRaw(h1.get(), kHello, kHelloSize, handles,
+                            /*num_handles=*/1, MOJO_WRITE_MESSAGE_FLAG_NONE));
+
+  MojoHandleSignalsState state;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            Wait(h0.get(), MOJO_HANDLE_SIGNAL_READABLE, &state));
+
+  // The message carries a handle but must not crash when we pass |handles| ==
+  // nullptr.
+  std::vector<uint8_t> bytes;
+  EXPECT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED,
+            ReadMessageRaw(h0.get(), &bytes, /*handles=*/nullptr,
+                           MOJO_READ_MESSAGE_FLAG_NONE));
+
+  // On the error path the payload is not populated.
+  EXPECT_TRUE(bytes.empty());
+
+  // No handle leak: the dropped message's destructor closes the attached
+  // handle (the released |mp.handle1|), so |mp.handle0| observes PEER_CLOSED.
+  EXPECT_EQ(MOJO_RESULT_OK,
+            Wait(mp.handle0.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED, &state));
+  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+}
+
 TEST(CoreCppTest, TearDownWithMessagesEnqueued) {
   // Tear down a message pipe which still has a message enqueued, with the
   // message also having a valid message pipe handle.

@@ -69,7 +69,9 @@ MojoResult ReadMessageRaw(MessagePipeHandle message_pipe,
   rv = MojoGetMessageData(message_handle->value(), nullptr, &buffer, &num_bytes,
                           nullptr, &num_handles);
   if (rv == MOJO_RESULT_RESOURCE_EXHAUSTED) {
-    DCHECK(handles);
+    if (!handles) {
+      return MOJO_RESULT_RESOURCE_EXHAUSTED;
+    }
     handles->resize(num_handles);
     rv = MojoGetMessageData(
         message_handle->value(), nullptr, &buffer, &num_bytes,
