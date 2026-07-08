@@ -456,17 +456,10 @@ crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/function
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
-# Random GPU process hangs on this bot are causing random D3D9 test faiures. Retry
-# all tests for the moment so that the test suite can remain enabled on this bot.
-crbug.com/1446091 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/* [ RetryOnFailure ]
 
-crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 
-## D3D9 / AMD / Passthrough
-crbug.com/40864619 [ win amd angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
-crbug.com/402989074 [ win amd-0x7480 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 # Commented out until full procurement is ready since UAT is done.
 # crbug.com/402989074 [ win amd-0x1900 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 # crbug.com/402989074 [ win amd-0x150e angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
@@ -562,7 +555,6 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBG
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/465162387 [ android android-pixel-6 angle-opengles passthrough ] conformance/extensions/oes-element-index-uint.html [ Failure ]
-crbug.com/465162387 [ android-14 android-pixel-6 angle-disabled graphite-disabled no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-element-index-uint.html [ Failure ]
 
 ## Pixel 10 ##
 
