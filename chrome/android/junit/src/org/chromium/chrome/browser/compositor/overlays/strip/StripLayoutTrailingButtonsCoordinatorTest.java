@@ -609,28 +609,15 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testOnLongPress_OnGlicButton() {
-        mCoordinator.onSizeChanged(
-                /* width= */ 1000f,
-                /* rightPadding= */ 10f,
-                /* leftPadding= */ 10f,
-                /* topPadding= */ 10f);
-
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
-
-        float x = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
-        float y = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
-
-        boolean handled = mCoordinator.onLongPress(x, y, /* tabWidthDp= */ 100f);
-        assertTrue(handled);
-        assertFalse(
-                "Glic button should not be pressed after long press menu is shown.",
-                mGlicButton.isPressed());
-        assertTrue("Glic context menu should be showing", mCoordinator.isMenuShowing());
+        verifyGlicButtonContextMenuTriggered(/* viaSecondaryClick= */ false);
     }
 
     @Test
-    // TODO(crbug.com/483475735): Combine into testSecondaryClick after launch
     public void testSecondaryClick_OnGlicButton() {
+        verifyGlicButtonContextMenuTriggered(/* viaSecondaryClick= */ true);
+    }
+
+    private void verifyGlicButtonContextMenuTriggered(boolean viaSecondaryClick) {
         mCoordinator.onSizeChanged(
                 /* width= */ 1000f,
                 /* rightPadding= */ 10f,
@@ -641,13 +628,15 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         float y = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
 
         boolean handled =
-                mCoordinator.click(
-                        0L, x, y, MotionEvent.BUTTON_SECONDARY, 0, /* tabWidthDp= */ 100f);
-        assertTrue(handled);
+                viaSecondaryClick
+                        ? mCoordinator.click(
+                                0L, x, y, MotionEvent.BUTTON_SECONDARY, 0, /* tabWidthDp= */ 100f)
+                        : mCoordinator.onLongPress(x, y, /* tabWidthDp= */ 100f);
+        assertTrue("Context menu trigger should be handled.", handled);
         assertFalse(
-                "Glic button should not be pressed after long press menu is shown.",
+                "Glic button should not be pressed after context menu is shown.",
                 mGlicButton.isPressed());
-        assertTrue("Glic context menu should be showing", mCoordinator.isMenuShowing());
+        assertTrue("Glic context menu should be showing.", mCoordinator.isMenuShowing());
     }
 
     @Test
