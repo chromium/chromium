@@ -165,9 +165,13 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
   if (::chromeos::features::IsCachedLocationProviderEnabled()) {
-    SystemLocationProvider::Initialize(std::make_unique<CachedLocationProvider>(
+    auto cached_location_provider = std::make_unique<CachedLocationProvider>(
         std::make_unique<LocationFetcher>(
-            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
+            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
+    // Disable rate limiting in tests so that mock location updates propagate
+    // immediately.
+    cached_location_provider->SetRateLimitForTesting(base::TimeDelta::Min());
+    SystemLocationProvider::Initialize(std::move(cached_location_provider));
   } else {
     SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
         std::make_unique<LocationFetcher>(

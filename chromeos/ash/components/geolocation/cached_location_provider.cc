@@ -150,7 +150,7 @@ constexpr base::FeatureParam<geolocation::SimilarityDegree>::Option
 const base::FeatureParam<geolocation::SimilarityDegree>
     kCacheEvictionToleranceParam{&chromeos::features::kCachedLocationProvider,
                                  "tolerance",
-                                 geolocation::SimilarityDegree::kLoose,
+                                 geolocation::SimilarityDegree::kModerate,
                                  &kEvictionStrategyToleranceOptions};
 
 // Returns the `CacheEviction` strategy configured by the feature parameter -

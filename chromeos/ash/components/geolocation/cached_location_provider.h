@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   GetEvictionStrategiesUnderTest();
 
   base::TimeDelta GetRateLimitForTesting() { return rate_limit_; }
+  void SetRateLimitForTesting(base::TimeDelta rate_limit) {
+    rate_limit_ = rate_limit;
+  }
   geolocation::CacheEviction* GetEvictionStrategyForTesting() {
     return cache_eviction_method_.get();
   }
