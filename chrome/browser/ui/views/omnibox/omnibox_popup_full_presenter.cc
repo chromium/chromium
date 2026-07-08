@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_utils.h"
 
 OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
@@ -94,19 +95,26 @@ void OmniboxPopupFullPresenter::Hide() {
   OmniboxPopupPresenterBase::Hide();
 }
 
-std::string_view OmniboxPopupFullPresenter::GetPopupMetricPrefix() const {
-  return OmniboxPopupPresenterBase::kFullWebUIPopupMetricPrefix;
+void OmniboxPopupFullPresenter::RequestFocus() {
+  if (GetWidget() && ShouldReceiveFocus()) {
+    if (!GetWidget()->IsActive()) {
+      GetWidget()->Activate();
+      if (GetUIContainer() && GetUIContainer()->GetWidget()) {
+        if (auto* focus_manager =
+                GetUIContainer()->GetWidget()->GetFocusManager()) {
+          // Clear stored focus on the container widget so that activating the
+          // popup widget does not restore stale focus or steal focus back from
+          // the WebUI input.
+          focus_manager->SetStoredFocusView(nullptr);
+        }
+      }
+    }
+  }
+  OmniboxPopupPresenterBase::RequestFocus();
 }
 
-void OmniboxPopupFullPresenter::WidgetDestroyed() {
-  forward_events_timer_.Stop();
-  // Update the popup state manager if widget was destroyed externally, e.g., by
-  // the OS. This ensures the popup state manager stays in sync.
-  if (controller()->popup_state_manager()->popup_state() ==
-      OmniboxPopupState::kFull) {
-    controller()->popup_state_manager()->SetPopupState(
-        OmniboxPopupState::kNone);
-  }
+std::string_view OmniboxPopupFullPresenter::GetPopupMetricPrefix() const {
+  return OmniboxPopupPresenterBase::kFullWebUIPopupMetricPrefix;
 }
 
 std::optional<base::TimeDelta>
@@ -131,6 +139,10 @@ OmniboxPopupFullPresenter::CreateResultsFrame(
     bool forward_mouse_events) {
   return std::make_unique<FullWebUIOmniboxFrame>(
       contents.release(), location_bar, forward_mouse_events);
+}
+
+bool OmniboxPopupFullPresenter::ShouldPreserveRequestedFocus() const {
+  return true;
 }
 
 void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
@@ -177,6 +189,17 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
 
   widget_bounds.Inset(-results_frame->GetInsets());
   GetWidget()->SetBounds(widget_bounds);
+}
+
+void OmniboxPopupFullPresenter::WidgetDestroyed() {
+  forward_events_timer_.Stop();
+  // Update the popup state manager if widget was destroyed externally, e.g., by
+  // the OS. This ensures the popup state manager stays in sync.
+  if (controller()->popup_state_manager()->popup_state() ==
+      OmniboxPopupState::kFull) {
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
 }
 
 void OmniboxPopupFullPresenter::StopForwardingEvents() {

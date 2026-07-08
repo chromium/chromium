@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "ui/base/models/menu_model.h"
 
 OmniboxPopupHandler::OmniboxPopupHandler(
@@ -35,22 +35,6 @@ void OmniboxPopupHandler::CloseUI() {
   }
 }
 
-void OmniboxPopupHandler::OnManualBlur(uint32_t sequence_number) {
-  // Guard 1: Sequence Guard. Reject stale manual blurs originating from a
-  // previous tab state (e.g., during rapid tab switching).
-  if (sequence_number < current_sequence_number_) {
-    return;
-  }
-
-  if (controller_) {
-    // TODO(b/527049398): Decouple from the edit model. It might make the most
-    // sense to use a delegate interface implemented by the view here.
-    if (auto* popup_view = controller_->edit_model()->popup_view()) {
-      popup_view->OnManualBlur();
-    }
-  }
-}
-
 void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
                                              uint32_t sequence_number,
                                              bool show_full_url) {
@@ -66,9 +50,35 @@ void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
     return;
   }
   if (controller_) {
-    // TODO(b/527049398): Decouple from the edit model. It might make the most
-    // sense to use a delegate interface implemented by the view here.
+    controller_->edit_model()->Revert();
+  }
+  latest_selection_ = gfx::Range(0, 0);
+}
+
+void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {
+  if (sequence_number < current_sequence_number_) {
+    return;
+  }
+  latest_selection_ = gfx::Range(0, 0);
+  if (controller_) {
     controller_->edit_model()->SetUserText(std::u16string());
+    // TODO(b/504668292): Vet if this setting of `SetWindowTextAndCaretPos` can
+    // be removed. Right now `FullWebUIOmniboxInteractiveTest.ClearAndSwitchTab`
+    // relies on this, since it checks if the Views Omnibox has the same string
+    // as the WebUI Omnibox, but it might not be needed in production.
+    if (controller_->edit_model()->view()) {
+      controller_->edit_model()->view()->SetWindowTextAndCaretPos(
+          /*text=*/std::u16string(), /*caret_pos=*/0, /*update_popup=*/false,
+          /*notify_text_changed=*/false);
+    }
+  }
+}
+
+void OmniboxPopupHandler::RequestInputState() {
+  auto* edit_model = controller_ ? controller_->edit_model() : nullptr;
+  auto* popup_view = edit_model ? edit_model->popup_view() : nullptr;
+  if (popup_view) {
+    popup_view->SyncNativeStateToWebUI();
   }
 }
 
@@ -91,6 +101,7 @@ void OmniboxPopupHandler::SetInputState(
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
   current_sequence_number_++;
+
   auto state = omnibox_popup::mojom::OmniboxInputState::New();
   state->sequence_number = current_sequence_number_;
   state->text = text;
@@ -101,6 +112,10 @@ void OmniboxPopupHandler::SetInputState(
   state->permanent_display_text = permanent_display_text;
   state->show_full_url = show_full_url;
   page_->SetInputState(std::move(state));
+}
+
+void OmniboxPopupHandler::SetFocus(bool is_focused) {
+  page_->SetFocus(is_focused);
 }
 
 void OmniboxPopupHandler::LogEscapeAction(

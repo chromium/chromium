@@ -7,10 +7,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +60,12 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(OmniboxPopupHandlerTest, OnShow) {
   EXPECT_CALL(page_, OnShow());
   handler_->OnShow();
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetFocus) {
+  EXPECT_CALL(page_, SetFocus(true));
+  handler_->SetFocus(true);
   page_.FlushForTesting();
 }
 
@@ -113,6 +123,95 @@ TEST_F(OmniboxPopupHandlerTest, OnSelectionChangedSequenceGuard) {
   // A call with active sequence number 1 should be accepted.
   handler_->OnSelectionChanged(selection2, 1, false);
   EXPECT_EQ(handler_->latest_selection(), selection2);
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnInputClearedSynchronicity) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto test_omnibox_view =
+      std::make_unique<TestOmniboxView>(omnibox_controller.get());
+  omnibox_controller->edit_model()->set_view(test_omnibox_view.get());
+
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+
+  // Re-initialize handler_ with the non-null controller
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  // Set some user text to ensure it's not empty initially.
+  omnibox_controller->edit_model()->SetUserText(u"some text");
+  test_omnibox_view->SetWindowTextAndCaretPos(u"some text", 0, false, false);
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"some text");
+  EXPECT_EQ(test_omnibox_view->GetText(), u"some text");
+
+  // Action: Invoke handler_->OnInputCleared(0);
+  handler_->OnInputCleared(0);
+
+  // Expected Assertions:
+  // Assert that edit_model()->user_text() is empty (u"").
+  // Assert that edit_model()->view()->GetText() is empty (u"").
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"");
+  EXPECT_EQ(test_omnibox_view->GetText(), u"");
+
+  // Reset the handler to avoid dangling raw_ptr to the local
+  // omnibox_controller.
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnInputClearedSequenceGuard) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto test_omnibox_view =
+      std::make_unique<TestOmniboxView>(omnibox_controller.get());
+  omnibox_controller->edit_model()->set_view(test_omnibox_view.get());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("test", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false);
+  omnibox_controller->edit_model()->SetUserText(u"some text");
+  test_omnibox_view->SetWindowTextAndCaretPos(u"some text", 0, false, false);
+
+  handler_->OnInputCleared(/*sequence_number=*/0);
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"some text");
+  EXPECT_EQ(test_omnibox_view->GetText(), u"some text");
+
+  handler_->OnInputCleared(/*sequence_number=*/1);
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"");
+  EXPECT_EQ(test_omnibox_view->GetText(), u"");
+
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, RevertSequenceGuard) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto test_omnibox_view =
+      std::make_unique<TestOmniboxView>(omnibox_controller.get());
+  omnibox_controller->edit_model()->set_view(test_omnibox_view.get());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("test", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false);
+  omnibox_controller->edit_model()->SetUserText(u"draft text");
+
+  handler_->Revert(/*sequence_number=*/0);
+  EXPECT_EQ(omnibox_controller->edit_model()->user_text(), u"draft text");
+
+  handler_->Revert(/*sequence_number=*/1);
+  EXPECT_FALSE(omnibox_controller->edit_model()->user_input_in_progress());
+
+  handler_.reset();
 }
 
 }  // namespace

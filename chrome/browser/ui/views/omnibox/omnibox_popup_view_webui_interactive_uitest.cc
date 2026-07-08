@@ -314,6 +314,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
   int initial_tab_index = browser()->tab_strip_model()->active_index();
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Focus the location bar to ensure the Omnibox has active focus.
+  location_bar()->FocusLocation(/*is_user_initiated=*/true,
+                                /*clear_focus_if_failed=*/false);
+
   // Type text in the omnibox of the active tab (new tab) and select it.
   omnibox_view()->SetUserText(u"test query");
   omnibox_view()->SelectAll(false);
@@ -341,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
   // Switch back to the initial tab.
   browser()->tab_strip_model()->ActivateTabAt(initial_tab_index);
 
-  // Verify the selection is reset when activating a tab with no saved state.
+  // Verify the selection matches the focus state when activating a tab with
+  // no saved state.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     auto* popup_view_check = static_cast<OmniboxPopupViewWebUI*>(
         location_bar()->GetOmniboxPopupView());
@@ -357,8 +363,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchNoSavedState) {
     auto* popup_ui_check = static_cast<OmniboxPopupUI*>(webui_controller_check);
     auto* popup_handler_check =
         popup_ui_check ? popup_ui_check->popup_handler() : nullptr;
+    const bool has_focus = controller()->edit_model()->has_focus();
+    const gfx::Range expected_selection =
+        has_focus ? gfx::Range(0, controller()
+                                      ->edit_model()
+                                      ->GetPermanentDisplayText()
+                                      .length())
+                  : gfx::Range(0, 0);
     return popup_handler_check &&
-           popup_handler_check->latest_selection() == gfx::Range(0, 0);
+           popup_handler_check->latest_selection() == expected_selection;
   }));
 }
 
