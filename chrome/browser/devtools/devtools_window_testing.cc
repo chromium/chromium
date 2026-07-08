@@ -237,6 +237,7 @@ void DevToolsDisabler::DisableDevTools() {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
   provider_.UpdateChromePolicy(policies);
+  content::RunAllTasksUntilIdle();
 }
 
 // DevToolsWindowCreationObserver ---------------------------------------------

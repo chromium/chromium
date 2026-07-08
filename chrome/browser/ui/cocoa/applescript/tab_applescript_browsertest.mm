@@ -73,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ViewSource) {
             ExecuteViewSourceCommand(tab_applescript));
 }
 
-// TODO(crbug.com/527722086): Flaky tests.
-IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, DISABLED_ExecuteJavascript) {
+IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
   Profile* profile = browser()->profile();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
