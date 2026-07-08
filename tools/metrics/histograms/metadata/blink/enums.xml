@@ -6531,7 +6531,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5788" label="AudioContextPlaybackStats"/>
   <int value="5789" label="ParseFromStringXML"/>
   <int value="5790" label="NonParentOriginInitiatedNavigationOfSubframe"/>
-  <int value="5791" label="ModelContextRegisterToolIDL"/>
+  <int value="5791" label="ModelContextRegisterTool"/>
   <int value="5792" label="ModelContextRegisterDeclarativeTool"/>
   <int value="5793" label="LanguageModel_ContextUsage"/>
   <int value="5794" label="LanguageModel_ContextWindow"/>
@@ -6539,7 +6539,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5796" label="V8WindowClient_Navigate_Method"/>
   <int value="5797" label="LanguageModel_OnQuotaOverflow"/>
   <int value="5798" label="LanguageModel_OnContextOverflow"/>
-  <int value="5799" label="ModelContextExecuteToolAllExecutions"/>
+  <int value="5799" label="ModelContextExecuteImperativeTool"/>
   <int value="5800" label="ModelContextExecuteDeclarativeTool"/>
   <int value="5801" label="ModelContextExecuteDeclarativeAutosubmit"/>
   <int value="5802" label="Prerender2CrossOriginIframes"/>
@@ -6648,7 +6648,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5901" label="SubtleCryptoGetPublicKey"/>
   <int value="5902" label="CapabilityDelegationOfDigitalCredentialsCreate"/>
   <int value="5903" label="CapabilityDelegationOfDigitalCredentialsGet"/>
-  <int value="5904" label="ModelContextGetToolsIDL"/>
+  <int value="5904" label="ModelContextGetTools"/>
   <int value="5905" label="WebSpeechSttAvailable"/>
   <int value="5906" label="WebSpeechSttStart"/>
   <int value="5907" label="WebSpeechSttResultRetrieved"/>
@@ -6691,7 +6691,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5940" label="RTCSctpSnapNegotiated"/>
   <int value="5941" label="V8RTC_StartDiagnosticLogging_Method"/>
   <int value="5942" label="SpeculationRulesModerateViewportHeuristicsControl"/>
-  <int value="5943" label="ModelContextExecuteToolIDL"/>
+  <int value="5943" label="ModelContextExecuteTool"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -9142,7 +9142,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="424" label="DRAFT_InstallElement"/>
   <int value="425" label="LanguageDetector"/>
   <int value="426" label="Translator"/>
-  <int value="427" label="NavigatorModelcontext"/>
+  <int value="427" label="DocumentModelcontext"/>
   <int value="428" label="LoadingLazyMedia"/>
   <int value="429" label="ManifestLocalization"/>
   <int value="430" label="ContrastColor"/>

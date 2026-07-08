@@ -5105,7 +5105,7 @@ enum WebFeature {
   kAudioContextPlaybackStats = 5788,
   kParseFromStringXML = 5789,
   kNonParentOriginInitiatedNavigationOfSubframe = 5790,
-  kModelContextRegisterToolIDL = 5791,
+  kModelContextRegisterTool = 5791,
   kModelContextRegisterDeclarativeTool = 5792,
   kLanguageModel_ContextUsage = 5793,
   kLanguageModel_ContextWindow = 5794,
@@ -5113,7 +5113,7 @@ enum WebFeature {
   kV8WindowClient_Navigate_Method = 5796,
   kLanguageModel_OnQuotaOverflow = 5797,
   kLanguageModel_OnContextOverflow = 5798,
-  kModelContextExecuteToolAllExecutions = 5799,
+  kModelContextExecuteImperativeTool = 5799,
   kModelContextExecuteDeclarativeTool = 5800,
   kModelContextExecuteDeclarativeAutosubmit = 5801,
   kPrerender2CrossOriginIframes = 5802,
@@ -5218,7 +5218,7 @@ enum WebFeature {
   kSubtleCryptoGetPublicKey = 5901,
   kCapabilityDelegationOfDigitalCredentialsCreate = 5902,
   kCapabilityDelegationOfDigitalCredentialsGet = 5903,
-  kModelContextGetToolsIDL = 5904,
+  kModelContextGetTools = 5904,
   kWebSpeechSttAvailable = 5905,
   kWebSpeechSttStart = 5906,
   kWebSpeechSttResultRetrieved = 5907,
@@ -5257,7 +5257,7 @@ enum WebFeature {
   kRTCSctpSnapNegotiated = 5940,
   kV8RTC_StartDiagnosticLogging_Method = 5941,
   kSpeculationRulesModerateViewportHeuristicsControl = 5942,
-  kModelContextExecuteToolIDL = 5943,
+  kModelContextExecuteTool = 5943,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

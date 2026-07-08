@@ -628,8 +628,7 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                                  const String& input_arguments,
                                  AbortSignal* signal,
                                  ScriptToolExecutedCallback tool_executed_cb) {
-  UseCounter::Count(document_,
-                    WebFeature::kModelContextExecuteToolAllExecutions);
+  UseCounter::Count(document_, WebFeature::kModelContextExecuteImperativeTool);
   ScriptState* script_state = tool_function->CallbackRelevantScriptState();
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());

@@ -57,9 +57,9 @@ dictionary ModelContextGetToolOptions {
     SecureContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext : EventTarget {
-  [CallWith=ScriptState, MeasureAs=ModelContextRegisterToolIDL] Promise<undefined> registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
-  [CallWith=ScriptState, MeasureAs=ModelContextGetToolsIDL] Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
-  [CallWith=ScriptState, MeasureAs=ModelContextExecuteToolIDL] Promise<DOMString?> executeTool(
+  [CallWith=ScriptState, MeasureAs=ModelContextRegisterTool] Promise<undefined> registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+  [CallWith=ScriptState, MeasureAs=ModelContextGetTools] Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
+  [CallWith=ScriptState, MeasureAs=ModelContextExecuteTool] Promise<DOMString?> executeTool(
       RegisteredTool tool,
       DOMString input_arguments,
       optional ExecuteToolOptions options = {}

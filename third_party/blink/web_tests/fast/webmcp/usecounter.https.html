@@ -12,22 +12,22 @@
 </form>
 <script>
 // Use counter IDs from web_feature.mojom
-const kModelContextRegisterToolIDL = 5791;
+const kModelContextRegisterTool = 5791;
 const kModelContextRegisterDeclarativeTool = 5792;
-const kModelContextExecuteToolAllExecutions = 5799;
+const kModelContextExecuteImperativeTool = 5799;
 const kModelContextExecuteDeclarativeTool = 5800;
 const kModelContextExecuteDeclarativeAutosubmit = 5801;
-const kModelContextGetToolsIDL = 5904;
-const kModelContextExecuteToolIDL = 5943;
+const kModelContextGetTools = 5904;
+const kModelContextExecuteTool = 5943;
 
 promise_test(async () => {
-    assert_false(internals.isUseCounted(document, kModelContextGetToolsIDL));
+    assert_false(internals.isUseCounted(document, kModelContextGetTools));
     await document.modelContext.getTools();
-    assert_true(internals.isUseCounted(document, kModelContextGetToolsIDL));
+    assert_true(internals.isUseCounted(document, kModelContextGetTools));
 }, "getTools use counter");
 
 promise_test(async () => {
-    assert_false(internals.isUseCounted(document, kModelContextRegisterToolIDL));
+    assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
 
     document.modelContext.registerTool({
@@ -36,10 +36,10 @@ promise_test(async () => {
         description: "dummy",
         inputSchema: { type: "object", properties: {} },
     });
-    assert_true(internals.isUseCounted(document, kModelContextRegisterToolIDL));
+    assert_true(internals.isUseCounted(document, kModelContextRegisterTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
 
-    internals.clearUseCounter(document, kModelContextRegisterToolIDL);
+    internals.clearUseCounter(document, kModelContextRegisterTool);
     internals.clearUseCounter(document, kModelContextRegisterDeclarativeTool);
 
     const f1 = document.getElementById("f1");
@@ -49,11 +49,11 @@ promise_test(async () => {
     await waitForTool("declarative1");
 
     assert_true(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
-    assert_false(internals.isUseCounted(document, kModelContextRegisterToolIDL));
+    assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
 }, "Registration use counters");
 
 promise_test(async () => {
-    internals.clearUseCounter(document, kModelContextExecuteToolAllExecutions);
+    internals.clearUseCounter(document, kModelContextExecuteImperativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
 
@@ -64,30 +64,30 @@ promise_test(async () => {
     try {
         await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
-    assert_true(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
     assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
 }, "Imperative execution use counter");
 
 promise_test(async () => {
-    internals.clearUseCounter(document, kModelContextExecuteToolAllExecutions);
-    internals.clearUseCounter(document, kModelContextExecuteToolIDL);
+    internals.clearUseCounter(document, kModelContextExecuteImperativeTool);
+    internals.clearUseCounter(document, kModelContextExecuteTool);
     const tools = await document.modelContext.getTools();
     const tool = tools.find(t => t.name === "imperative");
     assert_true(!!tool, "imperative tool should be found");
 
     const executePromise = document.modelContext.executeTool(tool, "{}");
-    assert_true(internals.isUseCounted(document, kModelContextExecuteToolIDL), 'counted synchronously upon executeTool() IDL method invocation');
-    assert_false(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions), 'not counted synchronously upon executeTool() method invocation');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteTool), 'counted synchronously upon executeTool() IDL method invocation');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool), 'not counted synchronously upon executeTool() method invocation');
 
     try {
         await executePromise;
     } catch (e) {}
-    assert_true(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions), 'counted during tool callback execution');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteImperativeTool), 'counted during tool callback execution');
 }, "Imperative executeTool() timing and observability use counter");
 
 promise_test(async () => {
-    internals.clearUseCounter(document, kModelContextExecuteToolAllExecutions);
+    internals.clearUseCounter(document, kModelContextExecuteImperativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
 
@@ -96,13 +96,13 @@ promise_test(async () => {
     try {
         await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
-    assert_false(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
     assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
 }, "Declarative execution use counter (no autosubmit)");
 
 promise_test(async () => {
-    internals.clearUseCounter(document, kModelContextExecuteToolAllExecutions);
+    internals.clearUseCounter(document, kModelContextExecuteImperativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
     internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
 
@@ -117,7 +117,7 @@ promise_test(async () => {
     try {
         await document.modelContext.executeTool(tool, "invalid json");
     } catch (e) {}
-    assert_false(internals.isUseCounted(document, kModelContextExecuteToolAllExecutions),'imperative execution');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
 }, "Declarative execution use counter (with autosubmit)");
