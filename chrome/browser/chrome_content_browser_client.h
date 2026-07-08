@@ -634,7 +634,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;
   void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
-  void BindUtilityHostReceiver(mojo::GenericPendingReceiver receiver) override;
+  void BindUtilityHostReceiver(const std::string& service_name,
+                               mojo::GenericPendingReceiver receiver) override;
   void BindHostReceiverForRenderer(
       content::RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) override;

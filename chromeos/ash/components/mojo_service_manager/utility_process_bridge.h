@@ -15,6 +15,7 @@ namespace ash::mojo_service_manager {
 // bridge in Ash is needed to forward the requests from utility process to the
 // mojo service manager.
 void EstablishUtilityProcessBridge(
+    const std::string& utility_service_name,
     mojo::PendingReceiver<chromeos::mojo_service_manager::mojom::ServiceManager>
         pending_receiver);
 
