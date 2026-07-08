@@ -453,7 +453,17 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoStartJob() {
 }
 
 void HostResolverManager::ServiceEndpointRequestImpl::OnIOComplete(int rv) {
-  DoLoop(rv);
+  rv = DoLoop(rv);
+  if (rv != ERR_IO_PENDING) {
+    // The request finished synchronously in DoLoop() (e.g. resolved locally
+    // after an asynchronous IPv6 reachability check). Start() has already
+    // returned ERR_IO_PENDING, so the delegate needs to be notified of the
+    // completion here.
+    CHECK(delegate_);
+    delegate_->OnServiceEndpointRequestFinished(
+        HostResolver::SquashErrorCode(rv));
+    // Do not add code below. `this` may be deleted at this point.
+  }
 }
 
 void HostResolverManager::ServiceEndpointRequestImpl::

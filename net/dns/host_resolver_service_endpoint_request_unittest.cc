@@ -630,6 +630,49 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
 }
 
+// Test that a request that resolves locally (an IP literal) after an
+// asynchronous IPv6 reachability check notifies the delegate of the
+// completion.
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncIpLiteral) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  Requester requester = CreateRequester("https://127.0.0.1");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)))));
+}
+
+// Test that a request that resolves locally (a host cache hit) after an
+// asynchronous IPv6 reachability check notifies the delegate of the
+// completion.
+TEST_F(HostResolverServiceEndpointRequestTest,
+       Ipv6GloballyReachableCheckAsyncCacheHit) {
+  set_globally_reachable_check_is_async(true);
+  UseNonDelayedDnsRules("ok");
+
+  IPEndPoint cached_endpoint1 = MakeIPEndPoint("192.0.2.1", 443);
+  IPEndPoint cached_endpoint2 = MakeIPEndPoint("2001:db8::1", 443);
+  PopulateCacheForUrl("https://ok", {cached_endpoint1, cached_endpoint2});
+
+  Requester requester = CreateRequester("https://ok");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(
+      requester.finished_endpoints(),
+      ElementsAre(ExpectServiceEndpoint(ElementsAre(cached_endpoint1),
+                                        ElementsAre(cached_endpoint2))));
+}
+
 TEST_F(HostResolverServiceEndpointRequestTest, EndpointsAreSorted) {
   MockDnsClientRuleList rules;
   constexpr const char* kHost = "multiple";
