@@ -122,8 +122,13 @@ DataTypeStoreServiceImpl::DataTypeStoreServiceImpl(
     : sync_path_(base_path.Append(base::FilePath(kSyncDataFolderName))),
       leveldb_path_(sync_path_.Append(base::FilePath(kLevelDBFolderName))),
       pref_service_(pref_service),
+      // The backend opens the sync LevelDB on disk during startup, but sync
+      // data is not needed to show the first tab. Use USER_VISIBLE rather than
+      // the default USER_BLOCKING so it does not contend with user-blocking
+      // startup work.
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       store_backend_(DataTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
   bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
