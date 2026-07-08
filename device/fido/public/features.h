@@ -102,40 +102,9 @@ BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 
-// Enables rate limiting of immediate requests based on main frame's eTLD+1.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnImmediateRequestRateLimit);
-
 // Support the WebAuthn Cross-device ("hybrid") fallback URL extension.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
-
-// Parameter controlling the maximum number of immediate requests allowed per
-// origin (eTLD+1) within the time window. This applies to the longer of the
-// two rate limiters.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kWebAuthnImmediateRequestLongRateLimitMaxRequests);
-
-// Parameter controlling the time window (in seconds) for the immediate request
-// rate limit. This applies to the longer of the two rate limiters.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kWebAuthnImmediateRequestLongRateLimitWindowSeconds);
-
-// Parameter controlling the maximum number of immediate requests allowed per
-// origin (eTLD+1) within the time window. This applies to the shorter of the
-// two rate limiters.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kWebAuthnImmediateRequestShortRateLimitMaxRequests);
-
-// Parameter controlling the time window (in seconds) for the immediate request
-// rate limit. This applies to the shorter of the two rate limiters.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kWebAuthnImmediateRequestShortRateLimitWindowSeconds);
 
 // Enables support for the WebAuthenticationRemoteDesktopAllowedOrigins
 // enterprise policy for Isolated Web Apps.

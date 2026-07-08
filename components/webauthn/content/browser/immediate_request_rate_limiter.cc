@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "components/webauthn/core/browser/rate_limiter_slide_window.h"
 #include "content/public/browser/render_frame_host.h"
-#include "device/fido/public/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 
@@ -40,17 +39,16 @@ bool AcquireFromRateLimiter(
 
 namespace webauthn {
 
-ImmediateRequestRateLimiter::ImmediateRequestRateLimiter() = default;
+ImmediateRequestRateLimiter::ImmediateRequestRateLimiter()
+    : limits_(Limits()) {}
+
+ImmediateRequestRateLimiter::ImmediateRequestRateLimiter(Limits limits)
+    : limits_(limits) {}
 
 ImmediateRequestRateLimiter::~ImmediateRequestRateLimiter() = default;
 
 bool ImmediateRequestRateLimiter::IsRequestAllowed(
     content::RenderFrameHost& render_frame_host) {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnImmediateRequestRateLimit)) {
-    return true;
-  }
-
   const url::Origin top_frame_origin =
       render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
   if (top_frame_origin.host() == "localhost") {
@@ -62,16 +60,12 @@ bool ImmediateRequestRateLimiter::IsRequestAllowed(
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   CHECK(!relying_party.empty());
 
-  return AcquireFromRateLimiter(
-             long_period_rate_limits_, relying_party,
-             device::kWebAuthnImmediateRequestLongRateLimitMaxRequests.Get(),
-             device::kWebAuthnImmediateRequestLongRateLimitWindowSeconds
-                 .Get()) &&
-         AcquireFromRateLimiter(
-             short_period_rate_limits_, relying_party,
-             device::kWebAuthnImmediateRequestShortRateLimitMaxRequests.Get(),
-             device::kWebAuthnImmediateRequestShortRateLimitWindowSeconds
-                 .Get());
+  return AcquireFromRateLimiter(long_period_rate_limits_, relying_party,
+                                limits_.max_requests_long,
+                                limits_.window_seconds_long) &&
+         AcquireFromRateLimiter(short_period_rate_limits_, relying_party,
+                                limits_.max_requests_short,
+                                limits_.window_seconds_short);
 }
 
 }  // namespace webauthn

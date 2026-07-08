@@ -18,7 +18,21 @@ namespace webauthn {
 
 class ImmediateRequestRateLimiter : public KeyedService {
  public:
+  // Rate limiting thresholds and window durations per eTLD+1 (relying party).
+  // A request must pass both the long and short sliding window checks.
+  struct Limits {
+    // Maximum number of requests allowed within `window_seconds_long`.
+    int max_requests_long = 10;
+    // Duration of the long rate limit sliding window in seconds.
+    int window_seconds_long = 60;
+    // Maximum number of requests allowed within `window_seconds_short`.
+    int max_requests_short = 2;
+    // Duration of the short rate limit sliding window in seconds.
+    int window_seconds_short = 5;
+  };
+
   ImmediateRequestRateLimiter();
+  explicit ImmediateRequestRateLimiter(Limits limits);
   ~ImmediateRequestRateLimiter() override;
 
   // Returns true if a request at the current time will not exceed any of the
@@ -32,6 +46,7 @@ class ImmediateRequestRateLimiter : public KeyedService {
       long_period_rate_limits_;
   base::flat_map<std::string, std::unique_ptr<RateLimiterSlideWindow>>
       short_period_rate_limits_;
+  const Limits limits_;
 };
 
 }  // namespace webauthn

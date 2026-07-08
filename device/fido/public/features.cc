@@ -9,16 +9,6 @@
 
 namespace {
 
-// Default maximum number of immediate requests allowed per origin (eTLD+1) for
-// the immediate request long rate limit.
-constexpr int kDefaultMaxRequests = 10;
-// Default time window (in seconds) for the immediate request long rate limit.
-constexpr int kDefaultWindowSeconds = 60;
-// Default maximum number of immediate requests allowed per origin (eTLD+1) for
-// the immediate request short rate limit.
-constexpr int kDefaultMaxRequestsShort = 2;
-// Default time window (in seconds) for the immediate request short rate limit.
-constexpr int kDefaultWindowSecondsShort = 5;
 // Default ttl (in seconds) for keeping the cached opportunistically retrieved
 // key in case its Gaia Id doesn't match to primary signed-in account.
 constexpr int kDefaultOpportunisticRetrievalTimeToKeepCachedKeySeconds = 300;
@@ -148,33 +138,7 @@ BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled by default for immediate get() requests.
-BASE_FEATURE(kWebAuthnImmediateRequestRateLimit,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(int,
-                   kWebAuthnImmediateRequestLongRateLimitMaxRequests,
-                   &kWebAuthnImmediateRequestRateLimit,
-                   "max_requests",
-                   kDefaultMaxRequests);
-
-BASE_FEATURE_PARAM(int,
-                   kWebAuthnImmediateRequestLongRateLimitWindowSeconds,
-                   &kWebAuthnImmediateRequestRateLimit,
-                   "window_seconds",
-                   kDefaultWindowSeconds);
-
-BASE_FEATURE_PARAM(int,
-                   kWebAuthnImmediateRequestShortRateLimitMaxRequests,
-                   &kWebAuthnImmediateRequestRateLimit,
-                   "max_requests_short",
-                   kDefaultMaxRequestsShort);
-
-BASE_FEATURE_PARAM(int,
-                   kWebAuthnImmediateRequestShortRateLimitWindowSeconds,
-                   &kWebAuthnImmediateRequestRateLimit,
-                   "window_seconds_short",
-                   kDefaultWindowSecondsShort);
 
 BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);

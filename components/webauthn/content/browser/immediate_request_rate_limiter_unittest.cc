@@ -35,86 +35,49 @@ class ImmediateRequestRateLimiterTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    SetRateLimitParams(kTestMaxRequestsLong, kTestWindowSecondsLong,
-                       kTestMaxRequestsShort, kTestWindowSecondsShort);
-    EnableRateLimitFeature();
+    ImmediateRequestRateLimiter::Limits limits;
+    limits.max_requests_long = kTestMaxRequestsLong;
+    limits.window_seconds_long = kTestWindowSecondsLong;
+    limits.max_requests_short = kTestMaxRequestsShort;
+    limits.window_seconds_short = kTestWindowSecondsShort;
+    rate_limiter_ = std::make_unique<ImmediateRequestRateLimiter>(limits);
   }
 
-  void SetRateLimitParams(int max_requests_long,
-                          int window_seconds_long,
-                          int max_requests_short,
-                          int window_seconds_short) {
-    feature_params_[device::kWebAuthnImmediateRequestLongRateLimitMaxRequests
-                        .name] = base::NumberToString(max_requests_long);
-    feature_params_[device::kWebAuthnImmediateRequestLongRateLimitWindowSeconds
-                        .name] = base::NumberToString(window_seconds_long);
-    feature_params_[device::kWebAuthnImmediateRequestShortRateLimitMaxRequests
-                        .name] = base::NumberToString(max_requests_short);
-    feature_params_[device::kWebAuthnImmediateRequestShortRateLimitWindowSeconds
-                        .name] = base::NumberToString(window_seconds_short);
-  }
-
-  void EnableRateLimitFeature() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        device::kWebAuthnImmediateRequestRateLimit, feature_params_);
-  }
-
-  void DisableRateLimitFeature() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnImmediateRequestRateLimit);
-  }
-
-  ImmediateRequestRateLimiter rate_limiter_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::map<std::string, std::string> feature_params_;
+  std::unique_ptr<ImmediateRequestRateLimiter> rate_limiter_;
 };
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureDisabled) {
-  DisableRateLimitFeature();
-  NavigateAndCommit(GURL("https://example.com"));
-
-  // Should always allow requests when the feature is disabled.
-  for (int i = 0; i < kTestMaxRequestsLong + 5; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
-        << "Request should be allowed when feature is disabled (attempt "
-        << i + 1 << ")";
-  }
-}
-
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimitShort) {
+TEST_F(ImmediateRequestRateLimiterTest, BasicLimitShort) {
   NavigateAndCommit(GURL("https://example.com"));
 
   // First kTestMaxRequestsShort should be allowed.
   for (int i = 0; i < kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request should be allowed within limit (attempt " << i + 1 << ")";
   }
 
   // The next request should be denied.
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should be denied after exceeding limit";
 
   // Advance time slightly less than the window.
   task_environment()->FastForwardBy(base::Seconds(kTestWindowSecondsShort - 1));
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should still be denied before window expires";
 
   // Advance time past the window. This advances to the end of the long window
   // because the previous requests will exceed the long rate limiter as well.
   task_environment()->FastForwardBy(
       base::Seconds(kTestWindowSecondsLong - kTestWindowSecondsShort + 1));
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should be allowed again after window expires";
 }
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimitLong) {
+TEST_F(ImmediateRequestRateLimiterTest, BasicLimitLong) {
   NavigateAndCommit(GURL("https://example.com"));
 
   // First kTestMaxRequestsShort should be allowed.
   for (int i = 0; i < kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request should be allowed within limit (attempt " << i + 1 << ")";
   }
 
@@ -122,28 +85,28 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimitLong) {
   // allowed requests on the long limiter.
   task_environment()->FastForwardBy(base::Seconds(kTestWindowSecondsShort));
   for (int i = 0; i < kTestMaxRequestsLong - kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request should be allowed within long time limit (attempt " << i + 1
         << ")";
   }
 
   // The next request should be denied.
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should be denied after exceeding limit";
 
   // Advance time slightly less than the window.
   task_environment()->FastForwardBy(
       base::Seconds(kTestWindowSecondsLong - kTestWindowSecondsShort - 1));
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should still be denied before window expires";
 
   // Advance time past the window.
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request should be allowed again after window expires";
 }
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_SubdomainsShareLimit) {
+TEST_F(ImmediateRequestRateLimiterTest, SubdomainsShareLimit) {
   GURL url1("https://a.example.com");
   GURL url2("https://b.example.com");
   GURL url3("https://example.com");
@@ -151,20 +114,20 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_SubdomainsShareLimit) {
   // Use up the limit with origin1.
   NavigateAndCommit(url1);
   for (int i = 0; i < kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request for origin1 should be allowed (attempt " << i + 1 << ")";
   }
 
   // Next request for origin1 should fail.
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin1 should be denied after exceeding limit";
 
   // Requests for origin2 and origin3 should also fail as they share the eTLD+1.
   NavigateAndCommit(url2);
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin2 should be denied (shared limit)";
   NavigateAndCommit(url3);
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin3 should be denied (shared limit)";
 
   // Advance time past the window.
@@ -172,52 +135,52 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_SubdomainsShareLimit) {
 
   // All origins should now be allowed again (up to the limit).
   NavigateAndCommit(url1);
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin1 should be allowed after window expires";
   NavigateAndCommit(url2);
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin2 should be allowed after window expires";
   NavigateAndCommit(url3);
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin3 should be allowed after window expires";
 }
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_DifferentDomains) {
+TEST_F(ImmediateRequestRateLimiterTest, DifferentDomains) {
   GURL url_com("https://example.com");
   GURL url_org("https://example.org");
 
   // Use up the limit for example.com.
   NavigateAndCommit(url_com);
   for (int i = 0; i < kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()));
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()));
   }
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()));
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()));
 
   // example.org should still have its full quota.
   NavigateAndCommit(url_org);
   for (int i = 0; i < kTestMaxRequestsShort; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request for origin_org should be allowed (attempt " << i + 1 << ")";
   }
-  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_FALSE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for origin_org should be denied after exceeding its limit";
 }
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_Localhost) {
+TEST_F(ImmediateRequestRateLimiterTest, Localhost) {
   // Localhost doesn't have eTLD+1, should fall back to host.
   NavigateAndCommit(GURL("http://localhost:8080"));
 
   // Should always allow requests for localhost, regardless of limit,
   // because it's explicitly bypassed.
   for (int i = 0; i < kTestMaxRequestsShort + 5; ++i) {
-    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+    EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
         << "Request for localhost should always be allowed (attempt " << i + 1
         << ")";
   }
 
   // Advance time past the window - should still be allowed.
   task_environment()->FastForwardBy(base::Seconds(kTestWindowSecondsLong));
-  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(*main_rfh()))
+  EXPECT_TRUE(rate_limiter_->IsRequestAllowed(*main_rfh()))
       << "Request for localhost should still be allowed after window time";
 }
 
