@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_TEST_UTILS_H_
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_TEST_UTILS_H_
 
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
@@ -84,6 +85,11 @@ class LevelDBScopesTestBase : public testing::Test {
   // Returns if any scope data exists, including metadata or log data (other
   // than global metadata).
   bool ScopeDataExistsOnDisk();
+
+  std::vector<PartitionedLock> AcquireLocksSync(
+      PartitionedLockManager* lock_manager,
+      base::flat_set<PartitionedLockManager::PartitionedLockRequest>
+          lock_requests);
 
   // Creates a shared lock request from |simple_lock_begin_| to
   // |simple_lock_end_|.

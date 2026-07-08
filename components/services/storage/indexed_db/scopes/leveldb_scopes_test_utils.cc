@@ -236,6 +236,19 @@ bool LevelDBScopesTestBase::ScopeDataExistsOnDisk() {
              scopes_encoder_.TasksKeyPrefix(metadata_prefix_));
 }
 
+std::vector<PartitionedLock> LevelDBScopesTestBase::AcquireLocksSync(
+    PartitionedLockManager* lock_manager,
+    base::flat_set<PartitionedLockManager::PartitionedLockRequest>
+        lock_requests) {
+  base::RunLoop loop;
+  PartitionedLockHolder locks_receiver;
+  lock_manager->AcquireLocks(
+      lock_requests, locks_receiver,
+      base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
+  loop.Run();
+  return std::move(locks_receiver.locks);
+}
+
 PartitionedLockManager::PartitionedLockRequest
 LevelDBScopesTestBase::CreateSimpleSharedLock() {
   return {{0, simple_lock_begin_}, PartitionedLockManager::LockType::kShared};

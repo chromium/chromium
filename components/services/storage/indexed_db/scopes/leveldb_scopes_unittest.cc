@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -47,6 +48,25 @@ TEST_F(LevelDBScopesStartupTest, CleanupOnRecovery) {
   EXPECT_FALSE(ScopeDataExistsOnDisk());
 
   EXPECT_TRUE(failure_callback.ok());
+}
+
+TEST_F(LevelDBScopesStartupTest, CreateScopeAdvancesPastRecoveredScopeIds) {
+  const int64_t kRecoveredScope = 19;
+  SetUpRealDatabase();
+  PartitionedLockManager lock_manager;
+  WriteScopesMetadata(kRecoveredScope, true);
+
+  LevelDBScopes scopes(
+      metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
+      base::BindLambdaForTesting([](leveldb::Status s) { ADD_FAILURE(); }));
+
+  leveldb::Status s = scopes.Initialize();
+  ASSERT_TRUE(s.ok());
+
+  auto scope = scopes.CreateScope(
+      AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
+
+  EXPECT_GT(scope->scope_id(), kRecoveredScope);
 }
 
 TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {

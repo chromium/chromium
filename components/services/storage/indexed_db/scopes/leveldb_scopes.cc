@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -155,6 +156,14 @@ leveldb::Status LevelDBScopes::Initialize() {
       return leveldb::Status::Corruption(base::StrCat(
           {"Could not read scope metadata key: ", iterator->key().ToString()}));
     }
+    base::CheckedNumeric<int64_t> next_scope_id = scope_id;
+    ++next_scope_id;
+    if (scope_id < 0 || !next_scope_id.IsValid()) [[unlikely]] {
+      return leveldb::Status::Corruption(base::StrCat(
+          {"Invalid scope metadata id: ", base::NumberToString(scope_id)}));
+    }
+    next_scope_id_ =
+        std::max<int64_t>(next_scope_id_, next_scope_id.ValueOrDie());
     if (!scope_metadata.ParseFromArray(iterator->value().data(),
                                        iterator->value().size())) [[unlikely]] {
       return leveldb::Status::Corruption(base::StrCat(
@@ -269,7 +278,7 @@ std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
     std::vector<PartitionedLock> locks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(recovery_finished_);
-  int scope_id = next_scope_id_;
+  int64_t scope_id = next_scope_id_;
   ++next_scope_id_;
   auto rollback_callback =
       base::BindOnce(&LevelDBScopes::Rollback, weak_factory_.GetWeakPtr());

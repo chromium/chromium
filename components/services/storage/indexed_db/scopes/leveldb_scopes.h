@@ -90,7 +90,7 @@ class LevelDBScopes {
 
   // This gets set to |true| when |Initialize()| succeeds.
   bool recovery_finished_ = false;
-  int next_scope_id_ = 0;
+  int64_t next_scope_id_ = 0;
   scoped_refptr<LevelDBState> level_db_;
   // The |lock_manager_| is expected to outlive this class.
   raw_ptr<PartitionedLockManager> lock_manager_;

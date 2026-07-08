@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -29,19 +28,6 @@ class LevelDBScopeTest : public LevelDBScopesTestBase {
  public:
   LevelDBScopeTest() = default;
   ~LevelDBScopeTest() override = default;
-
-  std::vector<PartitionedLock> AcquireLocksSync(
-      PartitionedLockManager* lock_manager,
-      base::flat_set<PartitionedLockManager::PartitionedLockRequest>
-          lock_requests) {
-    base::RunLoop loop;
-    PartitionedLockHolder locks_receiver;
-    lock_manager->AcquireLocks(
-        lock_requests, locks_receiver,
-        base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-    loop.Run();
-    return std::move(locks_receiver.locks);
-  }
 
   std::string CreateKey(int key_num) {
     return base::StrCat({base::NumberToString(db_prefix_[0]),
