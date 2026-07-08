@@ -45,6 +45,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheet.ShadowLayerView;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -720,5 +721,40 @@ public class BottomSheetUnitTest {
 
         // 5. Assert we are NOT stuck in SCROLLING and settled to HIDDEN.
         assertEquals(SheetState.HIDDEN, mBottomSheet.getSheetState());
+    }
+
+    @Test
+    public void testContentContainerHeightUpdated_ConstantTranslationY() {
+        BottomSheet.setSmallScreenForTesting(false);
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DISABLED).when(mSheetContent).getPeekHeight();
+        doReturn(android.R.string.ok).when(mSheetContent).getSheetHalfHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(mSheetContent).getSheetFullHeightAccessibilityStringId();
+
+        mBottomSheet.showContent(mSheetContent);
+
+        // Lay out decor view to have a large viewport.
+        View decorView = mActivity.getWindow().getDecorView();
+        decorView.layout(0, 0, 1080, 1000);
+
+        // Set state to HALF. Offset should be HALF height (0.5 * 200 = 100).
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+
+        // Now set offset to 200 (full height). translationY should be 0.
+        mBottomSheet.setSheetOffsetFromBottom(200, StateChangeReason.NONE);
+        assertEquals(200, contentContainer.getLayoutParams().height);
+        assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
+
+        // Now set offset to 250. translationY should still be 0 (capped).
+        // Without the fix, this would early return and NOT update the height.
+        mBottomSheet.setSheetOffsetFromBottom(250, StateChangeReason.NONE);
+
+        // Height should be updated to 250 (since viewport is 1000).
+        assertEquals(250, contentContainer.getLayoutParams().height);
+        assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
     }
 }

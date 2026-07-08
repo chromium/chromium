@@ -895,7 +895,20 @@ class BottomSheet extends FrameLayout
         // Ensure we don't over translate the bottom container.
         translationY = Math.max(0, translationY);
 
-        if (isSheetOpen() && MathUtils.areFloatsEqual(translationY, getTranslationY())) return;
+        updateViewport();
+        boolean translationChanged = !MathUtils.areFloatsEqual(translationY, getTranslationY());
+        boolean heightNeedsUpdate = false;
+        if (isFullHeightResizeContent()) {
+            @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
+            @Px int newHeight = (int) Math.max(minContentHeight, mCurrentOffsetPx);
+            newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
+            var params = mBottomSheetContentContainer.getLayoutParams();
+            if (params != null && params.height != newHeight) {
+                heightNeedsUpdate = true;
+            }
+        }
+
+        if (isSheetOpen() && !translationChanged && !heightNeedsUpdate) return;
 
         setTranslationY(translationY);
 
