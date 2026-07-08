@@ -4,6 +4,8 @@
 
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
+#include <algorithm>
+#include <map>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -53,6 +55,7 @@ constexpr std::string_view kTestSecondaryId1 = "3";
 constexpr std::string_view kTestSecondaryId2 = "7";
 constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
 constexpr gfx::RectF kElementBounds2{15, 25, 35, 45};
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestCustomEvent);
 
 auto MakeId(ElementIdentifier id, std::string_view secondary_id) {
   return tracked_element::mojom::TrackedElementIdentifier::New(
@@ -632,6 +635,112 @@ TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
 
   lock2.reset();
   EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+}
+
+// Tests for multiple elements with the same ElementIdentifier but different
+// secondary identifiers.
+class TrackedElementHandlerSecondaryIdentifierTest
+    : public TrackedElementHandlerTest {
+ public:
+  TrackedElementHandlerSecondaryIdentifierTest() = default;
+  ~TrackedElementHandlerSecondaryIdentifierTest() override = default;
+
+  using ElementMap = std::map<std::string, ui::TrackedElement*>;
+
+  void ShowElements() {
+    handler_remote()->TrackedElementVisibilityChanged(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId1), true,
+        kElementBounds);
+    handler_remote()->TrackedElementVisibilityChanged(
+        MakeId(kTestElementIdentifier1, kTestSecondaryId2), true,
+        kElementBounds2);
+    tracked_element_handler_remote_.FlushForTesting();
+  }
+
+  ElementMap GetElements() {
+    auto* const tracker = ui::ElementTracker::GetElementTracker();
+    auto elements =
+        tracker->GetAllMatchingElementsInAnyContext(kTestElementIdentifier1);
+    ElementMap result;
+    for (TrackedElement* el : elements) {
+      auto* const web_el = el->AsA<TrackedElementWebUI>();
+      CHECK(web_el);
+      CHECK(result.emplace(web_el->secondary_identifier(), web_el).second);
+    }
+    return result;
+  }
+};
+
+TEST_F(TrackedElementHandlerSecondaryIdentifierTest, VerifyAllElementsCreated) {
+  ShowElements();
+  auto elements = GetElements();
+  EXPECT_EQ(2U, elements.size());
+  EXPECT_TRUE(elements.contains(std::string(kTestSecondaryId1)));
+  EXPECT_TRUE(elements.contains(std::string(kTestSecondaryId2)));
+}
+
+TEST_F(TrackedElementHandlerSecondaryIdentifierTest, HideOneElement) {
+  ShowElements();
+  handler_remote()->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), false,
+      kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto elements = GetElements();
+  EXPECT_EQ(1U, elements.size());
+  EXPECT_TRUE(elements.contains(std::string(kTestSecondaryId2)));
+}
+
+TEST_F(TrackedElementHandlerSecondaryIdentifierTest, TrackedElementActivated) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, activated_callback);
+  const auto subscription =
+      ElementTracker::GetElementTracker()->AddElementActivatedCallback(
+          kTestElementIdentifier1, handler()->context(),
+          activated_callback.Get());
+
+  ShowElements();
+  auto elements = GetElements();
+
+  EXPECT_CALL_IN_SCOPE(
+      activated_callback, Run(elements[std::string(kTestSecondaryId1)]), {
+        handler_remote()->TrackedElementActivated(
+            MakeId(kTestElementIdentifier1, kTestSecondaryId1));
+        tracked_element_handler_remote_.FlushForTesting();
+      });
+
+  EXPECT_CALL_IN_SCOPE(
+      activated_callback, Run(elements[std::string(kTestSecondaryId2)]), {
+        handler_remote()->TrackedElementActivated(
+            MakeId(kTestElementIdentifier1, kTestSecondaryId2));
+        tracked_element_handler_remote_.FlushForTesting();
+      });
+}
+
+TEST_F(TrackedElementHandlerSecondaryIdentifierTest,
+       TrackedElementCustomEvent) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, event_callback);
+  const auto subscription =
+      ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kTestCustomEvent, handler()->context(), event_callback.Get());
+
+  ShowElements();
+  auto elements = GetElements();
+
+  EXPECT_CALL_IN_SCOPE(event_callback,
+                       Run(elements[std::string(kTestSecondaryId1)]), {
+                         handler_remote()->TrackedElementCustomEvent(
+                             MakeId(kTestElementIdentifier1, kTestSecondaryId1),
+                             kTestCustomEvent.GetName());
+                         tracked_element_handler_remote_.FlushForTesting();
+                       });
+
+  EXPECT_CALL_IN_SCOPE(event_callback,
+                       Run(elements[std::string(kTestSecondaryId2)]), {
+                         handler_remote()->TrackedElementCustomEvent(
+                             MakeId(kTestElementIdentifier1, kTestSecondaryId2),
+                             kTestCustomEvent.GetName());
+                         tracked_element_handler_remote_.FlushForTesting();
+                       });
 }
 
 #if !BUILDFLAG(IS_ANDROID)
