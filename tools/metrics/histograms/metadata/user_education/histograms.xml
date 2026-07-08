@@ -53,6 +53,9 @@ chromium-metrics-reviews@google.com.
   <variant name="SendTabToSelfEnhancedDesktopUI"
       summary="Promotion for Send to Your Device in the tab and webpage
                context menus."/>
+  <variant name="SendTabToSelfEnhancedDesktopUIv2"
+      summary="Promotion for Send to Your Device in the tab and webpage
+               context menus."/>
   <variant name="SideBySide"
       summary="Promotion for Split View in the tab context menu"/>
   <variant name="SideBySideLinkMenuNewBadge"

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -24,7 +22,9 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -63,6 +64,10 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
+#include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -2012,6 +2017,151 @@ IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
 
   ClosePopup();
   EXPECT_FALSE(omnibox_controller()->IsPopupOpen());
+}
+
+class OmniboxViewViewsSendTabToSelfTest : public OmniboxViewViewsTest {
+ public:
+  explicit OmniboxViewViewsSendTabToSelfTest(
+      bool omnibox_context_menu_enabled = true) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kMenuSimplification, features::kDesktopGlowUp};
+    if (omnibox_context_menu_enabled) {
+      enabled_features.push_back(
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
+    } else {
+      disabled_features.push_back(
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    OmniboxViewViewsTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OmniboxViewViewsSendTabToSelfTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              send_tab_to_self::StubSendTabToSelfSyncService>();
+        }));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+class OmniboxViewViewsSendTabToSelfSubmenuEnabledTest
+    : public OmniboxViewViewsSendTabToSelfTest {
+ public:
+  OmniboxViewViewsSendTabToSelfSubmenuEnabledTest()
+      : OmniboxViewViewsSendTabToSelfTest(
+            /*omnibox_context_menu_enabled=*/true) {}
+};
+
+class OmniboxViewViewsSendTabToSelfSubmenuDisabledTest
+    : public OmniboxViewViewsSendTabToSelfTest {
+ public:
+  OmniboxViewViewsSendTabToSelfSubmenuDisabledTest()
+      : OmniboxViewViewsSendTabToSelfTest(
+            /*omnibox_context_menu_enabled=*/false) {}
+};
+
+// Tests that the Omnibox context menu adds "Send to Your Devices" as a submenu
+// when the kSendTabToSelfOmniboxContextMenu feature is enabled.
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
+                       SendTabToSelfContextMenuSubmenuEnabled) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  std::vector<send_tab_to_self::TargetDeviceInfo> devices;
+  devices.emplace_back("Device 1", "guid1",
+                       syncer::DeviceInfo::FormFactor::kDesktop,
+                       base::Time::Now());
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      devices);
+
+  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
+      browser()->window()->GetLocationBar()->GetOmniboxView());
+  ui::SimpleMenuModel menu_model(nullptr);
+  menu_model.AddItem(views::Textfield::kUndo, u"Undo");
+  menu_model.AddItem(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), u"Paste");
+
+  omnibox->UpdateContextMenu(&menu_model);
+
+  std::optional<size_t> index =
+      menu_model.GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  // Verify that the entry is added as a submenu when the feature flag is on.
+  EXPECT_EQ(menu_model.GetTypeAt(index.value()), ui::MenuModel::TYPE_SUBMENU);
+  EXPECT_NE(menu_model.GetSubmenuModelAt(index.value()), nullptr);
+}
+
+// Tests that the Omnibox context menu adds "Send to Your Devices" as a command
+// item (legacy bubble trigger) when the kSendTabToSelfEnhancedDesktopUI feature
+// is disabled.
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuDisabledTest,
+                       SendTabToSelfContextMenuSubmenuDisabled) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  std::vector<send_tab_to_self::TargetDeviceInfo> devices;
+  devices.emplace_back("Device 1", "guid1",
+                       syncer::DeviceInfo::FormFactor::kDesktop,
+                       base::Time::Now());
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      devices);
+
+  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
+      browser()->window()->GetLocationBar()->GetOmniboxView());
+  ui::SimpleMenuModel menu_model(nullptr);
+  menu_model.AddItem(views::Textfield::kUndo, u"Undo");
+  menu_model.AddItem(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), u"Paste");
+
+  omnibox->UpdateContextMenu(&menu_model);
+
+  std::optional<size_t> index =
+      menu_model.GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  // Verify that the entry is added as a standard command item when the feature
+  // flag is off (surfacing legacy bubble behavior).
+  EXPECT_EQ(menu_model.GetTypeAt(index.value()), ui::MenuModel::TYPE_COMMAND);
+}
+
+// Tests that the Omnibox context menu does not add "Send to Your Devices"
+// when SendTabToSelf entry point should not be displayed (e.g. on unshareable
+// pages).
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
+                       SendTabToSelfContextMenuNotOffered) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  sync_service->SetEntryPointDisplayReason(std::nullopt);
+
+  OmniboxViewViews* omnibox = static_cast<OmniboxViewViews*>(
+      browser()->window()->GetLocationBar()->GetOmniboxView());
+  ui::SimpleMenuModel menu_model(nullptr);
+  menu_model.AddItem(views::Textfield::kUndo, u"Undo");
+  menu_model.AddItem(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), u"Paste");
+
+  omnibox->UpdateContextMenu(&menu_model);
+
+  std::optional<size_t> index =
+      menu_model.GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  // Verify that IDC_SEND_TAB_TO_SELF is not present in the menu.
+  EXPECT_FALSE(index.has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(

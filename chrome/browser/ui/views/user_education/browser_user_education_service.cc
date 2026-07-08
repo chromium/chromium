@@ -2505,6 +2505,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(
           151, "mtatarski@google.com",
           "Show the new badge on Send to Your Devices context menu items.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
+      user_education::Metadata(
+          153, "mtatarski@google.com",
+          "Show the new badge on Send to Your Devices context menu items.")));
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerImpl>

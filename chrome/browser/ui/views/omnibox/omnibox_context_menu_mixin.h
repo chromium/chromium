@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_MIXIN_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_MIXIN_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -21,6 +22,10 @@ struct AiModeButtonConfig;
 namespace gfx {
 class FontList;
 }  // namespace gfx
+
+namespace send_tab_to_self {
+class SendTabToSelfContextMenuDelegate;
+}  // namespace send_tab_to_self
 
 namespace ui {
 class SimpleMenuModel;
@@ -69,11 +74,19 @@ class OmniboxContextMenuMixinBase {
   // Helper that adds a menu entry to send current tab to other devices if
   // appropriate.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
+  void BuildSendTabToSelfSubmenu(ui::SimpleMenuModel* menu_contents,
+                                 size_t index);
+  void BuildSendTabToSelfSimpleItem(ui::SimpleMenuModel* menu_contents,
+                                    size_t index);
 
   const ai_mode_button_config::AiModeButtonConfig* GetAiModeConfig() const;
 
   raw_ptr<LocationBar> location_bar_;
   raw_ptr<OmniboxController> controller_;
+
+  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
+      send_tab_to_self_submenu_delegate_;
+  std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 
   // Cached clipboard text for menu paste state.
   // Updated by PrepareToShowContextMenu()

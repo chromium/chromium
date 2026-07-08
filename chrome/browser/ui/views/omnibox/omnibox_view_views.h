@@ -241,6 +241,12 @@ class OmniboxViewViews
                            NavigationToAndFromContextualTasks);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsPlaceholderTest,
                            TitleChangeUpdatesPlaceholder);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
+                           SendTabToSelfContextMenuSubmenuEnabled);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsSendTabToSelfSubmenuDisabledTest,
+                           SendTabToSelfContextMenuSubmenuDisabled);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
+                           SendTabToSelfContextMenuNotOffered);
 
   enum class UnelisionGesture {
     kHomeKeyPressed,

@@ -169,7 +169,10 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
 
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         web_contents_->GetBrowserContext(),
-        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
+        base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)
+            ? send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2
+            : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
 
     RecordEntryPointInvoked(entry_point_);
 
