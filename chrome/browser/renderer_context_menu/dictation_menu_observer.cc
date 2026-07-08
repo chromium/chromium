@@ -8,7 +8,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
@@ -18,11 +17,8 @@
 
 namespace dictation {
 
-DictationMenuObserver::DictationMenuObserver(RenderViewContextMenuProxy* proxy,
-                                             BrowserWindowInterface* bwi)
-    : window_(bwi), proxy_(proxy) {
-  CHECK(proxy_);
-}
+DictationMenuObserver::DictationMenuObserver(RenderViewContextMenuProxy* proxy)
+    : proxy_(*proxy) {}
 
 DictationMenuObserver::~DictationMenuObserver() = default;
 
@@ -55,7 +51,7 @@ void DictationMenuObserver::ExecuteCommand(int command_id) {
 
   DictationKeyedService* service = GetDictationService();
   if (service) {
-    service->ContextMenuHandler(*window_, *rfh, selection_text_);
+    service->ContextMenuHandler(*rfh, selection_text_);
   }
 }
 

@@ -49,10 +49,9 @@ DictationInteractiveBrowserTestBase::CheckHasSession(
 DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::StartSession() {
   return Steps(Do([this] {
-    dictation_service().StartSession(
-        *browser(),
-        std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(),
-                                 /*selected_text=*/""));
+    dictation_service().StartSession(*browser(),
+                                     DefaultInPageTargetId(web_contents()),
+                                     /*selected_text=*/"");
     if (dictation_service().session_controller()) {
       last_started_provider_ =
           static_cast<ListenerStreamProvider*>(dictation_service()

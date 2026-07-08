@@ -40,9 +40,8 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -81,10 +80,9 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Start the session with a non-empty selected text.
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(),
-                               "hello world"));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()),
+                                   "hello world");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -111,9 +109,8 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, InnerTextCaptured) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -154,10 +151,9 @@ IN_PROC_BROWSER_TEST_F(DictationContextAsyncBrowserTest, AsyncContextCaptured) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(),
-                               "hello world"));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()),
+                                   "hello world");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);

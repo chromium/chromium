@@ -36,7 +36,8 @@ void SessionController::Initialize() {
   ui_ = delegate_->CreateUi(*this);
 }
 
-void SessionController::StartDictationStream(std::unique_ptr<Target> target) {
+void SessionController::StartDictationStream(const TargetId& target_id,
+                                             const std::string& selected_text) {
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
@@ -46,7 +47,8 @@ void SessionController::StartDictationStream(std::unique_ptr<Target> target) {
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
-  stream_provider->BindToTargetAndConnect(std::move(target));
+  stream_provider->BindToTargetAndConnect(
+      std::make_unique<Target>(target_id, selected_text));
   attached_stream_provider_ = std::move(stream_provider);
 
   MoveToState(SessionState::kStreamInitializing);

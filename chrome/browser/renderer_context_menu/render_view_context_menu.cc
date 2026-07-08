@@ -3074,7 +3074,7 @@ void RenderViewContextMenu::AppendDictationItems() {
 
   if (!dictation_menu_observer_) {
     dictation_menu_observer_ =
-        std::make_unique<dictation::DictationMenuObserver>(this, GetBrowser());
+        std::make_unique<dictation::DictationMenuObserver>(this);
   }
   observers_.AddObserver(dictation_menu_observer_.get());
   dictation_menu_observer_->InitMenu(params_);

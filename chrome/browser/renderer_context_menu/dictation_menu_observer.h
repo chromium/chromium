@@ -7,10 +7,9 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
-class BrowserWindowInterface;
 class RenderViewContextMenuProxy;
 
 namespace dictation {
@@ -19,8 +18,7 @@ class DictationKeyedService;
 
 class DictationMenuObserver : public RenderViewContextMenuObserver {
  public:
-  explicit DictationMenuObserver(RenderViewContextMenuProxy* proxy,
-                                 BrowserWindowInterface* bwi);
+  explicit DictationMenuObserver(RenderViewContextMenuProxy* proxy);
   ~DictationMenuObserver() override;
 
   // RenderViewContextMenuObserver:
@@ -32,10 +30,8 @@ class DictationMenuObserver : public RenderViewContextMenuObserver {
  private:
   DictationKeyedService* GetDictationService();
 
-  // raw_ptr as the observer cannot outlive the context menu and the context
-  // menu cannot outlive the owning window.
-  raw_ptr<BrowserWindowInterface> window_;
-  raw_ptr<RenderViewContextMenuProxy> proxy_;
+  // raw_ref as the observer cannot outlive the context menu.
+  base::raw_ref<RenderViewContextMenuProxy> proxy_;
   std::u16string selection_text_;
 };
 

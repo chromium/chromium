@@ -152,8 +152,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServicePolicyTest,
   DictationKeyedService* service = DictationKeyedService::Get(profile());
   ASSERT_NE(service, nullptr);
 
-  service->StartSession(*GetBrowserWindowInterface(),
-                        std::make_unique<Target>());
+  service->StartSession(
+      *GetBrowserWindowInterface(),
+      DefaultInPageTargetId(chrome_test_utils::GetActiveWebContents(this)));
   ASSERT_NE(service->session_controller(), nullptr);
 
   // Set policy to disabled (value = 2) in real-time.

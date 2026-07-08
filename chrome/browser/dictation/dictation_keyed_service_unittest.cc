@@ -20,7 +20,7 @@ class DictationKeyedServiceTest : public testing::Test {
  public:
   DictationKeyedServiceTest()
       : scoped_feature_list_(CreateEnablingFeatureList()),
-        service_(std::make_unique<DictationKeyedService>(&profile_)) {
+        service_(std::make_unique<MockDictationKeyedService>(&profile_)) {
     profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
   }
@@ -31,7 +31,7 @@ class DictationKeyedServiceTest : public testing::Test {
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockBrowserWindowInterface> window_;
-  std::unique_ptr<DictationKeyedService> service_;
+  std::unique_ptr<MockDictationKeyedService> service_;
 };
 
 // Ending a non-existent session should not crash.
@@ -42,12 +42,12 @@ TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
 
 TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
-  service_->StartSession(window_, nullptr);
+  service_->StartSession(window_, EmptyTargetId());
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
 TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
-  service_->StartSession(window_, nullptr);
+  service_->StartSession(window_, EmptyTargetId());
   ASSERT_NE(service_->session_controller(), nullptr);
   service_->EndSession();
   EXPECT_EQ(service_->session_controller(), nullptr);

@@ -15,6 +15,7 @@
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
+#include "chrome/browser/dictation/target.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -27,8 +28,6 @@ class RenderFrameHost;
 }
 
 namespace dictation {
-
-class Target;
 
 // Created on a per-profile basis for any regular profile (i.e. excludes OTR,
 // service, etc. profiles) and only when the Dictation base::Feature is enabled.
@@ -59,18 +58,17 @@ class DictationKeyedService : public KeyedService,
   // responsibility to ensure this never called while an existing session in
   // progress.
   //
-  // If a target is provided, the new session will immediately start up a
-  // stream. Otherwise, if nullptr is passed the session is created without a
-  // stream.
+  // The new session will immediately start up a stream using the given
+  // target_id.
   void StartSession(BrowserWindowInterface& window,
-                    std::unique_ptr<Target> target);
+                    const TargetId& target_id,
+                    const std::string& selected_text = "");
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
 
   // Handles the context menu item click.
-  void ContextMenuHandler(BrowserWindowInterface& window,
-                          content::RenderFrameHost& rfh,
+  void ContextMenuHandler(content::RenderFrameHost& rfh,
                           const std::u16string& selected_text);
 
   // Returns null when no session is in progress.

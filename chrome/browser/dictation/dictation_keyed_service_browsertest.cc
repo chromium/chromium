@@ -107,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ShouldShowContextMenuItem) {
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
-  dictation_service().StartSession(*GetBrowserWindowInterface(), nullptr);
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   EXPECT_FALSE(dictation_service().ShouldShowContextMenuItem());
 
@@ -164,10 +165,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartSessionAndReceiveTranscription) {
-
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -205,10 +204,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        EndActiveStreamEntersFinalizingState) {
-
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -250,10 +247,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartNewStreamWhileFinalizing) {
-
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -282,8 +277,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a second stream while the first is finalizing. The controller should
   // immediately enter kStreamInitializing.
-  controller->StartDictationStream(
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  controller->StartDictationStream(DefaultInPageTargetId(web_contents()), "");
   EXPECT_EQ(controller->GetState(), SessionState::kStreamInitializing);
 
   // Wait for the stream to enter transcribing state.
@@ -302,10 +296,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterComplete) {
-
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -334,10 +326,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterFailed) {
-
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ASSERT_NE(controller, nullptr);
@@ -388,9 +378,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                     "until crbug.com/525856380 is fixed.";
   }
 
-  dictation_service().StartSession(
-      *GetBrowserWindowInterface(),
-      std::make_unique<Target>(web_contents()->GetPrimaryMainFrame(), ""));
+  dictation_service().StartSession(*GetBrowserWindowInterface(),
+                                   DefaultInPageTargetId(web_contents()), "");
 
   SessionController* controller = dictation_service().session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(

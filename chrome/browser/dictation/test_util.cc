@@ -15,11 +15,21 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry_test_helper.h"
 
 namespace dictation {
+
+TargetId EmptyTargetId() {
+  return TargetId();
+}
+
+TargetId DefaultInPageTargetId(content::WebContents* web_contents) {
+  return TargetId{web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr()};
+}
 
 base::test::ScopedFeatureList CreateEnablingFeatureList() {
   base::test::ScopedFeatureList feature_list;
@@ -280,9 +290,17 @@ MockSessionControllerDelegate::MockSessionControllerDelegate() {
 }
 MockSessionControllerDelegate::~MockSessionControllerDelegate() = default;
 
-MockTarget::MockTarget(content::RenderFrameHost* rfh,
-                       const std::string& selected_text)
-    : Target(rfh, selected_text) {}
-MockTarget::~MockTarget() = default;
+MockDictationKeyedService::MockDictationKeyedService(Profile* profile)
+    : DictationKeyedService(profile) {}
+MockDictationKeyedService::~MockDictationKeyedService() = default;
+
+std::unique_ptr<StreamProvider> MockDictationKeyedService::CreateStreamProvider(
+    SessionController& controller) const {
+  return std::make_unique<testing::NiceMock<MockStreamProvider>>();
+}
+std::unique_ptr<SessionUi> MockDictationKeyedService::CreateUi(
+    SessionController& controller) const {
+  return std::make_unique<testing::NiceMock<MockSessionUi>>();
+}
 
 }  // namespace dictation

@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
@@ -170,8 +171,9 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
       profile(), extension->id(), test_stream_id);
   multiplexer.RegisterStreamProvider(test_stream_id, &test_stream_provider);
 
-  auto mock_target = std::make_unique<dictation::MockTarget>();
-  test_stream_provider.BindToTargetAndConnect(std::move(mock_target));
+  auto target = std::make_unique<dictation::Target>(
+      dictation::TargetId{content::WeakDocumentPtr()}, /*selected_text=*/"");
+  test_stream_provider.BindToTargetAndConnect(std::move(target));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 

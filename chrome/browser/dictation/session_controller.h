@@ -22,7 +22,7 @@ namespace dictation {
 class SessionControllerDelegate;
 class SessionUi;
 class StreamProvider;
-class Target;
+struct TargetId;
 
 // The session_controller is a coordinating class between the StreamProvider and
 // the UI. It manages Profile-level state and transitions and synchronizes the
@@ -53,7 +53,11 @@ class SessionController : public SessionUiDelegate,
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this
   // method.
-  void StartDictationStream(std::unique_ptr<Target> target);
+  // TODO(b/528720407): Selected text is conceptually part of page context,
+  // it should be captured at the same time as other context. Remove from
+  // this interface.
+  void StartDictationStream(const TargetId& target_id,
+                            const std::string& selected_text);
 
   // Ends the current dictation stream and detaches the stream provider.
   void EndDictationStream();

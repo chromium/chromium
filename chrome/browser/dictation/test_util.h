@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_context.h"
+#include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "chrome/browser/dictation/session_ui.h"
@@ -23,7 +24,7 @@
 class Profile;
 
 namespace content {
-class RenderFrameHost;
+class WebContents;
 }
 
 namespace extensions {
@@ -34,6 +35,14 @@ namespace dictation {
 
 inline constexpr std::string_view kDictationTestExtensionId =
     "dfihfgggpgemecjdjahibncmmjlfjggp";
+
+// A target ID that doesn't point to anything. Used only in unit tests where the
+// target isn't actually used.
+TargetId EmptyTargetId();
+
+// Returns a target that points to the default element in the page. Currently
+// this will be the focused element in the primary main frame.
+TargetId DefaultInPageTargetId(content::WebContents* web_contents);
 
 // Returns a ScopedFeatureList that enables Dictation with common params for
 // testing.
@@ -121,11 +130,16 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
   MOCK_METHOD(void, EndSession, (), (override));
 };
 
-class MockTarget : public Target {
+class MockDictationKeyedService : public DictationKeyedService {
  public:
-  explicit MockTarget(content::RenderFrameHost* rfh = nullptr,
-                      const std::string& selected_text = "");
-  ~MockTarget() override;
+  explicit MockDictationKeyedService(Profile* profile);
+  ~MockDictationKeyedService() override;
+
+  // DictationKeyedService:
+  std::unique_ptr<StreamProvider> CreateStreamProvider(
+      SessionController& controller) const override;
+  std::unique_ptr<SessionUi> CreateUi(
+      SessionController& controller) const override;
 };
 
 }  // namespace dictation

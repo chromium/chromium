@@ -19,6 +19,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace dictation {
 
@@ -73,13 +76,13 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
 }
 
 void DictationKeyedService::StartSession(BrowserWindowInterface& window,
-                                         std::unique_ptr<Target> target) {
+                                         const TargetId& target_id,
+                                         const std::string& selected_text) {
   CHECK(IsEnabled());
   CHECK(!session_);
 
-  // ShowOnboardingIfNeeded conditionally moves the target unique_ptr if it
-  // returns true.
-  if (onboarding_manager_.ShowOnboardingIfNeeded(window, target)) {
+  if (onboarding_manager_.ShowOnboardingIfNeeded(window, target_id,
+                                                 selected_text)) {
     // If onboarding is shown, it will call StartSession again if needed.
     return;
   }
@@ -88,9 +91,7 @@ void DictationKeyedService::StartSession(BrowserWindowInterface& window,
 
   session_->controller_.Initialize();
 
-  if (target) {
-    session_->controller_.StartDictationStream(std::move(target));
-  }
+  session_->controller_.StartDictationStream(target_id, selected_text);
 }
 
 void DictationKeyedService::EndSession() {
@@ -105,7 +106,6 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
 }
 
 void DictationKeyedService::ContextMenuHandler(
-    BrowserWindowInterface& window,
     content::RenderFrameHost& rfh,
     const std::u16string& selected_text) {
   // Policy could have changed to disabled while the context menu was open.
@@ -113,10 +113,27 @@ void DictationKeyedService::ContextMenuHandler(
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&rfh);
+  if (!web_contents) {
+    return;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
+
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  if (!window) {
+    return;
+  }
+
   // TODO(crbug.com/525856380): Handle changes to the focused element. Identify
   // the targeted element for the dictation Target.
-  StartSession(
-      window, std::make_unique<Target>(&rfh, base::UTF16ToUTF8(selected_text)));
+  StartSession(*window, TargetId{rfh.GetWeakDocumentPtr()},
+               base::UTF16ToUTF8(selected_text));
 }
 
 bool DictationKeyedService::IsEnabled() const {
