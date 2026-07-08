@@ -4673,7 +4673,7 @@
       // message when calling showPopover() within another popover hide/show
       // operation. https://crbug.com/527495812
       name: "PopoverHintNestedShowException",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Simplifies the behavior and stacking interactions of popover=hint and
