@@ -761,8 +761,13 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <summary>
     The number of hard faults incurred in the browser process from startup to
-    start of the main thread's message loop, not including first runs of the
-    browser.
+    the start of the main thread's message loop, not including first runs of the
+    browser. On Windows this is derived from
+    SYSTEM_PROCESS_INFORMATION.HardFaultCount; on macOS from Mach task_info
+    (pageins); on Linux from getrusage (ru_majflt). Absolute values are not
+    directly comparable across platforms, and may not be comparable even between
+    OS versions (as changes to how the OS starts and times the startup of
+    applications can affect the metrics).
   </summary>
 </histogram>
 
