@@ -818,8 +818,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when an asynchronous {KeyType} key generation request is received,
     immediately before checking the pool for a hit or triggering replenishment.
-    Records the total number of spare {KeyType} keys currently sitting idle in
-    the pool for the requested algorithm.
+    Records the total {KeyType} key pool size.
   </summary>
   <token key="KeyType" variants="UnexportableKeysSpareKeyPoolType"/>
 </histogram>

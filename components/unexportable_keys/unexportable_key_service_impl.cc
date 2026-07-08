@@ -493,6 +493,24 @@ class UnexportableKeyServiceImpl::SpareKeyPool {
       return nullptr;
     }
 
+    const size_t total_pool_size = GetPoolSize();
+    base::UmaHistogramCounts100(
+        GetSpareKeyPoolHistogramName<KeyType>("PoolSize"), total_pool_size);
+
+    if (total_pool_size == 0) {
+      if (!inflight_spare_key_pool_requests_.has_value()) {
+        RecordRetrievalResult(SpareKeyPoolRetrievalResult::kMissNotInitialized);
+      } else if (inflight_spare_key_pool_requests_->empty()) {
+        RecordRetrievalResult(
+            SpareKeyPoolRetrievalResult::kMissFailedToCreateSpareKey);
+      } else {
+        RecordRetrievalResult(
+            SpareKeyPoolRetrievalResult::kMissDidNotReplenishFromLastUse);
+      }
+
+      return nullptr;
+    }
+
     // Query the provider to select the most preferred algorithm it supports
     // from the given list, before checking the spare pool. This ensures we
     // don't inadvertently return a spare key for an algorithm that is
@@ -509,10 +527,6 @@ class UnexportableKeyServiceImpl::SpareKeyPool {
 
     auto* keys = base::FindOrNull(spare_keys_pool_, algorithm);
 
-    base::UmaHistogramCounts100(
-        GetSpareKeyPoolHistogramName<KeyType>("PoolSize"),
-        keys ? keys->size() : 0);
-
     if (keys && !keys->empty()) {
       RecordRetrievalResult(SpareKeyPoolRetrievalResult::kHit);
       scoped_refptr<KeyType> spare_key = std::move(keys->back());
@@ -520,19 +534,7 @@ class UnexportableKeyServiceImpl::SpareKeyPool {
       return spare_key;
     }
 
-    const size_t total_pool_size = GetPoolSize();
-
-    SpareKeyPoolRetrievalResult result;
-    if (total_pool_size > 0) {
-      result = SpareKeyPoolRetrievalResult::kMissNoKeyForAlgorithm;
-    } else if (!inflight_spare_key_pool_requests_.has_value()) {
-      result = SpareKeyPoolRetrievalResult::kMissNotInitialized;
-    } else if (inflight_spare_key_pool_requests_->empty()) {
-      result = SpareKeyPoolRetrievalResult::kMissFailedToCreateSpareKey;
-    } else {
-      result = SpareKeyPoolRetrievalResult::kMissDidNotReplenishFromLastUse;
-    }
-    RecordRetrievalResult(result);
+    RecordRetrievalResult(SpareKeyPoolRetrievalResult::kMissNoKeyForAlgorithm);
 
     return nullptr;
   }

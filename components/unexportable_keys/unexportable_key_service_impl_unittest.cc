@@ -1735,6 +1735,10 @@ TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolMissNoKeyForAlgorithm) {
 
   this->ResetService();
 
+  // Populate the pool so that total_pool_size > 0.
+  this->FastForwardBy(kSpareKeyPoolDelay);
+  this->RunBackgroundTasks();
+
   auto future = this->GenerateKey(
       {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1});
 
@@ -1750,6 +1754,10 @@ TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolMissNoKeyForAlgorithm) {
       GetSpareKeyPoolHistogramName(this->pool_type(),
                                    kSpareKeyPoolUmaRetrievalResultSuffix),
       SpareKeyPoolRetrievalResult::kAlgorithmNotSupported, 1);
+  this->histogram_tester_.ExpectUniqueSample(
+      GetSpareKeyPoolHistogramName(this->pool_type(),
+                                   kSpareKeyPoolUmaPoolSizeSuffix),
+      2, 1);
   this->histogram_tester_.ExpectTimeBucketCount(
       GetSpareKeyPoolHistogramName(this->pool_type(),
                                    kSpareKeyPoolUmaRequestLatencySuffix),
