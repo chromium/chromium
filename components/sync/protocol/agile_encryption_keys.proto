@@ -28,3 +28,13 @@ message AgileSymmetricKey {
     Chacha20Poly1305Key chacha20_poly1305 = 3;
   }
 }
+
+message AgileSymmetricKeySet {
+  message Key {
+    optional AgileSymmetricKey key_data = 1;
+    optional uint32 key_id = 2;
+  }
+
+  optional uint32 primary_key_id = 1;
+  repeated Key key = 2;
+}

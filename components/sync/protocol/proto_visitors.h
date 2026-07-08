@@ -148,6 +148,16 @@ VISIT_PROTO_FIELDS(
   VISIT_SECRET(key);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::AgileSymmetricKeySet& proto) {
+  VISIT(primary_key_id);
+  VISIT_REP(key);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AgileSymmetricKeySet::Key& proto) {
+  VISIT(key_data);
+  VISIT(key_id);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::AppListSpecifics& proto) {
   VISIT(item_id);
   VISIT_ENUM(item_type);
@@ -725,6 +735,8 @@ VISIT_PROTO_FIELDS(const sync_pb::DictionarySpecifics& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::EncryptedData& proto) {
   VISIT(key_name);
   VISIT_BYTES(blob);
+  VISIT_BYTES(blob_v2);
+  VISIT(key_id_v2);
 }
 
 VISIT_PROTO_FIELDS(

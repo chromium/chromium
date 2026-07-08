@@ -16,19 +16,22 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-// Encrypted sync data consists of two parts: a key name and a blob. Key name is
-// the name of the key that was used to encrypt blob and blob is encrypted data
-// itself.
-//
-// The reason we need to keep track of the key name is that a sync user can
-// change their passphrase (and thus their encryption key) at any time. When
-// that happens, we make a best effort to reencrypt all nodes with the new
-// passphrase, but since we don't have transactions on the server-side, we
-// cannot guarantee that every node will be reencrypted. As a workaround, we
-// keep track of all keys, assign each key a name (by using that key to encrypt
-// a well known string) and keep track of which key was used to encrypt each
-// node.
+// A proto representation of an encrypted blob as exposed in the Sync protocol,
+// along with metadata to help identify which key should be used to decrypt this
+// specific encrypted blob. The latter information is useful as performance
+// optimization, because rotation of the encryption key doesn't immediately
+// re-encrypt all data. If rotation has been issued multiple times, it may lead
+// to a significant number of candidate keys that need to be tried with, so it
+// is faster to be able to narrow down to exactly one candidate key (based on a
+// name or ID).
 message EncryptedData {
+  // The initial version of Sync's encryption (referred here as V1) populated
+  // exactly two fields below: `key_name` and `blob`.
   optional string key_name = 1;
   optional string blob = 2;  // base64-encoded.
+  // The more modern (experimental) V2 populates `blob_v2` and optionally
+  // `key_id_v2` (clients should handle absence correctly and fall back to
+  // exhaustive attempts with all keys available).
+  optional bytes blob_v2 = 3;
+  optional uint32 key_id_v2 = 4;
 }

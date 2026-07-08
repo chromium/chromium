@@ -6,6 +6,8 @@ source_set("crypto") {
   sources = [
     "agile_symmetric_key.cc",
     "agile_symmetric_key.h",
+    "agile_symmetric_key_set.cc",
+    "agile_symmetric_key_set.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

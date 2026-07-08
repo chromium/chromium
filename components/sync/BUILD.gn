@@ -222,6 +222,7 @@ source_set("unit_tests") {
     "invalidations/sync_invalidations_service_impl_unittest.cc",
     "model/client_tag_based_data_type_processor_unittest.cc",
     "model/client_tag_based_remote_update_handler_unittest.cc",
+    "model/crypto/agile_symmetric_key_set_unittest.cc",
     "model/crypto/agile_symmetric_key_unittest.cc",
     "model/data_type_store_backend_unittest.cc",
     "model/data_type_store_impl_unittest.cc",
