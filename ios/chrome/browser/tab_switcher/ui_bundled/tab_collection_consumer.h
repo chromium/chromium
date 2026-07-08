@@ -79,18 +79,6 @@ class WebStateID;
 // Dismisses any presented modal UI.
 - (void)dismissModals;
 
-// Notifies the grid that all items will be closed.
-- (void)willCloseAll;
-
-// Notifies the grid that all items have been closed.
-- (void)didCloseAll;
-
-// Notifies the grid that all closed items will be restored.
-- (void)willUndoCloseAll;
-
-// Notifies the grid that all closed items have been restored.
-- (void)didUndoCloseAll;
-
 // Reloads the view.
 - (void)reload;
 

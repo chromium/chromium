@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
-#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -66,10 +65,7 @@ class InactiveTabsMediatorTest : public PlatformTest {
         initWithWebStateList:browser_->GetWebStateList()
           profilePrefService:profile_->GetPrefs()
                faviconLoader:favicon_loader
-        snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser_.get())
-                  tabsCloser:std::make_unique<TabsCloser>(
-                                 browser_.get(),
-                                 TabsCloser::ClosePolicy::kAllTabs)];
+        snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser_.get())];
     consumer_ = [[FakeTabCollectionConsumer alloc] init];
     mediator_.consumer = consumer_;
   }

@@ -1258,18 +1258,6 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 
-- (void)saveAndCloseAllItems {
-  NOTREACHED() << "Should be implemented in a subclass.";
-}
-
-- (void)undoCloseAllItems {
-  NOTREACHED() << "Should be implemented in a subclass.";
-}
-
-- (void)discardSavedClosedItems {
-  NOTREACHED() << "Should be implemented in a subclass.";
-}
-
 - (void)searchItemsWithText:(NSString*)searchText {
   TabsSearchService* searchService =
       TabsSearchServiceFactory::GetForProfile(self.profile);

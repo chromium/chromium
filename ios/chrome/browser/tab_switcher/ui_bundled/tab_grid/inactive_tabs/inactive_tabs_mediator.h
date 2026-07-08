@@ -17,7 +17,6 @@
 class FaviconLoader;
 class PrefService;
 class SnapshotBrowserAgent;
-class TabsCloser;
 @protocol TabCollectionConsumer;
 class WebStateList;
 
@@ -49,12 +48,10 @@ class WebStateList;
 // - `prefService`: the preference service from the profile.
 // - `faviconLoader`: the favicon loader from the profile.
 // - `snapshotBrowserAgent`: the snapshot browser agent.
-// - `tabsCloser`: the object used to implement "close all" and "undo".
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                   profilePrefService:(PrefService*)prefService
                        faviconLoader:(FaviconLoader*)faviconLoader
                 snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
-                          tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

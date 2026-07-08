@@ -120,86 +120,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   TabGridModeHolder* mode_holder_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;
 };
-
 #pragma mark - Command tests
-
-// Tests that the WebStateList and consumer's list are empty when
-// `-saveAndCloseAllItems` is called.
-TEST_F(RegularGridMediatorTest, SaveAndCloseAllItemsCommand) {
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.size());
-}
-
-// Tests that the WebStateList is not restored to 3 items when
-// `-undoCloseAllItems` is called after `-discardSavedClosedItems` is called.
-TEST_F(RegularGridMediatorTest, DiscardSavedClosedItemsCommand) {
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  [mediator_ discardSavedClosedItems];
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.size());
-}
-
-// Tests that the WebStateList is restored to 3 items when
-// `-undoCloseAllItems` is called.
-TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(3, browser_->GetWebStateList()->count());
-  EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[0]));
-  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[1]));
-  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[2]));
-}
-
-// Tests that the WebStateList is restored to 3 items when
-// `-undoCloseAllItems` is called.
-TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
-  // Previously there were 3 items.
-  [mediator_ saveAndCloseAllItems];
-
-  // There should be no tabs in the WebStateList.
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.size());
-
-  // There should be no "recently closed items" yet.
-  EXPECT_EQ(0u, tab_restore_service_->entries().size());
-
-  // Discarding the saved item should add them to recently closed.
-  [mediator_ discardSavedClosedItems];
-  EXPECT_EQ(3u, tab_restore_service_->entries().size());
-
-  // Add three new tabs.
-  auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state1), WebStateList::InsertionParams::AtIndex(0));
-  // Second tab is a NTP.
-  auto web_state2 = CreateFakeWebStateWithURL(GURL(kChromeUINewTabURL));
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state2), WebStateList::InsertionParams::AtIndex(1));
-  auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state3), WebStateList::InsertionParams::AtIndex(2));
-  browser_->GetWebStateList()->ActivateWebStateAt(0);
-
-  // Closing item does not add them to the recently closed.
-  [mediator_ saveAndCloseAllItems];
-
-  // There should be no tabs in the WebStateList.
-  EXPECT_EQ(0, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0UL, consumer_.items.size());
-
-  // There should be no new "recently closed items".
-  EXPECT_EQ(3u, tab_restore_service_->entries().size());
-
-  // Undoing the close should restore the items.
-  [mediator_ undoCloseAllItems];
-  EXPECT_EQ(3UL, consumer_.items.size());
-}
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.
 TEST_F(RegularGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
@@ -249,14 +170,13 @@ TEST_F(RegularGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
 // configuration is correct.
 TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_EQ(3UL, consumer_.items.size());
-  [mediator_ saveAndCloseAllItems];
+  [mediator_ closeAllItems];
   EXPECT_EQ(0UL, consumer_.items.size());
 
   EXPECT_EQ(TabGridPageRegularTabs, fake_toolbars_mediator_.configuration.page);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.undoButton);
 
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.doneButton);

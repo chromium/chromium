@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
@@ -198,9 +197,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
         profilePrefService:browser->GetProfile()->GetPrefs()
              faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                browser->GetProfile())
-      snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)
-                tabsCloser:std::make_unique<TabsCloser>(
-                               browser, TabsCloser::ClosePolicy::kAllTabs)];
+      snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)];
 }
 
 - (void)show {

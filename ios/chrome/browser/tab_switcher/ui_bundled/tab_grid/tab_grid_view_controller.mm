@@ -488,8 +488,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   [self recordIdlePageStatus];
 
-  [self.regularGridHandler discardSavedClosedItems];
-
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
 

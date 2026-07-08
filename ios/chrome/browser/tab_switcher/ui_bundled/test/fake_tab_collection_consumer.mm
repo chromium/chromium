@@ -116,18 +116,6 @@
   // No-op.
 }
 
-- (void)willCloseAll {
-}
-
-- (void)didCloseAll {
-}
-
-- (void)willUndoCloseAll {
-}
-
-- (void)didUndoCloseAll {
-}
-
 - (void)reload {
 }
 

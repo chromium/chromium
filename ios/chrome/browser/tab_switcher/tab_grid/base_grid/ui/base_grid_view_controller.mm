@@ -140,9 +140,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 @property(nonatomic, assign) BOOL dragEndAtNewIndex;
 // Tracks if a drop action initiated in this grid is in progress.
 @property(nonatomic) BOOL localDragActionInProgress;
-// Tracks if the items are in a batch action, which are the "Close All" or
-// "Undo" the close all.
-@property(nonatomic) BOOL isClosingAllOrUndoRunning;
 // Caches the initial entry direction for a cell drag into other cells.
 @property(nonatomic, strong)
     NSMutableDictionary<NSIndexPath*, NSNumber*>* entryDirectionCache;
@@ -1376,26 +1373,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)reload {
   [self.collectionView reloadData];
-}
-
-- (void)willCloseAll {
-  self.isClosingAllOrUndoRunning = YES;
-}
-
-- (void)didCloseAll {
-  self.isClosingAllOrUndoRunning = NO;
-  [self updateTabsSectionHeaderType];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-}
-
-- (void)willUndoCloseAll {
-  self.isClosingAllOrUndoRunning = YES;
-}
-
-- (void)didUndoCloseAll {
-  self.isClosingAllOrUndoRunning = NO;
-  [self updateTabsSectionHeaderType];
-  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - Suggested Actions Section

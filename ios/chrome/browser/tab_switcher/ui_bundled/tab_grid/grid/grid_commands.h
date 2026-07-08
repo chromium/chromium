@@ -34,15 +34,6 @@ class WebStateID;
                     tabCount:(int)tabCount;
 // Tells the receiver to close all items.
 - (void)closeAllItems;
-// Tells the receiver to save all items for an undo operation, then close all
-// items.
-- (void)saveAndCloseAllItems;
-// Tells the receiver to restore saved closed items, and then discard the saved
-// items. If there are no saved closed items, this is a no-op.
-- (void)undoCloseAllItems;
-// Tells the receiver to discard saved closed items. If the consumer has saved
-// closed items, it will discard them. Otherwise, this is a no-op.
-- (void)discardSavedClosedItems;
 
 // Tells the receiver to perform a search using `searchText` and update the list
 // of visible items based on the result.

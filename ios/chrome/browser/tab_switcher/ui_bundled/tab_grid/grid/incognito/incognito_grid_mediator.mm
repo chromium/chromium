@@ -76,18 +76,6 @@
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
-- (void)saveAndCloseAllItems {
-  NOTREACHED() << "Incognito tabs should not be saved before closing.";
-}
-
-- (void)undoCloseAllItems {
-  NOTREACHED() << "Incognito tabs are not saved before closing.";
-}
-
-- (void)discardSavedClosedItems {
-  NOTREACHED() << "Incognito tabs cannot be saved.";
-}
-
 - (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID {
   NOTREACHED() << "Should not be called in incognito.";
 }

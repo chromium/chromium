@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
-#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
@@ -80,9 +79,6 @@ using ScopedTabGroupSyncObservation =
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
-  // TabsClosed used to implement the "close all tabs" operation with support
-  // for undoing the operation.
-  std::unique_ptr<TabsCloser> _tabsCloser;
   // Whether the current grid is selected.
   BOOL _selected;
   // A service to get activity messages for a shared tab group.
@@ -163,43 +159,6 @@ using ScopedTabGroupSyncObservation =
                              WebStateList::ClosingReason::kUserAction);
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
   [self showTabGroupSnackbarOrIPH:tabGroupCount];
-}
-
-- (void)saveAndCloseAllItems {
-  [self.inactiveTabsGridCommands saveAndCloseAllItems];
-  if (![self canCloseTabs]) {
-    return;
-  }
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
-
-  const int tabGroupCount = self.webStateList->GetGroups().size();
-
-  const int closedTabs = _tabsCloser->CloseTabs();
-  RecordTabGridCloseTabsCount(closedTabs);
-
-  [self showTabGroupSnackbarOrIPH:tabGroupCount];
-}
-
-- (void)undoCloseAllItems {
-  [self.inactiveTabsGridCommands undoCloseAllItems];
-  if (![self canUndoCloseTabs]) {
-    return;
-  }
-
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
-
-  _tabsCloser->UndoCloseTabs();
-}
-
-- (void)discardSavedClosedItems {
-  [self.inactiveTabsGridCommands discardSavedClosedItems];
-  if (![self canUndoCloseTabs]) {
-    return;
-  }
-  _tabsCloser->ConfirmDeletion();
-  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridPageMutator
@@ -291,7 +250,6 @@ using ScopedTabGroupSyncObservation =
     _messagingBackendServiceBridge.reset();
     _messagingService = nullptr;
   }
-  _tabsCloser.reset();
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
@@ -327,9 +285,8 @@ using ScopedTabGroupSyncObservation =
     toolbarsConfiguration.doneButton = !self.webStateList->empty();
     toolbarsConfiguration.newTabButton = YES;
     toolbarsConfiguration.searchButton = YES;
-    toolbarsConfiguration.selectTabsButton = [self hasRegularTabs];
+    toolbarsConfiguration.selectTabsButton = [self canCloseTabs];
     toolbarsConfiguration.closeOtherTabsButton = [self canCloseOtherTabs];
-    toolbarsConfiguration.undoButton = [self canUndoCloseRegularOrInactiveTabs];
   }
 
   BOOL showPageActionMenu = (self.modeHolder.mode == TabGridMode::kNormal) &&
@@ -346,12 +303,6 @@ using ScopedTabGroupSyncObservation =
                                   behavior:TabGridScrollBehaviorAnimated];
   [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
                                        focusOmnibox:NO];
-}
-
-- (void)updateForTabInserted {
-  if (!self.webStateList->empty()) {
-    [self discardSavedClosedItems];
-  }
 }
 
 // Overrides the parent to return the data used for showing a label if there is
@@ -437,12 +388,8 @@ using ScopedTabGroupSyncObservation =
 }
 
 // YES if there are regular tabs in the grid.
-- (BOOL)hasRegularTabs {
-  return [self canCloseTabs];
-}
-
 - (BOOL)canCloseTabs {
-  return _tabsCloser && _tabsCloser->CanCloseTabs();
+  return self.webStateList && self.webStateList->regular_tabs_count() != 0;
 }
 
 // Returns YES if "Close Other Tabs" should be enabled.
@@ -460,10 +407,6 @@ using ScopedTabGroupSyncObservation =
   return self.webStateList->regular_tabs_count() > 1;
 }
 
-- (BOOL)canUndoCloseTabs {
-  return _tabsCloser && _tabsCloser->CanUndoCloseTabs();
-}
-
 - (BOOL)canCloseRegularOrInactiveTabs {
   if ([self canCloseTabs]) {
     return YES;
@@ -474,18 +417,6 @@ using ScopedTabGroupSyncObservation =
   TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
       [self.containedGridToolbarsProvider toolbarsConfiguration];
   return containedGridToolbarsConfiguration.closeAllButton;
-}
-
-- (BOOL)canUndoCloseRegularOrInactiveTabs {
-  if ([self canUndoCloseTabs]) {
-    return YES;
-  }
-
-  // This is an indirect way to check whether the inactive tabs can close
-  // tabs or undo a close tabs action.
-  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
-      [self.containedGridToolbarsProvider toolbarsConfiguration];
-  return containedGridToolbarsConfiguration.undoButton;
 }
 
 // Gets messages to indicate that the shared tab group has changed and the user
@@ -553,16 +484,6 @@ using ScopedTabGroupSyncObservation =
 }
 
 #pragma mark - Setters
-
-- (void)setBrowser:(Browser*)browser {
-  [super setBrowser:browser];
-  if (browser) {
-    _tabsCloser = std::make_unique<TabsCloser>(
-        browser, TabsCloser::ClosePolicy::kRegularTabs);
-  } else {
-    _tabsCloser.reset();
-  }
-}
 
 - (void)setWebStateList:(WebStateList*)webStateList {
   [super setWebStateList:webStateList];
