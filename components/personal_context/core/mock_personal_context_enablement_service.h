@@ -18,7 +18,7 @@ class MockPersonalContextEnablementService
 
   MOCK_METHOD(void, AddObserver, (Observer* observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer* observer), (override));
-  MOCK_METHOD(PersonalContextEnablementState,
+  MOCK_METHOD(PersonalContextEligibilityState,
               GetEnablementState,
               (),
               (override));

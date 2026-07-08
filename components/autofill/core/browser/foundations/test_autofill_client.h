@@ -233,13 +233,13 @@ class TestAutofillClientTemplate : public T {
     return at_memory_query_service_.get();
   }
 
-  personal_context::PersonalContextEnablementState
-  GetPersonalContextEnablementState() const override {
+  personal_context::PersonalContextEligibilityState
+  GetPersonalContextEligibilityState() const override {
     return personal_context_enablement_state_;
   }
 
   void set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState state) {
+      personal_context::PersonalContextEligibilityState state) {
     personal_context_enablement_state_ = state;
   }
 
@@ -825,9 +825,9 @@ class TestAutofillClientTemplate : public T {
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
-  personal_context::PersonalContextEnablementState
+  personal_context::PersonalContextEligibilityState
       personal_context_enablement_state_ =
-          personal_context::PersonalContextEnablementState::kEnabled;
+          personal_context::PersonalContextEligibilityState::kEligible;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
   std::unique_ptr<AutofillComposeDelegate> compose_delegate_;

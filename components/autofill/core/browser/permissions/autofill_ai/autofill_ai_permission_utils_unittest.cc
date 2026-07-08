@@ -582,7 +582,7 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
   feature_list.InitAndEnableFeature(features::debug::kAutofillAiForceOptIn);
 
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kEnabled);
+      personal_context::PersonalContextEligibilityState::kEligible);
   for (const EntityTypeName type :
        {kPassport, kDriversLicense, kNationalIdCard, kFlightReservation,
         kShipment, kOrder, kVehicle}) {
@@ -616,12 +616,12 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
 
 TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill) {
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kEnabled);
+      personal_context::PersonalContextEligibilityState::kEligible);
   EXPECT_TRUE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
 
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
+      personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
 }
@@ -631,7 +631,7 @@ TEST_F(AutofillAiPermissionUtilsTest, AmbientAutofillFillingRequiresOptIn) {
   feature_list.InitAndDisableFeature(features::kAutofillAiAvailableByDefault);
 
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kEnabled);
+      personal_context::PersonalContextEligibilityState::kEligible);
 
   // Opted out.
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
@@ -646,7 +646,7 @@ TEST_F(AutofillAiPermissionUtilsTest, AmbientAutofillFillingRequiresOptIn) {
 
 TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_G1Tiers) {
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kEnabled);
+      personal_context::PersonalContextEligibilityState::kEligible);
 
   // Scenario 1: Tiers 1 and 2 are eligible.
   {
@@ -686,7 +686,7 @@ TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_G1Tiers) {
 TEST_F(AutofillAiPermissionUtilsTest,
        AmbientAutofillRequiresPersonalContextPref) {
   client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kEnabled);
+      personal_context::PersonalContextEligibilityState::kEligible);
 
   // Pref enabled by default in RegisterProfilePrefs.
   EXPECT_TRUE(

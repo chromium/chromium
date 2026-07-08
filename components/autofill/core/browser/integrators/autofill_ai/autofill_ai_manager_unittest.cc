@@ -357,7 +357,7 @@ TEST_F(AutofillAiManagerTest,
   autofill_client().GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
   autofill_client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
+      personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
   auto form_structure = std::make_unique<FormStructure>(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));

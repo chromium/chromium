@@ -37,14 +37,14 @@ namespace {
   if (!personal_context_service) {
     return false;
   }
-  using enum personal_context::PersonalContextEnablementState;
+  using enum personal_context::PersonalContextEligibilityState;
   switch (personal_context_service->GetEnablementState()) {
     case kDisabledNotEligible:
     // TODO(crbug.com/504893949) Consider handling this status differently when
     // implementing opt-in logic.
     case kDisabledNeedsOptIn:
       return false;
-    case kEnabled:
+    case kEligible:
       return true;
   }
   NOTREACHED();
