@@ -1378,6 +1378,16 @@
     Got it
   </message>
 
+  <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_TITLE" desc="A title of the notice that infroms the user that page content will be processed privately in the cloud.">
+    Smarter autofill, kept private
+  </message>
+  <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_DESCRIPTION" desc="A description text of the notice that infroms the user that page content will be processed privately in the cloud.">
+    To improve suggestions and fill forms faster, the content and URLs of the pages you visit can be processed in a private space in the cloud.
+  </message>
+  <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_PRIMARY_BUTTON_TEXT" desc="A primary button text of the notice that infroms the user that page content will be processed privately in the cloud.">
+    Got it
+  </message>
+
   <!-- Prompt strings used on Android -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_ANDROID" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">

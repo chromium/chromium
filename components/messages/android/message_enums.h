@@ -162,6 +162,7 @@ enum class MessageIdentifier {
   GLIC_WINDOW_RESIZED = 72,
   EXTENSION_DEV_TOOLS = 73,
   PERSONAL_CONTEXT_FETCHING_FAILURE = 74,
+  PRIVATE_INFERENCE_NOTICE = 75,
   // Insert new values before this line.
   COUNT
 };

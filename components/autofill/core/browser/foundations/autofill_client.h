@@ -854,6 +854,10 @@ class AutofillClient {
   // Notifies the user that prefetching Autofill AI entities failed.
   virtual void ShowAutofillAiPreFetchFailureNotification();
 
+  // Notifies the user that the page content will now be processed privately by
+  // default.
+  virtual void ShowAutofillAiPrivateInferenceNotice();
+
   virtual void ShowEmailVerifiedToast(const GURL& issuer);
 
   // Shows a yes/no prompt asking the user to confirm that they want to verify

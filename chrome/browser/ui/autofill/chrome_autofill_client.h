@@ -289,6 +289,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void ShowAutofillAiSaveToWalletFailureNotification() final;
   void ShowAutofillAiFetchFromWalletFailureNotification() final;
   void ShowAutofillAiPreFetchFailureNotification() final;
+  void ShowAutofillAiPrivateInferenceNotice() final;
   void ShowEmailVerifiedToast(const GURL& issuer) final;
   void ShowEmailVerificationPopup(
       const gfx::RectF& element_bounds,

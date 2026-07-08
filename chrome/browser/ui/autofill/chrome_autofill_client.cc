@@ -1576,6 +1576,15 @@ void ChromeAutofillClient::ShowAutofillAiPreFetchFailureNotification() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
+#if BUILDFLAG(IS_ANDROID)
+  GetAutofillMessageController()->Show(
+      AutofillMessageModel::CreateForPrivateInferenceNotice());
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 ToastController* ChromeAutofillClient::GetToastController() {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;

@@ -1497,6 +1497,7 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="GlicWindowResized"/>
   <int value="73" label="ExtensionDevTools"/>
   <int value="74" label="PersonalContextFetchingFailure"/>
+  <int value="75" label="PrivateInferenceNotice"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

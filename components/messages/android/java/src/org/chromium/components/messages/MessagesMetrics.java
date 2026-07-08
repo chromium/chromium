@@ -364,6 +364,8 @@ public class MessagesMetrics {
                 return "ExtensionDevTools";
             case MessageIdentifier.PERSONAL_CONTEXT_FETCHING_FAILURE:
                 return "PersonalContextFetchingFailure";
+            case MessageIdentifier.PRIVATE_INFERENCE_NOTICE:
+                return "PrivateInferenceNotice";
             default:
                 return "Unknown";
         }

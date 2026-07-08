@@ -411,6 +411,10 @@ void AutofillClient::ShowAutofillAiPreFetchFailureNotification() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAutofillAiPrivateInferenceNotice() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
   NOTIMPLEMENTED();
 }
