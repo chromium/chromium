@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -143,15 +144,19 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
-    std::move(callback).Run(
-        base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
     return;
   }
 
   if (std::string mock_otp =
           one_time_tokens::features::kMockGmailOtpValue.Get();
       !mock_otp.empty()) {
-    std::move(callback).Run(mock_otp);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(mock_otp)));
     return;
   }
 
@@ -161,8 +166,12 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   one_time_tokens::OneTimeTokenService* service =
       OneTimeTokenServiceFactory::GetForProfile(profile_);
   if (!service) {
-    std::move(callback).Run(base::unexpected(
-        OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(
+                OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable)));
     return;
   }
 
@@ -188,10 +197,15 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     // previous callback with a default error so the old caller can gracefully
     // time out rather than hanging indefinitely.
     if (retrieve_otp_callback_) {
-      std::move(retrieve_otp_callback_)
-          .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(retrieve_otp_callback_),
+              base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
     }
-    std::move(callback).Run(most_recent_token->value());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), most_recent_token->value()));
     return;
   }
 
@@ -199,8 +213,11 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   // previous callback with a default error so the old caller can gracefully
   // time out rather than hanging indefinitely.
   if (retrieve_otp_callback_) {
-    std::move(retrieve_otp_callback_)
-        .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(retrieve_otp_callback_),
+            base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
   }
   retrieve_otp_callback_ = std::move(callback);
 
@@ -237,12 +254,14 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
     base::OnceCallback<void(bool)> callback) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
   if (trigger_field_ids.empty()) {
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -253,7 +272,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   if (filling_observer_) {
     LOG(WARNING) << "FillOtp called while another filling operation is still "
                     "in progress. The new request is ignored.";
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -264,7 +284,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       maybe_manager = GetAutofillManager(*tab);
   if (!maybe_manager.has_value()) {
     LOG(WARNING) << "FillOtp failed: AutofillManager not available.";
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   BrowserAutofillManager& autofill_manager = maybe_manager.value();
@@ -281,7 +302,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   if (!form_structure) {
     LOG(WARNING) << "FillOtp failed: Form structure containing trigger field "
                  << trigger_field_id << " not found in cache.";
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   const AutofillField* const autofill_field =
@@ -289,7 +311,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   if (!autofill_field) {
     LOG(WARNING) << "FillOtp failed: Trigger field " << trigger_field_id
                  << " not found in the form structure.";
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
@@ -301,7 +324,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
 
   if (otp_fill_data.empty()) {
     LOG(WARNING) << "FillOtp failed: Generated OtpFillData is empty.";
-    std::move(callback).Run(false);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
