@@ -30,6 +30,12 @@ BASE_DECLARE_FEATURE_PARAM(int, kPersonalContextForceEnablementStateParam);
 BASE_DECLARE_FEATURE(kMockPersonalContextResult);
 BASE_DECLARE_FEATURE_PARAM(int, kMockPersonalContextResultTypeParam);
 
+// When enabled, `PersonalContextFirstRunServiceImpl` will reset notice
+// preferences on startup.
+// TODO(b:532008442): When notice development has been completed and we don't
+// expect future changes to the notices anymore, clean up this debug feature.
+BASE_DECLARE_FEATURE(kPersonalContextResetNoticePrefsOnStartup);
+
 }  // namespace personal_context::features::debug
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_DEBUG_FEATURES_H_

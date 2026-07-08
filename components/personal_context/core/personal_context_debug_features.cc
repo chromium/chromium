@@ -32,4 +32,7 @@ BASE_FEATURE_PARAM(int,
                    &kMockPersonalContextResult,
                    2);
 
+BASE_FEATURE(kPersonalContextResetNoticePrefsOnStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace personal_context::features::debug

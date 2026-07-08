@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -110,6 +111,56 @@ TEST_F(PersonalContextFirstRunServiceImplTest, ClearsPrefOnSignout) {
       prefs::kPersonalContextInAutofillSettingsToggleStatus));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PersonalContextFirstRunServiceImplTest, ResetsNoticePrefsOnStartup) {
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
+  pref_service()->SetBoolean(prefs::kPersonalContextAtMemoryNoticeShouldBeShown,
+                             false);
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
+
+  base::test::ScopedFeatureList local_feature_list{
+      features::debug::kPersonalContextResetNoticePrefsOnStartup};
+
+  auto client = std::make_unique<MockPersonalContextFirstRunClient>();
+  auto service = std::make_unique<PersonalContextFirstRunServiceImpl>(
+      std::move(client), enablement_service(), pref_service(),
+      identity_test_env()->identity_manager());
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextAtMemoryNoticeShouldBeShown));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus));
+}
+
+TEST_F(PersonalContextFirstRunServiceImplTest,
+       DoesNotResetNoticePrefsOnStartup) {
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
+  pref_service()->SetBoolean(prefs::kPersonalContextAtMemoryNoticeShouldBeShown,
+                             false);
+  pref_service()->SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      features::debug::kPersonalContextResetNoticePrefsOnStartup);
+
+  auto client = std::make_unique<MockPersonalContextFirstRunClient>();
+  auto service = std::make_unique<PersonalContextFirstRunServiceImpl>(
+      std::move(client), enablement_service(), pref_service(),
+      identity_test_env()->identity_manager());
+
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kPersonalContextAtMemoryNoticeShouldBeShown));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus));
+}
 
 TEST_F(PersonalContextFirstRunServiceImplTest, SetsPrefOnAcknowledge) {
   EXPECT_CALL(*enablement_service(), GetEnablementState())

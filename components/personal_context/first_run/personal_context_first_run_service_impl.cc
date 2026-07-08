@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -31,6 +33,17 @@ bool AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
   return true;
 }
 
+void ResetNoticePrefs(PrefService* pref_service) {
+  if (!pref_service) {
+    return;
+  }
+  pref_service->ClearPref(
+      prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
+  pref_service->ClearPref(prefs::kPersonalContextAtMemoryNoticeShouldBeShown);
+  pref_service->ClearPref(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus);
+}
+
 }  // namespace
 
 PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
@@ -45,6 +58,10 @@ PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
   if (identity_manager_) {
     identity_manager_observation_.Observe(identity_manager_);
   }
+  if (base::FeatureList::IsEnabled(
+          features::debug::kPersonalContextResetNoticePrefsOnStartup)) {
+    ResetNoticePrefs(pref_service_);
+  }
 }
 
 PersonalContextFirstRunServiceImpl::~PersonalContextFirstRunServiceImpl() =
@@ -54,14 +71,7 @@ void PersonalContextFirstRunServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    if (pref_service_) {
-      pref_service_->ClearPref(
-          prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown);
-      pref_service_->ClearPref(
-          prefs::kPersonalContextAtMemoryNoticeShouldBeShown);
-      pref_service_->ClearPref(
-          prefs::kPersonalContextInAutofillSettingsToggleStatus);
-    }
+    ResetNoticePrefs(pref_service_);
   }
 }
 
