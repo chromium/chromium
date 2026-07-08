@@ -203,6 +203,31 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     }
 
     @Test
+    public void testMaybeShowCrashRecoveryDialog_singleWindowHost_resetsState() {
+        // Setup: Host window is the only window.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 0,
+                /* numNonDefaultDisplayWindows= */ 0);
+        writeCrashExitReasonToPrefs();
+
+        // Act.
+        mDelegate.initializeCrashRecoveryMetadata();
+
+        boolean shown =
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
+
+        // Verify.
+        assertFalse(shown);
+
+        // Now verify it's no longer eligible (resetState was called).
+        // A second call should return false because mIsCrashRecoveryEligible was reset to false.
+        assertFalse(
+                "Delegate should no longer be eligible after state reset.",
+                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity));
+    }
+
+    @Test
     public void testDidLastSessionCrashWithRecoverableWindows_variousExitReasons() {
         // Setup: At least one crashed window exists on disk.
         setupOtherCrashedWindows(
