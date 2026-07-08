@@ -172,7 +172,7 @@ source_set("unit_tests") {
     "//components/private_ai/crypto:unit_tests",
     "//components/signin/public/identity_manager:test_support",
   ]
-  if (is_ios) {
+  if (!use_blink) {
     deps += [ "//components/private_ai/ios:unit_tests" ]
   } else {
     deps += [ "//components/private_ai/content:unit_tests" ]

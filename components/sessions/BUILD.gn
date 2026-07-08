@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
+import("//build/config/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -10,7 +13,7 @@ config("implementation") {
   defines = [ "SESSIONS_IMPLEMENTATION" ]
 }
 
-if (!is_ios) {
+if (use_blink && !(is_ios && target_platform == "iphoneos")) {
   component("sessions") {
     sources = [
       "content/content_live_tab.cc",
@@ -181,7 +184,7 @@ static_library("test_support") {
     "//url",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "content/content_test_helper.cc",
       "content/content_test_helper.h",
@@ -208,7 +211,7 @@ source_set("unit_tests") {
     "core/tab_restore_service_helper_unittest.cc",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "content/content_serialized_navigation_builder_unittest.cc",
       "content/content_serialized_navigation_driver_unittest.cc",
@@ -235,7 +238,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [
       "//content/public/common",
       "//content/test:test_support",
