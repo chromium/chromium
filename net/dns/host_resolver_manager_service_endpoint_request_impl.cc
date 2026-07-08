@@ -453,7 +453,16 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoStartJob() {
 }
 
 void HostResolverManager::ServiceEndpointRequestImpl::OnIOComplete(int rv) {
-  rv = DoLoop(rv);
+  if (!resolve_context_) {
+    // The ResolveContext was shut down while `this` was waiting for an
+    // asynchronous check. Fail the request without accessing the context.
+    next_state_ = State::kNone;
+    finalized_result_ = FinalizedResult(/*endpoints=*/{}, /*dns_aliases=*/{});
+    error_info_ = ResolveErrorInfo(ERR_CONTEXT_SHUT_DOWN);
+    rv = ERR_CONTEXT_SHUT_DOWN;
+  } else {
+    rv = DoLoop(rv);
+  }
   if (rv != ERR_IO_PENDING) {
     // The request finished synchronously in DoLoop() (e.g. resolved locally
     // after an asynchronous IPv6 reachability check). Start() has already
