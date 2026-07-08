@@ -691,6 +691,7 @@ bool OffscreenCanvas::PushFrame(
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource));
 
+  CHECK(HasPlaceholderCanvas());
   auto* dispatcher = GetOrCreateResourceDispatcher();
   if (placeholder_client_) {
     placeholder_client_->DispatchFrame(exported_resource);
