@@ -44,20 +44,19 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
 
 std::string GetSessionIdentifier(Browser* browser) {
   SceneState* scene_state = browser->GetSceneState();
-  const std::string_view scene_session = scene_state.sceneSessionID;
-  DCHECK(!scene_session.empty());
+  const std::string_view scene_state_id = scene_state.sceneSessionID;
+  DCHECK(!scene_state_id.empty());
 
-  return GetSessionIdentifier(scene_session, browser->IsInactive());
+  return GetSessionIdentifier(scene_state_id, browser->IsInactive());
 }
 
-std::string GetSessionIdentifier(std::string_view scene_session_identifier,
+std::string GetSessionIdentifier(std::string_view scene_state_id,
                                  bool inactive_browser) {
   if (!inactive_browser) {
-    return std::string(scene_session_identifier);
+    return std::string(scene_state_id);
   }
 
-  return base::StrCat(
-      {scene_session_identifier, kInactiveBrowserIdentifierSuffix});
+  return base::StrCat({scene_state_id, kInactiveBrowserIdentifierSuffix});
 }
 
 }  // namespace session_util
