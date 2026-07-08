@@ -215,10 +215,6 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
     entry.Set("duration", 0.0);
     AddEntryToBuffer(std::move(entry));
   }
-
-  if (visibility == Visibility::HIDDEN) {
-    FlushMetrics();
-  }
 }
 
 void DeclarativePerformanceObserver::OnFrameDeleted() {
@@ -437,9 +433,29 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
 
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(
     base::ListValue reports) {
+  StoragePartition* storage_partition =
+      storage_partition_for_testing_
+          ? storage_partition_for_testing_.get()
+          : render_frame_host().GetStoragePartition();
+  if (!storage_partition) {
+    return;
+  }
   for (auto& val : reports) {
     if (val.is_dict()) {
-      AddEntryToBuffer(std::move(val).TakeDict());
+      base::DictValue entry = std::move(val).TakeDict();
+
+      std::string* name_url = entry.FindString("name");
+      GURL failed_url = name_url ? GURL(*name_url) : committed_url_;
+
+      base::DictValue report_body;
+      base::ListValue entries_list;
+      entries_list.Append(base::Value(std::move(entry)));
+      report_body.Set("entries", std::move(entries_list));
+
+      storage_partition->GetNetworkContext()->QueueReport(
+          kDeclarativePerformanceObserverReportType, reporting_endpoint_,
+          failed_url, reporting_source_, network_anonymization_key_,
+          std::move(report_body));
     }
   }
 }

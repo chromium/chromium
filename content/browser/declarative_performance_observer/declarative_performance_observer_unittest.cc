@@ -193,42 +193,32 @@ TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
   // Trigger unload to flush metrics
   DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
 
-  ASSERT_EQ(network_context_.reports().size(), 2u);
+  ASSERT_EQ(network_context_.reports().size(), 1u);
 
-  // Report 1: Flushed on HIDDEN
-  const auto& report1 = network_context_.reports()[0];
-  const base::ListValue* entries1 = report1.body.FindList("entries");
-  ASSERT_TRUE(entries1);
-  // initial visible + 1st flip (hidden)
-  ASSERT_EQ(entries1->size(), 2u);
+  const auto& report = network_context_.reports()[0];
+  const base::ListValue* entries = report.body.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(entries->size(), 4u);
 
-  const base::Value& entry0_val = (*entries1)[0];
+  const base::Value& entry0_val = (*entries)[0];
   const base::DictValue* entry0 = entry0_val.GetIfDict();
   ASSERT_TRUE(entry0);
   EXPECT_EQ(*(entry0->FindString("name")), "visible");
 
-  const base::Value& entry1_val = (*entries1)[1];
+  const base::Value& entry1_val = (*entries)[1];
   const base::DictValue* entry1 = entry1_val.GetIfDict();
   ASSERT_TRUE(entry1);
   EXPECT_EQ(*(entry1->FindString("name")), "hidden");
 
-  // Report 2: Flushed on RenderFrameDeleted
-  const auto& report2 = network_context_.reports()[1];
-  const base::ListValue* entries2 = report2.body.FindList("entries");
-  ASSERT_TRUE(entries2);
-  // 2nd flip (visible) + session-end
-  ASSERT_EQ(entries2->size(), 2u);
+  const base::Value& entry2_val = (*entries)[2];
+  const base::DictValue* entry2 = entry2_val.GetIfDict();
+  ASSERT_TRUE(entry2);
+  EXPECT_EQ(*(entry2->FindString("name")), "visible");
 
-  const base::Value& entry2_0_val = (*entries2)[0];
-  const base::DictValue* entry2_0 = entry2_0_val.GetIfDict();
-  ASSERT_TRUE(entry2_0);
-  EXPECT_EQ(*(entry2_0->FindString("name")), "visible");
-
-  const base::Value& entry2_1_val = (*entries2)[1];
-  const base::DictValue* entry2_1 = entry2_1_val.GetIfDict();
-  ASSERT_TRUE(entry2_1);
-  EXPECT_EQ(*(entry2_1->FindString("entryType")), "session-end");
-  EXPECT_EQ(*(entry2_1->FindString("name")), "session-end-event");
+  const base::Value& entry3_val = (*entries)[3];
+  const base::DictValue* entry3 = entry3_val.GetIfDict();
+  ASSERT_TRUE(entry3);
+  EXPECT_EQ(*(entry3->FindString("entryType")), "session-end");
 }
 
 TEST_F(DeclarativePerformanceObserverTest, RecordsNavigationTiming) {
@@ -622,7 +612,7 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPrerenderActivation) {
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
-       RecordsEarlyFailureAndMergesOnOptIn) {
+       RecordsEarlyFailureAsSeparateReportOnOptIn) {
   const GURL kPageURL("https://example.com/index.html");
   const url::Origin kOrigin = url::Origin::Create(kPageURL);
   auto* partition =
@@ -666,11 +656,30 @@ TEST_F(DeclarativePerformanceObserverTest,
 
   DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
 
-  ASSERT_EQ(network_context_.reports().size(), 1u);
-  const auto& report = network_context_.reports()[0];
-  const base::ListValue* entries = report.body.FindList("entries");
-  ASSERT_TRUE(entries);
-  ASSERT_EQ(entries->size(), 3u);
+  ASSERT_EQ(network_context_.reports().size(), 2u);
+
+  // First report: Early failure navigation timing
+  const auto& failure_report = network_context_.reports()[0];
+  EXPECT_EQ(failure_report.url, kOrigin.GetURL());
+  const base::ListValue* failure_entries =
+      failure_report.body.FindList("entries");
+  ASSERT_TRUE(failure_entries);
+  ASSERT_EQ(failure_entries->size(), 1u);
+  const base::Value& failure_entry_val = (*failure_entries)[0];
+  const base::DictValue* failure_nav_entry = failure_entry_val.GetIfDict();
+  ASSERT_TRUE(failure_nav_entry);
+  EXPECT_EQ(*(failure_nav_entry->FindString("entryType")), "navigation");
+  const base::DictValue* error_dict = failure_nav_entry->FindDict("error");
+  ASSERT_TRUE(error_dict);
+  EXPECT_EQ(*(error_dict->FindString("netError")), "ERR_CONNECTION_REFUSED");
+
+  // Second report: Main document session timing (visibility-state and
+  // session-end)
+  const auto& main_report = network_context_.reports()[1];
+  EXPECT_EQ(main_report.url, kPageURL);
+  const base::ListValue* main_entries = main_report.body.FindList("entries");
+  ASSERT_TRUE(main_entries);
+  ASSERT_EQ(main_entries->size(), 2u);
 }
 
 TEST_F(DeclarativePerformanceObserverTest, Enforces640KBFIFOQuota) {
