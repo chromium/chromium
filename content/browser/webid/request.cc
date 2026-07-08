@@ -565,6 +565,7 @@ bool Request::RequestToken(
                            weak_ptr_factory_.GetWeakPtr()))) {
       return false;
     }
+    did_show_ui_ = true;
   }
 
   fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
@@ -1243,6 +1244,7 @@ void Request::NotifyAutofillSuggestionAccepted(
                          weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
+  did_show_ui_ = true;
 
   std::vector<IdentityRequestAccountPtr> selected;
 
@@ -1279,6 +1281,7 @@ void Request::NotifyAutofillSuggestionAccepted(
 
 void Request::OnAccountsDisplayed() {
   accounts_dialog_display_time_ = base::TimeTicks::Now();
+  did_show_ui_ = true;
 }
 
 void Request::OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info) {
@@ -1356,6 +1359,7 @@ void Request::ShowSingleIdpFailureDialog() {
                               /*can_append_hints=*/true))) {
     return;
   }
+  did_show_ui_ = true;
 
   CHECK_EQ(idp_data_for_display_.size(), 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
@@ -1617,6 +1621,7 @@ void Request::ShowModalDialog(DialogType dialog_type,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
                      idp_config_url));
+  did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
   // If the showing of the model dialog was deferred, this will be null, and
@@ -1787,6 +1792,7 @@ void Request::ShowErrorDialog(const GURL& idp_config_url,
               : base::NullCallback())) {
     return;
   }
+  did_show_ui_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
@@ -2048,7 +2054,7 @@ void Request::RecordMetricsAndConsoleError(
             : ThirdPartyCookiesStatus::kDisabledInSettings,
         ComputeRequesterFrameType(render_frame_host(), origin(),
                                   GetEmbeddingOrigin()),
-        has_signin_account, GetDialogController()->DidShowUi());
+        has_signin_account, did_show_ui_);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {
@@ -2063,7 +2069,7 @@ void Request::RecordMetricsAndConsoleError(
           id_assertion_response_time_ - start_time_ -
               (accounts_dialog_display_time_ -
                ready_to_display_accounts_dialog_time_),
-          GetDialogController()->DidShowUi());
+          did_show_ui_);
     }
   } else {
     AddDevToolsIssue(result);
@@ -2072,8 +2078,8 @@ void Request::RecordMetricsAndConsoleError(
     // fedcm_accounts_fetcher_ could be null if configs were not fetched, e.g.
     // because of cooldown.
     if (IsMetricsEndpointEnabled() && fedcm_accounts_fetcher_) {
-      fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(
-          result, GetDialogController()->DidShowUi());
+      fedcm_accounts_fetcher_->SendAllFailedTokenRequestMetrics(result,
+                                                                did_show_ui_);
     }
   }
 

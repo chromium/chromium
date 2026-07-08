@@ -664,6 +664,8 @@ class CONTENT_EXPORT Request
   // dismissals triggered by tab closure on Android during the navigation.
   bool in_redirect_to_{false};
 
+  bool did_show_ui_{false};
+
   bool is_mojo_{true};
 
   mojo::ReceiverSet<blink::mojom::FederatedAuthRequest> auth_request_receivers_;

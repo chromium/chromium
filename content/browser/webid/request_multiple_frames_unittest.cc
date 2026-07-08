@@ -204,6 +204,7 @@ class TestDialogController
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::AccountsDisplayedCallback
           accounts_displayed_callback) override {
+    std::move(accounts_displayed_callback).Run();
     state_->did_show_accounts_dialog = true;
     state_->rp_for_display = base::UTF16ToUTF8(rp_data.rp_for_display);
     state_->iframe_for_display = base::UTF16ToUTF8(rp_data.iframe_for_display);
