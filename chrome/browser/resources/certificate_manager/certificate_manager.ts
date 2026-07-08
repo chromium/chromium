@@ -137,6 +137,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
       showSearch_: {type: Boolean},
 
       numPlatformClientCertsString_: {type: String},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -241,6 +242,8 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   ];
   // </if>
   protected accessor numPlatformClientCertsString_: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
   private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|

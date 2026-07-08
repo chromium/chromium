@@ -31,7 +31,10 @@ export function getHtml(this: CertificateManagerElement) {
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
           href="${this.generateHrefForPage_(Page.CLIENT_CERTS)}"
           @click="${this.onMenuItemClick_}">
-        <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
+        <cr-icon
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'certmanager:id-card'
+                : 'certmanager:card-old'}" class="menu-icon"></cr-icon>
         $i18n{certificateManagerV2ClientCerts}
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
