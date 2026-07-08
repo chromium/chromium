@@ -1397,7 +1397,7 @@
     {
         "name": "play-services-auth-api-phone",
         "group": "com.google.android.gms",
-        "version": "18.3.0"
+        "version": "18.3.1"
     },
     {
         "name": "play-services-auth-base",
