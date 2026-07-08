@@ -80,15 +80,15 @@ std::optional<std::string> ChromeCompaneroLoader::GetHeaderValueFromLib(
   }
 
   char value_buffer[64];
-  int32_t written = get_companero_value_fn_(
+  size_t written = get_companero_value_fn_(
       seed.data(), seed.length(), api_key.data(), api_key.length(),
       user_agent.data(), user_agent.length(), value_buffer,
       sizeof(value_buffer));
-  if (written <= 0) {
+  if (written == 0) {
     return std::nullopt;
   }
-  CHECK_LE(static_cast<size_t>(written), sizeof(value_buffer));
-  return std::string(value_buffer, static_cast<size_t>(written));
+  CHECK_LE(written, sizeof(value_buffer));
+  return std::string(value_buffer, written);
 }
 
 void ChromeCompaneroLoader::SetMojoRemote(
@@ -183,12 +183,12 @@ std::optional<std::string> ChromeCompaneroLoader::GetHeaderNameFromLib() {
   }
 
   char name_buffer[64];
-  int32_t written = get_header_name_fn_(name_buffer, sizeof(name_buffer));
-  if (written <= 0) {
+  size_t written = get_header_name_fn_(name_buffer, sizeof(name_buffer));
+  if (written == 0) {
     return std::nullopt;
   }
-  CHECK_LE(static_cast<size_t>(written), sizeof(name_buffer));
-  return std::string(name_buffer, static_cast<size_t>(written));
+  CHECK_LE(written, sizeof(name_buffer));
+  return std::string(name_buffer, written);
 }
 
 std::optional<HeaderNameAndValue>

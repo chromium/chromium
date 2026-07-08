@@ -74,19 +74,16 @@ class ChromeCompaneroLoader {
                                                    std::string_view api_key,
                                                    std::string_view user_agent);
 
-  // TODO(deepakr): Update FFI return types from int32_t to size_t to cleanly
-  // represent written byte counts without signed conversion artifacts across
-  // ABI boundaries.
   // Typedefs for function pointers.
-  using GetCompaneroValueFunc = int32_t (*)(const char*,
-                                            size_t,
-                                            const char*,
-                                            size_t,
-                                            const char*,
-                                            size_t,
-                                            char*,
-                                            size_t);
-  using GetHeaderNameFunc = int32_t (*)(char*, size_t);
+  using GetCompaneroValueFunc = size_t (*)(const char*,
+                                           size_t,
+                                           const char*,
+                                           size_t,
+                                           const char*,
+                                           size_t,
+                                           char*,
+                                           size_t);
+  using GetHeaderNameFunc = size_t (*)(char*, size_t);
 
   void RefreshValue();
   void RefreshValueLocked() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_);
