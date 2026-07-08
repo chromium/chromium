@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_
 
 #include <map>
+#include <string_view>
 
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -97,11 +98,13 @@ class WebUIToolbarExtensionsContainer
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
                            ExtensionUserActionsPlumbing);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring);
   class ActionInfo;
   class ContextMenu;
 
   views::Widget* GetWidget() const;
   ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
+  ui::TrackedElement* GetExtensionAnchor(std::string_view extension_id) const;
 
   void NotifyActionPoppedOut(base::OnceClosure closure);
 

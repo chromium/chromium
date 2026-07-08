@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,6 +30,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 class WebUIToolbarExtensionsContainer::ActionInfo {
  public:
@@ -45,9 +47,7 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
                 model_->GetId()))) {}
 
   ui::TrackedElement* GetAnchor() {
-    // TODO(webium): Use the proper button once TrackedElement supports
-    // dynamic ids or the like. See https://crbug.com/444237074
-    return extensions_container_->GetExtensionsMenuButtonAnchor();
+    return extensions_container_->GetExtensionAnchor(model_->GetId());
   }
 
   ExtensionActionViewModel* model() { return model_.get(); }
@@ -418,9 +418,26 @@ void WebUIToolbarExtensionsContainer::NotifyOfOneAction(
 
 ui::TrackedElement*
 WebUIToolbarExtensionsContainer::GetExtensionsMenuButtonAnchor() const {
-  return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-      kExtensionsMenuButtonElementId,
-      views::ElementTrackerViews::GetContextForWidget(GetWidget()));
+  return GetExtensionAnchor("");
+}
+
+ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
+    std::string_view extension_id) const {
+  const ui::ElementIdentifier primary_id = extension_id.empty()
+                                               ? kExtensionsMenuButtonElementId
+                                               : kToolbarActionViewElementId;
+  const std::string secondary_id = base::StrCat({"ext:", extension_id});
+  for (ui::TrackedElement* element :
+       ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+           primary_id,
+           views::ElementTrackerViews::GetContextForWidget(GetWidget()))) {
+    auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
+    if (webui_element &&
+        webui_element->secondary_identifier() == secondary_id) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {

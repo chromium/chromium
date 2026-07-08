@@ -295,9 +295,10 @@ const std::vector<ui::ElementIdentifier>&
 WebUIBrowserUI::GetKnownElementIdentifiers() const {
   static const std::vector<ui::ElementIdentifier> kKnownElementIdentifiers{
       kContentsContainerViewElementId, kExtensionsMenuButtonElementId,
-      kLocationBarElementId,           kLocationIconElementId,
-      kToolbarAppMenuButtonElementId,  kToolbarAvatarButtonElementId,
-      kToolbarBackButtonElementId,     kToolbarForwardButtonElementId};
+      kToolbarActionViewElementId,     kLocationBarElementId,
+      kLocationIconElementId,          kToolbarAppMenuButtonElementId,
+      kToolbarAvatarButtonElementId,   kToolbarBackButtonElementId,
+      kToolbarForwardButtonElementId};
   return kKnownElementIdentifiers;
 }
 

@@ -58,25 +58,25 @@ export class ExtensionElement extends ExtensionElementBase {
     }
   }
 
+  private getElementId(id: string): string {
+    return id === '' ? 'kExtensionsMenuButtonElementId' :
+                       'kToolbarActionViewElementId';
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (changedProperties.has('state')) {
       const oldState = changedProperties.get('state');
-      const wasMenuButton = oldState?.id === '';
-      const isMenuButton = this.state.id === '';
-
-      if (wasMenuButton !== isMenuButton) {
+      if (oldState?.id !== this.state.id) {
         if (this.registerHelpBubbleController_) {
           this.registerHelpBubbleController_.abort();
           this.registerHelpBubbleController_ = null;
         }
-        if (wasMenuButton) {
-          this.unregisterHelpBubble('kExtensionsMenuButtonElementId');
+        if (oldState !== undefined) {
+          this.unregisterHelpBubble(this.getElementId(oldState.id));
         }
-        if (isMenuButton) {
-          this.registerHelpBubble_('kExtensionsMenuButtonElementId');
-        }
+        this.registerHelpBubble_(this.getElementId(this.state.id));
       }
     }
   }
@@ -102,6 +102,7 @@ export class ExtensionElement extends ExtensionElementBase {
 
     if (!signal.aborted) {
       this.registerHelpBubble(newId, this, {
+        secondaryId: 'ext:' + this.state.id,
         onHighlightChanged: (highlighted: boolean) => {
           this.trackedHighlighted = highlighted;
         },

@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -170,6 +171,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
 constexpr int kNumMaxRecoveryTime = 2;
@@ -2309,7 +2311,8 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
   scoped_refptr<const extensions::Extension> LoadAndPinExtension(
       content::WebContents* web_contents,
       base::ScopedTempDir& temp_dir,
-      bool has_background_script = false) {
+      bool has_background_script = false,
+      bool has_popup = false) {
     base::FilePath manifest_path =
         temp_dir.GetPath().AppendASCII("manifest.json");
 
@@ -2330,16 +2333,24 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
       EXPECT_TRUE(base::WriteFile(script_path, script_content));
     }
 
+    std::string action_section = "{}";
+    if (has_popup) {
+      action_section = R"({"default_popup": "popup.html"})";
+      base::FilePath popup_path = temp_dir.GetPath().AppendASCII("popup.html");
+      EXPECT_TRUE(
+          base::WriteFile(popup_path, "<html><body>Popup</body></html>"));
+    }
+
     std::string manifest_content =
         base::StringPrintf(R"({
       "name": "Test Extension",
       "version": "1.0",
       "manifest_version": 3,
-      "action": {}
+      "action": %s
       %s,
       "host_permissions": ["*://allowed.com/*"]
     })",
-                           background_section.c_str());
+                           action_section.c_str(), background_section.c_str());
 
     EXPECT_TRUE(base::WriteFile(manifest_path, manifest_content));
 
@@ -2373,6 +2384,44 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
     }));
 
     return extension;
+  }
+
+  void ClickExtensionButton(content::WebContents* web_contents,
+                            const std::string& id) {
+    EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements)
+            .find(el => el.state.id === '%s');
+        el.shadowRoot.querySelector('cr-button').click();
+      })();
+    )",
+                                                                 id.c_str())));
+  }
+
+  void RightClickExtensionButton(content::WebContents* web_contents,
+                                 const std::string& id) {
+    EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
+        const extensionElements = extensionsContainer.shadowRoot
+            .querySelectorAll('webui-toolbar-extension');
+        const el = Array.from(extensionElements)
+            .find(el => el.state.id === '%s');
+        const btn = el.shadowRoot.querySelector('cr-button');
+        btn.dispatchEvent(new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 2
+        }));
+      })();
+    )",
+                                                                 id.c_str())));
   }
 
   void SimulateUriListDropOnToolbar(content::WebContents* web_contents,
@@ -4003,19 +4052,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     ExtensionTestMessageListener listener("clicked");
 
     // Click the extension button.
-    EXPECT_TRUE(content::ExecJs(web_contents,
-                                base::StringPrintf(R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements)
-            .find(el => el.state.id === '%s');
-        el.shadowRoot.querySelector('cr-button').click();
-      })();
-    )",
-                                                   extension_id.c_str())));
+    ClickExtensionButton(web_contents, extension_id);
 
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -4027,31 +4064,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     EXPECT_FALSE(coordinator->IsShowing());
 
     // Click the extensions button (puzzle piece, id: "").
-    EXPECT_TRUE(content::ExecJs(web_contents, R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements).find(el => el.state.id === '');
-        el.shadowRoot.querySelector('cr-button').click();
-      })();
-    )"));
+    ClickExtensionButton(web_contents, "");
 
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
 
     // Toggle it back off.
-    EXPECT_TRUE(content::ExecJs(web_contents, R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements).find(el => el.state.id === '');
-        el.shadowRoot.querySelector('cr-button').click();
-      })();
-    )"));
+    ClickExtensionButton(web_contents, "");
 
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
@@ -4062,28 +4081,123 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
     EXPECT_FALSE(container->context_menu_);
 
     // Trigger context menu event on the extension.
-    EXPECT_TRUE(content::ExecJs(web_contents,
-                                base::StringPrintf(R"(
-      (() => {
-        const app = document.querySelector('toolbar-app');
-        const extensionsContainer = app.shadowRoot.querySelector('#extensions');
-        const extensionElements = extensionsContainer.shadowRoot
-            .querySelectorAll('webui-toolbar-extension');
-        const el = Array.from(extensionElements)
-            .find(el => el.state.id === '%s');
-        const btn = el.shadowRoot.querySelector('cr-button');
-        btn.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-          button: 2
-        }));
-      })();
-    )",
-                                                   extension_id.c_str())));
+    RightClickExtensionButton(web_contents, extension_id);
 
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return container->context_menu_ != nullptr; }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadAndPinExtension(web_contents, temp_dir,
+                          /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+
+  std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  // Verify that appropriate anchors become available.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return container->GetExtensionAnchor(extension_id) != nullptr &&
+           container->GetExtensionAnchor("") != nullptr;
+  }));
+
+  // Verify anchors can be found programmatically.
+  ui::TrackedElement* ext_anchor = container->GetExtensionAnchor(extension_id);
+  ASSERT_NE(ext_anchor, nullptr);
+  EXPECT_EQ(ext_anchor->identifier(), kToolbarActionViewElementId);
+  EXPECT_EQ(ext_anchor->AsA<ui::TrackedElementWebUI>()->secondary_identifier(),
+            "ext:" + extension_id);
+
+  ui::TrackedElement* puzzle_anchor = container->GetExtensionAnchor("");
+  ASSERT_NE(puzzle_anchor, nullptr);
+  EXPECT_EQ(puzzle_anchor->identifier(), kExtensionsMenuButtonElementId);
+  EXPECT_EQ(
+      puzzle_anchor->AsA<ui::TrackedElementWebUI>()->secondary_identifier(),
+      "ext:");
+
+  // 1. Left click on extension icon (opens popup).
+  {
+    ClickExtensionButton(web_contents, extension_id);
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return ExtensionPopup::last_popup_for_testing() != nullptr &&
+             ExtensionPopup::last_popup_for_testing()->GetWidget()->IsVisible();
+    }));
+    views::BubbleDialogDelegate* popup_bubble =
+        ExtensionPopup::last_popup_for_testing();
+    ASSERT_TRUE(popup_bubble);
+    EXPECT_TRUE(popup_bubble->IsSameAnchor(
+        views::BubbleAnchor(container->GetExtensionAnchor(extension_id))));
+    EXPECT_EQ(popup_bubble->GetAnchorRect(),
+              container->GetExtensionAnchor(extension_id)->GetScreenBounds());
+
+    // Hide active popup before proceeding.
+    container->HideActivePopup();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return ExtensionPopup::last_popup_for_testing() == nullptr; }));
+  }
+
+  // 2. Right click on extension icon (opens context menu).
+  {
+    EXPECT_FALSE(container->context_menu_);
+    RightClickExtensionButton(web_contents, extension_id);
+
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return container->context_menu_ != nullptr; }));
+
+    // Close context menu.
+    container->OnContextMenuClosedFromToolbar();
+  }
+
+  // 3. Left click on extensions icon (puzzle piece, opens menu).
+  {
+    auto* coordinator = container->extensions_menu_coordinator_.get();
+    ASSERT_TRUE(coordinator);
+    EXPECT_FALSE(coordinator->IsShowing());
+
+    ClickExtensionButton(web_contents, "");
+
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+    views::Widget* menu_widget = coordinator->GetExtensionsMenuWidget();
+    ASSERT_TRUE(menu_widget);
+    views::BubbleDialogDelegate* menu_bubble =
+        menu_widget->widget_delegate()->AsBubbleDialogDelegate();
+    ASSERT_TRUE(menu_bubble);
+    EXPECT_TRUE(menu_bubble->IsSameAnchor(
+        views::BubbleAnchor(container->GetExtensionsMenuButtonAnchor())));
+    EXPECT_EQ(menu_bubble->GetAnchorRect(),
+              container->GetExtensionsMenuButtonAnchor()->GetScreenBounds());
+
+    // Toggle menu off.
+    ClickExtensionButton(web_contents, "");
+
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
   }
 }
 

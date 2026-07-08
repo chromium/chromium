@@ -6,6 +6,7 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '/shared/icon_from_table.js';
 
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import type {IconHandle} from '/shared/icon_handle.mojom-webui.js';
@@ -44,6 +45,18 @@ export class ExtensionElement extends CrLitElement {
     super();
     this.extensionId = extensionId;
     this.bar = bar;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    TrackedElementManager.getInstance().startTracking(
+        this, 'kToolbarActionViewElementId',
+        {secondaryId: 'ext:' + this.extensionId});
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    TrackedElementManager.getInstance().stopTracking(this);
   }
 
   protected onClick() {

@@ -60,7 +60,8 @@ export class ExtensionsBarElement extends CrLitElement {
     this.extensionsMenuButton.addEventListener(
         'click', this.extensionMenuButtonClicked.bind(this));
     this.trackedElementManager.startTracking(
-        this.extensionsMenuButton, 'kExtensionsMenuButtonElementId');
+        this.extensionsMenuButton, 'kExtensionsMenuButtonElementId',
+        {secondaryId: 'ext:'});
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(

@@ -325,7 +325,8 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        PermissionChipView::kPermissionRequestChipElementId,
        PermissionChipView::kIndicatorChipElementId,
        kToolbarBatterySaverButtonElementId,
-       kExtensionsMenuButtonElementId});
+       kExtensionsMenuButtonElementId,
+       kToolbarActionViewElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
   pinned_ids.reserve(pinned_ids.size() + ids->size());
   pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());
