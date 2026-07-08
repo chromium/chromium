@@ -512,6 +512,7 @@ void ModelLoader::Load(
     LoadManagedNodeCallback load_managed_node_callback,
     SaveSingleFileCallback save_local_or_syncable_single_file_callback,
     SaveSingleFileCallback save_account_single_file_callback,
+    const std::vector<base::FilePath>& files_to_delete,
     LoadCallback callback) {
   CHECK(!started_load_);
   started_load_ = true;
@@ -528,6 +529,16 @@ void ModelLoader::Load(
   auto save_account_single_file_callback_on_main_sequence =
       base::BindPostTaskToCurrentDefault(
           std::move(save_account_single_file_callback));
+
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::vector<base::FilePath> files_to_delete) {
+            for (const base::FilePath& file_to_delete : files_to_delete) {
+              base::DeleteFile(file_to_delete);
+            }
+          },
+          files_to_delete));
 
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,

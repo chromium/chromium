@@ -3193,6 +3193,34 @@ class BookmarkModelStorageWithSecondayFileTest
 };
 
 TEST_P(BookmarkModelStorageWithSecondayFileTest,
+       VerifyOldEncryptedFilesCleared) {
+  // EncryptedBookmarks and EncryptedAccountBookmarks are the legacy files from
+  // prior rollbacks.
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::WriteFile(tmp_dir.GetPath().Append(
+                      kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName),
+                  "");
+  base::WriteFile(
+      tmp_dir.GetPath().Append(kOBSOLETE_EncryptedAccountBookmarksFileName),
+      "");
+
+  auto model = CreateBookmarkModel();
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  ASSERT_FALSE(base::PathExists(tmp_dir.GetPath().Append(
+      kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName)));
+  ASSERT_FALSE(base::PathExists(
+      tmp_dir.GetPath().Append(kOBSOLETE_EncryptedAccountBookmarksFileName)));
+}
+
+TEST_P(BookmarkModelStorageWithSecondayFileTest,
        SaveSameContentEncryptedAndUnencryptedToDisk) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};

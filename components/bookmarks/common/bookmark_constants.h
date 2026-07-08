@@ -17,6 +17,12 @@ extern const base::FilePath::CharType
     kEncryptedLocalOrSyncableBookmarksFileName[];
 extern const base::FilePath::CharType kEncryptedAccountBookmarksFileName[];
 
+// There was a rollback at one point and these files were abandoned.
+extern const base::FilePath::CharType
+    kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName[];
+extern const base::FilePath::CharType
+    kOBSOLETE_EncryptedAccountBookmarksFileName[];
+
 extern const int64_t kRootNodeId;
 
 }  // namespace bookmarks

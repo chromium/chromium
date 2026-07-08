@@ -64,6 +64,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // be saved to a secondary file. The secondary file might contain the
   // unencrypted or encrypted bookmarks, see
   // BookmarkStorage::SaveBookmarksToSecondaryFile for more details.
+  // `files_to_delete` is a list of unneeded files to delete in the background.
   void Load(scoped_refptr<const os_crypt_async::Encryptor> encryptor,
             const base::FilePath& local_or_syncable_file_path,
             const base::FilePath& encrypted_local_or_syncable_file_path,
@@ -72,6 +73,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
             LoadManagedNodeCallback load_managed_node_callback,
             SaveSingleFileCallback save_local_or_syncable_single_file_callback,
             SaveSingleFileCallback save_account_single_file_callback,
+            const std::vector<base::FilePath>& files_to_delete,
             LoadCallback callback);
 
   ModelLoader(const ModelLoader&) = delete;

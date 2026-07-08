@@ -105,7 +105,7 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
 
@@ -190,7 +190,7 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
 
@@ -275,7 +275,7 @@ TEST(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
 
@@ -360,7 +360,7 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -450,7 +450,7 @@ TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -537,7 +537,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -649,7 +649,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -736,7 +736,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -825,7 +825,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereSecondHasInternalIdCollisions) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -913,7 +913,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -1001,7 +1001,7 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
 
@@ -1092,7 +1092,7 @@ TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {
       LoadManagedNodeCallback(),
       /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
       /*save_account_secondary_file_callback=*/base::DoNothing(),
-      details_future.GetCallback());
+      /*files_to_delete=*/{}, details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
   ASSERT_NE(nullptr, details);
@@ -1222,6 +1222,7 @@ class ModelLoaderWithSecondayFileTest
                    LoadManagedNodeCallback(),
                    std::move(save_local_or_syncable_single_file_callback),
                    std::move(save_account_single_file_callback),
+                   /*files_to_delete=*/{},
                    /*callback=*/base::DoNothing());
     } else {
       loader->Load(encryptor_, primary_local_or_syncable_file_path,
@@ -1230,6 +1231,7 @@ class ModelLoaderWithSecondayFileTest
                    LoadManagedNodeCallback(),
                    std::move(save_local_or_syncable_single_file_callback),
                    std::move(save_account_single_file_callback),
+                   /*files_to_delete=*/{},
                    /*callback=*/base::DoNothing());
     }
     return loader;
@@ -1664,7 +1666,7 @@ TEST(ModelLoaderTest, LoadBookmarks_ShouldReportDecryptionFailed) {
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
-               details_future.GetCallback());
+               /*files_to_delete=*/{}, details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
@@ -1728,7 +1730,7 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
-               details_future.GetCallback());
+               /*files_to_delete=*/{}, details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
@@ -1773,7 +1775,7 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
-               details_future.GetCallback());
+               /*files_to_delete=*/{}, details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
@@ -1847,7 +1849,7 @@ TEST_P(ModelLoaderWithEncryptionFileAsPrimaryTest,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
-               details_future.GetCallback());
+               /*files_to_delete=*/{}, details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
@@ -1933,6 +1935,7 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
+               /*files_to_delete=*/{},
                /*callback=*/details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
@@ -2017,6 +2020,7 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
+               /*files_to_delete=*/{},
                /*callback=*/base::DoNothing());
 
   task_environment.FastForwardUntilNoTasksRemain();
@@ -2075,6 +2079,7 @@ TEST(ModelLoaderWithEncryptionWriteOnly,
                encrypted_account_file_path, LoadManagedNodeCallback(),
                save_local_or_syncable_bookmark_future.GetCallback(),
                save_account_bookmark_future.GetCallback(),
+               /*files_to_delete=*/{},
                /*callback=*/base::DoNothing());
   task_environment.FastForwardUntilNoTasksRemain();
 

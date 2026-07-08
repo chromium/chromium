@@ -313,6 +313,17 @@ void BookmarkModel::ContinueLoadWithEncryptor(
           ? base::BindOnce(&BookmarkStorage::SaveSingleFileIfNoPreviousSave,
                            account_store_->AsWeakPtr())
           : base::DoNothing(),
+      /*files_to_delete=*/
+      {
+          // There was a rollback at one point and these files were abandoned.
+          profile_path.Append(
+              kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName),
+          profile_path.Append(kOBSOLETE_EncryptedAccountBookmarksFileName),
+
+          // TODO(crbug.com/479420496): All encrypted files should be deleted
+          // if we end up disabling the experiment again. That prevents the
+          // need to do future renames, and should be done in M152.
+      },
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 

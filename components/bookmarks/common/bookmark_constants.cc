@@ -14,13 +14,16 @@ const base::FilePath::CharType kLocalOrSyncableBookmarksFileName[] =
     FPL("Bookmarks");
 const base::FilePath::CharType kAccountBookmarksFileName[] =
     FPL("AccountBookmarks");
-// TODO(crbug.com/435317726): There was a rollback at one point and the files:
-// EncryptedBookmarks and EncryptedAccountBookmarks were abandoned. When the
-// code is cleaned up those files should be cleaned up.
 const base::FilePath::CharType kEncryptedLocalOrSyncableBookmarksFileName[] =
     FPL("EncryptedBookmarks2");
 const base::FilePath::CharType kEncryptedAccountBookmarksFileName[] =
     FPL("EncryptedAccountBookmarks2");
+
+const base::FilePath::CharType
+    kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName[] =
+        FPL("EncryptedBookmarks");
+const base::FilePath::CharType kOBSOLETE_EncryptedAccountBookmarksFileName[] =
+    FPL("EncryptedAccountBookmarks");
 
 // ID of the root node. This is also exposed externally via an extensions API.
 const int64_t kRootNodeId = 0;
