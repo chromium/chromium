@@ -56,7 +56,8 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
 
   SendTabToSelfToolbarIconController* controller() {
     return static_cast<SendTabToSelfToolbarIconController*>(
-        SendTabToSelfClientServiceFactory::GetForProfile(browser()->profile())
+        SendTabToSelfClientServiceFactory::GetForProfile(
+            browser()->GetProfile())
             ->GetReceivingUiHandler());
   }
 
@@ -69,7 +70,7 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
       FakeSendTabToSelfModel* model =
           static_cast<StubSendTabToSelfSyncService*>(
               SendTabToSelfSyncServiceFactory::GetForProfile(
-                  browser()->profile()))
+                  browser()->GetProfile()))
               ->GetFakeSendTabToSelfModel();
       model->SetLocalCacheGuid(kLocalCacheGuid);
       GURL url_1("https://www.example-a.com");

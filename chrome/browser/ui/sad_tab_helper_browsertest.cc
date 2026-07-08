@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(SadTabHelperBrowserTest,
   // TabHelpers::AttachTabHelpers.
   prerender::NoStatePrefetchManager* prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Set-up no-state prefetch test.
   prerender::test_utils::TestNoStatePrefetchContentsFactory*

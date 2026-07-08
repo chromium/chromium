@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
 
   // Signing in fom incognito should create a new non-incognito browser.
   BrowserWindowInterface* new_regular_browser =
-      ProfileBrowserCollection::GetForProfile(incognito_browser->profile())
+      ProfileBrowserCollection::GetForProfile(incognito_browser->GetProfile())
           ->FindTabbedBrowser(/*match_original_profiles=*/true);
 
   // The full-tab sign-in page should be shown in the newly created browser.

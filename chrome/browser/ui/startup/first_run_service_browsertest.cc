@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   SetPolicy(GetParam().key, GetParam().value);
 
   // The attempt to run the FRE should not be blocked
-  EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
+  EXPECT_TRUE(ShouldOpenFirstRun(browser()->GetProfile()));
   EXPECT_TRUE(IsProfileNameDefault());
 
   // However the FRE should be silently marked as finished due to policies

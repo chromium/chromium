@@ -135,7 +135,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
 
     identity_test_environment_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kFakeEmailAddress,
@@ -194,7 +194,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   MockPlusAddressSettingService& setting_service() {
     return static_cast<MockPlusAddressSettingService&>(
         *PlusAddressSettingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   std::string PlusAddressResponseContent(bool confirmed,

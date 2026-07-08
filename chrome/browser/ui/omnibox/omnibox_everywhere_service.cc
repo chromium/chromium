@@ -130,7 +130,7 @@ void OmniboxEverywhereService::OnKeyPressed(
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   Browser* browser =
       active_bwi ? active_bwi->GetBrowserForMigrationOnly() : nullptr;
-  Profile* target_profile = browser ? browser->profile() : nullptr;
+  Profile* target_profile = browser ? browser->GetProfile() : nullptr;
   if (!target_profile && g_browser_process->profile_manager()) {
     const std::vector<Profile*>& profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
@@ -280,7 +280,7 @@ void OmniboxEverywhereService::OpenUrl(const GURL& url,
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   Browser* browser =
       active_bwi ? active_bwi->GetBrowserForMigrationOnly() : nullptr;
-  if (browser && browser->profile() != profile_) {
+  if (browser && browser->GetProfile() != profile_) {
     browser = nullptr;
   }
   bool is_new_window = false;

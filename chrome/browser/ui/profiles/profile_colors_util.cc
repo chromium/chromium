@@ -182,7 +182,7 @@ void UpdateProfileThemeColors(Browser* browser,
     return;
   }
   CHECK(browser);
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   CHECK(profile);
   if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
     return;

@@ -199,7 +199,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     identity_test_env()->SetPrimaryAccount("test@mail.com",
                                            signin::ConsentLevel::kSignin);
     identity_test_env()->SetRefreshTokenForPrimaryAccount();
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
   // Create a popup.
-  Browser* popup = CreateBrowserForPopup(browser()->profile());
+  Browser* popup = CreateBrowserForPopup(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup));
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(popup, &omnibox_view));
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
   ExpectBrowserClosed(popup, ui::VKEY_W, kCtrlOrCmdMask);
 
   // Create another popup.
-  popup = CreateBrowserForPopup(browser()->profile());
+  popup = CreateBrowserForPopup(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup));
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(popup, &omnibox_view));
 
@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   // Disable the search provider, to make sure the popup contains only history
   // items.
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   model->SetUserSelectedDefaultSearchProvider(nullptr);
 
   ASSERT_TRUE(
@@ -1677,7 +1677,7 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
 
   // Check that new entries have been added to TemplateURLService.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(kSiteSearchPolicyKeyword);
   ASSERT_TRUE(turl);
   EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest, FeaturedPolicyKeyword) {
 
   // Check that new entries have been added to TemplateURLService.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
   ASSERT_TRUE(turl);
   EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
@@ -1774,7 +1774,7 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
 
   // Check that new entries have been added to TemplateURLService.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
   ASSERT_TRUE(turl);
   EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
 
   // Check that new entries have been added to TemplateURLService.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(kSearchAggregatorPolicyKeyword);
   ASSERT_TRUE(turl);
   EXPECT_EQ(turl->policy_origin(),
@@ -1959,7 +1959,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
   // Check that new entries have been added to TemplateURLService with at
   // prefix.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(
               kSearchAggregatorPolicyKeywordWithAtPrefix);
   ASSERT_TRUE(turl);
@@ -2016,7 +2016,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
   // Check that new entries have been added to TemplateURLService with at
   // prefix.
   const TemplateURL* turl =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTemplateURLForKeyword(
               kSearchAggregatorPolicyKeywordWithAtPrefix);
   ASSERT_TRUE(turl);

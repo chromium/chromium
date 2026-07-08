@@ -17,7 +17,7 @@
 class SigninPromoTabHelperTest : public InProcessBrowserTest {
  public:
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
  protected:
@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
                        CallPasswordMoveCallbackAfterSignInFromTab) {
   // Get the sign in tab with the correct access point.
   signin_ui_util::SignInFromSingleAccountPromo(
-      browser()->profile(), CoreAccountInfo(),
+      browser()->GetProfile(), CoreAccountInfo(),
       signin_metrics::AccessPoint::kPasswordBubble);
   content::WebContents* sign_in_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
 
   // Sign in, which will execute the callback.
   signin::MakeAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithAccessPoint(signin_metrics::AccessPoint::kPasswordBubble)
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
 
   // Get the reauth tab with the correct access point.
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      browser()->profile(), signin_metrics::AccessPoint::kAddressBubble);
+      browser()->GetProfile(), signin_metrics::AccessPoint::kAddressBubble);
   content::WebContents* reauth_tab =
       signin_ui_util::GetSignInTabWithAccessPoint(
           browser(), signin_metrics::AccessPoint::kAddressBubble);

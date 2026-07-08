@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   // Discard the first tab.
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   browser()->tab_strip_model()->DiscardWebContentsAt(0,
                                                      std::move(new_contents));

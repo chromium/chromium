@@ -19,7 +19,7 @@ using ReadAnythingServiceGuestTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ReadAnythingServiceGuestTest,
                        ServiceIsCreatedForGuestProfile) {
   Browser* guest_browser = CreateGuestBrowser();
-  Profile* guest_profile = guest_browser->profile();
+  Profile* guest_profile = guest_browser->GetProfile();
   EXPECT_TRUE(guest_profile->IsGuestSession());
 
   ReadAnythingService* guest_service = ReadAnythingService::Get(guest_profile);

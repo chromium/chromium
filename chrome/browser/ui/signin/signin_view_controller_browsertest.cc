@@ -1083,10 +1083,10 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
               mock_process_user_choice_callback.Get(),
               mock_done_callback.Get()));
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
-      browser()->profile()));
+      browser()->GetProfile()));
   browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
-      browser()->profile()));
+      browser()->GetProfile()));
 
   browser()
       ->GetFeatures()
@@ -1102,10 +1102,10 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
               mock_process_user_choice_callback.Get(),
               mock_done_callback.Get()));
   EXPECT_TRUE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
-      browser()->profile()));
+      browser()->GetProfile()));
   browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
-      browser()->profile()));
+      browser()->GetProfile()));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

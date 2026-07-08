@@ -38,7 +38,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
     GURL base_url = https_test_server().GetURL("/instant_extended.html?");
     GURL ntp_url = https_test_server().GetURL("/instant_extended_ntp.html?");
     ASSERT_NO_FATAL_FAILURE(
-        SetupInstant(browser()->profile(), base_url, ntp_url));
+        SetupInstant(browser()->GetProfile(), base_url, ntp_url));
   }
 
   void UpdateSearchState(content::WebContents* contents) {

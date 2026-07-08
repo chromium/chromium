@@ -37,14 +37,15 @@ class NewTabPageNavigationThrottleTest : public InProcessBrowserTest {
   void SetNewTabPage(const std::string& ntp_url) {
     // Set the new tab page.
     ntp_test_utils::SetUserSelectedDefaultSearchProvider(
-        browser()->profile(), https_test_server()->base_url().spec(), ntp_url);
+        browser()->GetProfile(), https_test_server()->base_url().spec(),
+        ntp_url);
 
     // Ensure we are using the newly set new_tab_url and won't be directed
     // to the local new tab page.
     TemplateURLService* service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     search_test_utils::WaitForTemplateURLServiceToLoad(service);
-    ASSERT_EQ(search::GetNewTabPageURL(browser()->profile()), ntp_url);
+    ASSERT_EQ(search::GetNewTabPageURL(browser()->GetProfile()), ntp_url);
   }
 
   // Navigates to the New Tab Page and then returns the GURL that ultimately was

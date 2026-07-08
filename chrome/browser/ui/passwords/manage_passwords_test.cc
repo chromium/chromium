@@ -187,7 +187,7 @@ void ManagePasswordsTest::SetupSafeState() {
   SetupPendingPassword();
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+          browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
   password_store->AddLogin(password_manager::FromPasswordForm(password_form_));
   GetController()->SavePassword(password_form_.username_value,
                                 password_form_.password_value);
@@ -204,7 +204,7 @@ void ManagePasswordsTest::SetupMoreToFixState() {
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+          browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated insecure credential that should still be fixed.
   password_manager::PasswordForm to_be_fixed = password_form_;
   to_be_fixed.signon_realm = "https://somesite.com/";
@@ -247,9 +247,9 @@ void ManagePasswordsTest::SetupMovingPasswords() {
 void ManagePasswordsTest::ConfigurePasswordSync(
     SyncConfiguration configuration) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
-      SyncServiceFactory::GetForProfile(browser()->profile()));
+      SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   switch (configuration) {
     case SyncConfiguration::kNotSyncing: {
       sync_service->SetSignedOut();

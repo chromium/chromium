@@ -164,7 +164,8 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
 
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+            browser()->GetProfile(),
+            base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDownOnMainThread() override {
@@ -249,7 +250,7 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
 
   syncer::TestSyncService& test_sync_service() {
     return *static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->profile()));
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -257,7 +258,7 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 
  protected:
@@ -355,7 +356,7 @@ BubbleSignInPromoInteractiveUITest::SaveAndShowBookmarkBubble(
     const bookmarks::BookmarkNode* parent) {
   const GURL kUrl("http://test.com");
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       model->AddURL(parent, 0, std::u16string(), kUrl);
   BrowserWindow::FromBrowser(browser())->ShowBookmarkBubble(bookmark->url(),
@@ -383,7 +384,8 @@ BubbleSignInPromoInteractiveUITest::InstallLocalExtension() {
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   test_data_dir = test_data_dir.AppendASCII("extensions");
 
-  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader extension_loader(
+      browser()->GetProfile());
   extension_loader.set_pack_extension(true);
 
   scoped_refptr<const Extension> extension = extension_loader.LoadExtension(
@@ -1097,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Trigger the bookmark bubble.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       SaveAndShowBookmarkBubble(/*parent=*/model->other_node());
 
@@ -1186,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Trigger the bookmark bubble.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       SaveAndShowBookmarkBubble(/*parent=*/model->other_node());
 
@@ -1274,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Trigger the bookmark bubble.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   model->CreateAccountPermanentFolders();
   const bookmarks::BookmarkNode* bookmark =
       SaveAndShowBookmarkBubble(/*parent=*/model->account_other_node());
@@ -1356,7 +1358,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger the bookmark bubble.
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       SaveAndShowBookmarkBubble(/*parent=*/model->other_node());
 
@@ -1416,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   scoped_refptr<const Extension> extension = InstallLocalExtension();
   ASSERT_TRUE(extension);
   ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
-            AccountExtensionTracker::Get(browser()->profile())
+            AccountExtensionTracker::Get(browser()->GetProfile())
                 ->GetAccountExtensionType(extension->id()));
   // Extensions are disabled.
   ASSERT_FALSE(test_sync_service().GetUserSettings()->GetSelectedTypes().Has(
@@ -1426,7 +1428,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       HasLocalDataItemId(syncer::DataType::EXTENSIONS, extension->id()));
 
   extensions::TriggerPostInstallDialog(
-      browser()->profile(), extension, SkBitmap(),
+      browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
           [](Browser* b) {
             return b->tab_strip_model()->GetActiveWebContents();
@@ -1512,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   scoped_refptr<const Extension> extension = InstallLocalExtension();
   ASSERT_TRUE(extension);
   ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
-            AccountExtensionTracker::Get(browser()->profile())
+            AccountExtensionTracker::Get(browser()->GetProfile())
                 ->GetAccountExtensionType(extension->id()));
   // Extensions are disabled.
   ASSERT_FALSE(test_sync_service().GetUserSettings()->GetSelectedTypes().Has(
@@ -1522,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       HasLocalDataItemId(syncer::DataType::EXTENSIONS, extension->id()));
 
   extensions::TriggerPostInstallDialog(
-      browser()->profile(), extension, SkBitmap(),
+      browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
           [](Browser* b) {
             return b->tab_strip_model()->GetActiveWebContents();
@@ -1606,7 +1608,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   ASSERT_TRUE(extension);
   ASSERT_EQ(
       AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
-      AccountExtensionTracker::Get(browser()->profile())
+      AccountExtensionTracker::Get(browser()->GetProfile())
           ->GetAccountExtensionType(extension->id()));
 
   // Extensions are enabled.
@@ -1620,7 +1622,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       HasLocalDataItemId(syncer::DataType::EXTENSIONS, extension->id()));
 
   extensions::TriggerPostInstallDialog(
-      browser()->profile(), extension, SkBitmap(),
+      browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
           [](Browser* b) {
             return b->tab_strip_model()->GetActiveWebContents();
@@ -1701,13 +1703,13 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const Extension> extension = InstallLocalExtension();
   ASSERT_TRUE(extension);
   ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
-            AccountExtensionTracker::Get(browser()->profile())
+            AccountExtensionTracker::Get(browser()->GetProfile())
                 ->GetAccountExtensionType(extension->id()));
   ASSERT_TRUE(
       HasLocalDataItemId(syncer::DataType::EXTENSIONS, extension->id()));
 
   extensions::TriggerPostInstallDialog(
-      browser()->profile(), extension, SkBitmap(),
+      browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
           [](Browser* b) {
             return b->tab_strip_model()->GetActiveWebContents();
@@ -1853,7 +1855,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
   // Trigger the bookmark bubble.
   const GURL kUrl("http://test.com");
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
   BrowserWindow::FromBrowser(browser())->ShowBookmarkBubble(kUrl, false);
@@ -1941,7 +1943,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
   // Trigger the bookmark bubble.
   const GURL kUrl("http://test.com");
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
   BrowserWindow::FromBrowser(browser())->ShowBookmarkBubble(kUrl, false);
@@ -2024,7 +2026,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
   // Trigger the bookmark bubble.
   const GURL kUrl("http://test.com");
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   const bookmarks::BookmarkNode* bookmark =
       model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
   BrowserWindow::FromBrowser(browser())->ShowBookmarkBubble(kUrl, false);

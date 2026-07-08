@@ -72,11 +72,11 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
     settings_manager_ = chrome::SettingsWindowManager::GetInstance();
 
     // Install the Settings App.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
 
     base::test::TestFuture<void> synchronized;
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->on_apps_synchronized()
         .Post(FROM_HERE, synchronized.GetCallback());
     ASSERT_TRUE(synchronized.Wait());
@@ -96,7 +96,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void ShowOSSettings() {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
-    settings_manager_->ShowOSSettings(browser()->profile());
+    settings_manager_->ShowOSSettings(browser()->GetProfile());
     browser_created_observer.Wait();
   }
 
@@ -109,24 +109,24 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
   ShowOSSettings();
 
   BrowserWindowInterface* settings_browser =
-      settings_manager_->FindBrowserForProfile(browser()->profile());
+      settings_manager_->FindBrowserForProfile(browser()->GetProfile());
   ASSERT_TRUE(settings_browser);
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
 
   // Open the settings again: no new window.
-  settings_manager_->ShowOSSettings(browser()->profile());
+  settings_manager_->ShowOSSettings(browser()->GetProfile());
   // TODO(crbug.com/41490117): Remove this once we can wait for the
   // ShowOSSettings call correctly.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(settings_browser,
-            settings_manager_->FindBrowserForProfile(browser()->profile()));
+            settings_manager_->FindBrowserForProfile(browser()->GetProfile()));
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
 
   // Launching via LaunchService should also de-dupe to the same browser.
   webapps::AppId settings_app_id = *ash::GetAppIdForSystemWebApp(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS);
+      browser()->GetProfile(), ash::SystemWebAppType::SETTINGS);
   content::WebContents* contents =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               settings_app_id, apps::LaunchContainer::kLaunchContainerWindow,
@@ -138,12 +138,13 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Close the settings window.
   CloseBrowserSynchronously(settings_browser);
-  EXPECT_FALSE(settings_manager_->FindBrowserForProfile(browser()->profile()));
+  EXPECT_FALSE(
+      settings_manager_->FindBrowserForProfile(browser()->GetProfile()));
 
   // Open a new settings window.
   ShowOSSettings();
   BrowserWindowInterface* settings_browser2 =
-      settings_manager_->FindBrowserForProfile(browser()->profile());
+      settings_manager_->FindBrowserForProfile(browser()->GetProfile());
   ASSERT_TRUE(settings_browser2);
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
 
@@ -205,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   // Showing an OS sub-page reuses the OS settings window.
   base::test::TestFuture<apps::LaunchResult> result;
   settings_manager_->ShowChromePageForProfile(
-      browser()->profile(),
+      browser()->GetProfile(),
       chromeos::settings::GetOSSettingsUrl(
           chromeos::settings::mojom::kBluetoothDevicesSubpagePath),
       display::kInvalidDisplayId, result.GetCallback());

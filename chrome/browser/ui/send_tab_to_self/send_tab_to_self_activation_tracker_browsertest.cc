@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
                        PRE_RestoreTrackerOnRestart) {
   // Enable session restore.
   SessionStartupPref pref(SessionStartupPref::LAST);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   // Tab 0 is active by default (about:blank).
   // Navigate Tab 0 to a specific URL.
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
   // Ensure the target tab is in the background.
   ASSERT_NE(target_index, tab_strip->active_index());
 
-  FakeSendTabToSelfModel* model = GetModel(browser()->profile());
+  FakeSendTabToSelfModel* model = GetModel(browser()->GetProfile());
   ASSERT_EQ(model->activated_call_count(), 0);
 
   // Activate the restored target tab.
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
                        PRE_RestoreAndCloseTrackerOnRestart) {
   // Enable session restore.
   SessionStartupPref pref(SessionStartupPref::LAST);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   // Tab 0 is active by default (about:blank).
   // Navigate Tab 0 to a specific URL.
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
   // Ensure the target tab is in the background.
   ASSERT_NE(target_index, tab_strip->active_index());
 
-  FakeSendTabToSelfModel* model = GetModel(browser()->profile());
+  FakeSendTabToSelfModel* model = GetModel(browser()->GetProfile());
   ASSERT_EQ(model->activated_call_count(), 0);
 
   // Close the restored target tab without activating it.

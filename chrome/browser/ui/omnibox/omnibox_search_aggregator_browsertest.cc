@@ -145,7 +145,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
     // loaded. Make sure it is loaded so that the autocomplete results are
     // consistent.
     search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
 
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
@@ -154,7 +154,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
     // Setup an identity profile.
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
+            browser()->GetProfile());
     identity_test_env()->SetPrimaryAccount("test@mail.com",
                                            signin::ConsentLevel::kSignin);
     identity_test_env()->SetRefreshTokenForPrimaryAccount();
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
 
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_in_keyword_mode(true);
   controller()->Start(input);
 
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
 
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_in_keyword_mode(true);
   controller()->Start(input);
 
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
   // 2. Trigger autocomplete.
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_in_keyword_mode(true);
   controller()->Start(input);
 
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
 
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_in_keyword_mode(true);
   controller()->Start(input);
 
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
                        DISABLED_HTTPErrorResponse) {
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+      ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
   input.set_in_keyword_mode(true);
   controller()->Start(input);
 

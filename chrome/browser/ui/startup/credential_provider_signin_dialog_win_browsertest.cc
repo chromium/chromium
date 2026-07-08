@@ -148,7 +148,7 @@ void CredentialProviderSigninDialogWinDialogTest::
 void CredentialProviderSigninDialogWinDialogTest::ShowSigninDialog(
     const base::CommandLine& command_line) {
   web_view_ = ShowCredentialProviderSigninDialog(
-      command_line, browser()->profile(),
+      command_line, browser()->GetProfile(),
       base::BindOnce(
           &CredentialProviderSigninDialogWinDialogTest::HandleSignInComplete,
           base::Unretained(this)));

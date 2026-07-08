@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, test_url.spec());
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
   EXPECT_EQ(0, GetActiveTabIndex());  // Should have switched back to first tab
@@ -101,7 +102,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, Basic_UrlCanonicalization) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, "https://example.com/test/");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
   EXPECT_EQ(0, GetActiveTabIndex());  // Should have found the match
@@ -112,7 +114,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, "not-a-valid-url");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kParseError, result.status);
 }
@@ -132,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, PrefixMatch_SingleTab) {
   command_line.AppendSwitchASCII(switches::kFocus,
                                  "https://example.com/path/*");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
   EXPECT_EQ(0, GetActiveTabIndex());  // Should have switched back to first tab
@@ -148,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, NoMatch_ReturnsNoMatch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, "https://nonexistent.com");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
   // Current tab should remain active.
@@ -159,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, IncognitoIsolation_NoMatch) {
   const GURL test_url("https://example.com/secret");
 
   // Create an incognito browser and navigate to a test URL
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -173,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest, IncognitoIsolation_NoMatch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, "https://example.com/*");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   // Should not match incognito tabs from regular profile
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
@@ -192,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   NavigateToURLInCurrentTab(test_url);
 
   // Create incognito browser and navigate to same URL
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -203,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
 
   // Focus should work within incognito profile but only find incognito tabs
   FocusResult result =
-      ProcessFocusRequest(command_line, *incognito_browser->profile());
+      ProcessFocusRequest(command_line, *incognito_browser->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 
@@ -225,7 +231,7 @@ class FocusHandlerWebAppBrowserTest : public web_app::WebAppBrowserTestBase {
   // Helper to get the manifest ID from an installed app
   std::string GetManifestIdForApp(const webapps::AppId& app_id) {
     web_app::WebAppProvider* provider =
-        web_app::WebAppProvider::GetForTest(browser()->profile());
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     EXPECT_TRUE(provider);
     const web_app::WebApp* web_app =
         provider->registrar_unsafe().GetAppById(app_id);
@@ -240,14 +246,15 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id = GetManifestIdForApp(app_id);
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(app_browser->is_type_app());
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id);
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
   EXPECT_TRUE(result.matched_selector.has_value());
@@ -264,22 +271,23 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id2 = GetManifestIdForApp(app_id2);
 
   Browser* app_browser1 =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id1);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id1);
   Browser* app_browser2 =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id2);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id2);
   ASSERT_TRUE(app_browser1);
   ASSERT_TRUE(app_browser2);
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id1);
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 
   command_line = base::CommandLine(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id2);
 
-  result = ProcessFocusRequest(command_line, *browser()->profile());
+  result = ProcessFocusRequest(command_line, *browser()->GetProfile());
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 }
 
@@ -289,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   command_line.AppendSwitchASCII(switches::kFocus,
                                  "https://nonexistent.app.test/");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
   EXPECT_FALSE(result.matched_selector.has_value());
@@ -303,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id);
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
 }
@@ -314,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id = GetManifestIdForApp(app_id);
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 
   const GURL tab_url("https://tab.site.test/");
@@ -323,13 +333,14 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id);
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 
   command_line = base::CommandLine(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, tab_url.spec());
 
-  result = ProcessFocusRequest(command_line, *browser()->profile());
+  result = ProcessFocusRequest(command_line, *browser()->GetProfile());
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 }
 
@@ -339,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id = GetManifestIdForApp(app_id);
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -347,7 +358,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
                                  "https://nonexistent1.test/," + manifest_id +
                                      ",https://nonexistent2.test/");
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
   EXPECT_TRUE(result.matched_selector.has_value());
@@ -360,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id = GetManifestIdForApp(app_id);
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 
   // Trigger async browser close. The browser may or may not be immediately
@@ -374,7 +386,8 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id);
 
-  FocusResult result = ProcessFocusRequest(command_line, *browser()->profile());
+  FocusResult result =
+      ProcessFocusRequest(command_line, *browser()->GetProfile());
 
   // Should return NoMatch - either because the browser is filtered out by
   // IsDeleteScheduled(), or because it's no longer in a valid state to
@@ -400,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
 
   // Process focus request with result file writing.
   FocusResult result =
-      ProcessFocusRequestWithResultFile(command_line, *browser()->profile());
+      ProcessFocusRequestWithResultFile(command_line, *browser()->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 
@@ -427,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
   const GURL test_url("https://example.com/secret");
 
   // Create incognito browser and navigate to test URL.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -440,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
 
   // Process focus request with result file writing on OTR profile.
   FocusResult result = ProcessFocusRequestWithResultFile(
-      command_line, *incognito_browser->profile());
+      command_line, *incognito_browser->GetProfile());
 
   EXPECT_EQ(FocusStatus::kFocused, result.status);
 

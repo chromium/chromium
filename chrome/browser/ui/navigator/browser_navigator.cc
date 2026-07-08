@@ -530,7 +530,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   Browser* source_browser =
       params->browser ? params->browser->GetBrowserForMigrationOnly() : nullptr;
   if (source_browser) {
-    params->initiating_profile = source_browser->profile();
+    params->initiating_profile = source_browser->GetProfile();
   }
   DCHECK(params->initiating_profile);
 

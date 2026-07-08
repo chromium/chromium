@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelNavigationThrottleBrowserTest,
   // Create a standalone WebContents (not associated with a tab).
   std::unique_ptr<content::WebContents> standalone_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
 
   // Navigate to the Read Anything Side Panel URL with PAGE_TRANSITION_TYPED.
   content::NavigationController::LoadURLParams params{

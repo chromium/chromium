@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxContextMenuControllerBrowserTestWithCommand,
   ASSERT_TRUE(omnibox_controller);
 
   // Start with the popup in Classic state.
-  OpenClassicPopup(browser()->profile(), omnibox_controller);
+  OpenClassicPopup(browser()->GetProfile(), omnibox_controller);
 
   // Executing the command should record that AIM was NOT open.
   controller.ExecuteCommand(GetCommandId(), 0);
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
       OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
           ->get_omnibox_controller();
   ASSERT_TRUE(omnibox_controller);
-  OpenClassicPopup(browser()->profile(), omnibox_controller);
+  OpenClassicPopup(browser()->GetProfile(), omnibox_controller);
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);

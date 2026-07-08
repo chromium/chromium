@@ -16,7 +16,7 @@ IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
   // Create a second browser to prevent the app from exiting when the browser is
   // closed.
 
-  CreateBrowser(browser()->profile());
+  CreateBrowser(browser()->GetProfile());
 
   std::unique_ptr<ui::NativeWindowTracker> tracker =
       ui::NativeWindowTracker::Create(

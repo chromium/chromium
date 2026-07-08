@@ -70,7 +70,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
       : browser_(browser) {
     DCHECK(browser_);
     login_ui_service_observation_.Observe(
-        LoginUIServiceFactory::GetForProfile(browser_->profile()));
+        LoginUIServiceFactory::GetForProfile(browser_->GetProfile()));
   }
 
   LoginUIService::SyncConfirmationUIClosedResult WaitForConfirmationClosed() {
@@ -109,7 +109,7 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   }
 };
 

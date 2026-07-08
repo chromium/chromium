@@ -179,7 +179,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   MockAffiliationService* url_service() {
     return static_cast<MockAffiliationService*>(
         AffiliationServiceFactory::GetInstance()->GetForProfile(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   ResponseDelayParams response_delays() const {

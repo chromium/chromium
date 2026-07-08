@@ -100,7 +100,7 @@ class OidcEnterpriseSigninInterceptionHandle
     }
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-          bubble_parameters_, browser_->profile(),
+          bubble_parameters_, browser_->GetProfile(),
           SigninInterceptionResult::kDeclined);
       std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
                                base::DoNothing());
@@ -127,7 +127,7 @@ class OidcEnterpriseSigninInterceptionHandle
         NOTREACHED();
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-        bubble_parameters_, browser_->profile(), interception_result);
+        bubble_parameters_, browser_->GetProfile(), interception_result);
     std::move(callback_).Run(result, std::move(done_callback),
                              std::move(retry_callback));
   }
@@ -182,7 +182,7 @@ class ForcedEnterpriseSigninInterceptionHandle
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
     if (callback_) {
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-          bubble_parameters_, browser_->profile(),
+          bubble_parameters_, browser_->GetProfile(),
           SigninInterceptionResult::kDeclined);
       std::move(callback_).Run(SigninInterceptionResult::kDeclined);
     }
@@ -209,7 +209,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         NOTREACHED();
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
-        bubble_parameters_, browser_->profile(), interception_result);
+        bubble_parameters_, browser_->GetProfile(), interception_result);
     std::move(callback_).Run(interception_result);
   }
 

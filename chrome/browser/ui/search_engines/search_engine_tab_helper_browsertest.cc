@@ -131,7 +131,7 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
                        IgnoreSearchDescriptionsFromFileURLs) {
   TemplateURLService* url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(url_service);
   EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
@@ -214,7 +214,7 @@ class SearchEngineTabHelperPrerenderingBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     std::unique_ptr<content::WebContents> owned_web_contents =
         content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
+            content::WebContents::CreateParams(browser()->GetProfile()));
     ASSERT_TRUE(owned_web_contents.get());
 
     TestSearchEngineTabHelper::CreateForWebContents(owned_web_contents.get());
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
                        GenerateKeywordInPrerendering) {
   GetNewTabWithTestSearchEngineTabHelper();
   TemplateURLService* url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(url_service);
   EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(
     GenerateKeywordAfterPrerenderActivation) {
   GetNewTabWithTestSearchEngineTabHelper();
   TemplateURLService* url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(url_service);
   EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =

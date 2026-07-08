@@ -155,17 +155,18 @@ class ChromeSignoutConfirmationPromptWithExtensionsPixelTest
 
 IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptWithExtensionsPixelTest,
                        InvokeUi_Default) {
-  extensions::signin_test_util::SimulateExplicitSignIn(browser()->profile(),
+  extensions::signin_test_util::SimulateExplicitSignIn(browser()->GetProfile(),
                                                        identity_test_env());
 
   // Install an account extension before showing the dialog.
-  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader extension_loader(
+      browser()->GetProfile());
   extension_loader.set_pack_extension(true);
   scoped_refptr<const extensions::Extension> account_extension =
       extension_loader.LoadExtension(
           extension_data_dir().AppendASCII("simple_with_icon"));
 
-  extensions::AccountExtensionTracker::Get(browser()->profile())
+  extensions::AccountExtensionTracker::Get(browser()->GetProfile())
       ->SetAccountExtensionTypeForTesting(
           account_extension->id(),
           extensions::AccountExtensionTracker::AccountExtensionType::
