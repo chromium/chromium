@@ -163,7 +163,6 @@ ExtensionsToolbarViewModelBrowserTest::AddExtension(
     bool withhold_permissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestVersion(3)
           .AddAPIPermissions(permissions)
           .AddHostPermissions(host_permissions)
           .SetAction(extensions::ActionInfo::Type::kBrowser)

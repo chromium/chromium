@@ -47,7 +47,7 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
     std::string json = base::StringPrintf(
         R"("mime_types_handler": {"%s": {"handler_url": "%s"}})",
         mime_type.c_str(), handler_url.c_str());
-    return ExtensionBuilder(name).SetManifestVersion(3).AddJSON(json).Build();
+    return ExtensionBuilder(name).AddJSON(json).Build();
   }
 
   // Builds an allowlisted dict-format mime handler whose extension ID is
@@ -59,7 +59,6 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
         R"("mime_types_handler": {"%s": {"handler_url": "viewer.html"}})",
         mime_type.c_str());
     return ExtensionBuilder(id_from_allowlist)
-        .SetManifestVersion(3)
         .SetID(id_from_allowlist)
         .AddJSON(json)
         .Build();
@@ -255,7 +254,6 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
   // accepted.
   auto allowlisted =
       ExtensionBuilder("AllowlistedMulti")
-          .SetManifestVersion(3)
           .SetID(extension_misc::kQuickOfficeExtensionId)
           .AddJSON(R"("mime_types_handler": {)"
                    R"("application/pdf": {"handler_url": "q.html"},)"
@@ -286,7 +284,6 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
 
 TEST_F(MimeHandlerRegistryTest, AllowlistedExtensionRegisteredWhenUsingDict) {
   auto ext = ExtensionBuilder("Allowlisted PDF")
-                 .SetManifestVersion(3)
                  .SetID(extension_misc::kPdfExtensionId)
                  .AddJSON(R"("mime_types_handler": {"application/pdf": )"
                           R"({"handler_url": "viewer.html"}})")

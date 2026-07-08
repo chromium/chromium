@@ -1423,8 +1423,7 @@ class NativeExtensionBindingsSystemBrowserUnittest
 // is defined but is not an object. Regression test for crbug.com/459049475.
 TEST_F(NativeExtensionBindingsSystemBrowserUnittest,
        TestWindowBrowserCrashNonRestricted) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").SetManifestVersion(3).Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
   Verify(extension);
 }
 

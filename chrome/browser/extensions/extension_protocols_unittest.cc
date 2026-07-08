@@ -86,7 +86,6 @@ base::FilePath GetContentVerifierTestPath() {
 scoped_refptr<const Extension> CreateTestExtension(const std::string& name,
                                                    bool incognito_split_mode) {
   return ExtensionBuilder(name)
-      .SetManifestVersion(3)
       .SetManifestKey("incognito", incognito_split_mode ? "split" : "spanning")
       .SetPath(GetTestPath("response_headers"))
       .SetLocation(mojom::ManifestLocation::kInternal)
@@ -99,7 +98,6 @@ scoped_refptr<const Extension> CreateWebStoreExtension() {
   path = path.AppendASCII("web_store");
 
   return ExtensionBuilder("WebStore")
-      .SetManifestVersion(3)
       .SetManifestKey("icons",
                       base::DictValue().Set("16", "webstore_icon_16.png"))
       .SetManifestKey(
@@ -116,7 +114,6 @@ scoped_refptr<const Extension> CreateWebStoreExtension() {
 
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
   return ExtensionBuilder("An extension with web-accessible resources")
-      .SetManifestVersion(3)
       .SetManifestKey(
           "web_accessible_resources",
           base::ListValue().Append(
@@ -136,7 +133,6 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
 
 scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension() {
   return ExtensionBuilder("A module extension")
-      .SetManifestVersion(3)
       .SetManifestKey("export", base::DictValue())
       .SetPath(GetTestPath("response_headers"))
       .Build();
@@ -145,7 +141,6 @@ scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension() {
 scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
     const std::string& module_extension_id) {
   return ExtensionBuilder("A module importer extension")
-      .SetManifestVersion(3)
       .SetManifestKey("import", base::ListValue().Append(base::DictValue().Set(
                                     "id", module_extension_id)))
       .SetManifestKey(
