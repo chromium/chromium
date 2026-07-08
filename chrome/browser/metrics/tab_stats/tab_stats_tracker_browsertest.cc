@@ -846,9 +846,19 @@ class TabStatsTrackerSubFrameBrowserTest : public TabStatsTrackerBrowserTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
+// TODO(crbug.com/532509057): Fix the flakiness on Android and re-enable the
+// test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_VerifyBehaviorOnSubFrameNavigation \
+  DISABLED_VerifyBehaviorOnSubFrameNavigation
+#else
+#define MAYBE_VerifyBehaviorOnSubFrameNavigation \
+  VerifyBehaviorOnSubFrameNavigation
+#endif
+
 // Ensure that subframe navigation cannot affect TabStatsTracker.
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
-                       VerifyBehaviorOnSubFrameNavigation) {
+                       MAYBE_VerifyBehaviorOnSubFrameNavigation) {
   MockTabStatsObserver mock_observer;
   TestTabStatsObserver count_observer;
   tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
