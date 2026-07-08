@@ -341,9 +341,6 @@ TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
   ASSERT_TRUE(test_extension) << error;
 
   std::vector<InstallWarning> warnings;
-  if (GetParam() == ActionInfo::Type::kBrowser) {
-    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-  }
   if (manifest_version == 2) {
     warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
   }
@@ -367,9 +364,6 @@ TEST_P(ExtensionActionManifestTest, EmptyDefaultPopup) {
   ASSERT_TRUE(test_extension) << error;
 
   std::vector<InstallWarning> warnings;
-  if (GetParam() == ActionInfo::Type::kBrowser) {
-    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-  }
   if (manifest_version == 2) {
     warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
   }
@@ -407,9 +401,6 @@ TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
   ASSERT_TRUE(test_extension) << error;
 
   std::vector<InstallWarning> warnings;
-  if (GetParam() == ActionInfo::Type::kBrowser) {
-    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
-  }
   if (manifest_version == 2) {
     warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
   }

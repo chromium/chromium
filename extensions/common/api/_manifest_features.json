@@ -99,6 +99,11 @@
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
+  "browser_action": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "max_manifest_version": 2
+  },
   "chrome_url_overrides": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

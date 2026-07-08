@@ -15,11 +15,6 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app", "hosted_app"]
   },
-  "browser_action": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "max_manifest_version": 2
-  },
   "chrome_settings_overrides": {
     "channel": "stable",
     "extension_types": ["extension"],
