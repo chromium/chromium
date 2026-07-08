@@ -1810,8 +1810,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       // and route to `OnThreadLinkClicked` for bottom-sheet handling, whereas
       // Desktop/AL allows natural window creation and handles AIM links at line
       // 1846.
-      if (IsAndroidMobileFormFactor() &&
-          !GetIsContextualTasksWindowTrackingEnabled()) {
+      if (IsAndroidMobileFormFactor()) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
