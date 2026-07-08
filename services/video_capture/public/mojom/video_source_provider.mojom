@@ -41,6 +41,8 @@ interface VideoSourceProvider {
   // and otherwise as |VideoBufferHandle.shared_buffer_handle|.
   // The virtual device is removed either when the caller releases
   // |virtual_device| or the given |producer| is closed.
+  // The device_id in |device_info| must start with "virtual-chromium-" and
+  // the display_name must either be empty or start with "Virtual Chromium ".
   AddSharedMemoryVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_remote<Producer> producer,
@@ -49,6 +51,8 @@ interface VideoSourceProvider {
   // Similar to AddSharedMemoryVirtualDevice() but for virtual (non-physical)
   // devices that are fed with textures (via SharedImages) allocated by the
   // caller instead of shared memory buffers provided by the service on demand.
+  // The device_id in |device_info| must start with "virtual-chromium-" and
+  // the display_name must either be empty or start with "Virtual Chromium ".
   AddTextureVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_receiver<TextureVirtualDevice> virtual_device_receiver);

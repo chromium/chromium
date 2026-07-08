@@ -14,6 +14,9 @@
 
 namespace media {
 
+inline constexpr char kVirtualDeviceIdPrefix[] = "virtual-chromium-";
+inline constexpr char kVirtualDeviceDisplayNamePrefix[] = "Virtual Chromium ";
+
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 // These values are persisted to logs. Entries should not be renumbered and

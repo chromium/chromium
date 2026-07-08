@@ -29,13 +29,13 @@ async function startVideoCaptureAndVerifySize(video_width, video_height) {
 
 async function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithSize(
     video_width, video_height) {
-  console.log('Trying to find device named "Virtual Device".');
+  console.log('Trying to find device named "Virtual Chromium Device".');
   const devices = await navigator.mediaDevices.enumerateDevices();
   var target_device;
   devices.forEach(function(device) {
     if (device.kind == 'videoinput') {
       console.log('Found videoinput device with label ' + device.label);
-      if (device.label == 'Virtual Device') {
+      if (device.label == 'Virtual Chromium Device') {
         target_device = device;
       }
     }
@@ -43,7 +43,7 @@ async function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithS
   if (target_device == null) {
     throw new Error(
         'No video input device was found with label = Virtual ' +
-        'Device');
+        'Chromium Device');
   }
   var device_specific_constraints = {
     video: {

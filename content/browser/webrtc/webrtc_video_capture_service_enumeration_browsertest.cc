@@ -80,7 +80,7 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
   void AddVirtualDevice(const std::string& device_id) {
     media::VideoCaptureDeviceInfo info;
     info.descriptor.device_id = device_id;
-    info.descriptor.set_display_name(device_id);
+    info.descriptor.set_display_name("Virtual Chromium " + device_id);
     info.descriptor.capture_api = media::VideoCaptureApi::VIRTUAL_DEVICE;
 
     base::RunLoop wait_loop;
@@ -201,11 +201,11 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
   ConnectToService();
 
   // Exercise
-  AddVirtualDevice("test");
+  AddVirtualDevice("virtual-chromium-test");
   EnumerateDevicesInRendererAndVerifyDeviceCount(1);
 
   // Tear down
-  RemoveVirtualDevice("test");
+  RemoveVirtualDevice("virtual-chromium-test");
   DisconnectFromService();
 }
 
@@ -223,12 +223,12 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
   Initialize();
   ConnectToService();
 
-  AddVirtualDevice("test_1");
-  AddVirtualDevice("test_2");
+  AddVirtualDevice("virtual-chromium-test-1");
+  AddVirtualDevice("virtual-chromium-test-2");
   EnumerateDevicesInRendererAndVerifyDeviceCount(2);
-  RemoveVirtualDevice("test_1");
+  RemoveVirtualDevice("virtual-chromium-test-1");
   EnumerateDevicesInRendererAndVerifyDeviceCount(1);
-  RemoveVirtualDevice("test_2");
+  RemoveVirtualDevice("virtual-chromium-test-2");
   EnumerateDevicesInRendererAndVerifyDeviceCount(0);
 
   // Tear down
@@ -255,12 +255,12 @@ IN_PROC_BROWSER_TEST_P(
   EnumerateDevicesInRendererAndVerifyDeviceCount(0);
 
   // Exercise
-  AddVirtualDevice("test");
+  AddVirtualDevice("virtual-chromium-test");
 
   WaitForDeviceChangeEventInRenderer();
   ResetHasReceivedChangedEventFlag();
 
-  RemoveVirtualDevice("test");
+  RemoveVirtualDevice("virtual-chromium-test");
   WaitForDeviceChangeEventInRenderer();
 
   // Tear down

@@ -31,6 +31,10 @@ class DeviceFactory {
 
   virtual void StopDevice(const std::string device_id) = 0;
 
+  // Note: For all Add*VirtualDevice methods, device_info.descriptor.device_id
+  // must start with media::kVirtualDeviceIdPrefix ("virtual-chromium-") and
+  // device_info.descriptor.display_name() must either be empty or start with
+  // media::kVirtualDeviceDisplayNamePrefix ("Virtual Chromium ").
   virtual void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,

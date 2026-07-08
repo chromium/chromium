@@ -57,7 +57,7 @@ TEST_F(VideoCaptureServiceTest, FakeDeviceFactoryEnumeratesThreeDevices) {
 // Tests that an added virtual device will be returned in the callback
 // when calling GetSourceInfos.
 TEST_F(VideoCaptureServiceTest, VirtualDeviceEnumeratedAfterAdd) {
-  const std::string virtual_device_id = "/virtual/device";
+  const std::string virtual_device_id = "virtual-chromium-device";
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
 
   base::RunLoop wait_loop;
@@ -97,7 +97,8 @@ TEST_F(VideoCaptureServiceTest,
     EXPECT_CALL(mock_observer, OnDevicesChanged()).WillOnce([&run_loop]() {
       run_loop.Quit();
     });
-    device_context_1 = AddSharedMemoryVirtualDevice("TestDevice1");
+    device_context_1 =
+        AddSharedMemoryVirtualDevice("virtual-chromium-TestDevice1");
     run_loop.Run();
   }
 
@@ -107,7 +108,7 @@ TEST_F(VideoCaptureServiceTest,
     EXPECT_CALL(mock_observer, OnDevicesChanged()).WillOnce([&run_loop]() {
       run_loop.Quit();
     });
-    device_context_2 = AddTextureVirtualDevice("TestDevice2");
+    device_context_2 = AddTextureVirtualDevice("virtual-chromium-TestDevice2");
     run_loop.Run();
   }
 
@@ -145,7 +146,7 @@ TEST_F(VideoCaptureServiceTest,
   // Disconnect observer
   observer_receiver.reset();
 
-  auto device_context = AddTextureVirtualDevice("TestDevice");
+  auto device_context = AddTextureVirtualDevice("virtual-chromium-TestDevice");
   device_context.reset();
 }
 
@@ -196,7 +197,7 @@ TEST_F(VideoCaptureServiceTest,
 // subscription for an added virtual device.
 TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
   base::RunLoop wait_loop;
-  const std::string virtual_device_id = "/virtual/device";
+  const std::string virtual_device_id = "virtual-chromium-device";
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
 
   mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
@@ -406,7 +407,7 @@ TEST_F(VideoCaptureServiceTest,
 }
 
 TEST_F(VideoCaptureServiceTest, VirtualDeviceCanBeReopenedAfterClosing) {
-  const std::string virtual_device_id = "/virtual/device";
+  const std::string virtual_device_id = "virtual-chromium-device";
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
 
   mojo::Remote<mojom::VideoSource> video_source_remote;

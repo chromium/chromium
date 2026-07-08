@@ -66,8 +66,8 @@ static const char kStartVideoCaptureAndVerify[] =
     "startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithSize(%d, "
     "%d)";
 
-static const char kVirtualDeviceId[] = "/virtual/device";
-static const char kVirtualDeviceName[] = "Virtual Device";
+static const char kVirtualDeviceId[] = "virtual-chromium-device";
+static const char kVirtualDeviceName[] = "Virtual Chromium Device";
 
 static const gfx::Size kDummyFrameCodedSize(320, 200);
 static const gfx::Rect kDummyFrameVisibleRect(94, 36, 178, 150);

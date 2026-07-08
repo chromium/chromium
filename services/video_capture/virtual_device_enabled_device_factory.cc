@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,6 +21,25 @@
 #include "services/video_capture/texture_virtual_device_mojo_adapter.h"
 
 namespace video_capture {
+
+namespace {
+
+bool IsValidVirtualDevice(const media::VideoCaptureDeviceInfo& device_info) {
+  if (!base::StartsWith(device_info.descriptor.device_id,
+                        media::kVirtualDeviceIdPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+  const std::string& display_name = device_info.descriptor.display_name();
+  if (!display_name.empty() &&
+      !base::StartsWith(display_name, media::kVirtualDeviceDisplayNamePrefix,
+                        base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
  public:
@@ -192,6 +212,9 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
     mojo::PendingRemote<mojom::Producer> producer_pending_remote,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
+  if (!IsValidVirtualDevice(device_info)) {
+    return;
+  }
   device_factory_->GetDeviceInfos(base::BindOnce(
       &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
       weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
@@ -235,6 +258,9 @@ void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::TextureVirtualDevice>
         virtual_device_receiver) {
+  if (!IsValidVirtualDevice(device_info)) {
+    return;
+  }
   device_factory_->GetDeviceInfos(base::BindOnce(
       &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
       weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
@@ -270,6 +296,9 @@ void VirtualDeviceEnabledDeviceFactory::AddGpuMemoryBufferVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
         virtual_device_receiver) {
+  if (!IsValidVirtualDevice(device_info)) {
+    return;
+  }
   device_factory_->GetDeviceInfos(base::BindOnce(
       &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
       weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
