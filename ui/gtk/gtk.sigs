@@ -196,3 +196,5 @@ void gtk_widget_show(GtkWidget* widget);
 void gtk_window_set_modal(GtkWindow* window, gboolean modal);
 void gtk_print_settings_set_printer(GtkPrintSettings* settings, const gchar* printer);
 GType gtk_settings_get_type(void);
+GType gtk_dialog_get_type(void);
+void gtk_dialog_set_default_response(GtkDialog* dialog, gint response_id);

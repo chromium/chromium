@@ -464,6 +464,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenHelper(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
       GTK_RESPONSE_CANCEL, GetOpenLabel(), kResponseTypeAccept);
+  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_CANCEL);
   SetGtkTransientForAura(dialog, parent, platform_);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
@@ -504,6 +505,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
       kResponseTypeAccept);
+  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_CANCEL);
   SetGtkTransientForAura(dialog, parent, platform_);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
   if (type == SELECT_UPLOAD_FOLDER || type == SELECT_EXISTING_FOLDER)
