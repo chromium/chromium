@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
@@ -174,27 +174,20 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                 }
             };
 
-    private final TabModelSelectorObserver mTabModelSelectorObserver =
-            new TabModelSelectorObserver() {
-                @Override
-                public void onChange() {
-                    TabModelSelector selector =
-                            TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
-                    if (selector == null) return;
+    private final Callback<TabModel> mTabModelSupplierObserver =
+            tabModel -> {
+                if (tabModel == null) return;
 
-                    boolean isIncognito = selector.isIncognitoSelected();
+                boolean isIncognito = tabModel.isIncognito();
 
-                    if (isIncognito) {
-                        if (!mIsSuppressedByIncognito) {
-                            mIsSuppressedByIncognito = true;
-                            maybeCloseBottomSheet();
-                        }
-                    } else {
-                        if (mIsSuppressedByIncognito) {
-                            mIsSuppressedByIncognito = false;
-                            maybeShowBottomSheet();
-                        }
+                if (isIncognito) {
+                    if (!mIsSuppressedByIncognito) {
+                        mIsSuppressedByIncognito = true;
+                        maybeCloseBottomSheet();
                     }
+                } else if (mIsSuppressedByIncognito) {
+                    mIsSuppressedByIncognito = false;
+                    maybeShowBottomSheet();
                 }
             };
 
@@ -272,7 +265,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                     mCallbackController.makeCancelable(
                             (TabModelSelector selector) -> {
                                 if (selector != null) {
-                                    selector.addObserver(mTabModelSelectorObserver);
+                                    selector.getCurrentTabModelSupplier()
+                                            .addSyncObserver(mTabModelSupplierObserver);
                                     mCurrentTabObserver =
                                             new CurrentTabObserver(
                                                     selector.getCurrentTabSupplier(), mTabObserver);
@@ -467,7 +461,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
 
         TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
         if (selector != null) {
-            selector.removeObserver(mTabModelSelectorObserver);
+            selector.getCurrentTabModelSupplier().removeObserver(mTabModelSupplierObserver);
         }
 
         var layoutStateProvider = mLayoutStateProviderOneShotSupplier.get();

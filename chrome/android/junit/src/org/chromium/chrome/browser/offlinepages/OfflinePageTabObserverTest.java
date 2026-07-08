@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -96,6 +97,10 @@ public class OfflinePageTabObserverTest {
         OfflinePageTabData offlinePageTabData = new OfflinePageTabData();
         userDataHost.setUserData(OfflinePageTabData.class, offlinePageTabData);
         doReturn(userDataHost).when(mTab).getUserDataHost();
+
+        doReturn(ObservableSuppliers.createMonotonic())
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
 
         // Setting up mock snackbar manager.
         doNothing().when(mSnackbarManager).dismissSnackbars(eq(mSnackbarController));

@@ -22,7 +22,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -117,18 +116,7 @@ public abstract class TabModelSelectorBase
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
-                        notifyChanged();
                         notifyNewTabCreated(tab, creationState);
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        notifyChanged();
-                    }
-
-                    @Override
-                    public void didMoveTab(Tab tab, int newIndex, int curIndex) {
-                        notifyChanged();
                     }
                 };
 
@@ -142,8 +130,6 @@ public abstract class TabModelSelectorBase
         incognitoModel.setActive(mStartIncognito);
         normalModel.setActive(!mStartIncognito);
         mTabModelSupplier.set(mTabModelInternals.get(activeModelIndex));
-
-        notifyChanged();
     }
 
     public static void setObserverForTests(@Nullable TabModelSelectorObserver observer) {
@@ -405,17 +391,6 @@ public abstract class TabModelSelectorBase
         for (int i = 0; i < getModels().size(); i++) mTabModelInternals.get(i).destroy();
         mTabModelInternals.clear();
         mTabModels.clear();
-    }
-
-    /**
-     * Notifies all the listeners that the {@link TabModelSelector} or its {@link TabModel} has
-     * changed.
-     */
-    // TODO(tedchoc): Remove the need for this to be exposed.
-    public void notifyChanged() {
-        for (TabModelSelectorObserver listener : mObservers) {
-            listener.onChange();
-        }
     }
 
     /**

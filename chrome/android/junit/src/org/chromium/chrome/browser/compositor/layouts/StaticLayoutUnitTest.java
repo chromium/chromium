@@ -154,6 +154,12 @@ public class StaticLayoutUnitTest {
         doReturn(POSITION1).when(mTabModel).index();
 
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn(ObservableSuppliers.createMonotonic(mTabModel))
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
+        doReturn(ObservableSuppliers.createNullable(mTab1))
+                .when(mTabModelSelector)
+                .getCurrentTabSupplier();
         doReturn(Arrays.asList(mTabModel)).when(mTabModelSelector).getModels();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
 

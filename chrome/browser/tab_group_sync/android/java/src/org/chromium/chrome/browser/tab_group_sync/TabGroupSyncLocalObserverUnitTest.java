@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.UserActionTester;
@@ -124,6 +126,10 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTab3 = prepareTab(TAB_ID_3, ROOT_ID_3, null);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
+
+        doReturn(ObservableSuppliers.createMonotonic(mTabModel))
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
 
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);

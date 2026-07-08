@@ -147,6 +147,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
+        doReturn(ObservableSuppliers.createMonotonic())
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
 
         mAreControlsHidden = ObservableSuppliers.createNonNull(false);
         mMultiWindowModeStateDispatcher = new MultiWindowModeStateDispatcherImpl(mActivity);

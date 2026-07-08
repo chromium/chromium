@@ -22,6 +22,7 @@ import android.provider.Browser;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -48,7 +48,7 @@ import java.util.Objects;
  */
 @NullMarked
 @SuppressLint("NewApi")
-public class HandoffController implements TabModelSelectorObserver, Destroyable {
+public class HandoffController implements Destroyable {
     @IntDef({
         HandoffEnableTrigger.TAB_SWITCH,
         HandoffEnableTrigger.URL_NAVIGATION,
@@ -64,6 +64,8 @@ public class HandoffController implements TabModelSelectorObserver, Destroyable 
     private final ActivityTabProvider mActivityTabProvider;
     private final Delegate mDelegate;
     private final ActivityTabTabObserver mActivityTabTabObserver;
+    private final Callback<@Nullable Tab> mCurrentTabObserver =
+            tab -> updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
 
     private @Nullable GURL mTabLastUrlSeen;
 
@@ -126,7 +128,7 @@ public class HandoffController implements TabModelSelectorObserver, Destroyable 
         mTabModelSelector = tabModelSelector;
         mActivityTabProvider = activityTabProvider;
         mDelegate = delegate;
-        mTabModelSelector.addObserver(this);
+        mTabModelSelector.getCurrentTabSupplier().addSyncObserver(mCurrentTabObserver);
 
         Tab currentTab = activityTabProvider.get();
         mTabLastUrlSeen = (currentTab != null) ? currentTab.getUrl() : null;
@@ -158,13 +160,7 @@ public class HandoffController implements TabModelSelectorObserver, Destroyable 
     @Override
     public void destroy() {
         mActivityTabTabObserver.destroy();
-        mTabModelSelector.removeObserver(this);
-    }
-
-    // TabModelSelectorObserver implementation.
-    @Override
-    public void onChange() {
-        updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
+        mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
     }
 
     ActivityTabTabObserver getActiveTabObserverForTesting() {

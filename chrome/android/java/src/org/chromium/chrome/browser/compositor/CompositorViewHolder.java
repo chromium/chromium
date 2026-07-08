@@ -1912,13 +1912,9 @@ public class CompositorViewHolder extends FrameLayout
                 bottomControlsOffsetSupplier);
 
         mTabModelSelector = tabModelSelector;
+        mTabModelSelector.getCurrentTabSupplier().addSyncObserver((tab) -> onContentChanged());
         tabModelSelector.addObserver(
                 new TabModelSelectorObserver() {
-                    @Override
-                    public void onChange() {
-                        onContentChanged();
-                    }
-
                     @Override
                     public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                         initializeTab(tab);

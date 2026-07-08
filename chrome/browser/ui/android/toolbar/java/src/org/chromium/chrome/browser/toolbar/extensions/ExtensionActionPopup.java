@@ -14,13 +14,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow.OnDismissListener;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -75,7 +76,7 @@ class ExtensionActionPopup implements Destroyable {
     private final ContentView mContentView;
 
     private final TabModelSelector mTabModelSelector;
-    private final TabModelSelectorObserver mTabObserver;
+    private final Callback<@Nullable Tab> mCurrentTabObserver;
 
     /**
      * Constructs an ExtensionActionPopup.
@@ -139,22 +140,6 @@ class ExtensionActionPopup implements Destroyable {
             contextMenuPopulatorFactory.setItemDelegate(itemDelegate);
         }
 
-        mTabModelSelector = tabModelSelector;
-        mTabObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onChange() {
-                        if (mPopupWindow.isShowing()) {
-                            // Due to inherent differences between platforms on focus handling, we
-                            // explicitly observe tab changes and dismiss, unlike on Desktop where
-                            // the popup is automatically dismissed as it loses focus due to the tab
-                            // change.
-                            mPopupWindow.dismiss();
-                        }
-                    }
-                };
-        mTabModelSelector.addObserver(mTabObserver);
-
         mThinWebView.attachWebContents(
                 webContents,
                 mContentView,
@@ -185,13 +170,26 @@ class ExtensionActionPopup implements Destroyable {
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_height));
         mPopupWindow.setFocusable(true);
 
+        mTabModelSelector = tabModelSelector;
+        mCurrentTabObserver =
+                tab -> {
+                    if (mPopupWindow.isShowing()) {
+                        // Due to inherent differences between platforms on focus handling, we
+                        // explicitly observe tab changes and dismiss, unlike on Desktop where
+                        // the popup is automatically dismissed as it loses focus due to the tab
+                        // change.
+                        mPopupWindow.dismiss();
+                    }
+                };
+        mTabModelSelector.getCurrentTabSupplier().addSyncObserver(mCurrentTabObserver);
+
         contents.setDelegate(new ContentsDelegate());
     }
 
     /** Cleans up resources used by this popup. */
     @Override
     public void destroy() {
-        mTabModelSelector.removeObserver(mTabObserver);
+        mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
         mPopupWindow.dismiss();
         mThinWebView.destroy();
         mPopupWindowAndroid.destroy();

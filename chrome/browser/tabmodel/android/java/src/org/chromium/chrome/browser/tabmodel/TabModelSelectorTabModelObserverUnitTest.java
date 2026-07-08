@@ -19,7 +19,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.ArrayList;
@@ -36,10 +39,13 @@ public class TabModelSelectorTabModelObserverUnitTest {
     @Mock private TabModel mTabModel;
 
     private List<TabModel> mTabModels = new ArrayList<>();
+    private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
 
     @Before
     public void setUp() {
         mTabModels = new ArrayList<>();
+        mTabModelSupplier = ObservableSuppliers.createMonotonic();
+        doReturn(mTabModelSupplier).when(mSelector).getCurrentTabModelSupplier();
         doReturn(mTabModels).when(mSelector).getModels();
     }
 
@@ -47,6 +53,7 @@ public class TabModelSelectorTabModelObserverUnitTest {
     public void testAlreadyInitializedSelector() throws TimeoutException {
         // ARRANGE
         mTabModels.add(mTabModel);
+        mTabModelSupplier.set(mTabModel);
         ArgumentCaptor<TabModelSelectorTabModelObserver> arg1 =
                 ArgumentCaptor.forClass(TabModelSelectorTabModelObserver.class);
 
@@ -61,6 +68,7 @@ public class TabModelSelectorTabModelObserverUnitTest {
                 };
 
         // ASSERT
+        RobolectricUtil.runAllBackgroundAndUi();
         registrationCompleteCallback.waitForCallback(0);
         verify(mTabModel).addObserver(arg1.capture());
         assertEquals(1, mTabModels.size());
@@ -70,8 +78,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     @Test
     public void testUninitializedSelector() throws TimeoutException {
         // ARRANGE
-        ArgumentCaptor<TabModelSelectorObserver> arg1 =
-                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
         ArgumentCaptor<TabModelSelectorTabModelObserver> arg2 =
                 ArgumentCaptor.forClass(TabModelSelectorTabModelObserver.class);
 
@@ -85,10 +91,10 @@ public class TabModelSelectorTabModelObserverUnitTest {
                     }
                 };
         mTabModels.add(mTabModel); // Ensure a (any) tab model is added after initialization.
-        verify(mSelector).addObserver(arg1.capture());
-        arg1.getValue().onChange();
+        mTabModelSupplier.set(mTabModel);
 
         // ASSERT
+        RobolectricUtil.runAllBackgroundAndUi();
         registrationCompleteCallback.waitForCallback(0);
         verify(mTabModel).addObserver(arg2.capture());
         assertEquals(1, mTabModels.size());
@@ -98,17 +104,13 @@ public class TabModelSelectorTabModelObserverUnitTest {
     @Test
     public void testDestroySelector() {
         // ARRANGE
-        ArgumentCaptor<TabModelSelectorObserver> arg1 =
-                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
         TabModelSelectorTabModelObserver observer = new TabModelSelectorTabModelObserver(mSelector);
 
         // ACT
-        verify(mSelector).addObserver(arg1.capture());
         mTabModels.add(mTabModel);
         observer.destroy();
 
         // ASSERT
-        verify(mSelector).removeObserver(arg1.getValue());
         verify(mTabModel).removeObserver(observer);
     }
 }

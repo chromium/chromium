@@ -1040,6 +1040,7 @@ public class TabGroupUiMediatorUnitTest {
         // Mock that tab2 is selected after tab model switch, and tab2 is in a group.
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab2);
         mTabModelSupplier.set(mTabModel);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyResetStrip(true, mTabGroup2);
     }
@@ -1052,6 +1053,7 @@ public class TabGroupUiMediatorUnitTest {
         // Mock that tab1 is selected after tab model switch, and tab1 is a single tab.
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab1);
         mTabModelSupplier.set(mTabModel);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyResetStrip(false, null);
     }
@@ -1074,6 +1076,7 @@ public class TabGroupUiMediatorUnitTest {
     public void testTabModelSelectorTabObserverDestroyWhenDetach() {
         InOrder tabObserverDestroyInOrder = inOrder(mTab1);
         initAndAssertProperties(mTab1);
+        mTabModelSupplier.set(mTabModel);
 
         mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab1, null);
 

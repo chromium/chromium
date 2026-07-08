@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -114,7 +113,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
 
     private @Nullable Tab mSurveyPromptTab;
     private @Nullable Tab mLoadingTab;
-    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private @Nullable Callback<@Nullable Tab> mCurrentTabObserver;
     private @Nullable TabObserver mDismissMessageTabObserver;
     private @Nullable TabObserver mLoadingTabObserver;
 
@@ -216,7 +215,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     }
 
     private void showSurveyIfReady() {
-        assert mTabModelSelectorObserver == null;
+        assert mCurrentTabObserver == null;
         assert mLoadingTabObserver == null;
         assert mState < State.ENQUEUED;
 
@@ -228,16 +227,19 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         // Wait until tab model has an active tab.
         if (mTabModelSelector.getCurrentTab() == null) {
             removeLoadingTabReferences();
-            mTabModelSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onChange() {
-                            mTabModelSelector.removeObserver(this);
-                            mTabModelSelectorObserver = null;
+            mCurrentTabObserver =
+                    tab -> {
+                        if (tab != null) {
+                            if (mCurrentTabObserver != null) {
+                                mTabModelSelector
+                                        .getCurrentTabSupplier()
+                                        .removeObserver(mCurrentTabObserver);
+                                mCurrentTabObserver = null;
+                            }
                             showSurveyIfReady();
                         }
                     };
-            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabSupplier().addSyncObserver(mCurrentTabObserver);
             return;
         }
 
@@ -357,10 +359,10 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         if (mLoadingTab != null && mLoadingTabObserver != null) {
             mLoadingTab.removeObserver(mLoadingTabObserver);
         }
-        if (mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        if (mCurrentTabObserver != null) {
+            mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
+            mCurrentTabObserver = null;
         }
-        mTabModelSelectorObserver = null;
         mLoadingTab = null;
         mLoadingTabObserver = null;
         mSurveyPromptTab = null;

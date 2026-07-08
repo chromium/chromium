@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -115,6 +116,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mNormalTabModel));
 
         when(mTabCreatorManager.getTabCreator(false)).thenReturn(mNormalTabCreator);
         when(mTabCreatorManager.getTabCreator(true)).thenReturn(mIncognitoTabCreator);

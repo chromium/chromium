@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -56,7 +56,7 @@ class SurveyClientImpl implements SurveyClient {
     private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private @Nullable LifecycleObserver mLifecycleObserver;
     private @Nullable Callback<Boolean> mOnCrashUploadPermissionChangeCallback;
-    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private @Nullable Callback<TabModel> mTabModelSupplierObserver;
     private boolean mIsDestroyed;
 
     SurveyClientImpl(
@@ -212,17 +212,21 @@ class SurveyClientImpl implements SurveyClient {
 
         // TODO(crbug.com/418075247): Ensure mTabModelSelector is never null.
         if (mTabModelSelector != null) {
-            mTabModelSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onChange() {
-                            if (!isRightBrowserType()) {
-                                mUiDelegate.dismiss();
-                                mTabModelSelector.removeObserver(this);
+            mTabModelSupplierObserver =
+                    tabModel -> {
+                        if (!isRightBrowserType()) {
+                            mUiDelegate.dismiss();
+                            if (mTabModelSupplierObserver != null) {
+                                mTabModelSelector
+                                        .getCurrentTabModelSupplier()
+                                        .removeObserver(mTabModelSupplierObserver);
+                                mTabModelSupplierObserver = null;
                             }
                         }
                     };
-            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+            mTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserver);
         }
 
         mUiDelegate.showSurveyInvitation(
@@ -293,9 +297,11 @@ class SurveyClientImpl implements SurveyClient {
             mCrashUploadPermissionSupplier.removeObserver(mOnCrashUploadPermissionChangeCallback);
             mOnCrashUploadPermissionChangeCallback = null;
         }
-        if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            mTabModelSelectorObserver = null;
+        if (mTabModelSelector != null && mTabModelSupplierObserver != null) {
+            mTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mTabModelSupplierObserver);
+            mTabModelSupplierObserver = null;
         }
         mLifecycleDispatcher = null;
 

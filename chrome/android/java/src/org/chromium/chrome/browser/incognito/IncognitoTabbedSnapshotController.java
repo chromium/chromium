@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
@@ -15,8 +16,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 import java.util.function.Supplier;
 
@@ -26,11 +27,12 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class IncognitoTabbedSnapshotController extends IncognitoSnapshotController
-        implements TabModelSelectorObserver, DestroyObserver {
+        implements DestroyObserver {
     private final TabModelSelector mTabModelSelector;
     private final LayoutManagerChrome mLayoutManager;
     private final LayoutStateObserver mLayoutStateObserver;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
@@ -117,19 +119,17 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
                         });
 
         mLayoutManager.addObserver(mLayoutStateObserver);
-        mTabModelSelector.addObserver(this);
+        mCurrentTabModelObserver = (tabModel) -> updateIncognitoTabSnapshotState();
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         mActivityLifecycleDispatcher.register(this);
     }
 
     @Override
     public void onDestroy() {
         mLayoutManager.removeObserver(mLayoutStateObserver);
-        mTabModelSelector.removeObserver(this);
+        mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         mActivityLifecycleDispatcher.unregister(this);
-    }
-
-    @Override
-    public void onChange() {
-        updateIncognitoTabSnapshotState();
     }
 }

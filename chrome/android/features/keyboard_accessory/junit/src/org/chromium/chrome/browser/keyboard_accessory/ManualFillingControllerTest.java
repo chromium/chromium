@@ -73,6 +73,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -103,6 +104,7 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -122,6 +124,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Controller tests for the root controller for interactions with the manual filling UI. */
@@ -174,6 +177,8 @@ public class ManualFillingControllerTest {
             ObservableSuppliers.createNonNull(0);
     private final SettableNullableObservableSupplier<EdgeToEdgeController>
             mMockEdgeToEdgeControllerSupplier = ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<TabModel> mMockTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
@@ -332,6 +337,8 @@ public class ManualFillingControllerTest {
         when(mMockWindow.getApplicationBottomInsetTracker()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
+        when(mMockTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mMockTabModelSupplier);
+        when(mMockTabModelSelector.getModels()).thenReturn(Collections.emptyList());
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mMockActivity, 0, mMockMultiWindowModeStateDispatcher);

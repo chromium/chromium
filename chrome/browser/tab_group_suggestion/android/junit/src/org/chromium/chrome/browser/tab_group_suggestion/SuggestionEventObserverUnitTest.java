@@ -92,6 +92,9 @@ public class SuggestionEventObserverUnitTest {
         mFocusedPaneSupplier.set(mPane);
 
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        doReturn(ObservableSuppliers.createMonotonic(mTabModel))
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
         when(mTabModel.getProfile()).thenReturn(mProfile);
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
                 ObservableSuppliers.createNullable(mTab);

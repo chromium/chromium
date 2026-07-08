@@ -116,6 +116,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     public void setUp() {
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
         mCipherFactory = new CipherFactory();
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);

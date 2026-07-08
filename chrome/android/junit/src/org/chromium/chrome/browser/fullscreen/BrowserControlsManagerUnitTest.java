@@ -49,6 +49,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsOffsetTags;
@@ -140,6 +141,10 @@ public class BrowserControlsManagerUnitTest {
         doNothing().when(mContentView).addOnSystemUiVisibilityChangeListener(any());
         when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
+        when(mTabModelSelector.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.createNullable(mTab));
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
         BrowserControlsManager browserControlsManager =

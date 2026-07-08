@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -75,12 +76,15 @@ public class TabbedNavigationBarColorControllerUnitTest {
     private SettableMonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
+    @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private NavigationBarColorProvider.Observer mObserver;
     @Mock private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
 
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<Tab> mTabSupplier =
+            ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {
@@ -93,7 +97,11 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mEdgeToEdgeControllerObservableSupplier = ObservableSuppliers.createMonotonic();
         mOverviewColorSupplier = ObservableSuppliers.createMonotonic();
 
+        mTabSupplier.set(mTab);
+        mTabModelSupplier.set(mTabModel);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplier);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         mNavColorController =
@@ -109,6 +117,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         mLayoutManagerSupplier.set(mLayoutManager);
         mEdgeToEdgeControllerObservableSupplier.set(mEdgeToEdgeController);
         mNavColorController.addObserver(mObserver);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         runColorUpdateAnimation();
     }

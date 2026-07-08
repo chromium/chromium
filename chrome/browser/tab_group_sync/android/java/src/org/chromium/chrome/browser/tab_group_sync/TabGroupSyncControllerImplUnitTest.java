@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -68,6 +70,9 @@ public class TabGroupSyncControllerImplUnitTest {
     public void setUp() {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        doReturn(ObservableSuppliers.createMonotonic(mTabModel))
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
         doNothing().when(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         mTabModel.setTabCreatorForTesting(mTabCreator);
         doNothing()

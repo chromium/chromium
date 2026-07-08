@@ -73,6 +73,8 @@ public class SurveyClientUnitTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic());
 
         mCrashUploadPermissionSupplier = ObservableSuppliers.createNonNull(true);
         doReturn(mCrashUploadPermissionSupplier)

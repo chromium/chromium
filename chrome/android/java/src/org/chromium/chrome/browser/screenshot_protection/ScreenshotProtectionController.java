@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 /** A class to provide common functionalities related to allowing/blocking screenshots. */
 @NullMarked
@@ -39,7 +39,7 @@ public class ScreenshotProtectionController implements DestroyObserver {
             this::onLayoutStateProviderAvailable;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
-    private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private @Nullable Callback<TabModel> mCurrentTabModelObserver;
 
     /**
      * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
@@ -67,14 +67,10 @@ public class ScreenshotProtectionController implements DestroyObserver {
         if (!isCustomTab) {
             // Custom tabs cannot switch between TabModelSelectors or layouts, so they skip
             // observing. Their screenshot protection state is updated once below.
-            mTabModelSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onChange() {
-                            updateScreenshotProtectionState();
-                        }
-                    };
-            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+            mCurrentTabModelObserver = tabModel -> updateScreenshotProtectionState();
+            mTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .addSyncObserver(mCurrentTabModelObserver);
 
             mLayoutStateProviderSupplier.addSyncObserverAndCallIfNonNull(
                     mOnLayoutStateProviderAvailableCallback);
@@ -142,8 +138,8 @@ public class ScreenshotProtectionController implements DestroyObserver {
         if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
-        if (mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        if (mCurrentTabModelObserver != null) {
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
 
         mActivityLifecycleDispatcher.unregister(this);

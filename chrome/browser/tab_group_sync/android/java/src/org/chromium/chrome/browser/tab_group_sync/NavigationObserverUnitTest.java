@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -69,6 +70,9 @@ public class NavigationObserverUnitTest {
         TabGroupSyncUtilsJni.setInstanceForTesting(mTabGroupSyncUtilsJni);
         mTabModels = new ArrayList<>();
         doReturn(mTabModels).when(mTabModelSelector).getModels();
+        doReturn(ObservableSuppliers.createMonotonic())
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
 
         mNavigationTracker = new NavigationTracker();
         mNavigationObserver =

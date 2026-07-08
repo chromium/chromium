@@ -37,6 +37,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -65,6 +67,7 @@ public class HandoffControllerUnitTest {
     @Mock private HandoffController.Delegate mDelegate;
     @Mock private ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerJni;
 
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private ActivityTabProvider mActivityTabProvider;
     private HandoffController mController;
     private Bundle mUserRestrictions;
@@ -77,6 +80,9 @@ public class HandoffControllerUnitTest {
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", HANDOFF_SDK_VERSION);
 
         ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerJni);
+
+        mCurrentTabSupplier = ObservableSuppliers.createNullable();
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         mActivityTabProvider = new ActivityTabProvider();
         mUserRestrictions = new Bundle();
@@ -272,7 +278,7 @@ public class HandoffControllerUnitTest {
     }
 
     @Test
-    public void testOnChange_TriggersUpdate() {
+    public void testCurrentTabSupplier_TriggersUpdate() {
         initializeController();
         when(mDelegate.isHandoffEnabled(mActivity)).thenReturn(true);
 
@@ -281,7 +287,7 @@ public class HandoffControllerUnitTest {
         when(mTab.isIncognitoBranded()).thenReturn(true);
 
         // Trigger observer
-        mController.onChange();
+        mCurrentTabSupplier.set(mTab);
 
         verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
         assertTrue(mUserActionTester.getActions().contains("HandoffDisabled"));
@@ -343,14 +349,15 @@ public class HandoffControllerUnitTest {
 
         // 2. Toggle incognito (disables handoff)
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
-        mController.onChange();
+        mCurrentTabSupplier.set(mTab);
         verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
         clearInvocations(mDelegate);
 
         // 3. Toggle back (enables handoff)
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mDelegate.isHandoffEnabled(mActivity)).thenReturn(false);
-        mController.onChange();
+        mCurrentTabSupplier.set(null);
+        mCurrentTabSupplier.set(mTab);
         verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(true));
         clearInvocations(mDelegate);
 

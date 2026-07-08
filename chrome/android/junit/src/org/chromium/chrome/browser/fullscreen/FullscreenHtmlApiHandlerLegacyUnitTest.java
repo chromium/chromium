@@ -77,6 +77,9 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
+        doReturn(ObservableSuppliers.createMonotonic())
+                .when(mTabModelSelector)
+                .getCurrentTabModelSupplier();
 
         mAreControlsHidden = ObservableSuppliers.createNonNull(false);
         mFullscreenHtmlApiHandlerLegacy =

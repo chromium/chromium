@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import java.util.List;
 public class TabModelSelectorTabModelObserver implements TabModelObserver {
     private final TabModelSelector mTabModelSelector;
 
-    private @Nullable TabModelSelectorObserver mSelectorObserver;
+    private @Nullable Callback<TabModel> mTabModelSupplierObserver;
 
     /**
      * Constructs an observer that should be notified of changes for all tab models owned by a
@@ -34,28 +33,19 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
     public TabModelSelectorTabModelObserver(TabModelSelector selector) {
         mTabModelSelector = selector;
 
-        List<TabModel> tabModels = mTabModelSelector.getModels();
-        if (tabModels.isEmpty()) {
-            mSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                            throw new IllegalStateException(
-                                    "onChange should have happened and unregistered this"
-                                            + " listener.");
-                        }
-
-                        @Override
-                        public void onChange() {
-                            mTabModelSelector.removeObserver(this);
-                            mSelectorObserver = null;
-                            registerModelObservers();
-                        }
-                    };
-            mTabModelSelector.addObserver(mSelectorObserver);
-        } else {
-            registerModelObservers();
-        }
+        mTabModelSupplierObserver =
+                (tabModel) -> {
+                    if (mTabModelSupplierObserver != null) {
+                        mTabModelSelector
+                                .getCurrentTabModelSupplier()
+                                .removeObserver(mTabModelSupplierObserver);
+                        mTabModelSupplierObserver = null;
+                    }
+                    registerModelObservers();
+                };
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndCallIfNonNull(mTabModelSupplierObserver);
     }
 
     private void registerModelObservers() {
@@ -73,9 +63,11 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
 
     /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
-        if (mSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mSelectorObserver);
-            mSelectorObserver = null;
+        if (mTabModelSupplierObserver != null) {
+            mTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mTabModelSupplierObserver);
+            mTabModelSupplierObserver = null;
         }
 
         List<TabModel> tabModels = mTabModelSelector.getModels();

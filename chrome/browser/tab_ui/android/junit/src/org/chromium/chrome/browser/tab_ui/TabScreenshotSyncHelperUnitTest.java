@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +50,9 @@ public class TabScreenshotSyncHelperUnitTest {
 
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.isErrorPage()).thenReturn(false);
+
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic());
 
         mHelper = new TabScreenshotSyncHelper(mTabModelSelector, mTabContentManager, mTimer);
     }

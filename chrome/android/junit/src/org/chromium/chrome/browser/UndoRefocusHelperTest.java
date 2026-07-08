@@ -76,6 +76,8 @@ public class UndoRefocusHelperTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
         when(mLayoutManagerImpl.isLayoutVisible(LayoutType.HUB)).thenReturn(true);
         mLayoutManagerObservableSupplier.set(mLayoutManagerImpl);
 

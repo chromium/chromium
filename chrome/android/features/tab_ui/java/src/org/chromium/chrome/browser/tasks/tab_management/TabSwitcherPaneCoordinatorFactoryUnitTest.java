@@ -334,9 +334,26 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     public void testCreateTabModelSupplier() {
+        SettableMonotonicObservableSupplier<TabModel> currentTabModelSupplier =
+                ObservableSuppliers.createMonotonic();
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(currentTabModelSupplier);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+
+        var supplier = mFactory.createTabModelSupplier(false);
+        assertNull(supplier.get());
+        assertTrue(currentTabModelSupplier.hasObservers());
+
+        currentTabModelSupplier.set(mTabModel);
+        assertEquals(mTabModel, supplier.get());
+        assertFalse(currentTabModelSupplier.hasObservers());
+    }
+
+    @Test
+    public void testCreateTabModelSupplier_AlreadySet() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
         var supplier = mFactory.createTabModelSupplier(false);
         assertEquals(mTabModel, supplier.get());
+        assertFalse(mTabModelSupplier.hasObservers());
     }
 }

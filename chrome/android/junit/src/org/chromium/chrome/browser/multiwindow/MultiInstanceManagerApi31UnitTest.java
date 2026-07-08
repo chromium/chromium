@@ -393,6 +393,8 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         when(mNormalTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mNormalTabModel));
         doNothing()
                 .when(mMultiInstanceManager)
                 .showTargetSelectorDialog(MockitoHelper.anyCallback(), anyInt(), anyInt());

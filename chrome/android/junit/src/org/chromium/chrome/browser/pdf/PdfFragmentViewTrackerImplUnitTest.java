@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,6 +53,8 @@ public class PdfFragmentViewTrackerImplUnitTest {
 
     @Before
     public void setUp() {
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic());
         String tabId1 = String.valueOf(TAB_ID1);
         String tabId2 = String.valueOf(TAB_ID2);
         String tabId3 = String.valueOf(TAB_ID3);

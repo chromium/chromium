@@ -88,7 +88,6 @@ public class TabModelSelectorImplTest {
     @Mock private Callback<TabModel> mTabModelSupplierObserverMock;
     @Mock private Callback<Tab> mTabSupplierObserverMock;
     @Mock private Callback<Integer> mTabCountSupplierObserverMock;
-    @Mock private TabModelSelectorObserver mTabModelSelectorObserverMock;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -141,6 +140,7 @@ public class TabModelSelectorImplTest {
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
                 mMockTabContentManager, mRegularTabModel, mIncognitoTabModel);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 mTabModelSelector.getModel(/* incognito= */ false),
@@ -153,6 +153,7 @@ public class TabModelSelectorImplTest {
     @After
     public void tearDown() {
         mTabModelSelector.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(currentTabModelSupplierHasObservers());
     }
 
@@ -330,17 +331,13 @@ public class TabModelSelectorImplTest {
         doNothing().when(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
         doNothing().when(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
-        mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
         mTabModelSelector
                 .getCurrentTabModelSupplier()
-                .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mTabModelSupplierObserverMock).onResult(any());
+                .addSyncObserverAndCallIfNonNull(mTabModelSupplierObserverMock);
 
         InOrder order =
                 inOrder(
                         mIncognitoReauthDialogDelegateMock,
-                        mTabModelSelectorObserverMock,
                         mTabModelSupplierObserverMock);
         mTabModelSelector.selectModel(/* incognito= */ true);
 
@@ -354,40 +351,27 @@ public class TabModelSelectorImplTest {
 
     /**
      * A test method to verify that {@link
-     * IncognitoReauthDialogDelegate#onAfterRegularTabModelChanged} gets called after any other
-     * {@link TabModelSelectorObserver} listening to {@link TabModelSelectorObserver#onChange()}.
+     * IncognitoReauthDialogDelegate#onAfterRegularTabModelChanged} gets called.
      */
     @Test
     public void testIncognitoReauthDialogDelegate_onAfterRegularTabModelChanged() {
         // Start-off with an Incognito tab model. This is needed to set up the environment.
         mTabModelSelector.selectModel(/* incognito= */ true);
-        // The above calls posts a tasks which can get executed after we add
-        // mTabModelSelectorObserverMock below and interfering with the verify onChange test below.
-        // Therefore execute that task immediately now.
-        RobolectricUtil.runAllBackgroundAndUi();
-        // Add the observers now to prevent any firing from the previous selectModel which is
-        // separate from the actual test.
+
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
-        mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
         doNothing().when(mTabModelSupplierObserverMock).onResult(any());
+        doNothing().when(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
+
+        InOrder order = inOrder(mTabModelSupplierObserverMock, mIncognitoReauthDialogDelegateMock);
         mTabModelSelector
                 .getCurrentTabModelSupplier()
-                .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mTabModelSupplierObserverMock).onResult(any());
+                .addSyncObserverAndCallIfNonNull(mTabModelSupplierObserverMock);
+        order.verify(mTabModelSupplierObserverMock).onResult(any());
 
-        doNothing().when(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
-        doNothing().when(mTabModelSelectorObserverMock).onChange();
-
-        InOrder order = inOrder(mTabModelSelectorObserverMock, mIncognitoReauthDialogDelegateMock);
-        verify(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.selectModel(/* incognito= */ false);
-        verify(mTabModelSupplierObserverMock, times(2)).onResult(any());
-
-        // The onChange method below is posted as a task to the main looper, and therefore we need
-        // to wait until it gets executed.
         RobolectricUtil.runAllBackgroundAndUi();
-        order.verify(mTabModelSelectorObserverMock).onChange();
+
+        order.verify(mTabModelSupplierObserverMock).onResult(any());
         order.verify(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
 
         mTabModelSelector
@@ -434,6 +418,7 @@ public class TabModelSelectorImplTest {
                 mMockTabContentManager, regularTabModel, mIncognitoTabModel);
         MockTab tab0 = regularTabModel.addTab(0);
         MockTab tab1 = regularTabModel.addTab(1);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, regularTabModel.indexOf(tab0));
         assertEquals(1, regularTabModel.indexOf(tab1));
 

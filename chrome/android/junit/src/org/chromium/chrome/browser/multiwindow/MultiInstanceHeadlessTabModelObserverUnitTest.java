@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.tabmodel.HeadlessTabModelSelectorImpl;
@@ -50,6 +51,8 @@ public class MultiInstanceHeadlessTabModelObserverUnitTest {
         when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mNormalTabModel));
 
         mObserver = new MultiInstanceHeadlessTabModelObserver(mTabModelSelector, WINDOW_ID);
     }

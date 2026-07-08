@@ -11,9 +11,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 /** Observes changes to the tab model selector. */
 @NullMarked
 public interface TabModelSelectorObserver {
-    /** Called whenever the {@link TabModel} has changed. */
-    default void onChange() {}
-
     /**
      * Called when a new tab is created.
      * @param tab A new tab being created.
