@@ -106,7 +106,7 @@ class PersonalizationAppWallpaperDailyRefreshBrowserTest
     auto wallpaper_controller_test_api =
         std::make_unique<WallpaperControllerTestApi>(wallpaper_controller());
     wallpaper_controller_test_api->SetDefaultWallpaper(
-        GetAccountId(browser()->profile()));
+        GetAccountId(browser()->GetProfile()));
 
     test_chrome_webui_controller_factory_.AddFactoryOverride(
         kChromeUIPersonalizationAppHost, &test_webui_provider_);

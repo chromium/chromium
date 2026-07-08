@@ -132,7 +132,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
   void SetupAutofillProfile(const std::u16string& email) {
     autofill_profile_ = test::GetFullProfile();
     autofill_profile_->SetRawInfo(EMAIL_ADDRESS, email);
-    AddTestProfile(browser()->profile(), *autofill_profile_);
+    AddTestProfile(browser()->GetProfile(), *autofill_profile_);
   }
 
   BrowserAutofillManager* GetBrowserAutofillManager(

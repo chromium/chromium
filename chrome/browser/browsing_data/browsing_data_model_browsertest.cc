@@ -539,7 +539,7 @@ class BrowsingDataModelBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->GetProfile())
         ->SetAllPrivacySandboxAllowedForTesting();
     // Mark all Privacy Sandbox APIs as attested since the test cases are
     // testing behaviors not related to attestations.
@@ -584,8 +584,9 @@ class BrowsingDataModelBrowserTest
     base::test::TestFuture<std::unique_ptr<BrowsingDataModel>>
         browsing_data_model;
     BrowsingDataModel::BuildFromDisk(
-        browser()->profile(),
-        ChromeBrowsingDataModelDelegate::CreateForProfile(browser()->profile()),
+        browser()->GetProfile(),
+        ChromeBrowsingDataModelDelegate::CreateForProfile(
+            browser()->GetProfile()),
         browsing_data_model.GetCallback());
     return browsing_data_model.Take();
   }

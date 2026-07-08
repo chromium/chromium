@@ -64,9 +64,9 @@ class AutofillCounterTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserContext(
-            browser()->profile());
+            browser()->GetProfile());
     web_data_service_ = WebDataServiceFactory::GetAutofillWebDataForProfile(
-        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+        browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS);
 
     SetAutofillDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
@@ -180,7 +180,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   autofill::EntityDataManager* GetEntityDataManager() {
     return autofill::AutofillEntityDataManagerFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   autofill::PersonalDataManager* GetPersonalDataManager() {
@@ -254,7 +254,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
 // Tests that we count the correct number of autocomplete suggestions.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   browsing_data::AutofillCounter counter = GetCounter();
-  counter.Init(browser()->profile()->GetPrefs(),
+  counter.Init(browser()->GetProfile()->GetPrefs(),
                future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
 
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Entities) {
   browsing_data::AutofillCounter counter = GetCounter();
-  counter.Init(browser()->profile()->GetPrefs(),
+  counter.Init(browser()->GetProfile()->GetPrefs(),
                future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();

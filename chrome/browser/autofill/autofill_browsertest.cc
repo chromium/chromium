@@ -116,7 +116,7 @@ class AutofillTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
-    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+    WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -145,7 +145,7 @@ class AutofillTest : public InProcessBrowserTest {
 
   PersonalDataManager* personal_data_manager() {
     return PersonalDataManagerFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   typedef std::map<std::string, std::string> FormMap;
@@ -197,7 +197,7 @@ class AutofillTest : public InProcessBrowserTest {
     // available through the PDM after it has asynchronously updated the
     // database. Wait for all pending DB tasks to complete.
     WaitForPendingDBTasks(*WebDataServiceFactory::GetAutofillWebDataForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+        browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
 
   // Aggregate profiles from forms into Autofill preferences. Returns the number

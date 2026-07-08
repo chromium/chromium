@@ -39,7 +39,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     time_ = base::Time::Now();
     times_used_in_html_form_ = 0;
     store_ = ProfilePasswordStoreFactory::GetForProfile(
-                 browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                 browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
                  .get();
     SetPasswordsDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);

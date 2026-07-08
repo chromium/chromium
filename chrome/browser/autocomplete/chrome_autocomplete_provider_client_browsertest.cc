@@ -106,7 +106,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     client_ = std::make_unique<ChromeAutocompleteProviderClient>(
-        browser()->profile());
+        browser()->GetProfile());
     storage_partition_.set_service_worker_context(&service_worker_context_);
     client_->set_storage_partition(&storage_partition_);
   }
@@ -136,7 +136,8 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
   // |client_| will be off the record.
   void GoOffTheRecord() {
     client_ = std::make_unique<ChromeAutocompleteProviderClient>(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+        browser()->GetProfile()->GetPrimaryOTRProfile(
+            /*create_if_needed=*/true));
   }
 
   std::unique_ptr<ChromeAutocompleteProviderClient> client_;

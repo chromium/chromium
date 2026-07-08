@@ -35,7 +35,7 @@ SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase() = default;
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
 SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
-  auto* swa_manager = SystemWebAppManager::Get(browser()->profile());
+  auto* swa_manager = SystemWebAppManager::Get(browser()->GetProfile());
   DCHECK(swa_manager);
   return *swa_manager;
 }
@@ -75,20 +75,20 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   // AppServiceProxyFactory will DCHECK when called with wrong profile. In
   // normal scenarios, no code path should trigger this.
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-      browser()->profile()));
+      browser()->GetProfile()));
 
   if (!params.launch_files.empty()) {
     // SWA browser tests bypass the code in `WebAppPublisherHelper` that fills
     // in `override_url`, so fill it in here, assuming the file handler action
     // URL matches the start URL.
-    params.override_url =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
-            ->registrar_unsafe()
-            .GetAppStartUrl(params.app_id);
+    params.override_url = web_app::WebAppProvider::GetForLocalAppsUnchecked(
+                              browser()->GetProfile())
+                              ->registrar_unsafe()
+                              .GetAppStartUrl(params.app_id);
   }
 
   content::WebContents* web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(std::move(params));
 
@@ -139,7 +139,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(
   return params.override_url.is_valid()
              ? params.override_url
              : web_app::WebAppProvider::GetForLocalAppsUnchecked(
-                   browser()->profile())
+                   browser()->GetProfile())
                    ->registrar_unsafe()
                    .GetAppStartUrl(params.app_id);
 }

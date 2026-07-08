@@ -64,7 +64,7 @@ class BrowserCommandsTest : public BrowserWithTestWindowTest {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+                browser()->GetProfile()));
     observer->Wait();
   }
 };

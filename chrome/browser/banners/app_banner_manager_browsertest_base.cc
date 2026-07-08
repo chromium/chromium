@@ -26,7 +26,7 @@ void AppBannerManagerBrowserTestBase::SetUpOnMainThread() {
 
 #if !BUILDFLAG(IS_ANDROID)
   web_app::test::WaitUntilReady(
-      web_app::WebAppProvider::GetForTest(browser()->profile()));
+      web_app::WebAppProvider::GetForTest(browser()->GetProfile()));
 #endif
 }
 

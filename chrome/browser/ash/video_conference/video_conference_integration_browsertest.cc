@@ -165,9 +165,10 @@ class VideoConferenceIntegrationTest
 
     // Create an incognito browser when parameter is true.
     if (is_incognito_mode_) {
-      browser_ = Browser::Create(Browser::CreateParams(
-          browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-          true));
+      browser_ = Browser::Create(
+          Browser::CreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                true));
       // This creates a blank page which is more consistent with normal mode.
       ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
           browser_, GURL("chrome://blank"), 1,
@@ -191,7 +192,7 @@ class VideoConferenceIntegrationTest
         camera_background_run_dir_);
 
     // Required for the VcBackgroundApp.
-    ash::SystemWebAppManager::Get(browser()->profile())
+    ash::SystemWebAppManager::Get(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 
@@ -212,7 +213,7 @@ class VideoConferenceIntegrationTest
   void SetPermission(content::WebContents* web_contents,
                      ContentSettingsType type,
                      ContentSetting result) {
-    HostContentSettingsMapFactory::GetForProfile(browser_->profile())
+    HostContentSettingsMapFactory::GetForProfile(browser_->GetProfile())
         ->SetContentSettingDefaultScope(web_contents->GetURL(), GURL(), type,
                                         result);
   }

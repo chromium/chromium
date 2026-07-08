@@ -91,19 +91,19 @@ class DownloadsDestinationUtilsTest : public policy::PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTest, DownloadsDestination) {
   EXPECT_EQ(FileSaveDestination::kNotSpecified,
-            GetDownloadsDestination(browser()->profile()));
+            GetDownloadsDestination(browser()->GetProfile()));
 
   SetDownloadsPolicy("");
   EXPECT_EQ(FileSaveDestination::kDownloads,
-            GetDownloadsDestination(browser()->profile()));
+            GetDownloadsDestination(browser()->GetProfile()));
 
   SetDownloadsPolicy(kGoogleDrivePolicyVariableName);
   EXPECT_EQ(FileSaveDestination::kGoogleDrive,
-            GetDownloadsDestination(browser()->profile()));
+            GetDownloadsDestination(browser()->GetProfile()));
 
   SetDownloadsPolicy(kOneDrivePolicyVariableName);
   EXPECT_EQ(FileSaveDestination::kOneDrive,
-            GetDownloadsDestination(browser()->profile()));
+            GetDownloadsDestination(browser()->GetProfile()));
 }
 
 class ScreenCaptureDestinationUtilsTest : public policy::PolicyTest {
@@ -121,19 +121,19 @@ class ScreenCaptureDestinationUtilsTest : public policy::PolicyTest {
 IN_PROC_BROWSER_TEST_F(ScreenCaptureDestinationUtilsTest,
                        ScreenCaptureDestination) {
   EXPECT_EQ(FileSaveDestination::kNotSpecified,
-            GetScreenCaptureDestination(browser()->profile()));
+            GetScreenCaptureDestination(browser()->GetProfile()));
 
   SetScreenCapturePolicy("");
   EXPECT_EQ(FileSaveDestination::kDownloads,
-            GetScreenCaptureDestination(browser()->profile()));
+            GetScreenCaptureDestination(browser()->GetProfile()));
 
   SetScreenCapturePolicy(kGoogleDrivePolicyVariableName);
   EXPECT_EQ(FileSaveDestination::kGoogleDrive,
-            GetScreenCaptureDestination(browser()->profile()));
+            GetScreenCaptureDestination(browser()->GetProfile()));
 
   SetScreenCapturePolicy(kOneDrivePolicyVariableName);
   EXPECT_EQ(FileSaveDestination::kOneDrive,
-            GetScreenCaptureDestination(browser()->profile()));
+            GetScreenCaptureDestination(browser()->GetProfile()));
 }
 
 class DownloadsDestinationUtilsTestWithSkyvault
@@ -144,13 +144,13 @@ class DownloadsDestinationUtilsTestWithSkyvault
 
 IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTestWithSkyvault,
                        DownloadToTemp) {
-  EXPECT_EQ(false, DownloadToTemp(browser()->profile()));
+  EXPECT_EQ(false, DownloadToTemp(browser()->GetProfile()));
 
   SetDownloadsPolicy(kGoogleDrivePolicyVariableName);
-  EXPECT_EQ(false, DownloadToTemp(browser()->profile()));
+  EXPECT_EQ(false, DownloadToTemp(browser()->GetProfile()));
 
   SetDownloadsPolicy(kOneDrivePolicyVariableName);
-  EXPECT_EQ(true, DownloadToTemp(browser()->profile()));
+  EXPECT_EQ(true, DownloadToTemp(browser()->GetProfile()));
 }
 
 }  // namespace policy::local_user_files

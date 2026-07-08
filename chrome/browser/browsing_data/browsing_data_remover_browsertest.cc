@@ -322,7 +322,7 @@ class BrowsingDataRemoverBrowserTest
                              .registrable_domain_or_host_for_testing());
     base::RunLoop loop;
     content::ClearSiteData(
-        GetBrowser()->profile()->GetWeakPtr(),
+        GetBrowser()->GetProfile()->GetWeakPtr(),
         /*storage_partition_config=*/std::nullopt,
         /*origin=*/origin, content::ClearSiteDataTypeSet::All(),
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
@@ -862,7 +862,7 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
     // We're clearing some storage buckets and not all of them.
     clear_site_data_types.Remove(content::ClearSiteDataType::kStorage);
     content::ClearSiteData(
-        GetBrowser()->profile()->GetWeakPtr(),
+        GetBrowser()->GetProfile()->GetWeakPtr(),
         /*storage_partition_config=*/std::nullopt,
         /*origin=*/origin, clear_site_data_types,
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
@@ -1502,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   }
 
   ExpectTotalModelCount(1);
-  HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(GetBrowser()->GetProfile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
 }

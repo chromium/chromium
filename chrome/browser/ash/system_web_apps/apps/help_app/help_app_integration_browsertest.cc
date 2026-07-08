@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Wait for system apps background tasks to start.
   base::RunLoop run_loop;
-  SystemWebAppManager::GetForTest(browser()->profile())
+  SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->on_tasks_started()
       .Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();

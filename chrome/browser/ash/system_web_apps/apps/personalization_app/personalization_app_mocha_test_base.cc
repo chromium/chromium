@@ -87,7 +87,7 @@ void PersonalizationAppMochaTestBase::SetUpOnMainThread() {
       std::make_unique<WallpaperControllerTestApi>(
           ::ash::Shell::Get()->wallpaper_controller());
   wallpaper_controller_test_api->SetDefaultWallpaper(
-      GetAccountId(browser()->profile()));
+      GetAccountId(browser()->GetProfile()));
 }
 
 // Initializes default wallpaper paths for regular users and writes JPEG

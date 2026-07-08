@@ -66,13 +66,13 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
 // This test verifies that the settings page is opened in a new browser window.
 IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, OmniboxNavigateToSettings) {
   // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
   GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
   {
     ui_test_utils::AllBrowserTabAddedWaiter waiter;
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        browser()->profile());
+        browser()->GetProfile());
     auto* web_contents = waiter.Wait();
     ASSERT_TRUE(web_contents);
     content::WaitForLoadStop(web_contents);
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, OmniboxNavigateToSettings) {
   // Settings page should be opened in a new window.
   BrowserWindowInterface* settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   EXPECT_NE(browser(), settings_browser);
   EXPECT_EQ(
       GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
                        RedirectIncognitoToOriginalProfile) {
   // Install the real SWA, not the test mock. This verifies the production
   // SystemAppInfo is correct.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   // When launching from incognito profile, OS Settings gets launched to the
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
   // There should be a browser for the original profile, but not the incognito
   // profile.
   auto* manager = chrome::SettingsWindowManager::GetInstance();
-  EXPECT_TRUE(manager->FindBrowserForProfile(browser()->profile()));
+  EXPECT_TRUE(manager->FindBrowserForProfile(browser()->GetProfile()));
   EXPECT_FALSE(manager->FindBrowserForProfile(incognito_profile));
 }
 

@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   )"));
 
   permissions::BluetoothChooserContext* context =
-      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
+      BluetoothChooserContextFactory::GetForProfile(browser()->GetProfile());
   url::Origin origin =
       web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   url::Origin origin =
       web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   permissions::BluetoothChooserContext* context =
-      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
+      BluetoothChooserContextFactory::GetForProfile(browser()->GetProfile());
   auto objects = context->GetGrantedObjects(origin);
   ASSERT_EQ(1u, objects.size());
   const auto first_object_key = context->GetKeyForObject(objects.at(0)->value);

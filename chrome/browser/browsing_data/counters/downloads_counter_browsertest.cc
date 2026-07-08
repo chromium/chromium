@@ -50,9 +50,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     items_count_ = 0;
     manager_ = browser()->profile()->GetDownloadManager();
     WaitForInitialization(manager_);
-    history_ =
-        DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
-            ->GetDownloadHistory();
+    history_ = DownloadCoreServiceFactory::GetForBrowserContext(
+                   browser()->GetProfile())
+                   ->GetDownloadHistory();
     history_->AddObserver(this);
 
     otr_manager_ = browser()

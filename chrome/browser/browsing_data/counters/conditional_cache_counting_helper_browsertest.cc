@@ -63,7 +63,7 @@ class ConditionalCacheCountingHelperBrowserTest : public InProcessBrowserTest {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     last_size_ = -1;
     ConditionalCacheCountingHelper::Count(
-        browser()->profile()->GetDefaultStoragePartition(), begin_time,
+        browser()->GetProfile()->GetDefaultStoragePartition(), begin_time,
         end_time,
         base::BindOnce(
             &ConditionalCacheCountingHelperBrowserTest::CountCallback,

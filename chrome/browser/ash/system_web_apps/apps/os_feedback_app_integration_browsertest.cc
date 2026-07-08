@@ -50,7 +50,7 @@ class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
   Browser* FindFeedbackAppBrowser() {
     ash::BrowserDelegate* delegate = ash::FindSystemWebAppBrowser(
-        browser()->profile(), ash::SystemWebAppType::OS_FEEDBACK,
+        browser()->GetProfile(), ash::SystemWebAppType::OS_FEEDBACK,
         ash::BrowserType::kApp);
     return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
                     : nullptr;

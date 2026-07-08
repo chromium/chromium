@@ -1201,7 +1201,7 @@ void TestRecipeReplayer::CleanupSiteData() {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser_, GURL(url::kAboutBlankURL)));
   content::BrowsingDataRemover* remover =
-      browser_->profile()->GetBrowsingDataRemover();
+      browser_->GetProfile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

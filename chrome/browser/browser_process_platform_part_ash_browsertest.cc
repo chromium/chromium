@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
 
   auto* pref_urls_opened_browser = browser_created_observer.Wait();
   ASSERT_TRUE(pref_urls_opened_browser);
-  EXPECT_EQ(pref_urls_opened_browser->profile(), profile);
+  EXPECT_EQ(pref_urls_opened_browser->GetProfile(), profile);
   ui_test_utils::WaitUntilBrowserBecomeActive(pref_urls_opened_browser);
 
   ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(profile)->GetSize());

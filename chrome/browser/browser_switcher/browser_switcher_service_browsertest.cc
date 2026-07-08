@@ -141,7 +141,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
     ASSERT_TRUE(DirectoryExists(fake_appdata_dir_) ||
                 CreateDirectory(fake_appdata_dir_));
     BrowserSwitcherServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(
             [](base::FilePath cache_dir, content::BrowserContext* context) {
               auto* instance = new BrowserSwitcherServiceWin(
@@ -167,7 +167,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
   void UpdatePolicies(policy::PolicyMap& policies) {
     provider_.UpdateChromePolicy(policies);
     base::RunLoop().RunUntilIdle();
-    BrowserSwitcherServiceFactory::GetForBrowserContext(browser()->profile())
+    BrowserSwitcherServiceFactory::GetForBrowserContext(browser()->GetProfile())
         ->Init();
   }
 
@@ -194,7 +194,7 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
 
   BrowserSwitcherService* GetService() {
     return BrowserSwitcherServiceFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   policy::MockConfigurationPolicyProvider& policy_provider() {
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
                            .Set("manifest_version", 2)
                            .Set("version", "5.9"))
           .Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
 
   // Cache files already exist.

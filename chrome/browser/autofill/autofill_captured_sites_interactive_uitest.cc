@@ -331,7 +331,7 @@ class AutofillCapturedSitesInteractiveTest
   }
 
   bool SetupAutofillProfile() override {
-    AddTestAutofillData(browser()->profile(), profile_controller_->profile(),
+    AddTestAutofillData(browser()->GetProfile(), profile_controller_->profile(),
                         profile_controller_->credit_card());
     // Disable the Password Manager to prevent password bubbles from occurring.
     // The password bubbles could overlap with the Autofill popups, in which

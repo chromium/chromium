@@ -47,7 +47,7 @@ class BackgroundSyncContentSettingBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(BackgroundSyncContentSettingBrowserTest,
                        BlockingContentSettingUnregistersPeriodicSync) {
   auto* controller = static_cast<BackgroundSyncControllerImpl*>(
-      browser()->profile()->GetBackgroundSyncController());
+      browser()->GetProfile()->GetBackgroundSyncController());
   DCHECK(controller);
 
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));

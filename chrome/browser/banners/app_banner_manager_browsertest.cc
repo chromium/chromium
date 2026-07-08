@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, WebAppBannerInIFrame) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, DoesNotShowInIncognito) {
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   content::WebContents* web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   // AppBannerManager is not even set up for incognito WebContents.
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   // notifies RendererStartupHelper. Adding it straight to the ExtensionRegistry
   // enabled set leaves RendererStartupHelper's bookkeeping out of sync and trips
   // a DCHECK when a new renderer process initializes (crbug.com/515192463).
-  extensions::ExtensionRegistrar::Get(browser()->profile())
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
 #endif
 

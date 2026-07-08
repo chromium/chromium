@@ -156,7 +156,7 @@ void AutofillUiTest::SetUpOnMainThread() {
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.
-  WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+  WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
 
   // Disable the caret blinking to not generate any compositor frames from just
   // a blinking cursor.

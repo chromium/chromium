@@ -191,7 +191,9 @@ class AutocompleteTest : public InProcessBrowserTest {
     return AutocompleteHistoryManagerFactory::GetForProfile(current_profile());
   }
 
-  PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
+  PrefService* pref_service() {
+    return active_browser_->GetProfile()->GetPrefs();
+  }
 
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
@@ -232,7 +234,7 @@ class AutocompleteTest : public InProcessBrowserTest {
     return active_browser_->tab_strip_model()->GetActiveWebContents();
   }
 
-  Profile* current_profile() { return active_browser_->profile(); }
+  Profile* current_profile() { return active_browser_->GetProfile(); }
 
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;

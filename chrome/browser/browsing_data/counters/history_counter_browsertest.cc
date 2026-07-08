@@ -41,7 +41,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     time_ = base::Time::Now();
     history_service_ = HistoryServiceFactory::GetForProfileWithoutCreating(
-        browser()->profile());
+        browser()->GetProfile());
     fake_web_history_service_ =
         std::make_unique<history::FakeWebHistoryService>();
 

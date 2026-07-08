@@ -47,9 +47,9 @@ class BackgroundContentsServiceNotificationTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
-    background_service_ =
-        BackgroundContentsServiceFactory::GetForProfile(browser()->profile());
+        browser()->GetProfile());
+    background_service_ = BackgroundContentsServiceFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {

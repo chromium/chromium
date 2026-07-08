@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
       web_app::CreateInstallOptions(GetBannerURL());
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
   options.user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
-  web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
+  web_app::ExternallyManagedAppManagerInstall(browser()->GetProfile(), options);
 
   // Run promotability check.
   {
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
           "/banners/manifest_display_override_contains_browser.json"));
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
   options.user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
-  web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
+  web_app::ExternallyManagedAppManagerInstall(browser()->GetProfile(), options);
 
   // Run promotability check.
   {
