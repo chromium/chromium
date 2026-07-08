@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, ThemeDataPackInvalid) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(UsingCustomTheme(*theme_service));
   EXPECT_EQ(kThemeNtpLinkColor,
             GetColorProviderFor(browser())->GetColor(kColorNewTabPageLink));
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
       GetColorProviderFor(incognito_browser)->GetColor(kColorToolbar);
 
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   test::ThemeServiceChangedWaiter waiter(theme_service);
   InstallExtension(test_data_dir_.AppendASCII("theme_minimal/"), 1);
   waiter.WaitForThemeChanged();
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
       GetColorProviderFor(browser())->GetColor(kColorToolbarButtonIcon);
 
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
   {
     test::ThemeServiceChangedWaiter waiter(theme_service);
     InstallExtension(
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
                        ThemeTransitionsEmitSingleNotification) {
   ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
 
   // User color.
   {

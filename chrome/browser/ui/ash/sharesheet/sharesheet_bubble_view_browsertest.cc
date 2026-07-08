@@ -54,7 +54,7 @@ class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
 
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
 
     auto intent = apps_util::MakeShareIntent("text", "");
     intent->action = apps_util::kIntentActionSend;
@@ -130,7 +130,7 @@ class SharesheetBubbleViewPolicyBrowserTest
 
   void SetupRulesManager(bool is_dlp_blocked) {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
+        browser()->GetProfile(),
         base::BindRepeating(
             &SharesheetBubbleViewPolicyBrowserTest::SetDlpRulesManager,
             base::Unretained(this)));
@@ -144,7 +144,7 @@ class SharesheetBubbleViewPolicyBrowserTest
   }
 
   void SetupAppService() {
-    app_service_test_.SetUp(browser()->profile());
+    app_service_test_.SetUp(browser()->GetProfile());
 
     AddAppServiceAppsForTesting("arcAppId", apps::AppType::kArc, "text/plain",
                                 "https://example.com");
@@ -155,7 +155,7 @@ class SharesheetBubbleViewPolicyBrowserTest
                                    std::string mime_type,
                                    std::optional<std::string> publisher_id) {
     apps::AppServiceProxy* app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
 
     std::vector<apps::AppPtr> fake_apps;
     apps::AppPtr fake_app =
@@ -256,7 +256,7 @@ class SharesheetBubbleViewNearbyShareBrowserTest : public InProcessBrowserTest {
                                           ->GetTopLevelNativeWindow();
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     sharesheet_service->ShowNearbyShareBubbleForArc(
         parent_window, ::sharesheet::CreateValidTextIntent(),
         ::sharesheet::LaunchSource::kArcNearbyShare,

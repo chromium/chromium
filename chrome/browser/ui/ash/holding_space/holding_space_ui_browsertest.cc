@@ -2627,8 +2627,8 @@ class HoldingSpaceSuggestionUiBrowserTest : public HoldingSpaceUiBrowserTest {
 
     // Initialize `local_file_directory_`.
     EXPECT_TRUE(local_file_directory_.CreateUniqueTempDirUnderPath(
-        browser()->profile()->GetPath()));
-    EXPECT_TRUE(browser()->profile()->GetMountPoints()->RegisterFileSystem(
+        browser()->GetProfile()->GetPath()));
+    EXPECT_TRUE(browser()->GetProfile()->GetMountPoints()->RegisterFileSystem(
         /*mount_name=*/"archive", storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), GetLocalFileMountPath()));
   }

@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 // memory from those sessions).
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        FinishedIncognitoSessionBlockingTraceStart) {
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_TRUE(IsOffTheRecordSessionActive());
   CloseBrowserSynchronously(incognito_browser);
   EXPECT_FALSE(IsOffTheRecordSessionActive());
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        ShortIncognitoSessionBlockingTraceFinalization) {
   EXPECT_TRUE(StartScenario(tracing::BackgroundTracingManager::ANONYMIZE_DATA));
 
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_TRUE(IsOffTheRecordSessionActive());
   CloseBrowserSynchronously(incognito_browser);
   EXPECT_FALSE(IsOffTheRecordSessionActive());

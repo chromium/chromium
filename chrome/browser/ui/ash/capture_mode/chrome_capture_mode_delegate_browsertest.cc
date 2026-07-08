@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
   // Mount ODFS.
   file_manager::test::FakeProvidedFileSystemOneDrive* provided_file_system =
       file_manager::test::MountFakeProvidedFileSystemOneDrive(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(provided_file_system);
   EXPECT_FALSE(delegate->GetOneDriveMountPointPath().empty());
   EXPECT_FALSE(delegate->GetOneDriveVirtualPath().empty());

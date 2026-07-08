@@ -206,7 +206,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     drive::DriveIntegrationService* service =
         drive::DriveIntegrationServiceFactory::FindForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     EXPECT_TRUE(service->IsMounted());
     EXPECT_TRUE(base::PathExists(service->GetMountPointPath()));
 
@@ -297,7 +297,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
   void VerifyNotificationCount(size_t size) {
     base::RunLoop run_loop;
-    NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+    NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetDisplayed(base::BindLambdaForTesting(
             [&run_loop, &size](std::set<std::string> displayed_notification_ids,
                                bool supports_synchronization) {

@@ -87,7 +87,7 @@ class SupervisedUserRegionalURLFilterTest
   bool IsUrlFilteringEnabled() const {
     return signin::Tribool::kTrue ==
            supervised_user::IsPrimaryAccountSubjectToParentalControls(
-               IdentityManagerFactory::GetForProfile(browser()->profile()));
+               IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
   }
 
  private:
@@ -111,7 +111,7 @@ class SupervisedUserRegionalURLFilterTest
 // Verifies that the regional setting is passed to the RPC backend.
 IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"www.example.com"}, browser()->profile()->GetPrefs());
+      {"www.example.com"}, browser()->GetProfile()->GetPrefs());
 
   std::string url_to_classify =
       "http://www.example.com/simple.html";  // Hostname of this url must be

@@ -255,7 +255,7 @@ class CaptureModeDlpBrowserTest : public CaptureModeBrowserTest {
   // Sets up mock rules manager.
   void SetupDlpRulesManager() {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(), base::BindRepeating(&SetDlpRulesManager));
+        browser()->GetProfile(), base::BindRepeating(&SetDlpRulesManager));
     ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(CaptureModePolicyBrowserTest,
     const base::FilePath expected_location =
         skyvault_enabled_
             ? temp_dir.GetPath()
-            : DownloadPrefs::FromBrowserContext(browser()->profile())
+            : DownloadPrefs::FromBrowserContext(browser()->GetProfile())
                   ->GetDefaultDownloadDirectoryForProfile();
     // Wait for the file to be saved.
     EXPECT_TRUE(expected_location.IsParent(path_future.Get()));

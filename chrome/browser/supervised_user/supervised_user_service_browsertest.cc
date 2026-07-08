@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
   DisableParentalControls(*pref_service);
   EXPECT_EQ(WebFilterType::kDisabled,
             SupervisedUserUrlFilteringServiceFactory::GetForProfile(
-                browser()->profile())
+                browser()->GetProfile())
                 ->GetWebFilterType());
 
   EXPECT_TRUE(pref_service->FindPreference(prefs::kSupervisedUserManualHosts)

@@ -104,7 +104,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
   // Otherwise, returns the absolute file path.
   base::FilePath GetTestFile(const std::string& title, bool relative) {
     auto* drive_service = drive::DriveIntegrationServiceFactory::FindForProfile(
-        browser()->profile());
+        browser()->GetProfile());
     base::FilePath mount_path = drive_service->GetMountPointPath();
     base::FilePath file_path = mount_path.Append(title);
     if (!relative) {
@@ -120,7 +120,8 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
                               const std::string& title,
                               bool shared_with_me) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    drivefs::FakeDriveFs* fake = GetFakeDriveFsForProfile(browser()->profile());
+    drivefs::FakeDriveFs* fake =
+        GetFakeDriveFsForProfile(browser()->GetProfile());
 
     const base::FilePath& absolute_path =
         GetTestFile(title, /*relative=*/false);
@@ -164,14 +165,14 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     }
 
     auto& drivefs_delegate =
-        GetFakeDriveFsForProfile(browser()->profile())->delegate();
+        GetFakeDriveFsForProfile(browser()->GetProfile())->delegate();
     drivefs_delegate->OnSyncingStatusUpdate(syncing_status.Clone());
     drivefs_delegate.FlushForTesting();
   }
 
   void VerifyNotificationSize(size_t size) {
     base::RunLoop run_loop;
-    NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
+    NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetDisplayed(base::BindLambdaForTesting(
             [&run_loop, &size](std::set<std::string> displayed_notifications,
                                bool supports_synchronization) {

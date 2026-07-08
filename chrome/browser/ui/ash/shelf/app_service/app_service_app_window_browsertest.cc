@@ -477,7 +477,7 @@ class AppServiceAppWindowWebAppBrowserTest
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GetAppURL());
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
-    std::string app_id = web_app::test::InstallWebApp(browser()->profile(),
+    std::string app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
                                                       std::move(web_app_info));
     CreateWebAppWindow(app_id);
     return app_id;
@@ -490,7 +490,7 @@ class AppServiceAppWindowWebAppBrowserTest
   void CreateWebAppWindow(const std::string& app_id) const {
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
-    web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+    web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     navigation_observer.WaitForNavigationFinished();
   }
 
@@ -881,11 +881,11 @@ using AppServiceAppWindowSystemWebAppBrowserTest =
 
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowSystemWebAppBrowserTest,
                        SystemWebAppWindow) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   const std::string app_id = ash::kOsSettingsAppId;
-  web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
 
   auto instances = app_service_proxy_->InstanceRegistry().GetInstances(app_id);
   EXPECT_EQ(1u, instances.size());

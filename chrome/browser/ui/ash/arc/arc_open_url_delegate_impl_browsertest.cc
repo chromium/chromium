@@ -215,7 +215,7 @@ void TestOpenSettingFromArc(Browser* browser,
                             const GURL& expected_url,
                             bool expected_setting_window) {
   // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser->profile())
+  ash::SystemWebAppManager::GetForTest(browser->GetProfile())
       ->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -390,7 +390,7 @@ void TestAllAboutPages() {
 
 IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, TestOpenChromePage) {
   // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   TestAllOSSettingPages(GURL(ash::kChromeUIOSSettingsURL));

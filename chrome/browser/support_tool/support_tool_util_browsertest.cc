@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilTest, GetSupportToolHandler) {
 #endif
 
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
-      kCaseId, kEmail, kIssueDescription, kUploadId, browser()->profile(),
+      kCaseId, kEmail, kIssueDescription, kUploadId, browser()->GetProfile(),
       std::set<support_tool::DataCollectorType>(data_collectors.begin(),
                                                 data_collectors.end()));
   EXPECT_EQ(data_collectors.size() - excluded_data_collectors.size(),

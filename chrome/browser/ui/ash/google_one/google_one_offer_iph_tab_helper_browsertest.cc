@@ -69,11 +69,11 @@ class GoogleOneOfferIphTabHelperTest
     // called before our `SetUpOnMainThread` as login happens in the method,
     // i.e. profile is not available before it.
     ash::CustomizableTestEnvBrowserTestBase::SetUpOnMainThread();
-    CHECK(browser()->profile());
+    CHECK(browser()->GetProfile());
 
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(
-            browser()->profile());
+            browser()->GetProfile());
   }
 
  protected:
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest,
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker =
       static_cast<feature_engagement::test::MockTracker*>(
           feature_engagement::TrackerFactory::GetForBrowserContext(
-              browser()->profile()));
+              browser()->GetProfile()));
   EXPECT_CALL(
       *mock_tracker,
       NotifyEvent(testing::Eq(kIPHGoogleOneOfferNotificationDismissEventName)))
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest, NotificationDismiss) {
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker =
       static_cast<feature_engagement::test::MockTracker*>(
           feature_engagement::TrackerFactory::GetForBrowserContext(
-              browser()->profile()));
+              browser()->GetProfile()));
   EXPECT_CALL(
       *mock_tracker,
       NotifyEvent(testing::Eq(kIPHGoogleOneOfferNotificationGetPerkEventName)))

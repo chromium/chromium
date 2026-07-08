@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
   // Wait for the Feedback app to launch.
   navigation_observer.Wait();
   ash::BrowserDelegate* feedback_browser = FindSystemWebAppBrowser(
-      browser()->profile(), SystemWebAppType::OS_FEEDBACK,
+      browser()->GetProfile(), SystemWebAppType::OS_FEEDBACK,
       ash::BrowserType::kApp);
   EXPECT_TRUE(feedback_browser);
 }
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
   // Wait for the Shortcut Customization app to launch.
   navigation_observer.Wait();
   ash::BrowserDelegate* shortcut_customization_browser =
-      FindSystemWebAppBrowser(browser()->profile(),
+      FindSystemWebAppBrowser(browser()->GetProfile(),
                               SystemWebAppType::SHORTCUT_CUSTOMIZATION,
                               ash::BrowserType::kApp);
   EXPECT_TRUE(shortcut_customization_browser);
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   // Wait for the Shortcut Customization app to launch.
   navigation_observer.Wait();
   ash::BrowserDelegate* shortcut_customization_browser =
-      FindSystemWebAppBrowser(browser()->profile(),
+      FindSystemWebAppBrowser(browser()->GetProfile(),
                               SystemWebAppType::SHORTCUT_CUSTOMIZATION,
                               ash::BrowserType::kApp);
   EXPECT_TRUE(shortcut_customization_browser);

@@ -174,7 +174,7 @@ class SupervisedUserPendingStateNavigationTest
                                             "*.example.com"}}};
 
   void SetManualHost(const GURL& url, bool allowlist) {
-    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+    supervised_user_test_util::SetManualFilterForHost(browser()->GetProfile(),
                                                       url.GetHost(), allowlist);
   }
 

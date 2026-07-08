@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance()
-      ->GetForProfile(browser()->profile())
+      ->GetForProfile(browser()->GetProfile())
       ->StartRoutingTo(GetSessionEventHandler());
   // Wait for OnLanguageDetermined().
   GetTranslateDriverObserver()->WaitForLanguageDetermined();
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   RemoveLanguageDetectionObserver();
   // Stop Routing.
   sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance()
-      ->GetForProfile(browser()->profile())
+      ->GetForProfile(browser()->GetProfile())
       ->Stop();
 
   // Make sure that the prerender was activated when the main frame was

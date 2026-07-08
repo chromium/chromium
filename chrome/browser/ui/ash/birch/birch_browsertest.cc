@@ -275,7 +275,7 @@ class BirchBrowserTest : public InProcessBrowserTest {
 
   BirchKeyedService* GetBirchKeyedService() {
     return BirchKeyedServiceFactory::GetInstance()->GetService(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
  protected:

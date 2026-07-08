@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   histograms.ExpectBucketCount("Navigation.MainFrame.SiteEngagementLevel",
                                blink::mojom::EngagementLevel::NONE, 1);
 
-  site_engagement::SiteEngagementService::Get(browser()->profile())
+  site_engagement::SiteEngagementService::Get(browser()->GetProfile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);

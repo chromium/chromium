@@ -307,13 +307,13 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
 
   base::FilePath mounted_path;
   ASSERT_TRUE(client()->GetBaseStoragePath(&mounted_path));
-  ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
+  ASSERT_EQ(browser()->GetProfile()->GetPath().Append("drivefs"), mounted_path);
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   EXPECT_TRUE(service->is_enabled());
 
   DriveFsMountStatusWaiter observer{service};
@@ -390,7 +390,7 @@ class ProjectorClientManagedTest
   apps::Readiness GetAppReadiness(const webapps::AppId& app_id) {
     apps::Readiness readiness;
     bool app_found =
-        GetAppServiceProxy(browser()->profile())
+        GetAppServiceProxy(browser()->GetProfile())
             ->AppRegistryCache()
             .ForOneApp(app_id, [&readiness](const apps::AppUpdate& update) {
               readiness = update.Readiness();
@@ -402,7 +402,7 @@ class ProjectorClientManagedTest
   std::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
     std::optional<apps::IconKey> icon_key;
     bool app_found =
-        GetAppServiceProxy(browser()->profile())
+        GetAppServiceProxy(browser()->GetProfile())
             ->AppRegistryCache()
             .ForOneApp(app_id, [&icon_key](const apps::AppUpdate& update) {
               icon_key = update.IconKey();

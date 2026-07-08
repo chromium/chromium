@@ -579,9 +579,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSuccess) {
             GetChromeTranslateClient()->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(
-      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
-          ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(AcceptLanguagesServiceFactory::GetForBrowserContext(
+                   browser()->GetProfile())
+                   ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -831,9 +831,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
             GetChromeTranslateClient()->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(
-      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
-          ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(AcceptLanguagesServiceFactory::GetForBrowserContext(
+                   browser()->GetProfile())
+                   ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
                        PRE_TranslateSessionRestore) {
   SessionStartupPref pref(SessionStartupPref::LAST);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 

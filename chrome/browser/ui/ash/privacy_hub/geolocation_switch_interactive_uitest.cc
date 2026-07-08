@@ -74,7 +74,7 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
   }
 
   void SetBrowserPermission(ContentSetting setting) {
-    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
         ->SetContentSettingDefaultScope(
             GetURL(), GetURL(), ContentSettingsType::GEOLOCATION, setting);
   }

@@ -335,7 +335,7 @@ bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
 #if !BUILDFLAG(IS_ANDROID)
 void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(browser.profile());
+      SyncServiceFactory::GetForProfile(browser.GetProfile());
   if (!sync_service) {
     return;
   }
@@ -350,7 +350,7 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
             return SyncPassphraseDialogDecryptData(
                 SyncServiceFactory::GetForProfile(profile.get()), passphrase);
           },
-          browser.profile()->GetWeakPtr()));
+          browser.GetProfile()->GetWeakPtr()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

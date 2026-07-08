@@ -80,7 +80,7 @@ class LocalSyncTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Wait until the first sync cycle is completed.
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldHonorSelectedTypes) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Wait until the first sync cycle is completed.
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldHonorSelectedTypes) {
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldSupportCustomPassphrase) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Wait until the first sync cycle is completed.
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldSupportCustomPassphrase) {
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldReportNoLocalOnlyData) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Wait until the first sync cycle is completed.
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());

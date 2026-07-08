@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
                        MAYBE_InvalidDownloadsPath) {
   auto* download_prefs =
-      DownloadPrefs::FromBrowserContext(browser()->profile());
+      DownloadPrefs::FromBrowserContext(browser()->GetProfile());
   const base::FilePath removable_path =
       ash::CrosDisksClient::GetRemovableDiskMountPoint();
   const base::FilePath invalid_path =

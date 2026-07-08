@@ -151,9 +151,9 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     GURL host_url = GetURL(host);
     std::string cookie = base::StrCat({"cross-site=", host});
     ASSERT_TRUE(
-        content::SetCookie(browser()->profile(), host_url,
+        content::SetCookie(browser()->GetProfile(), host_url,
                            base::StrCat({cookie, ";SameSite=None;Secure"})));
-    ASSERT_THAT(content::GetCookies(browser()->profile(), host_url),
+    ASSERT_THAT(content::GetCookies(browser()->GetProfile(), host_url),
                 testing::HasSubstr(cookie));
   }
 
@@ -165,12 +165,12 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     net::CookiePartitionKey partition_key =
         net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
     ASSERT_TRUE(content::SetCookie(
-        browser()->profile(), host_url,
+        browser()->GetProfile(), host_url,
         base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
         net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
         &partition_key));
     ASSERT_THAT(content::GetCookies(
-                    browser()->profile(), host_url,
+                    browser()->GetProfile(), host_url,
                     net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
                     net::CookiePartitionKeyCollection(partition_key)),
                 testing::HasSubstr(cookie));
@@ -355,10 +355,10 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
 
   // Set a cookie on `kHostB` and `kHostC`.
   SetCrossSiteCookieOnHost(kHostB);
-  ASSERT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  ASSERT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             "cross-site=b.test");
   SetCrossSiteCookieOnHost(kHostC);
-  ASSERT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostC)),
+  ASSERT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostC)),
             "cross-site=c.test");
 
   const base::TimeDelta lifetime = base::Hours(24);
@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   SetCrossSiteCookieOnHost(kHostB);
 
   // Block cookies at origin in browser settings
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(GetURL(kHostB), GetURL(kHostB),
                                       ContentSettingsType::COOKIES,
                                       CONTENT_SETTING_BLOCK);
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_P(TopLevelStorageExemptionReasonMetricTest,
     case CookieSetMechanism::kBrowserInternal:
       for (const auto& name_value : cookie_name_value()) {
         ASSERT_TRUE(content::SetCookie(
-            browser()->profile(), GetURL(kHostB),
+            browser()->GetProfile(), GetURL(kHostB),
             base::StrCat({name_value, kSameSiteNoneSecure})));
       }
       break;
@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_P(TopLevelStorageExemptionReasonMetricTest,
     }
   }
 
-  ASSERT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+  ASSERT_EQ(content::GetCookies(browser()->GetProfile(), GetURL(kHostB)),
             expected_cookie_string());
 
   NavigateToPageWithFrame(kHostA);

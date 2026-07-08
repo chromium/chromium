@@ -207,7 +207,7 @@ class PolicyDataCollectorBrowserTestAsh
 IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
                        CollectPolicyValuesAndMetadata) {
   // PolicyDataCollector for testing.
-  PolicyDataCollector data_collector(browser()->profile());
+  PolicyDataCollector data_collector(browser()->GetProfile());
 
   // We will use `values` for mocking the policy values `policy_provider_` will
   // return.

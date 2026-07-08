@@ -70,17 +70,18 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp() {
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
 
-    app_id_ = *ash::GetAppIdForSystemWebApp(browser()->profile(),
+    app_id_ = *ash::GetAppIdForSystemWebApp(browser()->GetProfile(),
                                             ash::SystemWebAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
     PinAppWithIDToShelf(app_id_);
   }
 
   BrowserWindowInterface* LaunchApp() {
-    guest_os::LaunchTerminal(browser()->profile(), display::kInvalidDisplayId,
+    guest_os::LaunchTerminal(browser()->GetProfile(),
+                             display::kInvalidDisplayId,
                              crostini::DefaultContainerId());
     return Waiter::WaitForNewBrowser();
   }

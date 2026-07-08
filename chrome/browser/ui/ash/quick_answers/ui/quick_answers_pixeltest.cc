@@ -202,7 +202,7 @@ class QuickAnswersPixelTestBase
         quick_answers_ui_controller->GetReadWriteCardsUiController();
 
     quick_answers_ui_controller->CreateQuickAnswersViewForPixelTest(
-        browser()->profile(), kTestQuery, intent,
+        browser()->GetProfile(), kTestQuery, intent,
         {
             .title = kTestTitle,
             .design = GetDesign(GetParam()),

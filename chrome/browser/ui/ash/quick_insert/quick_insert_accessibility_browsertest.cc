@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 
   sm()->Call([this, &feature_tour]() {
     feature_tour.MaybeShowForFirstUse(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         ash::QuickInsertFeatureTour::EditorStatus::kEligible, base::DoNothing(),
         base::DoNothing());
   });

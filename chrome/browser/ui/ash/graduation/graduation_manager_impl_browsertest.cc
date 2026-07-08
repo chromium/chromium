@@ -74,7 +74,7 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
     logged_in_user_mixin_.LogInUser();
     SetMockClocksAndTaskRunner();
     WaitForTestSystemAppInstall();
-    WaitForAppRegistryCommands(browser()->profile());
+    WaitForAppRegistryCommands(browser()->GetProfile());
   }
 
   static void SetTimeNow(base::Time new_time_now) { time_now_ = new_time_now; }
@@ -124,7 +124,7 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
   apps::Readiness GetAppReadiness(const webapps::AppId& app_id) {
     apps::Readiness readiness;
     bool app_found =
-        GetAppServiceProxy(browser()->profile())
+        GetAppServiceProxy(browser()->GetProfile())
             ->AppRegistryCache()
             .ForOneApp(app_id, [&readiness](const apps::AppUpdate& update) {
               readiness = update.Readiness();
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenPolicyEnabled) {
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
 
   SetGraduationEnablement(false);
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
 
   EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenStartDateIsReached) {
 
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
   WaitForShelfItemAdd();
 
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(2));
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
   // Wait for the new shelf iteme to finish.
   WaitForShelfItemAdd();
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
 
   // Fast forward to the policy enablement end date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
 
   // Since this is the last day the app is available, the app should be pinned.
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyUnset) {
             GetAppReadiness(ash::kGraduationAppId));
 
   SetGraduationEnablement(true);
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
 
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyDisabled) {
             GetAppReadiness(ash::kGraduationAppId));
 
   SetGraduationEnablement(true);
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
 
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
   // Fast forward to one day past the policy enablement end date set in the
   // pre-test.
   AdvanceTimeBy(base::Days(2));
-  WaitForAppRegistryCommands(browser()->profile());
+  WaitForAppRegistryCommands(browser()->GetProfile());
   // Wait for the shelf item to finish being removed.
   WaitForShefItemRemoved();
 
@@ -392,7 +392,7 @@ class GraduationManagerWithConsumerUserTest
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
     WaitForTestSystemAppInstall();
-    WaitForAppRegistryCommands(browser()->profile());
+    WaitForAppRegistryCommands(browser()->GetProfile());
   }
 
  private:

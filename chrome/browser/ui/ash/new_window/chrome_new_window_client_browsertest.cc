@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/false,
       /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(GetLastActiveBrowser()->profile(), profile1);
+  EXPECT_EQ(GetLastActiveBrowser()->GetProfile(), profile1);
 
   // Login another user and make sure the current active user changes.
   CreateAndStartUserSession(
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/false,
       /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(GetLastActiveBrowser()->profile(), profile2);
+  EXPECT_EQ(GetLastActiveBrowser()->GetProfile(), profile2);
 
   // After activating |browser1|, the newly created window should be created
   // against |browser1|'s profile.
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/false,
       /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(GetLastActiveBrowser()->profile(), profile1);
+  EXPECT_EQ(GetLastActiveBrowser()->GetProfile(), profile1);
 
   // Test for incognito windows.
   // The newly created incognito window should be created against the current
@@ -109,14 +109,16 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   browser1->GetWindow()->Show();
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(GetLastActiveBrowser()->profile()->GetOriginalProfile(), profile1);
+  EXPECT_EQ(GetLastActiveBrowser()->GetProfile()->GetOriginalProfile(),
+            profile1);
 
   // The newly created incognito window should be created against the current
   // active |browser2|'s profile.
   browser2->GetWindow()->Show();
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(GetLastActiveBrowser()->profile()->GetOriginalProfile(), profile2);
+  EXPECT_EQ(GetLastActiveBrowser()->GetProfile()->GetOriginalProfile(),
+            profile2);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
@@ -136,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_TRUE(GetLastActiveBrowser()->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(GetLastActiveBrowser()->GetProfile()->IsIncognitoProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
@@ -155,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   Browser* incognito_browser = GetLastActiveBrowser();
-  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
 
   // After deactivating browsers, NewTab should open a new Incognito Tab only
   incognito_browser->GetWindow()->Deactivate();

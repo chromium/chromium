@@ -461,11 +461,11 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
   EXPECT_THAT(FetchLastTrustedVaultKeyVersionForProfile(
-                  browser()->profile(),
+                  browser()->GetProfile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               Eq(kEncryptionKeyVersion));
 }
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
 }
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, ElementsAreArray(kEncryptionKeys));
 }
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EnclaveManager* const enclave_manager =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   EnclaveKeysWaiter enclave_keys_waiter(enclave_manager);
   const unsigned initial_count = enclave_manager->store_keys_count();
 
@@ -681,13 +681,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // No security domain client for passkeys, so no keys could have been set.
   EXPECT_EQ(
-      TrustedVaultServiceFactory::GetForProfile(browser()->profile())
+      TrustedVaultServiceFactory::GetForProfile(browser()->GetProfile())
           ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kPasskeys),
       nullptr);
 
   // No keys should have been set for chromesync either.
   EXPECT_THAT(FetchTrustedVaultKeysForProfile(
-                  browser()->profile(),
+                  browser()->GetProfile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
 }
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, IsEmpty());
 }
@@ -771,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, IsEmpty());
 }
@@ -807,11 +807,11 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
   EXPECT_THAT(FetchLastTrustedVaultKeyVersionForProfile(
-                  browser()->profile(),
+                  browser()->GetProfile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               Eq(kEncryptionKeyVersion));
 }
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   EXPECT_THAT(actual_keys, ElementsAre(kEncryptionKey));
 }
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
 
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), initial_url);
+      OpenURLOffTheRecord(browser()->GetProfile(), initial_url);
   content::WebContents* incognito_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   // In incognito, the keys should actually be ignored, never forwarded to
   // TrustedVaultService.
@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
 
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), initial_url);
+      OpenURLOffTheRecord(browser()->GetProfile(), initial_url);
   content::WebContents* incognito_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kChromeSync,
+          browser()->GetProfile(), trusted_vault::SecurityDomainId::kChromeSync,
           FakeAccount());
   // In incognito, the keys should actually be ignored, never forwarded to
   // TrustedVaultService.
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
 
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), initial_url);
+      OpenURLOffTheRecord(browser()->GetProfile(), initial_url);
   content::WebContents* incognito_web_contents =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   EXPECT_TRUE(frame_deleted_observer.WaitUntilDeleted());
   EXPECT_EQ(console_observer.messages().size(), 0u);
   EXPECT_THAT(FetchTrustedVaultKeysForProfile(
-                  browser()->profile(),
+                  browser()->GetProfile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
 }
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
   testing::NiceMock<MockTrustedVaultClientObserver> mock_observer;
-  TrustedVaultServiceFactory::GetForProfile(browser()->profile())
+  TrustedVaultServiceFactory::GetForProfile(browser()->GetProfile())
       ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
       ->AddObserver(&mock_observer);
   EXPECT_CALL(
@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   // indefinitely until it times out.
 #if !BUILDFLAG(IS_ANDROID)
   signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       "testusername", GetConsentLevel());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1148,7 +1148,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   // indefinitely until it times out.
 #if !BUILDFLAG(IS_ANDROID)
   signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       "testusername", GetConsentLevel());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
