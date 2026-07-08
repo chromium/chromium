@@ -73,9 +73,7 @@ DisplayWebView::DisplayWebView(
                    /*current_task_runner=*/nullptr),
       overlay_processor_webview_(overlay_processor_webview),
       frame_sink_manager_(frame_sink_manager),
-      root_frame_sink_(root_frame_sink),
-      use_new_invalidate_heuristic_(
-          features::UseWebViewNewInvalidateHeuristic()) {
+      root_frame_sink_(root_frame_sink) {
   if (overlay_processor_webview_) {
     frame_sink_manager_observation_.Observe(frame_sink_manager);
   }
@@ -94,12 +92,10 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
         frame_sink_manager_->surface_manager()->GetSurfaceForId(surface_id);
     DCHECK(surface);
 
-    if (use_new_invalidate_heuristic_) {
-      // For overlays we are going to display this frame immediately, so commit
-      // it.
-      surface->CommitFramesRecursively(
-          [](const viz::SurfaceId&, const viz::BeginFrameId&) { return true; });
-    }
+    // For overlays we are going to display this frame immediately, so commit
+    // it.
+    surface->CommitFramesRecursively(
+        [](const viz::SurfaceId&, const viz::BeginFrameId&) { return true; });
 
     // TODO(vasilyt): We don't need full aggregation here as we don't need
     // aggregated frame.

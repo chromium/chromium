@@ -205,7 +205,6 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
   const bool viz_frame_submission_;
-  const bool use_new_invalidate_heuristic_;
   bool expect_context_loss_ = false;
 
   // Initialized in ctor and never changes, so it's safe to access from both
@@ -224,9 +223,7 @@ HardwareRenderer::OnViz::OnViz(
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
-      viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()),
-      use_new_invalidate_heuristic_(
-          ::features::UseWebViewNewInvalidateHeuristic()) {
+      viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -388,72 +385,69 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   const auto& local_surface_id =
       without_gpu_->SubmitRootCompositorFrame(std::move(frame));
 
-  if (use_new_invalidate_heuristic_) {
-    auto root_surface_id =
-        viz::SurfaceId(without_gpu_->root_frame_sink_id(), local_surface_id);
+  auto root_surface_id =
+      viz::SurfaceId(without_gpu_->root_frame_sink_id(), local_surface_id);
 
-    const auto& current_frame_id = child_frame->begin_frame_args.frame_id;
-    const auto& root_frame_sink_id = root_surface_id.frame_sink_id();
-    const auto& child_frame_sink_id = child_surface_id_.frame_sink_id();
+  const auto& current_frame_id = child_frame->begin_frame_args.frame_id;
+  const auto& root_frame_sink_id = root_surface_id.frame_sink_id();
+  const auto& child_frame_sink_id = child_surface_id_.frame_sink_id();
 
-    // Each OnDraw on UI we get new ChildFrame. Without OnDraw we can't modify
-    // contents of the webview or it will break HWUI damage tracking, so only
-    // commit if the frame is new.
-    const bool commit_child_frames = !child_frame->rendered;
+  // Each OnDraw on UI we get new ChildFrame. Without OnDraw we can't modify
+  // contents of the webview or it will break HWUI damage tracking, so only
+  // commit if the frame is new.
+  const bool commit_child_frames = !child_frame->rendered;
 
-    base::flat_set<viz::SurfaceId> manual_surfaces;
-    auto commit_predicate = [&](const viz::SurfaceId& surface_id,
-                                const viz::BeginFrameId& frame_id) {
-      const bool is_root_surface =
-          surface_id.frame_sink_id() == root_frame_sink_id;
-      const bool is_main_renderer_surface =
-          surface_id.frame_sink_id() == child_frame_sink_id;
+  base::flat_set<viz::SurfaceId> manual_surfaces;
+  auto commit_predicate = [&](const viz::SurfaceId& surface_id,
+                              const viz::BeginFrameId& frame_id) {
+    const bool is_root_surface =
+        surface_id.frame_sink_id() == root_frame_sink_id;
+    const bool is_main_renderer_surface =
+        surface_id.frame_sink_id() == child_frame_sink_id;
 
-      // If we have uncommitted main renderer frame, `commit_child_frames`
-      // must be true.
-      CHECK(!is_main_renderer_surface || commit_child_frames);
+    // If we have uncommitted main renderer frame, `commit_child_frames`
+    // must be true.
+    CHECK(!is_main_renderer_surface || commit_child_frames);
 
-      if (!commit_child_frames) {
-        // Commit only root frame, all child surfaces can be committed only
-        // if we did have Draw on UI thread.
-        return is_root_surface;
-      }
+    if (!commit_child_frames) {
+      // Commit only root frame, all child surfaces can be committed only
+      // if we did have Draw on UI thread.
+      return is_root_surface;
+    }
 
-      // Always commit frame from different begin frame sources, because we
-      // can't order with them.
-      if (frame_id.source_id != current_frame_id.source_id) {
-        // We always should have single source_id except for the manual
-        // acks.
-        DCHECK_EQ(frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
+    // Always commit frame from different begin frame sources, because we
+    // can't order with them.
+    if (frame_id.source_id != current_frame_id.source_id) {
+      // We always should have single source_id except for the manual
+      // acks.
+      DCHECK_EQ(frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
 
-        // For manual acks commit only one frame at time to avoid excessive
-        // frame drops.
-        auto [_, inserted] = manual_surfaces.insert(surface_id);
-        return inserted;
-      }
+      // For manual acks commit only one frame at time to avoid excessive
+      // frame drops.
+      auto [_, inserted] = manual_surfaces.insert(surface_id);
+      return inserted;
+    }
 
-      // Commit all frames that are older than current one.
-      if (frame_id.sequence_number < current_frame_id.sequence_number) {
-        return true;
-      }
+    // Commit all frames that are older than current one.
+    if (frame_id.sequence_number < current_frame_id.sequence_number) {
+      return true;
+    }
 
-      // All clients except main renderer and root surface are frame behind.
-      const bool is_frame_behind =
-          !is_main_renderer_surface && !is_root_surface;
+    // All clients except main renderer and root surface are frame behind.
+    const bool is_frame_behind = !is_main_renderer_surface && !is_root_surface;
 
-      // If this surface is not frame behind, commit it for current frame
-      // too.
-      if (!is_frame_behind &&
-          frame_id.sequence_number == current_frame_id.sequence_number) {
-        return true;
-      }
+    // If this surface is not frame behind, commit it for current frame
+    // too.
+    if (!is_frame_behind &&
+        frame_id.sequence_number == current_frame_id.sequence_number) {
+      return true;
+    }
 
-      return false;
-    };
+    return false;
+  };
 
-    GetFrameSinkManager()->surface_manager()->CommitFramesInRangeRecursively(
-        viz::SurfaceRange(root_surface_id), commit_predicate);
-  }
+  GetFrameSinkManager()->surface_manager()->CommitFramesInRangeRecursively(
+      viz::SurfaceRange(root_surface_id), commit_predicate);
 
   if (root_local_surface_id_ != local_surface_id) {
     root_local_surface_id_ = local_surface_id;

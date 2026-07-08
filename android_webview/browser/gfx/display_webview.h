@@ -63,8 +63,6 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
 
   base::ScopedObservation<viz::FrameSinkManagerImpl, viz::FrameSinkObserver>
       frame_sink_manager_observation_{this};
-
-  const bool use_new_invalidate_heuristic_;
 };
 
 }  // namespace android_webview

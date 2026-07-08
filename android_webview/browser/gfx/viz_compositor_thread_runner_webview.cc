@@ -71,11 +71,10 @@ void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
 
   auto init_params = viz::FrameSinkManagerImpl::InitParams();
 
-  if (::features::UseWebViewNewInvalidateHeuristic()) {
-    // HWUI has 2 frames pipelineing and we need another one because we force
-    // client to be frame behind.
-    init_params.max_uncommitted_frames = 3;
-  }
+  // HWUI has 2 frames pipelineing and we need another one because we force
+  // client to be frame behind.
+  init_params.max_uncommitted_frames = 3;
+
   init_params.use_direct_receiver = base::FeatureList::IsEnabled(
       android_webview::features::
           kWebViewVizDirectCompositorThreadIpcFrameSinkManager);

@@ -73,10 +73,6 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
 
   const raw_ptr<RootFrameSink> root_frame_sink_;
 
-  // This count how many times specific sink damaged display. It's incremented
-  // in OnDisplayDamaged and decremented in DidSwapBuffers.
-  std::map<viz::FrameSinkId, int> damaged_frames_;
-
   // Due to destruction order in viz::Display this might be not safe to use in
   // destructor of this class.
   const raw_ptr<OverlaysInfoProvider, DanglingUntriaged>
@@ -86,8 +82,6 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
       surface_manager_observation_{this};
   base::ScopedObservation<viz::FrameSinkManagerImpl, viz::FrameSinkObserver>
       frame_sink_manager_observation_{this};
-
-  const bool use_new_invalidate_heuristic_;
 
   THREAD_CHECKER(thread_checker_);
 };

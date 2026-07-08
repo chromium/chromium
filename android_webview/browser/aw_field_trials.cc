@@ -195,10 +195,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   aw_feature_overrides.DisableFeature(::features::kPeriodicBackgroundSync);
 
-  // DISABLED_TEMPORARY: Disabled until viz scheduling can be improved.
-  aw_feature_overrides.DisableFeature(
-      ::features::kUseSurfaceLayerForVideoDefault);
-
   // Disable dr-dc on webview.
   aw_feature_overrides.DisableFeature(::features::kEnableDrDc);
 
