@@ -163,6 +163,8 @@ ci.builder(
                     "--use-upstream-wpt",
                 ],
                 swarming = targets.swarming(
+                    hard_timeout_sec = 10800,
+                    io_timeout_sec = 3600,
                     shards = 36,
                 ),
             ),
