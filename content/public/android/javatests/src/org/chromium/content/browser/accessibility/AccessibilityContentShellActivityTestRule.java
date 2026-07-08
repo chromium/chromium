@@ -25,6 +25,8 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
@@ -34,6 +36,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.io.File;
@@ -78,8 +81,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
     private @Nullable CountDownLatch mEventLatch;
 
+    private final EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
     public AccessibilityContentShellActivityTestRule() {
         super();
+    }
+
+    @Override
+    public Statement apply(final Statement base, final Description description) {
+        return super.apply(mTestServerRule.apply(base, description), description);
     }
 
     /** Wait until the event tracked by prepareToWaitForNextEvent() has been received. */
@@ -112,7 +122,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /* @Before */
     protected void setupTestFromFile(String file) {
         // Default behavior: ignore trivial TYPE_WINDOW_CONTENT_CHANGED events.
-        setupTestFromFile(file, /* shouldFilterTrivialEvents= */ true);
+        setupTestFromFile(file, /* shouldFilterTrivialEvents= */ true, /* testServer= */ false);
     }
 
     /**
@@ -121,30 +131,39 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * <p>This method replaces the usual setUp() method annotated with @Before because we wish to
      * load different data with each test, but the process is the same for all tests.
      *
-     * @param file                          Test file URL, including path and name
-     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
+     * @param file Test file URL, including path and name
+     * @param shouldFilterTrivialEvents Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
+     * @param testServer Whether to use a test server to load the file
      */
     /* @Before */
-    protected void setupTestFromFile(String file, boolean shouldFilterTrivialEvents) {
+    protected void setupTestFromFile(
+            String file, boolean shouldFilterTrivialEvents, boolean testServer) {
         // Verify file exists before beginning the test.
         verifyInputFile(file);
 
-        // 1. Launch content shell with null first to bring up the container view
-        launchContentShellWithUrl(null);
+        // 1. Launch content shell with about:blank first to bring up the container view
+        launchContentShellWithUrl("about:blank");
         waitForActiveShellToBeDoneLoading();
 
         // 2. Setup the test framework and register the tracker early
-        setupTestFramework(shouldFilterTrivialEvents);
+        setupTestFrameworkForBlankPage(shouldFilterTrivialEvents);
         setAccessibilityDelegate();
 
         // To prevent flakes, do not disable accessibility mid tests.
         mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         // 3. Load the actual target test file URL now that the tracker is active and listening
-        String targetUrl = UrlUtils.getIsolatedTestFileUrl(file);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity().getActiveShell().loadUrl(targetUrl);
-        });
+        String targetUrl;
+        if (testServer) {
+            targetUrl = mTestServerRule.getServer().getURL("/" + file);
+        } else {
+            targetUrl = UrlUtils.getIsolatedTestFileUrl(file);
+        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getActivity().getActiveShell().loadUrl(targetUrl);
+                });
+
         waitForActiveShellToBeDoneLoading();
 
         // Wait for the new page's native BrowserAccessibilityManager to be connected!
@@ -188,11 +207,29 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         Map<Integer, Integer> testingThrottleDelays = new HashMap<>();
         mWcax.setThrottleDelayForTesting(testingThrottleDelays);
 
-
         mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
         mWcax.setAccessibilityTrackerForTesting(mTracker);
         mNodeProvider = getAccessibilityNodeProvider();
+    }
 
+    public void setupTestFrameworkForBlankPage(boolean shouldFilterTrivialEvents) {
+        mockWebContentsAccessibilityImpl();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setEventMaskForTesting(EVENT_TYPE_MASK_ALL);
+                });
+
+        mWcax = getWebContentsAccessibility();
+
+        // Empty map to imply no throttle delay for events.
+        Map<Integer, Integer> testingThrottleDelays = new HashMap<>();
+        mWcax.setThrottleDelayForTesting(testingThrottleDelays);
+
+        mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
+        mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 
     public void setupTestFrameworkForBasicMode(boolean includeEventMaskByDefault) {
@@ -211,7 +248,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
         mNodeProvider = getAccessibilityNodeProvider();
-
     }
 
     public void setupTestFrameworkForFormControlsMode(boolean includeEventMaskByDefault) {
@@ -231,7 +267,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
         mNodeProvider = getAccessibilityNodeProvider();
-
     }
 
     public void setupTestFrameworkForCompleteMode(boolean includeEventMaskByDefault) {
@@ -251,7 +286,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
         mNodeProvider = getAccessibilityNodeProvider();
-
     }
 
     public void mockWebContentsAccessibilityImpl() {
