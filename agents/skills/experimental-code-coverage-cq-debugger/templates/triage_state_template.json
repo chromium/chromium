@@ -1,0 +1,20 @@
+{
+  "original_cl": null,
+  "modified_files": null,
+  "target_files": null,
+  "builders_of_concern": null,
+  "test_suites": null,
+  "control_builds": {},
+  "fix_builds": {},
+  "metrics_of_concern": null,
+  "fix_cl": null,
+  "control_cl": null,
+  "fix_branch_name": null,
+  "control_branch_name": null,
+  "iteration": 1,
+  "rca": {
+    "subsystem": null,
+    "failure_mechanism": null,
+    "fix_rationale": null
+  }
+}

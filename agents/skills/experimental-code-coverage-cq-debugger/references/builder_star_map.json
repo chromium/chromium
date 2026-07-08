@@ -1,0 +1,12 @@
+{
+  "linux-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.linux.star",
+  "mac-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.mac.star",
+  "ios-simulator": "infra/config/subprojects/chromium/try/tryserver.chromium.mac.star",
+  "ios-simulator-full-configs": "infra/config/subprojects/chromium/try/tryserver.chromium.mac.star",
+  "win-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.win.star",
+  "linux-chromeos-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.chromiumos.star",
+  "android-arm64-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.android.star",
+  "android-x86-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.android.star",
+  "android-12-x64-rel": "infra/config/subprojects/chromium/try/tryserver.chromium.android.star",
+  "android-cronet-x64-dbg-14-tests": "infra/config/subprojects/chromium/try/tryserver.chromium.android.star"
+}
