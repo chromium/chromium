@@ -75,7 +75,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 @synthesize targetIdentityEmail = _targetIdentityEmail;
 
 - (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _contextStyle = contextStyle;
   }

@@ -17,6 +17,10 @@
 - (instancetype)initWithFeatureHighlightItem:(BestFeaturesItem*)bestFeaturesItem
     NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_BEST_FEATURES_UI_FEATURE_HIGHLIGHT_ANIMATED_VIEW_CONTROLLER_H_

@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/scoped_refptr.h"
-#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
@@ -73,11 +71,6 @@ enum class ActionButtonsVisibility {
 // +--------------------------------+
 @interface PromoStyleViewController
     : ButtonStackViewController <UITextViewDelegate>
-
-- (instancetype)initWithTaskRunner:
-    (scoped_refptr<base::SequencedTaskRunner>)taskRunner;
-
-- (instancetype)init;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

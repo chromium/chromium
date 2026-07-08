@@ -134,12 +134,7 @@ UIImage* ArrowDownImage() {
 
 #pragma mark - Public
 
-// TODO(crbug.com/531600312): Remove SequencedTaskRunner and
-// initWithTaskRunner:.
-- (instancetype)initWithTaskRunner:
-    (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
-  ButtonStackConfiguration* configuration =
-      [[ButtonStackConfiguration alloc] init];
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration {
   self = [super initWithConfiguration:configuration];
   if (self) {
     self.actionDelegate = self;
@@ -150,12 +145,7 @@ UIImage* ArrowDownImage() {
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
   }
-
   return self;
-}
-
-- (instancetype)init {
-  return [self initWithTaskRunner:nil];
 }
 
 - (UIFontTextStyle)titleLabelFontTextStyle {

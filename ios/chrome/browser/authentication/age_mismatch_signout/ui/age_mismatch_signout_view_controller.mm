@@ -44,7 +44,7 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 }
 
 - (instancetype)initWithMode:(AgeMismatchPromptMode)mode {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _mode = mode;
     _showStaySignedOutButton = YES;

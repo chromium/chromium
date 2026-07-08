@@ -20,6 +20,8 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
 
 // Adds a spinner on the screen and blocks all UI interactions.
 - (void)blockUI;

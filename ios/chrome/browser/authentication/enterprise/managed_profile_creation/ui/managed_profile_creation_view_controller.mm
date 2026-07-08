@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
                      hostedDomain:(NSString*)hostedDomain {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _userEmail = userEmail;
     _hostedDomain = hostedDomain;

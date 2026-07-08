@@ -18,12 +18,6 @@ NSString* const kConsentViewControllerIdentifier =
 
 @implementation ConsentViewController
 
-#pragma mark - Initialization
-
-- (instancetype)init {
-  return [super initWithTaskRunner:nullptr];
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {

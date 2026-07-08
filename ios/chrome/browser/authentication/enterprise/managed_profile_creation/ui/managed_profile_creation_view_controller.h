@@ -47,6 +47,8 @@ enum class ManagedAccountSigninMode;
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
 
 @end
 

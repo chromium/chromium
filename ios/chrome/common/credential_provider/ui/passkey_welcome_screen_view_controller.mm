@@ -71,7 +71,7 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
            primaryButtonAction:
                (webauthn::PasskeyWelcomeScreenAction)primaryButtonAction
                        strings:(PasskeyWelcomeScreenStrings*)strings {
-  self = [super initWithTaskRunner:nullptr];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;

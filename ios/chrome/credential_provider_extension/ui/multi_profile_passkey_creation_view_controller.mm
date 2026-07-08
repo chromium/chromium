@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 
+#import "base/check.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -109,7 +110,7 @@ NSAttributedString* AsAttributedString(NSString* text,
                    delegate:
                        (id<MultiProfilePasskeyCreationViewControllerDelegate>)
                            delegate {
-  self = [super initWithTaskRunner:nullptr];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _userEmail = userEmail;
     _passkeyRequestDetails = passkeyRequestDetails;

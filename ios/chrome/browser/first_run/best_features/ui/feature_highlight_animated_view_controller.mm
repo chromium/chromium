@@ -23,7 +23,7 @@
 
 - (instancetype)initWithFeatureHighlightItem:
     (BestFeaturesItem*)bestFeaturesItem {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _bestFeaturesItem = bestFeaturesItem;
   }

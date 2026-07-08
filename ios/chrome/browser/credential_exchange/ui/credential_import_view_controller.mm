@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
 
+#import "base/check_op.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
