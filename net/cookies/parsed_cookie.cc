@@ -583,7 +583,7 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
     return;
   }
 
-  for (int pair_num = 0; it != end; ++pair_num) {
+  for (size_t pair_num = 0; it != end; ++pair_num) {
     std::pair<std::string, std::string> pair;
 
     std::string_view::iterator token_start, token_end;
