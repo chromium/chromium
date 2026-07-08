@@ -526,6 +526,7 @@ if (current_toolchain == default_toolchain) {
 
     if (is_chrome_branded) {
       sources += [
+        "google_chrome/fast_forward_circle_spark.icon",
         "google_chrome/google_agentspace_monochrome_logo.icon",
         "google_chrome/google_agentspace_monochrome_logo_25.icon",
         "google_chrome/google_calendar.icon",

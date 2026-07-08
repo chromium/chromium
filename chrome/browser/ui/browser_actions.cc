@@ -2075,7 +2075,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 bwi))
             .SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kPlayCircleSparkIcon
+                vector_icons::kFastForwardCircleSparkIcon
 #else
                 features::IsRoundedIconsEnabled()
                     ? vector_icons::kPlayArrowIcon
