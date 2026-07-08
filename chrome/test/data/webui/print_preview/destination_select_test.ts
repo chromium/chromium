@@ -6,6 +6,7 @@ import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getSelectDropdownBackground, IconsetMap} from 'chrome://print/print_preview.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -52,11 +53,16 @@ suite('DestinationSelectTest', function() {
     const selectEl =
         destinationSelect.shadowRoot.querySelector<HTMLSelectElement>(
             '.md-select')!;
-    compareIcon(selectEl, 'print');
+    const printIcon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'print-filled' :
+        'print-old';
+    compareIcon(selectEl, printIcon);
 
     // Select a destination with the enterprise printer icon.
     await selectOption(destinationSelect, `ID4/local/`);
-    const enterpriseIcon = 'business';
+    const enterpriseIcon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'domain' :
+        'business-old';
     compareIcon(selectEl, enterpriseIcon);
 
     // Update destination.

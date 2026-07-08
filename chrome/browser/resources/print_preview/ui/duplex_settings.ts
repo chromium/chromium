@@ -122,8 +122,8 @@ export class PrintPreviewDuplexSettingsElement extends
   }
 
   protected updateBackgroundImages_() {
-    const icon =
-        this.getSettingValue('duplexShortEdge') ? 'short-edge' : 'long-edge';
+    const icon = this.getSettingValue('duplexShortEdge') ? 'short-edge-custom' :
+                                                           'long-edge-custom';
     const iconset = IconsetMap.getInstance().get('print-preview');
     assert(iconset);
     this.backgroundImages_ = getSelectDropdownBackground(iconset, icon, this);
