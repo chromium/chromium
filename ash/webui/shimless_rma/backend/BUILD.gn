@@ -90,6 +90,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/qr_code_generator",
+    "//components/session_manager/core",
+    "//components/session_manager/test:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//content/test:test_support",
