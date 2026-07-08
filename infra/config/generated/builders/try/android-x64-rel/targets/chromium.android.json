@@ -3990,7 +3990,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "module_name": "//android_webview/test:trichrome_webview_wpt_64",
+        "module_name": "//android_webview/test:system_webview_wpt_64",
         "module_scheme": "webtest",
         "name": "android_webview_wpt_tests",
         "resultdb": {
@@ -4021,8 +4021,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
-        "test": "trichrome_webview_wpt_64",
-        "test_id_prefix": "ninja://android_webview/test:trichrome_webview_wpt_64/"
+        "test": "system_webview_wpt_64",
+        "test_id_prefix": "ninja://android_webview/test:system_webview_wpt_64/"
       },
       {
         "args": [

@@ -18,7 +18,7 @@ following targets:
 
 ```bash
 autoninja -C out/Default chrome_public_wpt        # For testing with Chrome Android
-autoninja -C out/Default trichrome_webview_wpt_64 # For testing with WebView
+autoninja -C out/Default system_webview_wpt_64    # For testing with WebView
 ```
 
 ## Running the Tests

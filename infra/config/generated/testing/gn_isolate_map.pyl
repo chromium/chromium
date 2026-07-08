@@ -1984,6 +1984,16 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "system_webview_wpt_64": {
+    "label": "//android_webview/test:system_webview_wpt_64",
+    "type": "generated_script",
+    "module_scheme": "webtest",
+    "skip_usage_check": True,
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "telemetry_gpu_integration_test": {
     "label": "//chrome/test:telemetry_gpu_integration_test",
     "type": "generated_script",
@@ -2098,16 +2108,6 @@
   "traffic_annotation_proto": {
     "label": "//chrome/browser/privacy:traffic_annotation_proto",
     "type": "additional_compile_target",
-  },
-  "trichrome_webview_wpt_64": {
-    "label": "//android_webview/test:trichrome_webview_wpt_64",
-    "type": "generated_script",
-    "module_scheme": "webtest",
-    "skip_usage_check": True,
-    "args": [
-      "--results-directory",
-      "${ISOLATED_OUTDIR}",
-    ],
   },
   "ui_android_unittests": {
     "label": "//ui/android:ui_android_unittests",

@@ -2226,8 +2226,8 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "trichrome_webview_wpt_64",
-    label = "//android_webview/test:trichrome_webview_wpt_64",
+    name = "system_webview_wpt_64",
+    label = "//android_webview/test:system_webview_wpt_64",
     # All references have been moved to starlark
     skip_usage_check = True,
     results_handler = "layout tests",
