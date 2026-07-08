@@ -97,7 +97,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"  // nogncheck
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)

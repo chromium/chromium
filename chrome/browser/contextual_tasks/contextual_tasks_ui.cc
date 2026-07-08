@@ -108,10 +108,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"  // nogncheck
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #endif
 
