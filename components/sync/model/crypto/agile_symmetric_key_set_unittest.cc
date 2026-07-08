@@ -9,7 +9,7 @@
 
 #include "base/base64.h"
 #include "components/sync/model/crypto/agile_symmetric_key.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/model/crypto/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

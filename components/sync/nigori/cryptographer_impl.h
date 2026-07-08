@@ -12,9 +12,9 @@
 
 #include "base/containers/span.h"
 #include "components/sync/engine/cryptographer.h"
+#include "components/sync/model/crypto/key_derivation_params.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
 #include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 
 namespace sync_pb {

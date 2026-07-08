@@ -12,12 +12,8 @@ static_library("nigori") {
     "cross_user_sharing_public_private_key_pair.h",
     "cryptographer_impl.cc",
     "cryptographer_impl.h",
-    "key_derivation_params.cc",
-    "key_derivation_params.h",
     "keystore_keys_cryptographer.cc",
     "keystore_keys_cryptographer.h",
-    "nigori.cc",
-    "nigori.h",
     "nigori_data_type_processor.cc",
     "nigori_data_type_processor.h",
     "nigori_key_bag.cc",
@@ -47,6 +43,7 @@ static_library("nigori") {
     "//components/sync/base",
     "//components/sync/engine",
     "//components/sync/model",
+    "//components/sync/model/crypto",
     "//components/sync/protocol",
   ]
 

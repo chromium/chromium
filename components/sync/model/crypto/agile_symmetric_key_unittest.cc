@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/model/crypto/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

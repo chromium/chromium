@@ -15,7 +15,7 @@
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
-#include "components/sync/nigori/key_derivation_params.h"
+#include "components/sync/model/crypto/key_derivation_params.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_storage.h"

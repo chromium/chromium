@@ -13,7 +13,7 @@
 #include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/model/crypto/nigori.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
 

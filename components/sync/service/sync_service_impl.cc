@@ -81,7 +81,7 @@
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/sync/android/jni_headers/ExplicitPassphrasePlatformClient_jni.h"
 #include "components/sync/android/sync_service_android_bridge.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/model/crypto/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 

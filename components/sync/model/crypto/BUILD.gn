@@ -8,6 +8,10 @@ source_set("crypto") {
     "agile_symmetric_key.h",
     "agile_symmetric_key_set.cc",
     "agile_symmetric_key_set.h",
+    "key_derivation_params.cc",
+    "key_derivation_params.h",
+    "nigori.cc",
+    "nigori.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -19,6 +23,6 @@ source_set("crypto") {
 
   deps = [
     "//base",
-    "//components/sync/nigori",
+    "//components/sync/base",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_
-#define COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_
+#ifndef COMPONENTS_SYNC_MODEL_CRYPTO_KEY_DERIVATION_PARAMS_H_
+#define COMPONENTS_SYNC_MODEL_CRYPTO_KEY_DERIVATION_PARAMS_H_
 
 #include <string>
 
@@ -36,4 +36,4 @@ class KeyDerivationParams {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_
+#endif  // COMPONENTS_SYNC_MODEL_CRYPTO_KEY_DERIVATION_PARAMS_H_

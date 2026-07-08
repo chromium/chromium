@@ -19,7 +19,7 @@
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/model/crypto/nigori.h"
 #include "components/sync/nigori/required_passphrase_verifier_impl.h"
 #include "components/sync/test/mock_sync_engine.h"
 #include "components/sync/test/sync_service_crypto_test_utils.h"

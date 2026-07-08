@@ -42,7 +42,7 @@
 #include "components/sync/base/sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/nigori/key_derivation_params.h"
+#include "components/sync/model/crypto/key_derivation_params.h"
 #include "components/sync/nigori/required_passphrase_verifier_impl.h"
 #include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/sync_service_observer.h"
