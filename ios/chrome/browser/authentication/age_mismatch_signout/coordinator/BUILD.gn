@@ -70,7 +70,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/common/ui/promo_style",
     "//ios/web/common:web_view_creation_util",
-    "//ios/web/web_state:web_view_internal_creation_util",
   ]
 }
 

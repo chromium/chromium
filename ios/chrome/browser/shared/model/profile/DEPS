@@ -2,6 +2,11 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
-  "+ios/web/webui",
   # keep-sorted end
 ]
+specific_include_rules = {
+  # TODO(crbug.com/41259428): Remove this exception.
+  "^profile_ios\\.mm$": [
+    "+ios/web/webui",
+  ],
+}

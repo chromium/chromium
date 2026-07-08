@@ -27,8 +27,16 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
-  "+ios/web/find_in_page/find_in_page_java_script_feature.h",
-  "+ios/web/js_messaging/java_script_feature_manager.h",
-  "+ios/web/util/content_type_util.h",
   # keep-sorted end
 ]
+
+# TODO(crbug.com/532174813): Remove usage of //ios/web internals.
+specific_include_rules = {
+  "^gemini_browser_agent_unittest\\.mm$" : [
+    "+ios/web/find_in_page/find_in_page_java_script_feature.h",
+    "+ios/web/js_messaging/java_script_feature_manager.h",
+  ],
+  "^gemini_service_impl\\.mm$" : [
+    "+ios/web/util/content_type_util.h",
+  ]
+}

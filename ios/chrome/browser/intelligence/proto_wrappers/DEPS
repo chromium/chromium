@@ -1,7 +1,14 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
-  "+ios/web/find_in_page/find_in_page_java_script_feature.h",
-  "+ios/web/util/content_type_util.h",
   # keep-sorted end
 ]
+specific_include_rules = {
+  # TODO(crbug.com/532174813): Remove usage of //ios/web internals.
+  "^page_context_utils\\.mm$" : [
+    "+ios/web/util/content_type_util.h",
+  ],
+  "^page_context_wrapper(_unittest)?\\.mm$" : [
+    "+ios/web/find_in_page/find_in_page_java_script_feature.h",
+  ],
+}

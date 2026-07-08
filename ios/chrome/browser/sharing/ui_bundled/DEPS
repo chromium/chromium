@@ -13,6 +13,11 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
   "+ios/components/enterprise/analysis/features.h",
-  "+ios/web/download/crw_web_view_download.h",
   # keep-sorted end
 ]
+specific_include_rules = {
+  # TODO(crbug.com/532174813): Remove usage of //ios/web internals.
+  "^sharing_coordinator(_unittest)?\\.mm$" : [
+    "+ios/web/download/crw_web_view_download.h",
+  ]
+}
