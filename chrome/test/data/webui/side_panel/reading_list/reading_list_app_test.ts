@@ -104,16 +104,15 @@ suite('ReadingListAppTest', () => {
   test('click on item passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     clickItem(expectedUrl);
-    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
+    const [url] = await testProxy.whenCalled('openUrl');
     assertEquals(url, expectedUrl);
-    assertTrue(updateReadStatus);
   });
 
   test('click on item passes event info', async () => {
     const item = readingListApp.shadowRoot.querySelector(
         `[data-url="https://www.apple.com"]`)!;
     item.dispatchEvent(new MouseEvent('click'));
-    const [, , click] = await testProxy.whenCalled('openUrl');
+    const [, click] = await testProxy.whenCalled('openUrl');
     assertFalse(
         click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
         click.shiftKey);
@@ -121,7 +120,7 @@ suite('ReadingListAppTest', () => {
 
     // Middle mouse button click.
     item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
-    const [, , auxClick] = await testProxy.whenCalled('openUrl');
+    const [, auxClick] = await testProxy.whenCalled('openUrl');
     assertTrue(auxClick.middleButton);
     assertFalse(
         auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
@@ -135,7 +134,7 @@ suite('ReadingListAppTest', () => {
       metaKey: true,
       shiftKey: true,
     }));
-    const [, , modifiedClick] = await testProxy.whenCalled('openUrl');
+    const [, modifiedClick] = await testProxy.whenCalled('openUrl');
     assertFalse(modifiedClick.middleButton);
     assertTrue(
         modifiedClick.altKey && modifiedClick.ctrlKey &&
@@ -193,9 +192,8 @@ suite('ReadingListAppTest', () => {
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], 'Enter');
-    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
+    const [url] = await testProxy.whenCalled('openUrl');
     assertEquals(url, expectedUrl);
-    assertTrue(updateReadStatus);
   });
 
   test('Space key triggers action and passes correct url', async () => {
@@ -205,9 +203,8 @@ suite('ReadingListAppTest', () => {
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], ' ');
-    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
+    const [url] = await testProxy.whenCalled('openUrl');
     assertEquals(url, expectedUrl);
-    assertTrue(updateReadStatus);
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {

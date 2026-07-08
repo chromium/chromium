@@ -178,7 +178,6 @@ void ReadingListPageHandler::GetReadLaterEntries(
 
 void ReadingListPageHandler::OpenURL(
     const GURL& url,
-    bool mark_as_read,
     ui::mojom::ClickModifiersPtr click_modifiers) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();

@@ -13,7 +13,7 @@ let instance: ReadingListApiProxy|null = null;
 export interface ReadingListApiProxy {
   getReadLaterEntries(): Promise<{entries: ReadLaterEntriesByStatus}>;
 
-  openUrl(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers): void;
+  openUrl(url: Url, clickModifiers: ClickModifiers): void;
 
   updateReadStatus(url: Url, read: boolean): void;
 
@@ -55,8 +55,8 @@ export class ReadingListApiProxyImpl implements ReadingListApiProxy {
     return this.handler.getReadLaterEntries();
   }
 
-  openUrl(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers) {
-    this.handler.openURL(url, markAsRead, clickModifiers);
+  openUrl(url: Url, clickModifiers: ClickModifiers) {
+    this.handler.openURL(url, clickModifiers);
   }
 
   updateReadStatus(url: Url, read: boolean) {

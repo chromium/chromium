@@ -84,7 +84,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       return;
     }
 
-    this.apiProxy_.openUrl(this.data.url, true, {
+    this.apiProxy_.openUrl(this.data.url, {
       middleButton: true,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
@@ -94,7 +94,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   private onClick_(e: MouseEvent|KeyboardEvent) {
-    this.apiProxy_.openUrl(this.data.url, true, {
+    this.apiProxy_.openUrl(this.data.url, {
       middleButton: false,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,

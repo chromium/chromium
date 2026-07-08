@@ -223,7 +223,7 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLOnNTP) {
 
   // Check that OpenURL from the NTP does not open a new tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged to be called 5 times.
@@ -244,7 +244,7 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLOnNTP) {
 TEST_F(TestReadingListPageHandlerTest, OpenURLNotOnNTP) {
   // Check that OpenURL opens in the same tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
 
   // Expect ItemsChanged to be called 5 times.
@@ -300,7 +300,7 @@ TEST_F(TestReadingListPageHandlerTest, RemoveEntry) {
 
 TEST_F(TestReadingListPageHandlerTest, UpdateAndRemoveEntry) {
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
@@ -322,7 +322,7 @@ TEST_F(TestReadingListPageHandlerTest, UpdateAndRemoveEntry) {
 TEST_F(TestReadingListPageHandlerTest, PostBatchUpdate) {
   auto token = model()->BeginBatchUpdates();
   EXPECT_TRUE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
   token.reset();
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
@@ -351,7 +351,7 @@ TEST_F(TestReadingListPageHandlerTest, NoUpdateWhenHidden) {
       content::WebContents::Create(params);
   handler()->set_web_contents_for_testing(web_contents.get());
 
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   handler()->RemoveEntry(GURL(kTabUrl3));
 
   // Expect ItemsChanged to be called four times from the two AddEntry calls in
@@ -371,7 +371,7 @@ TEST_F(TestReadingListPageHandlerTest, NoUpdateWhenHidden) {
 
 TEST_F(TestReadingListPageHandlerTest, OpenURLAndReadd) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true, GetClickModifiers());
+  handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   // Expect CurrentPageActionButtonState to be add, due to the current
   // tab not being on the reading list.

@@ -49,7 +49,6 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   // reading_list::mojom::PageHandler:
   void GetReadLaterEntries(GetReadLaterEntriesCallback callback) override;
   void OpenURL(const GURL& url,
-               bool mark_as_read,
                ui::mojom::ClickModifiersPtr click_modifiers) override;
   void UpdateReadStatus(const GURL& url, bool read) override;
   void MarkCurrentTabAsRead() override;

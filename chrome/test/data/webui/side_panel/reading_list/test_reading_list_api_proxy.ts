@@ -45,8 +45,8 @@ export class TestReadingListApiProxy extends TestBrowserProxy implements
     return Promise.resolve({entries: this.entries_});
   }
 
-  openUrl(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers) {
-    this.methodCalled('openUrl', [url, markAsRead, clickModifiers]);
+  openUrl(url: Url, clickModifiers: ClickModifiers) {
+    this.methodCalled('openUrl', [url, clickModifiers]);
   }
 
   updateReadStatus(url: Url, read: boolean) {
