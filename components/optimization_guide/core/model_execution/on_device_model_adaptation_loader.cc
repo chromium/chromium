@@ -108,7 +108,7 @@ bool ArePerformanceHintsCompatible(
 std::optional<OnDeviceModelAdaptationAvailability>
 DetectBaseModelIncompatibility(const optimization_guide::ModelInfo& model_info,
                                const OnDeviceBaseModelSpec& registered_spec) {
-  const std::optional<proto::Any>& metadata = model_info.GetModelMetadata();
+  const std::optional<proto::Any>& metadata = model_info.model_metadata;
   if (!metadata.has_value()) {
     return OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid;
   }
@@ -310,7 +310,7 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
       base::BindOnce(&ReadOnDeviceModelExecutionConfig, *execution_config_file),
       base::BindOnce(&CreateAdaptationMetadataFromModelExecutionConfig,
                      feature_, MaybeGetAdaptationPaths(*model_info),
-                     model_info->GetVersion())
+                     model_info->version)
           .Then(
               base::BindOnce(&OnDeviceModelAdaptationMetadataCreated, feature_))
           .Then(on_load_fn_));

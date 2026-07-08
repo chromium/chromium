@@ -177,11 +177,11 @@ std::optional<optimization_guide::ModelInfo>
 AnnotatorImpl::GetBrowsingTopicsModelInfo() const {
 #if DCHECK_IS_ON()
   if (GetModelInfo()) {
-    DCHECK(GetModelInfo()->GetModelMetadata());
+    DCHECK(GetModelInfo()->model_metadata);
     std::optional<optimization_guide::proto::PageTopicsModelMetadata>
         model_metadata = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::PageTopicsModelMetadata>(
-            *GetModelInfo()->GetModelMetadata());
+            *GetModelInfo()->model_metadata);
     DCHECK(model_metadata);
     DCHECK(IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version()));
   }
@@ -473,14 +473,14 @@ void AnnotatorImpl::OnModelUpdated(
     return;
   }
 
-  if (!model_info.has_value() || !model_info->GetModelMetadata()) {
+  if (!model_info.has_value() || !model_info->model_metadata) {
     return;
   }
 
   std::optional<optimization_guide::proto::PageTopicsModelMetadata>
       model_metadata = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PageTopicsModelMetadata>(
-          *model_info->GetModelMetadata());
+          *model_info->model_metadata);
   if (!model_metadata) {
     return;
   }

@@ -87,7 +87,7 @@ void NotificationContentDetectionModel::Execute(
     ModelVerdictCallback model_verdict_callback) {
   // If there is no model version, then there is no valid notification content
   // detection model loaded from the server so don't check the model.
-  if (!GetModelInfo() || !GetModelInfo()->GetVersion()) {
+  if (!GetModelInfo() || !GetModelInfo()->version) {
     std::move(model_verdict_callback)
         .Run(/*is_suspicious=*/false,
              GetSerializedMetadata(did_match_allowlist, is_allowlisted_by_user,

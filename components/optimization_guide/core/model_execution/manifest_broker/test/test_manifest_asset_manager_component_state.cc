@@ -301,9 +301,9 @@ void TestManifestAssetManagerComponentState::UpdateSafetyModel(
     std::unique_ptr<FakeSafetyModelAsset> asset) {
   InstallTarget target{
       public_key,
-      base::Version(base::NumberToString(asset->model_info().GetVersion()))};
+      base::Version(base::NumberToString(asset->model_info().version))};
   installable_components_[target] = {
-      target, asset->model_info().GetModelFilePath().DirName()};
+      target, asset->model_info().model_file_path.DirName()};
   safety_model_assets_.push_back(std::move(asset));
   MaybeCompleteDownload(public_key);
 }
@@ -313,9 +313,9 @@ void TestManifestAssetManagerComponentState::UpdateLanguageDetectionModel(
     std::unique_ptr<FakeLanguageModelAsset> asset) {
   InstallTarget target{
       public_key,
-      base::Version(base::NumberToString(asset->model_info().GetVersion()))};
+      base::Version(base::NumberToString(asset->model_info().version))};
   installable_components_[target] = {
-      target, asset->model_info().GetModelFilePath().DirName()};
+      target, asset->model_info().model_file_path.DirName()};
   language_model_assets_.push_back(std::move(asset));
   MaybeCompleteDownload(public_key);
 }

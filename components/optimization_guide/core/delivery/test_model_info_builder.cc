@@ -4,7 +4,10 @@
 
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 
-#include "components/optimization_guide/core/delivery/model_util.h"
+#include <memory>
+#include <utility>
+
+#include "build/build_config.h"
 
 namespace optimization_guide {
 
@@ -14,65 +17,59 @@ const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
 const char kTestAbsoluteFilePath[] = "/absolutefilepath";
 #endif
 
-TestModelInfoBuilder::TestModelInfoBuilder() {
-  // Valid (dummy values) by default.
-  model_.mutable_model()->set_download_url(kTestAbsoluteFilePath);
-  model_.mutable_model_info()->set_version(123);
-}
-TestModelInfoBuilder::TestModelInfoBuilder(const ModelInfo& model_info) {
-  SetModelFilePath(model_info.GetModelFilePath());
-  SetVersion(model_info.GetVersion());
-  SetModelMetadata(model_info.GetModelMetadata());
-  SetAdditionalFiles(model_info.GetAdditionalFiles());
-}
+TestModelInfoBuilder::TestModelInfoBuilder()
+    : model_file_path_(base::FilePath::FromUTF8Unsafe(kTestAbsoluteFilePath)),
+      version_(123) {}
+
+TestModelInfoBuilder::TestModelInfoBuilder(const ModelInfo& model_info)
+    : model_file_path_(model_info.model_file_path),
+      additional_files_(model_info.additional_files),
+      version_(model_info.version),
+      model_metadata_(model_info.model_metadata) {}
+
 TestModelInfoBuilder::~TestModelInfoBuilder() = default;
+TestModelInfoBuilder::TestModelInfoBuilder(TestModelInfoBuilder&&) = default;
+TestModelInfoBuilder& TestModelInfoBuilder::operator=(TestModelInfoBuilder&&) =
+    default;
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetModelFilePath(
     const base::FilePath& file_path) {
-  model_.mutable_model()->set_download_url(FilePathToString(file_path));
+  model_file_path_ = file_path;
   return *this;
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetAdditionalFiles(
     const base::flat_set<base::FilePath>& additional_files) {
-  for (const base::FilePath& file_path : additional_files) {
-    model_.mutable_model_info()->add_additional_files()->set_file_path(
-        FilePathToString(file_path));
-  }
+  additional_files_ = additional_files;
   return *this;
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::RemoveAdditionalFileWithBasename(
     const base::FilePath::StringType& base_name) {
-  auto* files = model_.mutable_model_info()->mutable_additional_files();
-  for (auto it = files->begin(); it != files->end(); it++) {
-    std::optional<base::FilePath> path = StringToFilePath(it->file_path());
-    if (path && path->BaseName().value() == base_name) {
-      files->erase(it);
-      return *this;
-    }
-  }
+  base::EraseIf(additional_files_, [&](const base::FilePath& path) {
+    return path.BaseName().value() == base_name;
+  });
   return *this;
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetVersion(int64_t version) {
-  model_.mutable_model_info()->set_version(version);
+  version_ = version;
   return *this;
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetModelMetadata(
     std::optional<proto::Any> model_metadata) {
-  if (!model_metadata) {
-    model_.mutable_model_info()->clear_model_metadata();
-    return *this;
-  }
-  *model_.mutable_model_info()->mutable_model_metadata() =
-      model_metadata.value();
+  model_metadata_ = std::move(model_metadata);
   return *this;
 }
 
 std::unique_ptr<ModelInfo> TestModelInfoBuilder::Build() {
-  return ModelInfo::Create(model_);
+  return std::make_unique<ModelInfo>(ModelInfo{
+      .model_file_path = model_file_path_,
+      .additional_files = additional_files_,
+      .version = version_,
+      .model_metadata = model_metadata_,
+  });
 }
 
 }  // namespace optimization_guide

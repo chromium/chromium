@@ -100,7 +100,7 @@ PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
 bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // Got the same version again. Do not run through rest of logic.
-  if (model_info && model_version_ == model_info->GetVersion()) {
+  if (model_info && model_version_ == model_info->version) {
     return true;
   }
 
@@ -119,8 +119,8 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   }
 
   // The only additional file should be the sentencepiece model.
-  base::flat_set<base::FilePath> additional_files =
-      model_info->GetAdditionalFiles();
+  const base::flat_set<base::FilePath>& additional_files =
+      model_info->additional_files;
   if (additional_files.size() != 1u) {
     logger.set_status(EmbeddingsModelInfoStatus::kInvalidAdditionalFiles);
     return false;
@@ -128,7 +128,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
 
   // Check validity of model metadata.
   const std::optional<optimization_guide::proto::Any>& metadata =
-      model_info->GetModelMetadata();
+      model_info->model_metadata;
   if (!metadata) {
     logger.set_status(EmbeddingsModelInfoStatus::kNoMetadata);
     return false;
@@ -141,9 +141,9 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     return false;
   }
 
-  model_version_ = model_info->GetVersion();
+  model_version_ = model_info->version;
   model_metadata_ = embeddings_metadata;
-  embeddings_model_path_ = model_info->GetModelFilePath();
+  embeddings_model_path_ = model_info->model_file_path;
   sp_model_path_ = *(additional_files.begin());
 
   CHECK(IsModelAvailable());

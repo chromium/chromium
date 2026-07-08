@@ -409,9 +409,8 @@ void FieldClassificationModelHandler::OnModelUpdated(
   // The model was loaded or updated.
   state_.reset();
   ModelState state;
-  if (!model_info->GetModelMetadata() ||
-      !state.metadata.ParseFromString(
-          model_info->GetModelMetadata()->value())) {
+  if (!model_info->model_metadata ||
+      !state.metadata.ParseFromString(model_info->model_metadata->value())) {
     // The model should always come with metadata - but since this comes from
     // the server-side and might change in the future, it might fail.
     return;

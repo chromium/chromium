@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 
 namespace optimization_guide {
 
@@ -25,6 +25,10 @@ class TestModelInfoBuilder {
   TestModelInfoBuilder();
   explicit TestModelInfoBuilder(const ModelInfo& model_info);
   ~TestModelInfoBuilder();
+  TestModelInfoBuilder(const TestModelInfoBuilder&) = delete;
+  TestModelInfoBuilder& operator=(const TestModelInfoBuilder&) = delete;
+  TestModelInfoBuilder(TestModelInfoBuilder&&);
+  TestModelInfoBuilder& operator=(TestModelInfoBuilder&&);
 
   TestModelInfoBuilder& SetModelFilePath(const base::FilePath& file_path);
 
@@ -42,7 +46,10 @@ class TestModelInfoBuilder {
   std::unique_ptr<ModelInfo> Build();
 
  private:
-  proto::PredictionModel model_;
+  base::FilePath model_file_path_;
+  base::flat_set<base::FilePath> additional_files_;
+  int64_t version_;
+  std::optional<proto::Any> model_metadata_;
 };
 
 // File paths that can be used in testing, handling platform differences, namely

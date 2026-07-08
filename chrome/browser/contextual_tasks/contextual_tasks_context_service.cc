@@ -553,7 +553,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     std::optional<optimization_guide::ModelInfo> model_info =
         model_handler_->GetModelInfo();
     if (model_info.has_value()) {
-      quality_log->set_tab_selection_model_version(model_info->GetVersion());
+      quality_log->set_tab_selection_model_version(model_info->version);
     }
   }
 

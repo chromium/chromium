@@ -69,7 +69,7 @@ void AutocompleteScoringModelService::AddOnModelUpdatedCallback(
 
 int AutocompleteScoringModelService::GetModelVersion() const {
   auto info = url_scoring_model_handler_->GetModelInfo();
-  return info.has_value() ? info->GetVersion() : -1;
+  return info.has_value() ? info->version : -1;
 }
 
 std::vector<AutocompleteScoringModelService::Result>

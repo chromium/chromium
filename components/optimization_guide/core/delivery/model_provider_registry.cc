@@ -94,8 +94,8 @@ void ModelProviderRegistry::AddObserverForOptimizationTargetModel(
           optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
           optimization_guide_logger_.get())
           << "OnModelFileUpdated for OptimizationTarget: "
-          << optimization_target << "\nFile path: "
-          << model_it->second->GetModelFilePath().AsUTF8Unsafe()
+          << optimization_target
+          << "\nFile path: " << model_it->second->model_file_path.AsUTF8Unsafe()
           << "\nHas metadata: " << (model_metadata ? "True" : "False");
     }
     RecordLifecycleState(optimization_target,
@@ -155,8 +155,8 @@ ModelProviderRegistry::GetDownloadedModelsInfoForWebUI() const {
     const optimization_guide::ModelInfo* const model_info = it.second.get();
     auto downloaded_model_info_ptr =
         optimization_guide_internals::mojom::DownloadedModelInfo::New(
-            optimization_target_name, model_info->GetVersion(),
-            model_info->GetModelFilePath().AsUTF8Unsafe());
+            optimization_target_name, model_info->version,
+            model_info->model_file_path.AsUTF8Unsafe());
     downloaded_models_info.push_back(std::move(downloaded_model_info_ptr));
   }
   return downloaded_models_info;
@@ -218,9 +218,9 @@ void ModelProviderRegistry::NotifyObserversOfNewModel(
           optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
           optimization_guide_logger_.get())
           << "OnModelFileUpdated for target: " << optimization_target
-          << "\nFile path: " << model_info->GetModelFilePath().AsUTF8Unsafe()
+          << "\nFile path: " << model_info->model_file_path.AsUTF8Unsafe()
           << "\nHas metadata: "
-          << (model_info->GetModelMetadata() ? "True" : "False");
+          << (model_info->model_metadata ? "True" : "False");
     } else {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,

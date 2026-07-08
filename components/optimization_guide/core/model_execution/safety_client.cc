@@ -24,7 +24,7 @@ void SafetyClient::SetLanguageDetectionModel(
     return;
   }
   remote_.reset();  // The remote's assets are outdated.
-  language_detection_model_path_ = model_info->GetModelFilePath();
+  language_detection_model_path_ = model_info->model_file_path;
 }
 
 void SafetyClient::MaybeUpdateSafetyModel(
