@@ -1737,15 +1737,14 @@ gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {
     return gfx::Rect();
   }
 
-  CHECK(location_bar_view_)
-      << "Alternate location bar impls need to handle this.";
+  CHECK(location_bar_);
 
-  if (!location_bar_view_->IsDrawn()) {
+  if (!location_bar_->IsDrawn()) {
     return gfx::Rect();
   }
 
-  gfx::Rect bounds = location_bar_view_->ConvertRectToWidget(
-      location_bar_view_->GetLocalBounds());
+  gfx::Rect bounds = views::View::ConvertRectFromScreen(
+      GetWidget()->GetRootView(), location_bar_->BoundsInScreen());
   return gfx::Rect(bounds.x(), bounds.bottom(), bounds.width(),
                    contents_bottom - bounds.bottom());
 }
