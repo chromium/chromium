@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -102,10 +102,9 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
     profile_state_.profile = profile_.get();
 
-    fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.profileState = profile_state_;
-    scene_state_.scene = fake_scene_;
+    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
+                                      .identifier = "scene"}];
 
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
@@ -161,7 +160,6 @@ class BrowserLifecycleManagerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  id fake_scene_;
   ProfileState* profile_state_;
   SceneState* scene_state_;
 

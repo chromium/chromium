@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
@@ -151,13 +150,6 @@
 
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
-  if (_scene) {
-    _sceneStateOptions.identifier = SessionIdentifierForScene(_scene);
-    [self createPrefsIfPossible];
-  } else {
-    _sceneStateOptions.identifier.clear();
-    _prefs = nil;
-  }
 }
 
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
@@ -327,7 +319,7 @@
 - (void)createPrefsIfPossible {
   ProfileState* profileState = _sceneStateOptions.profile_state;
   std::string_view identifier = _sceneStateOptions.identifier;
-  if (!_scene || identifier.empty() ||
+  if (identifier.empty() ||
       profileState.initStage < ProfileInitStage::kProfileLoaded) {
     return;
   }

@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -108,7 +109,8 @@ class SceneControllerTest : public PlatformTest {
                                                          appState:nil];
 
     profile_state_ = CreateProfileState(ProfileInitStage::kFinal);
-    scene_state_.profileState = profile_state_;
+    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
+                                      .identifier = "scene-id"}];
 
     scene_controller_ =
         [[InternalFakeSceneController alloc] initWithSceneState:scene_state_];
@@ -362,7 +364,8 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 
   ProfileState* profile_state = CreateProfileState(ProfileInitStage::kFinal);
-  scene_controller.profileState = profile_state;
+  [scene_controller connectWithOptions:{.profile_state = profile_state,
+                                        .identifier = "other-id"}];
 
   EXPECT_NE(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }
@@ -380,7 +383,8 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 
   ProfileState* profile_state = CreateProfileState(ProfileInitStage::kFinal);
-  scene_controller.profileState = profile_state;
+  [scene_controller connectWithOptions:{.profile_state = profile_state,
+                                        .identifier = "other-id"}];
 
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }

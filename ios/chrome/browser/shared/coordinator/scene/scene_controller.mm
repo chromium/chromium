@@ -107,6 +107,8 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
@@ -1702,11 +1704,13 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
-- (void)setProfileState:(ProfileState*)profileState {
+- (void)connectWithOptions:(SceneStateOptions)options {
   DCHECK(!_sceneState.profileState);
+  DCHECK(!options.identifier.empty());
 
   // Connect the ProfileState with the SceneState.
-  _sceneState.profileState = profileState;
+  ProfileState* profileState = options.profile_state;
+  [_sceneState connectWithOptions:std::move(options)];
   [profileState sceneStateConnected:_sceneState];
 
   // Add agents. They may depend on the ProfileState, so they need to be

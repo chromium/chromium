@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
 @protocol BrowserProviderInterface;
-@class ProfileState;
+struct SceneStateOptions;
 
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <ConnectionInformation,
@@ -33,8 +33,8 @@
 // YES if the tab grid is the main user interface at the moment.
 @property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;
 
-// Connects the ProfileState to this SceneController.
-- (void)setProfileState:(ProfileState*)profileState;
+// Connects the SceneController with `options`.
+- (void)connectWithOptions:(SceneStateOptions)options;
 
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
