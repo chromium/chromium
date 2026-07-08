@@ -495,3 +495,51 @@ if (enable_bound_session_credentials) {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  # Some signin unit tests have file-scope statics of non-trivial-destructor
+  # types, which -Wexit-time-destructors rejects.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = []
+  deps = []
+
+  if (enable_dice_support) {
+    sources += [
+      "cross_device_signin_promo_manager_unittest.cc",
+      "dice_response_handler_factory_unittest.cc",
+      "dice_response_handler_unittest.cc",
+      "dice_signed_in_profile_creator_unittest.cc",
+      "dice_tab_helper_unittest.cc",
+      "dice_web_signin_interceptor_unittest.cc",
+      "logout_tab_helper_unittest.cc",
+      "process_dice_header_delegate_impl_unittest.cc",
+    ]
+    deps += [
+      ":signin",
+      ":test_support",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/test:test_support",
+      "//components/metrics",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_device_info:test_support",
+      "//components/unexportable_keys",
+      "//components/unexportable_keys:test_support",
+      "//content/test:test_support",
+      "//google_apis",
+      "//testing/gmock",
+      "//testing/gtest",
+
+      # For -Wno-sign-compare (crbug.com/527094632).
+      "//third_party/fuzztest",
+    ]
+  }
+}

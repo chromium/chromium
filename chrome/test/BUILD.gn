@@ -6465,14 +6465,6 @@ test("unit_tests") {
 
   if (enable_dice_support) {
     sources += [
-      "../browser/signin/cross_device_signin_promo_manager_unittest.cc",
-      "../browser/signin/dice_response_handler_factory_unittest.cc",
-      "../browser/signin/dice_response_handler_unittest.cc",
-      "../browser/signin/dice_signed_in_profile_creator_unittest.cc",
-      "../browser/signin/dice_tab_helper_unittest.cc",
-      "../browser/signin/dice_web_signin_interceptor_unittest.cc",
-      "../browser/signin/logout_tab_helper_unittest.cc",
-      "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
       "../browser/ui/signin/signin_qrcode_infobar_delegate_unittest.cc",
       "../browser/ui/signin/signin_qrcode_model_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
@@ -6488,6 +6480,7 @@ test("unit_tests") {
       "../browser/ui/webui/feature_showcase/themes_and_customization_handler_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/signin:unit_tests",
       "//chrome/browser/ui:feature_showcase_metrics",
       "//chrome/browser/ui/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
