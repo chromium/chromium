@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 interface mixin CanvasDrawElementImage {
-  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double dx,
                              unrestricted double dy);
 
-  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double dx,
                              unrestricted double dy,
                              unrestricted double dwidth,
                              unrestricted double dheight);
 
-  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double sx,
                              unrestricted double sy,
@@ -24,7 +24,7 @@ interface mixin CanvasDrawElementImage {
                              unrestricted double dx,
                              unrestricted double dy);
 
-  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double sx,
                              unrestricted double sy,

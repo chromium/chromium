@@ -587,16 +587,25 @@ TEST_P(HTMLCanvasElementTest, LayoutsubtreeInvalidation) {
 }
 
 TEST_P(HTMLCanvasElementTest, HTMLInCanvasUseCounter) {
-  SetBodyInnerHTML(R"HTML(
-    <canvas></canvas>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kHTMLInCanvas));
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
 
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree></canvas>
+    <canvas id=cvs layoutsubtree>
+      <div id=target>hello world</div>
+    </canvas>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
+  RunDocumentLifecycle();
+
+  // Metrics should not be recorded until the feature is actually used.
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kHTMLInCanvas));
+
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    cvs.getContext('2d').drawElementImage(target, 0, 0);
+  )JS");
+  GetDocument().body()->appendChild(script);
+  RunDocumentLifecycle();
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kHTMLInCanvas));
 }
 

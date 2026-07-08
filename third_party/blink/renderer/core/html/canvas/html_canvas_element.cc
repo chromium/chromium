@@ -380,7 +380,6 @@ void HTMLCanvasElement::AttributeChanged(
     bool has_layoutsubtree = !params.new_value.IsNull();
     if (had_layoutsubtree != has_layoutsubtree) {
       setLayoutSubtree(has_layoutsubtree);
-      UseCounter::Count(GetDocument(), WebFeature::kHTMLInCanvas);
       if (accessibility_manager_) {
         accessibility_manager_->SetHasLayoutSubtree(has_layoutsubtree);
       }
