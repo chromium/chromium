@@ -356,9 +356,14 @@ class DomStorageDatabaseFactory {
  public:
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
+  struct DestroyOutcome {
+    DbStatus status;
+    DatabaseMetricsType destroyed_db_metrics_type;
+  };
+
   // Result of opening a DomStorage database. Contains everything
   // the caller needs to use the database and record metrics. The database has
-  // already been opened on its backend sequence; `open_status` carries the
+  // already been opened on its backend sequence. `open_status` carries the
   // outcome.
   class OpenResult {
    public:
@@ -383,6 +388,12 @@ class DomStorageDatabaseFactory {
     bool is_sqlite = false;
     DbStatus open_status = DbStatus::IOError("uninitialized");
 
+    // Set only when the open was requested with a non-empty `dir_to_destroy`,
+    // reporting the outcome of destroying the pre-existing on-disk database
+    // before opening. Consumed by recovery callers to record recovery
+    // telemetry.
+    std::optional<DestroyOutcome> destroy_outcome;
+
    private:
     // The opened database while the result is in flight to the caller's
     // sequence. If the result is dropped before `TakeDatabase()`, the
@@ -396,34 +407,30 @@ class DomStorageDatabaseFactory {
 
   using OpenCallback = base::RepeatingCallback<void(
       StorageType,
-      const base::FilePath&,
+      const base::FilePath& dir_to_open,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
+      const base::FilePath& dir_to_destroy,
       OpenResultCallback)>;
 
-  // Asynchronously opens a DomStorageDatabase. For in-memory
-  // databases, pass an empty `storage_partition_dir`. The callback receives
-  // the opened database, its resolved configuration, and the Open() outcome.
+  // Asynchronously opens a DomStorageDatabase. The callback receives the opened
+  // database, its resolved configuration, and the Open() outcome.
+  //
+  // The new database is opened at `dir_to_open`, or in-memory if `dir_to_open`
+  // is empty.
+  //
+  // If `dir_to_destroy` is non-empty, the pre-existing on-disk database at that
+  // location is destroyed before the new database is opened, all within this
+  // flow. The destroy outcome is reported via `OpenResult::destroy_status`.
+  // `dir_to_destroy` may differ from `dir_to_open`. E.g. recovery can destroy
+  // the on-disk database, then open an in-memory database by passing the
+  // on-disk location as `dir_to_destroy` and an empty `dir_to_open`.
   static void Open(
       StorageType storage_type,
-      const base::FilePath& storage_partition_dir,
+      const base::FilePath& dir_to_open,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
+      const base::FilePath& dir_to_destroy,
       OpenResultCallback callback);
-
-  using StatusCallback = base::OnceCallback<void(DbStatus)>;
-
-  using DestroyCallback = base::RepeatingCallback<
-      void(const base::FilePath&, bool is_sqlite, StatusCallback)>;
-
-  // Destroys the on-disk database for the given `storage_type` under
-  // `storage_partition_dir`. Checks which backend (LevelDB or SQLite) exists
-  // on disk and destroys it.
-  //
-  // All work is done on blocking task runners, and upon completion `callback`
-  // is called on the calling sequence.
-  static void Destroy(StorageType storage_type,
-                      const base::FilePath& storage_partition_dir,
-                      StatusCallback callback);
 
  private:
   friend class LocalStorageLevelDBTest;
@@ -437,32 +444,70 @@ class DomStorageDatabaseFactory {
 
   static void OpenImpl(
       StorageType storage_type,
-      const base::FilePath& storage_partition_dir,
+      const base::FilePath& dir_to_open,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
+      const base::FilePath& dir_to_destroy,
       OpenResultCallback callback);
 
   // The following Open helpers are private static members so that
   // `InitializeDatabase` can create a `PassKey` when constructing backend
   // subclasses.
 
-  // Called only in experimental rollout stages. Runs on the LevelDB blocking
-  // sequence.
-  //
-  // Checks for an existing on-disk LevelDB database. Accordingly, initializes
-  // the appropriate database backend.
-  static void CheckDiskStateAndInitializeDatabase(
-      StorageType storage_type,
-      base::FilePath storage_partition_dir,
-      DomStorageSqliteRolloutStage stage,
-      std::optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id,
-      OpenResultCallback callback);
+  using OnDiskStateCheckedCallback =
+      base::OnceCallback<void(LevelDbOnDiskState)>;
 
-  // Constructs the backend, opens it, records the OpenDatabase histograms, and
-  // runs `callback` (already bound to the caller's sequence) with the
-  // assembled `OpenResult`.
+  // Reads the on-disk LevelDB state at `dir` and passes it to `callback`. Runs
+  // the read on `dir`'s LevelDB blocking sequence, re-posting to it if needed.
+  static void CheckOnDiskLevelDbState(StorageType storage_type,
+                                      base::FilePath dir,
+                                      OnDiskStateCheckedCallback callback);
+
+  using OnDatabaseDestroyedCallback =
+      base::OnceCallback<void(std::optional<DestroyOutcome> destroy_outcome)>;
+
+  // Bound as the `CheckOnDiskLevelDbState()` continuation for the destroy flow,
+  // so `leveldb_state` trails. Like `InitializeDatabase`, this runs on the
+  // destroy target's blocking sequence (selected via `GetTaskRunnerForDb()`),
+  // re-posting to it if needed.
+  static void DestroyDatabase(StorageType storage_type,
+                              base::FilePath dir_to_destroy,
+                              OnDatabaseDestroyedCallback callback,
+                              LevelDbOnDiskState leveldb_state);
+
+  // Invoked with the resolved backend to construct and open the database.
+  using OnBackendResolvedCallback =
+      base::OnceCallback<void(bool is_sqlite,
+                              bool write_exp_tag,
+                              DatabaseMetricsType metrics_type,
+                              base::FilePath database_path,
+                              std::optional<DestroyOutcome> destroy_outcome)>;
+
+  // Resolves the backend (in-memory vs on-disk, SQLite vs LevelDB) and the
+  // database path using `dir_to_open` (empty for in-memory), then runs
+  // `callback` with the result.
+  static void ResolveDatabaseBackend(
+      StorageType storage_type,
+      base::FilePath dir_to_open,
+      OnBackendResolvedCallback callback,
+      std::optional<DestroyOutcome> destroy_outcome);
+
+  // Resolves the experimental backend from the on-disk LevelDB state, then runs
+  // `callback`. Bound as the `CheckOnDiskLevelDbState()` continuation for
+  // the open flow, so `leveldb_state` (the produced on-disk state) trails.
+  static void ResolveOnDiskExperimentalDatabaseBackend(
+      StorageType storage_type,
+      base::FilePath dir_to_open,
+      DomStorageSqliteRolloutStage stage,
+      OnBackendResolvedCallback callback,
+      std::optional<DestroyOutcome> destroy_outcome,
+      LevelDbOnDiskState leveldb_state);
+
+  // Constructs the resolved backend, opens it, records the OpenDatabase
+  // histograms, and runs `callback` (already bound to the caller's sequence)
+  // with the assembled `OpenResult`.
   //
-  // For on-disk databases this may be called from any sequence: the work runs
+  // For on-disk databases this may be called from any sequence. The work runs
   // on the backend's blocking sequence (selected via `GetTaskRunnerForDb()`),
   // re-posting to it if needed. For in-memory databases the caller must invoke
   // this on the backend's sequence, since `GetTaskRunnerForDb()` returns a
@@ -470,29 +515,18 @@ class DomStorageDatabaseFactory {
   // re-post.
   static void InitializeDatabase(
       StorageType storage_type,
+      std::optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id,
+      OpenResultCallback callback,
       bool is_sqlite,
       bool write_exp_tag,
       DatabaseMetricsType metrics_type,
       base::FilePath database_path,
-      std::optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id,
-      OpenResultCallback callback);
+      std::optional<DestroyOutcome> destroy_outcome);
 
-  static void DestroyImpl(const base::FilePath& database_path,
-                          bool is_sqlite,
-                          StatusCallback callback);
-
-  // Callback for the async disk state check during Destroy().
-  static void OnDestroyDiskStateChecked(
-      StorageType storage_type,
-      const base::FilePath& storage_partition_dir,
-      StatusCallback callback,
-      LevelDbOnDiskState leveldb_state);
-
-  // Returns the open/destroy callbacks, lazily initialized on first call.
-  // Defaults point to `OpenImpl`/`DestroyImpl`. Tests can swap in custom
-  // implementations via `ScopedDomStorageDatabaseFactoryForTesting`.
+  // Returns the open callback, lazily initialized on first call. Defaults to
+  // `OpenImpl`. Tests can swap in a custom implementation via
+  // `ScopedDomStorageDatabaseFactoryForTesting`.
   static OpenCallback& GetOpenCallback();
-  static DestroyCallback& GetDestroyCallback();
 
   // Allow unit tests to create a database instance without `SequenceBound`.
   static PassKey CreatePassKeyForTesting();

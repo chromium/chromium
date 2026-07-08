@@ -96,8 +96,14 @@ class SessionStorageImplTestBase : public testing::Test {
   SessionStorageImpl* session_storage_impl() {
     if (!session_storage_) {
       remote_session_storage_.reset();
+      // A database with `BackingMode::kNoDisk` has no on-disk location and is
+      // constructed with an empty path.
+      const base::FilePath path =
+          backing_mode_ == SessionStorageImpl::BackingMode::kNoDisk
+              ? base::FilePath()
+              : temp_path();
       session_storage_ = std::make_unique<SessionStorageImpl>(
-          temp_path(), backing_mode_, base::DoNothing(),
+          path, backing_mode_, base::DoNothing(),
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }
     return session_storage_.get();
@@ -875,10 +881,12 @@ void SessionStorageImplTestBase::TestInvalidVersionOnDisk(
         AsyncDomStorageDatabase::Open(
             StorageType::kSessionStorage, temp_path(),
             /*memory_dump_id=*/std::nullopt,
-            base::BindLambdaForTesting([&](DbStatus callback_status) {
-              status = callback_status;
-              open_db_run_loop.Quit();
-            }));
+            /*dir_to_destroy=*/base::FilePath(),
+            base::BindLambdaForTesting(
+                [&](AsyncDomStorageDatabase::OpenOutcome outcome) {
+                  status = outcome.open_status;
+                  open_db_run_loop.Quit();
+                }));
 
     open_db_run_loop.Run();
     ASSERT_TRUE(status.ok()) << status.ToString();
@@ -1042,8 +1050,9 @@ TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
     session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
     WaitForDatabaseTasks();
   }
-  // Recovery sets the db to nullptr.
-  ASSERT_FALSE(session_storage_impl()->GetDatabaseForTesting());
+  // Recovery recreates `database_` right away and opens and connects to it
+  // asynchronously, so `database_` stays non-null during recovery.
+  ASSERT_TRUE(session_storage_impl()->GetDatabaseForTesting());
   area_o1.reset();
 
   // Wait for the post-recovery database to be fully connected before
@@ -1156,8 +1165,9 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     old_value = value;
     value[0]++;
   }
-  // Recovery sets the db to nullptr.
-  ASSERT_FALSE(session_storage_impl()->GetDatabaseForTesting());
+  // Recovery recreates `database_` right away and opens and connects to it
+  // asynchronously, so `database_` stays non-null during recovery.
+  ASSERT_TRUE(session_storage_impl()->GetDatabaseForTesting());
   area.reset();
 
   // Wait for the post-recovery database to be fully connected before
@@ -1404,6 +1414,53 @@ TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest, PreExistingTaggedLevelDb) {
       /*sample=*/0, /*expected_bucket_count=*/1);
 }
 
+// Exercises the destroy-then-open path of the factory under each rollout stage.
+// `kClearDiskStateOnOpen` destroys any pre-existing on-disk database before
+// opening. Verifies the persisted data is cleared and the resolved backend
+// matches the stage's choice for a new database.
+TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest,
+       DestroyAndOpenNewOnDiskDatabase) {
+  std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  // Persist data to disk using the stage's backend.
+  DoTestPut(namespace_id, storage_key, "key", "value", /*should_persist=*/true);
+  ShutDownSessionStorage();
+
+  // Reopen without clearing and read the value back, proving it actually
+  // persisted to disk.
+  EXPECT_EQ(DoTestGet(namespace_id, storage_key, "key"),
+            StringViewToUint8Vector("value"));
+  ShutDownSessionStorage();
+
+  // Reopen with `kClearDiskStateOnOpen`, which destroys the pre-existing
+  // on-disk database, and create a new one in its place based on the
+  // rollout stage.
+  SetBackingMode(SessionStorageImpl::BackingMode::kClearDiskStateOnOpen);
+  base::HistogramTester histograms;
+  // The previously persisted value is gone, proving the destroy ran.
+  EXPECT_EQ(DoTestGet(namespace_id, storage_key, "key"), std::nullopt);
+  ShutDownSessionStorage();
+
+  // The final backend should match the stage's choice for a new database.
+  if (UsesSqliteForNewDb()) {
+    EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+    EXPECT_FALSE(LevelDbDirHasContents());
+  } else {
+    EXPECT_FALSE(base::PathExists(SqliteDbPath()));
+    EXPECT_TRUE(LevelDbDirHasContents());
+  }
+  // Only the control arm tags a newly-created LevelDB.
+  EXPECT_EQ(base::PathExists(ExpTagPath()),
+            stage() == DomStorageSqliteRolloutStage::kUseLevelDbAsControl);
+  histograms.ExpectUniqueSample(
+      IsExperimentalStage()
+          ? "Storage.SessionStorage.OpenDatabase.OnDiskExperimental"
+          : "Storage.SessionStorage.OpenDatabase.OnDisk",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
 // Test fixture for tests that use fake database implementations. These tests
 // do not depend on the real SQLite/LevelDB backend and run only once.
 class SessionStorageImplFakeDbTest : public SessionStorageImplTestBase {
@@ -1424,30 +1481,32 @@ TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   size_t num_databases_destroyed = 0;
 
   // Each database starts with UpdateMaps returning IOError. The test switches
-  // the second database to OK mid-flight to simulate transient errors. The
-  // destroy override counts destruction so we can later assert recovery
-  // actually destroyed and re-created the database.
+  // the second database to OK mid-flight to simulate transient errors. The open
+  // override counts the opens that destroy the pre-existing database so we can
+  // later assert recovery actually destroyed and re-created the database.
   ScopedDomStorageDatabaseFactoryForTesting scoped_factory(
       base::BindLambdaForTesting(
-          [](StorageType, const base::FilePath& storage_partition_dir,
-             const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
-             DomStorageDatabaseFactory::OpenResultCallback callback) {
+          [&](StorageType, const base::FilePath& dir_to_open,
+              const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
+              const base::FilePath& dir_to_destroy,
+              DomStorageDatabaseFactory::OpenResultCallback callback) {
+            if (!dir_to_destroy.empty()) {
+              ++num_databases_destroyed;
+            }
             auto fake =
                 std::make_unique<FakeDomStorageDatabase>(DbStatus::OK());
             fake->SetUpdateMapsStatus(DbStatus::IOError("test"));
             DomStorageDatabaseFactory::OpenResult result;
-            result.SetDatabase(GetTaskRunnerForDb(storage_partition_dir),
+            result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                                std::move(fake));
             result.metrics_type = DatabaseMetricsType::kOnDisk;
             result.open_status = DbStatus::OK();
+            if (!dir_to_destroy.empty()) {
+              result.destroy_outcome =
+                  DomStorageDatabaseFactory::DestroyOutcome{
+                      DbStatus::OK(), DatabaseMetricsType::kOnDisk};
+            }
             std::move(callback).Run(std::move(result));
-          }),
-      base::BindLambdaForTesting(
-          [&](const base::FilePath&, bool /*is_sqlite*/,
-              DomStorageDatabaseFactory::StatusCallback callback) {
-            ++num_databases_destroyed;
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), DbStatus::OK()));
           }));
 
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -1483,8 +1542,9 @@ TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
     old_value = value;
     value[0]++;
   }
-  // Recovery sets the db to nullptr.
-  ASSERT_FALSE(session_storage_impl()->GetDatabaseForTesting());
+  // Recovery recreates `database_` right away and opens and connects to it
+  // asynchronously, so `database_` stays non-null during recovery.
+  ASSERT_TRUE(session_storage_impl()->GetDatabaseForTesting());
   area.reset();
 
   // Wait for the post-recovery database to be fully connected before
@@ -1650,16 +1710,10 @@ TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_SecondDestroyFailed) {
   // First destroy succeeds, second fails.
   int destroy_count = 0;
   FakeDomStorageDatabaseFactory fake_factory(
-      /*num_open_failures=*/2,
-      base::BindLambdaForTesting(
-          [&destroy_count](const base::FilePath&, bool /*is_sqlite*/,
-                           DomStorageDatabaseFactory::StatusCallback cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), destroy_count++ >= 1
-                                                  ? DbStatus::IOError("test")
-                                                  : DbStatus::OK()));
-          }));
+      /*num_open_failures=*/2, base::BindLambdaForTesting([&destroy_count]() {
+        return destroy_count++ >= 1 ? DbStatus::IOError("test")
+                                    : DbStatus::OK();
+      }));
 
   EnsureDatabaseOpen();
 
@@ -1679,16 +1733,10 @@ TEST_F(SessionStorageImplFakeDbTest, GaveUp_SecondDestroyFailed) {
   // First destroy succeeds, second fails.
   int destroy_count = 0;
   FakeDomStorageDatabaseFactory fake_factory(
-      /*num_open_failures=*/3,
-      base::BindLambdaForTesting(
-          [&destroy_count](const base::FilePath&, bool /*is_sqlite*/,
-                           DomStorageDatabaseFactory::StatusCallback cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), destroy_count++ >= 1
-                                                  ? DbStatus::IOError("test")
-                                                  : DbStatus::OK()));
-          }));
+      /*num_open_failures=*/3, base::BindLambdaForTesting([&destroy_count]() {
+        return destroy_count++ >= 1 ? DbStatus::IOError("test")
+                                    : DbStatus::OK();
+      }));
 
   EnsureDatabaseOpen();
 
@@ -1758,8 +1806,9 @@ TEST_F(SessionStorageImplFakeDbTest, MetadataReadFailure) {
   bool first_create = true;
   ScopedDomStorageDatabaseFactoryForTesting scoped_factory(
       base::BindLambdaForTesting(
-          [&](StorageType, const base::FilePath& storage_partition_dir,
+          [&](StorageType, const base::FilePath& dir_to_open,
               const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
+              const base::FilePath& dir_to_destroy,
               DomStorageDatabaseFactory::OpenResultCallback callback) {
             auto fake =
                 std::make_unique<FakeDomStorageDatabase>(DbStatus::OK());
@@ -1769,10 +1818,15 @@ TEST_F(SessionStorageImplFakeDbTest, MetadataReadFailure) {
                   base::unexpected(DbStatus::Corruption("test")));
             }
             DomStorageDatabaseFactory::OpenResult result;
-            result.SetDatabase(GetTaskRunnerForDb(storage_partition_dir),
+            result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                                std::move(fake));
             result.metrics_type = DatabaseMetricsType::kOnDisk;
             result.open_status = DbStatus::OK();
+            if (!dir_to_destroy.empty()) {
+              result.destroy_outcome =
+                  DomStorageDatabaseFactory::DestroyOutcome{
+                      DbStatus::OK(), DatabaseMetricsType::kOnDisk};
+            }
             std::move(callback).Run(std::move(result));
           }));
 
@@ -1987,6 +2041,7 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
 
   // This will re-initialize Session Storage and load the persisted namespace,
   // but it should have been deleted due to our backing mode.
+  base::HistogramTester histograms;
   session_storage()->CreateNamespace(namespace_id1);
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver());
@@ -1995,6 +2050,10 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
   // clears disk space on open.
   data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
+
+  // BackingMode::kClearDiskStateOnOpen should record its Destroy result.
+  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(SessionStorageImplTest, ClearDiskStateOnOpenWithEmptyPathUsesInMemory) {

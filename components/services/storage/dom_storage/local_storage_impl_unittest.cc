@@ -1368,12 +1368,15 @@ TEST_P(LocalStorageImplTest, InvalidVersionOnDisk) {
         AsyncDomStorageDatabase::Open(
             StorageType::kLocalStorage, storage_path(),
             /*memory_dump_id*/ std::nullopt,
-            base::BindLambdaForTesting([&](DbStatus callback_status) {
-              status = callback_status;
-              open_db_run_loop.Quit();
-            }));
+            /*dir_to_destroy=*/base::FilePath(),
+            base::BindLambdaForTesting(
+                [&](AsyncDomStorageDatabase::OpenOutcome outcome) {
+                  status = outcome.open_status;
+                  open_db_run_loop.Quit();
+                }));
 
     open_db_run_loop.Run();
+
     ASSERT_TRUE(status.ok()) << status.ToString();
 
     // Mess up version number in database.
@@ -1873,17 +1876,23 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   // the second database to OK mid-flight to simulate transient errors.
   ScopedDomStorageDatabaseFactoryForTesting scoped_factory(
       base::BindLambdaForTesting(
-          [](StorageType, const base::FilePath& storage_partition_dir,
+          [](StorageType, const base::FilePath& dir_to_open,
              const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
+             const base::FilePath& dir_to_destroy,
              DomStorageDatabaseFactory::OpenResultCallback callback) {
             auto fake =
                 std::make_unique<FakeDomStorageDatabase>(DbStatus::OK());
             fake->SetUpdateMapsStatus(DbStatus::IOError("test"));
             DomStorageDatabaseFactory::OpenResult result;
-            result.SetDatabase(GetTaskRunnerForDb(storage_partition_dir),
+            result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                                std::move(fake));
             result.metrics_type = DatabaseMetricsType::kOnDisk;
             result.open_status = DbStatus::OK();
+            if (!dir_to_destroy.empty()) {
+              result.destroy_outcome =
+                  DomStorageDatabaseFactory::DestroyOutcome{
+                      DbStatus::OK(), DatabaseMetricsType::kOnDisk};
+            }
             std::move(callback).Run(std::move(result));
           }));
 
@@ -2104,16 +2113,10 @@ TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_SecondDestroyFailed) {
   // First destroy succeeds, second fails.
   int destroy_count = 0;
   FakeDomStorageDatabaseFactory fake_factory(
-      /*num_open_failures=*/2,
-      base::BindLambdaForTesting(
-          [&destroy_count](const base::FilePath&, bool /*is_sqlite*/,
-                           DomStorageDatabaseFactory::StatusCallback cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), destroy_count++ >= 1
-                                                  ? DbStatus::IOError("test")
-                                                  : DbStatus::OK()));
-          }));
+      /*num_open_failures=*/2, base::BindLambdaForTesting([&destroy_count]() {
+        return destroy_count++ >= 1 ? DbStatus::IOError("test")
+                                    : DbStatus::OK();
+      }));
 
   InitializeStorage(storage_path());
   WaitForDatabaseOpen();
@@ -2136,16 +2139,10 @@ TEST_F(LocalStorageImplFakeDbTest, GaveUp_SecondDestroyFailed) {
   // First destroy succeeds, second fails.
   int destroy_count = 0;
   FakeDomStorageDatabaseFactory fake_factory(
-      /*num_open_failures=*/3,
-      base::BindLambdaForTesting(
-          [&destroy_count](const base::FilePath&, bool /*is_sqlite*/,
-                           DomStorageDatabaseFactory::StatusCallback cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), destroy_count++ >= 1
-                                                  ? DbStatus::IOError("test")
-                                                  : DbStatus::OK()));
-          }));
+      /*num_open_failures=*/3, base::BindLambdaForTesting([&destroy_count]() {
+        return destroy_count++ >= 1 ? DbStatus::IOError("test")
+                                    : DbStatus::OK();
+      }));
 
   InitializeStorage(storage_path());
   WaitForDatabaseOpen();

@@ -31,18 +31,30 @@ class AsyncDomStorageDatabase {
 
   ~AsyncDomStorageDatabase();
 
+  struct OpenOutcome {
+    DbStatus open_status;
+    std::optional<DomStorageDatabaseFactory::DestroyOutcome> destroy_outcome;
+  };
+  using OpenCallback = base::OnceCallback<void(OpenOutcome)>;
+
   // Creates an `AsyncDomStorageDatabase` then asynchronously opens the
   // database. Callers must wait to use `AsyncDomStorageDatabase` until
   // `callback` completes with an OK status. After failing to open,
   // `AsyncDomStorageDatabase` must be discarded.
   //
-  // To create an in-memory database, provide an empty `storage_partition_dir`.
+  // The new database is in-memory if `dir_to_open` is empty. If
+  // `dir_to_destroy` is non-empty, the pre-existing on-disk database at that
+  // location is destroyed before the new one is opened, and the destroy outcome
+  // is passed to `callback`. `dir_to_destroy` may differ from `dir_to_open`.
+  // E.g. recovery destroys the on-disk database then opens an in-memory DB by
+  // passing an empty `dir_to_open`.
   static std::unique_ptr<AsyncDomStorageDatabase> Open(
       StorageType storage_type,
-      const base::FilePath& storage_partition_dir,
+      const base::FilePath& dir_to_open,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      StatusCallback callback);
+      const base::FilePath& dir_to_destroy,
+      OpenCallback callback);
 
   // An interface that represents a source of commits. Practically speaking,
   // this is a `StorageAreaImpl`.
@@ -60,7 +72,6 @@ class AsyncDomStorageDatabase {
     CHECK(is_database_opened_);
     return is_sqlite_;
   }
-  DatabaseMetricsType metrics_type() const { return metrics_type_; }
 
   // The functions below use `base::SequenceBound` to read and write
   // `database_` through the `DomStorageDatabase` interface. See function
@@ -126,8 +137,8 @@ class AsyncDomStorageDatabase {
 
   // Callback from DomStorageDatabaseFactory::Open(). Stores the opened
   // database and its resolved configuration. Then, runs `callback` with the
-  // `DbStatus` from opening the database.
-  void OnDatabaseOpened(StatusCallback callback,
+  // `DbStatus` from opening the database and the destroy outcome, if any.
+  void OnDatabaseOpened(OpenCallback callback,
                         DomStorageDatabaseFactory::OpenResult result);
 
   // `database_` and `is_sqlite_` must not be used until `is_database_opened_`

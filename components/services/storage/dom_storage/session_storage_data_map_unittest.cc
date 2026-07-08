@@ -101,10 +101,12 @@ class SessionStorageDataMapTest : public base::test::WithFeatureOverride,
         StorageType::kSessionStorage,
         /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
-        base::BindLambdaForTesting([&](DbStatus status) {
-          ASSERT_TRUE(status.ok());
-          loop.Quit();
-        }));
+        /*dir_to_destroy=*/base::FilePath(),
+        base::BindLambdaForTesting(
+            [&](AsyncDomStorageDatabase::OpenOutcome outcome) {
+              ASSERT_TRUE(outcome.open_status.ok());
+              loop.Quit();
+            }));
     loop.Run();
 
     // Store a key/value pair in the first map.

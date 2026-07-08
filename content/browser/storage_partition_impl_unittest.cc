@@ -362,10 +362,12 @@ class RemoveLocalStorageTester {
         // creation.
         browser_context_->GetPath(),
         /*memory_dump_id=*/std::nullopt,
-        base::BindLambdaForTesting([&](storage::DbStatus status) {
-          ASSERT_TRUE(status.ok());
-          open_loop.Quit();
-        }));
+        /*dir_to_destroy=*/base::FilePath(),
+        base::BindLambdaForTesting(
+            [&](storage::AsyncDomStorageDatabase::OpenOutcome outcome) {
+              ASSERT_TRUE(outcome.open_status.ok());
+              open_loop.Quit();
+            }));
     open_loop.Run();
 
     PopulateDatabase(database.get(), origin1, origin2, origin3);

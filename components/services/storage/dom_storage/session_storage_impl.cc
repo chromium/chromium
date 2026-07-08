@@ -642,35 +642,50 @@ void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {
   NOTREACHED();
 }
 
-void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
+void SessionStorageImpl::InitiateConnection(
+    bool in_memory_only,
+    bool destroy_existing_db_for_recovery) {
   CHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
-  if (backing_mode_ != BackingMode::kNoDisk && !in_memory_only &&
-      !storage_partition_directory_.empty()) {
-    // We were given a subdirectory to write to, so use a disk backed database.
-    if (backing_mode_ == BackingMode::kClearDiskStateOnOpen) {
-      DomStorageDatabaseFactory::Destroy(
-          StorageType::kSessionStorage, storage_partition_directory_,
-          base::BindOnce(&SessionStorageImpl::OnDiskStateCleared,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
+  // Use an in-memory database unless we were given a usable subdirectory and
+  // weren't asked to stay in memory.
+  in_memory_ = in_memory_only || backing_mode_ == BackingMode::kNoDisk ||
+               storage_partition_directory_.empty();
+  const base::FilePath dir_to_open =
+      in_memory_ ? base::FilePath() : storage_partition_directory_;
 
-    OpenOnDiskDatabase();
-    return;
-  }
-
-  // We were not given a subdirectory. Use a memory backed database.
-  in_memory_ = true;
+  // Recovery destroys the pre-existing on-disk database before reopening (which
+  // may itself be in-memory). `kClearDiskStateOnOpen` also destroys any
+  // pre-existing on-disk state, but only when actually opening on disk (an
+  // empty dir has nothing to destroy). An empty `dir_to_destroy` means no
+  // destroy.
+  const bool destroy_existing =
+      destroy_existing_db_for_recovery ||
+      (!in_memory_ && backing_mode_ == BackingMode::kClearDiskStateOnOpen);
+  const base::FilePath dir_to_destroy =
+      destroy_existing ? storage_partition_directory_ : base::FilePath();
   database_ = AsyncDomStorageDatabase::Open(
-      StorageType::kSessionStorage,
-      /*storage_partition_dir=*/base::FilePath(), memory_dump_id_,
+      StorageType::kSessionStorage, dir_to_open, memory_dump_id_,
+      dir_to_destroy,
       base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
-  if (!status.ok()) {
+void SessionStorageImpl::OnDatabaseOpened(
+    AsyncDomStorageDatabase::OpenOutcome outcome) {
+  // If this open destroyed a pre-existing database, log the destroy result.
+  // This covers both recovery and the `kClearDiskStateOnOpen` path. If
+  // `recovery_state_` is set, then add the destroy's result to it.
+  if (outcome.destroy_outcome) {
+    outcome.destroy_outcome->status.Log(
+        "Storage.SessionStorage.DestroyDatabase",
+        outcome.destroy_outcome->destroyed_db_metrics_type);
+    if (recovery_state_) {
+      recovery_state_->AddDestroyResult(outcome.destroy_outcome->status.ok());
+    }
+  }
+
+  if (!outcome.open_status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
     DeleteAndRecreateDatabase(DomStorageRecoveryReason::kOpenFailure);
@@ -755,10 +770,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(
   receiver_.Pause();
   RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
   commit_error_count_ = 0;
-  // Capture `metrics_type` before resetting `database_` so `OnDBDestroyed`
-  // can log with the right histogram suffix.
   CHECK(database_);
-  DatabaseMetricsType metrics_type = database_->metrics_type();
   database_.reset();
 
   bool recreate_in_memory = false;
@@ -778,44 +790,10 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(
 
   protected_namespaces_from_scavenge_.clear();
 
-  // Destroy database, and try again.
-  if (!in_memory_) {
-    DomStorageDatabaseFactory::Destroy(
-        StorageType::kSessionStorage, storage_partition_directory_,
-        base::BindOnce(&SessionStorageImpl::OnDBDestroyed,
-                       weak_ptr_factory_.GetWeakPtr(), recreate_in_memory,
-                       metrics_type));
-  } else {
-    // No directory, so nothing to destroy. Retrying to recreate will probably
-    // fail, but try anyway.
-    InitiateConnection(recreate_in_memory);
-  }
-}
-
-void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
-                                       DatabaseMetricsType metrics_type,
-                                       DbStatus status) {
-  // Destroy is only invoked from the `!in_memory_` branch of
-  // `DeleteAndRecreateDatabase`, so the destroyed database must not be
-  // in-memory.
-  CHECK_NE(metrics_type, DatabaseMetricsType::kInMemory);
-  status.Log("Storage.SessionStorage.DestroyDatabase", metrics_type);
-  CHECK(recovery_state_);
-  recovery_state_->AddDestroyResult(status.ok());
-  InitiateConnection(recreate_in_memory);
-}
-
-void SessionStorageImpl::OpenOnDiskDatabase() {
-  in_memory_ = false;
-  database_ = AsyncDomStorageDatabase::Open(
-      StorageType::kSessionStorage, storage_partition_directory_,
-      memory_dump_id_,
-      base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SessionStorageImpl::OnDiskStateCleared(DbStatus status) {
-  OpenOnDiskDatabase();
+  // `!in_memory_` means the old database was on-disk and must be destroyed
+  // before reopening.
+  InitiateConnection(recreate_in_memory,
+                     /*destroy_existing_db_for_recovery=*/!in_memory_);
 }
 
 void SessionStorageImpl::GetStatistics(size_t* total_cache_size,

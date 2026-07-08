@@ -172,8 +172,19 @@ DomStorageDatabaseLevelDB::Open(
 
 // static
 DbStatus DomStorageDatabaseLevelDB::Destroy(const base::FilePath& directory) {
+  leveldb_env::Options options = MakeOnDiskOptions();
+
+  // Remove the experimental tag file if one exists so `DestroyDB()` can clear
+  // the folder after removing LevelDB related files. The storage service is
+  // sandboxed, so this goes through the env's `FilesystemProxy`.
+  DbStatus status = FromLevelDBStatus(options.env->RemoveFile(
+      GetLevelDbExperimentalTagPath(directory).AsUTF8Unsafe()));
+  if (!status.ok()) {
+    return status;
+  }
+
   return FromLevelDBStatus(
-      leveldb::DestroyDB(directory.AsUTF8Unsafe(), MakeOnDiskOptions()));
+      leveldb::DestroyDB(directory.AsUTF8Unsafe(), options));
 }
 
 StatusOr<DomStorageDatabase::Value> DomStorageDatabaseLevelDB::Get(

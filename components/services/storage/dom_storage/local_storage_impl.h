@@ -119,13 +119,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Part of asynchronous database opening called from `RunWhenConnected()`. If
   // opening the database on disk fails twice, falls back to in memory. If
   // opening the database in memory fails, runs without a database.
-  void InitiateConnection(bool in_memory_only = false);
-  void OnDatabaseOpened(DbStatus status);
+  void InitiateConnection(bool in_memory_only = false,
+                          bool destroy_existing_db_for_recovery = false);
+  void OnDatabaseOpened(AsyncDomStorageDatabase::OpenOutcome outcome);
   void OnConnectionFinished();
   void DeleteAndRecreateDatabase(DomStorageRecoveryReason reason);
-  void OnDBDestroyed(bool recreate_in_memory,
-                     DatabaseMetricsType metrics_type,
-                     DbStatus status);
 
   StorageAreaHolder* GetOrCreateStorageArea(
       const blink::StorageKey& storage_key);

@@ -184,7 +184,9 @@ class StorageAreaImplTestBase : public testing::Test,
         StorageType::kSessionStorage,
         /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
-        base::BindLambdaForTesting([&](DbStatus status) { loop.Quit(); }));
+        /*dir_to_destroy=*/base::FilePath(),
+        base::BindLambdaForTesting(
+            [&](AsyncDomStorageDatabase::OpenOutcome) { loop.Quit(); }));
     loop.Run();
 
     StorageAreaImpl::Options options =

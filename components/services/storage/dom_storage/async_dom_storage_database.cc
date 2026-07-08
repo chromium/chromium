@@ -56,15 +56,16 @@ void RecordStatusAndDuration(const std::string& status_histogram_name,
 // static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
     StorageType storage_type,
-    const base::FilePath& storage_partition_dir,
+    const base::FilePath& dir_to_open,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
-    StatusCallback callback) {
+    const base::FilePath& dir_to_destroy,
+    OpenCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> instance(
       new AsyncDomStorageDatabase(storage_type));
 
   DomStorageDatabaseFactory::Open(
-      storage_type, storage_partition_dir, memory_dump_id,
+      storage_type, dir_to_open, memory_dump_id, dir_to_destroy,
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      instance->weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
@@ -253,7 +254,7 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 }
 
 void AsyncDomStorageDatabase::OnDatabaseOpened(
-    StatusCallback callback,
+    OpenCallback callback,
     DomStorageDatabaseFactory::OpenResult result) {
   CHECK(!is_database_opened_);
   metrics_type_ = result.metrics_type;
@@ -264,7 +265,8 @@ void AsyncDomStorageDatabase::OnDatabaseOpened(
     CHECK(database_);
   }
 
-  std::move(callback).Run(std::move(result.open_status));
+  std::move(callback).Run(OpenOutcome{std::move(result.open_status),
+                                      std::move(result.destroy_outcome)});
 }
 
 std::string_view AsyncDomStorageDatabase::StorageTypeForHistograms() const {

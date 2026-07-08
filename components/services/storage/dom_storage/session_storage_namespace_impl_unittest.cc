@@ -86,7 +86,9 @@ class SessionStorageNamespaceImplTest
         StorageType::kSessionStorage,
         /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
-        base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
+        /*dir_to_destroy=*/base::FilePath(),
+        base::BindLambdaForTesting(
+            [&](AsyncDomStorageDatabase::OpenOutcome) { loop.Quit(); }));
     loop.Run();
 
     auto map_locator =
