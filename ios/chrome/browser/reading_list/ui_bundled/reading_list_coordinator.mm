@@ -706,6 +706,7 @@
       [[SharingParams alloc] initWithURL:URL
                                    title:title
                                 scenario:SharingScenario::ReadingListEntry];
+  [self.sharingCoordinator stop];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.tableViewController
                          browser:self.browser

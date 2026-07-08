@@ -113,6 +113,7 @@
                                      title:imageTitle
                                   scenario:SharingScenario::QRCodeImage];
   // Configure the image sharing scenario.
+  [self.sharingCoordinator stop];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser

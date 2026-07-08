@@ -2283,6 +2283,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                                    title:title
                                 scenario:SharingScenario::BookmarkEntry];
   UIView* cellView = [self.tableView cellForRowAtIndexPath:indexPath];
+  [self.sharingCoordinator stop];
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:self
                                                      browser:_browser.get()
