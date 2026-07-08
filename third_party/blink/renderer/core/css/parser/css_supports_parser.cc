@@ -145,8 +145,8 @@ bool CSSSupportsParser::ConsumeSupportsSelectorFn(
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
 
-  if (CSSSelectorParser::SupportsComplexSelector(stream,
-                                                 parser_.GetContext()) &&
+  if (CSSSelectorParser::SupportsComplexSelector(stream, parser_.GetContext(),
+                                                 parser_.GetStyleSheet()) &&
       guard.Release()) {
     stream.ConsumeWhitespace();
     return true;

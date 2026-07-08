@@ -243,12 +243,13 @@ ActiveNavigationCondition* CSSSelectorParser::ParseActiveNavigationCondition(
 // static
 bool CSSSelectorParser::SupportsComplexSelector(
     CSSParserTokenStream& stream,
-    const CSSParserContext* context) {
+    const CSSParserContext* context,
+    StyleSheetContents* style_sheet) {
   stream.ConsumeWhitespace();
   HeapVector<CSSSelector> arena;
   CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
-                           /*semicolon_aborts_nested_selector=*/false, nullptr,
-                           arena);
+                           /*semicolon_aborts_nested_selector=*/false,
+                           style_sheet, arena);
   parser.SetInSupportsParsing();
   ResultFlags result_flags = 0;
   base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(

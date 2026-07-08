@@ -84,7 +84,8 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeNthChildOfSelectors(CSSParserTokenStream&);
 
   static bool SupportsComplexSelector(CSSParserTokenStream&,
-                                      const CSSParserContext*);
+                                      const CSSParserContext*,
+                                      StyleSheetContents*);
 
   static CSSSelector::PseudoType ParsePseudoType(const AtomicString&,
                                                  bool has_arguments,
