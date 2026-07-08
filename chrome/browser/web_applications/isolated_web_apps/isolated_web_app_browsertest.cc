@@ -82,6 +82,11 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -1209,6 +1214,10 @@ IN_PROC_BROWSER_TEST_F(
       permissions::PermissionRequestManager::FromWebContents(app_web_contents_);
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
+#if BUILDFLAG(IS_MAC)
+  apps::AppShimManager::Get()->SetNotificationPermissionResponseForTesting(
+      mac_notifications::mojom::RequestPermissionResult::kPermissionGranted);
+#endif
 
   ASSERT_EQ("permission status - granted", content::EvalJs(app_frame_, R"js(
     (async () => {

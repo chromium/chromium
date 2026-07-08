@@ -51,6 +51,7 @@ class AppShimController
   };
 
   static void SetDelegateForTesting(TestDelegate* delegate);
+  static void SetDisableNotificationServiceForTesting(bool disable);
 
   struct Params {
     Params();
@@ -211,6 +212,7 @@ class AppShimController
       mac_notifications::mojom::PermissionStatus status);
 
   bool WebAppIsAdHocSigned() const;
+  bool ShouldCreateNotificationServiceUN() const;
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.

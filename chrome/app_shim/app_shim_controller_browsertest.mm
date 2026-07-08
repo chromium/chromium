@@ -266,6 +266,13 @@ MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
 
   AppShimControllerDelegate controller_delegate(log);
   AppShimController::SetDelegateForTesting(&controller_delegate);
+  // This test runs as a raw child binary rather than launched from an
+  // `.app` bundle via LaunchServices. Even though in-memory bundle
+  // lookups are overridden, Apple's UserNotifications framework queries
+  // the OS for the running binary, finds no LaunchServices registration,
+  // and throws an exception when accessing currentNotificationCenter.
+  // Disable creating the notification service specifically for this test.
+  AppShimController::SetDisableNotificationServiceForTesting(true);
 
   log("Shim Started");
 

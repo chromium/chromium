@@ -175,11 +175,16 @@ class ScopedSynchronizeThreads {
 };
 
 AppShimController::TestDelegate* g_test_delegate = nullptr;
+bool g_disable_notification_service_for_testing = false;
 
 }  // namespace
 
 void AppShimController::SetDelegateForTesting(TestDelegate* delegate) {
   g_test_delegate = delegate;
+}
+
+void AppShimController::SetDisableNotificationServiceForTesting(bool disable) {
+  g_disable_notification_service_for_testing = disable;
 }
 
 AppShimController::Params::Params() = default;
@@ -205,8 +210,7 @@ AppShimController::AppShimController(const Params& params)
   // is harmless, and the only effect of not creating it early when we later
   // need it is that we might miss some notification actions, which again is
   // harmless.
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
-      WebAppIsAdHocSigned()) {
+  if (ShouldCreateNotificationServiceUN()) {
     // `notification_service_` needs to be created early during start up to make
     // sure it is able to install its delegate before the OS attempts to inform
     // it of any notification actions that might have happened.
@@ -854,7 +858,7 @@ void AppShimController::BindNotificationService(
     // instance already, it is possible that the base::FeatureList state at the
     // time did not match the current Chrome state, so make sure to create the
     // service now if it wasn't created already.
-    if (!notification_service_) {
+    if (!notification_service_ && ShouldCreateNotificationServiceUN()) {
       CHECK(notification_action_handler_remote_);
       notification_service_ =
           std::make_unique<mac_notifications::MacNotificationServiceUN>(
@@ -864,14 +868,16 @@ void AppShimController::BindNotificationService(
                   base::Unretained(this)),
               UNUserNotificationCenter.currentNotificationCenter);
     }
-    // Note that `handler` as passed in to this method is ignored. Notification
-    // actions instead will be dispatched to the app-shim scoped mojo pipe that
-    // was established earlier during startup, to allow notification actions to
-    // be triggered before the browser process tries to connect to the
-    // notification service.
-    notification_service_un()->Bind(std::move(service));
-    // TODO(crbug.com/40616749): Determine when to ask for permissions.
-    notification_service_un()->RequestPermission(base::DoNothing());
+    if (notification_service_un()) {
+      // Note that `handler` as passed in to this method is ignored.
+      // Notification actions instead will be dispatched to the app-shim scoped
+      // mojo pipe that was established earlier during startup, to allow
+      // notification actions to be triggered before the browser process tries
+      // to connect to the notification service.
+      notification_service_un()->Bind(std::move(service));
+      // TODO(crbug.com/40616749): Determine when to ask for permissions.
+      notification_service_un()->RequestPermission(base::DoNothing());
+    }
   } else {
     // NSUserNotificationCenter is in the process of being replaced, and
     // warnings about its deprecation are not helpful.
@@ -998,4 +1004,16 @@ bool AppShimController::WebAppIsAdHocSigned() const {
       base::apple::MainBundle()
           .infoDictionary[app_mode::kCrAppModeIsAdHocSignedKey];
   return isAdHocSigned.boolValue;
+}
+
+bool AppShimController::ShouldCreateNotificationServiceUN() const {
+  if (g_disable_notification_service_for_testing) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kAppShimNotificationAttribution) ||
+      !WebAppIsAdHocSigned()) {
+    return false;
+  }
+  return true;
 }
