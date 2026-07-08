@@ -62,10 +62,7 @@ source_set("core") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "filter_tab_controller_test_api.h",
-    "multistep_filter_service_test_api.h",
-  ]
+  sources = [ "filter_tab_controller_test_api.h" ]
   public_deps =
       [ "//components/multistep_filter/core/annotation_index:test_support" ]
   deps = [

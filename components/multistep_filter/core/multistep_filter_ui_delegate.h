@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 
 namespace multistep_filter {
@@ -29,8 +28,6 @@ class MultistepFilterUiDelegate {
   // Called when a suggestion is generated (or fails to generate).
   virtual void OnSuggestionGenerated(
       std::optional<UrlFilterSuggestion> suggestion) = 0;
-
-  virtual base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() = 0;
 };
 
 }  // namespace multistep_filter

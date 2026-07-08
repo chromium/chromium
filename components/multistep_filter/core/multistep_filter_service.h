@@ -23,7 +23,6 @@
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/sync/service/sync_service.h"
 
-class GURL;
 class PrefService;
 
 namespace signin {
@@ -39,7 +38,6 @@ namespace multistep_filter {
 class AnnotationIndexClient;
 class MultistepFilterLogRouter;
 class MultistepFilterServiceTestApi;
-class FilterExtractor;
 class FilterStore;
 class FilterSuggestionGenerator;
 
@@ -55,15 +53,6 @@ class FilterSuggestionGenerator;
 class MultistepFilterService : public KeyedService,
                                public history::HistoryServiceObserver {
  public:
-  class ObserverForTest {
-   public:
-    virtual ~ObserverForTest() = default;
-    virtual void OnExtractionFinished(
-        std::optional<base::Uuid> annotation_id) = 0;
-    virtual void OnSuggestionGenerated(
-        std::optional<UrlFilterSuggestion> suggestion) = 0;
-  };
-
   struct Params {
     std::unique_ptr<AnnotationIndexClient> annotation_index_client;
     std::unique_ptr<FilterStore> filter_store;
@@ -86,41 +75,11 @@ class MultistepFilterService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Parses the given url to extract a `FilterAnnotation`. A filter annotation
-  // is a set of normalized filter attributes. The eventual extraction is
-  // delegated to `filter_extractor_` which takes care of storing the results.
-  // `ExtractAnnotation` is guaranteed to call `OnExtractionFinished`. The
-  // `annotation` will be nullopt in case of failures.
-  virtual void ExtractAnnotation(
-      int64_t navigation_id,
-      const GURL& url,
-      std::optional<UrlFilterSuggestion> applied_suggestion);
-
-  // Called when a navigation happened but the landing page has an insecure
-  // scheme or is an error page (i.e. no annotation can be extracted).
-  virtual void NetworkStatusPreventedExtraction(
-      int64_t navigation_id,
-      const GURL& url,
-      std::optional<UrlFilterSuggestion> applied_suggestion,
-      bool is_unsupported_scheme,
-      int net_error_code,
-      int http_response_code);
-
   // Checks if the user has provided consent (signed in, URL-keyed data
   // collection enabled, and history sync enabled), and logs the eligibility
   // check.
   virtual bool HasUserProvidedConsent(int64_t navigation_id,
                                       std::string_view host);
-
-  // Generates a filter suggestion for `url`. Based on URL analysis, the
-  // suggestion may be stored for later use. Results are returned via the
-  // `callback`. `GenerateFilterSuggestions` is guaranteed to call
-  // `OnSuggestionGenerated`. The `annotation` will be nullopt in case of
-  // failures.
-  virtual void GenerateFilterSuggestions(
-      int64_t navigation_id,
-      const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 
   // Records a suggestion impression in Profile retention preferences.
   virtual void RecordSuggestionImpression();
@@ -150,41 +109,6 @@ class MultistepFilterService : public KeyedService,
  private:
   friend class MultistepFilterServiceTestApi;
 
-  // Callback for when `GetSupportedTaskForUrl` finishes for extraction.
-  void OnUrlAllowedForExtraction(
-      int64_t navigation_id,
-      const GURL& url,
-      std::optional<UrlFilterSuggestion> applied_suggestion,
-      std::vector<std::string> supported_task_types);
-
-  // Callback for when an annotation is extracted or failed. In case of failure,
-  // `annotation` will be nullopt.
-  void OnExtractionFinished(
-      int64_t navigation_id,
-      std::string host,
-      std::optional<UrlFilterSuggestion> applied_suggestion,
-      std::optional<FilterAnnotation> annotation);
-
-  // Callback for when `GetSupportedTaskForUrl` finishes for suggestion
-  // generation.
-  void OnUrlAllowedForSuggestion(
-      int64_t navigation_id,
-      const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      std::vector<std::string> supported_task_types);
-
-  // Callback for when a suggestion is generated.
-  void OnSuggestionGenerated(
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
-      std::optional<UrlFilterSuggestion> suggestion);
-
-  // Asynchronously retrieves the supported task types for `url` via the
-  // annotation index client and returns them via `callback`.
-  void GetSupportedTaskForUrl(
-      int64_t navigation_id,
-      const GURL& url,
-      base::OnceCallback<void(std::vector<std::string>)> callback);
-
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
   bool IsUserSignedIn() const;
@@ -195,8 +119,6 @@ class MultistepFilterService : public KeyedService,
   // Returns true if history sync is enabled.
   bool IsHistorySyncEnabled() const;
 
-  raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
-
   // Client used to interact with the `SiteAutomationIndexServer` on the server
   // side.
   std::unique_ptr<AnnotationIndexClient> annotation_index_client_;
@@ -204,12 +126,6 @@ class MultistepFilterService : public KeyedService,
   // Provides access to the underlying database that persists the user's
   // filter suggestions.
   std::unique_ptr<FilterStore> filter_store_;
-
-  // Extracts filter annotations from URLs and stores them. Never null.
-  std::unique_ptr<FilterExtractor> filter_extractor_;
-
-  // Responsible for generating filter suggestions.
-  std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator_;
 
   // Used to check if the user is signed in, as the feature is only available
   // for signed-in users.

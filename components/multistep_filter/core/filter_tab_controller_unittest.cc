@@ -53,13 +53,6 @@ class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
               (std::optional<UrlFilterSuggestion>),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
-
-  base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockMultistepFilterUiDelegate> weak_ptr_factory_{this};
 };
 
 class MockFilterExtractor : public FilterExtractor {

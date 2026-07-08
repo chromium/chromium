@@ -20,8 +20,6 @@ MultistepFilterUiDelegateImpl::MultistepFilterUiDelegateImpl(
 MultistepFilterUiDelegateImpl::~MultistepFilterUiDelegateImpl() = default;
 
 void MultistepFilterUiDelegateImpl::ClearSuggestion() {
-  // Cancel any pending suggestion generation callbacks.
-  weak_ptr_factory_.InvalidateWeakPtrs();
   if (FilterUiController* controller = GetController()) {
     // A navigation has occurred, so the suggestion is ignored.
     controller->ClearSuggestion(SuggestionUserDecision::kIgnored);
@@ -33,12 +31,6 @@ void MultistepFilterUiDelegateImpl::OnSuggestionGenerated(
   if (FilterUiController* controller = GetController()) {
     controller->OnSuggestionGenerated(std::move(suggestion));
   }
-}
-
-
-base::WeakPtr<MultistepFilterUiDelegate>
-MultistepFilterUiDelegateImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 FilterUiController* MultistepFilterUiDelegateImpl::GetController() const {

@@ -112,21 +112,6 @@ TEST_F(MultistepFilterUiDelegateImplTest,
   delegate_->OnSuggestionGenerated(suggestion);
 }
 
-TEST_F(MultistepFilterUiDelegateImplTest, GetWeakPtr) {
-  base::WeakPtr<MultistepFilterUiDelegate> weak_ptr = delegate_->GetWeakPtr();
-  EXPECT_TRUE(weak_ptr);
-
-  delegate_.reset();
-  EXPECT_FALSE(weak_ptr);
-}
-
-TEST_F(MultistepFilterUiDelegateImplTest, ClearSuggestion_InvalidatesWeakPtr) {
-  base::WeakPtr<MultistepFilterUiDelegate> weak_ptr = delegate_->GetWeakPtr();
-  EXPECT_TRUE(weak_ptr);
-  delegate_->ClearSuggestion();
-  EXPECT_FALSE(weak_ptr);
-}
-
 }  // namespace
 
 }  // namespace multistep_filter

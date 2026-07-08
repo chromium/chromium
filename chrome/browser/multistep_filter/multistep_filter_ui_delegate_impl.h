@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 
@@ -33,16 +32,10 @@ class MultistepFilterUiDelegateImpl final : public MultistepFilterUiDelegate {
   void ClearSuggestion() override;
   void OnSuggestionGenerated(
       std::optional<UrlFilterSuggestion> suggestion) override;
-  base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override;
-
  private:
   FilterUiController* GetController() const;
 
   raw_ref<tabs::TabInterface> tab_;
-
-  // This should be kept at the end so that it is the first member to be
-  // destroyed.
-  base::WeakPtrFactory<MultistepFilterUiDelegateImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter
