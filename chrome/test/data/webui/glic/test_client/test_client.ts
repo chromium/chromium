@@ -52,6 +52,8 @@ $.openGlicSettings.addEventListener('click', () => {
     options.highlightField = SettingsPageField.OS_HOTKEY;
   } else if (selectedHighlight === 'osEntrypointToggle') {
     options.highlightField = SettingsPageField.OS_ENTRYPOINT_TOGGLE;
+  } else if (selectedHighlight === 'locationPermission') {
+    options.highlightField = SettingsPageField.LOCATION_PERMISSION;
   }
   getBrowser()!.openGlicSettingsPage!(options);
 });
