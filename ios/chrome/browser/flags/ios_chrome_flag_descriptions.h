@@ -682,6 +682,11 @@ inline constexpr char kEnableDiscoverBackgroundRefreshName[] =
 inline constexpr char kEnableDiscoverBackgroundRefreshDescription[] =
     "Enables background refresh for the Discover feed.";
 
+inline constexpr char kEnableEnterpriseWatermarkingIOSName[] =
+    "Enable Enterprise Watermarking.";
+inline constexpr char kEnableEnterpriseWatermarkingIOSDescription[] =
+    "When enabled, the enterprise watermarking is available on iOS.";
+
 inline constexpr char kEnableFamilyLinkControlsName[] =
     "Family Link parental controls";
 inline constexpr char kEnableFamilyLinkControlsDescription[] =
