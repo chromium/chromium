@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/rand_util.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

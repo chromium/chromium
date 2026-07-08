@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/controller/performance_manager/v8_worker_memory_reporter.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
