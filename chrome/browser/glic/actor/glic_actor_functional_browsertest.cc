@@ -72,7 +72,7 @@ GlicActorFunctionalBrowserTestBase::~GlicActorFunctionalBrowserTestBase() =
 
 ::actor::ActorKeyedService*
 GlicActorFunctionalBrowserTestBase::actor_keyed_service() {
-  return ::actor::ActorKeyedService::Get(browser()->profile());
+  return ::actor::ActorKeyedService::Get(browser()->GetProfile());
 }
 
 void GlicActorFunctionalBrowserTestBase::SetUpOnMainThread() {

@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
 
   // Lazy Background Page doesn't exist yet.
   ProcessManager* pm = ProcessManager::Get(profile());
-  ProcessManager* pmi = ProcessManager::Get(incognito_browser->profile());
+  ProcessManager* pmi = ProcessManager::Get(incognito_browser->GetProfile());
   EXPECT_FALSE(pm->GetBackgroundHostForExtension(last_loaded_extension_id()));
   EXPECT_FALSE(pmi->GetBackgroundHostForExtension(last_loaded_extension_id()));
 
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
 
     ExtensionHostTestHelper original_host(profile());
     original_host.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-    ExtensionHostTestHelper incognito_host(incognito_browser->profile());
+    ExtensionHostTestHelper incognito_host(incognito_browser->GetProfile());
     incognito_host.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
     BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile());

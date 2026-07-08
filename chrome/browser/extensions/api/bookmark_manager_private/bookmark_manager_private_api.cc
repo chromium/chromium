@@ -965,7 +965,7 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
   }
 
   BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return RespondNow(Error(kBookmarkNodesNotFoundFromIdListError,

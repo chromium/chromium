@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
 
   EXPECT_TRUE(
-      OpenOptionsPageFromAPI(options_split_extension, incognito->profile()));
+      OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       incognito->tab_strip_model()->GetActiveWebContents()));
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                                            chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(
-      OpenOptionsPageFromAPI(options_split_extension, incognito->profile()));
+      OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
 
   // Opening the options page should take the new tab and use it, so we should
   // have only one tab, and it should be open to the options page.
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Calling OpenOptionsPage again shouldn't result in any new tabs, since we
   // re-use the existing options page.
   EXPECT_TRUE(
-      OpenOptionsPageFromAPI(options_split_extension, incognito->profile()));
+      OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       incognito->tab_strip_model()->GetActiveWebContents()));
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(incognito, GURL("http://www.google.com/")));
   EXPECT_TRUE(
-      OpenOptionsPageFromAPI(options_split_extension, incognito->profile()));
+      OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
   EXPECT_EQ(2, incognito->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       incognito->tab_strip_model()->GetActiveWebContents()));

@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
   // validate that the proper context is used.
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_browser);
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile = incognito_browser->GetProfile();
 #else
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);

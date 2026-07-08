@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
   ASSERT_EQ(0u, registry.throttles().size());
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
-      BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
+      BlockNavigationUntilEnterpriseActionTaken(browser()->GetProfile(),
                                                 web_contents, nullptr, kEmail);
   ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(0u, registry.throttles().size());
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
-      BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
+      BlockNavigationUntilEnterpriseActionTaken(browser()->GetProfile(),
                                                 web_contents, nullptr, kEmail);
   ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(
   bool page_reloded = false;
   // Ensures `web_contents` is reloaded
   ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
-      browser()->profile(), true,
+      browser()->GetProfile(), true,
       base::BindLambdaForTesting([&](content::NavigationHandle&) {
         page_reloded = true;
         loop.Quit();

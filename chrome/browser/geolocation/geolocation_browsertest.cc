@@ -299,7 +299,7 @@ void GeolocationBrowserTest::Initialize(InitializationOptions options) {
 void GeolocationBrowserTest::Initialize(InitializationOptions options,
                                         GURL target) {
   if (options == INITIALIZATION_OFFTHERECORD) {
-    current_browser_ = OpenURLOffTheRecord(browser()->profile(), target);
+    current_browser_ = OpenURLOffTheRecord(browser()->GetProfile(), target);
   } else {
     current_browser_ = browser();
     if (options == INITIALIZATION_NEWTAB)
@@ -337,7 +337,7 @@ void GeolocationBrowserTest::SetFrameForScriptExecution(
 }
 
 HostContentSettingsMap* GeolocationBrowserTest::GetHostContentSettingsMap() {
-  return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  return HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
 }
 
 bool GeolocationBrowserTest::WatchPositionAndGrantPermission() {

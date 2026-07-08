@@ -124,7 +124,7 @@ class GetDriveFsCloudIdentifierBrowserTest
   base::FilePath AddDriveFsFile(const std::string& item_id) {
     base::FilePath absolute_path;
     base::FilePath relateive_path;
-    AddDriveFileWithRelativePath(browser()->profile(), item_id,
+    AddDriveFileWithRelativePath(browser()->GetProfile(), item_id,
                                  base::FilePath(), &relateive_path,
                                  &absolute_path);
     return absolute_path;
@@ -133,7 +133,7 @@ class GetDriveFsCloudIdentifierBrowserTest
 
 IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleSuccess) {
   // Set up DriveFS file system.
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   const std::string provider_name = "drive.google.com";
 
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleSuccess) {
 
 IN_PROC_BROWSER_TEST_F(GetDriveFsCloudIdentifierBrowserTest, GetHandleError) {
   // Set up DriveFS file system.
-  InitTestFileMountRoot(browser()->profile());
+  InitTestFileMountRoot(browser()->GetProfile());
 
   // Unexpected type (expect dir for file) should fail.
   const std::string file_item_id = "file-item-id";
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
 
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(
-          browser()->profile());
+          browser()->GetProfile());
 
   const std::string provider_name = "provided-file-system-provider";
 
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(GetProvidedFsCloudIdentifierBrowserTest,
 
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(
-          browser()->profile());
+          browser()->GetProfile());
 
   // Unexpected type (expect dir for file) should fail.
   base::FilePath file_1_path =

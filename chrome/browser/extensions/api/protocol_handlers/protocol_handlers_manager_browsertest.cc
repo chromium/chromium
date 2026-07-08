@@ -120,7 +120,7 @@ class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
  protected:
   custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlersRegistry() {
     return ProtocolHandlerRegistryFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -135,8 +135,8 @@ class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
   void SetExtensionIncognitoEnabledAndWait(const ExtensionId& id,
                                            bool enabled) {
     TestExtensionRegistryObserver observer(
-        ExtensionRegistry::Get(browser()->profile()), id);
-    util::SetIsIncognitoEnabled(id, browser()->profile(), enabled);
+        ExtensionRegistry::Get(browser()->GetProfile()), id);
+    util::SetIsIncognitoEnabled(id, browser()->GetProfile(), enabled);
     observer.WaitForExtensionLoaded();
   }
 
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          incognito_browser->profile());
+          incognito_browser->GetProfile());
   ASSERT_TRUE(incognito_registry->GetHandlerFor(scheme).IsEmpty());
 }
 
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          incognito_browser->profile());
+          incognito_browser->GetProfile());
   ASSERT_FALSE(incognito_registry->GetHandlerFor(scheme).IsEmpty());
 }
 
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
     Browser* incognito_browser = CreateIncognitoBrowser();
     custom_handlers::ProtocolHandlerRegistry* incognito_registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
-            incognito_browser->profile());
+            incognito_browser->GetProfile());
     ASSERT_FALSE(incognito_registry->GetHandlerFor(scheme).IsEmpty());
     CloseBrowserSynchronously(incognito_browser);
   }
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   Browser* incognito_browser2 = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry2 =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          incognito_browser2->profile());
+          incognito_browser2->GetProfile());
   ASSERT_TRUE(incognito_registry2->GetHandlerFor(scheme).IsEmpty());
 }
 

@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // This page has an unload handler.
   GURL url = embedded_test_server()->GetURL("/fast_shutdown/on_unloader.html");
-  EXPECT_EQ("", content::GetCookies(browser()->profile(), url));
+  EXPECT_EQ("", content::GetCookies(browser()->GetProfile(), url));
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
@@ -71,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   chrome::CloseTab(browser());
   renderer_shutdown_observer.Wait();
 
-  EXPECT_EQ("unloaded=ohyeah", content::GetCookies(browser()->profile(), url));
+  EXPECT_EQ("unloaded=ohyeah",
+            content::GetCookies(browser()->GetProfile(), url));
 }
 #endif
 
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
 // though the test doesn't have any explicit dependencies on the //chrome layer.
 IN_PROC_BROWSER_TEST_F(FastShutdown, SpareRenderProcessHostDuringShutdown) {
   content::SpareRenderProcessHostManager::Get().WarmupSpare(
-      browser()->profile());
+      browser()->GetProfile());
 
   // The verification is that there are no DCHECKs anywhere during test tear
   // down (in particular that no DCHECKs are hit inside

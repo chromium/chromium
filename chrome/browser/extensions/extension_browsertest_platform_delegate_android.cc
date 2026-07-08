@@ -26,7 +26,7 @@ void ExtensionBrowserTestPlatformDelegate::SetUpOnMainThread() {}
 void ExtensionBrowserTestPlatformDelegate::OpenURL(const GURL& url,
                                                    bool open_in_incognito) {
   if (open_in_incognito) {
-    parent_->PlatformOpenURLOffTheRecord(parent_->profile(), url);
+    parent_->PlatformOpenURLOffTheRecord(parent_->GetProfile(), url);
   } else {
     content::WebContents* web_contents = parent_->GetActiveWebContents();
     content::TestNavigationObserver observer(web_contents);

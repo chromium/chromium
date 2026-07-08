@@ -80,7 +80,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
   base::TimeTicks end_time = base::TimeTicks::Now() + kWaitTime;
   while (base::TimeTicks::Now() < end_time) {
     if (extensions::browsertest_util::GetWindowControllerCountInProfile(
-            browser->profile()) == num_browsers &&
+            browser->GetProfile()) == num_browsers &&
         browser->tab_strip_model()->count() == num_tabs) {
       break;
     }
@@ -90,7 +90,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
 
   EXPECT_EQ(num_browsers,
             extensions::browsertest_util::GetWindowControllerCountInProfile(
-                browser->profile()));
+                browser->GetProfile()));
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
 
   EXPECT_EQ(num_popups, WindowOpenApiTest::CountBrowsersForType(
@@ -100,7 +100,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
 
   return ((num_browsers ==
            extensions::browsertest_util::GetWindowControllerCountInProfile(
-               browser->profile())) &&
+               browser->GetProfile())) &&
           (num_tabs == browser->tab_strip_model()->count()) &&
           (num_popups == WindowOpenApiTest::CountBrowsersForType(
                              BrowserWindowInterface::TYPE_POPUP)) &&

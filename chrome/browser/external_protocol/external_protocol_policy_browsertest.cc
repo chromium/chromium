@@ -26,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 
   // Single dictionary for this test case, but erroneously not embedded
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   UpdateProviderPolicy(policies);
 
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // return UNKNOWN.
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, nullptr,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 
   base::ListValue protocol_origins_map_list;
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   UpdateProviderPolicy(policies);
 
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 }
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -226,19 +226,19 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that insecure origin matches.
   test_origin = url::Origin::Create(GURL("http://www.example.test"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that different origin does not match.
   test_origin = url::Origin::Create(GURL("http://www.other.test"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -271,19 +271,19 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that insecure origin matches.
   test_origin = url::Origin::Create(GURL("http://www.example.test"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that different origin does not match.
   test_origin = url::Origin::Create(GURL("http://www.other.test"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 }
 
@@ -349,13 +349,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that insecure origin does not match.
   test_origin = url::Origin::Create(GURL("http://www.example.test"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -388,19 +388,19 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that explicit port 443 matches.
   test_origin = url::Origin::Create(GURL("https://www.example.test:443"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
   // Test that explicit other port does not match.
   test_origin = url::Origin::Create(GURL("https://www.example.test:8080"));
   block_state = ExternalProtocolHandler::GetBlockState(
-      kExampleScheme, &test_origin, browser()->profile());
+      kExampleScheme, &test_origin, browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       url::Origin::Create(GURL("https://www.example.test"));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   url::Origin test_origin = url::Origin::Create(GURL(kFullUrlWithPath));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
-                                             browser()->profile());
+                                             browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 }
 

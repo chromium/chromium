@@ -442,7 +442,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
                                      const Extension* extension,
                                      Browser* browser) {
     content::WebContents* background_web_contents =
-        ProcessManager::Get(browser->profile())
+        ProcessManager::Get(browser->GetProfile())
             ->GetBackgroundHostForExtension(extension->id())
             ->host_contents();
     return FetchViaFrame(url, background_web_contents);
@@ -3048,7 +3048,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // 2. Grant active tab permission to that tab.
   // This is now asynchronous (it waits for Network Service to be updated).
   PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->profile()));
+      PermissionsManager::Get(browser()->GetProfile()));
   ActiveTabPermissionGranter* granter =
       ActiveTabPermissionGranter::FromWebContents(active_web_contents());
   ASSERT_TRUE(granter);

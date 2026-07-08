@@ -99,7 +99,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
         profile);
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                         signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
       Check([this]() {
         EnterpriseSigninService* signin_service =
             EnterpriseSigninServiceFactory::GetInstance()->GetForBrowserContext(
-                browser()->profile());
+                browser()->GetProfile());
         return !sync_service().HasObserver(signin_service);
       }));
 }
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
   GURL example_url(kExampleUrl);
   GURL auth_url(kAuthUrl);
 
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
 
   RunTestSequence(
       SetMaxTransportState(TransportState::START_DEFERRED),

@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
       update_tab_function.get(),
       std::string("[null, {\"url\": \"") + chrome::kChromeUIExtensionsURL +
           chrome::kExtensionConfigureCommandsSubPage + "\"}]",
-      incognito->profile(),  // incognito doesn't have any tabs.
+      incognito->GetProfile(),  // incognito doesn't have any tabs.
       api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 tabs_constants::kURLsNotAllowedInIncognitoError,
@@ -702,7 +702,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
   function->set_extension(extension.get());
   result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
       function.get(), kArgsWithoutExplicitIncognitoParam,
-      incognito_browser->profile(), api_test_utils::FunctionMode::kIncognito));
+      incognito_browser->GetProfile(),
+      api_test_utils::FunctionMode::kIncognito));
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(incognito_browser),
             GetWindowId(result));
@@ -770,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   function = base::MakeRefCounted<WindowsCreateFunction>();
   function->set_extension(extension.get());
   result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-      function.get(), kEmptyArgs, incognito_browser->profile(),
+      function.get(), kEmptyArgs, incognito_browser->GetProfile(),
       api_test_utils::FunctionMode::kIncognito));
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(incognito_browser),
@@ -804,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(function.get(),
                                        kArgsWithExplicitIncognitoParam,
-                                       incognito_browser->profile()),
+                                       incognito_browser->GetProfile()),
       keys::kIncognitoModeIsForced));
 }
 
@@ -830,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(function.get(), kArgs,
-                                       incognito_browser->profile()),
+                                       incognito_browser->GetProfile()),
       keys::kIncognitoModeIsDisabled));
 }
 

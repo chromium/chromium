@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   function->set_extension(extension.get());
   base::DictValue result =
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", new_browser->profile()));
+          function.get(), "[]", new_browser->GetProfile()));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.

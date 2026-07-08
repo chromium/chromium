@@ -32,7 +32,7 @@ class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
   TemplateURLService* LoadTemplateUrlService() {
     TemplateURLService* service =
         TemplateURLServiceFactory::GetInstance()->GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     if (service->loaded())
       return service;
     base::RunLoop run_loop;
@@ -79,7 +79,7 @@ class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
   }
 
   std::vector<std::string> GetFontNames() {
-    return FontPrewarmerTabHelper::GetFontNames(browser()->profile());
+    return FontPrewarmerTabHelper::GetFontNames(browser()->GetProfile());
   }
 
   std::unique_ptr<net::test_server::HttpResponse> OnHandleRequest(
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(FontPrewarmerTabHelperTest, Basic) {
                         ui::PAGE_TRANSITION_LINK);
   base::RunLoop run_loop;
   PrefChangeRegistrar prefs_registrar;
-  prefs_registrar.Init(browser()->profile()->GetPrefs());
+  prefs_registrar.Init(browser()->GetProfile()->GetPrefs());
   prefs_registrar.Add(GetSearchResultsPageFontsPref(),
                       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   Navigate(&params);

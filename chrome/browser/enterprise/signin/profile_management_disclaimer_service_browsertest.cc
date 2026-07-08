@@ -279,7 +279,7 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
 
   void ReplaceCurrentBrowserWithNewOne() {
     BrowserWindowInterface* const new_browser =
-        CreateBrowser(browser()->profile());
+        CreateBrowser(browser()->GetProfile());
     CloseBrowserSynchronously(browser());
     SetBrowser(new_browser);
     ASSERT_EQ(browser(), new_browser);

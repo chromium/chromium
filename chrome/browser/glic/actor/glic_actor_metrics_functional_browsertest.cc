@@ -92,7 +92,7 @@ class GlicActorMetricsFunctionalBrowserTestWithDisabledPolicy
   }
 
   void SetUpOnMainThread() override {
-    policy::ManagementServiceFactory::GetForProfile(browser()->profile())
+    policy::ManagementServiceFactory::GetForProfile(browser()->GetProfile())
         ->SetManagementAuthoritiesForTesting(
             policy::EnterpriseManagementAuthority::CLOUD);
     GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption::

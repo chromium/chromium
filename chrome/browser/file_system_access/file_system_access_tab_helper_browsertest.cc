@@ -64,11 +64,11 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
   void SetUpOnMainThread() override {
     // Clear the permission context since setting the testing factory will
     // destroy the current context outside of the normal shutdown sequence.
-    content::SetFileSystemAccessPermissionContext(browser()->profile(),
+    content::SetFileSystemAccessPermissionContext(browser()->GetProfile(),
                                                   nullptr);
     FileSystemAccessPermissionContextFactory::GetInstance()
         ->SetTestingFactoryAndUse(
-            browser()->profile(),
+            browser()->GetProfile(),
             base::BindRepeating(
                 &FileSystemAccessTabHelperPrerenderingBrowserTest::
                     BuildMockFileSystemAccessPermissionContext,
@@ -93,7 +93,7 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
       content::BrowserContext* context) {
     std::unique_ptr<MockFileSystemAccessPermissionContext> service =
         std::make_unique<MockFileSystemAccessPermissionContext>(
-            browser()->profile());
+            browser()->GetProfile());
     mock_service_ = service.get();
     return std::move(service);
   }

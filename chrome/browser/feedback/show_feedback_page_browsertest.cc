@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
 // opened and the os_feedback is used when the feature kOsFeedback is enabled.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackIsOpenedWhenFeatureEnabled) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
 
   base::HistogramTester histogram_tester;
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 // - `from_assistant` set true.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackAdditionalAssistantContextAddedToUrl) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ShowFeedbackPageBrowserTest,
     OsFeedbackAdditionalSettingsSearchNoFingerprintContextAddedToUrl) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ShowFeedbackPageBrowserTest,
     OsFeedbackAdditionalSettingsSearchWithFingerprintContextAddedToUrl) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(
 // - `autofill_metadata` string.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackAdditionalAutofillMetadataAddedToUrl) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const GURL page_url = chrome::GetTargetTabUrl(

@@ -103,7 +103,7 @@ class FileSystemAccessPickerRequiresUserGestureTest
 
   void SetupFakePermissionContext() {
     // Required to bypass permission prompt for directory picker.
-    content::SetFileSystemAccessPermissionContext(browser()->profile(),
+    content::SetFileSystemAccessPermissionContext(browser()->GetProfile(),
                                                   &permission_context_);
   }
 

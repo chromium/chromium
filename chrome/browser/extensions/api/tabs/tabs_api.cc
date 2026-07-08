@@ -365,7 +365,7 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
   // the JS side, and in that case we don't want to change the locked state.
   Browser* const target_browser = browser->GetBrowserForMigrationOnly();
   if (target_browser) {
-    Profile* const browser_profile = target_browser->profile();
+    Profile* const browser_profile = target_browser->GetProfile();
     if (is_locked_fullscreen &&
         params.update_info.state != windows::WindowState::kLockedFullscreen &&
         params.update_info.state != windows::WindowState::kNone) {

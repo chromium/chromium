@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
                        AllErrorsRemovedWhenExtensionRemoved) {
   const Extension* extension = InstallIncreasingPermissionExtensionV1();
   ASSERT_TRUE(extension);
-  AddExtensionDisabledError(browser()->profile(), extension, false);
+  AddExtensionDisabledError(browser()->GetProfile(), extension, false);
   extension = UpdateIncreasingPermissionExtension(extension, path_v2_, -1);
   ASSERT_TRUE(extension);
 

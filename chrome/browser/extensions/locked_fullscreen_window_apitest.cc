@@ -88,7 +88,7 @@ class LockedFullscreenWindowApiTestChromeOS
 
   void SetUpOnMainThread() override {
     LockedFullscreenWindowApiTestBase::SetUpOnMainThread();
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 
@@ -97,7 +97,7 @@ class LockedFullscreenWindowApiTestChromeOS
     content::TestNavigationObserver observer(
         (GURL(ash::boca::kChromeBocaAppUntrustedIndexURL)));
     observer.StartWatchingNewWebContents();
-    ash::LaunchSystemWebAppAsync(browser()->profile(),
+    ash::LaunchSystemWebAppAsync(browser()->GetProfile(),
                                  ash::SystemWebAppType::BOCA);
     observer.Wait();
   }
@@ -117,7 +117,7 @@ class LockedFullscreenWindowApiTestChromeOS
 
   Browser* FindBocaSystemWebAppBrowser() {
     ash::BrowserDelegate* delegate = ash::FindSystemWebAppBrowser(
-        browser()->profile(), ash::SystemWebAppType::BOCA,
+        browser()->GetProfile(), ash::SystemWebAppType::BOCA,
         ash::BrowserType::kApp);
     return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
                     : nullptr;

@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
   // LoadExtension() method ensures the on-the-record background page has spun
   // up, but we need to explicitly wait for the incognito version.
   Browser* incognito_browser = CreateIncognitoBrowser();
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile = incognito_browser->GetProfile();
   ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(incognito_profile);
   const Extension* extension =

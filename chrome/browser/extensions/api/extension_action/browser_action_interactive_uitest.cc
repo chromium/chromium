@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupDoesNotGrantTabPermissions) {
   OpenPopupViaAPI(false);
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->GetProfile());
   ASSERT_FALSE(registry->enabled_extensions()
                    .GetByID(last_loaded_extension_id())
                    ->permissions_data()
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   content::WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
   GURL url = active_web_contents->GetLastCommittedURL();
-  const Extension* extension = ExtensionRegistry::Get(browser()->profile())
+  const Extension* extension = ExtensionRegistry::Get(browser()->GetProfile())
                                    ->enabled_extensions()
                                    .GetExtensionOrAppByURL(url);
   ASSERT_TRUE(extension);
@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   ASSERT_TRUE(extension) << message_;
 
   content::DownloadTestObserverTerminal downloads_observer(
-      browser()->profile()->GetDownloadManager(), 1,
+      browser()->GetProfile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
   // Simulate a click on the browser action to open the popup.
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
       popup_browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
           Browser::WindowFeature::kFeatureToolbar));
   EXPECT_EQ(popup_browser,
-            ProfileBrowserCollection::GetForProfile(browser()->profile())
+            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                 ->GetLastActiveBrowser());
 
   // Load up the extension, which will call chrome.browserAction.openPopup()
@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // Find the RenderFrameHost associated with the iframe in the popup.
   content::RenderFrameHost* frame_host = nullptr;
   extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
+      extensions::ProcessManager::Get(browser()->GetProfile());
   std::set<content::RenderFrameHost*> frame_hosts =
       manager->GetRenderFrameHostsForExtension(extension->id());
   for (auto* host : frame_hosts) {
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
 
   // Find a primary main frame associated in the popup.
   extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
+      extensions::ProcessManager::Get(browser()->GetProfile());
   std::set<content::RenderFrameHost*> hosts =
       manager->GetRenderFrameHostsForExtension(extension->id());
   const auto& it = std::ranges::find_if(
@@ -1192,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        DownloadViaPost) {
   // Setup monitoring of the downloads.
   content::DownloadTestObserverTerminal downloads_observer(
-      browser()->profile()->GetDownloadManager(),
+      browser()->GetProfile()->GetDownloadManager(),
       1,  // == wait_count (only waiting for "download-test3.gif").
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
@@ -1211,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath downloads_directory =
-      DownloadPrefs(browser()->profile()).DownloadPath();
+      DownloadPrefs(browser()->GetProfile()).DownloadPath();
   EXPECT_TRUE(base::PathExists(
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        DownloadViaGet) {
   // Setup monitoring of the downloads.
   content::DownloadTestObserverTerminal downloads_observer(
-      browser()->profile()->GetDownloadManager(),
+      browser()->GetProfile()->GetDownloadManager(),
       1,  // == wait_count (only waiting for "download-test3.gif").
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath downloads_directory =
-      DownloadPrefs(browser()->profile()).DownloadPath();
+      DownloadPrefs(browser()->GetProfile()).DownloadPath();
   EXPECT_TRUE(base::PathExists(
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 

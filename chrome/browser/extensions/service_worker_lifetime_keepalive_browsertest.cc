@@ -1171,7 +1171,7 @@ class IWAServiceWorkerLifetimeKeepaliveBrowsertest
     const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
             .BuildBundle();
-    return bundle->InstallChecked(browser()->profile());
+    return bundle->InstallChecked(browser()->GetProfile());
   }
 
   void ConnectToReceiverExtension(content::RenderFrameHost* app_frame) {

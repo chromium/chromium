@@ -93,12 +93,13 @@ class EnterpriseProfileBadgingTest
   }
 
   void SetUpOnMainThread() override {
-    SetUserAcceptedAccountManagement(browser()->profile(), managed_profile());
+    SetUserAcceptedAccountManagement(browser()->GetProfile(),
+                                     managed_profile());
     if (managed_profile()) {
       scoped_browser_management_ =
           std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
               policy::ManagementServiceFactory::GetForProfile(
-                  browser()->profile()),
+                  browser()->GetProfile()),
               policy::EnterpriseManagementAuthority::CLOUD);
     }
     InProcessBrowserTest::SetUpOnMainThread();
@@ -137,11 +138,13 @@ IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest, CanShowEnterpriseBadging) {
 IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest,
                        CanNotShowEnterpriseBadgingForPrimaryOTRProfile) {
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   // Profile badging should always return false in incognito.
-  EXPECT_FALSE(CanShowEnterpriseBadgingForAvatar(incognito_browser->profile()));
-  EXPECT_FALSE(CanShowEnterpriseBadgingForMenu(incognito_browser->profile()));
+  EXPECT_FALSE(
+      CanShowEnterpriseBadgingForAvatar(incognito_browser->GetProfile()));
+  EXPECT_FALSE(
+      CanShowEnterpriseBadgingForMenu(incognito_browser->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest,
@@ -181,13 +184,13 @@ class EnterpriseBrowserBadgingTest
       scoped_browser_management_ =
           std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
               policy::ManagementServiceFactory::GetForProfile(
-                  browser()->profile()),
+                  browser()->GetProfile()),
               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
     } else {
       scoped_browser_management_ =
           std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
               policy::ManagementServiceFactory::GetForProfile(
-                  browser()->profile()),
+                  browser()->GetProfile()),
               policy::EnterpriseManagementAuthority::NONE);
     }
     InProcessBrowserTest::SetUpOnMainThread();

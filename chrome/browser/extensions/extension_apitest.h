@@ -64,7 +64,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     bool use_extensions_root_dir = false;
 
     // If given, the Profile instance is used. Otherwise, the default Profile
-    // (i.e., taken by browser()->profile()) for the browser_test is used.
+    // (i.e., taken by browser()->GetProfile()) for the browser_test is used.
     raw_ptr<Profile> profile = nullptr;
   };
 

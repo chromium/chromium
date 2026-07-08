@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
   ASSERT_TRUE(viewer1);
   spare_manager.CleanupSparesForTesting();
   content::SpareRenderProcessHostStartedObserver spare_observer;
-  spare_manager.WarmupSpare(browser()->profile());
+  spare_manager.WarmupSpare(browser()->GetProfile());
   spare_observer.WaitForSpareRenderProcessStarted();
   content::RenderFrameHost* iframe1 =
       AppendChildFrame(viewer1, cross_origin_url);

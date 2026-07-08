@@ -43,7 +43,7 @@ class FileSystemFileHandleBrowserTest : public InProcessBrowserTest {
   }
 
   void ConfigureCookieSetting(const GURL& url, ContentSetting setting) {
-    CookieSettingsFactory::GetForProfile(browser()->profile())
+    CookieSettingsFactory::GetForProfile(browser()->GetProfile())
         ->SetCookieSetting(url, setting);
   }
 

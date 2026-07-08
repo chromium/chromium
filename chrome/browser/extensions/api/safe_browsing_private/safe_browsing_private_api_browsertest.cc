@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPrivateApiBrowserTest, GetReferrerChain) {
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
   std::optional<base::Value> referrer_chain =
-      RunGetReferrerChainFunction(browser()->profile(), tab_id);
+      RunGetReferrerChainFunction(browser()->GetProfile(), tab_id);
   ASSERT_TRUE(referrer_chain);
 }
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPrivateApiBrowserTest,
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
   std::optional<base::Value> referrer_chain =
-      RunGetReferrerChainFunction(browser()->profile(), tab_id);
+      RunGetReferrerChainFunction(browser()->GetProfile(), tab_id);
   ASSERT_FALSE(referrer_chain);
 }
 

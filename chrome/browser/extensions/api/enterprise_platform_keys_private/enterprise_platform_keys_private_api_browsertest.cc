@@ -56,7 +56,7 @@ class EPKPChallengeKeyTestBase : public ExtensionApiTest {
   // user in the IdentityManager class.
   virtual void SetAuthenticatedUser() {
     auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     signin::MakePrimaryAccountAvailable(identity_manager, kUserEmail,
                                         signin::ConsentLevel::kSync);
   }

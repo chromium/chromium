@@ -123,7 +123,7 @@ bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
 
 // static
 void ReportUnsafeSiteDialog::Show(Browser* browser) {
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   if (!ReportUnsafeSiteDialog::IsEnabled(*profile)) {
     return;
   }
