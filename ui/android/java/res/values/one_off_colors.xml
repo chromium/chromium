@@ -226,4 +226,8 @@ found in the LICENSE file.
 
     <!-- Colors used for the tab bottom sheet. -->
     <color name="glic_dark_theme_background">#141414</color>
+
+    <!-- Colors used for the Glic/Actor take over button glow. -->
+    <color name="actor_button_glow_soft">#4D0B57D0</color>
+    <color name="actor_button_glow_strong">#800B57D0</color>
 </resources>
