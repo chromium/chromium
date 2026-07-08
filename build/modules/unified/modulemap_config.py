@@ -72,6 +72,7 @@ def headers(os):
       Header('alloca.h'),
       # Include loop with sys/cdefs.h
       Header('android/api-level.h', exists=is_android, textual=True),
+      Header('android/legacy_stdlib_inlines.h', textual=True),
       Header('android/ndk-version.h', exists=is_android),
       Header('android/versioning.h', exists=is_android),
       AllowedHeader('arpa/inet.h'),
