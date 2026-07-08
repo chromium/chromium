@@ -417,6 +417,7 @@ after discussions on the right group.
       <annotation id="user_info_fetcher"/>
       <annotation id="managed_configuration_loader"/>
       <annotation id="managed_acccount_signin_restrictions_secure_connect"/>
+      <annotation id="enterprise_proxy_pvd_fetch"/>
     </sender>
     <sender name="Developer Tools">
       <annotation id="devtools_cdp_console_insights"/>
