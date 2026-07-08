@@ -304,6 +304,15 @@ struct GemmParams {
   bool is_c_constant;
 };
 
+struct HardSigmoidParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  float alpha;
+  float beta;
+  bool is_input_constant;
+};
+
 struct InstanceNormalizationParams {
   OperandDataType data_type;
   uint32_t batch;
@@ -333,6 +342,15 @@ struct LeakyReluParams {
   uint32_t rank;
   std::array<uint32_t, 8> input_dims;
   float alpha;
+  bool is_input_constant;
+};
+
+struct LinearParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  float alpha;
+  float beta;
   bool is_input_constant;
 };
 
@@ -408,6 +426,16 @@ struct Pool2dParams {
   Size2d<uint32_t> strides;
   Size2d<uint32_t> dilations;
   bool is_input_constant;
+};
+
+struct PreluParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  uint32_t slope_rank;
+  std::array<uint32_t, 8> slope_dims;
+  bool is_input_constant;
+  bool is_slope_constant;
 };
 
 struct QuantizationParams {
@@ -1124,6 +1152,18 @@ auto AnyGemmParams() {
   );
 }
 
+auto AnyHardSigmoidParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<HardSigmoidParams>(
+      AnyOperandDataTypeFor(limits.hard_sigmoid_input.data_types),
+      AnyTensorRankIncludeZero(),          // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      fuzztest::Arbitrary<float>(),        // alpha
+      fuzztest::Arbitrary<float>(),        // beta
+      fuzztest::Arbitrary<bool>()          // is_input_constant
+  );
+}
+
 auto AnyInstanceNormalizationParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<InstanceNormalizationParams>(
@@ -1164,6 +1204,18 @@ auto AnyLeakyReluParams() {
       AnyTensorRankIncludeZero(),          // rank
       fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
       fuzztest::Arbitrary<float>(),        // alpha
+      fuzztest::Arbitrary<bool>()          // is_input_constant
+  );
+}
+
+auto AnyLinearParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<LinearParams>(
+      AnyOperandDataTypeFor(limits.linear_input.data_types),
+      AnyTensorRankIncludeZero(),          // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      fuzztest::Arbitrary<float>(),        // alpha
+      fuzztest::Arbitrary<float>(),        // beta
       fuzztest::Arbitrary<bool>()          // is_input_constant
   );
 }
@@ -1263,6 +1315,21 @@ auto AnyPool2dParams() {
           AnyDilations2d(),            // dilations
           fuzztest::Arbitrary<bool>()  // is_input_constant
           ));
+}
+
+auto AnyPreluParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  // Bias slope dims toward 1 which is broadcastable.
+  auto any_slope_dim = fuzztest::OneOf(fuzztest::Just(1u), AnyDimSize());
+  return fuzztest::StructOf<PreluParams>(
+      AnyOperandDataTypeFor(limits.prelu_input.data_types),
+      AnyTensorRankIncludeZero(),           // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),   // input_dims
+      AnyTensorRankIncludeZero(),           // slope_rank
+      fuzztest::ArrayOf<8>(any_slope_dim),  // slope_dims
+      fuzztest::Arbitrary<bool>(),          // is_input_constant
+      fuzztest::Arbitrary<bool>()           // is_slope_constant
+  );
 }
 
 auto AnyQuantizationParams() {
@@ -2779,16 +2846,19 @@ class WebNNGraphImplFuzzerImpl
   void Gather(GatherParams params, uint8_t seed_for_data);
   void GatherND(GatherNDParams params, uint8_t seed_for_data);
   void Gemm(GemmParams params, uint8_t seed_for_data);
+  void HardSigmoid(HardSigmoidParams params, uint8_t seed_for_data);
   void InstanceNormalization(InstanceNormalizationParams params,
                              uint8_t seed_for_data);
   void LayerNormalization(LayerNormalizationParams params,
                           uint8_t seed_for_data);
   void LeakyRelu(LeakyReluParams params, uint8_t seed_for_data);
+  void Linear(LinearParams params, uint8_t seed_for_data);
   void Lstm(LstmParams params, uint8_t seed_for_data);
   void LstmCell(LstmCellParams params, uint8_t seed_for_data);
   void Matmul(MatmulParams params, uint8_t seed_for_data);
   void Pad(PadParams params, uint8_t seed_for_data);
   void Pool2d(Pool2dParams params, uint8_t seed_for_data);
+  void Prelu(PreluParams params, uint8_t seed_for_data);
   void QuantizeLinear(QuantizeLinearParams params,
                       float seed_for_input,
                       float seed_for_scale,
@@ -3513,6 +3583,46 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Gemm(GemmParams params,
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::HardSigmoid(
+    HardSigmoidParams params,
+    uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  // Replace NaN alpha or beta with the default value so the operator is valid.
+  float alpha = std::isnan(params.alpha) ? 0.2f : params.alpha;
+  float beta = std::isnan(params.beta) ? 0.5f : params.beta;
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  // The output of hardSigmoid has the same shape and data type as the input.
+  OperandId output_id =
+      builder.BuildOutput("output", input_desc.shape(), input_desc.data_type());
+
+  builder.BuildHardSigmoid(input_id, output_id, alpha, beta);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::InstanceNormalization(
     InstanceNormalizationParams params,
     uint8_t seed_for_data) {
@@ -3722,6 +3832,45 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::LeakyRelu(LeakyReluParams params,
                           leaky_relu_descs.input_desc.data_type());
 
   builder.BuildLeakyRelu(input_id, output_id, leaky_relu_descs.alpha);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Linear(LinearParams params,
+                                                   uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  // Replace NaN alpha or beta with the default value so the operator is valid.
+  float alpha = std::isnan(params.alpha) ? 1.0f : params.alpha;
+  float beta = std::isnan(params.beta) ? 0.0f : params.beta;
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  // The output of linear has the same shape and data type as the input.
+  OperandId output_id =
+      builder.BuildOutput("output", input_desc.shape(), input_desc.data_type());
+
+  builder.BuildLinear(input_id, output_id, alpha, beta);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -4191,6 +4340,64 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Pool2d(Pool2dParams params,
   pool2d_attr.strides = {params.strides.height, params.strides.width};
   pool2d_attr.dilations = {params.dilations.height, params.dilations.width};
   builder.BuildPool2d(params.pool2d_kind, input_id, output_id, pool2d_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Prelu(PreluParams params,
+                                                  uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  std::vector<uint32_t> slope_dims(
+      params.slope_dims.begin(), params.slope_dims.begin() + params.slope_rank);
+
+  // Fix up slope dims to be bidirectionally broadcastable with input dims.
+  // The current implementation only supports unidirectional broadcasting, so
+  // the bidirectional-only cases are filtered out by validation
+  // (crbug.com/387892103).
+  for (size_t i = 0; i < slope_dims.size() && i < input_dims.size(); ++i) {
+    size_t slope_idx = slope_dims.size() - 1 - i;
+    size_t input_idx = input_dims.size() - 1 - i;
+    if (slope_dims[slope_idx] != input_dims[input_idx] &&
+        slope_dims[slope_idx] != 1 && input_dims[input_idx] != 1) {
+      slope_dims[slope_idx] = input_dims[input_idx];
+    }
+  }
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+  ASSIGN_OR_RETURN_VOID(auto slope_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, slope_dims, ""));
+  ASSIGN_OR_RETURN_VOID(auto output_desc, ValidatePreluAndInferOutput(
+                                              this->context_properties(),
+                                              input_desc, slope_desc, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+  OperandId slope_id = BuildInputOrConstant(builder, params.is_slope_constant,
+                                            "slope", slope_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildPrelu(input_id, slope_id, output_id);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -6026,6 +6233,19 @@ WEBNN_FUZZ_TEST_F(Gemm,
                                    },
                                    /*seed_for_data=*/3}}));
 
+WEBNN_FUZZ_TEST_F(HardSigmoid,
+                  .WithDomains(AnyHardSigmoidParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{HardSigmoidParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*alpha=*/0.2f,
+                                       /*beta=*/0.5f,
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/2}}));
+
 WEBNN_FUZZ_TEST_F(
     InstanceNormalization,
     .WithDomains(AnyInstanceNormalizationParams(),
@@ -6067,6 +6287,19 @@ WEBNN_FUZZ_TEST_F(LeakyRelu,
                                        /*rank=*/4,
                                        /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
                                        /*alpha=*/0.01f,
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/2}}));
+
+WEBNN_FUZZ_TEST_F(Linear,
+                  .WithDomains(AnyLinearParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{LinearParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*alpha=*/1.0f,
+                                       /*beta=*/0.0f,
                                        /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/2}}));
@@ -6170,6 +6403,19 @@ WEBNN_FUZZ_TEST_F(Pool2d,
                                        /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/2}}));
+
+WEBNN_FUZZ_TEST_F(Prelu,
+                  .WithDomains(AnyPreluParams(), fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{PreluParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/5,
+                                       /*input_dims=*/{1, 3, 4, 4, 6, 1, 1, 1},
+                                       /*slope_rank=*/3,
+                                       /*slope_dims=*/{3, 1, 4, 1, 1, 1, 1, 1},
+                                       /*is_input_constant=*/false,
+                                       /*is_slope_constant=*/true,
+                                   },
+                                   /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
     QuantizeLinear,
