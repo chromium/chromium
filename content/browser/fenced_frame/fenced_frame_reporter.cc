@@ -156,58 +156,6 @@ std::string AutomaticBeaconTypeAsString(
   }
 }
 
-blink::FencedFrameBeaconReportingResult CreateBeaconReportingResultEnum(
-    const FencedFrameReporter::DestinationVariant& event_variant,
-    std::optional<int> http_response_code) {
-  // Unfortunately std::visit can't make this more compact, because each
-  // combination of results produces a unique output enum.
-  if (std::holds_alternative<DestinationEnumEvent>(event_variant)) {
-    if (!http_response_code.has_value()) {
-      return blink::FencedFrameBeaconReportingResult::kDestinationEnumInvalid;
-    }
-    if (*http_response_code != 200) {
-      return blink::FencedFrameBeaconReportingResult::kDestinationEnumFailure;
-    }
-    return blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess;
-  }
-
-  if (std::holds_alternative<DestinationURLEvent>(event_variant)) {
-    if (!http_response_code.has_value()) {
-      return blink::FencedFrameBeaconReportingResult::kDestinationUrlInvalid;
-    }
-    if (*http_response_code != 200) {
-      return blink::FencedFrameBeaconReportingResult::kDestinationUrlFailure;
-    }
-    return blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess;
-  }
-
-  if (std::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
-    if (!http_response_code.has_value()) {
-      return blink::FencedFrameBeaconReportingResult::kAutomaticInvalid;
-    }
-    if (*http_response_code != 200) {
-      return blink::FencedFrameBeaconReportingResult::kAutomaticFailure;
-    }
-    return blink::FencedFrameBeaconReportingResult::kAutomaticSuccess;
-  }
-
-  return blink::FencedFrameBeaconReportingResult::kUnknownResult;
-}
-
-void RecordBeaconReportingResultHistogram(
-    const FencedFrameReporter::DestinationVariant& event_variant,
-    net::HttpResponseHeaders* headers) {
-  std::optional<int> http_response_code;
-
-  if (headers != nullptr) {
-    http_response_code = headers->response_code();
-  }
-
-  base::UmaHistogramEnumeration(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      CreateBeaconReportingResultEnum(event_variant, http_response_code));
-}
-
 }  // namespace
 
 FencedFrameReporter::PendingEvent::PendingEvent(
@@ -340,10 +288,6 @@ FencedFrameReporter::~FencedFrameReporter() {
   base::UmaHistogramCustomCounts(blink::kFencedFrameBeaconReportingCountUMA,
                                  beacons_sent_same_origin_, /*min=*/1,
                                  /*exclusive_max=*/20, /*buckets=*/20);
-  base::UmaHistogramCustomCounts(
-      blink::kFencedFrameBeaconReportingCountCrossOriginUMA,
-      beacons_sent_cross_origin_, /*min=*/1, /*exclusive_max=*/20,
-      /*buckets=*/20);
 }
 
 void FencedFrameReporter::OnUrlMappingReady(
@@ -803,10 +747,6 @@ bool FencedFrameReporter::SendReportInternal(
               devtools_instrumentation::OnFencedFrameReportResponseReceived(
                   initiator_frame_tree_node_id, devtools_request_id,
                   loader->GetFinalURL(), headers);
-
-              // Record UMA metrics for the destination.
-              RecordBeaconReportingResultHistogram(event_variant,
-                                                   headers.get());
             },
             event_variant, attribution_data_host_manager->AsWeakPtr(),
             attribution_reporting_data->beacon_id, std::move(simple_url_loader),
@@ -825,10 +765,6 @@ bool FencedFrameReporter::SendReportInternal(
               devtools_instrumentation::OnFencedFrameReportResponseReceived(
                   initiator_frame_tree_node_id, devtools_request_id,
                   loader->GetFinalURL(), headers);
-
-              // Record UMA metrics for the destination.
-              RecordBeaconReportingResultHistogram(event_variant,
-                                                   headers.get());
             },
             event_variant, std::move(simple_url_loader),
             initiator_frame_tree_node_id, devtools_request_id));
@@ -841,9 +777,7 @@ bool FencedFrameReporter::SendReportInternal(
         using Event = std::decay_t<decltype(event)>;
         if constexpr (std::is_same_v<Event, DestinationEnumEvent> ||
                       std::is_same_v<Event, DestinationURLEvent>) {
-          if (event.cross_origin_exposed) {
-            beacons_sent_cross_origin_++;
-          } else {
+          if (!event.cross_origin_exposed) {
             beacons_sent_same_origin_++;
           }
         }

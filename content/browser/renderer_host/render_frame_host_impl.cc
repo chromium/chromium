@@ -1096,11 +1096,6 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   }
 }
 
-void RecordAutomaticBeaconOutcome(const blink::AutomaticBeaconOutcome outcome) {
-  base::UmaHistogramEnumeration(blink::kAutomaticBeaconOutcomeHistogram,
-                                outcome);
-}
-
 // Traverse up a frame tree, starting at `rfh`, until finding a RFH whose
 // associated fenced document data matches the expected criteria. Namely, it
 // must contain automatic beacon data for the provided `event_type`, and if
@@ -10904,8 +10899,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // is no way for that to cause an accidental beacon to be sent.
   if (!navigation_request.StartedWithTransientActivation() &&
       !navigation_request.common_params().has_possibly_filtered_user_gesture) {
-    RecordAutomaticBeaconOutcome(
-        blink::AutomaticBeaconOutcome::kNoUserActivation);
     return;
   }
 
@@ -10913,15 +10906,11 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // fenced frame config's mapped url, but only if the document opts in through
   // a header.
   if (!is_same_origin && !initiator_allows_fenced_frame_automatic_beacons) {
-    RecordAutomaticBeaconOutcome(
-        blink::AutomaticBeaconOutcome::kNotSameOriginNotOptedIn);
     return;
   }
 
   // Any destination registered in a Protected Audience/Shared Storage worklet
   // will have a beacon sent to its endpoint.
-  RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
-
   for (const auto& destination :
        properties->fenced_frame_reporter()->ReportingDestinations()) {
     std::string data;
@@ -11123,9 +11112,6 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
       FencedDocumentData::GetOrCreateForCurrentDocument(this);
   fenced_document_data->UpdateAutomaticBeaconData(
       event_type, event_data_to_use, destinations, once, cross_origin_exposed);
-
-  base::UmaHistogramEnumeration(blink::kAutomaticBeaconEventTypeHistogram,
-                                event_type);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetBeforeUnloadInitiator() {

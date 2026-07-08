@@ -486,7 +486,6 @@ class CONTENT_EXPORT FencedFrameReporter
   // Tracks the number of beacons sent during the lifetime of the reporter.
   // Logged as a histogram in the destructor.
   unsigned int beacons_sent_same_origin_ = 0;
-  unsigned int beacons_sent_cross_origin_ = 0;
 };
 
 }  // namespace content

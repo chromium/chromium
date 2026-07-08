@@ -6407,8 +6407,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
   histogram_tester.ExpectUniqueSample(
       blink::kFencedFrameBeaconReportingCountUMA, 3, 1);
-  histogram_tester.ExpectUniqueSample(
-      blink::kFencedFrameBeaconReportingCountCrossOriginUMA, 0, 1);
 }
 
 // reportEvent shouldn't work in subframes that are cross-origin to the most
@@ -7416,8 +7414,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
   histogram_tester.ExpectUniqueSample(
       blink::kFencedFrameBeaconReportingCountUMA, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      blink::kFencedFrameBeaconReportingCountCrossOriginUMA, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
@@ -7451,8 +7447,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
   histogram_tester.ExpectUniqueSample(
       blink::kFencedFrameBeaconReportingCountUMA, 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      blink::kFencedFrameBeaconReportingCountCrossOriginUMA, 1, 1);
 }
 
 class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
@@ -8016,10 +8010,6 @@ class FencedFrameAutomaticBeaconBrowserTest
             )",
                              config.beacon_type.name, destination_list.Clone()),
                    ad_frame_execjs_options));
-
-        histogram_tester_.ExpectUniqueSample(
-            blink::kAutomaticBeaconEventTypeHistogram, config.beacon_type.type,
-            1);
       } else {
         // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
         EvalJsResult result =
@@ -8045,15 +8035,8 @@ class FencedFrameAutomaticBeaconBrowserTest
                           "The data provided to "
                           "setReportEventDataForAutomaticBeacons() "
                           "exceeds the maximum length, which is 64KB.")));
-
-          histogram_tester_.ExpectUniqueSample(
-              blink::kAutomaticBeaconEventTypeHistogram,
-              config.beacon_type.type, 0);
         } else {
           EXPECT_TRUE(result.is_ok());
-          histogram_tester_.ExpectUniqueSample(
-              blink::kAutomaticBeaconEventTypeHistogram,
-              config.beacon_type.type, 1);
         }
       }
     }
@@ -8134,20 +8117,6 @@ class FencedFrameAutomaticBeaconBrowserTest
       response.WaitForRequest();
       EXPECT_TRUE(response.has_received_request());
       EXPECT_EQ(response.http_request()->content, "response");
-      // Fenced frames do not allow top-level navigation without user activation
-      // due to the permissions policy always being disabled. We only test the
-      // histogram for iframes.
-      if (!config.initiator_has_user_activation &&
-          GetParam() == std::string("iframe")) {
-        histogram_tester_.ExpectUniqueSample(
-            blink::kAutomaticBeaconOutcomeHistogram,
-            blink::AutomaticBeaconOutcome::kNoUserActivation, 1);
-      }
-      if (secondary_initiator_url.is_valid()) {
-        histogram_tester_.ExpectUniqueSample(
-            blink::kAutomaticBeaconOutcomeHistogram,
-            blink::AutomaticBeaconOutcome::kNotSameOriginNotOptedIn, 1);
-      }
       return;
     }
 
@@ -8190,10 +8159,6 @@ class FencedFrameAutomaticBeaconBrowserTest
     }
 
     response.Done();
-
-    histogram_tester_.ExpectUniqueSample(
-        blink::kAutomaticBeaconOutcomeHistogram,
-        blink::AutomaticBeaconOutcome::kSuccess, 1);
   }
 
  private:

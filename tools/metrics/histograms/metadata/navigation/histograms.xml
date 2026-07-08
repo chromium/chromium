@@ -784,17 +784,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.AutomaticBeaconOutcome"
-    enum="AutomaticBeaconOutcome" expires_after="2026-06-07">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    Record if a 'reserved.top_navigation' automatic beacon was sent out, or the
-    reason for not sending the beacon if it was not sent out.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem"
     units="ms" expires_after="2025-01-05">
@@ -1229,29 +1218,6 @@ chromium-metrics-reviews@google.com.
     received by Viz before the surface used for the document gets embedded by
     the browser process. Logged after the first contentful frame has been
     displayed on screen.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.FencedFrameAutomaticBeaconEventType"
-    enum="FencedFrameAutomaticBeaconEventType" expires_after="2026-06-30">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    Recorded what event type is used when automatic beacon data is set using
-    setReportEventDataForAutomaticBeacons().
-  </summary>
-</histogram>
-
-<histogram name="Navigation.FencedFrameBeaconReportingCountCrossOrigin"
-    units="beacons" expires_after="2026-06-30">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    Records how many beacons were sent through window.fence.reportEvent() from a
-    document that is cross-origin to the mapped URL of the FencedFrameConfig
-    during the lifetime of the FencedFrameConfig object. This is recorded when
-    the FencedFrameConfig object is destroyed and is recorded once per
-    FencedFrameConfig instance.
   </summary>
 </histogram>
 

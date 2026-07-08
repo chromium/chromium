@@ -7478,20 +7478,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:VerifyingDialogResult) -->
 
-<enum name="FencedFrameBeaconReportingResult">
-  <int value="0" label="Unknown result"/>
-  <int value="1" label="Invalid / missing network request for an enum beacon"/>
-  <int value="2" label="Successful network request for an enum beacon"/>
-  <int value="3" label="Failed network request for an enum beacon"/>
-  <int value="4" label="Invalid / missing network request for a URL beacon"/>
-  <int value="5" label="Successful network request for a URL beacon"/>
-  <int value="6" label="Failed network request for a URL beacon"/>
-  <int value="7"
-      label="Invalid / missing network request for an automatic beacon"/>
-  <int value="8" label="Successful network request for an automatic beacon"/>
-  <int value="9" label="Failed network request for an automatic beacon"/>
-</enum>
-
 <enum name="FencedFrameCreationOutcome">
   <int value="0" label="Success (default mode)"/>
   <int value="1" label="Success (opaque ads mode)"/>

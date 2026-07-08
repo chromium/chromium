@@ -39,20 +39,8 @@ inline constexpr char kFencedFrameMandatoryUnsandboxedFlagsSandboxed[] =
 inline constexpr char kFencedFrameFailedSandboxLoadInTopLevelFrame[] =
     "Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame";
 
-inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
-    "Navigation.AutomaticBeaconOutcome";
-
-inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
-    "Navigation.FencedFrameAutomaticBeaconEventType";
-
-inline constexpr char kFencedFrameBeaconReportingHttpResultUMA[] =
-    "Blink.FencedFrame.BeaconReportingHttpResult";
-
 inline constexpr char kFencedFrameBeaconReportingCountUMA[] =
     "Navigation.FencedFrameBeaconReportingCountSameOrigin";
-
-inline constexpr char kFencedFrameBeaconReportingCountCrossOriginUMA[] =
-    "Navigation.FencedFrameBeaconReportingCountCrossOrigin";
 
 inline constexpr char kSameSiteAdComponentsMaxCountForWinningBidHistogram[] =
     "Ads.InterestGroup.Auction.SameSiteAdComponentsMaxCountForWinningBid";
@@ -77,17 +65,6 @@ enum class FencedFrameCreationOutcome {
   kMaxValue = kResponseHeaderNotOptIn
 };
 
-// Corresponds to the "AutomaticBeaconOutcome" histogram enumeration type in
-// tools/metrics/histograms/metadata/navigation/histograms.xml.
-//
-// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
-enum class AutomaticBeaconOutcome {
-  kSuccess = 0,
-  kNoUserActivation,
-  kNotSameOriginNotOptedIn,
-  kMaxValue = kNotSameOriginNotOptedIn,
-};
-
 // Corresponds to the "FencedFrameNavigationState" histogram enumeration type in
 // tools/metrics/histograms/metadata/navigation/enums.xml.
 //
@@ -96,22 +73,6 @@ enum class FencedFrameNavigationState {
   kBegin = 0,
   kCommit = 1,
   kMaxValue = kCommit
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FencedFrameBeaconReportingResult {
-  kUnknownResult = 0,
-  kDestinationEnumInvalid = 1,
-  kDestinationEnumSuccess = 2,
-  kDestinationEnumFailure = 3,
-  kDestinationUrlInvalid = 4,
-  kDestinationUrlSuccess = 5,
-  kDestinationUrlFailure = 6,
-  kAutomaticInvalid = 7,
-  kAutomaticSuccess = 8,
-  kAutomaticFailure = 9,
-  kMaxValue = kAutomaticFailure
 };
 
 // Whether or not a fenced frame is allowed to be navigated to `url`. For now

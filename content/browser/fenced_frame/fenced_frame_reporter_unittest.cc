@@ -1343,11 +1343,7 @@ TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
       report_destination_.spec(), ""));
 }
 
-// Histogram tests. Separate from existing tests because we need to account
-// for HTTP request failures, and actually simulate HTTP responses instead of
-// just leaving them pending.
-
-TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsEnum) {
+TEST_F(FencedFrameReporterTest, SendReportsEnumWithSimulatedResponse) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
           shared_url_loader_factory(), browser_context(),
@@ -1373,12 +1369,6 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsEnum) {
       report_destination_.spec(), "");
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess, 1);
-
   // Make an enum report that fails due to HTTP status 404.
   EXPECT_TRUE(reporter->SendReport(
       DestinationEnumEvent("event_type", "event_data"),
@@ -1391,18 +1381,9 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsEnum) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination_.spec(), "", net::HTTP_NOT_FOUND);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationEnumFailure, 1);
 }
 
-TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsURL) {
+TEST_F(FencedFrameReporterTest, SendReportsURLWithSimulatedResponse) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), browser_context(),
@@ -1445,12 +1426,6 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsURL) {
       report_destination_.spec(), "");
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess, 1);
-
   // Make a URL report that fails with HTTP status 404.
   EXPECT_TRUE(reporter->SendReport(
       DestinationURLEvent(report_destination_),
@@ -1463,18 +1438,10 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsURL) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination_.spec(), "", net::HTTP_NOT_FOUND);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kDestinationUrlFailure, 1);
 }
 
-TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
+TEST_F(FencedFrameReporterTest,
+       SendReportsAutomaticBeaconWithSimulatedResponse) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), browser_context(),
@@ -1523,12 +1490,6 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
       report_destination3_.spec(), "");
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kAutomaticSuccess, 1);
-
   // Make an automatic beacon report that fails with HTTP status 404.
   EXPECT_TRUE(reporter->SendReport(
       AutomaticBeaconEvent(
@@ -1543,15 +1504,6 @@ TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination3_.spec(), "", net::HTTP_NOT_FOUND);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  histogram_tester().ExpectTotalCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kAutomaticSuccess, 1);
-  histogram_tester().ExpectBucketCount(
-      blink::kFencedFrameBeaconReportingHttpResultUMA,
-      blink::FencedFrameBeaconReportingResult::kAutomaticFailure, 1);
 }
 
 }  // namespace
