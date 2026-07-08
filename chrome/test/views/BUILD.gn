@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/views/features.gni")
+
+assert(toolkit_views)
+
+source_set("views") {
+  testonly = true
+  sources = [
+    "accessibility_checker.cc",
+    "accessibility_checker.h",
+    "chrome_test_views_delegate.h",
+    "chrome_test_widget.cc",
+    "chrome_test_widget.h",
+    "chrome_views_test_base.cc",
+    "chrome_views_test_base.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views:layout_provider",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+  deps = [
+    "//chrome/browser/ui/color:mixers",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/test:test_theme_provider",
+    "//components/color",
+    "//content/test:test_support",
+    "//ui/color",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ash:test_support" ]
+  }
+}

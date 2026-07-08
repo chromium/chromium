@@ -1042,19 +1042,18 @@ static_library("test_support") {
       "../browser/ui/views/profiles/profiles_pixel_test_utils.h",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h",
-      "views/accessibility_checker.cc",
-      "views/accessibility_checker.h",
-      "views/chrome_test_views_delegate.h",
-      "views/chrome_test_widget.cc",
-      "views/chrome_test_widget.h",
-      "views/chrome_views_test_base.cc",
-      "views/chrome_views_test_base.h",
     ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/test:test_theme_provider",
+
+      # TODO(crbug.com/353332589): Remove once browser_with_test_window_test.h
+      # is componentized. It uses ChromeTestViewsDelegate<> as a member field,
+      # forcing this to remain a public_dep for now. Final goal: each direct
+      # consumer declares dep on //chrome/test/views explicitly.
+      "//chrome/test/views",
       "//ui/native_theme:test_support",
       "//ui/views:test_support",
     ]
@@ -8841,6 +8840,7 @@ if (!is_android) {
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
       "//chrome/test/supervised_user:child_accounts",
+      "//chrome/test/views",
       "//components/account_id",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",
