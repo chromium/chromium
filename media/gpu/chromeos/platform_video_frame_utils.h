@@ -73,6 +73,7 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
 // thread-safe.
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
     VideoPixelFormat pixel_format,
+    const gfx::ColorSpace& color_space,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,

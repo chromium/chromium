@@ -212,8 +212,8 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   // handles to the video frame's data to the decoder.
   for (const PictureBuffer& picture_buffer : picture_buffers) {
     scoped_refptr<VideoFrame> video_frame = CreateMappableSharedImageVideoFrame(
-        format, dimensions, visible_rect, visible_rect.size(),
-        base::TimeDelta(),
+        format, gfx::ColorSpace(), dimensions, visible_rect,
+        visible_rect.size(), base::TimeDelta(),
         linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
                        : gfx::BufferUsage::SCANOUT_VDA_WRITE,
         test_sii_.get());

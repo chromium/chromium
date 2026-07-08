@@ -768,8 +768,9 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
   scoped_refptr<VideoFrame> frame = CreateMappableSharedImageVideoFrame(
       is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                : VideoPixelFormat::PIXEL_FORMAT_ARGB,
-      coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii_.get());
+      gfx::ColorSpace::CreateSRGB(), coded_size, gfx::Rect(coded_size),
+      coded_size, kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      test_sii_.get());
 
   auto gmb = CreateGpuMemoryBufferHandle(frame.get());
   auto si_format = is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
