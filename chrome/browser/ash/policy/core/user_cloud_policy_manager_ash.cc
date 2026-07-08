@@ -267,7 +267,8 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
   if (IsSkyVaultTTEnabled()) {
     // Local files should be deleted if required by policy.
     local_files_cleanup_ =
-        std::make_unique<local_user_files::LocalFilesCleanup>();
+        std::make_unique<local_user_files::LocalFilesCleanup>(
+            &local_state_.get());
   }
 }
 

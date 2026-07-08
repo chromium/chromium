@@ -9,12 +9,17 @@
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 
+class PrefService;
+
 namespace policy::local_user_files {
 
 // Kicks-off user files removal when LocalUserFilesEnabled is set to 'false'.
 class LocalFilesCleanup : public LocalUserFilesPolicyObserver {
  public:
-  LocalFilesCleanup();
+  // `local_state` must not be null and must outlive `this`.
+  explicit LocalFilesCleanup(PrefService* local_state);
+  LocalFilesCleanup(const LocalFilesCleanup&) = delete;
+  LocalFilesCleanup& operator=(const LocalFilesCleanup&) = delete;
   ~LocalFilesCleanup() override;
 
  private:
