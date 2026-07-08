@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/model/ios_personal_context_service_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 
 #import "base/feature_list.h"
 #import "components/personal_context/core/personal_context_features.h"
@@ -11,7 +11,8 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace personal_context {
+using personal_context::PersonalContextService;
+using personal_context::PersonalContextServiceImpl;
 
 // static
 PersonalContextService* IOSPersonalContextServiceFactory::GetForProfile(
@@ -38,7 +39,8 @@ IOSPersonalContextServiceFactory::~IOSPersonalContextServiceFactory() = default;
 std::unique_ptr<KeyedService>
 IOSPersonalContextServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!base::FeatureList::IsEnabled(features::kPersonalContext)) {
+  if (!base::FeatureList::IsEnabled(
+          personal_context::features::kPersonalContext)) {
     return nullptr;
   }
 
@@ -46,5 +48,3 @@ IOSPersonalContextServiceFactory::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
 }
-
-}  // namespace personal_context

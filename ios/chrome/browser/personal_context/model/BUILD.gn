@@ -4,13 +4,19 @@
 
 source_set("model") {
   sources = [
+    "ios_personal_context_access_manager_factory.h",
+    "ios_personal_context_access_manager_factory.mm",
     "ios_personal_context_enablement_service_factory.h",
     "ios_personal_context_enablement_service_factory.mm",
+    "ios_personal_context_service_factory.h",
+    "ios_personal_context_service_factory.mm",
   ]
   deps = [
     "//base",
     "//components/account_settings",
     "//components/application_locale_storage",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/personal_context/core",
     "//components/personal_context/core:features",
     "//components/signin/public/identity_manager",
@@ -20,16 +26,22 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
+    "//services/network/public/cpp",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_personal_context_enablement_service_factory_unittest.mm" ]
+  sources = [
+    "ios_personal_context_access_manager_factory_unittest.mm",
+    "ios_personal_context_enablement_service_factory_unittest.mm",
+    "ios_personal_context_service_factory_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//components/personal_context/core",
     "//components/personal_context/core:features",
     "//ios/chrome/browser/shared/model/profile/test",

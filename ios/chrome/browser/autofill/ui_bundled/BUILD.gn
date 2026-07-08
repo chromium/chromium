@@ -58,6 +58,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

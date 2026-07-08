@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
@@ -11,18 +11,14 @@
 class ProfileIOS;
 
 namespace personal_context {
-
 class PersonalContextService;
+}
 
 class IOSPersonalContextServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static PersonalContextService* GetForProfile(ProfileIOS* profile);
+  static personal_context::PersonalContextService* GetForProfile(
+      ProfileIOS* profile);
   static IOSPersonalContextServiceFactory* GetInstance();
-
-  IOSPersonalContextServiceFactory(const IOSPersonalContextServiceFactory&) =
-      delete;
-  IOSPersonalContextServiceFactory& operator=(
-      const IOSPersonalContextServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSPersonalContextServiceFactory>;
@@ -35,6 +31,4 @@ class IOSPersonalContextServiceFactory : public ProfileKeyedServiceFactoryIOS {
       ProfileIOS* profile) const override;
 };
 
-}  // namespace personal_context
-
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
