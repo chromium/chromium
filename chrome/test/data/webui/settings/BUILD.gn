@@ -151,6 +151,7 @@ build_webui_tests("build") {
     "settings_pref_util_test.ts",
     "settings_prefs_test.ts",
     "settings_prefs_test_cases.ts",
+    "settings_radio_group_test.ts",
     "settings_section_test.ts",
     "settings_slider_test.ts",
     "settings_subpage_test.ts",

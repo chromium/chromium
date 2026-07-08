@@ -11,12 +11,13 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString} from '/shared/settings/prefs/pref_util.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
 
-const ControlledRadioButtonElementBase =
-    CrRippleMixinPolymer(CrRadioButtonMixin(PrefControlMixin(PolymerElement)));
+const ControlledRadioButtonElementBase = PrefServiceObserverMixin(
+    CrRippleMixinPolymer(CrRadioButtonMixin(PrefControlMixin(PolymerElement))));
 
 export class ControlledRadioButtonElement extends
     ControlledRadioButtonElementBase {
@@ -28,11 +29,23 @@ export class ControlledRadioButtonElement extends
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      prefKey: {
+        type: String,
+        value: '',
+        observer: 'onPrefKeyChanged_',
+      },
+    };
+  }
+
   static get observers() {
     return [
       'updateDisabled_(pref.enforcement)',
     ];
   }
+
+  declare prefKey: string;
 
   // Overridden from CrRadioButtonMixin
   override getPaperRipple() {
@@ -51,6 +64,16 @@ export class ControlledRadioButtonElement extends
   private updateDisabled_() {
     this.disabled =
         this.pref!.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private onPrefKeyChanged_(newKey: string, oldKey: string) {
+    if (newKey === '' && oldKey === undefined) {
+      return;
+    }
+
+    // Disallow re-assigning the prefKey after initial assignment.
+    assert(!oldKey);
+    this.mirrorPref(newKey, 'pref');
   }
 
   private showIndicator_(): boolean {

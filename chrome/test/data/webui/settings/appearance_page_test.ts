@@ -529,6 +529,28 @@ suite('AppearancePage', function() {
     assertTrue(!!appearancePage.shadowRoot!.querySelector('#customHomePage'));
   });
 
+  test('homepage_is_newtabpage radio group toggling', async function() {
+    await prefService.setPrefValue('browser.show_home_button', true);
+    await microtasksFinished();
+
+    const radioGroup =
+        appearancePage.shadowRoot!.querySelector('settings-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('homepage_is_newtabpage', radioGroup.prefKey);
+
+    assertTrue(prefService.getPref<boolean>('homepage_is_newtabpage').value);
+    assertEquals('true', radioGroup.selected);
+
+    const buttonFalse = radioGroup.querySelector<HTMLElement>(
+        'controlled-radio-button[name="false"]');
+    assertTrue(!!buttonFalse);
+    buttonFalse.click();
+    await microtasksFinished();
+
+    assertFalse(prefService.getPref<boolean>('homepage_is_newtabpage').value);
+    assertEquals('false', radioGroup.selected);
+  });
+
   test('show side panel options', async function() {
     await createAppearancePage();
     assertTrue(

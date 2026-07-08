@@ -133,13 +133,13 @@
         <template is="dom-if" if="[[prefs.browser.show_home_button.value]]">
           <div id="home-button-options" class="list-frame"
               hidden="[[!pageVisibility.homeButton]]">
-            <settings-radio-group pref="{{prefs.homepage_is_newtabpage}}">
+            <settings-radio-group pref-key="homepage_is_newtabpage">
               <controlled-radio-button class="list-item" name="true"
-                  pref="[[prefs.homepage_is_newtabpage]]"
+                  pref-key="homepage_is_newtabpage"
                   label="$i18n{homePageNtp}" no-extension-indicator>
               </controlled-radio-button>
               <controlled-radio-button id="custom-input" class="list-item"
-                  name="false" pref="[[prefs.homepage_is_newtabpage]]"
+                  name="false" pref-key="homepage_is_newtabpage"
                   no-extension-indicator>
                 <!-- TODO(dbeam): this can show double indicators when both
                      homepage and whether to use the NTP as the homepage are
