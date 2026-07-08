@@ -99,6 +99,9 @@ const char kEnrollmentToken[] = "enrollmentToken";
 // automatically proceeded through.
 const char kSkipEnrollmentSuccessScreen[] = "skipEnrollmentSuccessScreen";
 
+// Boolean value, indicating that the update opt out screen should be skipped.
+const char kSkipUpdateOptOutScreen[] = "skipUpdateOptOutScreen";
+
 // String value, indicates origin of OOBE config (i.e. what agent/purpose
 // created the OOBE config and put it on the device).
 // Currently used values are:
@@ -143,6 +146,8 @@ constexpr struct {
     {kEnrollmentToken, ValueType::STRING,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kSkipEnrollmentSuccessScreen, ValueType::BOOLEAN,
+     ConfigurationHandlerSide::HANDLER_CPP},
+    {kSkipUpdateOptOutScreen, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kSource, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {"desc", ValueType::STRING, ConfigurationHandlerSide::HANDLER_DOC},

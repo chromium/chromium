@@ -37,6 +37,7 @@ extern const char kEnrollmentLocation[];
 extern const char kEnrollmentAutoAttributes[];
 extern const char kEnrollmentToken[];
 extern const char kSkipEnrollmentSuccessScreen[];
+extern const char kSkipUpdateOptOutScreen[];
 
 extern const char kSource[];
 
