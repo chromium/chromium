@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
 using PerformanceScriptVector = HeapVector<Member<PerformanceScriptTiming>>;
+using PerformanceEntryVector = HeapVector<Member<PerformanceEntry>>;
 
 class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
@@ -54,6 +56,9 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp layoutDuration() const { return layout_duration_; }
 
   const PerformanceScriptVector& scripts() const { return scripts_; }
+  const PerformanceEntryVector& userTimingEntries() const {
+    return user_timing_entries_;
+  }
 
   void Trace(Visitor*) const override;
  private:
@@ -65,6 +70,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp style_duration_;
   DOMHighResTimeStamp layout_duration_;
   PerformanceScriptVector scripts_;
+  PerformanceEntryVector user_timing_entries_;
 };
 
 }  // namespace blink

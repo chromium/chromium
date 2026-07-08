@@ -580,6 +580,12 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
         entries = &long_animation_frame_buffer_;
       break;
 
+    // Conditional user timing entries are included in other relevant
+    // Performance entries. They are not retrievable through Performance
+    // interface.
+    case PerformanceEntry::kMarkConditional:
+      break;
+
     case PerformanceEntry::kInvalid:
       break;
   }
@@ -1181,6 +1187,9 @@ PerformanceMeasure* Performance::MeasureWithDetail(
 void Performance::clearMeasures(const AtomicString& measure_name) {
   GetUserTiming().ClearMeasures(measure_name);
 }
+
+void Performance::markConditional(ScriptState* script_state,
+                                  const AtomicString& mark_name) {}
 
 void Performance::RegisterPerformanceObserver(PerformanceObserver& observer) {
   observer_filter_options_ |= observer.FilterOptions();

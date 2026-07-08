@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -92,6 +93,19 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   scoped_refptr<const SecurityOrigin> security_origin_;
 };
 
+class ConditionalMarkInfo : public GarbageCollected<ConditionalMarkInfo> {
+ public:
+  ConditionalMarkInfo(const AtomicString& name, base::TimeTicks start_time)
+      : name_(name), start_time_(start_time) {}
+  void Trace(Visitor* visitor) const {}
+  const AtomicString& GetName() const { return name_; }
+  base::TimeTicks GetStartTime() const { return start_time_; }
+
+ private:
+  AtomicString name_;
+  base::TimeTicks start_time_;
+};
+
 class AnimationFrameTimingInfo
     : public GarbageCollected<AnimationFrameTimingInfo> {
  public:
@@ -123,6 +137,15 @@ class AnimationFrameTimingInfo
 
   void SetScripts(const HeapVector<Member<ScriptTimingInfo>>& scripts) {
     scripts_ = scripts;
+  }
+
+  const HeapVector<Member<ConditionalMarkInfo>>& ConditionalMarks() const {
+    return conditional_marks_;
+  }
+
+  void SetConditionalMarks(
+      const HeapVector<Member<ConditionalMarkInfo>>& conditional_marks) {
+    conditional_marks_ = conditional_marks;
   }
 
   const base::TimeDelta& TotalBlockingDuration() const {
@@ -185,6 +208,7 @@ class AnimationFrameTimingInfo
   base::TimeDelta layout_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
+  HeapVector<Member<ConditionalMarkInfo>> conditional_marks_;
 
   // Id for the BeginFrame, which triggered this animation frame.
   viz::BeginFrameId begin_frame_id_;

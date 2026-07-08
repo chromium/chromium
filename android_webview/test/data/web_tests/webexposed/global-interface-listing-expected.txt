@@ -7223,6 +7223,7 @@ interface Performance : EventTarget
     method getEntriesByType
     method getSpeculations
     method mark
+    method markConditional
     method measure
     method now
     method setResourceTimingBufferSize
@@ -7285,6 +7286,7 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     getter scripts
     getter styleAndLayoutStart
     getter styleDuration
+    getter userTimingEntries
     method constructor
     method toJSON
 interface PerformanceLongTaskTiming : PerformanceEntry
@@ -7295,6 +7297,9 @@ interface PerformanceLongTaskTiming : PerformanceEntry
 interface PerformanceMark : PerformanceEntry
     attribute @@toStringTag
     getter detail
+    method constructor
+interface PerformanceMarkConditional : PerformanceEntry
+    attribute @@toStringTag
     method constructor
 interface PerformanceMeasure : PerformanceEntry
     attribute @@toStringTag

@@ -27,5 +27,6 @@
     "unknown",
     "visibility-state",
     "window",
+    "mark-conditional",
   ],
 }

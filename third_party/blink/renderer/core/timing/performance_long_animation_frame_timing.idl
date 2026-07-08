@@ -12,6 +12,7 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
     [RuntimeEnabled=LongAnimationFrameStyleDuration, MeasureAs=LongAnimationFrameTimingStyleDuration] readonly attribute DOMHighResTimeStamp styleDuration;
     [RuntimeEnabled=LongAnimationFrameStyleDuration, MeasureAs=LongAnimationFrameTimingLayoutDuration] readonly attribute DOMHighResTimeStamp layoutDuration;
     [SameObject, SaveSameObject] readonly attribute FrozenArray<PerformanceScriptTiming> scripts;
+    [RuntimeEnabled=ConditionalTracingLoAF, SameObject, SaveSameObject] readonly attribute FrozenArray<PerformanceEntry> userTimingEntries;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

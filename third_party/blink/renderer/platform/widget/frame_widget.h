@@ -344,6 +344,9 @@ class PLATFORM_EXPORT FrameWidget {
   // other parameters are recorded earlier).
   virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       base::TimeTicks) = 0;
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ConditionalTracing/explainer-for-loaf.md
+  virtual void MarkConditional(const AtomicString& name,
+                               base::TimeTicks start_time) = 0;
 
   virtual void OnFirstContentfulPaint() = 0;
 };

@@ -352,6 +352,14 @@ class CORE_EXPORT WebFrameWidgetImpl
   void OnTaskCompletedForFrame(base::TimeTicks start_time,
                                base::TimeTicks end_time,
                                LocalFrame*) override;
+
+  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      base::TimeTicks) override;
+  void OnFirstContentfulPaint() override;
+  void MarkConditional(const AtomicString& name,
+                       base::TimeTicks start_time) override;
+  // TODO(https://crbug.com/515098190): Below are not FrameWidget overrides.
+
   void SetVirtualKeyboardResizeHeightForTesting(int);
   bool GetMayThrottleIfUndrawnFramesForTesting();
 
@@ -361,8 +369,6 @@ class CORE_EXPORT WebFrameWidgetImpl
                             base::TimeTicks end,
                             ExecutionContext* task_context) override;
   bool RequestedMainFramePending() override;
-  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
-      base::TimeTicks) override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;
 
@@ -795,7 +801,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void OnDevToolsSessionConnectionChanged(bool attached);
 
-  void OnFirstContentfulPaint() override;
 
   WidgetBase* widget_base_for_testing() const { return widget_base_.get(); }
 

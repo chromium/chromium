@@ -190,6 +190,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                       ExecutionContext* task_context,
                       bool has_multiple_contexts) override;
 
+  void markConditional(ScriptState*, const AtomicString& mark_name) override;
+
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
   PerformanceSoftNavigation* AddSoftNavigation(

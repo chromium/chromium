@@ -245,6 +245,8 @@ class CORE_EXPORT Performance : public EventTarget {
   void clearMarks(const AtomicString& mark_name);
   void clearMarks() { return clearMarks(AtomicString()); }
 
+  virtual void markConditional(ScriptState*, const AtomicString& mark_name);
+
   void AddBackForwardCacheRestoration(base::TimeTicks start_time,
                                       base::TimeTicks pageshow_start_time,
                                       base::TimeTicks pageshow_end_time);

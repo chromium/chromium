@@ -41,6 +41,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -93,6 +94,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_long_animation_frame_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_mark_conditional.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
@@ -120,6 +122,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -573,6 +576,21 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
   DEFINE_STATIC_LOCAL(const AtomicString, kCrossOriginAttribution,
                       ("cross-origin-unreachable"));
   return std::make_pair(kCrossOriginAttribution, nullptr);
+}
+
+void WindowPerformance::markConditional(ScriptState* script_state,
+                                        const AtomicString& mark_name) {
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  if (!window || !window->GetFrame() ||
+      !window->GetFrame()->GetWidgetForLocalRoot()) {
+    return;
+  }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  window->GetFrame()->GetWidgetForLocalRoot()->MarkConditional(mark_name,
+                                                               start_time);
 }
 
 void WindowPerformance::ReportLongTask(base::TimeTicks start_time,

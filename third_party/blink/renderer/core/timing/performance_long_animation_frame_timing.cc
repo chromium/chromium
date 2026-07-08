@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_mark_conditional.h"
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 #include "third_party/blink/renderer/core/timing/task_attribution_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -94,6 +95,17 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
           navigation_id));
     }
   }
+
+  if (!RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled()) {
+    DCHECK(info->ConditionalMarks().empty());
+  }
+
+  for (ConditionalMarkInfo* conditional_mark : info->ConditionalMarks()) {
+    user_timing_entries_.push_back(
+        MakeGarbageCollected<PerformanceMarkConditional>(
+            conditional_mark->GetName(), conditional_mark->GetStartTime(),
+            source, navigation_id));
+  }
 }
 
 PerformanceLongAnimationFrameTiming::~PerformanceLongAnimationFrameTiming() =
@@ -128,6 +140,7 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
 void PerformanceLongAnimationFrameTiming::Trace(Visitor* visitor) const {
   PerformanceEntry::Trace(visitor);
   visitor->Trace(scripts_);
+  visitor->Trace(user_timing_entries_);
 }
 
 }  // namespace blink

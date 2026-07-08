@@ -1777,6 +1777,14 @@ AnimationFrameTimingInfo* WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
       *local_root_frame->DomWindow(), rendering_update_time);
 }
 
+void WebFrameWidgetImpl::MarkConditional(const AtomicString& name,
+                                         base::TimeTicks start_time) {
+  if (!animation_frame_timing_monitor_) {
+    return;
+  }
+  animation_frame_timing_monitor_->MarkConditional(name, start_time);
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);

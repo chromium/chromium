@@ -62,6 +62,8 @@ interface Performance : EventTarget {
     [MeasureAs=UserTiming, CallWith=ScriptState, RaisesException] PerformanceMeasure measure(DOMString measureName, optional (DOMString or PerformanceMeasureOptions) startOrMeasureOptions = {}, optional DOMString endMark);
     [MeasureAs=UserTiming] void clearMeasures(optional DOMString measureName);
 
+    [Exposed=Window, RuntimeEnabled=ConditionalTracingLoAF, CallWith=ScriptState] void markConditional(DOMString markName);
+
     // TODO(foolip): There is no spec for the Memory Info API, see blink-dev:
     // https://groups.google.com/a/chromium.org/d/msg/blink-dev/g5YRCGpC9vs/b4OJz71NmPwJ
     [Exposed=Window, Measure, CallWith=ScriptState] readonly attribute MemoryInfo memory;

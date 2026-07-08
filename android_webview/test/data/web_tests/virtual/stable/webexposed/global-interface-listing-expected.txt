@@ -6652,6 +6652,9 @@ interface PerformanceMark : PerformanceEntry
     attribute @@toStringTag
     getter detail
     method constructor
+interface PerformanceMarkConditional : PerformanceEntry
+    attribute @@toStringTag
+    method constructor
 interface PerformanceMeasure : PerformanceEntry
     attribute @@toStringTag
     getter detail

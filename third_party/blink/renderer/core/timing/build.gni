@@ -54,6 +54,8 @@ blink_core_sources_timing = [
   "performance_long_task_timing.h",
   "performance_mark.cc",
   "performance_mark.h",
+  "performance_mark_conditional.cc",
+  "performance_mark_conditional.h",
   "performance_measure.cc",
   "performance_measure.h",
   "performance_navigation.cc",

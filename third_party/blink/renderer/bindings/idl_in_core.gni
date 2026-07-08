@@ -771,6 +771,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/timing/performance_long_animation_frame_timing.idl",
   "//third_party/blink/renderer/core/timing/performance_long_task_timing.idl",
   "//third_party/blink/renderer/core/timing/performance_mark.idl",
+  "//third_party/blink/renderer/core/timing/performance_mark_conditional.idl",
   "//third_party/blink/renderer/core/timing/performance_mark_options.idl",
   "//third_party/blink/renderer/core/timing/performance_measure.idl",
   "//third_party/blink/renderer/core/timing/performance_measure_options.idl",

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_mark_conditional.h"
 #include "third_party/blink/renderer/core/timing/third_party_script_detector.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -37,6 +38,9 @@ namespace {
 constexpr base::TimeDelta kLongAnimationFrameDuration = base::Milliseconds(50);
 constexpr base::TimeDelta kLongTaskDuration = base::Milliseconds(50);
 constexpr base::TimeDelta kLongScriptDuration = base::Milliseconds(5);
+// TODO(crbug.com/383157188): Define this at
+// https://w3c.github.io/timing-entrytypes-registry/.
+constexpr size_t kConditionalUserTimingBufferSize = 200;
 }  // namespace
 
 AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
@@ -64,6 +68,14 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
   }
 
   frame_handling_input_ = frame;
+}
+
+void AnimationFrameTimingMonitor::MarkConditional(const AtomicString& name,
+                                                  base::TimeTicks start_time) {
+  if (conditional_marks_.size() < kConditionalUserTimingBufferSize) {
+    conditional_marks_.push_back(
+        MakeGarbageCollected<ConditionalMarkInfo>(name, start_time));
+  }
 }
 
 void AnimationFrameTimingMonitor::BeginMainFrame(
@@ -119,6 +131,11 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
 
   current_frame_timing_info_->SetScripts(current_scripts_);
 
+  if (!conditional_marks_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    current_frame_timing_info_->SetConditionalMarks(conditional_marks_);
+  }
+
   current_frame_timing_info_->SetStyleDuration(render_style_duration_);
   current_frame_timing_info_->SetLayoutDuration(render_layout_duration_);
 
@@ -155,6 +172,10 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
+  if (!conditional_marks_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    conditional_marks_.clear();
+  }
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
   render_style_duration_ = base::TimeDelta();
@@ -277,6 +298,13 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   std::swap(scripts, current_scripts_);
   current_scripts_.clear();
+
+  HeapVector<Member<ConditionalMarkInfo>> conditional_marks;
+  if (!conditional_marks_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    std::swap(conditional_marks, conditional_marks_);
+  }
+
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
 
@@ -304,6 +332,11 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   if (did_pause) {
     timing_info->SetDidPause();
+  }
+
+  if (!conditional_marks.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    timing_info->SetConditionalMarks(conditional_marks);
   }
 
   DOMWindowPerformance::performance(*frame->DomWindow())
@@ -539,6 +572,7 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(current_frame_timing_info_);
   visitor->Trace(current_scripts_);
+  visitor->Trace(conditional_marks_);
   visitor->Trace(frame_handling_input_);
   visitor->Trace(task_attributed_window_);
 }
