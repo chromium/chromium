@@ -4,7 +4,7 @@
 
 assert(!is_android)
 
-source_set("test_support") {
+source_set("permissions") {
   testonly = true
   sources = [
     "permission_request_manager_test_api.cc",

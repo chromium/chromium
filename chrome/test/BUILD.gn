@@ -8736,7 +8736,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/test/interaction",
-      "//chrome/test/permissions:test_support",
+      "//chrome/test/permissions",
       "//components/autofill/content/browser:test_support",
       "//components/supervised_user/core/browser",
       "//components/webui/chrome_urls",
