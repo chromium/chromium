@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"

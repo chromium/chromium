@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/core/session_manager.h"
