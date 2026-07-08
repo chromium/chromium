@@ -888,11 +888,13 @@ void PseudoElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kClick && !event.DefaultHandled() &&
       RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
     if (GetPseudoId() == kPseudoIdOverscrollBackdrop) {
-      if (Element* container =
-              UltimateOriginatingElement().GetOverscrollContainer()) {
-        if (auto* tracker = container->GetOverscrollAreaTracker()) {
-          tracker->CloseAllAreas();
-          event.SetDefaultHandled();
+      if (isConnected()) {
+        if (Element* container =
+                UltimateOriginatingElement().GetOverscrollContainer()) {
+          if (auto* tracker = container->GetOverscrollAreaTracker()) {
+            tracker->CloseAllAreas();
+            event.SetDefaultHandled();
+          }
         }
       }
     }
