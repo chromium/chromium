@@ -27,7 +27,7 @@ declare_args() {
 
   # Indicates support for watermark.
   enterprise_watermark =
-      (is_win || is_mac || is_linux || is_chromeos) && !is_castos
+      (is_win || is_mac || is_linux || is_chromeos || is_ios) && !is_castos
 
   enterprise_screenshot_protection = is_win || is_mac || is_ios || is_android
 

@@ -1197,6 +1197,7 @@ source_set("impl") {
     "//components/embedder_support",
     "//components/embedder_support:user_agent",
     "//components/enterprise/browser/data_region",
+    "//components/enterprise/buildflags",
     "//components/enterprise/net",
     "//components/enterprise/network_header_injection/core:policy",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -1240,6 +1241,10 @@ source_set("impl") {
       "//chrome/browser/extensions/api/messaging",
       "//extensions/strings",
     ]
+  }
+
+  if (enterprise_watermark) {
+    deps += [ "//components/enterprise/watermarking:watermarking_handler" ]
   }
 
   # These targets back browser (machine) scope provisioning via Chrome Browser

@@ -12,32 +12,40 @@ source_set("watermarking") {
     "watermark.h",
   ]
 
+  public_deps = [
+    "//skia",
+    "//ui/gfx",
+  ]
+}
+
+source_set("watermarking_handler") {
+  sources = []
+  deps = []
+
   if (enterprise_watermark) {
     sources += [
       "watermark_style_policy_handler.cc",
       "watermark_style_policy_handler.h",
     ]
+
+    deps += [
+      "//components/enterprise/connectors/core",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//components/strings:components_strings_grit",
+    ]
   }
-
-  public_deps = [
-    "//skia",
-    "//ui/gfx",
-  ]
-
-  deps = [
-    "//components/enterprise/connectors/core",
-    "//components/policy/core/browser",
-    "//components/policy/core/common",
-    "//components/prefs",
-    "//components/strings:components_strings_grit",
-  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [ "watermark_unittest.cc" ]
+  sources = []
+  if (!is_ios) {
+    sources += [ "watermark_unittest.cc" ]
+  }
 
   if (enterprise_watermark) {
     sources += [ "watermark_style_policy_handler_unittest.cc" ]
@@ -49,15 +57,24 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":watermarking",
-    "//cc:test_support",
-    "//cc/paint",
     "//components/enterprise/connectors/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
     "//testing/gtest",
   ]
+
+  if (enterprise_watermark) {
+    deps += [ ":watermarking_handler" ]
+  }
+
+  if (!is_ios) {
+    deps += [
+      ":watermarking",
+      "//cc:test_support",
+      "//cc/paint",
+    ]
+  }
 }
 
 source_set("watermark_test_utils") {

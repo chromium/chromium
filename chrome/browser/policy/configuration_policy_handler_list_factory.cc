@@ -284,7 +284,7 @@
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "components/enterprise/watermarking/watermark_style_policy_handler.h"
+#include "components/enterprise/watermarking/watermark_style_policy_handler.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

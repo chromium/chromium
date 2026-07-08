@@ -91,6 +91,7 @@ source_set("model") {
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/idle",
     "//components/enterprise/isolated_mode",
+    "//components/enterprise/watermarking:watermarking_handler",
     "//components/history/core/common",
     "//components/lens:enterprise_policy",
     "//components/metrics",

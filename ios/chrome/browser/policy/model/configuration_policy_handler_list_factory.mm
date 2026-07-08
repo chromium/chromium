@@ -29,6 +29,7 @@
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/enterprise/isolated_mode/prefs.h"
+#import "components/enterprise/watermarking/watermark_style_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -349,6 +350,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           base::Value::Type::BOOLEAN)));
 
   handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
+
+  handlers->AddHandler(
+      std::make_unique<WatermarkStylePolicyHandler>(chrome_schema));
 
   handlers->AddHandler(
       std::make_unique<
