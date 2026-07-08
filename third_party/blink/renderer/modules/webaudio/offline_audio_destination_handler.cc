@@ -188,7 +188,7 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
   while (frames_to_process_ > 0) {
     // Suspend the rendering if a scheduled suspend found at the current
     // sample frame. Otherwise render one quantum.
-    if (RenderIfNotSuspended(nullptr, render_bus_.get(),
+    if (RenderIfNotSuspended(render_bus_.get(),
                              GetDeferredTaskHandler().RenderQuantumFrames())) {
       return;
     }
@@ -264,7 +264,6 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
 }
 
 bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
-    AudioBus* source_bus,
     AudioBus* destination_bus,
     uint32_t number_of_frames) {
   // We don't want denormals slowing down any of the audio processing

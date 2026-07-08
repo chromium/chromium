@@ -91,8 +91,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // The offline version of render() method. If the rendering needs to be
   // suspended after checking, this stops the rendering and returns true.
   // Otherwise, it returns false after rendering one quantum.
-  bool RenderIfNotSuspended(AudioBus* source_bus,
-                            AudioBus* destination_bus,
+  bool RenderIfNotSuspended(AudioBus* destination_bus,
                             uint32_t number_of_frames);
 
   // Prepares a task runner for the rendering based on the operation mode
