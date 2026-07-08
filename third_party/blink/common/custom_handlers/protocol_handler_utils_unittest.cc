@@ -389,6 +389,41 @@ TEST(ProtocolHandlerUtilTest, IsolatedAppFeaturesValidCustomScheme) {
           "--",
           false,
       },
+      {
+          "Invalid scheme: standard scheme (http)",
+          "http",
+          false,
+      },
+      {
+          "Invalid scheme: standard scheme (https)",
+          "https",
+          false,
+      },
+      {
+          "Invalid scheme: standard scheme (file)",
+          "file",
+          false,
+      },
+      {
+          "Invalid scheme: blocked scheme (ms-settings)",
+          "ms-settings",
+          false,
+      },
+      {
+          "Invalid scheme: standard scheme (chrome)",
+          "chrome",
+          false,
+      },
+      {
+          "Invalid scheme: blocked scheme (chrome-extension)",
+          "chrome-extension",
+          false,
+      },
+      {
+          "Invalid scheme: blocked scheme (isolated-app)",
+          "isolated-app",
+          false,
+      },
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);

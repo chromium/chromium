@@ -96,13 +96,27 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
     if (scheme.length() < 2) {
       return false;
     }
-    return std::ranges::all_of(
+    bool is_valid_format = std::ranges::all_of(
         base::SplitStringPiece(scheme, "-", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_ALL),
         [](std::string_view chunk) {
           return !chunk.empty() &&
                  std::ranges::all_of(chunk, &base::IsAsciiAlpha<char>);
         });
+    if (!is_valid_format) {
+      return false;
+    }
+
+    // Blocks sensitive schemes.
+    std::string lower_scheme = base::ToLowerASCII(scheme);
+    static constexpr const char* const kProtocolBlocklist[] = {
+        "http",        "https",  "file",
+        "ms-settings", "chrome", "chrome-extension",
+        "isolated-app"};
+    if (std::ranges::contains(kProtocolBlocklist, lower_scheme)) {
+      return false;
+    }
+    return true;
   }
 
   static constexpr const char* const kProtocolSafelist[] = {
