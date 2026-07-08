@@ -47,3 +47,17 @@ source_set("constants") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "credential_group_identifier_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/ui",
+    "//testing/gtest",
+    "//url",
+  ]
+}
