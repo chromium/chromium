@@ -7,10 +7,13 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
@@ -27,6 +30,40 @@
 
 namespace blink {
 namespace {
+
+// LINT.IfChange(kCorsSafelistedResponseHeaderNames)
+// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
+constexpr auto kCorsSafelistedResponseHeaderNames =
+    base::MakeFixedFlatSet<std::string_view>({
+        "cache-control",
+        "content-language",
+        "content-length",
+        // "content-range" is not a standard CORS-safelisted response header,
+        // but it is required by C++ media loaders (e.g. WebMediaPlayer) to
+        // process "206 Partial Content" range responses. We permit it in
+        // URLResponseHead to avoid breaking media playback, while it remains
+        // filtered out and hidden from JavaScript's view in the renderer.
+        "content-range",
+        "content-type",
+        "expires",
+        "last-modified",
+        "pragma",
+    });
+// LINT.ThenChange(third_party/blink/renderer/platform/loader/cors/cors.cc:allowed_cross_origin_response_headers)
+
+bool IsCorsExposedResponseHeader(
+    std::string_view name,
+    const std::vector<std::string>& cors_exposed_header_names) {
+  if (kCorsSafelistedResponseHeaderNames.contains(base::ToLowerASCII(name))) {
+    return true;
+  }
+  for (const auto& exposed : cors_exposed_header_names) {
+    if (base::EqualsCaseInsensitiveASCII(name, exposed)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Calls |callback| when Blob reading is complete.
 class BlobCompleteCaller : public mojom::BlobReaderClient {
@@ -228,7 +265,18 @@ ServiceWorkerLoaderHelpers::GetHttpResponseHeaders(
   std::string status = base::StrCat(
       {base::ToString(response.status_code), " ", response.status_text});
   net::HttpResponseHeaders::Builder builder({1, 1}, status);
+  // |response.headers| holds the header list of the internal response. For a
+  // CORS filtered response, restrict the resulting header list to the
+  // CORS-safelisted response headers and any explicitly exposed names.
+  // https://fetch.spec.whatwg.org/#concept-filtered-response-cors
+  const bool is_cors_filtered =
+      response.response_type == network::mojom::FetchResponseType::kCors;
   for (const auto& item : response.headers) {
+    if (is_cors_filtered &&
+        !IsCorsExposedResponseHeader(item.first,
+                                     response.cors_exposed_header_names)) {
+      continue;
+    }
     builder.AddHeader(item.first, item.second);
   }
   return builder.Build();

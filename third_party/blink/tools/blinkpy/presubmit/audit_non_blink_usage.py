@@ -547,6 +547,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/service_worker/service_worker_loader_helpers.cc',
+        ],
+        'allowed': [
+            'base::EqualsCaseInsensitiveASCII',
+            'base::MakeFixedFlatSet',
+            'base::ToLowerASCII',
+            'network::mojom::FetchResponseType',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/navigation/navigation_params.cc',
         ],
         'allowed': [
