@@ -79,6 +79,10 @@ source_set("impl") {
     ]
   }
 
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/ui/pdf/infobar" ]
+  }
+
   if (is_win) {
     deps += [
       "//chrome/browser/startup",

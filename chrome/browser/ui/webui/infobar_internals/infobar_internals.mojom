@@ -36,6 +36,9 @@ enum InfoBarType {
   [EnableIf=is_mac]
   kKeystone,
 
+  // PDF infobar. Can only be triggered on Windows or Mac.
+  [EnableIf=is_win|is_mac]
+  kPdf,
   // Reload plugin infobar.
   [EnableIf=enable_plugins]
   kReloadPlugin,

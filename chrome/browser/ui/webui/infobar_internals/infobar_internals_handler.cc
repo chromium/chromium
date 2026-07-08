@@ -72,6 +72,10 @@
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/startup/startup_launch_manager.h"  // nogncheck
 #include "chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h"
@@ -163,6 +167,16 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "system scope. This trigger resets any browser state that "
       "prevents the infobar from being shown, then shows the infobar. "
       "This can only be triggered on Mac."));
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kPdf, /*name=*/"PDF",
+      /*description=*/
+      "The PDF infobar offers to set Chrome as the default PDF viewer "
+      "if it's not already. This trigger resets any browser state "
+      "that prevents the infobar from being shown, then shows the infobar. "
+      "This can only be triggered on Windows or Mac."));
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -414,6 +428,28 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #else
       return false;
 #endif
+    }
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    case InfoBarType::kPdf: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      auto* controller = pdf::infobar::PdfInfoBarController::From(bwi);
+      if (!controller) {
+        return false;
+      }
+      // Reset rate-limiting preferences to ensure repeated triggers succeed.
+      PrefService* local_state = g_browser_process->local_state();
+      local_state->ClearPref(prefs::kPdfInfoBarTimesShown);
+      local_state->ClearPref(prefs::kPdfInfoBarLastShown);
+      pdf::infobar::PdfInfoBarController::
+          SetHigherPriorityInfoBarShownForTesting(false);
+
+      controller->MaybeShowInfoBarCallback(
+          shell_integration::DefaultWebClientState::NOT_DEFAULT);
+      return true;
     }
 #endif
 #if BUILDFLAG(IS_WIN)
