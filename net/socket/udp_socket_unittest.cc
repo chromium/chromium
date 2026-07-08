@@ -400,14 +400,30 @@ TEST_F(UDPSocketTest, ConnectRestrictedPort) {
       {{"localhost_restrict_ports",
         base::NumberToString(server_address.port())}});
   ReloadLocalhostRestrictedPortsForTesting();
-  // Setup the client.
-  auto client = std::make_unique<UDPClientSocket>(
-      DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource(),
-      handles::kInvalidNetworkHandle);
-  EXPECT_THAT(client->Connect(server_address), IsError(ERR_UNSAFE_PORT));
-  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 1);
+  const IPAddress addresses_to_test[] = {
+      IPAddress::IPv4Localhost(),
+      IPAddress(127, 0, 0, 2),
+      IPAddress::IPv4AllZeros(),
+      IPAddress::IPv6Localhost(),
+      IPAddress::IPv6AllZeros(),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost()),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4AllZeros()),
+  };
+
+  int expected_count = 0;
+  for (const auto& address : addresses_to_test) {
+    auto client = std::make_unique<UDPClientSocket>(
+        DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource(),
+        handles::kInvalidNetworkHandle);
+    EXPECT_THAT(client->Connect(IPEndPoint(address, server_address.port())),
+                IsError(ERR_UNSAFE_PORT));
+    expected_count++;
+  }
+
+  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts",
+                                    expected_count);
   histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts",
-                                     server_address.port(), 1);
+                                     server_address.port(), expected_count);
 }
 
 TEST_F(UDPSocketTest, ConnectUsingNetworkRestrictedPort) {

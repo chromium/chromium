@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/parse_number.h"
 #include "url/url_constants.h"
@@ -154,6 +155,17 @@ PortSet ParseRestrictedPortsFromFeatureParam(const base::Feature& feature,
 
 constinit bool g_need_to_reset_restrict_localhost_ports = false;
 
+// Returns true if connecting to `address` may reach a service on the local
+// host. In addition to the loopback ranges this includes the unspecified
+// address, which many operating systems route to loopback, and IPv4-mapped
+// IPv6 forms of those addresses.
+bool MayConnectToLocalhost(const IPAddress& address) {
+  const IPAddress unmapped = address.IsIPv4MappedIPv6()
+                                 ? ConvertIPv4MappedIPv6ToIPv4(address)
+                                 : address;
+  return unmapped.IsLoopback() || unmapped.IsZero();
+}
+
 }  // namespace
 
 bool IsPortValid(int port) {
@@ -206,7 +218,10 @@ bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {
   }
 
   // This function currently restricts only on localhost.
-  if (!endpoint.address().IsLoopback()) {
+  // 0.0.0.0 and :: are treated as localhost aliases on some platforms.
+  // On other platforms, connections to those addresses fail, so applying
+  // the same restriction is harmless.
+  if (!MayConnectToLocalhost(endpoint.address())) {
     return true;
   }
 

@@ -57,22 +57,40 @@ TEST(NetUtilTest, RestrictedAbusePortsLocalhostTest) {
   ReloadLocalhostRestrictedPortsForTesting();
   IPAddress public_address(8, 8, 8, 8);
   EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 12345)));
+  EXPECT_TRUE(IsPortAllowedForIpEndpoint(
+      IPEndPoint(ConvertIPv4ToIPv4MappedIPv6(public_address), 12345)));
   EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 443)));
   EXPECT_TRUE(
       IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv4Localhost(), 443)));
   EXPECT_TRUE(
       IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv6Localhost(), 443)));
   histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 0);
+
+  const IPAddress localhost_addresses[] = {
+      IPAddress::IPv4Localhost(),
+      IPAddress(127, 0, 0, 2),
+      IPAddress::IPv4AllZeros(),
+      IPAddress::IPv6Localhost(),
+      IPAddress::IPv6AllZeros(),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost()),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4AllZeros()),
+  };
+
+  int expected_count = 0;
   for (int port : {12345, 23456, 34567}) {
-    EXPECT_FALSE(IsPortAllowedForIpEndpoint(
-        IPEndPoint(IPAddress::IPv4Localhost(), port)));
-    EXPECT_FALSE(IsPortAllowedForIpEndpoint(
-        IPEndPoint(IPAddress::IPv6Localhost(), port)));
+    for (const auto& address : localhost_addresses) {
+      EXPECT_FALSE(IsPortAllowedForIpEndpoint(IPEndPoint(address, port)));
+      expected_count++;
+    }
   }
-  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 6);
-  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 12345, 2);
-  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 23456, 2);
-  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 34567, 2);
+  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts",
+                                    expected_count);
+  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 12345,
+                                     std::size(localhost_addresses));
+  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 23456,
+                                     std::size(localhost_addresses));
+  histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts", 34567,
+                                     std::size(localhost_addresses));
 }
 
 TEST(NetUtilTest, RestrictedAbusePortsLocalhostTestNoParamSet) {
@@ -82,17 +100,29 @@ TEST(NetUtilTest, RestrictedAbusePortsLocalhostTestNoParamSet) {
   ReloadLocalhostRestrictedPortsForTesting();
   IPAddress public_address(8, 8, 8, 8);
   EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 12345)));
+  EXPECT_TRUE(IsPortAllowedForIpEndpoint(
+      IPEndPoint(ConvertIPv4ToIPv4MappedIPv6(public_address), 12345)));
   EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 443)));
   EXPECT_TRUE(
       IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv4Localhost(), 443)));
   EXPECT_TRUE(
       IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv6Localhost(), 443)));
   histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 0);
+
+  const IPAddress localhost_addresses[] = {
+      IPAddress::IPv4Localhost(),
+      IPAddress(127, 0, 0, 2),
+      IPAddress::IPv4AllZeros(),
+      IPAddress::IPv6Localhost(),
+      IPAddress::IPv6AllZeros(),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost()),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4AllZeros()),
+  };
+
   for (int port : {12345, 23456, 34567}) {
-    EXPECT_TRUE(IsPortAllowedForIpEndpoint(
-        IPEndPoint(IPAddress::IPv4Localhost(), port)));
-    EXPECT_TRUE(IsPortAllowedForIpEndpoint(
-        IPEndPoint(IPAddress::IPv6Localhost(), port)));
+    for (const auto& address : localhost_addresses) {
+      EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(address, port)));
+    }
   }
   histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 0);
 }

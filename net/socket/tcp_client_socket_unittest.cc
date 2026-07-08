@@ -339,16 +339,33 @@ TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
       {{"localhost_restrict_ports",
         base::NumberToString(server_address.port())}});
   ReloadLocalhostRestrictedPortsForTesting();
-  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
-                         NetLogSource(), handles::kInvalidNetworkHandle);
+  const IPAddress addresses_to_test[] = {
+      IPAddress::IPv4Localhost(),
+      IPAddress(127, 0, 0, 2),
+      IPAddress::IPv4AllZeros(),
+      IPAddress::IPv6Localhost(),
+      IPAddress::IPv6AllZeros(),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost()),
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4AllZeros()),
+  };
 
-  TestCompletionCallback connect_callback;
-  int connect_result = socket.Connect(connect_callback.callback());
-  EXPECT_THAT(connect_callback.GetResult(connect_result),
-              IsError(ERR_UNSAFE_PORT));
-  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts", 1);
+  int expected_count = 0;
+  for (const auto& address : addresses_to_test) {
+    TCPClientSocket socket(
+        AddressList(IPEndPoint(address, server_address.port())), nullptr,
+        nullptr, nullptr, NetLogSource(), handles::kInvalidNetworkHandle);
+
+    TestCompletionCallback connect_callback;
+    int connect_result = socket.Connect(connect_callback.callback());
+    EXPECT_THAT(connect_callback.GetResult(connect_result),
+                IsError(ERR_UNSAFE_PORT));
+    expected_count++;
+  }
+
+  histogram_tester.ExpectTotalCount("Net.RestrictedLocalhostPorts",
+                                    expected_count);
   histogram_tester.ExpectBucketCount("Net.RestrictedLocalhostPorts",
-                                     server_address.port(), 1);
+                                     server_address.port(), expected_count);
 }
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
