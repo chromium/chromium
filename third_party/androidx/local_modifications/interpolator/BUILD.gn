@@ -11,6 +11,9 @@ android_library("interpolator_java") {
   ]
   sources = [
     "java/src/androidx/interpolator/view/animation/FastOutExtraSlowInInterpolator.java",
+    "java/src/androidx/interpolator/view/animation/FastOutLinearInInterpolator.java",
+    "java/src/androidx/interpolator/view/animation/FastOutSlowInInterpolator.java",
+    "java/src/androidx/interpolator/view/animation/LinearOutSlowInInterpolator.java",
     "java/src/androidx/interpolator/view/animation/LookupTableInterpolator.java",
   ]
 }
