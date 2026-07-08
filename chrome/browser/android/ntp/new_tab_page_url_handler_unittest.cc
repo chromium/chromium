@@ -7,13 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/search_engines/template_url.h"
@@ -59,7 +57,6 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseGoogle) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chrome::android::kUseWebUiNtpAndroid);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kUseWebUiNtp);
 
   // Mock Google DSE setup
   std::unique_ptr<TemplateURL> google_turl = CreateTestTemplateURL(
@@ -80,7 +77,6 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseNotGoogle) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chrome::android::kUseWebUiNtpAndroid);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kUseWebUiNtp);
 
   // DSE is NOT Google
   std::unique_ptr<TemplateURL> bing_turl = CreateTestTemplateURL(
