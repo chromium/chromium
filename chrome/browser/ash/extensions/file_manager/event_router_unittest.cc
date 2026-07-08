@@ -292,7 +292,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
   extensions::TestEventRouter* test_event_router =
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
-  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  auto event_router = std::make_unique<EventRouter>(
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -333,7 +334,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
   extensions::TestEventRouter* test_event_router =
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
-  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  auto event_router = std::make_unique<EventRouter>(
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -368,7 +370,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
   extensions::TestEventRouter* test_event_router =
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
-  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  auto event_router = std::make_unique<EventRouter>(
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -419,7 +422,8 @@ TEST_F(FileManagerEventRouterLocalFilesTest, OnLocalUserFilesPolicyChanged) {
   extensions::TestEventRouter* test_event_router =
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
-  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  auto event_router = std::make_unique<EventRouter>(
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
   event_router->ForceBroadcastingForTesting(true);
 
   // Expect the preferences changed event.

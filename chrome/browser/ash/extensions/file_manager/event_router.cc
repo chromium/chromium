@@ -54,7 +54,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -593,9 +592,8 @@ fmp::MountError MountErrorToMountCompletedStatus(ash::MountError error) {
   }
 }
 
-EventRouter::EventRouter(Profile* profile)
-    // TODO(crbug.com/404131876): Avoid using g_browser_process.
-    : LocalUserFilesPolicyObserver(g_browser_process->local_state()),
+EventRouter::EventRouter(PrefService* local_state, Profile* profile)
+    : LocalUserFilesPolicyObserver(local_state),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       profile_(profile),
       notification_manager_(

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -59,7 +60,10 @@ EventRouterFactory::~EventRouterFactory() = default;
 std::unique_ptr<KeyedService>
 EventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<EventRouter>(Profile::FromBrowserContext(context));
+  // NOTE: Allow g_browser_process here as this class is initialized lazily
+  // with base::NoDestructor.
+  return std::make_unique<EventRouter>(g_browser_process->local_state(),
+                                       Profile::FromBrowserContext(context));
 }
 
 bool EventRouterFactory::ServiceIsCreatedWithBrowserContext() const {

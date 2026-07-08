@@ -48,6 +48,7 @@
 #include "url/origin.h"
 
 class PrefChangeRegistrar;
+class PrefService;
 class Profile;
 
 using OutputsType =
@@ -83,7 +84,8 @@ class EventRouter
                                    bool got_error,
                                    const std::vector<url::Origin>& listeners)>;
 
-  explicit EventRouter(Profile* profile);
+  // `local_state` must be non-null and outlive `this`.
+  EventRouter(PrefService* local_state, Profile* profile);
 
   EventRouter(const EventRouter&) = delete;
   EventRouter& operator=(const EventRouter&) = delete;
