@@ -79,8 +79,9 @@ void EventBasedLogManager::MaybeAddAllEventObservers() {
   for (const auto event_type : kAllTriggerEventTypes) {
     switch (event_type) {
       case ash::reporting::TriggerEventType::OS_UPDATE_FAILED:
-        event_observers_.emplace(event_type,
-                                 std::make_unique<OsUpdateEventObserver>());
+        event_observers_.emplace(
+            event_type,
+            std::make_unique<OsUpdateEventObserver>(&policy_manager_.get()));
         break;
       case ash::reporting::TriggerEventType::FATAL_CRASH:
         event_observers_.emplace(event_type,

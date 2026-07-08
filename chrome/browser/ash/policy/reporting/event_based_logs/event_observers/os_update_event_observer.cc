@@ -9,19 +9,14 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 
 namespace policy {
 
-OsUpdateEventObserver::OsUpdateEventObserver()
-    : policy_manager_(
-          CHECK_DEREF(CHECK_DEREF(g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash())
-                          .GetDeviceCloudPolicyManager())) {
+OsUpdateEventObserver::OsUpdateEventObserver(
+    DeviceCloudPolicyManagerAsh* policy_manager)
+    : policy_manager_(CHECK_DEREF(policy_manager)) {
   policy_manager_->GetOsUpdatesReporter()->AddObserver(this);
 }
 

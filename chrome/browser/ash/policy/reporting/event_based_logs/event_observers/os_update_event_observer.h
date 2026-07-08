@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
@@ -23,7 +24,8 @@ class OsUpdateEventObserver
     : public EventObserverBase,
       reporting::OsUpdatesReporter::OsUpdateEventBasedLogObserver {
  public:
-  OsUpdateEventObserver();
+  // `policy_manager` must be non-null and must outlive `this`.
+  explicit OsUpdateEventObserver(DeviceCloudPolicyManagerAsh* policy_manager);
   ~OsUpdateEventObserver() override;
 
   // EventObserverBase override
@@ -37,7 +39,7 @@ class OsUpdateEventObserver
  private:
   void OnUploadTriggered(EventBasedUploadStatus status);
 
-  raw_ref<DeviceCloudPolicyManagerAsh> policy_manager_;
+  const raw_ref<DeviceCloudPolicyManagerAsh> policy_manager_;
   base::WeakPtrFactory<OsUpdateEventObserver> weak_ptr_factory_{this};
 };
 
