@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.app.Activity;
+
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,6 +26,7 @@ public final class GlicKeyedServiceHandler {
      *
      * @param profile The current profile.
      * @param task The ChromeAndroidTask.
+     * @param activity The ChromeActivity.
      * @param preventClose Whether to prevent closing the UI if it's already open.
      * @param invocationSource How the UI was triggered.
      * @return true if the UI was successfully toggled.
@@ -31,6 +34,7 @@ public final class GlicKeyedServiceHandler {
     public static boolean toggleGlic(
             Profile profile,
             @Nullable ChromeAndroidTask task,
+            Activity activity,
             boolean preventClose,
             @GlicInvocationSource int invocationSource) {
         GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
@@ -43,7 +47,12 @@ public final class GlicKeyedServiceHandler {
             return false;
         }
 
-        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
+        long browserWindowPtr = task.getNativeBrowserWindowPtr(profile, activity);
+        if (browserWindowPtr == 0) {
+            Log.w(TAG, "Failed to trigger GLIC: Native browser window pointer is 0.");
+            return false;
+        }
+
         service.toggleUI(browserWindowPtr, preventClose, profile, invocationSource);
         return true;
     }

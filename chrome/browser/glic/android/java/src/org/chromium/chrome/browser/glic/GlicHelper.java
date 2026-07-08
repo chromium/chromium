@@ -55,6 +55,26 @@ public class GlicHelper {
     }
 
     /**
+     * Shows a snackbar indicating Glic is unavailable.
+     *
+     * @param activity The Android activity.
+     */
+    public static void showUnavailableSnackbar(Activity activity) {
+        if (activity instanceof SnackbarManageable) {
+            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+            if (snackbarManager != null) {
+                snackbarManager.showSnackbar(
+                        Snackbar.make(
+                                activity.getString(
+                                        R.string.signin_generic_error_dialog_description),
+                                null,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_GLIC));
+            }
+        }
+    }
+
+    /**
      * Shows a snackbar if there are any active Glic tasks for the given profile.
      *
      * @param snackbarManageable The activity or component that can manage snackbars.
