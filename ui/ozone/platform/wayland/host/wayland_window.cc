@@ -944,16 +944,23 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
     // is about to shut down. Do nothing and return.
     return;
   }
+  // Running `drag_finished_callback_` and dispatching the synthetic pointer
+  // release below may spin a nested run loop in which `this` gets destroyed,
+  // so move the quit closure onto the stack to ensure the drag loop is still
+  // quit in that case.
+  base::OnceClosure quit_closure = std::move(drag_loop_quit_closure_);
+  auto alive = AsWeakPtr();
   std::move(drag_finished_callback_).Run(operation);
   // Skip releasing any pointer buttons for the case of a window drag driven by
   // the data drag controller.
   // TODO: crbug.com/40238145 - Refactor this per discussion at
   // crrev.com/c/5570335/comment/0b8811fc_818028c9/.
-  if (!connection()->data_drag_controller()->IsWindowDragSessionRunning()) {
+  if (alive &&
+      !connection()->data_drag_controller()->IsWindowDragSessionRunning()) {
     connection()->event_source()->ReleasePressedPointerButtons(
         this, EventTimeForNow());
   }
-  std::move(drag_loop_quit_closure_).Run();
+  std::move(quit_closure).Run();
 }
 
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
