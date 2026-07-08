@@ -40,9 +40,6 @@
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kCrossDeviceSigninQrBubbleWebViewElementId);
 
 namespace {
-// TODO(crbug.com/527402105): Dynamically size the bubble based on the WebUI's
-// preferred content size.
-constexpr gfx::Size kBubbleSize(320, 420);
 
 class CrossDeviceSigninQrWebView : public views::WebView {
  public:
@@ -110,7 +107,15 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto web_view =
       std::make_unique<CrossDeviceSigninQrWebView>(browser->GetProfile());
   web_view->LoadInitialURL(GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
-  web_view->SetPreferredSize(kBubbleSize);
+  // The overall dialog width is 370px to prevent the native title from
+  // wrapping.
+  constexpr int kDialogWidth = 370;
+  // The DialogModel adds internal padding (typically 20px per side).
+  // The WebView bounds must account for this to prevent horizontal overflow.
+  constexpr int kHorizontalPadding = 40;
+  constexpr int kWebViewWidth = kDialogWidth - kHorizontalPadding;
+  web_view->EnableSizingFromWebContents(gfx::Size(kWebViewWidth, 200),
+                                        gfx::Size(kWebViewWidth, 800));
   web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
   auto dialog_model =
@@ -138,6 +143,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, arrow);
   bubble->set_margins(gfx::Insets());
+  bubble->set_fixed_width(kDialogWidth);
 
   if (browser_view && browser_view->GetWidget()) {
     bubble->set_parent_window(browser_view->GetWidget()->GetNativeView());

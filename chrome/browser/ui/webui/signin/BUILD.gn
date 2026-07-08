@@ -124,6 +124,7 @@ source_set("signin") {
       "dice_web_signin_intercept_ui.h",
       "signin_qrcode_bar_ui.h",
     ]
+    public_deps += [ "cross_device_signin_qr_bubble:mojo_bindings" ]
   }
 
   if (!is_chromeos) {
@@ -206,7 +207,12 @@ source_set("signin_impl") {
       "dice_web_signin_intercept_ui.cc",
       "signin_qrcode_bar_ui.cc",
     ]
-    deps += [ "//chrome/browser/ui/webui" ]
+    deps += [
+      "cross_device_signin_qr_bubble:mojo_bindings",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/util",
+      "//components/qr_code_generator:bitmap_generator",
+    ]
   }
 
   if (!is_chromeos) {

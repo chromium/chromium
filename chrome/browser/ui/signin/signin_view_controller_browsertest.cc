@@ -995,6 +995,8 @@ class SigninViewControllerCrossDeviceSigninBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ShowCrossDeviceSigninQrBubble) {
+  SetPrimaryAccount();
+
   views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
   views::Widget* bubble_widget = nullptr;
   base::RunLoop run_loop;
@@ -1024,10 +1026,6 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   run_loop.Run();
   ASSERT_TRUE(bubble_widget);
 
-  // After showing, the explicit state should be set.
-  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
-
-  // Verify that the WebUI URL loaded successfully.
   views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
   ASSERT_TRUE(delegate);
   EXPECT_TRUE(delegate->ShouldShowCloseButton());
@@ -1043,7 +1041,25 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   content::WebContents* web_contents = web_view->GetWebContents();
   ASSERT_TRUE(web_contents);
-  content::WaitForLoadStop(web_contents);
+
+  // Note: This observer is attached after the WebContents has started loading,
+  // so it won't reliably catch load-time JS errors (like missing imports),
+  // but it will successfully catch post-load runtime errors or unhandled
+  // exceptions.
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  if (web_contents->IsLoading()) {
+    content::WaitForLoadStop(web_contents);
+  }
+  for (const auto& message : console_observer.messages()) {
+    LOG(INFO) << "Console message: " << message.message;
+    EXPECT_NE(message.log_level, blink::mojom::ConsoleMessageLevel::kError)
+        << "JS Error on WebUI: " << message.message;
+  }
+
+  // After showing, the explicit state should be set.
+  EXPECT_TRUE(avatar_button->HasExplicitButtonState());
+
+  // Verify that the WebUI URL loaded successfully.
   EXPECT_EQ(web_contents->GetVisibleURL(),
             GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
 

@@ -66,6 +66,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
   "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
   "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
+  "//chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble:mojo_bindings",
   "//chrome/browser/ui/webui/signin/signout_confirmation:mojo_bindings",
   "//chrome/browser/ui/webui/skills:mojo_bindings",
   "//chrome/browser/ui/webui/subresource_filter:mojo_bindings",
