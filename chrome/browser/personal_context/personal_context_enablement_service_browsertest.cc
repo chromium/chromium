@@ -46,7 +46,7 @@ class MockPersonalContextEnablementServiceObserver
  public:
   MOCK_METHOD(void,
               OnEnablementStateChanged,
-              (PersonalContextEligibilityState),
+              (PersonalContextEnablementState),
               (override));
 };
 
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   SignIn(kUnderagedUserEmail, /*is_underaged=*/true);
 
   EXPECT_EQ(enablement_service_->GetEnablementState(),
-            PersonalContextEligibilityState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
 // Ensure managed enterprise accounts disable personal context features
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   SignIn(kCorpUserEmail, /*is_underaged=*/false, /*is_managed=*/true);
 
   EXPECT_EQ(enablement_service_->GetEnablementState(),
-            PersonalContextEligibilityState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
 // Verify photos and workspace opt-outs disable service status
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
                        ConsentCloudPreferencesDeactivate) {
   SignIn(kAdultUserEmail);
   EXPECT_EQ(enablement_service_->GetEnablementState(),
-            PersonalContextEligibilityState::kEligible);
+            PersonalContextEnablementState::kEnabled);
 
   // Simulate preferences opt-out
   EXPECT_CALL(*mock_account_settings_service_, GetBoolean(testing::_))
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   enablement_service_->OnAccountSettingDataUpdated("any_setting");
 
   EXPECT_EQ(enablement_service_->GetEnablementState(),
-            PersonalContextEligibilityState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
 // =============================================================================
@@ -220,9 +220,10 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   enablement_service_->AddObserver(&observer);
 
   // Toggling settings should fire state update notification to the observer
-  EXPECT_CALL(observer,
-              OnEnablementStateChanged(
-                  PersonalContextEligibilityState::kDisabledNotEligible))
+  EXPECT_CALL(
+      observer,
+      OnEnablementStateChanged(
+          PersonalContextEnablementState::kDisabledNotEligible))
       .Times(1);
 
   // We simulate preferences opt-out

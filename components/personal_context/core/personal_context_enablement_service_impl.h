@@ -41,7 +41,7 @@ class PersonalContextEnablementServiceImpl
       PersonalContextEnablementService::Observer* observer) override;
   void RemoveObserver(
       PersonalContextEnablementService::Observer* observer) override;
-  PersonalContextEligibilityState GetEnablementState() override;
+  PersonalContextEnablementState GetEnablementState() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -55,7 +55,7 @@ class PersonalContextEnablementServiceImpl
  private:
   friend class PersonalContextEnablementServiceImplTestApi;
 
-  std::pair<PersonalContextEligibilityState,
+  std::pair<PersonalContextEnablementState,
             std::optional<PersonalContextNonEligibilityReason>>
   ComputeEnablementState();
   void UpdateEnablementState();
@@ -75,8 +75,8 @@ class PersonalContextEnablementServiceImpl
       account_settings_observation_{this};
   PrefChangeRegistrar pref_registrar_;
   // Cached last enablement state.
-  PersonalContextEligibilityState enablement_state_ =
-      PersonalContextEligibilityState::kDisabledNotEligible;
+  PersonalContextEnablementState enablement_state_ =
+      PersonalContextEnablementState::kDisabledNotEligible;
   // Cached last non-eligibility reason for logging.
   std::optional<PersonalContextNonEligibilityReason>
       last_non_eligibility_reason_;

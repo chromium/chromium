@@ -34,13 +34,13 @@ enum class PersonalContextNonEligibilityReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:PersonalContextNonEligibilityReason)
 
-// Tracks the global eligibility state of the feature for the current profile.
+// Tracks the global enablement state of the feature for the current profile.
 // Used by consuming features to determine both feature execution and UI
 // entrypoint visibility.
-enum class PersonalContextEligibilityState {
-  kDisabledNotEligible = 0,  // Not eligible.
-  kDisabledNeedsOptIn = 1,   // Not eligible, requires account opt-in.
-  kEligible = 2              // Eligible.
+enum class PersonalContextEnablementState {
+  kDisabledNotEligible = 0,  // Not available, user not eligible.
+  kDisabledNeedsOptIn = 1,   // Not available, requires account opt-in.
+  kEnabled = 2               // Available.
 };
 
 // Defines the result of a PersonalContextService::FetchContext operation.

@@ -28,7 +28,7 @@ class PersonalContextEnablementService : public KeyedService {
     // enablement status changes and show/hide the entrypoint. Notifies
     // observers of changes to the value returned by GetEnablementState().
     virtual void OnEnablementStateChanged(
-        PersonalContextEligibilityState new_state) = 0;
+        PersonalContextEnablementState new_state) = 0;
   };
 
   ~PersonalContextEnablementService() override = default;
@@ -38,7 +38,7 @@ class PersonalContextEnablementService : public KeyedService {
 
   // Sync getter for the current enablement state. Checks whether the profile
   // is eligible for Personal Context.
-  virtual PersonalContextEligibilityState GetEnablementState() = 0;
+  virtual PersonalContextEnablementState GetEnablementState() = 0;
 };
 
 }  // namespace personal_context

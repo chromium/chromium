@@ -100,7 +100,7 @@ enum class Channel;
 }
 
 namespace personal_context {
-enum class PersonalContextEligibilityState;
+enum class PersonalContextEnablementState;
 class PersonalContextEnablementService;
 }
 
@@ -500,8 +500,8 @@ class AutofillClient {
   // Returns the enablement state of the Accessibility Annotator.
   // TODO(crbug.com/524193567) Delete this method once all the invocations are
   // replaced by the calls to the central enablement util.
-  virtual personal_context::PersonalContextEligibilityState
-  GetPersonalContextEligibilityState() const;
+  virtual personal_context::PersonalContextEnablementState
+  GetPersonalContextEnablementState() const;
 
   // Returns the Personal Context Enablement Service. May return nullptr.
   virtual personal_context::PersonalContextEnablementService*

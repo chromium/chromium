@@ -1339,8 +1339,8 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
     ON_CALL(mock_personal_context_service_, GetEnablementState())
-        .WillByDefault(Return(
-            personal_context::PersonalContextEligibilityState::kEligible));
+        .WillByDefault(
+            Return(personal_context::PersonalContextEnablementState::kEnabled));
     autofill_client().set_personal_context_enablement_service(
         &mock_personal_context_service_);
   }
@@ -1362,18 +1362,18 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, AtMemoryTriggersEmptySuggestions) {
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
-// Tests that when `PersonalContextEligibilityState` is `kDisabledNotEligible`
+// Tests that when `PersonalContextEnablementState` is `kDisabledNotEligible`
 // for a given profile, the AtMemory popup doesn't trigger.
 TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
   ON_CALL(mock_personal_context_service_, GetEnablementState())
-      .WillByDefault(Return(personal_context::PersonalContextEligibilityState::
+      .WillByDefault(Return(personal_context::PersonalContextEnablementState::
                                 kDisabledNotEligible));
 
   autofill_client().set_personal_context_enablement_state(
-      personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
 
   OnAskForValuesToFill(form, form.fields()[0],
                        AutofillSuggestionTriggerSource::kAtMemory);

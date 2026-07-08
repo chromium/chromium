@@ -27,7 +27,7 @@ class ConsentAuditor;
 
 namespace personal_context {
 class PersonalContextEnablementService;
-enum class PersonalContextEligibilityState;
+enum class PersonalContextEnablementState;
 }  // namespace personal_context
 
 namespace subscription_eligibility {

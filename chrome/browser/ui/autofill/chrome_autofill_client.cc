@@ -540,13 +540,13 @@ AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
   return AtMemoryQueryServiceFactory::GetForProfile(profile);
 }
 
-personal_context::PersonalContextEligibilityState
-ChromeAutofillClient::GetPersonalContextEligibilityState() const {
+personal_context::PersonalContextEnablementState
+ChromeAutofillClient::GetPersonalContextEnablementState() const {
   Profile* profile = GetProfile();
   personal_context::PersonalContextEnablementService* service =
       PersonalContextEnablementServiceFactory::GetForProfile(profile);
   return service ? service->GetEnablementState()
-                 : personal_context::PersonalContextEligibilityState::
+                 : personal_context::PersonalContextEnablementState::
                        kDisabledNotEligible;
 }
 

@@ -26,7 +26,7 @@ bool AreServicesAvailableAndAccountEligibleForPersonalIntelligence(
   }
 
   if (enablement_service->GetEnablementState() !=
-      PersonalContextEligibilityState::kEligible) {
+      PersonalContextEnablementState::kEnabled) {
     // Account not eligible.
     return false;
   }
@@ -85,7 +85,7 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
   }
 
   if (enablement_service_->GetEnablementState() !=
-      PersonalContextEligibilityState::kEligible) {
+      PersonalContextEnablementState::kEnabled) {
     // Account not eligible.
     std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
     return;
