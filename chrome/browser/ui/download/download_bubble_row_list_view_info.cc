@@ -16,10 +16,6 @@ DownloadBubbleRowListViewInfo::DownloadBubbleRowListViewInfo(
     std::vector<DownloadUIModel::DownloadUIModelPtr> models) {
   CHECK(!models.empty());
 
-  if (!models.front()->GetEndTime().is_null()) {
-    last_completed_time_ = models.front()->GetEndTime();
-  }
-
   for (DownloadUIModel::DownloadUIModelPtr& model : models) {
     AddRow(std::move(model));
   }

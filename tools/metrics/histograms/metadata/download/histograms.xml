@@ -219,16 +219,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Bubble.DownloadCompletionToPartialViewShownLatency"
-    units="ms" expires_after="2024-06-01">
-  <owner>kerenzhu@chromium.org</owner>
-  <summary>
-    Measures the time (in ms) from a successful download completion to when
-    Download Bubble partial view becomes visible. Recorded only for Desktop
-    platforms, where Download Bubble is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Download.Bubble.ProcessedCommand2" enum="DownloadCommand"
     expires_after="2027-02-01">
   <owner>yawfrempong@google.com</owner>
