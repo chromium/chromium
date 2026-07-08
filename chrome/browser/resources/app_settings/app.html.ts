@@ -76,17 +76,23 @@ export function getHtml(this: AppElement) {
       </div>
       <div class="permission-list indented-permission-block">
         <app-management-permission-item class="subpermission-row"
-            icon="app-management:location" .app="${this.app_}"
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'app-management:location-on'
+                : 'app-management:location-old'}" .app="${this.app_}"
             permission-label="$i18n{appManagementLocationPermissionLabel}"
             permission-type="kLocation">
         </app-management-permission-item>
         <app-management-permission-item class="subpermission-row"
-            icon="app-management:camera" .app="${this.app_}"
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'app-management:videocam'
+                : 'app-management:camera-old'}" .app="${this.app_}"
             permission-label="$i18n{appManagementCameraPermissionLabel}"
             permission-type="kCamera">
         </app-management-permission-item>
         <app-management-permission-item class="subpermission-row"
-            icon="app-management:microphone" .app="${this.app_}"
+            icon="${this.webuiRoundedIconsEnabled_
+                ? 'app-management:mic'
+                : 'app-management:microphone-old'}" .app="${this.app_}"
             permission-label="$i18n{appManagementMicrophonePermissionLabel}"
             permission-type="kMicrophone">
         </app-management-permission-item>
