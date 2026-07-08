@@ -10,6 +10,7 @@ import type {ReadingListAppElement} from 'chrome://read-later.top-chrome/reading
 import type {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list_item.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestReadingListApiProxy} from './test_reading_list_api_proxy.js';
@@ -165,7 +166,9 @@ suite('ReadingListAppTest', () => {
         readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
     assertEquals(
-        'read-later:check-circle-reverse',
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'read-later:check-circle-filled' :
+            'read-later:check-circle-reverse-old',
         readingListItem.$.updateStatusButton.ironIcon);
     readingListItem.$.updateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');

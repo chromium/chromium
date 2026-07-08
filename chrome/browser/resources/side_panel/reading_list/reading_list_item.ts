@@ -11,6 +11,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
@@ -161,8 +162,11 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
    * @return The appropriate icon for the current state
    */
   protected getUpdateStatusButtonIcon_(): string {
-    return this.data.read ? 'read-later:check-circle-reverse' :
-                            'cr:check-circle';
+    return this.data.read ?
+        (loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+             'read-later:check-circle-filled' :
+             'read-later:check-circle-reverse-old') :
+        'cr:check-circle';
   }
 
   /**
