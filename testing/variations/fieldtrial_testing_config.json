@@ -14524,24 +14524,6 @@
             ]
         }
     ],
-    "IOSSyncedSetUp": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SyncedSetUpImpressionLimit": "1"
-                    },
-                    "enable_features": [
-                        "IOSSyncedSetUp"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabResumptionShopCard": [
         {
             "platforms": [
