@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   // Grant write permission.
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   host_content_settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
       CONTENT_SETTING_ALLOW);
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   // Grant write permission.
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   host_content_settings_map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
       CONTENT_SETTING_ALLOW);
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Create three separate windows:
 
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Create two separate windows:
 
@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
   const std::string file_contents = "file contents to write";
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
-          browser()->profile());
+          browser()->GetProfile());
 
   ui::SelectFileDialog::SetFactory(
       std::make_unique<SelectPredeterminedFileDialogFactory>(
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
-          browser()->profile());
+          browser()->GetProfile());
 
   const base::FilePath test_file = CreateTestFile("");
 
@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
-          browser()->profile());
+          browser()->GetProfile());
   const base::FilePath test_file = CreateTestFile("");
 
   // Navigate to the initial page.
@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
-          browser()->profile());
+          browser()->GetProfile());
 
   const base::FilePath test_file = CreateTestFile("");
 
@@ -1374,7 +1374,7 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
 
   content::WebContents* SetUpAndNavigateToTestWebUI() {
     const GURL kWebUITestUrl = content::GetWebUIURL("webui/title1.html");
-    WebUIAllowlist::GetOrCreate(browser()->profile())
+    WebUIAllowlist::GetOrCreate(browser()->GetProfile())
         ->RegisterAutoGrantedPermissions(
             url::Origin::Create(kWebUITestUrl),
             {ContentSettingsType::FILE_SYSTEM_READ_GUARD,

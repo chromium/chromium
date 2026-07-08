@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessUsageBubbleInteractiveUiTest,
   // Revoke the permission.
   auto* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   permission_context->RevokeGrants(kTestOrigin);
 
   // Invoke the bubble again, which simulates re-granting access.

@@ -111,7 +111,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
   void OnNewChangeAvailable() override {}
 
   SyncFileSystemService* sync_file_system_service() {
-    return SyncFileSystemServiceFactory::GetForProfile(browser()->profile());
+    return SyncFileSystemServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   drive_backend::SyncEngine* sync_engine() {
