@@ -870,6 +870,7 @@ test("android_webview_unittests") {
     "../browser/metrics/aw_server_side_allowlist_metrics_provider_unittest.cc",
     "../browser/metrics/visibility_metrics_logger_unittest.cc",
     "../browser/network_service/aw_proxying_restricted_cookie_manager_unittest.cc",
+    "../browser/network_service/aw_proxying_url_loader_factory_unittest.cc",
     "../browser/permission/media_access_permission_request_unittest.cc",
     "../browser/permission/permission_request_handler_unittest.cc",
     "../browser/prefetch/aw_prefetch_manager_unittest.cc",
