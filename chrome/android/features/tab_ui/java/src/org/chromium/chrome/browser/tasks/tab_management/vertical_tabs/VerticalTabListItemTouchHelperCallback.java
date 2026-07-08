@@ -463,8 +463,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 // Select the group header, which ensures a tab within the group is active.
                 selectTabForGroup(viewHolder);
 
-                // TODO(crbug.com/518307037): Collapsed groups should not be expanded when dragged.
-
                 int currentSelectedTabId = getCurrentSelectedTabId();
 
                 // Give inactive child tabs a selected background so the entire group looks
@@ -752,7 +750,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
         int tabId = getTabId(viewHolder);
         Tab tab = tabModel.getTabById(tabId);
-        selectTabInternal(tabModel, tab);
+        selectTabInternal(tabModel, tab, TabSelectionType.FROM_USER);
     }
 
     /**
@@ -779,15 +777,16 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             }
         }
 
-        selectTabInternal(tabModel, tabToSelect);
+        selectTabInternal(tabModel, tabToSelect, TabSelectionType.FROM_DRAG);
     }
 
-    private void selectTabInternal(TabModel tabModel, @Nullable Tab tab) {
+    private void selectTabInternal(
+            TabModel tabModel, @Nullable Tab tab, @TabSelectionType int type) {
         if (tab == null) return;
 
         int index = tabModel.indexOf(tab);
         if (index != TabModel.INVALID_TAB_INDEX && index != tabModel.index()) {
-            tabModel.setIndex(index, TabSelectionType.FROM_USER);
+            tabModel.setIndex(index, type);
         }
     }
 

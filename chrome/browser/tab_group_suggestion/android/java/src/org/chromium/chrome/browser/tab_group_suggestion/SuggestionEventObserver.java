@@ -47,7 +47,8 @@ public class SuggestionEventObserver {
                                         TabSelectionCause.FROM_CLOSE_ACTIVE_TAB;
                                 case TabSelectionType.FROM_EXIT -> TabSelectionCause.FROM_APP_EXIT;
                                 case TabSelectionType.FROM_NEW -> TabSelectionCause.FROM_NEW_TAB;
-                                case TabSelectionType.FROM_USER -> TabSelectionCause.FROM_USER;
+                                case TabSelectionType.FROM_DRAG, TabSelectionType.FROM_USER ->
+                                        TabSelectionCause.FROM_USER;
                                 case TabSelectionType.FROM_OMNIBOX ->
                                         TabSelectionCause.FROM_OMNIBOX;
                                 case TabSelectionType.FROM_UNDO ->

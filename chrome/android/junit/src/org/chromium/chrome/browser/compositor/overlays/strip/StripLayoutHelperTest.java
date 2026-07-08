@@ -1161,7 +1161,8 @@ public class StripLayoutHelperTest {
 
         // Pin the third tab.
         when(tabs[3].getIsPinned()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is hidden on the selected tab, because its pinned.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -1184,7 +1185,8 @@ public class StripLayoutHelperTest {
         // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
         when(tabs[3].getDrawX()).thenReturn(530.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is visible on the selected tab.
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -1207,7 +1209,8 @@ public class StripLayoutHelperTest {
         // drawX(600) + tabWidth(140 - 28) > width(800) - offsetXRight(20) - longRightFadeWidth(136)
         when(tabs[3].getDrawX()).thenReturn(600.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is hidden on the selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -1231,7 +1234,8 @@ public class StripLayoutHelperTest {
         // drawX(550) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
         when(tabs[4].getDrawX()).thenReturn(550.f);
         when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is visible on the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(true, false);
@@ -1255,7 +1259,8 @@ public class StripLayoutHelperTest {
         // drawX(600) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
         when(tabs[4].getDrawX()).thenReturn(600.f);
         when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is hidden on the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(false, false);
@@ -1279,7 +1284,8 @@ public class StripLayoutHelperTest {
         // mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(630.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close button is hidden for selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -1303,7 +1309,8 @@ public class StripLayoutHelperTest {
         // mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(580.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close button is visible for selected tab
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -1327,7 +1334,8 @@ public class StripLayoutHelperTest {
         // drawX(100) + tabOverlapWidth(28) < NTB_X(100) + NTB_WIDTH(100)
         when(tabs[4].getDrawX()).thenReturn(100.f);
         when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close button is hidden for the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(false, false);
@@ -1351,7 +1359,8 @@ public class StripLayoutHelperTest {
         // drawX(200) + tabOverlapWidth(28) > NTB_X(100) + NTB_WIDTH(100)
         when(tabs[4].getDrawX()).thenReturn(200.f);
         when(tabs[4].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 4, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close button is visible for selected last tab.
         verify(tabs[4]).setCanShowCloseButton(true, false);
@@ -1374,7 +1383,8 @@ public class StripLayoutHelperTest {
         // drawX(50) + tabOverlapWidth(28) < offsetXRight(20) + mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(50.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close btn is hidden for selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -1398,7 +1408,8 @@ public class StripLayoutHelperTest {
         // drawX(70) + tabOverlapWidth(28) > offsetXRight(20) + mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(70.f);
         when(tabs[3].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
+        mStripLayoutHelper.tabSelected(
+                TIMESTAMP, 3, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
 
         // Close button is visible for the selected tab.
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -3914,7 +3925,7 @@ public class StripLayoutHelperTest {
         when(mTab.getId()).thenReturn(tabId);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         verify(mStripLayoutHelper, times(1))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
     }
 
     @Test
@@ -3926,10 +3937,10 @@ public class StripLayoutHelperTest {
         when(mTab.getId()).thenReturn(tabId);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         verify(mStripLayoutHelper, times(1))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
         mStripLayoutHelper.onTabStateInitialized();
         verify(mStripLayoutHelper, times(2))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
     }
 
     private SavedTabGroup setupTabGroupSync(Token tabGroupId) {
@@ -4810,7 +4821,7 @@ public class StripLayoutHelperTest {
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
-        mStripLayoutHelper.tabSelected(0, tabIndex, 0);
+        mStripLayoutHelper.tabSelected(0, tabIndex, 0, TabSelectionType.FROM_USER);
         // Flush UI updated
     }
 
@@ -4987,7 +4998,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 5, 10);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 10);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        mStripLayoutHelper.tabSelected(1, 5, 0);
+        mStripLayoutHelper.tabSelected(1, 5, 0, TabSelectionType.FROM_USER);
         // Trigger update to set foreground container visibility.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutTab theClickedTab = tabs[5];
@@ -5752,10 +5763,25 @@ public class StripLayoutHelperTest {
         when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
 
         // Select the first tab.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_USER);
 
         // Verify we auto-expand.
         verify(mModel).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+    }
+
+    @Test
+    public void testTabSelected_FromDrag_DoesNotExpandGroup() {
+        // Group first two tabs and collapse.
+        int startIndex = 3;
+        initializeTest(startIndex);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+
+        // Select the first tab via drag.
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_DRAG);
+
+        // Verify we do NOT auto-expand.
+        verify(mModel, never()).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
     }
 
     private void testTabCreated_InCollapsedGroup(boolean selected) {
@@ -5991,7 +6017,7 @@ public class StripLayoutHelperTest {
         when(mController.wouldTriggerIph(eq(IphType.VERTICAL_TABS_PROMO))).thenReturn(true);
 
         // Select tab to queue Vertical Tabs IPH.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 1, 0);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 1, 0, TabSelectionType.FROM_USER);
 
         // Run layout pass (completes animations/scroll and runs queue).
         mStripLayoutHelper.finishAnimations();

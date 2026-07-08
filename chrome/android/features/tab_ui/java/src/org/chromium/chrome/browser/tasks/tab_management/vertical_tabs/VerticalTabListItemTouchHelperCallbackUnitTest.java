@@ -810,10 +810,38 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
 
         // Verify selectTabForGroup sets the index
-        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
 
         // Verify child is highlighted
         assertTrue(mTargetPropertyModel.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
+    public void testOnSelectedChanged_DragGroupHeader_PreservesSelection() {
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+
+        Tab tab1 = mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab2.getId()).thenReturn(2);
+
+        doReturn(tab1).when(mTabModel).getTabById(1);
+        doReturn(Arrays.asList(tab1, tab2)).when(mTabModel).getRelatedTabList(1);
+
+        // Setup mModel indices
+        when(mTabModel.indexOf(tab1)).thenReturn(0);
+        when(mTabModel.indexOf(tab2)).thenReturn(1);
+        // Current active tab index is 1, which corresponds to tab2.
+        when(mTabModel.index()).thenReturn(1);
+        when(mTabModel.getTabAt(1)).thenReturn(tab2);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        // Since tab2 is already selected and it belongs to the group being dragged,
+        // we shouldn't change the selection index!
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
     }
 
     @Test

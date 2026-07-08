@@ -237,6 +237,9 @@ class TabModel : public TabListInterface {
     FROM_OMNIBOX,
     // Selection of a previously closed tab when closure is undone.
     FROM_UNDO,
+    // Selection of a tab when an item is dragged in the UI, requiring an active
+    // tab representation.
+    FROM_DRAG,
     // Must be last.
     SIZE
   };
