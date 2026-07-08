@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
@@ -84,9 +83,8 @@ class OptimizationGuideAnnotationIndexClient : public AnnotationIndexClient {
   // and invokes `callback` with the result.
   void OnFilterExecutionStrategyDecision(
       int64_t navigation_id,
-      scoped_refptr<base::RefCountedData<base::OnceCallback<
-          void(std::optional<std::vector<FilterSuggestionCandidate>>)>>>
-          shared_callback,
+      base::OnceCallback<
+          void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
