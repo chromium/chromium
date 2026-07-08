@@ -289,49 +289,23 @@ bool IsValidSchema(ui::LinuxUiBackend backend) {
   return true;
 }
 
-bool IsValidIconThemeName(std::string_view theme) {
-  base::FilePath theme_path(theme);
-  return !theme.empty() && theme != "." && !theme_path.IsAbsolute() &&
-         !theme_path.ReferencesParent() && theme_path.BaseName() == theme_path;
+std::string GetSettingsStringProperty(const char* property_name) {
+  gchar* prop_value = nullptr;
+  g_object_get(gtk_settings_get_default(), property_name, &prop_value, nullptr);
+  std::string prop_string;
+  if (prop_value) {
+    prop_string = prop_value;
+    g_free(prop_value);
+  }
+  return prop_string;
 }
 
 std::string GetIconThemeName() {
-  gchar* theme = nullptr;
-  g_object_get(gtk_settings_get_default(), "gtk-icon-theme-name", &theme,
-               nullptr);
-  std::string theme_string;
-  if (theme) {
-    theme_string = theme;
-    g_free(theme);
-  }
-  return theme_string;
+  return GetSettingsStringProperty("gtk-icon-theme-name");
 }
 
-void (*g_orig_set_property)(GObject* object,
-                            guint property_id,
-                            const GValue* value,
-                            GParamSpec* pspec) = nullptr;
-
-DISABLE_CFI_ICALL
-void GtkSettingsSetProperty(GObject* object,
-                            guint property_id,
-                            const GValue* value,
-                            GParamSpec* pspec) {
-  if (pspec && pspec->name &&
-      std::string_view(pspec->name) == "gtk-key-theme-name") {
-    const gchar* name = g_value_get_string(value);
-    if (name && *name) {
-      if (!IsValidIconThemeName(name)) {
-        GValue sanitized_value = G_VALUE_INIT;
-        g_value_init(&sanitized_value, G_TYPE_STRING);
-        g_value_set_string(&sanitized_value, nullptr);
-        g_orig_set_property(object, property_id, &sanitized_value, pspec);
-        g_value_unset(&sanitized_value);
-        return;
-      }
-    }
-  }
-  g_orig_set_property(object, property_id, value, pspec);
+std::string GetThemeName() {
+  return GetSettingsStringProperty("gtk-theme-name");
 }
 
 }  // namespace
@@ -392,15 +366,10 @@ bool GtkUi::Initialize() {
 
   GtkSettings* settings = gtk_settings_get_default();
   SanitizeIconThemeName();
-  if (!GtkCheckVersion(4)) {
-    if (!g_orig_set_property) {
-      GObjectClass* gobject_class =
-          G_OBJECT_CLASS(g_type_class_ref(GTK_TYPE_SETTINGS));
-      g_orig_set_property = gobject_class->set_property;
-      gobject_class->set_property = GtkSettingsSetProperty;
-      g_type_class_unref(gobject_class);
-    }
+  SanitizeThemeName();
+  InstallGtkSettingsInterceptor();
 
+  if (!GtkCheckVersion(4)) {
     SanitizeKeyThemeName();
     connect(settings, "notify::gtk-key-theme-name",
             &GtkUi::OnKeyThemeNameChanged);
@@ -555,7 +524,8 @@ void GtkUi::GetInactiveSelectionFgColor(SkColor* color) const {
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
                                         int dip_size,
                                         float scale) const {
-  if (!IsValidIconThemeName(GetIconThemeName())) {
+  if (!IsValidThemeName(ThemeProperty::kIconThemeName,
+                        GetIconThemeName().c_str())) {
     return gfx::Image();
   }
 
@@ -838,8 +808,18 @@ std::string GtkUi::GetCursorThemeName() {
 
 bool GtkUi::SanitizeIconThemeName() {
   std::string theme = GetIconThemeName();
-  if (!IsValidIconThemeName(theme)) {
+  if (!IsValidThemeName(ThemeProperty::kIconThemeName, theme.c_str())) {
     g_object_set(gtk_settings_get_default(), "gtk-icon-theme-name", "hicolor",
+                 nullptr);
+    return true;
+  }
+  return false;
+}
+
+bool GtkUi::SanitizeThemeName() {
+  std::string theme = GetThemeName();
+  if (!IsValidThemeName(ThemeProperty::kThemeName, theme.c_str())) {
+    g_object_set(gtk_settings_get_default(), "gtk-theme-name", "Adwaita",
                  nullptr);
     return true;
   }
@@ -855,8 +835,7 @@ bool GtkUi::SanitizeKeyThemeName() {
     name_str = name;
     g_free(name);
   }
-  // Unlike the icon theme, an empty key-theme name is normal (no key theme).
-  if (!name_str.empty() && !IsValidIconThemeName(name_str)) {
+  if (!IsValidThemeName(ThemeProperty::kKeyThemeName, name_str.c_str())) {
     g_object_set(gtk_settings_get_default(), "gtk-key-theme-name", nullptr,
                  nullptr);
     return true;
@@ -918,7 +897,7 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 #endif
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
-  if (SanitizeIconThemeName()) {
+  if (SanitizeIconThemeName() || SanitizeThemeName()) {
     return;  // Exit early; modifying the setting re-triggered this function
   }
   colors_.clear();

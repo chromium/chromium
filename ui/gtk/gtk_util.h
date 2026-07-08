@@ -200,6 +200,33 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
 double GetOpacityFromContext(GtkStyleContext* context);
 
+enum class ThemeProperty {
+  kThemeName,
+  kIconThemeName,
+  kKeyThemeName,
+};
+
+// Returns true if `theme` is a safe, valid theme name for `property`.
+// If `theme` is null, returns true only for kKeyThemeName.
+COMPONENT_EXPORT(GTK)
+bool IsValidThemeName(ThemeProperty property, const char* theme);
+
+// Returns the safe fallback value for the given theme-related property.
+COMPONENT_EXPORT(GTK)
+const char* GetThemeFallback(ThemeProperty property);
+
+// Hook the `GtkSettings` `set_property` method to sanitize theme names.
+COMPONENT_EXPORT(GTK) void InstallGtkSettingsInterceptor();
+
+// Unhook the `GtkSettings` `set_property` method.
+COMPONENT_EXPORT(GTK) void UninstallGtkSettingsInterceptor();
+
+// Returns the default `GtkSettings` instance. This wrapper is required because
+// in component builds, raw GTK symbols loaded via stubs (including
+// `gtk_settings_get_default`) are not exported, preventing direct usage in
+// non-component targets like tests.
+COMPONENT_EXPORT(GTK) GtkSettings* GetDefaultGtkSettings();
+
 }  // namespace gtk
 
 #endif  // UI_GTK_GTK_UTIL_H_

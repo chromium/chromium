@@ -121,6 +121,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // Returns true if the setting was modified.
   bool SanitizeIconThemeName();
 
+  // Sanitizes the "gtk-theme-name" setting in GtkSettings if it is unsafe.
+  // Returns true if the setting was modified.
+  bool SanitizeThemeName();
+
   // Sanitizes the "gtk-key-theme-name" setting in GtkSettings if it is unsafe.
   // Returns true if the setting was modified.
   bool SanitizeKeyThemeName();
