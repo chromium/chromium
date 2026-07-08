@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+import argparse
 import dataclasses
 import difflib
 import hashlib
@@ -21,7 +22,7 @@ import chromium_src.tools.metrics.common.diff_util as diff_util
 import chromium_src.tools.python.google.path_utils as path_utils
 
 
-def DoPresubmit(argv,
+def DoPresubmit(args,
                 original_filename,
                 backup_filename,
                 prettyFn,
@@ -29,7 +30,7 @@ def DoPresubmit(argv,
   """Execute presubmit/pretty printing for the target file.
 
   Args:
-    argv: command line arguments
+    args: parsed command line arguments (argparse.Namespace)
     original_filename: The path to the file to read from.
     backup_filename: When pretty printing, move the old file contents here.
     prettyFn: A function which takes the original xml content and produces
@@ -40,13 +41,13 @@ def DoPresubmit(argv,
     An exit status.  Non-zero indicates errors.
   """
   # interactive: Print log info messages and prompt user to accept the diff.
-  interactive = ('--non-interactive' not in argv)
+  interactive = not args.non_interactive
   # presubmit: Simply print a message if the input is not formatted correctly.
-  presubmit = ('--presubmit' in argv)
+  presubmit = args.presubmit
   # diff: Print diff to stdout rather than modifying files.
-  diff = ('--diff' in argv)
+  diff = args.diff
   # cleanup: Remove the backup file after at the end, if created.
-  cleanup = ('--cleanup' in argv)
+  cleanup = args.cleanup
 
   if interactive:
     logging.basicConfig(level=logging.INFO)
@@ -120,8 +121,34 @@ def DoPresubmit(argv,
   return 0
 
 
-def DoPresubmitMain(*args, **kwargs):
-  sys.exit(DoPresubmit(*args, **kwargs))
+def DoPresubmitMain(original_filename,
+                    backup_filename,
+                    prettyFn,
+                    script_name='git cl format'):
+  """Main function for presubmit/pretty printing.
+
+  Handles command line argument parsing.
+
+  Args:
+    original_filename: The path to the file to read from.
+    backup_filename: When pretty printing, move the old file contents here.
+    prettyFn: A function that implements the pretty-printing logic. It accepts
+        the original file content as a string and returns the formatted content.
+    script_name: The user-facing name of the script that runs the
+        pretty-printing. This is shown to the user in the instructions on how to
+        fix formatting issues.
+  """
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--non-interactive', action='store_true')
+  parser.add_argument('--presubmit', action='store_true')
+  parser.add_argument('--diff', action='store_true')
+  parser.add_argument('--cleanup',
+                      action='store_true',
+                      help='Remove the backup file after a successful run.')
+  args, _ = parser.parse_known_args()
+  sys.exit(
+      DoPresubmit(args, original_filename, backup_filename, prettyFn,
+                  script_name))
 
 
 def CheckChange(xml_file, input_api, output_api):

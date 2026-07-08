@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import sys
-import argparse
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -13,33 +12,12 @@ import chromium_src.tools.metrics.common.utf8_encoding as utf8_encoding
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
 def main():
-  """Pretty-prints the Chrome UKM events in ukm.xml file.
-
-  Args:
-    --non-interactive: (Optional) Does not print log info messages and does not
-        prompt user to accept the diff.
-    --presubmit: (Optional) Simply prints a message if the input is not
-        formatted correctly instead of modifying the file.
-    --diff: (Optional) Prints diff to stdout rather than modifying the file.
-    --cleanup: (Optional) Removes any backup file created during the execution.
-
-  Example usage:
-    pretty_print.py --diff --cleanup
-  """
-  parser = argparse.ArgumentParser()
-  # The following optional flags are used by common/presubmit_util.py
-  parser.add_argument('--non-interactive', action="store_true")
-  parser.add_argument('--presubmit', action="store_true")
-  parser.add_argument('--diff', action="store_true")
-  parser.add_argument('--cleanup',
-                      action="store_true",
-                      help="Remove the backup file after a successful run.")
-
+  """Pretty-prints the Chrome UKM events in ukm.xml file."""
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
-  presubmit_util.DoPresubmitMain(sys.argv, 'ukm.xml', 'ukm.old.xml',
+  presubmit_util.DoPresubmitMain('ukm.xml', 'ukm.old.xml',
                                  ukm_model.prettify_xml_and_trim_obsolete)
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+  main()
