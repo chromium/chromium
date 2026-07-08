@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/mv2_deprecation_impact_checker.h"
+#include "extensions/browser/manifest_v2_util.h"
 
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -10,21 +10,16 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-namespace extensions {
+namespace extensions::manifest_v2_util {
 
-MV2DeprecationImpactChecker::MV2DeprecationImpactChecker() = default;
-MV2DeprecationImpactChecker::~MV2DeprecationImpactChecker() = default;
-
-bool MV2DeprecationImpactChecker::IsExtensionAffected(
-    const Extension& extension) {
+bool IsExtensionAffected(const Extension& extension) {
   return IsExtensionAffected(extension.manifest_version(), extension.GetType(),
                              extension.location());
 }
 
-bool MV2DeprecationImpactChecker::IsExtensionAffected(
-    int manifest_version,
-    Manifest::Type manifest_type,
-    mojom::ManifestLocation manifest_location) {
+bool IsExtensionAffected(int manifest_version,
+                         Manifest::Type manifest_type,
+                         mojom::ManifestLocation manifest_location) {
   // Only extensions < MV3.
   if (manifest_version >= 3) {
     return false;
@@ -49,4 +44,4 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
   return true;
 }
 
-}  // namespace extensions
+}  // namespace extensions::manifest_v2_util

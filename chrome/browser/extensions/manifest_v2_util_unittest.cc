@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/mv2_deprecation_impact_checker.h"
+#include "extensions/browser/manifest_v2_util.h"
 
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -11,22 +11,16 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
-namespace extensions {
+namespace extensions::manifest_v2_util {
 
-class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
+class ManifestV2UtilUnitTest : public ExtensionServiceTestBase {
  public:
-  MV2DeprecationImpactCheckerUnitTest() = default;
-  ~MV2DeprecationImpactCheckerUnitTest() override = default;
+  ManifestV2UtilUnitTest() = default;
+  ~ManifestV2UtilUnitTest() override = default;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams{});
-    impact_checker_ = std::make_unique<MV2DeprecationImpactChecker>();
-  }
-
-  void TearDown() override {
-    impact_checker_ = nullptr;
-    ExtensionServiceTestBase::TearDown();
   }
 
   // Since this is testing the MV2 deprecation, we don't want to bypass the
@@ -64,10 +58,6 @@ class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
                                        "allowed");
   }
 
-  MV2DeprecationImpactChecker* impact_checker() {
-    return impact_checker_.get();
-  }
-
  private:
   // Helper function to add a policy extension entry.
   scoped_refptr<const Extension> AddPolicyInstalledExtension(
@@ -100,14 +90,11 @@ class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
 
     return extension;
   }
-
-  std::unique_ptr<MV2DeprecationImpactChecker> impact_checker_;
 };
 
 // Tests that user-visible MV2 extensions are properly considered affected by
 // the MV2 deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest,
-       UserVisibleMV2ExtensionsAreAffected) {
+TEST_F(ManifestV2UtilUnitTest, UserVisibleMV2ExtensionsAreAffected) {
   scoped_refptr<const Extension> user_installed =
       ExtensionBuilder("user installed")
           .SetLocation(mojom::ManifestLocation::kInternal)
@@ -142,18 +129,17 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest,
           .SetManifestVersion(2)
           .Build();
 
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*user_installed));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*external_registry));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*external_pref));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*external_pref_download));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*unpacked));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*commandline));
+  EXPECT_TRUE(IsExtensionAffected(*user_installed));
+  EXPECT_TRUE(IsExtensionAffected(*external_registry));
+  EXPECT_TRUE(IsExtensionAffected(*external_pref));
+  EXPECT_TRUE(IsExtensionAffected(*external_pref_download));
+  EXPECT_TRUE(IsExtensionAffected(*unpacked));
+  EXPECT_TRUE(IsExtensionAffected(*commandline));
 }
 
 // Checks that certain special cases of extensions, such as default-installed
 // and installed by OEM, are also affected by the MV2 deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest,
-       DefaultInstalledMV2ExtensionsAreAffected) {
+TEST_F(ManifestV2UtilUnitTest, DefaultInstalledMV2ExtensionsAreAffected) {
   scoped_refptr<const Extension> default_installed =
       ExtensionBuilder("default installed")
           .SetLocation(mojom::ManifestLocation::kInternal)
@@ -168,13 +154,13 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest,
                     Extension::WAS_INSTALLED_BY_OEM)
           .Build();
 
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*default_installed));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*oem_installed));
+  EXPECT_TRUE(IsExtensionAffected(*default_installed));
+  EXPECT_TRUE(IsExtensionAffected(*oem_installed));
 }
 
 // Tests that component extensions are not included in the MV2 deprecation
 // (they're implementation details of the browser).
-TEST_F(MV2DeprecationImpactCheckerUnitTest, ComponentExtensionsAreNotAffected) {
+TEST_F(ManifestV2UtilUnitTest, ComponentExtensionsAreNotAffected) {
   scoped_refptr<const Extension> component =
       ExtensionBuilder("component")
           .SetLocation(mojom::ManifestLocation::kComponent)
@@ -187,13 +173,13 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest, ComponentExtensionsAreNotAffected) {
           .Build();
 
   // Component extensions are never affected.
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*component));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*external_component));
+  EXPECT_FALSE(IsExtensionAffected(*component));
+  EXPECT_FALSE(IsExtensionAffected(*external_component));
 }
 
 // Tests that MV3 extensions, of any location, are not affected by the MV2
 // deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest, NoMV3ExtensionsAreAffected) {
+TEST_F(ManifestV2UtilUnitTest, NoMV3ExtensionsAreAffected) {
   struct {
     mojom::ManifestLocation manifest_location;
     const char* name;
@@ -219,14 +205,13 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest, NoMV3ExtensionsAreAffected) {
             .SetManifestVersion(3)
             .SetLocation(test_case.manifest_location)
             .Build();
-    EXPECT_FALSE(impact_checker()->IsExtensionAffected(*extension));
+    EXPECT_FALSE(IsExtensionAffected(*extension));
   }
 }
 
 // Tests that MV2 policy-installed extensions are affected if and only if the
 // policy does not exempt them.
-TEST_F(MV2DeprecationImpactCheckerUnitTest,
-       MV2PolicyInstalledExtensionsAreAffected) {
+TEST_F(ManifestV2UtilUnitTest, MV2PolicyInstalledExtensionsAreAffected) {
   scoped_refptr<const Extension> forced_policy = AddForceInstalledExtension(
       "forced policy", mojom::ManifestLocation::kExternalPolicy, 2);
   scoped_refptr<const Extension> forced_policy_download =
@@ -242,17 +227,15 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest,
           mojom::ManifestLocation::kExternalPolicyDownload, 2);
 
   // Policy installs are affected; we no longer support the exemption policy.
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*forced_policy));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*forced_policy_download));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*recommended_policy));
-  EXPECT_TRUE(
-      impact_checker()->IsExtensionAffected(*recommended_policy_download));
+  EXPECT_TRUE(IsExtensionAffected(*forced_policy));
+  EXPECT_TRUE(IsExtensionAffected(*forced_policy_download));
+  EXPECT_TRUE(IsExtensionAffected(*recommended_policy));
+  EXPECT_TRUE(IsExtensionAffected(*recommended_policy_download));
 }
 
 // Tests that MV2 extensions that are allowed by policy, but not policy-
 // installed, are treated as other MV2 extensions.
-TEST_F(MV2DeprecationImpactCheckerUnitTest,
-       MV2PolicyAllowedExtensionsMayBeAffected) {
+TEST_F(ManifestV2UtilUnitTest, MV2PolicyAllowedExtensionsMayBeAffected) {
   scoped_refptr<const Extension> allowed_policy = AddAllowedPolicyExtension(
       "allowed policy", mojom::ManifestLocation::kExternalPolicy, 2);
   scoped_refptr<const Extension> allowed_policy_download =
@@ -260,14 +243,13 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest,
           "allowed policy download",
           mojom::ManifestLocation::kExternalPolicyDownload, 2);
 
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*allowed_policy));
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*allowed_policy_download));
+  EXPECT_TRUE(IsExtensionAffected(*allowed_policy));
+  EXPECT_TRUE(IsExtensionAffected(*allowed_policy_download));
 }
 
 // Tests that any MV3 extension installed by policy is never affected by
 // MV2 deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest,
-       MV3PolicyInstalledExtensionsNeverAffected) {
+TEST_F(ManifestV2UtilUnitTest, MV3PolicyInstalledExtensionsNeverAffected) {
   scoped_refptr<const Extension> forced_policy = AddForceInstalledExtension(
       "forced policy", mojom::ManifestLocation::kExternalPolicy, 3);
   scoped_refptr<const Extension> forced_policy_download =
@@ -288,18 +270,17 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest,
           "allowed policy download",
           mojom::ManifestLocation::kExternalPolicyDownload, 3);
 
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*forced_policy));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*forced_policy_download));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*recommended_policy));
-  EXPECT_FALSE(
-      impact_checker()->IsExtensionAffected(*recommended_policy_download));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*allowed_policy));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*allowed_policy_download));
+  EXPECT_FALSE(IsExtensionAffected(*forced_policy));
+  EXPECT_FALSE(IsExtensionAffected(*forced_policy_download));
+  EXPECT_FALSE(IsExtensionAffected(*recommended_policy));
+  EXPECT_FALSE(IsExtensionAffected(*recommended_policy_download));
+  EXPECT_FALSE(IsExtensionAffected(*allowed_policy));
+  EXPECT_FALSE(IsExtensionAffected(*allowed_policy_download));
 }
 
 // Tests that non-extension "extension-like" things (such as platform apps and
 // hosted apps) are not affected by the MV2 deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest, NonExtensionsAreNotAffected) {
+TEST_F(ManifestV2UtilUnitTest, NonExtensionsAreNotAffected) {
   scoped_refptr<const Extension> platform_app =
       ExtensionBuilder("app", ExtensionBuilder::Type::PLATFORM_APP)
           .SetManifestVersion(2)
@@ -319,13 +300,13 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest, NonExtensionsAreNotAffected) {
           .Build();
   ASSERT_TRUE(hosted_app->is_hosted_app());
 
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*platform_app));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*hosted_app));
+  EXPECT_FALSE(IsExtensionAffected(*platform_app));
+  EXPECT_FALSE(IsExtensionAffected(*hosted_app));
 }
 
 // Tests that user script MV2 extensions are properly considered affected by
 // the MV2 deprecation.
-TEST_F(MV2DeprecationImpactCheckerUnitTest, UserScriptsAreAffected) {
+TEST_F(ManifestV2UtilUnitTest, UserScriptsAreAffected) {
   scoped_refptr<const Extension> user_script =
       ExtensionBuilder("user script")
           .SetLocation(mojom::ManifestLocation::kInternal)
@@ -334,7 +315,7 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest, UserScriptsAreAffected) {
           .Build();
   ASSERT_EQ(Manifest::Type::kUserScript, user_script->GetType());
 
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*user_script));
+  EXPECT_TRUE(IsExtensionAffected(*user_script));
 }
 
-}  // namespace extensions
+}  // namespace extensions::manifest_v2_util

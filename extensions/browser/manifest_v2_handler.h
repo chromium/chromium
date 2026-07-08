@@ -13,7 +13,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/mv2_deprecation_impact_checker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -129,10 +128,6 @@ class ManifestV2Handler : public KeyedService,
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const Extension* extension,
                             bool is_update) override;
-
-  // A helper object to determine if a given extension is affected by the
-  // MV2 deprecation.
-  MV2DeprecationImpactChecker impact_checker_;
 
   // The associated ExtensionPrefs. Guaranteed to be safe to use since this
   // class depends upon them via the KeyedService infrastructure.

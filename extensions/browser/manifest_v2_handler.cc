@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/manifest_v2_util.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -145,7 +146,7 @@ BrowserContextKeyedServiceFactory* ManifestV2Handler::GetFactory() {
 }
 
 bool ManifestV2Handler::IsExtensionAffected(const Extension& extension) {
-  return impact_checker_.IsExtensionAffected(extension);
+  return manifest_v2_util::IsExtensionAffected(extension);
 }
 
 bool ManifestV2Handler::ShouldBlockExtensionInstallation(
@@ -158,8 +159,8 @@ bool ManifestV2Handler::ShouldBlockExtensionInstallation(
 
   // Otherwise, if the extension is affected by the deprecation, it should be
   // blocked.
-  return impact_checker_.IsExtensionAffected(manifest_version, manifest_type,
-                                             manifest_location);
+  return manifest_v2_util::IsExtensionAffected(manifest_version, manifest_type,
+                                               manifest_location);
 }
 
 bool ManifestV2Handler::ShouldBlockExtensionEnable(const Extension& extension) {
@@ -167,8 +168,7 @@ bool ManifestV2Handler::ShouldBlockExtensionEnable(const Extension& extension) {
     return false;
   }
 
-  return impact_checker_.IsExtensionAffected(
-      extension.manifest_version(), extension.GetType(), extension.location());
+  return IsExtensionAffected(extension);
 }
 
 bool ManifestV2Handler::DidUserAcknowledgeNoticeGlobally() {
@@ -206,7 +206,7 @@ void ManifestV2Handler::DisableAffectedExtensions() {
 
   // Disable all applicable MV2 extensions.
   for (const auto& extension : extension_registry->enabled_extensions()) {
-    if (!impact_checker_.IsExtensionAffected(*extension)) {
+    if (!manifest_v2_util::IsExtensionAffected(*extension)) {
       continue;
     }
 
@@ -247,7 +247,7 @@ void ManifestV2Handler::MaybeReEnableExtension(const Extension& extension) {
   // still one in which extensions should be disabled. It's possible the global
   // state changed (e.g. in testing), in which case extensions should be
   // re-enabled.
-  if (impact_checker_.IsExtensionAffected(extension) &&
+  if (manifest_v2_util::IsExtensionAffected(extension) &&
       ShouldDisableLegacyExtensions()) {
     return;
   }
@@ -287,7 +287,7 @@ void ManifestV2Handler::EmitMetricsForProfileReady() {
     }
 
     MV2ExtensionState extension_state = MV2ExtensionState::kUnaffected;
-    if (!impact_checker_.IsExtensionAffected(extension)) {
+    if (!manifest_v2_util::IsExtensionAffected(extension)) {
       extension_state = MV2ExtensionState::kUnaffected;
     } else if (extension_prefs()->HasDisableReason(
                    extension.id(),
