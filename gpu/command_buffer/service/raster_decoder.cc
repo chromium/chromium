@@ -2652,6 +2652,19 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   gl::ScopedProgressReporter report_progress(
       shared_context_state_->progress_reporter());
 
+  // YUV readback requires knowing what SkColorSpace the RGB data should be
+  // converted to AND the SkYUVColorSpace that defines how YUV is derived from
+  // the RGB data. To avoid colorspace conversion, this always uses the
+  // SkColorSpace on `sk_image` (derived from the gfx::ColorSpace of the shared
+  // image). If the source image is multi-planar, try to match its YUV color
+  // space, otherwise default to Rec 709 for multi-planar and Rec 601 for
+  // single-plane formats.
+  SkYUVColorSpace yuv_cs = kRec601_Limited_SkYUVColorSpace;
+  if (source_shared_image->format().is_multi_plane()) {
+    yuv_cs = kRec709_Limited_SkYUVColorSpace;
+    source_shared_image->color_space().ToSkYUVColorSpace(&yuv_cs);
+  }
+
   // While this function indicates it's asynchronous, the DoFinish() call below
   // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
@@ -2659,17 +2672,15 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
     graphite_shared_context()->asyncRescaleAndReadPixelsYUV420AndSubmit(
-        sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
-        src_rect, dst_size, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear,
+        sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
         base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
   } else {
     CHECK(gr_context());
     sk_image->asyncRescaleAndReadPixelsYUV420(
-        kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
-        dst_size, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadYUVImagePixelsDone,
-        &yuv_result);
+        yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &OnReadYUVImagePixelsDone, &yuv_result);
     source_scoped_access->ApplyBackendSurfaceEndState();
     if (!end_semaphores.empty()) {
       GrFlushInfo flush_info = {
