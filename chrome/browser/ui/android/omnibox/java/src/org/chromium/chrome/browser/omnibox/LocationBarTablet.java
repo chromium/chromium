@@ -596,16 +596,17 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         Resources resources = getResources();
         LinearLayout.LayoutParams parentParams =
                 (LinearLayout.LayoutParams) mHolder.getLayoutParams();
+        boolean isPopover =
+                mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER && mIsReparentedToPopover;
         if (!mIsInStandby
                 && (mFuseboxState == FuseboxState.COMPACT
                         || mFuseboxState == FuseboxState.EXPANDED
-                        || (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                                && mIsReparentedToPopover))) {
+                        || isPopover)) {
             parentParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
                     resources.getDimensionPixelSize(
                             R.dimen.location_bar_tablet_fusebox_popup_inset);
-            parentParams.topMargin = -expansionPx;
+            parentParams.topMargin = isPopover ? 0 : -expansionPx;
             setMarginsForWindowWidth(parentParams, expansionPx);
             parentParams.gravity = Gravity.TOP;
             setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());

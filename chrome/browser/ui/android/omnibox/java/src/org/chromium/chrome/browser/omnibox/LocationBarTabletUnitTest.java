@@ -237,6 +237,7 @@ public class LocationBarTabletUnitTest {
     public void testFuseboxStateChange_popoverLayoutMode() {
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mLocationBarTablet.setReparentedToPopover(true);
         GradientDrawable outerRect =
                 (GradientDrawable)
                         ((LayerDrawable) mLocationBarTablet.getBackground())
@@ -276,6 +277,10 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
         assertEquals(radius, glifStrokeDrawable.getCornerRadiusForTesting(), MathUtils.EPSILON);
+
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+        assertEquals(0, layoutParams.topMargin);
     }
 
     @Test
