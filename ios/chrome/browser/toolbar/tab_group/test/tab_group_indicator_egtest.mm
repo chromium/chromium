@@ -212,6 +212,8 @@ void CreateSharedGroupAndOpenMenu(
 
 - (void)tearDownHelper {
   [super tearDownHelper];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
   // Delete groups.
   [TabGroupAppInterface cleanup];
 }
