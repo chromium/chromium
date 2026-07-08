@@ -55,7 +55,29 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.browsing_data.ClearBrowsingDataExpandablePreferenceCategory
         android:key="manage_other_google_data_expandable"
-        android:title="@string/clear_browsing_data_manage_other_google_data_expandable_title" />
+        android:title="@string/clear_browsing_data_manage_other_google_data_expandable_title" >
+
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:key="password_manager_link_out"
+            android:icon="@drawable/ic_password_manager_key"
+            android:title="@string/password_manager_link_out_title"
+            android:summary="@string/password_manager_link_out_description"
+            android:widgetLayout="@layout/preference_widget_open_in_new" />
+
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:key="search_history_link_out"
+            android:icon="@drawable/ic_search_24dp"
+            android:title="@string/search_history_link_out_title"
+            android:summary="@string/my_activity_link_out_description"
+            android:widgetLayout="@layout/preference_widget_open_in_new" />
+
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:key="my_activity_link_out"
+            android:icon="@drawable/ic_google_services_24dp"
+            android:title="@string/my_activity_link_out_title"
+            android:summary="@string/my_activity_link_out_description"
+            android:widgetLayout="@layout/preference_widget_open_in_new" />
+    </org.chromium.chrome.browser.browsing_data.ClearBrowsingDataExpandablePreferenceCategory>
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="sign_out_of_chrome_text" />

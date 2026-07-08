@@ -197,6 +197,10 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     static final String PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE =
             "manage_other_google_data_expandable";
 
+    static final String PREF_PASSWORD_MANAGER_LINK_OUT = "password_manager_link_out";
+    static final String PREF_SEARCH_HISTORY_LINK_OUT = "search_history_link_out";
+    static final String PREF_MY_ACTIVITY_LINK_OUT = "my_activity_link_out";
+
     /** The "Clear" button preference. */
     @VisibleForTesting public static final String PREF_CLEAR_BUTTON = "clear_button";
 
@@ -702,7 +706,18 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         ClearBrowsingDataExpandablePreferenceCategory manageOtherGoogleDataSection =
                 findPreference(PREF_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE);
 
-        manageOtherGoogleDataSection.setExpanded(true);
+        manageOtherGoogleDataSection.setOnExpandedListener(
+                () -> {
+                    findPreference(PREF_PASSWORD_MANAGER_LINK_OUT)
+                            .setVisible(manageOtherGoogleDataSection.isExpanded());
+                    findPreference(PREF_SEARCH_HISTORY_LINK_OUT)
+                            .setVisible(manageOtherGoogleDataSection.isExpanded());
+                    findPreference(PREF_MY_ACTIVITY_LINK_OUT)
+                            .setVisible(manageOtherGoogleDataSection.isExpanded());
+                    notifyPreferencesUpdated();
+                });
+
+        manageOtherGoogleDataSection.setExpanded(false);
     }
 
     @Override

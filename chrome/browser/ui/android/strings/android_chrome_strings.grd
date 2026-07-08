@@ -1295,6 +1295,21 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_MANAGE_OTHER_GOOGLE_DATA_EXPANDABLE_TITLE" desc="Title for the expandable 'Manage other Google data' section in Clear Browsing Data." translateable="false">
         Manage other Google data
       </message>
+            <message name="IDS_PASSWORD_MANAGER_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google Password Manager." translateable="false">
+        Passwords and passkeys
+      </message>
+      <message name="IDS_PASSWORD_MANAGER_LINK_OUT_DESCRIPTION" desc="Description for the link out button in Clear Browsing Data settings that redirects to the Google Password Manager." translateable="false">
+        Manage in Google Password Manager
+      </message>
+            <message name="IDS_SEARCH_HISTORY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google Search History page." translateable="false">
+        Search history
+      </message>
+      <message name="IDS_MY_ACTIVITY_LINK_OUT_TITLE" desc="Title for the link out button in Clear Browsing Data settings that redirects to the Google My Activity page." translateable="false">
+        My Activity
+      </message>
+      <message name="IDS_MY_ACTIVITY_LINK_OUT_DESCRIPTION" desc="Description for the link out button in Clear Browsing Data settings that redirects to the Google My Activity page." translateable="false">
+        Manage in your Google Account
+      </message>
       <message name="IDS_IMPORTANT_SITES_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
         Also clear data from these sites?
       </message>

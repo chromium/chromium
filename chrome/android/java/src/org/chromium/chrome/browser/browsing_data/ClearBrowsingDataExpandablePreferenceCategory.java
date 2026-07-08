@@ -21,6 +21,11 @@ public class ClearBrowsingDataExpandablePreferenceCategory extends ExpandablePre
     }
 
     @Override
+    protected void onClick() {
+        setExpanded(!isExpanded());
+    }
+
+    @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
