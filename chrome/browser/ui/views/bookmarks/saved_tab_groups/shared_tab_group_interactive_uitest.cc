@@ -110,7 +110,7 @@ class SharedTabGroupInteractiveUiTest
                      data_sharing::MemberRole member_role,
                      bool should_sign_in) {
     TabGroupSyncService* service =
-        TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+        TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
     service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
 
     // Additional Properties.
@@ -125,7 +125,7 @@ class SharedTabGroupInteractiveUiTest
     if (should_sign_in) {
       // Simulate a signed in primary account.
       signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(browser()->profile());
+          IdentityManagerFactory::GetForProfile(browser()->GetProfile());
       signin::MakePrimaryAccountAvailable(identity_manager, email,
                                           signin::ConsentLevel::kSignin);
       signin::MakePrimaryAccountAvailable(identity_manager, email,
@@ -177,14 +177,14 @@ class SharedTabGroupInteractiveUiTest
   data_sharing::DataSharingService* data_sharing_service() {
     data_sharing::DataSharingService* data_sharing_service =
         data_sharing::DataSharingServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     return data_sharing_service;
   }
 
   collaboration::messaging::MessagingBackendService* messaging_service() {
     collaboration::messaging::MessagingBackendService* messaging_service =
         collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     return messaging_service;
   }
 

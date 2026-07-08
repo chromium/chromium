@@ -115,7 +115,7 @@ class PriceInsightsIconViewBaseInteractiveTest
     EXPECT_TRUE(is_browser_context_services_created);
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
     mock_account_checker_ = std::make_unique<commerce::MockAccountChecker>();
     mock_shopping_service_->SetAccountChecker(mock_account_checker_.get());
 

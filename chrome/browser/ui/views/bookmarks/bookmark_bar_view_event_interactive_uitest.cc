@@ -354,7 +354,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_ = CreateBrowserWithTestWindowForParams(native_params);
 
     model_->DisableWritesToDiskForTest();
-    PinnedToolbarActionsModel::Get(browser_->profile())
+    PinnedToolbarActionsModel::Get(browser_->GetProfile())
         ->UpdatePinnedState(kActionShowChromeLabs, false);
 
     AddTestData(CreateBigMenu());

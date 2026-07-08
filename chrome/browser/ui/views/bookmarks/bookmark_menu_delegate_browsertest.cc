@@ -181,16 +181,16 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
   }
 
   BookmarkModel* model() {
-    return BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    return BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   }
 
   BookmarkMergedSurfaceService* bookmark_service() {
     return BookmarkMergedSurfaceServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   const BookmarkNode* managed_node() {
-    return ManagedBookmarkServiceFactory::GetForProfile(browser()->profile())
+    return ManagedBookmarkServiceFactory::GetForProfile(browser()->GetProfile())
         ->managed_node();
   }
 

@@ -127,7 +127,7 @@ class CaptionBubbleControllerViewsTest
   CaptionBubbleControllerViews* GetController() {
     if (!controller_) {
       caption_bubble_settings_ = std::make_unique<LiveCaptionBubbleSettings>(
-          browser()->profile()->GetPrefs());
+          browser()->GetProfile()->GetPrefs());
       controller_ = std::make_unique<CaptionBubbleControllerViews>(
           caption_bubble_settings_.get(), "en-US" /* application_locale */,
           std::make_unique<TranslationViewWrapper>(
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        MAYBE_BubblePositioningSmallNonBrowserContext) {
   auto context_widget =
-      MakeWebViewWidget(browser()->profile(), {{0, 0}, {300, 100}});
+      MakeWebViewWidget(browser()->GetProfile(), {{0, 0}, {300, 100}});
 
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
   base::RunLoop().RunUntilIdle();
@@ -1207,7 +1207,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   int line_height = 24;
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveCaptionBubbleExpanded));
 
   OnPartialTranscription("Seahorses are monogamous");
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLiveCaptionBubbleExpanded));
 
   // Switch media. The bubble should remain expanded.
@@ -1787,16 +1787,16 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
   ASSERT_EQ(u"Filipino", target_language_label->GetText());
 
   SetTargetLanguage("iw");
-  ASSERT_EQ("he", browser()->profile()->GetPrefs()->GetString(
+  ASSERT_EQ("he", browser()->GetProfile()->GetPrefs()->GetString(
                       prefs::kLiveTranslateTargetLanguageCode));
   SetTargetLanguage("gom");
-  ASSERT_EQ("kok", browser()->profile()->GetPrefs()->GetString(
+  ASSERT_EQ("kok", browser()->GetProfile()->GetPrefs()->GetString(
                        prefs::kLiveTranslateTargetLanguageCode));
   SetTargetLanguage("jw");
-  ASSERT_EQ("jv", browser()->profile()->GetPrefs()->GetString(
+  ASSERT_EQ("jv", browser()->GetProfile()->GetPrefs()->GetString(
                       prefs::kLiveTranslateTargetLanguageCode));
   SetTargetLanguage("tl");
-  ASSERT_EQ("fil", browser()->profile()->GetPrefs()->GetString(
+  ASSERT_EQ("fil", browser()->GetProfile()->GetPrefs()->GetString(
                        prefs::kLiveTranslateTargetLanguageCode));
 }
 

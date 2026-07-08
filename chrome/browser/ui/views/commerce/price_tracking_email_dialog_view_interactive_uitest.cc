@@ -92,7 +92,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
 
   void ApplyMetaToBookmark() {
     bookmarks::BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(
             embedded_test_server()->GetURL(kShoppingURL));
@@ -111,7 +111,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     EXPECT_TRUE(is_browser_context_services_created_);
     auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
     MockCommerceUiTabHelper* mock_tab_helper =
         static_cast<MockCommerceUiTabHelper*>(browser()
                                                   ->GetActiveTabInterface()
@@ -138,7 +138,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
 IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
                        EmailConsentDialogShown) {
   signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       "test@example.com", signin::ConsentLevel::kSignin);
 
   RunTestSequence(

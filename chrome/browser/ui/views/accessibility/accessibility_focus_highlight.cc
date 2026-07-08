@@ -88,7 +88,8 @@ AccessibilityFocusHighlight::AccessibilityFocusHighlight(
   DCHECK(browser_view);
 
   // Listen for preference changes.
-  profile_pref_registrar_.Init(browser_view_->browser()->profile()->GetPrefs());
+  profile_pref_registrar_.Init(
+      browser_view_->browser()->GetProfile()->GetPrefs());
   profile_pref_registrar_.Add(
       prefs::kAccessibilityFocusHighlightEnabled,
       base::BindRepeating(&AccessibilityFocusHighlight::AddOrRemoveObservers,
@@ -223,7 +224,7 @@ void AccessibilityFocusHighlight::RemoveLayer() {
 
 void AccessibilityFocusHighlight::AddOrRemoveObservers() {
   Browser* browser = browser_view_->browser();
-  PrefService* prefs = browser->profile()->GetPrefs();
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   if (prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled)) {

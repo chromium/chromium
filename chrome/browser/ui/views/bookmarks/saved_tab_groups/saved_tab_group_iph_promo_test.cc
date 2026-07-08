@@ -29,7 +29,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
         Do([this]() {
           tab_groups::TabGroupSyncService* service =
               tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                  browser()->profile());
+                  browser()->GetProfile());
           ASSERT_TRUE(service);
 
           chrome::AddTabAt(browser(), GURL(), 0, true);

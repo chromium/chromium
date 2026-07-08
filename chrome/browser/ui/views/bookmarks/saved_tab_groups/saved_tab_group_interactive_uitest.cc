@@ -196,7 +196,7 @@ class SavedTabGroupInteractiveTestBase
 
   TabGroupSyncService* service() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   StepBuilder CheckIfSavedGroupIsClosed(const base::Uuid* const saved_guid) {
@@ -307,7 +307,7 @@ class SavedTabGroupInteractiveTest
     return Do([=, this]() {
       TabGroupSyncService* service =
           tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile());
+              browser()->GetProfile());
       service->AddGroup({u"Test Test",
                          tab_groups::TabGroupColorId::kBlue,
                          {},
@@ -341,7 +341,7 @@ class SavedTabGroupInteractiveTest
       TabGroupSyncServiceImpl* service_impl =
           static_cast<TabGroupSyncServiceImpl*>(
               tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                  browser()->profile()));
+                  browser()->GetProfile()));
       service_impl->GetModel()->AddedFromSync(std::move(group));
     });
   }
@@ -416,7 +416,7 @@ class SavedTabGroupInteractiveTest
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
+        content::WebContents::CreateParams(browser()->GetProfile()));
   }
 
  private:

@@ -318,7 +318,7 @@ void SavedTabGroupButton::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
+          browser_->GetProfile());
 
   const std::optional<SavedTabGroup> saved_group =
       tab_group_service->GetGroup(guid_);

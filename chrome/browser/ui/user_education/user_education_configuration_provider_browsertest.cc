@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(UserEducationConfigurationProviderBrowsertest,
                        AutoConfigureWithExtendedParam) {
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   auto* const config = tracker->GetConfigurationForTesting();
   const feature_engagement::FeatureConfig& feature_config =
       config->GetFeatureConfig(

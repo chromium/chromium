@@ -47,7 +47,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
 
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
-    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+    WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
   }
 
   TestAutofillManager* GetAutofillManager() {

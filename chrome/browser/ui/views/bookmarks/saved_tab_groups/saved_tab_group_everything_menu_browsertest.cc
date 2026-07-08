@@ -36,7 +36,7 @@ SavedTabGroup CreateTestSavedTabGroup() {
 class STGEverythingMenuBrowserTest : public InProcessBrowserTest {
  public:
   TabGroupSyncService* service() {
-    return TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+    return TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   }
 };
 

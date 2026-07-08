@@ -1024,7 +1024,7 @@ bool BookmarkBarView::AreDropTypesRequired() {
 
 bool BookmarkBarView::CanDrop(const ui::OSExchangeData& data) {
   if (!bookmark_service_ || !bookmark_service_->loaded() ||
-      !browser_->profile()->GetPrefs()->GetBoolean(
+      !browser_->GetProfile()->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled)) {
     return false;
   }
@@ -1379,7 +1379,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
                                            const gfx::Point& press_pt,
                                            ui::OSExchangeData* data) {
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragButton"));
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
 
   const auto* node = GetNodeForSender(sender);
   ui::ImageModel icon;
@@ -1411,7 +1411,7 @@ int BookmarkBarView::GetDragOperationsForView(View* sender,
     return ui::DragDropTypes::DRAG_NONE;
   }
 
-  return chrome::GetBookmarkDragOperation(browser_->profile(),
+  return chrome::GetBookmarkDragOperation(browser_->GetProfile(),
                                           GetNodeForSender(sender));
 }
 
@@ -1440,7 +1440,7 @@ void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   page_navigator_->OpenURL(params, /*navigation_handle_callback=*/{});
   RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
@@ -1448,7 +1448,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   // Only URL nodes have regular buttons on the bookmarks bar; folder clicks
   // are directed to ::OnMenuButtonPressed().
   DCHECK(node->is_url());
-  RecordAppLaunch(browser_->profile(), node->url());
+  RecordAppLaunch(browser_->GetProfile(), node->url());
   bookmarks::OpenAllIfAllowed(
       browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
       bookmarks::OpenAllBookmarksContext::kNone,
@@ -1457,13 +1457,13 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
-      profile_metrics::GetBrowserProfileType(browser_->profile()));
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
+      profile_metrics::GetBrowserProfileType(browser_->GetProfile()));
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
 }
 
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.
   if ((event.flags() & ui::EF_MIDDLE_MOUSE_BUTTON) ||
@@ -1564,7 +1564,7 @@ void BookmarkBarView::RunContextMenuAt(std::vector<int64_t> node_ids,
   const bool close_on_remove = true;
 
   auto* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile());
   std::vector<const BookmarkNode*> nodes;
   for (int64_t node_id : node_ids) {
     const BookmarkNode* node =
@@ -1579,7 +1579,7 @@ void BookmarkBarView::RunContextMenuAt(std::vector<int64_t> node_ids,
 
   context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      GetWidget(), browser_, browser_->profile(),
+      GetWidget(), browser_, browser_->GetProfile(),
       BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
       close_on_remove, can_paste);
   context_menu_observation_.Observe(context_menu_.get());
@@ -1636,12 +1636,12 @@ void BookmarkBarView::Init() {
   managed_bookmarks_button_->SetEnabled(false);
 
   if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-          browser_->profile())) {
+          browser_->GetProfile())) {
     saved_tab_group_bar_ =
         AddChildView(std::make_unique<tab_groups::SavedTabGroupBar>(
             browser_, animations_enabled));
     saved_tab_group_bar_->SetVisible(
-        chrome::ShouldShowTabGroupsInBookmarkBar(browser_->profile()));
+        chrome::ShouldShowTabGroupsInBookmarkBar(browser_->GetProfile()));
     saved_tab_groups_separator_view_ =
         AddChildView(std::make_unique<ButtonSeparatorView>());
     saved_tab_groups_separator_view_->SetVisible(true);
@@ -1653,7 +1653,7 @@ void BookmarkBarView::Init() {
   // We'll re-enable when the model is loaded.
   all_bookmarks_button_->SetEnabled(false);
 
-  profile_pref_registrar_.Init(browser_->profile()->GetPrefs());
+  profile_pref_registrar_.Init(browser_->GetProfile()->GetPrefs());
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
       base::BindRepeating(
@@ -1671,7 +1671,7 @@ void BookmarkBarView::Init() {
                           base::Unretained(this)));
 
   apps_page_shortcut_->SetVisible(
-      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->profile()));
+      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->GetProfile()));
 
   bookmarks_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
@@ -1682,9 +1682,10 @@ void BookmarkBarView::Init() {
 
   set_context_menu_controller(this);
 
-  bookmark_service_ =
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(browser_->profile());
-  managed_ = ManagedBookmarkServiceFactory::GetForProfile(browser_->profile());
+  bookmark_service_ = BookmarkMergedSurfaceServiceFactory::GetForProfile(
+      browser_->GetProfile());
+  managed_ =
+      ManagedBookmarkServiceFactory::GetForProfile(browser_->GetProfile());
   if (bookmark_service_) {
     bookmark_service_->AddObserver(this);
     if (bookmark_service_->loaded()) {
@@ -2045,7 +2046,7 @@ void BookmarkBarView::CalculateDropLocation(
 
   bool found = false;
   const int other_delta_x = mirrored_x - all_bookmarks_button_->x();
-  Profile* profile = browser_->profile();
+  Profile* profile = browser_->GetProfile();
   if (all_bookmarks_button_->GetVisible() && other_delta_x >= 0 &&
       other_delta_x < all_bookmarks_button_->width()) {
     // Mouse is over 'other' folder.
@@ -2179,7 +2180,7 @@ void BookmarkBarView::WriteBookmarkDragData(const BookmarkNode* node,
                                             ui::OSExchangeData* data) {
   DCHECK(node && data);
   bookmarks::BookmarkNodeData drag_data(node);
-  drag_data.Write(browser_->profile()->GetPath(), data);
+  drag_data.Write(browser_->GetProfile()->GetPath(), data);
 }
 
 void BookmarkBarView::UpdateAppearanceForTheme() {
@@ -2250,7 +2251,7 @@ bool BookmarkBarView::UpdateOtherAndManagedButtonsVisibility() {
 
   bool show_managed = bookmark_service_->GetChildrenCount(
                           BookmarkParentFolder::ManagedFolder()) &&
-                      browser_->profile()->GetPrefs()->GetBoolean(
+                      browser_->GetProfile()->GetPrefs()->GetBoolean(
                           bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
   bool update_managed = show_managed != managed_bookmarks_button_->GetVisible();
   if (update_managed) {
@@ -2268,7 +2269,7 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
   DCHECK(apps_page_shortcut_);
   // Only perform layout if required.
   bool visible =
-      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->profile());
+      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->GetProfile());
   if (apps_page_shortcut_->GetVisible() == visible) {
     return;
   }
@@ -2282,13 +2283,14 @@ void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
   // browser is triggered. Early return because incognito has no
   // `saved_tab_group_bar_`.
   if (!tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-          browser_->profile())) {
+          browser_->GetProfile())) {
     return;
   }
 
   DCHECK(saved_tab_group_bar_);
   // Only perform layout if required.
-  bool visible = chrome::ShouldShowTabGroupsInBookmarkBar(browser_->profile());
+  bool visible =
+      chrome::ShouldShowTabGroupsInBookmarkBar(browser_->GetProfile());
   if (saved_tab_group_bar_->GetVisible() == visible) {
     return;
   }
@@ -2388,11 +2390,11 @@ void BookmarkBarView::PerformDrop(
   DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
-  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
   output_drag_op =
       BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                &parent_folder)
-          .DropBookmarks(browser_->profile(), data, index, copy,
+          .DropBookmarks(browser_->GetProfile(), data, index, copy,
                          chrome::BookmarkReorderDropTarget::kBookmarkBarView,
                          browser_);
 }
@@ -2412,7 +2414,7 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
   // Check whether to show the synced, or unsyned version of the promo.
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
+          browser_->GetProfile());
   if (!tab_group_service) {
     return;
   }
@@ -2433,7 +2435,7 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
 
   // If tabs groups are syncing...
   if (tab_groups::SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(
-          browser()->profile())) {
+          browser()->GetProfile())) {
     // Anchor the IPH to the bookmarks bar if the everything button is visible.
     // Otherwise, anchor to the AppMenu.
     if (everything_button_is_visible) {

@@ -53,14 +53,14 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
   AddEventObserverToController(controller);
 
   personal_data_ =
-      PersonalDataManagerFactory::GetForBrowserContext(browser()->profile());
+      PersonalDataManagerFactory::GetForBrowserContext(browser()->GetProfile());
 
   // Mimic the user is signed in so payments integration is considered enabled.
   personal_data_->payments_data_manager().SetSyncingForTest(true);
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.
-  WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+  WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
 
   host_resolver()->AddRule("*", "127.0.0.1");
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);

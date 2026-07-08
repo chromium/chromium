@@ -297,7 +297,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     base::RecordAction(UserMetricsAction("BookmarkBubble_Unstar"));
     should_apply_edits_ = false;
     bookmarks::BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (node) {
@@ -332,7 +332,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   void ShowEditor() {
     DCHECK(dialog_model()->host());
 
-    Profile* const profile = browser_->profile();
+    Profile* const profile = browser_->GetProfile();
 
     const bookmarks::BookmarkNode* node =
         BookmarkModelFactory::GetForBrowserContext(profile)
@@ -369,7 +369,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     should_apply_edits_ = false;
 
     bookmarks::BookmarkModel* const model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (!node) {
@@ -434,7 +434,7 @@ void BookmarkBubbleView::ShowBubble(
     }
     return;
   }
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   CHECK(profile);
   CHECK(web_contents);
 

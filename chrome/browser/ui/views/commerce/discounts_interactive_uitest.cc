@@ -121,7 +121,7 @@ class DiscountsInteractiveTest
   commerce::MockShoppingService* ShoppingService() {
     return static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
   using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;

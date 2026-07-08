@@ -86,7 +86,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   TabGroupSyncService* service() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   int button_padding() { return button_padding_; }
@@ -98,7 +98,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
 
     TabGroupSyncService* service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     service->SetIsInitializedForTesting(true);
     Wait();
 
@@ -125,7 +125,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
 
   void AddTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(browser->profile(),
+        content::WebContentsTester::CreateTestWebContents(browser->GetProfile(),
                                                           nullptr);
 
     browser->tab_strip_model()->AddWebContents(

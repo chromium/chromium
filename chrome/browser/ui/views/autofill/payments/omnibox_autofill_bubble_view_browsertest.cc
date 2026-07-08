@@ -60,12 +60,12 @@ class OmniboxAutofillBubbleViewBrowserTest : public InProcessBrowserTest {
 
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
-    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+    WaitForPersonalDataManagerToBeLoaded(browser()->GetProfile());
   }
 
   PersonalDataManager* personal_data_manager() {
     return PersonalDataManagerFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   OmniboxAutofillBubbleController* GetBubbleController() {
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
 
   // Add local card.
   CreditCard local_card = test::GetCreditCard();
-  AddTestCreditCard(browser()->profile(), local_card);
+  AddTestCreditCard(browser()->GetProfile(), local_card);
 
   // Add local card suggestion.
   std::vector<Suggestion> suggestions;
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   // Add server card.
   personal_data_manager()->payments_data_manager().SetSyncingForTest(true);
   CreditCard server_card = test::GetMaskedServerCard();
-  AddTestServerCreditCard(browser()->profile(), server_card);
+  AddTestServerCreditCard(browser()->GetProfile(), server_card);
   const CreditCard* loaded_card =
       personal_data_manager()->payments_data_manager().GetCreditCardByServerId(
           server_card.server_id());

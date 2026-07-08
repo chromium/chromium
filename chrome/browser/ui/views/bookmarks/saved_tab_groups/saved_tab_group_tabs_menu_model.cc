@@ -123,7 +123,7 @@ void STGTabsMenuModel::Build(
   }
 
   latest_command_id = get_next_command_id.Run();
-  if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
+  if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->GetProfile(),
                                                   sync_id_.value())) {
     // Add item: delete group.
     AddItemWithStringIdAndIcon(
@@ -181,7 +181,7 @@ void STGTabsMenuModel::Build(
 
   // Perform an async request for the favicon from the favicon service
   favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(browser_->profile(),
+      FaviconServiceFactory::GetForProfile(browser_->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
   // Append open urls.
@@ -257,7 +257,7 @@ void STGTabsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   TabGroupMenuAction action = it->second;
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
+          browser_->GetProfile());
   SavedTabGroupUtils::PerformTabGroupMenuAction(action, context_, browser_,
                                                 tab_group_service);
 }

@@ -120,7 +120,7 @@ class ResumptionRailPromoTest
       chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_BAR);
     }
     ASSERT_TRUE(tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-        browser()->profile()));
+        browser()->GetProfile()));
 
     // Simulate an old profile so the button shows by default without
     // interference from the new profile grace period. Tests that need to test
@@ -131,7 +131,7 @@ class ResumptionRailPromoTest
   auto AddTabGroupsToForceOverflow() {
     return Do([this]() {
       auto* service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
       for (int i = 0; i < kNumTabGroupsToForceOverflow; ++i) {
         base::Uuid id = base::Uuid::ParseLowercase(
             base::StringPrintf("00000000-0000-0000-0000-0000000000%02d", i));

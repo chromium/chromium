@@ -62,7 +62,7 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
 
  protected:
   TabGroupSyncService* GetSyncService() {
-    return TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+    return TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   }
 
   base::test::ScopedFeatureList feature_list_;

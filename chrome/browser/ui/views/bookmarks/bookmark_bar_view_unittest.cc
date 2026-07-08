@@ -263,7 +263,7 @@ TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
   // the Apps shortcut is enabled.
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, true);
-  if (chrome::IsAppsShortcutEnabled(browser()->profile())) {
+  if (chrome::IsAppsShortcutEnabled(browser()->GetProfile())) {
     EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
   } else {
     EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());

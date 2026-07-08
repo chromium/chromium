@@ -120,7 +120,7 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     commerce::MockShoppingService* mock_shopping_service =
         static_cast<commerce::MockShoppingService*>(
             commerce::ShoppingServiceFactory::GetForBrowserContext(
-                browser()->profile()));
+                browser()->GetProfile()));
     mock_shopping_service->SetIsShoppingListEligible(true);
   }
 

@@ -69,7 +69,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(nullptr, ActiveView());
 
     auto* app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(app_service_proxy);
 
     UninstallApp(app_id_);
@@ -85,7 +85,8 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     if (name == "accept") {
       if (app_service_proxy->AppRegistryCache().GetAppType(app_id_) ==
           apps::AppType::kWeb) {
-        web_app::WebAppTestUninstallObserver app_listener(browser()->profile());
+        web_app::WebAppTestUninstallObserver app_listener(
+            browser()->GetProfile());
         app_listener.BeginListening();
         ActiveView()->AcceptDialog();
         app_listener.Wait();
@@ -122,7 +123,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
   // displayed.
   bool UninstallApp(std::string app_id) {
     auto* app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
     DCHECK(app_service_proxy);
 
     base::test::TestFuture<bool> future;
@@ -150,12 +151,12 @@ class ArcAppsUninstallDialogViewBrowserTest
   void SetUpOnMainThread() override {
     AppUninstallDialogViewBrowserTest::SetUpOnMainThread();
 
-    arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
+    arc::SetArcPlayStoreEnabledForProfile(browser()->GetProfile(), true);
 
     // Validating decoded content does not fit well for unit tests.
     ArcAppIcon::DisableSafeDecodingForTesting();
 
-    arc_app_list_pref_ = ArcAppListPrefs::Get(browser()->profile());
+    arc_app_list_pref_ = ArcAppListPrefs::Get(browser()->GetProfile());
     ASSERT_TRUE(arc_app_list_pref_);
     base::RunLoop run_loop;
     arc_app_list_pref_->SetDefaultAppsReadyCallback(run_loop.QuitClosure());
@@ -218,14 +219,15 @@ class WebAppsUninstallDialogViewBrowserTest
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GetAppURL());
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
-    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
+    app_id_ = web_app::test::InstallWebApp(browser()->GetProfile(),
                                            std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
-    web_app::LaunchWebAppBrowser(browser()->profile(), app_id_);
+    web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id_);
     navigation_observer.WaitForNavigationFinished();
 
-    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
+    auto* provider =
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     DCHECK(provider);
     app_name_ = provider->registrar_unsafe().GetAppShortName(app_id_);
   }
@@ -278,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
   EXPECT_EQ(nullptr, ActiveView());
 
   auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+      apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(app_service_proxy);
 
   // First call to uninstall should return true in callback for successful.
@@ -343,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
-                       app->Install(browser()->profile()));
+                       app->Install(browser()->GetProfile()));
 
   const webapps::AppId parent_app_id = parent_app.app_id();
   const GURL parent_app_url = parent_app.origin().GetURL();
@@ -362,7 +364,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
     web_app_info->parent_app_id = parent_app_id;
     web_app_info->title = sub_app_name;
 
-    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info),
+    web_app::test::InstallWebApp(browser()->GetProfile(),
+                                 std::move(web_app_info),
                                  /*overwrite_existing_manifest_fields=*/true,
                                  webapps::WebappInstallSource::SUB_APP);
   }
@@ -402,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
-                       app->Install(browser()->profile()));
+                       app->Install(browser()->GetProfile()));
 
   const webapps::AppId parent_app_id = parent_app.app_id();
   const GURL parent_app_url = parent_app.origin().GetURL();
@@ -428,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->Install(browser()->profile()));
+                       app->Install(browser()->GetProfile()));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "AppUninstallDialogView");
@@ -454,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
           .BuildBundle();
 
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo parent_app,
-                       app->Install(browser()->profile()));
+                       app->Install(browser()->GetProfile()));
 
   const webapps::AppId parent_app_id = parent_app.app_id();
   const GURL parent_app_url = parent_app.origin().GetURL();
@@ -467,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   web_app_info->title = sub_app_name;
 
   webapps::AppId sub_app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info),
+      browser()->GetProfile(), std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/true,
       webapps::WebappInstallSource::SUB_APP);
 

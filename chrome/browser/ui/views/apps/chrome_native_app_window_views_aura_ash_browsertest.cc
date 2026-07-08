@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   extensions::AppWindow::CreateParams params;
   params.frame = extensions::AppWindow::FRAME_NONE;
   extensions::AppWindow* app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
+      CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
 
   // Test that the window is centered within the work area.
   gfx::Rect expected_bounds = display_manager->GetDisplayAt(0).work_area();
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
     content_spec.bounds = specified_bounds;
     params.content_spec = content_spec;
     app_window =
-        CreateAppWindowFromParams(browser()->profile(), extension, params);
+        CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
     EXPECT_EQ(specified_bounds,
               app_window->GetNativeWindow()->GetBoundsInScreen());
   }
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
     content_spec.bounds = specified_bounds;
     params.content_spec = content_spec;
     app_window =
-        CreateAppWindowFromParams(browser()->profile(), extension, params);
+        CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
     EXPECT_EQ(specified_bounds,
               app_window->GetNativeWindow()->GetBoundsInScreen());
   }
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   extensions::AppWindow::CreateParams params;
   extensions::AppWindow* app1_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
+      CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
 
   ash::SplitViewTestApi split_view_test_api;
   split_view_test_api.SnapWindow(app1_window->GetNativeWindow(),
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   // snapped.
   params.state = ui::mojom::WindowShowState::kMaximized;
   extensions::AppWindow* app2_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
+      CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
   ASSERT_EQ(app2_window->GetNativeWindow(),
             split_view_test_api.GetSecondaryWindow());
 }

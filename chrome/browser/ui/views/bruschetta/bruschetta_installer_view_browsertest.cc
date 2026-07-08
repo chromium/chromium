@@ -83,7 +83,7 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    BruschettaInstallerView::Show(browser()->profile(),
+    BruschettaInstallerView::Show(browser()->GetProfile(),
                                   *g_browser_process->local_state(),
                                   GetBruschettaAlphaId());
     view_ = BruschettaInstallerView::GetActiveViewForTesting();

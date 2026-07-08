@@ -259,7 +259,7 @@ void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
   if (!groups_model_) {
     TabGroupSyncService* tab_group_service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser_->profile());
+            browser_->GetProfile());
 
     // Only recreate the model if we have to.
     groups_model_ = CreateMenuModel(tab_group_service);
@@ -370,7 +370,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
             : TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU,
         browser_,
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser_->profile()));
+            browser_->GetProfile()));
   }
 }
 

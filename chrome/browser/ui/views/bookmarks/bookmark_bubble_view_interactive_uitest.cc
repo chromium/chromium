@@ -101,11 +101,11 @@ class BookmarkBubbleViewIPHInteractiveTest
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
         "test@email.com", consent_level);
 
     bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
     // If we are not syncing, we need to add account nodes in order to use the
@@ -121,7 +121,7 @@ class BookmarkBubbleViewIPHInteractiveTest
   feature_engagement::test::MockTracker* GetMockTracker(Profile* profile) {
     return static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetInstance()->GetForBrowserContext(
-            browser()->profile()));
+            browser()->GetProfile()));
   }
 
  private:
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
                        ShoppingCollectionIPH_Shown) {
   bookmarks::BookmarkModel* model = CreateBookmarkModel();
 
-  ON_CALL(*GetMockTracker(browser()->profile()),
+  ON_CALL(*GetMockTracker(browser()->GetProfile()),
           ShouldTriggerHelpUI(
               testing::Ref(feature_engagement::kIPHShoppingCollectionFeature)))
       .WillByDefault(testing::Return(true));
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
 
   commerce::AddProductInfoToExistingBookmark(model, node, u"Product", 12345L);
 
-  EXPECT_CALL(*GetMockTracker(browser()->profile()),
+  EXPECT_CALL(*GetMockTracker(browser()->GetProfile()),
               Dismissed(testing::Ref(
                   feature_engagement::kIPHShoppingCollectionFeature)));
 
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
                        ShoppingCollectionIPH_NotShown) {
   bookmarks::BookmarkModel* model = CreateBookmarkModel();
 
-  ON_CALL(*GetMockTracker(browser()->profile()),
+  ON_CALL(*GetMockTracker(browser()->GetProfile()),
           ShouldTriggerHelpUI(testing::_))
       .WillByDefault(testing::Return(false));
 

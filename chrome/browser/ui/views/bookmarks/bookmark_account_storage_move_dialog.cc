@@ -269,7 +269,7 @@ void ShowBookmarkAccountStorageUploadDialog(Browser* browser,
                                             const bookmarks::BookmarkNode* node,
                                             base::OnceClosure closed_callback) {
   bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser->profile());
+      BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
   const bookmarks::BookmarkPermanentNode* target = nullptr;
   if (node->HasAncestor(model->other_node())) {
     target = model->account_other_node();

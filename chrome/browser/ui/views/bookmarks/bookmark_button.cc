@@ -119,9 +119,9 @@ BookmarkButton::~BookmarkButton() = default;
 void BookmarkButton::OnButtonPressed(const ui::Event& event) {
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) &&
       browser_) {
-    browser_->profile()->GetPrefs()->SetInt64(
+    browser_->GetProfile()->GetPrefs()->SetInt64(
         prefs::kBookmarkBarNavigationCount,
-        browser_->profile()->GetPrefs()->GetInt64(
+        browser_->GetProfile()->GetPrefs()->GetInt64(
             prefs::kBookmarkBarNavigationCount) +
             1);
   }
@@ -198,9 +198,9 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
 
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) &&
       browser_) {
-    browser_->profile()->GetPrefs()->SetInt64(
+    browser_->GetProfile()->GetPrefs()->SetInt64(
         prefs::kBookmarkBarHoverCount,
-        browser_->profile()->GetPrefs()->GetInt64(
+        browser_->GetProfile()->GetPrefs()->GetInt64(
             prefs::kBookmarkBarHoverCount) +
             1);
   }
@@ -306,8 +306,8 @@ void BookmarkButton::StartPreconnecting(GURL url) {
     return;
   }
 
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      browser_->GetProfile());
   if (loading_predictor) {
     loading_predictor->PrepareForPageLoad(
         /*initiator_origin=*/std::nullopt, url,

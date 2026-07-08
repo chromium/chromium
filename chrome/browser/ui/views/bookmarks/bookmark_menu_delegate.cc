@@ -134,7 +134,7 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
         bookmark_service_(BookmarkMergedSurfaceServiceFactory::GetForProfile(
-            browser->profile())) {
+            browser->GetProfile())) {
     DCHECK(drop_data_.is_valid());
     CHECK(bookmark_service_);
     bookmark_merged_service_observation_.Observe(bookmark_service_);
@@ -155,8 +155,8 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
     output_drag_op =
         BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                  &drop_parent_)
-            .DropBookmarks(browser_->profile(), drop_data_, index_to_drop_at_,
-                           copy,
+            .DropBookmarks(browser_->GetProfile(), drop_data_,
+                           index_to_drop_at_, copy,
                            chrome::BookmarkReorderDropTarget::kBookmarkMenu,
                            browser_.get());
   }
@@ -287,7 +287,7 @@ BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
                                            views::MenuDelegate* real_delegate,
                                            BookmarkLaunchLocation location)
     : browser_(browser),
-      profile_(browser->profile()),
+      profile_(browser->GetProfile()),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
