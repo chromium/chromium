@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, BackupRestorePolicyTest) {
              nullptr);
   UpdatePolicy(policy);
 
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
 
   // Set the user pref as initially enabled.
   prefs->SetBoolean(prefs::kArcBackupRestoreEnabled, true);
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, LocationServicePolicyTest) {
              nullptr);
   UpdatePolicy(policy);
 
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
 
   // Set the user pref as initially enabled.
   prefs->SetBoolean(prefs::kArcLocationServiceEnabled, true);
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
 
   // Set the user preference to indicate that ARC should connect to
   // System-proxy.
-  browser()->profile()->GetPrefs()->Set(
+  browser()->GetProfile()->GetPrefs()->Set(
       ash::prefs::kSystemProxyUserTrafficHostAndPort,
       base::Value("local_proxy:3128"));
   RunUntilIdle();
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
 
   // Unset the System-proxy preference to verify that ARC syncs proxy configs
   // correctly when System-proxy is disabled.
-  browser()->profile()->GetPrefs()->Set(
+  browser()->GetProfile()->GetPrefs()->Set(
       ash::prefs::kSystemProxyUserTrafficHostAndPort, base::Value(""));
   RunUntilIdle();
 
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
 
   // Set the user preference to indicate that ARC should connect to
   // System-proxy.
-  browser()->profile()->GetPrefs()->Set(
+  browser()->GetProfile()->GetPrefs()->Set(
       ash::prefs::kSystemProxyUserTrafficHostAndPort,
       base::Value("local_proxy:3128"));
   RunUntilIdle();
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxyPrefTest) {
   base::DictValue proxy_config;
   proxy_config.Set("mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
   proxy_config.Set("pac_url", base::Value("http://proxy"));
-  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+  browser()->GetProfile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
                                             std::move(proxy_config));
   RunUntilIdle();
 
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   base::DictValue proxy_config_wpad;
   proxy_config_wpad.Set("mode",
                         base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+  browser()->GetProfile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
                                             std::move(proxy_config_wpad));
 
   RunUntilIdle();
@@ -887,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   base::DictValue proxy_config_direct;
   proxy_config_direct.Set("mode",
                           base::Value(ProxyPrefs::kDirectProxyModeName));
-  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+  browser()->GetProfile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
                                             std::move(proxy_config_direct));
 
   RunUntilIdle();
