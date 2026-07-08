@@ -94,7 +94,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         mPageUrl = mainController.getURL();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
-        mHighlightColor = R.color.iph_highlight_color;
+        mHighlightColor = R.color.menu_highlight_color;
         mTitle = resources.getString(R.string.page_info_permissions_title);
     }
 
