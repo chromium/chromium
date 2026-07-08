@@ -937,9 +937,24 @@ by a child template that "extends" this file.
             android:process=":decoder_service" />
 
         <!-- Actor foreground service -->
+        <!-- TODO: This service needs to verify the calling app and its certificates before
+             starting the actor service. Export this service in production channels once the
+             verification is handled correctly in the service. -->
+        {% if channel in ['default'] %}
         <service android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
-           android:foregroundServiceType="dataSync" android:exported="false">
+            android:foregroundServiceType="dataSync"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE" />
+            </intent-filter>
         </service>
+        {% else %}
+        <service android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false">
+        </service>
+        {% endif %}
 
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
