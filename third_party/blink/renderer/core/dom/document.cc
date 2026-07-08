@@ -6351,14 +6351,28 @@ void Document::NodeWillBeRemoved(Node& n) {
   for (NodeIterator* ni : node_iterators_)
     ni->NodeWillBeRemoved(n);
 
+  if (sequential_focus_navigation_starting_point_) {
+    // If the removed node is the starting point and is assigned to a slot,
+    // move the starting point to the slot itself so that sequential focus
+    // navigation can continue from there.
+    if (sequential_focus_navigation_starting_point_->startContainer() &&
+        n.IsShadowIncludingInclusiveAncestorOf(
+            *sequential_focus_navigation_starting_point_->startContainer())) {
+      if (auto* element = DynamicTo<Element>(&n)) {
+        if (auto* slot = element->AssignedSlot()) {
+          SetSequentialFocusNavigationStartingPoint(slot);
+        }
+      }
+    }
+    sequential_focus_navigation_starting_point_
+        ->FixupRemovedNodeAcrossShadowBoundary(n);
+  }
+
   // We want to run the normal Range reset code when we're not in the middle of
   // `moveBefore()`, or when we *are* but when range preservation is disabled
   // (it is by default).
   for (Range* range : ranges_) {
     range->NodeWillBeRemoved(n);
-    if (range == sequential_focus_navigation_starting_point_) {
-      range->FixupRemovedNodeAcrossShadowBoundary(n);
-    }
   }
 
   if (LocalFrame* frame = GetFrame()) {

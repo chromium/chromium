@@ -1516,8 +1516,20 @@ void Range::NodeWillBeRemoved(Node& node) {
 }
 
 void Range::FixupRemovedNodeAcrossShadowBoundary(Node& node) {
-  BoundaryShadowNodeWillBeRemoved(start_, node);
-  BoundaryShadowNodeWillBeRemoved(end_, node);
+  // If the node being removed is the child immediately before the boundary
+  // point, we need to handle it here to avoid a crash in
+  // BoundaryShadowNodeWillBeRemoved (which expects ChildBefore != node).
+  // This mirrors the behavior in BoundaryNodeWillBeRemoved.
+  if (start_.ChildBefore() == &node) {
+    start_.ChildBeforeWillBeRemoved();
+  } else {
+    BoundaryShadowNodeWillBeRemoved(start_, node);
+  }
+  if (end_.ChildBefore() == &node) {
+    end_.ChildBeforeWillBeRemoved();
+  } else {
+    BoundaryShadowNodeWillBeRemoved(end_, node);
+  }
 }
 
 static inline void BoundaryTextInserted(RangeBoundaryPoint& boundary,
