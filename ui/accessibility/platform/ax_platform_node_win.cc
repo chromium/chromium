@@ -701,20 +701,20 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
       HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
       !GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 
-  // Menu items fire selection events but Windows screen readers work reliably
-  // with focus events. Remap selected menu items and legacy selection events
-  // without explicit selected state, but do not remap explicitly unselected
-  // items.
+  // Menu items and the focused option of a single-select listbox fire selection
+  // events, but Windows screen readers announce reliably from focus events, so
+  // remap those to focus. Explicitly unselected nodes stay as selection events:
+  // a deselection must not be announced as a focus change.
   if (event_type == ax::mojom::Event::kSelection &&
       !selection_event_on_unselected_node) {
-    // A menu item could have something other than a role of
-    // |ROLE_SYSTEM_MENUITEM|. Zoom modification controls for example have a
-    // role of button.
+    // Some selection sources have no explicit selected state and a
+    // non-menuitem, non-listitem role (e.g. zoom controls with a button role);
+    // those only qualify for the parent-role fallback below.
     const bool selection_state_is_unknown =
         !HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
     if (int role = MSAARole(); role == ROLE_SYSTEM_MENUITEM) {
       event_type = ax::mojom::Event::kFocus;
-    } else if (selection_state_is_unknown && role == ROLE_SYSTEM_LISTITEM) {
+    } else if (role == ROLE_SYSTEM_LISTITEM) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&

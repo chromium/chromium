@@ -7541,6 +7541,91 @@ TEST_F(AXPlatformNodeWinTest, SelectedMenuItemSelectionEventNotifiesFocus) {
   EXPECT_FALSE(selection_event_fired);
 }
 
+TEST_F(AXPlatformNodeWinTest,
+       SelectedListBoxOptionSelectionEventNotifiesFocus) {
+  // Autofill-style popup: the focused option of a single-select listbox carries
+  // an explicit selected state. Its selection event must be remapped to a focus
+  // event so Windows screen readers announce it (https://crbug.com/525108196).
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kListBox;
+
+  AXNodeData option;
+  option.id = 2;
+  option.role = ax::mojom::Role::kListBoxOption;
+  option.AddState(ax::mojom::State::kFocusable);
+  option.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+  root.child_ids.push_back(option.id);
+
+  Init(root, option);
+
+  // Give the option platform focus so the remap's focus guard is satisfied.
+  auto* option_node = GetRoot()->children()[0].get();
+  ComPtr<IRawElementProviderFragment> option_fragment =
+      IRawElementProviderFragmentFromNode(option_node);
+  ASSERT_NE(nullptr, option_fragment.Get());
+  EXPECT_HRESULT_SUCCEEDED(option_fragment->SetFocus());
+
+  bool focus_event_fired = false;
+  bool selection_event_fired = false;
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus,
+      base::BindLambdaForTesting([&]() { focus_event_fired = true; }));
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection,
+      base::BindLambdaForTesting([&]() { selection_event_fired = true; }));
+
+  AXPlatformNodeFromNode(option_node)
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus, base::RepeatingClosure());
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection, base::RepeatingClosure());
+
+  EXPECT_TRUE(focus_event_fired);
+  EXPECT_FALSE(selection_event_fired);
+}
+
+TEST_F(AXPlatformNodeWinTest,
+       UnselectedListBoxOptionSelectionEventDoesNotNotifyFocus) {
+  // A deselection (explicit selected=false) must stay a selection event and not
+  // be remapped to focus, so the highlight moving away is not announced as a
+  // focus change (preserves the behavior added in crrev.com/c/7799854).
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kListBox;
+
+  AXNodeData option;
+  option.id = 2;
+  option.role = ax::mojom::Role::kListBoxOption;
+  option.AddState(ax::mojom::State::kFocusable);
+  option.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  root.child_ids.push_back(option.id);
+
+  Init(root, option);
+
+  bool focus_event_fired = false;
+  bool selection_event_fired = false;
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus,
+      base::BindLambdaForTesting([&]() { focus_event_fired = true; }));
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection,
+      base::BindLambdaForTesting([&]() { selection_event_fired = true; }));
+
+  AXPlatformNodeFromNode(GetRoot()->children()[0])
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus, base::RepeatingClosure());
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection, base::RepeatingClosure());
+
+  EXPECT_FALSE(focus_event_fired);
+  EXPECT_TRUE(selection_event_fired);
+}
+
 TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderTable) {
   AXNodeData root;
   root.id = 1;
