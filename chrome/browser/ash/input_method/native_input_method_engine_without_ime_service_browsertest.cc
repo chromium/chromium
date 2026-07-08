@@ -118,7 +118,7 @@ class NativeInputMethodEngineWithoutImeServiceTest
     auto observer = std::make_unique<TestObserver>();
     observer_ = observer.get();
 
-    profile_ = browser()->profile();
+    profile_ = browser()->GetProfile();
     prefs_ = profile_->GetPrefs();
     prefs_->Set(ash::prefs::kLanguageInputMethodSpecificSettings,
                 base::Value(base::Value::Type::DICT));

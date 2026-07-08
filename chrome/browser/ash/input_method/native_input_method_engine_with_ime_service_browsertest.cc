@@ -83,7 +83,7 @@ class NativeInputMethodEngineWithImeServiceTest
     IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
     auto observer = std::make_unique<TestObserver>();
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     PrefService* prefs = profile->GetPrefs();
     prefs->Set(ash::prefs::kLanguageInputMethodSpecificSettings, base::Value());
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile);
