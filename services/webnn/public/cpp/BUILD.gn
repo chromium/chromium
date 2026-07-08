@@ -59,7 +59,7 @@ component("cpp") {
     ]
   }
 
-  if (is_win) {
+  if (is_win || is_linux) {
     sources += [
       "webnn_sandbox_init.cc",
       "webnn_sandbox_init.h",

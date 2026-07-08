@@ -109,6 +109,9 @@
 #include "media/base/win/mf_initializer.h"
 #include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "services/webnn/public/cpp/webnn_sandbox_init.h"
 #endif
 
@@ -189,6 +192,8 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_WIN)
     media::PreSandboxMediaFoundationInitialization();
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     webnn::PreSandboxWebNNInitialization();
 #endif
 

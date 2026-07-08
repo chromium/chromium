@@ -10,7 +10,7 @@
 
 namespace webnn {
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Preloads WebNN LiteRT libraries (like the GPU accelerator DLL) before the
 // GPU process sandbox is locked down.
 COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
