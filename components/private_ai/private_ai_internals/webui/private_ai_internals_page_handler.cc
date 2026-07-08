@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_page_handler.h"
+#include "components/private_ai/private_ai_internals/webui/private_ai_internals_page_handler.h"
 
 #include <memory>
 #include <optional>
@@ -17,8 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
-#include "chrome/common/channel_info.h"
 #include "components/optimization_guide/core/model_execution/private_ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -29,13 +27,13 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
-#include "components/private_ai/content/private_ai_network_driver_content.h"
-#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
+#include "components/private_ai/private_ai_internals/webui/private_ai_internals.mojom.h"
 #include "components/private_ai/private_ai_service.h"
 #include "components/private_ai/proto/private_ai.ostream.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -84,12 +82,18 @@ PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
     network::mojom::NetworkContext* network_context,
     Client* private_ai_client,
     PrivateAiLogger* private_ai_logger,
+    PrivateAiOakSessionDriver* oak_session_driver,
+    PrivateAiNetworkDriver* network_driver,
+    version_info::Channel channel,
     mojo::PendingReceiver<
         private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver)
     : token_manager_(token_manager),
       private_ai_client_(private_ai_client),
       private_ai_logger_(private_ai_logger),
+      oak_session_driver_(oak_session_driver),
+      network_driver_(network_driver),
       network_context_(network_context),
+      channel_(channel),
       receiver_(this, std::move(receiver)) {
   CHECK(private_ai_logger_);
 
@@ -112,13 +116,13 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                                             ConnectCallback callback) {
   std::string effective_api_key = api_key;
   if (effective_api_key == kApiKeyPlaceholder) {
-    effective_api_key = PrivateAiService::GetApiKey(chrome::GetChannel());
+    effective_api_key = PrivateAiService::GetApiKey(channel_);
   }
 
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_, &webui_logger_,
-                     &oak_session_driver_content_, &network_driver_content_);
+                     oak_session_driver_, network_driver_);
   std::move(callback).Run();
 }
 

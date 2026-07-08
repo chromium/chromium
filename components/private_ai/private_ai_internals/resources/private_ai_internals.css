@@ -1,0 +1,102 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  height: 100vh;
+}
+
+#main-container {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 50%;
+}
+
+#logs {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.console-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#console-container,
+#logs-container {
+  border: 1px solid var(--cr-separator-color, #ccc);
+  flex-grow: 1;
+  font-family: monospace;
+  overflow-y: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+#console {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 5px;
+}
+
+#input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#request-input {
+  box-sizing: border-box;
+  font-family: monospace;
+  height: 60px;
+  resize: vertical;
+  width: 100%;
+}
+
+#button-container {
+  display: flex;
+  gap: 5px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+input[type='text'] {
+  width: 300px;
+}
+
+label {
+  display: inline-block;
+  width: 450px;
+}
+
+.log-entry-info {
+  color: var(--google-blue-600, blue);
+}
+@media (prefers-color-scheme: dark) {
+  .log-entry-info {
+    color: var(--google-blue-300, lightblue);
+  }
+}
+
+.log-entry-error {
+  color: var(--google-red-600, red);
+}
+@media (prefers-color-scheme: dark) {
+  .log-entry-error {
+    color: var(--google-red-300, pink);
+  }
+}

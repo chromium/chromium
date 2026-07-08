@@ -266,8 +266,6 @@ inline constexpr char16_t kChromeUIPrivacySandboxManageTopicsLearnMoreURL[] =
     u"https://support.google.com/chrome?p=ad_privacy";
 inline constexpr char16_t kChromeUIPrivacySandboxTopicsURL[] =
     u"chrome://settings/adPrivacy/interests";
-inline constexpr char kChromeUIPrivateAiInternalsHost[] =
-    "private-ai-internals";
 inline constexpr char kChromeUIProfileInternalsHost[] = "profile-internals";
 inline constexpr char kChromeUIQuitHost[] = "quit";
 inline constexpr char kChromeUIQuitURL[] = "chrome://quit/";

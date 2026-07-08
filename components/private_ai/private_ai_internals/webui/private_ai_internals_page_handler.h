@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
+#ifndef COMPONENTS_PRIVATE_AI_PRIVATE_AI_INTERNALS_WEBUI_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
+#define COMPONENTS_PRIVATE_AI_PRIVATE_AI_INTERNALS_WEBUI_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
-#include "components/private_ai/content/private_ai_network_driver_content.h"
-#include "components/private_ai/content/private_ai_oak_session_driver_content.h"
+#include "components/private_ai/private_ai_internals/webui/private_ai_internals.mojom.h"
+#include "components/private_ai/private_ai_network_driver.h"
+#include "components/private_ai/private_ai_oak_session_driver.h"
+#include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -36,6 +37,9 @@ class PrivateAiInternalsPageHandler
       network::mojom::NetworkContext* network_context,
       Client* private_ai_client,
       PrivateAiLogger* private_ai_logger,
+      PrivateAiOakSessionDriver* oak_session_driver,
+      PrivateAiNetworkDriver* network_driver,
+      version_info::Channel channel,
       mojo::PendingReceiver<
           private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver);
   ~PrivateAiInternalsPageHandler() override;
@@ -86,10 +90,11 @@ class PrivateAiInternalsPageHandler
   raw_ptr<PrivateAiLogger> private_ai_logger_;
   // The client created by webui. Used for testing.
   PrivateAiLogger webui_logger_;
-  PrivateAiOakSessionDriverContent oak_session_driver_content_;
-  PrivateAiNetworkDriverContent network_driver_content_;
+  raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
+  raw_ptr<PrivateAiNetworkDriver> network_driver_;
   std::unique_ptr<Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
+  version_info::Channel channel_;
   mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>
       receiver_;
   mojo::Remote<private_ai_internals::mojom::PrivateAiInternalsPage> page_;
@@ -100,4 +105,4 @@ class PrivateAiInternalsPageHandler
 
 }  // namespace private_ai
 
-#endif  // CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
+#endif  // COMPONENTS_PRIVATE_AI_PRIVATE_AI_INTERNALS_WEBUI_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_

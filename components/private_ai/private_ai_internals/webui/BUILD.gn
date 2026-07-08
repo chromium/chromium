@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+source_set("url_constants") {
+  sources = [ "url_constants.h" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "private_ai_internals.mojom" ]
+  webui_module_path = "/"
+}
+
+source_set("page_handler") {
+  sources = [
+    "private_ai_internals_page_handler.cc",
+    "private_ai_internals_page_handler.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto_extras_ostream",
+    "//components/private_ai",
+    "//components/private_ai:proto",
+    "//components/private_ai:proto_extras",
+    "//components/private_ai/common",
+    "//components/private_ai/phosphor",
+    "//components/version_info",
+    "//services/network/public/mojom",
+  ]
+}

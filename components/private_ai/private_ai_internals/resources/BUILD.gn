@@ -17,9 +17,9 @@ build_webui("build") {
     "private_ai_internals_browser_proxy.ts",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/private_ai_internals:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [ "//components/private_ai/private_ai_internals/webui:mojo_bindings_ts__generator" ]
 
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom-webui.ts" ]
+  mojo_files = [ "$root_gen_dir/components/private_ai/private_ai_internals/webui/private_ai_internals.mojom-webui.ts" ]
 
   ts_composite = true
   ts_deps = [
@@ -28,4 +28,5 @@ build_webui("build") {
   ]
 
   webui_context_type = "trusted"
+  grit_output_dir = "$root_gen_dir/components"
 }
