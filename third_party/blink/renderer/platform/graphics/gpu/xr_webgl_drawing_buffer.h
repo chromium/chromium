@@ -62,7 +62,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   struct PLATFORM_EXPORT ColorBuffer
       : public ThreadSafeRefCounted<ColorBuffer> {
     ColorBuffer(base::WeakPtr<XRWebGLDrawingBuffer>,
-                const gfx::Size&,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
                 std::unique_ptr<gpu::SharedImageTexture> texture);
     ColorBuffer(const ColorBuffer&) = delete;
@@ -84,7 +83,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // destroyed by the BeginDestruction method, which will eventually drain all
     // of its ColorBuffers.
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer;
-    const gfx::Size size;
 
     // The client shared image backing this color buffer.
     scoped_refptr<gpu::ClientSharedImage> shared_image;

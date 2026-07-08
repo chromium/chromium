@@ -57,12 +57,10 @@ namespace blink {
 
 XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
     base::WeakPtr<XRWebGLDrawingBuffer> drawing_buffer,
-    const gfx::Size& size,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     std::unique_ptr<gpu::SharedImageTexture> texture)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
-      size(size),
       shared_image(std::move(shared_image)),
       texture_(std::move(texture)) {}
 
@@ -532,7 +530,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   DrawingBuffer::Client* client = drawing_buffer_->client();
   client->DrawingBufferClientRestoreTexture2DBinding();
 
-  return base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(), size_,
+  return base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(),
                                            std::move(client_shared_image),
                                            std::move(texture));
 }
@@ -542,7 +540,7 @@ XRWebGLDrawingBuffer::CreateOrRecycleColorBuffer() {
   if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
-    DCHECK(recycled->size == size_);
+    DCHECK(recycled->shared_image->size() == size_);
     return recycled;
   }
   return CreateColorBuffer();
@@ -695,8 +693,8 @@ void XRWebGLDrawingBuffer::MailboxReleased(
   if (color_buffer == front_color_buffer_)
     front_color_buffer_ = nullptr;
 
-  if (drawing_buffer_->destroyed() || color_buffer->size != size_ ||
-      lost_resource) {
+  if (drawing_buffer_->destroyed() ||
+      color_buffer->shared_image->size() != size_ || lost_resource) {
     return;
   }
 
