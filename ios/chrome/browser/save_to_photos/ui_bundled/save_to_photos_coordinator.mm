@@ -53,7 +53,34 @@
                                        SigninReauthCoordinatorDelegate,
                                        StoreKitCoordinatorDelegate>
 
+- (void)confirmChangeProfileWithCompletion:(void (^)(BOOL))completion;
+- (void)handleConfirmChangeProfile:(BOOL)proceed
+                        completion:(void (^)(BOOL))completion;
+
 @end
+
+namespace {
+
+void HandleConfirmChangeProfile(SaveToPhotosCoordinator* coordinator,
+                                void (^completion)(BOOL),
+                                bool confirmed) {
+  if (completion && !coordinator) {
+    completion(NO);
+    return;
+  }
+  [coordinator handleConfirmChangeProfile:confirmed completion:completion];
+}
+
+void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
+                                        void (^completion)(BOOL)) {
+  if (completion && !coordinator) {
+    completion(NO);
+    return;
+  }
+  [coordinator confirmChangeProfileWithCompletion:completion];
+}
+
+}  // namespace
 
 @implementation SaveToPhotosCoordinator {
   GURL _imageURL;
@@ -409,6 +436,11 @@
     return;
   }
   [_signinCoordinator stop];
+  __weak __typeof(self) weakSelf = self;
+  SigninChangeProfileConfirmationBlock confirmChangeProfile =
+      ^(void (^completion)(BOOL)) {
+        ConfirmChangeProfileWithCompletion(weakSelf, completion);
+      };
   _signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:
           self.baseViewController
@@ -420,19 +452,61 @@
                                                       signin_metrics::
                                                           AccessPoint::
                                                               kSaveToPhotosIos
-                                         confirmChangeProfile:nil
+                                         confirmChangeProfile:
+                                             confirmChangeProfile
                                          prepareChangeProfile:nil
                                          continuationProvider:
                                              // TODO(crbug.com/484919846):
                                              // Handle profile switching.
                                              DoNothingContinuationProvider()];
-  __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
         id<SystemIdentity> identity) {
         [weakSelf handleSigninResult:result identity:identity];
       };
   [_signinCoordinator start];
+}
+
+// Shows an alert letting the user know that switching profiles will cancel the
+// current save operation and asking them to confirm.
+- (void)confirmChangeProfileWithCompletion:(void (^)(BOOL))completion {
+  // TODO(crbug.com/484919846): Replace placeholders with the localized string.
+  _alertController =
+      [UIAlertController alertControllerWithTitle:@"THIS_IS_A_PLACEHOLDER"
+                                          message:@"THIS_IS_A_PLACEHOLDER"
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                HandleConfirmChangeProfile(weakSelf, completion, NO);
+              }];
+  UIAlertAction* confirmChangeProfileAction = [UIAlertAction
+      // TODO(crbug.com/484919846): Replace placeholder with the localized
+      // string.
+      actionWithTitle:@"THIS_IS_A_PLACEHOLDER"
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                HandleConfirmChangeProfile(weakSelf, completion, YES);
+              }];
+  [_alertController addAction:cancelAction];
+  [_alertController addAction:confirmChangeProfileAction];
+  [self.baseViewController.presentedViewController
+      presentViewController:_alertController
+                   animated:YES
+                 completion:nil];
+}
+
+// Handles the user's response to the confirm change profile alert.
+- (void)handleConfirmChangeProfile:(BOOL)proceed
+                        completion:(void (^)(BOOL))completion {
+  CHECK(completion);
+  [_alertController dismissViewControllerAnimated:YES
+                                       completion:^{
+                                         completion(proceed);
+                                       }];
+  _alertController = nil;
 }
 
 - (void)handleSigninResult:(SigninCoordinatorResult)result
