@@ -157,6 +157,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/page_info/core/merchant_trust_service.h"
@@ -2217,7 +2218,7 @@ void RegisterScreenshotPrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(prefs::kGeminiSettings, 0);
+  registry->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings, 0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

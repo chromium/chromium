@@ -49,7 +49,7 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -641,7 +641,8 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
 
   result.gemini_enterprise_settings = GetGeminiEnterpriseSettings(profile);
 
-  if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
+  if (profile->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings) !=
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled)) {
     result.allowed_by_chrome_policy = false;
   }
@@ -1170,7 +1171,7 @@ GlicEnabling::GlicEnabling(
       profile_attributes_storage_(profile_attributes_storage) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                           base::Unretained(this)));
   pref_registrar_.Add(prefs::kGlicCompletedFre,

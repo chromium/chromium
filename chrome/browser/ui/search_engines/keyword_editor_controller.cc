@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
-#include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
@@ -59,7 +59,8 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
         AimEligibilityServiceFactory::GetForProfile(profile));
     bool gemini_enabled =
         base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion) &&
-        profile->GetPrefs()->GetInteger(prefs::kGeminiSettings) == 0;
+        profile->GetPrefs()->GetInteger(
+            optimization_guide::prefs::kGeminiSettings) == 0;
     table_model_ = std::make_unique<TemplateURLTableModel>(
         url_model_,
         internal::GetDisabledStarterPackIds(ai_mode_enabled, gemini_enabled));

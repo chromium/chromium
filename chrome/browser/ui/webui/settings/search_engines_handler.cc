@@ -29,12 +29,12 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -189,7 +189,8 @@ base::DictValue SearchEnginesHandler::GetCategorizedTemplateUrls() {
       AimEligibilityServiceFactory::GetForProfile(profile));
   bool gemini_enabled =
       base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion) &&
-      profile->GetPrefs()->GetInteger(prefs::kGeminiSettings) == 0;
+      profile->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings) == 0;
 
   TemplateURLService::CategorizedTemplateUrls data =
       template_url_service->GetCategorizedTemplateURLs(

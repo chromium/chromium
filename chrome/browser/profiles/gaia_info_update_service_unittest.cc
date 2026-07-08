@@ -30,10 +30,10 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/consent_level.h"
@@ -452,7 +452,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
 
     // Enable enterprise policy for glic control
     pref_service_.SetInteger(
-        ::prefs::kGeminiSettings,
+        optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   }
 

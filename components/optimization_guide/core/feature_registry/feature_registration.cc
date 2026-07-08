@@ -60,6 +60,8 @@ const char kFindsEnterprisePolicyAllowed[] =
 
 const char kChromeSuggestionsSettings[] =
     "contextual_cueing.chrome_suggestions_settings";
+
+const char kGeminiSettings[] = "browser.gemini_settings";
 }  // namespace prefs
 
 namespace features {

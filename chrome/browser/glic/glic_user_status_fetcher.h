@@ -128,8 +128,8 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   // was not yet available, and it should be retried when it becomes available.
   bool is_user_status_waiting_for_refresh_token_ = false;
 
-  // Stores the previous value of `prefs::kGeminiSettings` to detect
-  // transitions.
+  // Stores the previous value of `optimization_guide::prefs::kGeminiSettings`
+  // to detect transitions.
   glic::prefs::SettingsPolicyState cached_gemini_settings_value_;
 
   // Used to find the account managed status of the primary account.

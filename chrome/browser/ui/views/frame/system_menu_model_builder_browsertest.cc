@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -78,18 +79,18 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleGlicPinning) {
                             ->GetSystemMenuModel();
 
   profile_prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
   EXPECT_FALSE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, std::nullopt));
 
   profile_prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_TRUE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, IDS_GLIC_PIN));
 
   profile_prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, IDS_GLIC_UNPIN));

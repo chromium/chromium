@@ -32,9 +32,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -112,7 +112,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     profile()->GetPrefs()->SetInteger(
-        ::prefs::kGeminiSettings,
+        optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   // Setting kGeminiSettings to disabled so that no RPC would be sent.
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
 
   // Sign in again and wait for a while.
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   // Make the account enterprise again by setting kGeminiSettings to enabled.
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
 
   // Sign in again.
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   // Setting kGeminiSettings to disabled so that no RPC would be sent.
   request_received = false;
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
 
   // Verifying the absence of a request by verifying the absence for a time
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   // Make the account enterprise again by setting kGeminiSettings to enabled.
   profile()->GetPrefs()->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
 
   // Verify request handler is inovked.

@@ -81,6 +81,7 @@
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/search_engines/ai_mode_button_service.h"
@@ -706,7 +707,8 @@ bool ChromeAutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
 
 bool ChromeAutocompleteProviderClient::IsGeminiStarterPackEnabled() const {
   return AutocompleteProviderClient::IsGeminiStarterPackEnabled() &&
-         profile_->GetPrefs()->GetInteger(prefs::kGeminiSettings) == 0;
+         profile_->GetPrefs()->GetInteger(
+             optimization_guide::prefs::kGeminiSettings) == 0;
 }
 
 base::CallbackListSubscription

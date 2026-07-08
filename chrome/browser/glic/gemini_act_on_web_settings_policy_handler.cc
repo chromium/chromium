@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/common/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -25,10 +25,10 @@ GeminiActOnWebSettingsPolicyHandler::GeminiActOnWebSettingsPolicyHandler(
                             /*clamp_=*/false),
       gen_ai_default_settings_policy_handler_(
           std::move(gemini_settings_policy_handler)),
-      gemini_settings_policy_handler_(
-          std::make_unique<SimplePolicyHandler>(key::kGeminiSettings,
-                                                prefs::kGeminiSettings,
-                                                base::Value::Type::INTEGER)) {}
+      gemini_settings_policy_handler_(std::make_unique<SimplePolicyHandler>(
+          key::kGeminiSettings,
+          optimization_guide::prefs::kGeminiSettings,
+          base::Value::Type::INTEGER)) {}
 
 GeminiActOnWebSettingsPolicyHandler::~GeminiActOnWebSettingsPolicyHandler() =
     default;
@@ -64,7 +64,8 @@ bool GeminiActOnWebSettingsPolicyHandler::CheckPolicySettings(
                                                                    &prefs);
     }
     int gemini_settings_pref_value = -1;
-    prefs.GetInteger(prefs::kGeminiSettings, &gemini_settings_pref_value);
+    prefs.GetInteger(optimization_guide::prefs::kGeminiSettings,
+                     &gemini_settings_pref_value);
     // See `GeminiSettings.yaml`.
     bool gemini_disabled = gemini_settings_pref_value == 1;
     if (gemini_disabled) {

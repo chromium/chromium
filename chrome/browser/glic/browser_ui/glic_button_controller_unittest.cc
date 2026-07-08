@@ -27,10 +27,10 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -176,7 +176,7 @@ class GlicButtonControllerTest : public testing::Test {
 
     PrefService* prefs = profile()->GetPrefs();
     prefs->SetInteger(
-        ::prefs::kGeminiSettings,
+        optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
     prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   }
@@ -247,28 +247,28 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
   EXPECT_TRUE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
   EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
   EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(tab_strip_controller_delegate()->show_state());

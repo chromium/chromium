@@ -475,7 +475,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSharedWorkerExtendedLifetimeEnabled,
     base::Value::Type::BOOLEAN },
   { key::kGeminiSettings,
-    prefs::kGeminiSettings,
+    optimization_guide::prefs::kGeminiSettings,
     base::Value::Type::INTEGER },
 #if !BUILDFLAG(IS_ANDROID)
   { key::kVoiceTypingSettings,
@@ -3671,7 +3671,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
   gen_ai_default_policies.emplace_back(
-      key::kGeminiSettings, prefs::kGeminiSettings,
+      key::kGeminiSettings, optimization_guide::prefs::kGeminiSettings,
       GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
 #if !BUILDFLAG(IS_ANDROID)

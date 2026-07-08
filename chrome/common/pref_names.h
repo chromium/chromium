@@ -654,10 +654,6 @@ inline constexpr char kSplitViewDragAndDropNudgeUsedCount[] =
 // recently used tabs.
 inline constexpr char kCtrlTabMru[] = "browser.ctrl_tab_mru";
 
-// A boolean pref set to true if Gemini integration be enabled. This is managed
-// by enterprise policy.
-inline constexpr char kGeminiSettings[] = "browser.gemini_settings";
-
 // An int pref that controls the voice typing feature. This is managed by
 // enterprise policy.
 inline constexpr char kVoiceTypingSettings[] = "browser.voice_typing_settings";

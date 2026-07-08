@@ -42,9 +42,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
@@ -70,7 +70,7 @@
 using glic::prefs::GlicActuationOnWebPolicyState;
 using glic::prefs::kGlicActuationOnWeb;
 using glic::prefs::SettingsPolicyState;
-using ::prefs::kGeminiSettings;
+using optimization_guide::prefs::kGeminiSettings;
 
 using policy::PolicyTest;
 

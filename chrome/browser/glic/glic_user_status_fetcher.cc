@@ -24,7 +24,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/api_error_codes.h"
@@ -94,11 +94,12 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      ::prefs::kGeminiSettings,
+      optimization_guide::prefs::kGeminiSettings,
       base::BindRepeating(&GlicUserStatusFetcher::OnGeminiSettingsChanged,
                           base::Unretained(this)));
-  cached_gemini_settings_value_ = glic::prefs::SettingsPolicyState{
-      profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
+  cached_gemini_settings_value_ =
+      glic::prefs::SettingsPolicyState{profile_->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings)};
 
   // if it has passed default delay after last update time,
   // run immediately. Otherwise, wait until the default delay.
@@ -181,7 +182,8 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
   // LINT.IfChange(GlicCachedUserStatusScope)
 
   // If the admin has disabled Gemini, we don't need to send the request.
-  if (profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
+  if (profile_->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings) ==
       std::to_underlying(glic::prefs::SettingsPolicyState::kDisabled)) {
     return;
   }
@@ -451,7 +453,8 @@ void GlicUserStatusFetcher::OnGeminiSettingsChanged() {
   // If the policy changed from either not set or Disabled to Enabled, trigger a
   // rpc fetch to update the possible user status change sooner.
   glic::prefs::SettingsPolicyState updated_gemini_settings_value{
-      profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
+      profile_->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kGeminiSettings)};
   if (cached_gemini_settings_value_ !=
           glic::prefs::SettingsPolicyState::kEnabled &&
       updated_gemini_settings_value ==
