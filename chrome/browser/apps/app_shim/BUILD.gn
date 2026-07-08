@@ -80,6 +80,12 @@ source_set("app_shim") {
     "//services/preferences/public/cpp",
     "//ui/views",
   ]
+
+  if (is_mac) {
+    # app_shim_manager_mac.cc includes chrome/browser/ui/chrome_pages.h, which
+    # is a desktop-only (!is_android) target.
+    deps += [ "//chrome/browser/ui:chrome_pages" ]
+  }
 }
 
 if (is_mac) {

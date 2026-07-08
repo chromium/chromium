@@ -43,6 +43,7 @@ if (!is_android) {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resources/feedback:resources",
       "//chrome/browser/resources/key_value_pair_viewer_shared:resources",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/toasts",

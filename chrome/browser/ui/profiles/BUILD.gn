@@ -116,6 +116,7 @@ source_set("impl") {
       ]
 
       deps += [
+        "//chrome/browser/ui:chrome_pages",
         "//chrome/browser/ui/webui/signin",
         "//chrome/browser/ui/webui/signin:login_ui_service",
 

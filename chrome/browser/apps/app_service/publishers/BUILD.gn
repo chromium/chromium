@@ -37,6 +37,7 @@ source_set("publishers") {
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
     "//chrome/browser/web_applications",

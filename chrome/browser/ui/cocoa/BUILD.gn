@@ -199,4 +199,9 @@ source_set("cocoa") {
       "//components/infobars/content",
     ]
   }
+
+  if (is_mac) {
+    # tab_group_menu_bridge.mm includes chrome/browser/ui/chrome_pages.h.
+    deps += [ "//chrome/browser/ui:chrome_pages" ]
+  }
 }

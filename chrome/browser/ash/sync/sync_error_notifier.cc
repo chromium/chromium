@@ -86,7 +86,7 @@ void OpenSyncSettings(Profile* profile) {
 void TriggerSyncKeyRetrieval(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   OpenTabForSyncKeyRetrieval(
-      displayer.browser(),
+      displayer.browser_window_interface(),
       trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
@@ -94,7 +94,7 @@ void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
   // TODO(crbug.com/40264837): clean up once not reachable.
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   OpenTabForSyncKeyRecoverabilityDegraded(
-      displayer.browser(),
+      displayer.browser_window_interface(),
       trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 

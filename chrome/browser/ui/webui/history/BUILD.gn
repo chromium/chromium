@@ -56,6 +56,7 @@ source_set("history") {
       "//chrome/browser/supervised_user",
       "//chrome/browser/sync",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:url_identity",
       "//chrome/browser/ui/browser_window",

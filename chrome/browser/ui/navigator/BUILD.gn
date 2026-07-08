@@ -133,6 +133,7 @@ if (!is_android) {
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/renderer_host",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/test:test_support",

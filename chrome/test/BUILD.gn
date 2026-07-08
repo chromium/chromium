@@ -2491,6 +2491,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_select_file_dialog_controller",
       "//chrome/browser/ui:browser_tests",
       "//chrome/browser/ui:browser_ui_prefs",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:simple_message_box_internal",
       "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",
@@ -4995,6 +4996,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ui:breadcrumb_manager_browser_agent",
         "//chrome/browser/ui:browser_instant_controller",
+        "//chrome/browser/ui:chrome_pages",
       ]
     }
   }
@@ -7856,6 +7858,7 @@ test("unit_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/webui/password_manager:unit_tests",
       "//chrome/browser/ui/webui/password_manager/notification_cards:unit_tests",
       "//chrome/browser/ui/webui/side_panel/bookmarks:unit_tests",
@@ -9278,6 +9281,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/apps",

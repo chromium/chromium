@@ -117,6 +117,7 @@ source_set("impl") {
       "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/tabs:tab_strip",

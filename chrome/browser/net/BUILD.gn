@@ -217,6 +217,7 @@ source_set("impl") {
 
   if (is_chromeos) {
     sources += [ "net_error_diagnostics_dialog_chromeos.cc" ]
+    deps += [ "//chrome/browser/ui:chrome_pages" ]
   } else if (is_win) {
     sources += [ "net_error_diagnostics_dialog_win.cc" ]
   } else {

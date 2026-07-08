@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"

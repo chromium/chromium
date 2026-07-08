@@ -137,6 +137,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/default_browser:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/infobars",

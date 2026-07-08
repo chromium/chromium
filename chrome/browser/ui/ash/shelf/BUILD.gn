@@ -112,6 +112,7 @@ static_library("shelf") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_tab_strip_tracker",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/apps",
     "//chrome/browser/ui/ash/app_icon_color_cache",
     "//chrome/browser/ui/ash/keyboard",

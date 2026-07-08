@@ -78,6 +78,7 @@ source_set("impl") {
     "//chrome/browser/payments",
     "//chrome/browser/task_manager",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views:layout_provider",
@@ -92,7 +93,7 @@ source_set("impl") {
 
   # payment_handler_web_flow_view_controller.cc and
   # payment_sheet_view_controller.cc include headers still built as part of
-  # //chrome/browser/ui:ui (browser_tabstrip.h, chrome_pages.h). Reach them via
+  # //chrome/browser/ui:ui (browser_tabstrip.h). Reach them via
   # browser_public_dependencies; the reverse edge is expressed by the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

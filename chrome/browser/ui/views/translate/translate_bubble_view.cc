@@ -125,7 +125,7 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
   }
 
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
+  BrowserWindowInterface* browser = displayer.browser_window_interface();
   if (!browser) {
     return;
   }

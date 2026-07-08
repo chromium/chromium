@@ -208,7 +208,10 @@ source_set("misc") {
       "profile_list_desktop.cc",
       "profile_list_desktop.h",
     ]
-    deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
+    deps += [
+      "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/ui:chrome_pages",
+    ]
   }
 
   if (is_win) {
@@ -1109,6 +1112,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/startup",

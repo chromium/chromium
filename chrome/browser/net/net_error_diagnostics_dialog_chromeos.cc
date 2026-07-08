@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 void LaunchDiagnosticsAppAtConnectivityScreen(Profile* profile) {

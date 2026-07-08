@@ -25,6 +25,7 @@ static_library("app_access") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui:chrome_pages",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//components/session_manager:base",

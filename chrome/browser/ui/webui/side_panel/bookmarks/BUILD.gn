@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/resources/side_panel/bookmarks:resources",
     "//chrome/browser/resources/side_panel/shared:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/views/interaction",

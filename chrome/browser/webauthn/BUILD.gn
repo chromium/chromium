@@ -164,6 +164,7 @@ source_set("impl") {
       "//chrome/browser/profiles",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/signin",

@@ -164,6 +164,7 @@ source_set("impl") {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/navigator",

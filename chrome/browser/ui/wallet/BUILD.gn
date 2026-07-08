@@ -31,6 +31,10 @@ source_set("wallet") {
     "//ui/views",
   ]
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:chrome_pages" ]
+  }
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

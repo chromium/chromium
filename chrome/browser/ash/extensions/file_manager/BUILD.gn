@@ -115,6 +115,7 @@ static_library("file_manager") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/ash/manage_mirrorsync",

@@ -130,6 +130,7 @@ static_library("printing") {
     "//chrome/browser/notifications",
     "//chrome/browser/printing",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",

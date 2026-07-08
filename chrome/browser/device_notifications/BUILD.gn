@@ -53,6 +53,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:chrome_pages",
       "//content/public/browser",
       "//url",
     ]

@@ -79,7 +79,10 @@ source_set("impl") {
   ]
 
   if (!is_android) {
-    deps += [ "//components/keep_alive_registry" ]
+    deps += [
+      "//chrome/browser/ui:chrome_pages",
+      "//components/keep_alive_registry",
+    ]
   }
 
   if (!is_chromeos) {

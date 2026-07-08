@@ -479,7 +479,7 @@ void SystemTrayClientImpl::ShowSmartPrivacySettings() {
 void SystemTrayClientImpl::ShowChromeSlow() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetPrimaryUserProfile());
-  chrome::ShowSlow(displayer.browser());
+  chrome::ShowSlow(displayer.browser_window_interface());
 }
 
 void SystemTrayClientImpl::ShowIMESettings() {
@@ -580,7 +580,8 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // Otherwise show enterprise management info page.
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
-  chrome::ShowEnterpriseManagementPageInTabbedBrowser(displayer.browser());
+  chrome::ShowEnterpriseManagementPageInTabbedBrowser(
+      displayer.browser_window_interface());
 }
 
 void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {

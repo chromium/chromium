@@ -96,6 +96,7 @@ source_set("impl") {
       "hid_connection_tracker_factory.cc",
       "hid_system_tray_icon.cc",
     ]
+    deps += [ "//chrome/browser/ui:chrome_pages" ]
     if (is_chromeos) {
       sources += [ "hid_pinned_notification.cc" ]
       deps += [

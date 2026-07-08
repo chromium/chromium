@@ -17,6 +17,7 @@ static_library("os_feedback_dialog") {
     "//base",
     "//chrome/browser/ash/os_feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//extensions/browser",

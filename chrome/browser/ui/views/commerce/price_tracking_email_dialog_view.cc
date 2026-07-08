@@ -147,7 +147,7 @@ void PriceTrackingEmailDialogView::OpenSettings() {
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.EmailConsentDialog.EmailLinkClicked"));
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
-  chrome::ShowSettings(browser_displayer.browser());
+  chrome::ShowSettings(browser_displayer.browser_window_interface());
 }
 
 void PriceTrackingEmailDialogView::OnAccepted() {

@@ -216,7 +216,10 @@ source_set("impl") {
       "chromeos/supervised_user_favicon_request_handler.cc",
       "chromeos/supervised_user_web_content_handler_impl.cc",
     ]
-    deps += [ "//chrome/browser/ash/profiles" ]
+    deps += [
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ui:chrome_pages",
+    ]
   }
 
   if (enable_extensions_core) {

@@ -1586,7 +1586,10 @@ source_set("extensions") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_tab_strip_tracker" ]
+    deps += [
+      "//chrome/browser/ui:browser_tab_strip_tracker",
+      "//chrome/browser/ui:chrome_pages",
+    ]
   }
 }
 

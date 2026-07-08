@@ -342,6 +342,7 @@ source_set("impl") {
     deps += [
       ":signin_promo",
       "//chrome/browser/feature_engagement",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/navigator",
       "//device/bluetooth",

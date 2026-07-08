@@ -32,6 +32,7 @@ static_library("camera_mic") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/notifications",
+    "//chrome/browser/ui:chrome_pages",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//components/vector_icons",

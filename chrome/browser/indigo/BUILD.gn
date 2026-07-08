@@ -82,6 +82,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

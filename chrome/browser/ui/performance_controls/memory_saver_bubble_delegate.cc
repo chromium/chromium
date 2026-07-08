@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 

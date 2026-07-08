@@ -230,6 +230,7 @@ source_set("signin_impl") {
     deps += [
       ":login_ui_service",
       "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:tab_strip",

@@ -76,6 +76,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/hats:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

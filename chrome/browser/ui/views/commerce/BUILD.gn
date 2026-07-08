@@ -46,6 +46,7 @@ source_set("impl") {
     ":commerce",
     "//base",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/call_to_action",

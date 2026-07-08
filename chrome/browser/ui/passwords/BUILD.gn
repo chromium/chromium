@@ -136,6 +136,7 @@ source_set("impl") {
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/signin",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/autofill",

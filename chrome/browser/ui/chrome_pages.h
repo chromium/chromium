@@ -21,8 +21,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/signin_promo.h"
-// Removed after browser_finder.h migrate.
-#include "chrome/browser/ui/browser.h"
 #endif
 
 namespace apps {

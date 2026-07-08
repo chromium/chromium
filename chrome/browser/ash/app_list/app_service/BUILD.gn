@@ -45,6 +45,7 @@ static_library("app_service") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/remote_apps",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/constants",

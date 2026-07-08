@@ -88,6 +88,7 @@ source_set("impl") {
     "//chrome/browser/printing",
     "//chrome/browser/printing:impl",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui",

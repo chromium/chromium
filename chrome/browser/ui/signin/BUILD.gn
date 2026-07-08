@@ -159,6 +159,7 @@ if (!is_android) {
         "//chrome/browser/password_manager:test_support",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui:chrome_pages",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/extensions",

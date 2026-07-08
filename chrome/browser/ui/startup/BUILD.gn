@@ -235,6 +235,7 @@ source_set("impl") {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",
@@ -538,6 +539,7 @@ if (!is_android) {
       deps += [
         ":credential_provider_test_utils",
         "//chrome/browser/profile_resetter",
+        "//chrome/browser/ui:chrome_pages",
         "//chrome/credential_provider/common:common_constants",
       ]
     }

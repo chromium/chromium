@@ -62,6 +62,7 @@ if (!is_android) {
       "//chrome/browser/resources/side_panel/shared:resources_grit",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/dialogs",

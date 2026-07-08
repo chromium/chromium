@@ -149,6 +149,7 @@ source_set("impl") {
       "//chrome/browser/notifications",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/sessions",
+      "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/startup",
