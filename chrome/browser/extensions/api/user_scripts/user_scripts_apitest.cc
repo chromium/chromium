@@ -144,8 +144,7 @@ UserScriptsAPITest::RunUserScriptsExtensionTestNotAllowed(
 UserScriptsAPITest::UserScriptsAPITest() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/
-      {extensions_features::kApiUserScriptsMultipleWorlds,
-       extensions_features::kApiUserScriptsExecute},
+      {extensions_features::kApiUserScriptsExecute},
       /*disabled_features=*/{});
 }
 

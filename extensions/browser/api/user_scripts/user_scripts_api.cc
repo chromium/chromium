@@ -152,10 +152,7 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kApiUserScriptsMultipleWorlds)) {
-    serialized_script.world_id = std::move(user_script.world_id);
-  }
+  serialized_script.world_id = std::move(user_script.world_id);
 
   return serialized_script;
 }
@@ -624,11 +621,7 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> world_id;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kApiUserScriptsMultipleWorlds)) {
-    world_id = std::move(params->properties.world_id);
-  }
+  std::optional<std::string> world_id = std::move(params->properties.world_id);
 
   std::string error;
   if (!IsValidWorldId(api::user_scripts::ExecutionWorld::kUserScript, world_id,

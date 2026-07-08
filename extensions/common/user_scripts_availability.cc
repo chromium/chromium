@@ -31,9 +31,8 @@ constexpr static std::array<std::string_view, 4>
         "userScripts",
         // These additional items are necessary because they are listed as
         // individual api features in _api_features.json.
-        "userScripts.execute", "userScripts.getWorldConfigurations",
-        "userScripts.resetWorldConfiguration",
-        // LINT.ThenChange(chrome/common/extensions/extension_test_util.cc)
+        "userScripts.execute",
+        // LINT.ThenChange(//chrome/common/extensions/extension_test_util.cc)
 };
 
 bool AreUserScriptsFeaturesAvailable(

@@ -65,10 +65,6 @@ BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 // the userScripts API.
 BASE_DECLARE_FEATURE(kApiUserScriptsExecute);
 
-// Controls the availability of specifying different world IDs in the
-// userScripts API.
-BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
-
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 
