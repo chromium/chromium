@@ -285,6 +285,10 @@ void RecordGeminiSessionCancellation(
   base::UmaHistogramEnumeration(kGeminiSessionCancellationHistogram, reason);
 }
 
+void RecordGeminiSessionOpened() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSessionOpened"));
+}
+
 void RecordGeminiSessionTime(base::TimeDelta session_duration) {
   base::UmaHistogramLongTimes100(kGeminiSessionTimeHistogram, session_duration);
 }

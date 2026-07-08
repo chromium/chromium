@@ -430,6 +430,9 @@ void RecordImageRemixContextMenuEntryPointTapped(double aspect_ratio);
 // Records user feedback on a Gemini response.
 void RecordGeminiFeedback(IOSGeminiFeedback feedback);
 
+// Records that the Gemini session/floaty UI was successfully opened.
+void RecordGeminiSessionOpened();
+
 // Records the duration of a Gemini session.
 void RecordGeminiSessionTime(base::TimeDelta session_duration);
 

@@ -28363,6 +28363,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiSessionOpened">
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when the Gemini Floaty/session UI successfully appears on screen.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiSettingsBack">
   <owner>joemerramos@google.com</owner>
   <description>

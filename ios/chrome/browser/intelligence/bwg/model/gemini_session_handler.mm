@@ -204,6 +204,9 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                        serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
 
+  // Record that the Gemini Floaty has successfully appeared on screen.
+  RecordGeminiSessionOpened();
+
   // Start session timer.
   _sessionStartTime = base::TimeTicks::Now();
   // Reset first response flag for new session.
