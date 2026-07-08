@@ -136,7 +136,7 @@ void GridTrackSizingAlgorithm::CacheSubgridItemsProperties(
     GridTrackSizingDirection track_direction) {
   DCHECK(grid_items);
 
-  for (auto& grid_item : *grid_items) {
+  for (auto& grid_item : grid_items->IncludeSubgriddedItems()) {
     if (!grid_item.IsSubgrid()) {
       continue;
     }

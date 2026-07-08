@@ -1993,10 +1993,12 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
 
   // Compute set indices for subgrid items so that `ForEachSubgrid` can create
   // constraint spaces for them.
-  for (auto& grid_item : sizing_subtree.GetGridItems()) {
-    if (grid_item.IsSubgrid()) {
-      Node().ComputeSetIndicesForSubgrid(grid_item, layout_data);
+  for (auto& grid_item :
+       sizing_subtree.GetGridItems().IncludeSubgriddedItems()) {
+    if (!grid_item.IsSubgrid()) {
+      continue;
     }
+    Node().ComputeSetIndicesForSubgrid(grid_item, layout_data);
   }
 
   // Cache track span properties for subgrid items so that we know the track
