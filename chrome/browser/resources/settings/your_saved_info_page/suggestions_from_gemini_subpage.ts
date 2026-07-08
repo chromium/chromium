@@ -25,6 +25,13 @@ import {getTemplate} from './suggestions_from_gemini_subpage.html.js';
 const SettingsSuggestionsFromGeminiSubpageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
 
+interface AtMemoryTriggerPrefValue {
+  is_shortcut: boolean;
+  trigger: string;
+}
+
+const atMemoryTriggerPrefName = 'autofill.at_memory.trigger_info';
+
 export class SettingsSuggestionsFromGeminiSubpageElement extends
     SettingsSuggestionsFromGeminiSubpageElementBase {
   static get is() {
@@ -48,7 +55,8 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
 
       atMemoryTrigger_: {
         type: String,
-        value: '',
+        computed:
+            `computeAtMemoryTrigger_(prefs.${atMemoryTriggerPrefName}.value)`,
       },
     };
   }
@@ -68,14 +76,22 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
   }
 
   private onAtMemoryTriggerSettingUpdated_(event: CustomEvent<string>) {
-    // TODO(crbug.com/521768751): update pref instead
-    this.atMemoryTrigger_ = event.detail;
+    const newTrigger = event.detail;
+    if (newTrigger === '') {
+      this.setPrefValue(
+          atMemoryTriggerPrefName, {is_shortcut: false, trigger: '@@'});
+    } else {
+      this.setPrefValue(
+          atMemoryTriggerPrefName, {is_shortcut: true, trigger: newTrigger});
+    }
   }
 
-  private atMemoryTriggerSettingEnabled_() {
-    // TODO(crbug.com/521768751): call MayPerformAtMemoryAction service
-    // MayPerformAtMemoryAction(kAllowCustomizeAtMemoryShortcut,...)
-    return true;
+  private computeAtMemoryTrigger_(triggerPrefValue: AtMemoryTriggerPrefValue):
+      string {
+    if (!triggerPrefValue.is_shortcut) {
+      return '';
+    }
+    return triggerPrefValue.trigger;
   }
 }
 
