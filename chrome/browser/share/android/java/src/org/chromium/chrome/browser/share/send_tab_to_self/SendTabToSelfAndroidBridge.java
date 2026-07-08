@@ -58,11 +58,6 @@ public class SendTabToSelfAndroidBridge {
         void onResult(@SendTabToSelfResult int result);
     }
 
-    // TODO(crbug.com/40618597): Add logic back in to track whether model is loaded.
-    // private boolean mIsNativeSendTabToSelfModelLoaded;
-
-    // TODO(crbug.com/492072882): Eventually remove the commitConfirmation parameter once
-    // confirmation feedback behavior is fully unified and centralized across all Android sites.
     /**
      * Handles the action when the user selects a device.
      *
@@ -74,7 +69,6 @@ public class SendTabToSelfAndroidBridge {
      * @param targetDeviceName The name of the target device.
      * @param url The URL being shared.
      * @param title The title of the page being shared.
-     * @param commitConfirmation Callback to receive the commit result.
      */
     public static void sendTabToDevice(
             Profile profile,
@@ -83,7 +77,6 @@ public class SendTabToSelfAndroidBridge {
             String targetDeviceName,
             String url,
             String title,
-            @Nullable CommitConfirmationCallback commitConfirmation,
             @ShareEntryPoint int entryPoint) {
         SendTabToSelfAndroidBridgeJni.get()
                 .sendTabToDevice(
@@ -92,12 +85,7 @@ public class SendTabToSelfAndroidBridge {
                         targetDeviceSyncCacheGuid,
                         url,
                         title,
-                        result -> {
-                            showPostSendSnackbar(webContents, result, targetDeviceName);
-                            if (commitConfirmation != null) {
-                                commitConfirmation.onResult(result);
-                            }
-                        },
+                        result -> showPostSendSnackbar(webContents, result, targetDeviceName),
                         entryPoint);
     }
 
@@ -215,8 +203,9 @@ public class SendTabToSelfAndroidBridge {
      */
     @CalledByNative
     public static void attachTabLabel(Tab tab, String guid, String senderDeviceName) {
-        if (tab == null || tab.getUserDataHost() == null || TextUtils.isEmpty(senderDeviceName))
+        if (tab == null || tab.getUserDataHost() == null || TextUtils.isEmpty(senderDeviceName)) {
             return;
+        }
 
         tab.getUserDataHost()
                 .setUserData(
@@ -345,8 +334,9 @@ public class SendTabToSelfAndroidBridge {
         @JniType("std::vector")
         List<TargetDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);
 
-        @Nullable @EntryPointDisplayReason Integer getEntryPointDisplayReason(
-                @JniType("Profile*") Profile profile, String url);
+        @Nullable
+        @EntryPointDisplayReason
+        Integer getEntryPointDisplayReason(@JniType("Profile*") Profile profile, String url);
 
         void recordTargetDeviceCount(
                 @ShareEntryPoint int entryPoint,

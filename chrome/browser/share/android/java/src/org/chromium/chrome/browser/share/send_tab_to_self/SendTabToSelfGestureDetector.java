@@ -162,7 +162,6 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
                 target.deviceName,
                 tab.getUrl().getSpec(),
                 tab.getTitle(),
-                result -> Log.i(TAG, "Send tab result: %s", result),
                 ShareEntryPoint.GESTURE);
     }
 

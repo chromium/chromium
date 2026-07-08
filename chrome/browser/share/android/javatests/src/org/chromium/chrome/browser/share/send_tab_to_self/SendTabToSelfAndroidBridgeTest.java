@@ -107,7 +107,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "device_name",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
         verify(mNativeMock)
                 .sendTabToDevice(
@@ -189,7 +188,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)
@@ -227,7 +225,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)
@@ -265,7 +262,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)
@@ -306,7 +302,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)
@@ -349,7 +344,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)
@@ -390,7 +384,6 @@ public class SendTabToSelfAndroidBridgeTest {
                 "Pixel 10",
                 URL,
                 TITLE,
-                null,
                 ShareEntryPoint.SHARE_SHEET);
 
         verify(mNativeMock)

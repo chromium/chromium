@@ -122,7 +122,6 @@ class EnhancedTargetDevicePickerMediator {
                 selectedDevice.deviceName,
                 mUrl,
                 mTitle,
-                null,
                 mEntryPoint);
     }
 }

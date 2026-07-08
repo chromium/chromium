@@ -185,7 +185,6 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
                 targetDeviceInfo.deviceName,
                 mUrl,
                 mTitle,
-                null,
                 mEntryPoint);
     }
 }
