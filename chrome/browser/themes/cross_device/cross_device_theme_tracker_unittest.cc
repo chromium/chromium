@@ -8,11 +8,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/theme_android_specifics.pb.h"
+#include "components/sync/protocol/theme_ios_specifics.pb.h"
+#include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/test/test_data_type_store_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/test_device_info_builder.h"
@@ -27,48 +32,75 @@ namespace themes {
 
 namespace {
 
-class MockObserver
-    : public CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>::Observer {
+using LocalSpecifics = sync_pb::ThemeSpecifics;
+
+class MockObserver : public CrossDeviceThemeTracker<LocalSpecifics>::Observer {
  public:
   MOCK_METHOD(void, OnCrossDeviceThemeChanged, (), (override));
   MOCK_METHOD(void, OnServiceStatusChanged, (ServiceStatus), (override));
 };
 
-class CrossDeviceThemeTrackerIntegrationTest : public testing::Test {
+class CrossDeviceThemeTrackerDesktopTest : public testing::Test {
  protected:
-  using AndroidBridge =
-      CrossDeviceThemeSyncBridge<sync_pb::ThemeAndroidSpecifics,
-                                 sync_pb::ThemeSpecifics>;
-  using IosBridge = CrossDeviceThemeSyncBridge<sync_pb::ThemeIosSpecifics,
-                                               sync_pb::ThemeSpecifics>;
+  CrossDeviceThemeTrackerDesktopTest() {
+    tracker_ = std::make_unique<CrossDeviceThemeTracker<LocalSpecifics>>(
+        &fake_device_info_tracker_);
 
-  CrossDeviceThemeTrackerIntegrationTest() {
-    tracker_ =
-        std::make_unique<CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>>(
-            &fake_device_info_tracker_);
+    // Construct and register Android bridge.
+    {
+      syncer::RepeatingDataTypeStoreFactory store_factory =
+          test_store_service_.GetStoreFactory();
+      auto android_processor =
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+              syncer::THEMES_ANDROID, base::DoNothing());
+      auto android_bridge = std::make_unique<themes::CrossDeviceThemeSyncBridge<
+          sync_pb::ThemeAndroidSpecifics, LocalSpecifics>>(
+          syncer::THEMES_ANDROID,
+          base::BindRepeating(&themes::TranslateAndroid),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::UpdateThemeInfo,
+              base::Unretained(tracker_.get())),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::RemoveThemeInfo,
+              base::Unretained(tracker_.get())),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::OnBridgeSyncStarted,
+              base::Unretained(tracker_.get()), syncer::THEMES_ANDROID),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::OnBridgeSyncDisabled,
+              base::Unretained(tracker_.get()), syncer::THEMES_ANDROID),
+          std::move(android_processor), store_factory);
+      android_bridge_ = android_bridge.get();
+      tracker_->RegisterBridge(syncer::THEMES_ANDROID,
+                               std::move(android_bridge));
+    }
 
-    syncer::RepeatingDataTypeStoreFactory store_factory =
-        test_store_service_.GetStoreFactory();
-
-    // Construct Android Bridge
-    auto android_processor =
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::THEMES_ANDROID, base::DoNothing());
-    auto android_bridge = std::make_unique<AndroidBridge>(
-        syncer::THEMES_ANDROID, base::BindRepeating(&themes::TranslateAndroid),
-        tracker_.get(), std::move(android_processor), store_factory);
-    android_bridge_ = android_bridge.get();
-    tracker_->RegisterBridge(syncer::THEMES_ANDROID, std::move(android_bridge));
-
-    // Construct iOS Bridge
-    auto ios_processor =
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::THEMES_IOS, base::DoNothing());
-    auto ios_bridge = std::make_unique<IosBridge>(
-        syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
-        tracker_.get(), std::move(ios_processor), store_factory);
-    ios_bridge_ = ios_bridge.get();
-    tracker_->RegisterBridge(syncer::THEMES_IOS, std::move(ios_bridge));
+    // Construct and register iOS bridge.
+    {
+      syncer::RepeatingDataTypeStoreFactory store_factory =
+          test_store_service_.GetStoreFactory();
+      auto ios_processor =
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+              syncer::THEMES_IOS, base::DoNothing());
+      auto ios_bridge = std::make_unique<themes::CrossDeviceThemeSyncBridge<
+          sync_pb::ThemeIosSpecifics, LocalSpecifics>>(
+          syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::UpdateThemeInfo,
+              base::Unretained(tracker_.get())),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::RemoveThemeInfo,
+              base::Unretained(tracker_.get())),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::OnBridgeSyncStarted,
+              base::Unretained(tracker_.get()), syncer::THEMES_IOS),
+          base::BindRepeating(
+              &CrossDeviceThemeTracker<LocalSpecifics>::OnBridgeSyncDisabled,
+              base::Unretained(tracker_.get()), syncer::THEMES_IOS),
+          std::move(ios_processor), store_factory);
+      ios_bridge_ = ios_bridge.get();
+      tracker_->RegisterBridge(syncer::THEMES_IOS, std::move(ios_bridge));
+    }
 
     // Wait for bridges to be ready.
     EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -77,7 +109,7 @@ class CrossDeviceThemeTrackerIntegrationTest : public testing::Test {
     }));
   }
 
-  ~CrossDeviceThemeTrackerIntegrationTest() override {
+  ~CrossDeviceThemeTrackerDesktopTest() override {
     android_bridge_ = nullptr;
     ios_bridge_ = nullptr;
   }
@@ -110,17 +142,43 @@ class CrossDeviceThemeTrackerIntegrationTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   syncer::TestDataTypeStoreService test_store_service_;
-  std::unique_ptr<CrossDeviceThemeTracker<sync_pb::ThemeSpecifics>> tracker_;
-  raw_ptr<AndroidBridge> android_bridge_ = nullptr;
-  raw_ptr<IosBridge> ios_bridge_ = nullptr;
+  std::unique_ptr<CrossDeviceThemeTracker<LocalSpecifics>> tracker_;
+  raw_ptr<themes::CrossDeviceThemeSyncBridge<sync_pb::ThemeAndroidSpecifics,
+                                             LocalSpecifics>>
+      android_bridge_ = nullptr;
+  raw_ptr<themes::CrossDeviceThemeSyncBridge<sync_pb::ThemeIosSpecifics,
+                                             LocalSpecifics>>
+      ios_bridge_ = nullptr;
 };
 
-TEST_F(CrossDeviceThemeTrackerIntegrationTest, InitialState) {
+TEST_F(CrossDeviceThemeTrackerDesktopTest, InitialState) {
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
   EXPECT_TRUE(tracker_->GetOtherDevicesThemes().empty());
 }
 
-TEST_F(CrossDeviceThemeTrackerIntegrationTest, AndroidThemeUpdate) {
+TEST_F(CrossDeviceThemeTrackerDesktopTest, SyncStarted) {
+  MockObserver observer;
+  tracker_->AddObserver(&observer);
+
+  // We expect status change notifications.
+  // Initially, both are kInitializing.
+  // When first bridge starts, aggregate is still kInitializing (no
+  // notification). When second bridge starts, aggregate becomes kActive
+  // (notifies).
+  EXPECT_CALL(observer, OnServiceStatusChanged(ServiceStatus::kActive))
+      .Times(1);
+
+  syncer::DataTypeActivationRequest request;
+  android_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
+
+  ios_bridge_->OnSyncStarting(request);
+  EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kActive);
+
+  tracker_->RemoveObserver(&observer);
+}
+
+TEST_F(CrossDeviceThemeTrackerDesktopTest, AndroidThemeUpdate) {
   MockObserver observer;
   tracker_->AddObserver(&observer);
 
@@ -165,7 +223,7 @@ TEST_F(CrossDeviceThemeTrackerIntegrationTest, AndroidThemeUpdate) {
   tracker_->RemoveObserver(&observer);
 }
 
-TEST_F(CrossDeviceThemeTrackerIntegrationTest, IosThemeUpdate) {
+TEST_F(CrossDeviceThemeTrackerDesktopTest, IosThemeUpdate) {
   MockObserver observer;
   tracker_->AddObserver(&observer);
 

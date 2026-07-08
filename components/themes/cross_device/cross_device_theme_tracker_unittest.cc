@@ -33,11 +33,14 @@ class TestCrossDeviceThemeTracker
       syncer::DeviceInfoTracker* device_info_tracker)
       : CrossDeviceThemeTracker(device_info_tracker) {}
 
-  using CrossDeviceThemeTracker::ClearAllThemeInfo;
-  using CrossDeviceThemeTracker::OnBridgeStatusChanged;
   using CrossDeviceThemeTracker::RemoveThemeInfo;
   using CrossDeviceThemeTracker::SetStatus;
   using CrossDeviceThemeTracker::UpdateThemeInfo;
+
+  void SetBridgeStatusForTesting(syncer::DataType type, ServiceStatus status) {
+    this->bridge_statuses_[type] = status;
+    this->UpdateAggregateStatus();
+  }
 };
 
 class CrossDeviceThemeTrackerTest : public testing::Test {
@@ -202,6 +205,27 @@ TEST_F(CrossDeviceThemeTrackerTest, DeviceInfoChange) {
   themes = tracker_.GetOtherDevicesThemes();
   ASSERT_EQ(themes.size(), 1u);
   EXPECT_EQ(themes[0].device_name, "New Phone Name");
+  EXPECT_EQ(themes[0].os_type, syncer::DeviceInfo::OsType::kAndroid);
+
+  // Now simulate a change in OS type.
+  old_device = fake_device_info_tracker_.GetDeviceInfo(cache_guid);
+  ASSERT_TRUE(old_device);
+  fake_device_info_tracker_.Remove(old_device);
+
+  EXPECT_CALL(observer, OnCrossDeviceThemeChanged()).Times(1);
+  updated_device_info =
+      syncer::TestDeviceInfoBuilder()
+          .WithGuid(cache_guid)
+          .WithClientName("New Phone Name")
+          .WithOsType(syncer::DeviceInfo::OsType::kLinux)
+          .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
+          .Build();
+  fake_device_info_tracker_.Add(std::move(updated_device_info));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  themes = tracker_.GetOtherDevicesThemes();
+  ASSERT_EQ(themes.size(), 1u);
+  EXPECT_EQ(themes[0].os_type, syncer::DeviceInfo::OsType::kLinux);
 
   tracker_.RemoveObserver(&observer);
 }
@@ -216,58 +240,37 @@ TEST_F(CrossDeviceThemeTrackerTest, BridgeStatusAggregation) {
   // One bridge becomes active -> kActive.
   EXPECT_CALL(observer, OnServiceStatusChanged(ServiceStatus::kActive))
       .Times(1);
-  tracker_.OnBridgeStatusChanged(syncer::THEMES_ANDROID,
-                                 ServiceStatus::kActive);
+  tracker_.SetBridgeStatusForTesting(syncer::THEMES_ANDROID,
+                                     ServiceStatus::kActive);
   EXPECT_EQ(tracker_.GetServiceStatus(), ServiceStatus::kActive);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Other bridge becomes disabled -> still kActive (since Android is active).
   EXPECT_CALL(observer, OnServiceStatusChanged(testing::_)).Times(0);
-  tracker_.OnBridgeStatusChanged(syncer::THEMES_IOS,
-                                 ServiceStatus::kSyncDisabled);
+  tracker_.SetBridgeStatusForTesting(syncer::THEMES_IOS,
+                                     ServiceStatus::kSyncDisabled);
   EXPECT_EQ(tracker_.GetServiceStatus(), ServiceStatus::kActive);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Android also becomes disabled -> all disabled -> kSyncDisabled.
   EXPECT_CALL(observer, OnServiceStatusChanged(ServiceStatus::kSyncDisabled))
       .Times(1);
-  tracker_.OnBridgeStatusChanged(syncer::THEMES_ANDROID,
-                                 ServiceStatus::kSyncDisabled);
+  tracker_.SetBridgeStatusForTesting(syncer::THEMES_ANDROID,
+                                     ServiceStatus::kSyncDisabled);
   EXPECT_EQ(tracker_.GetServiceStatus(), ServiceStatus::kSyncDisabled);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Android becomes initializing -> kInitializing.
   EXPECT_CALL(observer, OnServiceStatusChanged(ServiceStatus::kInitializing))
       .Times(1);
-  tracker_.OnBridgeStatusChanged(syncer::THEMES_ANDROID,
-                                 ServiceStatus::kInitializing);
+  tracker_.SetBridgeStatusForTesting(syncer::THEMES_ANDROID,
+                                     ServiceStatus::kInitializing);
   EXPECT_EQ(tracker_.GetServiceStatus(), ServiceStatus::kInitializing);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   tracker_.RemoveObserver(&observer);
 }
 
-TEST_F(CrossDeviceThemeTrackerTest, ClearAllThemeInfo) {
-  MockObserver observer;
-  tracker_.AddObserver(&observer);
-
-  DeviceThemeInfo<sync_pb::ThemeSpecifics> theme_info;
-  theme_info.theme.mutable_user_color_theme()->set_color(SK_ColorBLUE);
-  EXPECT_CALL(observer, OnCrossDeviceThemeChanged()).Times(1);
-  tracker_.UpdateThemeInfo("guid_1", theme_info);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_EQ(tracker_.GetOtherDevicesThemes().size(), 1u);
-
-  // Clear all.
-  EXPECT_CALL(observer, OnCrossDeviceThemeChanged()).Times(1);
-  tracker_.ClearAllThemeInfo();
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_TRUE(tracker_.GetOtherDevicesThemes().empty());
-
-  tracker_.RemoveObserver(&observer);
-}
 
 }  // namespace
 

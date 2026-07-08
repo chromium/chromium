@@ -12,9 +12,7 @@ source_set("features") {
 
 source_set("cross_device") {
   sources = [
-    "cross_device_theme_sync_bridge.cc",
     "cross_device_theme_sync_bridge.h",
-    "cross_device_theme_tracker.cc",
     "cross_device_theme_tracker.h",
     "theme_comparer.h",
     "theme_translation.cc",

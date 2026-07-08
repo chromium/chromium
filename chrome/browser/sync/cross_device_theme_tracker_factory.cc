@@ -74,7 +74,21 @@ CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
   auto android_bridge = std::make_unique<themes::CrossDeviceThemeSyncBridge<
       sync_pb::ThemeAndroidSpecifics, sync_pb::ThemeSpecifics>>(
       syncer::THEMES_ANDROID, base::BindRepeating(&themes::TranslateAndroid),
-      tracker.get(), std::move(android_processor), store_factory);
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::UpdateThemeInfo,
+                          base::Unretained(tracker.get())),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::RemoveThemeInfo,
+                          base::Unretained(tracker.get())),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::OnBridgeSyncStarted,
+                          base::Unretained(tracker.get()),
+                          syncer::THEMES_ANDROID),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::OnBridgeSyncDisabled,
+                          base::Unretained(tracker.get()),
+                          syncer::THEMES_ANDROID),
+      std::move(android_processor), store_factory);
 
   tracker->RegisterBridge(syncer::THEMES_ANDROID, std::move(android_bridge));
 
@@ -86,7 +100,19 @@ CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
   auto ios_bridge = std::make_unique<themes::CrossDeviceThemeSyncBridge<
       sync_pb::ThemeIosSpecifics, sync_pb::ThemeSpecifics>>(
       syncer::THEMES_IOS, base::BindRepeating(&themes::TranslateIos),
-      tracker.get(), std::move(ios_processor), store_factory);
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::UpdateThemeInfo,
+                          base::Unretained(tracker.get())),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::RemoveThemeInfo,
+                          base::Unretained(tracker.get())),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::OnBridgeSyncStarted,
+                          base::Unretained(tracker.get()), syncer::THEMES_IOS),
+      base::BindRepeating(&themes::CrossDeviceThemeTracker<
+                              sync_pb::ThemeSpecifics>::OnBridgeSyncDisabled,
+                          base::Unretained(tracker.get()), syncer::THEMES_IOS),
+      std::move(ios_processor), store_factory);
 
   tracker->RegisterBridge(syncer::THEMES_IOS, std::move(ios_bridge));
 
