@@ -345,7 +345,60 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
 
   draw_callback(recorder_for_external_draws_->getRecordingCanvas());
   if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
+    cc::PaintRecord last_recording =
+        recorder_for_external_draws_->ReleaseMainRecording();
+
+    auto access = WillDrawInternal();
+    EnsureWriteAccess();
+
+    const bool needs_clear = !is_cleared_;
+    is_cleared_ = true;
+
+    gpu::raster::RasterInterface* ri = RasterInterface();
+    SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
+                                     ? SkColors::kBlack
+                                     : SkColors::kTransparent;
+
+    auto list = base::MakeRefCounted<cc::DisplayItemList>();
+    list->StartPaint();
+    list->push<cc::DrawRecordOp>(std::move(last_recording));
+    list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
+    list->Finalize();
+
+    gfx::Size size(Size().width(), Size().height());
+    size_t max_op_size_hint =
+        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
+    gfx::Rect full_raster_rect(Size().width(), Size().height());
+    gfx::Rect playback_rect(Size().width(), Size().height());
+    gfx::Vector2dF post_translate(0.f, 0.f);
+    gfx::Vector2dF post_scale(1.f, 1.f);
+
+    const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
+    const auto& caps =
+        context_provider_wrapper_->ContextProvider().GetCapabilities();
+    bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+    ri->BeginRasterCHROMIUM(background_color, needs_clear,
+                            /*msaa_sample_count=*/use_msaa ? 1 : 0,
+                            use_msaa ? gpu::raster::MsaaMode::kDMSAA
+                                     : gpu::raster::MsaaMode::kNoMSAA,
+                            can_use_lcd_text, /*visible=*/true, GetColorSpace(),
+                            /*hdr_headroom=*/0.f,
+                            resource()->GetSharedImage()->mailbox().name);
+
+    auto* image_provider = GetOrCreateImageProvider();
+    ri->RasterCHROMIUM(
+        list.get(), image_provider, size, full_raster_rect, playback_rect,
+        post_translate, post_scale, /*requires_clear=*/false,
+        /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
+        base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
+
+    ri->EndRasterCHROMIUM();
+    resource()->EndAccess(std::move(access));
+
+    if (canvas_image_provider_) {
+      canvas_image_provider_->ReleaseLockedImages();
+      canvas_image_provider_->UnbindTextureBackedImages();
+    }
   }
 
   // We are about to give the caller read access to this resource (and its
@@ -493,64 +546,7 @@ WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
   return canvas_image_provider_.get();
 }
 
-void WebGpuRecyclableResourceProvider::FlushRecording(
-    cc::PaintRecord last_recording) {
-  if (!IsGpuContextLost()) {
-    auto access = WillDrawInternal();
-    EnsureWriteAccess();
 
-    const bool needs_clear = !is_cleared_;
-    is_cleared_ = true;
-
-    gpu::raster::RasterInterface* ri = RasterInterface();
-    SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
-                                     ? SkColors::kBlack
-                                     : SkColors::kTransparent;
-
-    auto list = base::MakeRefCounted<cc::DisplayItemList>();
-    list->StartPaint();
-    list->push<cc::DrawRecordOp>(std::move(last_recording));
-    list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
-    list->Finalize();
-
-    gfx::Size size(Size().width(), Size().height());
-    size_t max_op_size_hint =
-        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    gfx::Rect full_raster_rect(Size().width(), Size().height());
-    gfx::Rect playback_rect(Size().width(), Size().height());
-    gfx::Vector2dF post_translate(0.f, 0.f);
-    gfx::Vector2dF post_scale(1.f, 1.f);
-
-    const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-    const auto& caps =
-        context_provider_wrapper_->ContextProvider().GetCapabilities();
-    bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-    ri->BeginRasterCHROMIUM(background_color, needs_clear,
-                            /*msaa_sample_count=*/use_msaa ? 1 : 0,
-                            use_msaa ? gpu::raster::MsaaMode::kDMSAA
-                                     : gpu::raster::MsaaMode::kNoMSAA,
-                            can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-                            /*hdr_headroom=*/0.f,
-                            resource()->GetSharedImage()->mailbox().name);
-
-    auto* image_provider = GetOrCreateImageProvider();
-    ri->RasterCHROMIUM(
-        list.get(), image_provider, size, full_raster_rect, playback_rect,
-        post_translate, post_scale, /*requires_clear=*/false,
-        /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
-        base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
-
-    ri->EndRasterCHROMIUM();
-    resource()->EndAccess(std::move(access));
-  }
-
-  // Images are locked for the duration of the rasterization, in case they get
-  // used multiple times. We can unlock them once the rasterization is complete.
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
-}
 
 base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;

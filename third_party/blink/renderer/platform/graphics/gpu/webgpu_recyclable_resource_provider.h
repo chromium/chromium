@@ -175,7 +175,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   void OnContextLost() override;
 
   bool ShouldReplaceTargetBuffer();
-  void FlushRecording(cc::PaintRecord last_recording);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
