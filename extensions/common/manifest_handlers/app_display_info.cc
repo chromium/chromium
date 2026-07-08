@@ -23,7 +23,7 @@ const char* kAppDisplayInfoKey = keys::kDisplayInLauncher;
 const AppDisplayInfo* GetAppDisplayInfo(const Extension& extension) {
   const AppDisplayInfo* info = static_cast<const AppDisplayInfo*>(
       extension.GetManifestData(kAppDisplayInfoKey));
-  DCHECK(!info || extension.is_app())
+  CHECK(!info || extension.is_app())
       << "Only apps are allowed to be displayed in the NTP or launcher.";
   return info;
 }

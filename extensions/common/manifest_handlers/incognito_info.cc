@@ -13,7 +13,7 @@ namespace extensions {
 using IncognitoManifestKeys = api::incognito::ManifestKeys;
 
 IncognitoInfo::IncognitoInfo(api::incognito::IncognitoMode mode) : mode(mode) {
-  DCHECK_NE(api::incognito::IncognitoMode::kNone, mode);
+  CHECK_NE(api::incognito::IncognitoMode::kNone, mode);
 }
 
 IncognitoInfo::~IncognitoInfo() = default;

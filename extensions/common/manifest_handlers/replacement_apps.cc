@@ -59,7 +59,7 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
     return true;
   }
 
-  DCHECK(app_value);
+  CHECK(app_value);
   if (!app_value->is_string()) {
     *error = errors::kInvalidReplacementWebApp;
     return false;

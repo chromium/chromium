@@ -141,7 +141,7 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
 
   bool has_import = !!manifest_keys.import;
   bool has_export = !!manifest_keys.export_;
-  DCHECK(has_import || has_export);
+  CHECK(has_import || has_export);
 
   auto info = std::make_unique<SharedModuleInfo>();
 

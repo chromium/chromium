@@ -80,7 +80,7 @@ bool IsValidProtocolHandler(const std::string& protocol,
   return is_valid;
 }
 
-bool SupportsProtocolHandlers(const Extension& extension) {
+bool SupportsProtocolHandlers() {
   return base::FeatureList::IsEnabled(
       extensions_features::kExtensionProtocolHandlers);
 }
@@ -95,7 +95,7 @@ const ProtocolHandlersInfo* ProtocolHandlers::GetProtocolHandlers(
     const Extension& extension) {
   const ProtocolHandlers* info = static_cast<const ProtocolHandlers*>(
       extension.GetManifestData(keys::kProtocolHandlers));
-  DCHECK(!info || SupportsProtocolHandlers(extension));
+  CHECK(!info || SupportsProtocolHandlers());
   return info ? &info->protocol_handlers : nullptr;
 }
 
@@ -125,8 +125,8 @@ std::unique_ptr<ProtocolHandlers> ParseEntryList(
   std::unique_ptr<ProtocolHandlers> info = std::make_unique<ProtocolHandlers>();
   for (const auto& protocol_handler : *manifest_keys.protocol_handlers) {
     apps::ProtocolHandlerInfo handler;
-    DCHECK(!protocol_handler.protocol.empty());
-    DCHECK(!protocol_handler.uri_template.empty());
+    CHECK(!protocol_handler.protocol.empty());
+    CHECK(!protocol_handler.uri_template.empty());
     handler.protocol = protocol_handler.protocol;
     handler.name = protocol_handler.name;
     handler.url = GURL(protocol_handler.uri_template);
@@ -147,7 +147,7 @@ bool ProtocolHandlersParser::Parse(Extension* extension,
   CHECK(extension);
   CHECK_GE(extension->manifest_version(), 3);
 
-  if (!SupportsProtocolHandlers(*extension)) {
+  if (!SupportsProtocolHandlers()) {
     return true;
   }
 

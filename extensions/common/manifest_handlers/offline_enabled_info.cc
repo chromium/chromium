@@ -42,7 +42,7 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
     // A platform app is offline enabled unless it requests the webview
     // permission. That is, offline_enabled is true when there is NO webview
     // permission requested and false when webview permission is present.
-    DCHECK(extension->is_platform_app());
+    CHECK(extension->is_platform_app());
 
     const bool has_webview_permission = PermissionsParser::HasAPIPermission(
         extension, mojom::APIPermissionID::kWebView);

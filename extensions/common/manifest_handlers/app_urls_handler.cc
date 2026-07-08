@@ -19,16 +19,10 @@ AppURLsHandler::AppURLsHandler() = default;
 AppURLsHandler::~AppURLsHandler() = default;
 
 bool AppURLsHandler::Parse(Extension* extension, std::u16string* error) {
-  // TODO(crbug.com/324534603): Convert to CHECK().
-  DCHECK(extension->is_hosted_app());
+  CHECK(extension->is_hosted_app());
   const base::Value* temp_pattern_value =
       extension->manifest()->FindPath(keys::kWebURLs);
-  // TODO(crbug.com/324534603): Convert to CHECK() and remove the
-  // `if (temp_pattern_value) == nullptr` early return.
-  DCHECK(temp_pattern_value);
-  if (temp_pattern_value == nullptr) {
-    return true;
-  }
+  CHECK(temp_pattern_value);
 
   if (!temp_pattern_value->is_list()) {
     *error = errors::kInvalidWebURLs;

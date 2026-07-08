@@ -104,7 +104,7 @@ class CSPHandler : public ManifestHandler {
                        const base::Value* sandbox_csp,
                        bool allow_remote_sources);
 
-  // Helper to DCHECK() the extension pages content security policy.
+  // Helper to CHECK() the extension pages content security policy.
   void ValidateExtensionPagesCSP(const Extension& extension,
                                  std::string_view manifest_key,
                                  const std::string& content_security_policy);
