@@ -15,9 +15,9 @@
 namespace web_app {
 
 // Helper class that takes a NavigationHandleUserData and attaches it to the
-// first navigation that is started in the given WebContents. The user data
-// needs to implement a `AttachToNavigationHandle` method to do the actual
-// attaching.
+// first primary main frame navigation that is started in the given WebContents.
+// Navigations in other frames are ignored. The user data needs to implement a
+// `AttachToNavigationHandle` method to do the actual attaching.
 // This is a plain `base::SupportsUserData::Data` rather than a
 // `WebContentsUserData` to make it easier to re-use the same user data key
 // as what is used by the underlying `NavigationHandleUserData`.
@@ -43,6 +43,13 @@ class NavigationHandleUserDataForwarder : public content::WebContentsObserver,
   // content::WebContentsObserver overrides:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // The forwarded user data only targets primary main frame navigations
+    // (e.g. it may CHECK IsInPrimaryMainFrame()). Ignore navigations in other
+    // frames so a subframe navigation doesn't match `target_url_` first and get
+    // the data attached to it.
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
+      return;
+    }
     if (navigation_handle->GetURL() == target_url_) {
       UserDataType::AttachToNavigationHandle(*navigation_handle,
                                              std::move(data_));

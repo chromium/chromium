@@ -17,9 +17,11 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -30,6 +32,8 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -806,6 +810,82 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetFocusExistingUrl(), app_browser_to_use->tab_strip_model()
                                        ->GetActiveWebContents()
                                        ->GetLastCommittedURL());
+}
+
+// Regression test for crbug.com/529425540. A same-document navigation in a
+// subframe that matches the navigation capturing target URL must not receive
+// the forwarded launch data, since that data CHECKs IsInPrimaryMainFrame(). A
+// subsequent primary main frame navigation to the same URL should still receive
+// the launch data.
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       SameDocumentSubframeNavigationDoesNotAttachLaunchData) {
+  const GURL app_url = GetAppNoManifestUrl();
+  const webapps::AppId app_id =
+      InstallTestWebApp(app_url, mojom::UserDisplayMode::kStandalone);
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetLandingPage()));
+  ASSERT_TRUE(content::ExecJs(
+      contents,
+      content::JsReplace("new Promise(resolve => {"
+                         "  const f = document.createElement('iframe');"
+                         "  f.id = 'child';"
+                         "  f.src = $1;"
+                         "  f.onload = () => resolve(true);"
+                         "  document.body.appendChild(f);"
+                         "});",
+                         app_url)));
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ(subframe->GetLastCommittedURL(), app_url);
+
+  // Drive the navigation capturing pipeline directly, using the same entry
+  // points as `browser_navigator.cc`, and stop right after the forwarder is
+  // installed on `contents`. This is deliberate: it lets the subframe
+  // navigation below start first, deterministically. Going through a real
+  // navigation (e.g. window.open) would also start a primary main frame
+  // navigation to `app_url`, which would race the subframe navigation and make
+  // this repro flaky - it could pass even without the fix.
+  NavigateParams params(browser(), app_url, ui::PAGE_TRANSITION_LINK);
+  params.initiating_profile = profile();
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.source_contents = contents;
+  std::unique_ptr<NavigationCapturingProcess> process =
+      NavigationCapturingProcess::MaybeHandleAppNavigation(params);
+  ASSERT_TRUE(process);
+  std::optional<NavigationCapturingOverride> override_result =
+      process->GetInitialNavigationParamsOverride(params);
+  ASSERT_TRUE(override_result.has_value());
+
+  NavigationCapturingProcess::AfterWebContentsCreation(
+      std::move(process), *contents, /*navigation_handle=*/nullptr);
+
+  // The same-document subframe navigation matches `target_url_` but must be
+  // ignored: attaching the launch data to it would trip the CHECK. Without the
+  // fix, this crashes the browser process.
+  ASSERT_TRUE(
+      content::ExecJs(subframe, "history.pushState({}, '', location.href);"));
+
+  EXPECT_TRUE(contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(contents->GetLastCommittedURL(), GetLandingPage());
+
+  // The forwarder is still installed, so a subsequent primary main frame
+  // navigation to the target URL should receive the forwarded launch data.
+  content::TestNavigationManager main_frame_nav(contents, app_url);
+  ASSERT_TRUE(
+      content::ExecJs(contents->GetPrimaryMainFrame(),
+                      content::JsReplace("location.href = $1;", app_url),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(main_frame_nav.WaitForRequestStart());
+  content::NavigationHandle* main_frame_handle =
+      main_frame_nav.GetNavigationHandle();
+  ASSERT_TRUE(main_frame_handle);
+  ASSERT_TRUE(main_frame_handle->IsInPrimaryMainFrame());
+  EXPECT_TRUE(WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
+      *main_frame_handle));
+  ASSERT_TRUE(main_frame_nav.WaitForNavigationFinished());
 }
 
 using LaunchQueueLatencyMetricBrowserTest =
