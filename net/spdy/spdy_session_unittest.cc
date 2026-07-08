@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -152,6 +153,23 @@ class HeadersSentDelegate : public test::StreamDelegateDoNothing {
  private:
   base::OnceClosure quit_closure_;
 };
+
+void WaitForSessionCloseHelper(base::WeakPtr<SpdySession> session,
+                               base::OnceClosure quit_closure) {
+  if (!session) {
+    std::move(quit_closure).Run();
+    return;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(WaitForSessionCloseHelper, session,
+                                std::move(quit_closure)));
+}
+
+void WaitForSessionClose(base::WeakPtr<SpdySession> session) {
+  base::RunLoop run_loop;
+  WaitForSessionCloseHelper(session, run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 }  // namespace
 
@@ -6122,6 +6140,10 @@ class AltSvcFrameTest : public SpdySessionTest {
         ::net::CreateSpdySession(http_session_.get(), key_, NetLogWithSource());
   }
 
+  bool AllSocketDataConsumed() const {
+    return data_->AllReadDataConsumed() && data_->AllWriteDataConsumed();
+  }
+
   spdy::SpdyAltSvcWireFormat::AlternativeService alternative_service_;
 
  private:
@@ -6455,7 +6477,9 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
 
   spdy_stream1->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
-  base::RunLoop().RunUntilIdle();
+  WaitForSessionClose(session_);
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
 
   const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
@@ -6469,6 +6493,106 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
                       url::SchemeHostPort(GURL(request_origin)),
                       NetworkAnonymizationKey())
                   .empty());
+}
+
+// An ALTSVC frame received on a session used to carry tunnels to other
+// destinations must be ignored: the session host is not authoritative for the
+// origin associated with the tunnel stream.
+TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnProxySession) {
+  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), PRIVACY_MODE_DISABLED,
+                        ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_verification_network_fetches=*/true,
+                        handles::kInvalidNetworkHandle);
+
+  spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 1);
+  altsvc_ir.add_altsvc(alternative_service_);
+
+  spdy::SpdySerializedFrame altsvc_frame(spdy_util_.SerializeFrame(altsvc_ir));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_REFUSED_STREAM));
+  MockRead reads[] = {
+      CreateMockRead(altsvc_frame, 1), CreateMockRead(rst, 2),
+      MockRead(ASYNC, 0, 3)  // EOF
+  };
+
+  const char request_origin[] = "https://invalid.example.org";
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(request_origin, 1, MEDIUM));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+  };
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  base::WeakPtr<SpdyStream> spdy_stream1 = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session_, GURL(request_origin), MEDIUM,
+      NetLogWithSource());
+  test::StreamDelegateDoNothing delegate1(spdy_stream1);
+  spdy_stream1->SetDelegate(&delegate1);
+
+  quiche::HttpHeaderBlock headers(
+      spdy_util_.ConstructGetHeaderBlock(request_origin));
+
+  spdy_stream1->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+
+  WaitForSessionClose(session_);
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
+                                           test_url_.EffectiveIntPort());
+  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
+                  ->GetAlternativeServiceInfos(session_origin,
+                                               NetworkAnonymizationKey())
+                  .empty());
+
+  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
+                  ->GetAlternativeServiceInfos(
+                      url::SchemeHostPort(GURL(request_origin)),
+                      NetworkAnonymizationKey())
+                  .empty());
+}
+
+TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnProxySessionOnStreamZero) {
+  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), PRIVACY_MODE_DISABLED,
+                        ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_verification_network_fetches=*/true,
+                        handles::kInvalidNetworkHandle);
+
+  const char origin[] = "https://mail.example.org";
+  spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
+  altsvc_ir.add_altsvc(alternative_service_);
+  altsvc_ir.set_origin(origin);
+  AddSocketData(altsvc_ir);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  WaitForSessionClose(session_);
+  EXPECT_TRUE(AllSocketDataConsumed());
+
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
+                                           test_url_.EffectiveIntPort());
+  AlternativeServiceInfoVector altsvc_info_vector =
+      spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
+          session_origin, NetworkAnonymizationKey());
+  ASSERT_TRUE(altsvc_info_vector.empty());
+
+  altsvc_info_vector =
+      spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
+          url::SchemeHostPort(GURL(origin)), NetworkAnonymizationKey());
+  ASSERT_EQ(1u, altsvc_info_vector.size());
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alternative.example.org", 443u);
+  EXPECT_EQ(alternative_service, altsvc_info_vector[0].alternative_service());
 }
 
 TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnNonExistentStream) {
