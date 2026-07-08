@@ -329,7 +329,6 @@ bool FrameSelection::SetSelectionDeprecated(
   is_handle_visible_ = should_show_handle;
   ScheduleVisualUpdateForVisualOverflowIfNeeded();
 
-  frame_->GetEditor().RespondToChangedSelection();
   DCHECK_EQ(current_document, GetDocument());
   return true;
 }
@@ -432,6 +431,7 @@ void FrameSelection::DidSetSelectionDeprecated(
         *Event::Create(event_type_names::kSelectionchange),
         TaskType::kMiscPlatformAPI);
   }
+  frame_->GetEditor().RespondToChangedSelection();
 }
 
 void FrameSelection::SetSelectionForAccessibility(
