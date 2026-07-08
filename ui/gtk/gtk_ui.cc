@@ -312,6 +312,7 @@ void (*g_orig_set_property)(GObject* object,
                             const GValue* value,
                             GParamSpec* pspec) = nullptr;
 
+DISABLE_CFI_ICALL
 void GtkSettingsSetProperty(GObject* object,
                             guint property_id,
                             const GValue* value,
