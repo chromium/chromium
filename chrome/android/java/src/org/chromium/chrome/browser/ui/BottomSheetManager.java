@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -340,6 +341,17 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         @Override
         public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+            if (newContent != null) {
+                // Query the stacker for the height of the layers below the bottom sheet
+                // to initialize the offset before the sheet is drawn. This prevents the
+                // sheet from initially drawing at a stale offset (0) and jumping once the
+                // stacker finishes its asynchronous layout.
+                int height =
+                        mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_SHEET);
+                if (height != BottomControlsStacker.INVALID_HEIGHT) {
+                    mSheetController.setBottomControlsOffset(height);
+                }
+            }
             maybeUpdateLayerHeight();
         }
 
@@ -352,7 +364,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         @Override
         public int getType() {
-            return BottomControlsStacker.LayerType.BOTTOM_SHEET;
+            return LayerType.BOTTOM_SHEET;
         }
 
         @Override

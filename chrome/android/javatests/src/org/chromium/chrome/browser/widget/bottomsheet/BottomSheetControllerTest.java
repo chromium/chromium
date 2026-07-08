@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.widget.bottomsheet;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -100,6 +102,7 @@ public class BottomSheetControllerTest {
     private ScrimManager mScrimManager;
     private int mSuppressionToken;
     private TestEdgeToEdgeController mEdgeToEdgeController;
+    private EdgeToEdgeController mOriginalEdgeToEdgeController;
 
     @Before
     public void setUp() throws Exception {
@@ -132,6 +135,32 @@ public class BottomSheetControllerTest {
                     mPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
+                });
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Browser controls should be fully shown.",
+                            mActivity.getBrowserControlsManager().getBottomControlOffset(),
+                            is(0));
+                });
+    }
+
+    /**
+     * Injects a mock EdgeToEdgeController to test sheet behavior when drawing edge-to-edge. We save
+     * the original controller and restore it in {@link #tearDown()} to prevent state leakage across
+     * tests in the batch.
+     *
+     * <p>Note: We cannot inject this mock globally in {@link #setUp()} because it registers a sync
+     * observer on the active controller inside BottomControlsMediator, which triggers asynchronous
+     * layout updates on BottomControlsStacker. This interferes with back-press tests by causing
+     * race conditions on sheet open state.
+     */
+    private void injectMockEdgeToEdgeController() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mOriginalEdgeToEdgeController =
+                            mActivity.getEdgeToEdgeControllerSupplierForTesting().get();
                     mEdgeToEdgeController = new TestEdgeToEdgeController();
                     mActivity
                             .getEdgeToEdgeControllerSupplierForTesting()
@@ -145,6 +174,11 @@ public class BottomSheetControllerTest {
                 () -> {
                     mTestSupport.forceDismissAllContent();
                     mTestSupport.endAllAnimations();
+                    if (mOriginalEdgeToEdgeController != null) {
+                        mActivity
+                                .getEdgeToEdgeControllerSupplierForTesting()
+                                .set(mOriginalEdgeToEdgeController);
+                    }
                 });
     }
 
@@ -185,6 +219,7 @@ public class BottomSheetControllerTest {
     @Feature({"BottomSheetController"})
     @DisabledTest(message = "Flaky, http://crbug.com/397476647")
     public void testShowWithBottomInset() {
+        injectMockEdgeToEdgeController();
         requestContentInSheet(mLowPriorityContent, true);
         View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
         float transYWithoutBottomInset = bottomSheet.getTranslationY();
@@ -220,6 +255,7 @@ public class BottomSheetControllerTest {
     @SmallTest
     @Feature({"BottomSheetController"})
     public void testShowWithBottomInset_LargeBottomInsets() {
+        injectMockEdgeToEdgeController();
         mEdgeToEdgeController.bottomInset = 2000;
 
         requestContentInSheet(mNonPeekableContent, true);
@@ -279,15 +315,31 @@ public class BottomSheetControllerTest {
     @SmallTest
     @Feature({"BottomSheetController"})
     public void testShowWithBottomInset_resizeContent_LargeBottomInsets() {
-        mEdgeToEdgeController.bottomInset = 2000;
-        mNonPeekableContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+        injectMockEdgeToEdgeController();
+        mEdgeToEdgeController.bottomInset = 0;
+        mNonPeekableContent.setFullHeightRatio(HeightMode.DEFAULT);
         requestContentInSheet(mNonPeekableContent, true);
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
 
         View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);
         View bottomSheetContent = bottomSheet.findViewById(R.id.bottom_sheet_content);
-        int heightWithoutBottomInset = bottomSheetContent.getHeight();
-        float transYWithBottomInset = bottomSheet.getTranslationY();
 
+        CriteriaHelper.pollUiThread(() -> mSheetController.getSheetState() == SheetState.HALF);
+        int heightWithoutBottomInset = bottomSheetContent.getHeight();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSheetController.hideContent(mNonPeekableContent, false));
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
+        CriteriaHelper.pollUiThread(() -> mSheetController.getSheetState() == SheetState.HIDDEN);
+
+        mEdgeToEdgeController.bottomInset = 2000;
+        mNonPeekableContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+        requestContentInSheet(mNonPeekableContent, true);
+        ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
+
+        CriteriaHelper.pollUiThread(() -> mSheetController.getSheetState() == SheetState.HALF);
+
+        float transYWithBottomInset = bottomSheet.getTranslationY();
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(
@@ -296,13 +348,13 @@ public class BottomSheetControllerTest {
                                 Matchers.greaterThanOrEqualTo(0.f)));
 
         int bottomInsets = ViewUtils.dpToPx(mActivity, mEdgeToEdgeController.bottomInset);
+        int expectedHeight = Math.max(0, heightWithoutBottomInset - bottomInsets);
         CriteriaHelper.pollUiThread(
                 () ->
                         Criteria.checkThat(
                                 "The height of the sheet should decrease by the bottom insets.",
                                 bottomSheetContent.getHeight(),
-                                Matchers.equalTo(
-                                        Math.max(0, heightWithoutBottomInset - bottomInsets))));
+                                Matchers.equalTo(expectedHeight)));
     }
 
     @Test

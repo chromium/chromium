@@ -213,6 +213,7 @@ public class BottomSheetTestSupport {
                         if (newState == BottomSheetController.SheetState.HALF
                                 || newState == SheetState.FULL) {
                             stateChangeHelper.notifyCalled();
+                            controller.removeObserver(this);
                         }
                     }
                 };
@@ -264,16 +265,17 @@ public class BottomSheetTestSupport {
                     public void onSheetContentChanged(BottomSheetContent newContent) {
                         if ((contentShouldBeNull && newContent == null) || content == newContent) {
                             contentChangeHelper.notifyCalled();
+                            controller.removeObserver(this);
                         }
                     }
                 };
-        controller.addObserver(observer);
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.addObserver(observer));
         try {
             contentChangeHelper.waitForOnly();
         } catch (TimeoutException ex) {
             assert false : "Bottom sheet content never changed!";
         }
-        controller.removeObserver(observer);
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.removeObserver(observer));
     }
 
     /**

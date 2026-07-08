@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -236,6 +237,19 @@ public class BottomSheetManagerUnitTest {
         clearInvocations(mBottomControlsStacker);
         mObserver.onSheetContentChanged(mSheetContent);
         verify(mBottomControlsStacker).requestLayerUpdate(false);
+    }
+
+    @Test
+    public void testOnSheetContentChanged_initializesOffset() {
+        when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mSheetController.getCurrentPeekHeightPx()).thenReturn(100);
+        when(mSheetController.getSheetState()).thenReturn(BottomSheetController.SheetState.PEEK);
+        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_SHEET))
+                .thenReturn(100);
+
+        mObserver.onSheetContentChanged(mSheetContent);
+        verify(mSheetController).setBottomControlsOffset(100);
     }
 
     @Test

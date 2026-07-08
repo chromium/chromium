@@ -225,6 +225,7 @@ class BottomSheet extends FrameLayout
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
+    private int mBottomControlsOffset;
     private int mBottomMargin;
     private @ColorInt int mSheetBgColor;
 
@@ -372,7 +373,7 @@ class BottomSheet extends FrameLayout
      * @param alwaysFullWidth Whether bottom sheet is always full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
      * @param appHeaderHeight The app header height, in px.
-     * @param bottomMargin The extra margin to add to the bottom of sheet container.
+     * @param bottomControlsOffset The extra margin to add to the bottom of sheet container.
      * @param insetObserver An observer for inset changes.
      */
     @Initializer
@@ -382,7 +383,7 @@ class BottomSheet extends FrameLayout
             boolean alwaysFullWidth,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             int appHeaderHeight,
-            int bottomMargin,
+            int bottomControlsOffset,
             InsetObserver insetObserver) {
         mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
@@ -392,7 +393,8 @@ class BottomSheet extends FrameLayout
         mSheetBackground = findViewById(R.id.background);
         mShadowLayer = findViewById(R.id.shadow_layer);
         onAppHeaderHeightChanged(appHeaderHeight);
-        setBottomMargin(bottomMargin);
+        mBottomControlsOffset = bottomControlsOffset;
+        setBottomMargin(bottomControlsOffset);
 
         mToolbarHolder = findViewById(R.id.bottom_sheet_toolbar_container);
         mToolbarHolder.setBottomSheet(this);
@@ -585,7 +587,6 @@ class BottomSheet extends FrameLayout
             resetCachedKeyboardState();
         }
 
-
         mPreviousScreenHeight = decorHeight;
     }
 
@@ -643,7 +644,8 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMinOffsetPx() {
-        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mContainerHeight;
+        if (mContainerHeight <= 0) return 0;
+        return getSheetHeightForState(getMinSwipableSheetState());
     }
 
     /**
@@ -805,6 +807,8 @@ class BottomSheet extends FrameLayout
     private void createSettleAnimation(
             @SheetState final int targetState, @StateChangeReason final int reason) {
         mTargetState = targetState;
+        setInternalCurrentState(SheetState.SCROLLING, reason);
+
         mSettleAnimator =
                 ValueAnimator.ofFloat(getCurrentOffsetPx(), getSheetHeightForState(targetState));
         boolean isExpand = targetState == SheetState.FULL;
@@ -836,7 +840,6 @@ class BottomSheet extends FrameLayout
                     }
                 });
 
-        setInternalCurrentState(SheetState.SCROLLING, reason);
         mSettleAnimator.start();
     }
 
@@ -922,6 +925,7 @@ class BottomSheet extends FrameLayout
                 onSheetClosed(reason);
             } else if (!isSheetOpen()
                     && mTargetState != SheetState.HIDDEN
+                    && mTargetState != SheetState.PEEK
                     && getCurrentOffsetPx() > minScrollableHeight) {
                 onSheetOpened(reason);
             }
@@ -1170,7 +1174,9 @@ class BottomSheet extends FrameLayout
         mTargetState = state;
         if (getCurrentSheetContent() != null) {
             @StringRes int resId = getAccessibilityStringIdForState(state);
-            updateA11yPaneTitle(getResources().getString(resId));
+            if (resId != Resources.ID_NULL) {
+                updateA11yPaneTitle(getResources().getString(resId));
+            }
         }
 
         if (animate
@@ -1314,7 +1320,12 @@ class BottomSheet extends FrameLayout
             ensureContentDesiredHeightIsComputed();
         }
 
-        return getRatioForState(state) * getMaxContentHeight();
+        float height = getRatioForState(state) * getMaxContentHeight();
+        if (state == SheetState.PEEK) {
+            height +=
+                    Math.max(0, mBottomControlsOffset - mBottomMargin - getEdgeToEdgeBottomInset());
+        }
+        return height;
     }
 
     /**
@@ -1414,9 +1425,6 @@ class BottomSheet extends FrameLayout
         if (sheetHeight >= getMaxOffsetPx()) return SheetState.FULL;
 
         boolean isMovingDownward = yVelocity < 0;
-
-        // If velocity shouldn't affect dismissing the sheet, reverse effect on the sheet height.
-        if (isMovingDownward && !swipeToDismissEnabled()) sheetHeight -= yVelocity;
 
         // Find the two states that the sheet height is between.
         @SheetState int prevState = mScrollingStartState;
@@ -1709,19 +1717,38 @@ class BottomSheet extends FrameLayout
     }
 
     void setBottomMargin(@Px int bottomMargin) {
-        // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
-        // ensure we don't introduce subtle client regressions.
-        boolean bottomMarginChanged = mBottomMargin != bottomMargin;
+        if (mBottomMargin == bottomMargin) return;
 
+        int marginDelta = mBottomMargin - bottomMargin;
+        // Store the old inset before updating mBottomMargin (which will change the return value).
+        int oldInset = getEdgeToEdgeBottomInset();
         mBottomMargin = bottomMargin;
+
+        int insetDelta =
+                mTargetState == SheetState.HIDDEN ? 0 : oldInset - getEdgeToEdgeBottomInset();
+
+        if (mCurrentState != SheetState.HIDDEN && mCurrentState != SheetState.NONE) {
+            mCurrentOffsetPx = mCurrentOffsetPx + marginDelta + insetDelta;
+        }
+        if (mTargetState != SheetState.NONE && mSettleAnimator != null) {
+            int targetState = mTargetState;
+            cancelAnimation();
+            setSheetState(targetState, false);
+        } else {
+            cancelAnimation();
+        }
+
         MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
         layoutParams.bottomMargin = mBottomMargin;
         mSheetContainer.setLayoutParams(layoutParams);
 
-        if (!bottomMarginChanged) return;
         for (BottomSheetObserver obs : mObservers) {
             obs.onContainerBottomMarginChanged(bottomMargin);
         }
+    }
+
+    void setBottomControlsOffset(int bottomControlsOffset) {
+        mBottomControlsOffset = bottomControlsOffset;
     }
 
     void onSheetBackgroundColorOverrideChanged() {
