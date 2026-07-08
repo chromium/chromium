@@ -51,6 +51,8 @@ constexpr std::string_view kUiaClientProcessWebContentsHistogram =
     "Accessibility.WinUIA.ClientProcess.WebContents";
 constexpr std::string_view kUiaClientDisconnectedHistogram =
     "Accessibility.WinUIA.ClientDisconnected";
+constexpr ui::AXMode kTrackedUiaClientProcessModes(ui::AXMode::kNativeAPIs |
+                                                   ui::AXMode::kWebContents);
 
 enum class AccessibilityTarget {
   kStickyKeys,
@@ -73,9 +75,20 @@ void RecordUiaClientProcesses(
   }
 }
 
+bool ShouldRecordUiaClientProcessHistogramsForModeChange(ui::AXMode old_mode,
+                                                         ui::AXMode new_mode) {
+  return !(
+      ((new_mode & ~old_mode) & kTrackedUiaClientProcessModes).is_mode_off());
+}
+
 void QueryAndRecordUiaClientProcessHistogramsForModeChange(
     ui::AXMode old_mode,
     ui::AXMode new_mode) {
+  if (!ShouldRecordUiaClientProcessHistogramsForModeChange(old_mode,
+                                                           new_mode)) {
+    return;
+  }
+
   std::optional<ui::UiaClientInfoSource> client_info_source =
       ui::UiaClientInfoSource::Create();
   if (!client_info_source) {
@@ -89,6 +102,9 @@ void QueryAndRecordUiaClientProcessHistogramsForModeChange(
 void RecordUiaClientConnection(
     const std::string& process_name,
     ui::UiaClientInfoSource::ConnectionState connection_state) {
+  // The UiaClientInfoSource that registers this callback is created lazily,
+  // only once kNativeAPIs or kWebContents is enabled, to avoid loading
+  // UIAutomationCore.dll at startup. Disconnects before then aren't recorded.
   if (connection_state ==
       ui::UiaClientInfoSource::ConnectionState::kDisconnected) {
     internal::RecordUiaClientDisconnectedHistogram(process_name);
@@ -112,13 +128,12 @@ void RecordUiaClientProcessHistogramsForModeChange(
     ui::AXMode old_mode,
     ui::AXMode new_mode,
     std::vector<std::string> process_names) {
-  ui::AXMode newly_enabled_mode = new_mode & ~old_mode;
-  constexpr ui::AXMode kTrackedUiaClientProcessModes(ui::AXMode::kNativeAPIs |
-                                                     ui::AXMode::kWebContents);
-  if ((newly_enabled_mode & kTrackedUiaClientProcessModes).is_mode_off()) {
+  if (!ShouldRecordUiaClientProcessHistogramsForModeChange(old_mode,
+                                                           new_mode)) {
     return;
   }
 
+  ui::AXMode newly_enabled_mode = new_mode & ~old_mode;
   base::flat_set<std::string> unique_process_names(std::move(process_names));
   if (unique_process_names.empty()) {
     return;
@@ -428,6 +443,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
  private:
   void OnDiscoveredAssistiveTech(
       const std::vector<AssistiveTechInfo>& discovered_ats);
+  void MaybeCreateUiaClientInfoSource(ui::AXMode new_mode);
 
   base::CallbackListSubscription hwnd_subscription_;
 
@@ -446,15 +462,28 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&OnWndProc));
-
-    uia_client_info_source_ = ui::UiaClientInfoSource::Create(
-        base::BindRepeating(&RecordUiaClientConnection));
   }
+}
+
+void BrowserAccessibilityStateImplWin::MaybeCreateUiaClientInfoSource(
+    ui::AXMode new_mode) {
+  if (uia_client_info_source_ ||
+      (new_mode & kTrackedUiaClientProcessModes).is_mode_off()) {
+    return;
+  }
+
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    return;
+  }
+
+  uia_client_info_source_ = ui::UiaClientInfoSource::Create(
+      base::BindRepeating(&RecordUiaClientConnection));
 }
 
 void BrowserAccessibilityStateImplWin::RecordPlatformClientHistograms(
     ui::AXMode old_mode,
     ui::AXMode new_mode) {
+  MaybeCreateUiaClientInfoSource(new_mode);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&QueryAndRecordUiaClientProcessHistogramsForModeChange,
