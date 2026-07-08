@@ -12,6 +12,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -300,7 +301,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mFullyOpened = false;
 
         if (mWebContents != null) {
-            mWebContents.destroy();
+            final WebContents webContentsToDestroy = mWebContents;
+            ThreadUtils.postOnUiThread(() -> webContentsToDestroy.destroy());
             mWebContents = null;
             mContentView = null;
         }
