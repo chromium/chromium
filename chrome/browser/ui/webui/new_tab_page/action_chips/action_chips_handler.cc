@@ -192,22 +192,6 @@ void ActionChipsHandler::SetActionChipsVisibility(bool is_visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, is_visible);
 }
 
-void ActionChipsHandler::NotifyActionChipClicked() {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!web_ui_ || !web_ui_->GetWebContents()) {
-    return;
-  }
-  auto* user_education_interface =
-      BrowserUserEducationInterface::MaybeGetForWebUiContents(
-          web_ui_->GetWebContents());
-  if (!user_education_interface) {
-    return;
-  }
-  user_education_interface->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
 
 void ActionChipsHandler::SendActionChipsToUi(base::TimeTicks start_time,
                                              std::vector<ActionChipPtr> chips) {

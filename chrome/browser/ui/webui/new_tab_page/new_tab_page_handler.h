@@ -172,6 +172,7 @@ class NewTabPageHandler
   void CanShowRealboxContextMenuAnimation(
       CanShowRealboxContextMenuAnimationCallback callback) override;
   void RecordRealboxContextMenuAnimationImpression() override;
+  void OnContextualSearchIPHEngaged() override;
 
  private:
   // ui::NativeThemeObserver:

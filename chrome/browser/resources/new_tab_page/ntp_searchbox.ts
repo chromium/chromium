@@ -665,6 +665,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected onContextMenuEntrypointClick_() {
     this.pageHandler().activateMetricsFunnel('PlusButton');
+    this.dispatchEvent(new Event('context-menu-entrypoint-click'));
   }
 
   protected onContextMenuEntrypointHover_() {

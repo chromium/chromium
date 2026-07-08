@@ -285,6 +285,8 @@ interface PageHandler {
   CanShowRealboxContextMenuAnimation() => (bool can_show);
   // Records that the Realbox "+" context menu button animation was shown.
   RecordRealboxContextMenuAnimationImpression();
+  // Records that the user engaged with the contextual search IPH.
+  OnContextualSearchIPHEngaged();
 };
 
 // WebUI-side handler for requests from the browser.

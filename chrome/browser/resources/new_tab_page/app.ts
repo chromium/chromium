@@ -970,6 +970,7 @@ export class AppElement extends AppElementBase {
   }
 
   protected onActionChipClick_(e: CustomEvent<ComposeboxState>) {
+    this.pageHandler_.onContextualSearchIPHEngaged();
     this.onOpenComposebox_(e);
   }
 
@@ -977,6 +978,10 @@ export class AppElement extends AppElementBase {
     this.composeboxState_ = e.detail;
 
     this.toggleComposebox_();
+  }
+
+  protected onContextMenuEntrypointClick_() {
+    this.pageHandler_.onContextualSearchIPHEngaged();
   }
 
   protected toggleComposebox_() {
