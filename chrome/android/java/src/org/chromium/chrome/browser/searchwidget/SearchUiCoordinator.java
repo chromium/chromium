@@ -170,6 +170,12 @@ public class SearchUiCoordinator {
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         setColorScheme(mLocationBarDataProvider.isIncognitoBranded());
+
+        // The native initialization may have already finished before this coordinator was
+        // initialized. Finish native initialization for the LocationBarCoordinator in that case.
+        if (lifecycleDispatcher.isNativeInitializationFinished()) {
+            mLocationBarCoordinator.onFinishNativeInitialization();
+        }
     }
 
     /** Destroys the coordinator and its associated underlying components. */

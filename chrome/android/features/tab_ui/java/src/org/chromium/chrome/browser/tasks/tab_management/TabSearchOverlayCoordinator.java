@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +20,16 @@ import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
@@ -38,7 +46,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -177,6 +184,8 @@ public class TabSearchOverlayCoordinator {
                     }
                 };
 
+        // Omnibox action suggestions (such as action chips or action buttons) are not supported
+        // or used in Tab Search, so these action delegate callbacks are stubbed out.
         OmniboxActionDelegateImpl omniboxActionDelegate =
                 new OmniboxActionDelegateImpl(
                         mActivity,
@@ -184,13 +193,10 @@ public class TabSearchOverlayCoordinator {
                             TabModelSelector selector = mTabModelSelectorSupplier.get();
                             return selector != null ? selector.getCurrentTab() : null;
                         },
-                        url ->
-                                loadUrl(
-                                        new OmniboxLoadUrlParams.Builder(url, PageTransition.TYPED)
-                                                .build(),
-                                        false),
-                        CallbackUtils.emptyRunnable(),
-                        CallbackUtils.emptyRunnable(),
+                        /* openUrlInExistingTabElseNewTabCb= */ CallbackUtils.emptyCallback()
+                                ::onResult,
+                        /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
+                        /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
                         /* openQuickDeleteCb= */ null,
                         TabWindowManagerSingleton::getInstance,
                         this::bringTabToFront);
@@ -206,7 +212,7 @@ public class TabSearchOverlayCoordinator {
                 mTabModelSelectorSupplier,
                 this::loadUrl,
                 backKeyBehaviorDelegate,
-                CallbackUtils.emptyCallback(),
+                this::bringTabGroupToFront,
                 omniboxActionDelegate,
                 /* backPressManager= */ null,
                 embedder,
@@ -221,13 +227,37 @@ public class TabSearchOverlayCoordinator {
     }
 
     private boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
-        // TODO(crbug.com/527090329): Implement URL loading when ready.
-        return false;
+        if (params.url == null) return false;
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.url));
+        intent.setComponent(
+                new ComponentName(mActivity.getApplicationContext(), ChromeLauncherActivity.class));
+
+        // If an existing open tab already matches this query, reuse it.
+        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+
+        // Include support for incognito mode.
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isIncognito);
+        if (isIncognito) {
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
+        }
+
+        // Add trusted intent extras so Chrome trusts the incognito launch request
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(mActivity, intent);
+
+        hide();
+        return true;
     }
 
     private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {
         SearchActivityUtils.bringTabToFront(
                 mActivity, mTabModelSelectorSupplier.get(), tabWindowInfo, url, this::hide);
+    }
+
+    private void bringTabGroupToFront(String tabGroupId) {
+        IntentHandler.bringTabGroupToFront(tabGroupId);
+        hide();
     }
 
     /**
