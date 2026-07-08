@@ -7,7 +7,7 @@ aXe violations: []
 
 Running: testNewLocationError
 Invalidating the Location name input
-Error message: Location name cannot be empty
+Error message: Location name can’t be empty
 Invalidating the Latitude input
 Error message: Latitude must be a number
 Invalidating the Longitude input

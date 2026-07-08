@@ -85,6 +85,9 @@ crbug.com/457388389 http/tests/devtools/sources/debugger-pause/debugger-change-v
 crbug.com/457388389 http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure Pass Timeout ]
 crbug.com/457388389 http/tests/devtools/sources/debugger/debugger-scope-resolve-this.js [ Failure Pass Timeout ]
 
+# Temporary disable for devtools-frontend change crrev.com/c/8064957
+http/tests/devtools/a11y-axe-core/settings/locations-a11y-test.js [ Failure Pass Timeout ]
+
 # Disable layout tests to land crrev.com/c/7969697
 http/tests/devtools/security/blank-origins-not-shown.js [ Failure Pass ]
 http/tests/devtools/security/failed-request.js [ Failure Pass ]
