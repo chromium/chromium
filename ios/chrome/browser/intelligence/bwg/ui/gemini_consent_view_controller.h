@@ -9,13 +9,16 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_view_controller_protocol.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
 @protocol GeminiConsentMutator;
 
 // Gemini consent View Controller (VC).
 @interface GeminiConsentViewController
-    : UIViewController <GeminiFirstRunViewControllerProtocol>
+    : UIViewController <GeminiFirstRunViewControllerProtocol,
+                        GeminiFirstRunStep>
 
 // Initializer with the layout configuration.
 - (instancetype)initWithConfiguration:(GeminiConsentConfiguration*)configuration
@@ -31,6 +34,12 @@
 
 // The delegate to handle height changes and accordion toggles.
 @property(nonatomic, weak) id<GeminiConsentViewControllerDelegate> delegate;
+
+// The step delegate for the parent PageViewController.
+@property(nonatomic, weak) id<GeminiFirstRunStepDelegate> stepDelegate;
+
+// The Gemini First Run type being displayed.
+@property(nonatomic, assign) GeminiFirstRunType firstRunType;
 
 @end
 

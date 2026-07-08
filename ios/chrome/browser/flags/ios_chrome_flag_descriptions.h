@@ -851,6 +851,10 @@ inline constexpr char kGeminiContextualSuggestionsCuesName[] =
 inline constexpr char kGeminiContextualSuggestionsCuesDescription[] =
     "Enables Gemini contextual suggestions cues framework.";
 
+inline constexpr char kGeminiFRERefactorName[] = "Gemini FRE Refactor";
+inline constexpr char kGeminiFRERefactorDescription[] =
+    "Enables the refactored Gemini First Run Experience UI.";
+
 inline constexpr char kGeminiImageRemixToolName[] = "Gemini Image Remix Tool";
 inline constexpr char kGeminiImageRemixToolDescription[] =
     "Enables the image remix tool in the Gemini floaty.";

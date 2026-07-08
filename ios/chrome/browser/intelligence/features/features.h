@@ -434,4 +434,10 @@ BASE_DECLARE_FEATURE(kGeminiQuizzes);
 // Returns true if the GeminiQuizzes feature is enabled.
 bool IsGeminiQuizzesEnabled();
 
+// Feature flag to enable the Gemini FRE UI refactoring.
+BASE_DECLARE_FEATURE(kGeminiFRERefactor);
+
+// Helper function to check if `kGeminiFRERefactor` is enabled.
+bool IsGeminiFRERefactorEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

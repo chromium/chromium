@@ -857,3 +857,9 @@ BASE_FEATURE(kGeminiQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiQuizzesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiQuizzes);
 }
+
+BASE_FEATURE(kGeminiFRERefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiFRERefactorEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiFRERefactor);
+}
