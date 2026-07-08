@@ -27,7 +27,6 @@ static_library("external_data") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",

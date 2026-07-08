@@ -21,6 +21,8 @@
 #include "components/user_manager/user_manager.h"
 
 class AccountId;
+class PrefService;
+
 namespace policy {
 
 // Helper for implementing policies referencing external data: This class
@@ -91,7 +93,8 @@ class CloudExternalDataPolicyObserver
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
 
-  static AccountId GetAccountId(const std::string& user_id);
+  static AccountId GetAccountId(PrefService& local_state,
+                                const std::string& user_id);
 
  private:
   // Helper class that observes |policy_| for a logged-in user.

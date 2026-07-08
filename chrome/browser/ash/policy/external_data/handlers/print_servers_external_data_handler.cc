@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
@@ -15,27 +16,30 @@ namespace policy {
 namespace {
 
 base::WeakPtr<ash::PrintServersProvider> GetPrintServersProvider(
+    PrefService& local_state,
     const std::string& user_id) {
   return ash::PrintServersProviderFactory::Get()->GetForAccountId(
-      CloudExternalDataPolicyObserver::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(local_state, user_id));
 }
 
 }  // namespace
 
-PrintServersExternalDataHandler::PrintServersExternalDataHandler() = default;
+PrintServersExternalDataHandler::PrintServersExternalDataHandler(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 PrintServersExternalDataHandler::~PrintServersExternalDataHandler() = default;
 
 void PrintServersExternalDataHandler::OnExternalDataSet(
     const std::string& policy,
     const std::string& user_id) {
-  GetPrintServersProvider(user_id)->ClearData();
+  GetPrintServersProvider(local_state_.get(), user_id)->ClearData();
 }
 
 void PrintServersExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  GetPrintServersProvider(user_id)->ClearData();
+  GetPrintServersProvider(local_state_.get(), user_id)->ClearData();
 }
 
 void PrintServersExternalDataHandler::OnExternalDataFetched(
@@ -43,7 +47,8 @@ void PrintServersExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  GetPrintServersProvider(user_id)->SetData(std::move(data));
+  GetPrintServersProvider(local_state_.get(), user_id)
+      ->SetData(std::move(data));
 }
 
 void PrintServersExternalDataHandler::RemoveForAccountId(

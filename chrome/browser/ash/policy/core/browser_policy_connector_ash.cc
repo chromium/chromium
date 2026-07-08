@@ -577,6 +577,11 @@ void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void BrowserPolicyConnectorAsh::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
+  // TODO(crbug.com/404133022): Avoid depending on g_browser_process.
+  // Currently, `local_state_` may be null in unit tests because Init() is not
+  // always called.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   if (device_weekly_scheduled_suspend_controller_) {
     device_weekly_scheduled_suspend_controller_->InitUserManagerObservation(
         user_manager);
@@ -586,28 +591,32 @@ void BrowserPolicyConnectorAsh::OnUserManagerCreated(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings, device_local_account_policy_service_.get(),
           policy::key::kUserAvatarImage, user_manager,
-          std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
+          std::make_unique<policy::UserAvatarImageExternalDataHandler>(
+              &local_state)));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings, device_local_account_policy_service_.get(),
           policy::key::kWallpaperImage, user_manager,
-          std::make_unique<policy::WallpaperImageExternalDataHandler>()));
+          std::make_unique<policy::WallpaperImageExternalDataHandler>(
+              &local_state)));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings, device_local_account_policy_service_.get(),
           policy::key::kPrintersBulkConfiguration, user_manager,
-          std::make_unique<policy::PrintersExternalDataHandler>()));
+          std::make_unique<policy::PrintersExternalDataHandler>(&local_state)));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings, device_local_account_policy_service_.get(),
           policy::key::kExternalPrintServers, user_manager,
-          std::make_unique<policy::PrintServersExternalDataHandler>()));
+          std::make_unique<policy::PrintServersExternalDataHandler>(
+              &local_state)));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings, device_local_account_policy_service_.get(),
           policy::key::kPreconfiguredDeskTemplates, user_manager,
           std::make_unique<
-              policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
+              policy::PreconfiguredDeskTemplatesExternalDataHandler>(
+              &local_state)));
   for (auto& observer : cloud_external_data_policy_observers_) {
     observer->Init();
   }

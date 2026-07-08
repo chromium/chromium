@@ -6,13 +6,15 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 
 namespace policy {
 
-WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler() =
-    default;
+WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 WallpaperImageExternalDataHandler::~WallpaperImageExternalDataHandler() =
     default;
@@ -21,7 +23,8 @@ void WallpaperImageExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
   WallpaperControllerClientImpl::Get()->RemovePolicyWallpaper(
-      CloudExternalDataPolicyObserver::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(local_state_.get(),
+                                                    user_id));
 }
 
 void WallpaperImageExternalDataHandler::OnExternalDataFetched(
@@ -30,7 +33,9 @@ void WallpaperImageExternalDataHandler::OnExternalDataFetched(
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
   WallpaperControllerClientImpl::Get()->SetPolicyWallpaper(
-      CloudExternalDataPolicyObserver::GetAccountId(user_id), std::move(data));
+      CloudExternalDataPolicyObserver::GetAccountId(local_state_.get(),
+                                                    user_id),
+      std::move(data));
 }
 
 void WallpaperImageExternalDataHandler::RemoveForAccountId(

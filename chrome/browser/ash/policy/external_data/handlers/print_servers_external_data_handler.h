@@ -8,7 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
+
+class PrefService;
 
 namespace policy {
 
@@ -17,7 +20,8 @@ namespace policy {
 class PrintServersExternalDataHandler
     : public CloudExternalDataPolicyObserver::Delegate {
  public:
-  PrintServersExternalDataHandler();
+  // `local_state` must not be nullptr and must outlive this object.
+  explicit PrintServersExternalDataHandler(PrefService* local_state);
   PrintServersExternalDataHandler(const PrintServersExternalDataHandler&) =
       delete;
   PrintServersExternalDataHandler& operator=(
@@ -34,6 +38,9 @@ class PrintServersExternalDataHandler
                              std::unique_ptr<std::string> data,
                              const base::FilePath& file_path) override;
   void RemoveForAccountId(const AccountId& account_id) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace policy

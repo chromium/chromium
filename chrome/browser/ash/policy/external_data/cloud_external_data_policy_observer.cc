@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -232,8 +231,9 @@ void CloudExternalDataPolicyObserver::OnDeviceLocalAccountsChanged() {
 
 // static
 AccountId CloudExternalDataPolicyObserver::GetAccountId(
+    PrefService& local_state,
     const std::string& user_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   return known_user.GetAccountId(user_id, /*id=*/std::string(),
                                  AccountType::UNKNOWN);
 }

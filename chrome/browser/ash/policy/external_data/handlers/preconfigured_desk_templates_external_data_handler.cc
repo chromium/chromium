@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 
 namespace policy {
 
 PreconfiguredDeskTemplatesExternalDataHandler::
-    PreconfiguredDeskTemplatesExternalDataHandler() = default;
+    PreconfiguredDeskTemplatesExternalDataHandler(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 PreconfiguredDeskTemplatesExternalDataHandler::
     ~PreconfiguredDeskTemplatesExternalDataHandler() = default;
@@ -22,7 +24,8 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataCleared(
   DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->RemovePolicyPreconfiguredTemplate(
-        CloudExternalDataPolicyObserver::GetAccountId(user_id));
+        CloudExternalDataPolicyObserver::GetAccountId(local_state_.get(),
+                                                      user_id));
   }
 }
 
@@ -34,7 +37,8 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataFetched(
   DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->SetPolicyPreconfiguredTemplate(
-        CloudExternalDataPolicyObserver::GetAccountId(user_id),
+        CloudExternalDataPolicyObserver::GetAccountId(local_state_.get(),
+                                                      user_id),
         std::move(data));
   }
 }

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 
@@ -13,15 +14,17 @@ namespace policy {
 
 namespace {
 
-ash::UserImageManagerImpl* GetUserImageManager(const std::string& user_id) {
+ash::UserImageManagerImpl* GetUserImageManager(PrefService& local_state,
+                                               const std::string& user_id) {
   return ash::UserImageManagerRegistry::Get()->GetManager(
-      CloudExternalDataPolicyObserver::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(local_state, user_id));
 }
 
 }  // namespace
 
-UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler() =
-    default;
+UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 UserAvatarImageExternalDataHandler::~UserAvatarImageExternalDataHandler() =
     default;
@@ -29,13 +32,14 @@ UserAvatarImageExternalDataHandler::~UserAvatarImageExternalDataHandler() =
 void UserAvatarImageExternalDataHandler::OnExternalDataSet(
     const std::string& policy,
     const std::string& user_id) {
-  GetUserImageManager(user_id)->OnExternalDataSet(policy);
+  GetUserImageManager(local_state_.get(), user_id)->OnExternalDataSet(policy);
 }
 
 void UserAvatarImageExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  GetUserImageManager(user_id)->OnExternalDataCleared(policy);
+  GetUserImageManager(local_state_.get(), user_id)
+      ->OnExternalDataCleared(policy);
 }
 
 void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
@@ -43,7 +47,8 @@ void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  GetUserImageManager(user_id)->OnExternalDataFetched(policy, std::move(data));
+  GetUserImageManager(local_state_.get(), user_id)
+      ->OnExternalDataFetched(policy, std::move(data));
 }
 
 void UserAvatarImageExternalDataHandler::RemoveForAccountId(

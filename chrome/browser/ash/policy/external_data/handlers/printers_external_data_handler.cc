@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
@@ -15,25 +16,28 @@ namespace policy {
 namespace {
 
 base::WeakPtr<ash::BulkPrintersCalculator> GetBulkPrintersCalculator(
+    PrefService& local_state,
     const std::string& user_id) {
   auto* factory = ash::BulkPrintersCalculatorFactory::Get();
   if (!factory) {
     return nullptr;
   }
   return factory->GetForAccountId(
-      CloudExternalDataPolicyObserver::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(local_state, user_id));
 }
 
 }  // namespace
 
-PrintersExternalDataHandler::PrintersExternalDataHandler() = default;
+PrintersExternalDataHandler::PrintersExternalDataHandler(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 PrintersExternalDataHandler::~PrintersExternalDataHandler() = default;
 
 void PrintersExternalDataHandler::OnExternalDataSet(
     const std::string& policy,
     const std::string& user_id) {
-  auto calculator = GetBulkPrintersCalculator(user_id);
+  auto calculator = GetBulkPrintersCalculator(local_state_.get(), user_id);
   if (calculator) {
     calculator->ClearData();
   }
@@ -42,7 +46,7 @@ void PrintersExternalDataHandler::OnExternalDataSet(
 void PrintersExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  auto calculator = GetBulkPrintersCalculator(user_id);
+  auto calculator = GetBulkPrintersCalculator(local_state_.get(), user_id);
   if (calculator) {
     calculator->ClearData();
   }
@@ -53,7 +57,7 @@ void PrintersExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  auto calculator = GetBulkPrintersCalculator(user_id);
+  auto calculator = GetBulkPrintersCalculator(local_state_.get(), user_id);
   if (calculator) {
     calculator->SetData(std::move(data));
   }
