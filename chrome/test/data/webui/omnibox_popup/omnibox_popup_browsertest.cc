@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupAimTest, App) {
 }
 
 // TODO(crbug.com/519692372): Investigate why this fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/532163956): Flaky on Linux Debug.
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_Composebox DISABLED_Composebox
 #else
 #define MAYBE_Composebox Composebox
