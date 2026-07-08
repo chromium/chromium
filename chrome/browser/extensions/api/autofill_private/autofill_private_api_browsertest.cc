@@ -49,12 +49,14 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -854,6 +856,45 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiAutofillAiMetricsTest,
       autofill::EntityTypeName::kPassport, 1);
   histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityDeletedFromSettings",
                                       autofill::EntityTypeName::kPassport, 1);
+}
+
+class AutofillPrivateApiBrowserTestWithWalletPassBranding
+    : public AutofillPrivateApiBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiWalletPassBranding2026};
+};
+
+// Tests that the add entity type string is branded when the
+// kAutofillAiWalletPassBranding2026 feature is enabled and
+// falls back to the unbranded string otherwise.
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTestWithWalletPassBranding,
+                       EntityTypeToPrivateApiEntityType_Branding) {
+  autofill::EntityType entity_type(autofill::EntityTypeName::kDriversLicense);
+
+  // When supports_wallet_storage is false, should use unbranded string.
+  extensions::api::autofill_private::EntityType api_type_unbranded =
+      extensions::autofill_ai_util::EntityTypeToPrivateApiEntityType(
+          entity_type, /*supports_wallet_storage=*/false);
+  EXPECT_EQ(
+      api_type_unbranded.add_entity_type_string,
+      l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY));
+
+  // When supports_wallet_storage is true, should use branded string.
+  extensions::api::autofill_private::EntityType api_type_branded =
+      extensions::autofill_ai_util::EntityTypeToPrivateApiEntityType(
+          entity_type, /*supports_wallet_storage=*/true);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(
+      api_type_branded.add_entity_type_string,
+      l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED));
+#else
+  EXPECT_EQ(
+      api_type_branded.add_entity_type_string,
+      l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY));
+#endif
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \

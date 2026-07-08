@@ -34,7 +34,10 @@ EntityTypeResources GetResourcesForType(EntityTypeName type_name) {
       return {
           .section_title_id = IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE,
           .add_entity_id = IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY,
-          .add_entity_branded_id = IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+          .add_entity_branded_id = IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED,
+#endif
           .edit_entity_id = IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY,
           .delete_entity_id = IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY,
       };

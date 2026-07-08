@@ -12,13 +12,16 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -284,6 +287,24 @@ TEST_F(AutofillAiWalletUtilsTest, RecordWalletPrivatePassConsent) {
   expected_consent.mutable_description_grd_ids()->Add(1);
   expected_consent.set_confirmation_grd_id(2);
   EXPECT_THAT(consent, base::test::EqualsProto(expected_consent));
+}
+
+// Tests that the branded add entity type string is used when the
+// kAutofillAiWalletPassBranding2026 feature is enabled and falls back to the
+// unbranded string otherwise.
+TEST_F(AutofillAiWalletUtilsTest, GetAddEntityTypeStringForI18n_Branded) {
+  EXPECT_EQ(
+      GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kDriversLicense),
+                                    /*is_wallet_branded=*/false),
+      l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(
+      GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kDriversLicense),
+                                    /*is_wallet_branded=*/true),
+      l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED));
+#endif
 }
 
 }  // namespace
