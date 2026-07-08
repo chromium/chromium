@@ -352,7 +352,7 @@ void WaylandToplevelWindow::Activate() {
   if (connection()->xdg_activation()) {
     if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
-    } else if (!pending_configure_activation_token_.has_value()) {
+    } else {
       connection()->xdg_activation()->RequestNewToken(
           base::BindOnce(&WaylandToplevelWindow::ActivateWithToken,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -659,9 +659,6 @@ bool WaylandToplevelWindow::OnInitialize(
   state->window_state = PlatformWindowState::kNormal;
 
   app_id_ = properties.wayland_app_id;
-  if (!properties.startup_id.empty()) {
-    pending_configure_activation_token_ = properties.startup_id;
-  }
   SetWaylandToplevelExtension(this, this);
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));

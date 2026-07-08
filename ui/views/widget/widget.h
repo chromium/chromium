@@ -499,9 +499,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // Only used by Wayland, for root level windows.
     std::string wayland_app_id;
-    // The startup ID (or XDG activation token) used to associate the window
-    // with the launch event that created it. Used for both X11 and Wayland.
-    std::string startup_id;
 #endif  // BUILDFLAG(IS_LINUX)
 
     // If true then the widget uses software compositing.

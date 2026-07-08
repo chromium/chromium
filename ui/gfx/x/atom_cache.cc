@@ -114,7 +114,6 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "_NET_ACTIVE_WINDOW",
     "_NET_CURRENT_DESKTOP",
     "_NET_FRAME_EXTENTS",
-    "_NET_STARTUP_ID",
     "_NET_STARTUP_INFO",
     "_NET_STARTUP_INFO_BEGIN",
     "_NET_SUPPORTED",

@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "base/nix/xdg_util.h"
 #include "net/base/network_interfaces.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -271,17 +270,6 @@ base::WeakPtr<X11Window> X11Window::GetWeakPtr() {
 
 void X11Window::Initialize(PlatformWindowInitProperties properties) {
   CreateXWindow(properties);
-
-  std::string startup_id = properties.startup_id;
-  if (startup_id.empty()) {
-    if (auto token = base::nix::TakeXdgActivationToken()) {
-      startup_id = token.value();
-    }
-  }
-  if (!startup_id.empty()) {
-    connection_->SetStringProperty(xwindow_, x11::GetAtom("_NET_STARTUP_ID"),
-                                   x11::Atom::STRING, startup_id);
-  }
 
   // It can be a status icon window.  If it fails to initialize, don't provide
   // it with a native window handle, close ourselves and let the client destroy
@@ -858,11 +846,6 @@ PlatformWindowState X11Window::GetPlatformWindowState() const {
 void X11Window::Activate() {
   if (!IsVisible() || !activatable_) {
     return;
-  }
-
-  if (auto token = base::nix::TakeXdgActivationToken()) {
-    connection_->SetStringProperty(xwindow_, x11::GetAtom("_NET_STARTUP_ID"),
-                                   x11::Atom::STRING, token.value());
   }
 
   BeforeActivationStateChanged();
