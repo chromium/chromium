@@ -7,10 +7,12 @@
 #include <optional>
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/containers/extend.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -27,8 +29,10 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -371,6 +375,9 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     IwaIdentityValidator::CreateSingleton();
+    ChromeIwaClient::CreateSingleton();
+    provider_reset_ = IwaRuntimeDataProvider::SetInstanceForTesting(
+        &IwaKeyDistributionInfoProvider::GetInstanceForTesting());
   }
 
   base::FilePath WriteSignedWebBundleToDisk(
@@ -385,6 +392,7 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  std::optional<base::AutoReset<IwaRuntimeDataProvider*>> provider_reset_;
 };
 
 TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
@@ -540,7 +548,7 @@ class IwaKeyDistributionInfoProviderReadinessTest
         test::SetOnComponentUpdatedForTesting(future.GetRepeatingCallback());
 
     base::MakeRefCounted<component_updater::ComponentInstaller>(
-        std::make_unique<Component>())
+        std::make_unique<Component>(base::NullCallback()))
         ->Register(&cus_, base::DoNothing());
 
     return future.Take();

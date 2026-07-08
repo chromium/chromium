@@ -60,6 +60,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user.h"

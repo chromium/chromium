@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
 namespace web_app::test {

@@ -14,6 +14,7 @@ include_rules = [
   "+components/plus_addresses/core/common",
   "+components/prefs",
   "+components/private_verification_tokens/common",
+  "+components/webapps/isolated_web_apps/key_distribution",
   "+mojo/public/cpp/base",
   "+net/base",
   "+services/network/public",
