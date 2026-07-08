@@ -3513,6 +3513,23 @@ TEST(XFormTest, MapRect) {
 
   auto rotate = Transform::Make90degRotation();
   EXPECT_EQ(RectF(-6.5f, 1.25f, 4.f, 3.75f), rotate.MapRect(rect));
+
+  // A scale+translation stored as a full matrix (e.g. from Affine()) must map
+  // identically to the same transform stored as an AxisTransform2d.
+  auto scale_translate = Transform::Affine(2, 0, 0, 4, 3, 7);
+  auto axis = Transform::MakeScale(2, 4);
+  axis.PostTranslate(3, 7);
+  EXPECT_EQ(RectF(5.5f, 17.f, 7.5f, 16.f), axis.MapRect(rect));
+  EXPECT_EQ(RectF(5.5f, 17.f, 7.5f, 16.f), scale_translate.MapRect(rect));
+
+  // A negative scale stored as a full matrix fails the fast path's
+  // non-negative scale check and must fall back to the general path.
+  auto negative_scale_full = Transform::Affine(-1, 0, 0, -2, 0, 0);
+  EXPECT_EQ(RectF(-5.f, -13.f, 3.75f, 8.f), negative_scale_full.MapRect(rect));
+
+  auto rotate_90 = Transform::Make90degRotation();
+  EXPECT_EQ(RectF(-12.f, 2.f, 8.f, 6.f),
+            rotate_90.MapRect(RectF(2.f, 4.f, 6.f, 8.f)));
 }
 
 TEST(XFormTest, MapIntRect) {
@@ -3542,6 +3559,25 @@ TEST(XFormTest, TransformRectReverse) {
 
   auto rotate = Transform::Make90degRotation();
   EXPECT_EQ(RectF(2.5f, -5.f, 4.f, 3.75f), rotate.InverseMapRect(rect));
+
+  // A scale+translation stored as a full matrix must inverse-map identically to
+  // the same transform stored as an AxisTransform2d.
+  auto scale_translate = Transform::Affine(2, 0, 0, 4, 3, 7);
+  auto axis = Transform::MakeScale(2, 4);
+  axis.PostTranslate(3, 7);
+  EXPECT_EQ(RectF(-0.875f, -1.125f, 1.875f, 1.f), axis.InverseMapRect(rect));
+  EXPECT_EQ(RectF(-0.875f, -1.125f, 1.875f, 1.f),
+            scale_translate.InverseMapRect(rect));
+
+  // Same as above: a negative scale stored as a full matrix falls back to the
+  // general path.
+  auto negative_scale_full = Transform::Affine(-1, 0, 0, -2, 0, 0);
+  EXPECT_EQ(RectF(-5.f, -3.25f, 3.75f, 2.f),
+            negative_scale_full.InverseMapRect(rect));
+
+  auto rotate_90 = Transform::Make90degRotation();
+  EXPECT_EQ(RectF(4.f, -8.f, 8.f, 6.f),
+            rotate_90.InverseMapRect(RectF(2.f, 4.f, 6.f, 8.f)));
 }
 
 TEST(XFormTest, InverseMapIntRect) {
