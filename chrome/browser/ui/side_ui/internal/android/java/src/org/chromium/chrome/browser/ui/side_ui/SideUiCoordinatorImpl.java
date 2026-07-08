@@ -63,6 +63,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     private final SideUiTransitionListener mSideUiTransitionListener =
             new SideUiTransitionListener();
 
+    private final SideUiWebContentHairlineManager mWebContentsHairlineManager;
+
     /**
      * Whether {@link #updateUiInternal} is in progress.
      *
@@ -109,9 +111,13 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         mTopMarginSupplier = topMarginSupplier;
         mTopMarginSupplier.addSyncObserver(mTopMarginObserver);
 
-        // TODO(crbug.com/515162490): Inflate and update the web content hairline.
         webContentHairlineContainerStub.setLayoutResource(
                 R.layout.side_ui_web_content_hairline_container);
+        SideUiWebContentHairlineContainer webContentHairlineContainer =
+                (SideUiWebContentHairlineContainer) webContentHairlineContainerStub.inflate();
+        mWebContentsHairlineManager =
+                new SideUiWebContentHairlineManager(
+                        /* sideUiStateProvider= */ this, webContentHairlineContainer);
 
         mActivityLifecycleDispatcher.register(this);
     }
@@ -166,6 +172,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         ThreadUtils.assertOnUiThread();
         mSideUiContainers.clear();
         mTopMarginSupplier.removeObserver(mTopMarginObserver);
+        mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
 

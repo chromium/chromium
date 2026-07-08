@@ -25,6 +25,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiObserverNotifier.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiTransitionListener.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiUpdateSpecs.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineContainer.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineManager.java",
   ]
 
   deps = [
@@ -52,9 +54,13 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.side_ui"
-  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImplTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImplTest.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineManagerTest.java",
+  ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

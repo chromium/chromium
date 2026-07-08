@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout
+<org.chromium.chrome.browser.ui.side_ui.SideUiWebContentHairlineContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/web_content_hairline_container"
@@ -23,6 +23,7 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/left_web_content_hairline"
         android:src="@drawable/vertical_hairline"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="left"
@@ -33,6 +34,7 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/right_web_content_hairline"
         android:src="@drawable/vertical_hairline"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right"
@@ -40,4 +42,4 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         tools:ignore="RtlHardcoded" />
 
-</FrameLayout>
+</org.chromium.chrome.browser.ui.side_ui.SideUiWebContentHairlineContainer>

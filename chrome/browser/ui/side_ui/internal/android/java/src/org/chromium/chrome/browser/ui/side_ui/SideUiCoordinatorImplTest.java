@@ -115,6 +115,14 @@ public class SideUiCoordinatorImplTest {
         doReturn(mLeftAnchorContainer).when(mLeftAnchorContainerStub).inflate();
         doReturn(mRightAnchorContainer).when(mRightAnchorContainerStub).inflate();
 
+        SideUiWebContentHairlineContainer webContentHairlineContainer =
+                (SideUiWebContentHairlineContainer)
+                        mTestActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.side_ui_web_content_hairline_container, null);
+        webContentHairlineContainer.setLayoutParams(new MarginLayoutParams(0, 0));
+        doReturn(webContentHairlineContainer).when(mWebContentHairlineContainerStub).inflate();
+
         // Initialize the SideUiCoordinator under test.
         mCoordinator =
                 new SideUiCoordinatorImpl(
