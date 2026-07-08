@@ -455,7 +455,8 @@ std::string DiceHeaderHelper::BuildRequestHeader(
     parts.push_back("sync_account_id=" + primary_account_gaia_id.ToString());
   }
 
-  if (base::FeatureList::IsEnabled(switches::kDiceLinkedAccounts)) {
+  if (base::FeatureList::IsEnabled(switches::kDiceHeaderVersion2) &&
+      base::FeatureList::IsEnabled(switches::kDiceLinkedAccounts)) {
     if (!primary_account_gaia_id.empty()) {
       parts.push_back("primary_account_id=" +
                       primary_account_gaia_id.ToString());
