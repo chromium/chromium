@@ -1169,6 +1169,14 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     if (isolated_process.has_value()) {
       int exit_code = 0;
       if (isolated_process->WaitForExit(&exit_code)) {
+        // A negative exit code indicates the browser crashed, however
+        // `content::RunContentProcess` treats negative return code from
+        // `BasicStartupComplete` as indicating that startup should continue, so
+        // in this case it is best to simply pass the exit code straight back to
+        // the shell by terminating immediately.
+        if (exit_code < 0) {
+          base::Process::TerminateCurrentProcessImmediately(exit_code);
+        }
         return exit_code;
       }
       return CHROME_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS;
