@@ -156,6 +156,12 @@ public class WebappLauncherActivity extends Activity {
         if (WebappActionsNotificationManager.handleNotificationAction(intent)) {
             finish();
             return;
+        } else if (intent.getAction() != null
+                && intent.getAction().startsWith(WebappActionsNotificationManager.ACTION_PREFIX)) {
+            // Catch unhandled notification intents (e.g. if the activity was garbage collected)
+            // so they do not fall through to WebAPK extraction which checks for EXTRA_URL.
+            finish();
+            return;
         }
 
         ChromeWebApkHost.init();

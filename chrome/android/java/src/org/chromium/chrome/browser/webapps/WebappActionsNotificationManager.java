@@ -47,12 +47,10 @@ import java.lang.ref.WeakReference;
  */
 @NullMarked
 public class WebappActionsNotificationManager implements PauseResumeWithNativeObserver {
-    private static final String ACTION_SHARE =
-            "org.chromium.chrome.browser.webapps.NOTIFICATION_ACTION_SHARE";
-    private static final String ACTION_OPEN_IN_CHROME =
-            "org.chromium.chrome.browser.webapps.NOTIFICATION_ACTION_OPEN_IN_CHROME";
-    private static final String ACTION_FOCUS =
-            "org.chromium.chrome.browser.webapps.NOTIFICATION_ACTION_FOCUS";
+    static final String ACTION_PREFIX = "org.chromium.chrome.browser.webapps.NOTIFICATION_ACTION_";
+    private static final String ACTION_SHARE = ACTION_PREFIX + "SHARE";
+    private static final String ACTION_OPEN_IN_CHROME = ACTION_PREFIX + "OPEN_IN_CHROME";
+    private static final String ACTION_FOCUS = ACTION_PREFIX + "FOCUS";
 
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
