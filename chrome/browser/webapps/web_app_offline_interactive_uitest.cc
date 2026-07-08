@@ -10,6 +10,7 @@
 #include "base/metrics/crc32.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -65,12 +66,9 @@ enum class PageFlagParam {
   kMaxValue = kWithoutDefaultPageFlag
 };
 
-class WebAppOfflineTest : public InProcessBrowserTest {
+class WebAppOfflineTestBase : public InProcessBrowserTest {
  public:
-  WebAppOfflineTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kWebAppInstallDialog);
-  }
+  WebAppOfflineTestBase() = default;
 
   void SetUpOnMainThread() override {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -137,13 +135,16 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
 
-class WebAppOfflinePageTest : public WebAppOfflineTest {
+class WebAppOfflinePageTest : public base::test::WithFeatureOverride,
+                              public WebAppOfflineTestBase {
  public:
+  WebAppOfflinePageTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {}
+
   void SyncHistograms() {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -166,7 +167,7 @@ class WebAppOfflinePageTest : public WebAppOfflineTest {
 // display the default offline page rather than the dino.
 // When the exact same conditions are applied with the feature flag disabled
 // expect that the default offline page is not shown.
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
 
 // When a web app with a manifest and service worker that doesn't handle being
 // offline it should display the default offline page rather than the dino.
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest,
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
                        WebAppOfflineWithEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest,
 
 // When a web app with a manifest and service worker that handles being offline
 // it should not display the default offline page.
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -214,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
 }
 
 // Default offline page icon test.
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -284,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   EXPECT_EQ(1504857296u, base::Crc32(0, image_bytes));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -311,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
               ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -344,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
               ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -371,10 +372,23 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
               ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppOfflinePageTest);
+
 class WebAppOfflineDarkModeTest
-    : public WebAppOfflineTest,
-      public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
+    : public WebAppOfflineTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, blink::mojom::PreferredColorScheme>> {
  public:
+  WebAppOfflineDarkModeTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kWebAppInstallDialog,
+                                              GetInstallDialogEnabled());
+  }
+
+  bool GetInstallDialogEnabled() const { return std::get<0>(GetParam()); }
+  blink::mojom::PreferredColorScheme GetColorScheme() const {
+    return std::get<1>(GetParam());
+  }
+
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
     InProcessBrowserTest::SetUp();
@@ -387,12 +401,12 @@ class WebAppOfflineDarkModeTest
   }
 
   void SetUpOnMainThread() override {
-    WebAppOfflineTest::SetUpOnMainThread();
+    WebAppOfflineTestBase::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS)
     // Explicitly set dark mode in ChromeOS or we can't get light mode after
     // sunset (due to dark mode auto-scheduling).
     ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(
-        GetParam() == blink::mojom::PreferredColorScheme::kDark);
+        GetColorScheme() == blink::mojom::PreferredColorScheme::kDark);
 #endif
   }
 
@@ -401,9 +415,13 @@ class WebAppOfflineDarkModeTest
     // ShellContentBrowserClient::OverrideWebPreferences() overrides the
     // prefers-color-scheme according to switches::kForceDarkMode
     // command line.
-    if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
+    if (GetColorScheme() == blink::mojom::PreferredColorScheme::kDark) {
       command_line->AppendSwitch(switches::kForceDarkMode);
+    }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Testing offline page in dark mode for a web app with a manifest and no
@@ -419,7 +437,7 @@ class WebAppOfflineDarkModeTest
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeNoServiceWorker) {
 #if BUILDFLAG(IS_WIN)
-  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
+  if (GetColorScheme() == blink::mojom::PreferredColorScheme::kLight &&
       ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
           ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
@@ -433,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
+  if (GetColorScheme() == blink::mojom::PreferredColorScheme::kDark) {
     // Expect that the default offline page is showing with dark mode colors.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -481,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
 #if BUILDFLAG(IS_WIN)
-  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
+  if (GetColorScheme() == blink::mojom::PreferredColorScheme::kLight &&
       ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
           ui::NativeTheme::PreferredColorScheme::kDark) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
@@ -494,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   StartPwaAndDisconnect(web_contents,
                         "/banners/manifest_test_page_empty_fetch_handler.html");
-  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
+  if (GetColorScheme() == blink::mojom::PreferredColorScheme::kDark) {
     // Expect that the default offline page is showing with dark mode colors.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -530,8 +548,20 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
+    All,
     WebAppOfflineDarkModeTest,
-    ::testing::Values(blink::mojom::PreferredColorScheme::kDark,
-                      blink::mojom::PreferredColorScheme::kLight));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(blink::mojom::PreferredColorScheme::kDark,
+                        blink::mojom::PreferredColorScheme::kLight)),
+    [](const testing::TestParamInfo<
+        std::tuple<bool, blink::mojom::PreferredColorScheme>>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "InstallDialogEnabled"
+                                   : "InstallDialogDisabled",
+           "_",
+           std::get<1>(info.param) == blink::mojom::PreferredColorScheme::kDark
+               ? "Dark"
+               : "Light"});
+    });
 }  // namespace web_app
