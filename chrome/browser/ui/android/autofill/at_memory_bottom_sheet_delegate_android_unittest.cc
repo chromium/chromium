@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+using ::testing::ElementsAreArray;
+using ::testing::Eq;
 using ::testing::NiceMock;
 
 class AtMemoryBottomSheetDelegateAndroidTest : public ::testing::Test {
@@ -80,6 +82,25 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
                   child1, AutofillSuggestionDelegate::SuggestionMetadata{
                               .multi_index = {1, 1}}));
   delegate.OnChildSuggestionSelected(1, 1);
+}
+
+TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
+       OnChildSuggestionsShownCallsDelegate) {
+  Suggestion child0(u"child0", SuggestionType::kAddressEntry);
+  Suggestion child1(u"child1", SuggestionType::kAddressEntry);
+  Suggestion parent0(u"parent0", SuggestionType::kAddressEntry);
+  Suggestion parent1(u"parent1", SuggestionType::kAddressEntry);
+  parent1.children = {child0, child1};
+  std::vector<Suggestion> suggestions = {parent0, parent1};
+  AtMemoryBottomSheetDelegateAndroid delegate(
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
+
+  const AutofillSuggestionDelegate::SuggestionMetadata expected_metadata{
+      .multi_index = {1}};
+  EXPECT_CALL(mock_suggestion_delegate_,
+              OnSuggestionsShown(ElementsAreArray(parent1.children),
+                                 Eq(expected_metadata)));
+  delegate.OnChildSuggestionsShown(1);
 }
 
 }  // namespace autofill

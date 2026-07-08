@@ -64,6 +64,22 @@ void AtMemoryBottomSheetDelegateAndroid::OnSuggestionSelected(int position) {
   }
 }
 
+void AtMemoryBottomSheetDelegateAndroid::OnChildSuggestionsShown(
+    int parent_position) {
+  if (parent_position < 0 ||
+      base::checked_cast<size_t>(parent_position) >= suggestions_.size()) {
+    return;
+  }
+
+  const Suggestion& parent_suggestion = suggestions_[parent_position];
+  if (delegate_) {
+    delegate_->OnSuggestionsShown(
+        parent_suggestion.children,
+        AutofillSuggestionDelegate::SuggestionMetadata{
+            .multi_index = {static_cast<size_t>(parent_position)}});
+  }
+}
+
 void AtMemoryBottomSheetDelegateAndroid::OnChildSuggestionSelected(
     int parent_position,
     int child_position) {

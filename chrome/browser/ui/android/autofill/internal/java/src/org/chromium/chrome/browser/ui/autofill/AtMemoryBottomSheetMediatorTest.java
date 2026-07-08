@@ -140,6 +140,30 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
+    public void testOnFlyoutClickedTriggersDelegate() {
+        AutofillSuggestion childSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Check-in")
+                        .setSubLabel("May 16")
+                        .build();
+        List<AutofillSuggestion> suggestions =
+                List.of(
+                        new AutofillSuggestion.Builder()
+                                .setIconId(R.drawable.travel_trip)
+                                .setLabel("Hotel Booking")
+                                .setSubLabel("Hilton ⋅ 16 May")
+                                .setChildren(List.of(childSuggestion))
+                                .build());
+
+        mMediator.show(suggestions);
+
+        PropertyModel itemModel = mModelList.get(0).model;
+        itemModel.get(ON_FLYOUT_CLICKED).run();
+
+        verify(mDelegate).onChildSuggestionsShown(/* parentPosition= */ 0);
+    }
+
+    @Test
     public void testOnFlyoutSuggestionClicked() {
         AutofillSuggestion childSuggestion0 =
                 new AutofillSuggestion.Builder()

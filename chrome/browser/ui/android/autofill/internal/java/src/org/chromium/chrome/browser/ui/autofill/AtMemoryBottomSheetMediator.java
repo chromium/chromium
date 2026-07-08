@@ -220,6 +220,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 childPosition -> onFlyoutSuggestionClicked(position, childPosition));
 
         mModel.set(CURRENT_SCREEN, ScreenId.FLYOUT_SCREEN);
+        mDelegate.onChildSuggestionsShown(position);
     }
 
     private void onFlyoutBackClicked() {

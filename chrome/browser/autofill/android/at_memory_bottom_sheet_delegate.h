@@ -26,6 +26,10 @@ class AtMemoryBottomSheetDelegate {
   // Called when the user selects a suggestion in the bottom sheet.
   virtual void OnSuggestionSelected(int position) = 0;
 
+  // Called when the child suggestions are shown to the user in the flyout
+  // screen of the bottom sheet.
+  virtual void OnChildSuggestionsShown(int parent_position) = 0;
+
   // Called when the user selects a child suggestion in the flyout screen of the
   // bottom sheet.
   virtual void OnChildSuggestionSelected(int parent_position,

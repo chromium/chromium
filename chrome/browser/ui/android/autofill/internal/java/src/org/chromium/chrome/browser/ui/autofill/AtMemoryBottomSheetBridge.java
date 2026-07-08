@@ -129,6 +129,14 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @Override
+    public void onChildSuggestionsShown(int parentPosition) {
+        if (mNativeAtMemoryBottomSheetBridge != 0) {
+            AtMemoryBottomSheetBridgeJni.get()
+                    .onChildSuggestionsShown(mNativeAtMemoryBottomSheetBridge, parentPosition);
+        }
+    }
+
+    @Override
     public void onChildSuggestionClicked(int parentPosition, int childPosition) {
         if (mNativeAtMemoryBottomSheetBridge != 0) {
             AtMemoryBottomSheetBridgeJni.get()
@@ -154,6 +162,8 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
                 long nativeAtMemoryBottomSheetBridge, @JniType("std::u16string") String query);
 
         void onSuggestionSelected(long nativeAtMemoryBottomSheetBridge, int position);
+
+        void onChildSuggestionsShown(long nativeAtMemoryBottomSheetBridge, int parentPosition);
 
         void onChildSuggestionSelected(
                 long nativeAtMemoryBottomSheetBridge, int parentPosition, int childPosition);
