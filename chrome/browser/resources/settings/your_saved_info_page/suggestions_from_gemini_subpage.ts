@@ -53,6 +53,14 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
         },
       },
 
+      isAtMemoryTriggerCustomizationAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAtMemoryTriggerCustomizationAllowed');
+        },
+      },
+
       atMemoryTrigger_: {
         type: String,
         computed:
@@ -63,6 +71,7 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
 
   declare prefs: Record<string, unknown>;
   declare private isAtMemoryEnabled_: boolean;
+  declare private isAtMemoryTriggerCustomizationAllowed_: boolean;
   declare private atMemoryTrigger_: string;
 
   private showQualityLogging_(toggleOn: boolean, atMemoryEnabled: boolean):

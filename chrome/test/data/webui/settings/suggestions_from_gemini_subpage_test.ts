@@ -15,7 +15,6 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('SuggestionsFromGeminiSubpage', function() {
 
-  let subpage: SettingsSuggestionsFromGeminiSubpageElement;
   let openWindowProxy: TestOpenWindowProxy;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -27,27 +26,34 @@ suite('SuggestionsFromGeminiSubpage', function() {
     loadTimeData.overrideValues({
       personalContextConnectedAppsUrl: 'https://gemini.google.com/apps',
       isAtMemoryEnabled: true,
+      isAtMemoryTriggerCustomizationAllowed: true,
     });
 
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-
-    subpage =
-        document.createElement('settings-suggestions-from-gemini-subpage');
-    subpage.prefs = settingsPrefs.prefs!;
-    subpage.setPrefValue(
-        'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
-    subpage.setPrefValue(
-        'autofill.personal_context.settings_toggle_status', true);
-    document.body.appendChild(subpage);
-    return flushTasks();
   });
 
   teardown(function() {
     CrSettingsPrefs.resetForTesting();
   });
 
+  async function setupPage():
+      Promise<SettingsSuggestionsFromGeminiSubpageElement> {
+    const page: SettingsSuggestionsFromGeminiSubpageElement =
+        document.createElement('settings-suggestions-from-gemini-subpage');
+
+    page.prefs = settingsPrefs.prefs!;
+    page.setPrefValue(
+        'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
+    page.setPrefValue('autofill.personal_context.settings_toggle_status', true);
+
+    document.body.appendChild(page);
+    await flushTasks();
+    return page;
+  }
+
   test('ManageConnectedAppsClick', async function() {
+    const subpage = await setupPage();
     const row = subpage.shadowRoot!.querySelector<HTMLElement>(
         '#manageConnectedAppsLinkRow');
     assertTrue(!!row);
@@ -59,7 +65,8 @@ suite('SuggestionsFromGeminiSubpage', function() {
         loadTimeData.getString('personalContextConnectedAppsUrl'), url);
   });
 
-  test('QualityLoggingRendersExpectedColumnsAndBullets', function() {
+  test('QualityLoggingRendersExpectedColumnsAndBullets', async function() {
+    const subpage = await setupPage();
     const columns = subpage.shadowRoot!.querySelectorAll('.column');
     assertEquals(2, columns.length);
 
@@ -107,6 +114,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
   });
 
   test('QualityLoggingIsHiddenWhenToggleIsOff', async function() {
+    const subpage = await setupPage();
     assertTrue(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
 
     subpage.set(
@@ -117,6 +125,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
   });
 
   test('QualityLoggingIsHiddenWhenAtMemoryDisabled', async function() {
+    const subpage = await setupPage();
     assertTrue(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
 
     subpage.set('isAtMemoryEnabled_', false);
@@ -125,7 +134,20 @@ suite('SuggestionsFromGeminiSubpage', function() {
     assertFalse(!!subpage.shadowRoot!.querySelector('#qualityLoggingCard'));
   });
 
+  test('AtMemoryTriggerSettingHidden', async function() {
+    loadTimeData.overrideValues({
+      isAtMemoryTriggerCustomizationAllowed: false,
+    });
+    const subpage = await setupPage();
+    const inputElement =
+        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+            '#atMemoryTriggerSetting cr-shortcut-input');
+    assertTrue(!!inputElement);
+    assertFalse(isVisible(inputElement));
+  });
+
   test('AtMemoryTriggerSettingShowsCurrentShortcut', async function() {
+    const subpage = await setupPage();
     const inputElement =
         subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
             '#atMemoryTriggerSetting cr-shortcut-input');
@@ -144,6 +166,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
   });
 
   test('AtMemoryTriggerSettingSetsShortcut', async function() {
+    const subpage = await setupPage();
     subpage.setPrefValue(
         'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
     await flushTasks();
@@ -164,6 +187,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
   });
 
   test('AtMemoryTriggerSettingClearesShortcut', async function() {
+    const subpage = await setupPage();
     subpage.setPrefValue(
         'autofill.at_memory.trigger_info',
         {is_shortcut: true, trigger: 'Ctrl+A'});

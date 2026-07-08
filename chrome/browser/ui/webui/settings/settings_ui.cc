@@ -700,6 +700,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       autofill::MayPerformAtMemoryAction(
           autofill::AtMemoryAction::kShowAtMemoryInSettings, autofill_client));
 
+  html_source->AddBoolean(
+      "isAtMemoryTriggerCustomizationAllowed",
+      autofill::MayPerformAtMemoryAction(
+          autofill::AtMemoryAction::kAllowCustomizeAtMemoryShortcut,
+          autofill_client));
+
   html_source->AddString(
       "webuiRefresh2026",
       features::IsWebuiRefresh2026Enabled() ? "webui-refresh-2026" : "");
