@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -26,30 +27,38 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_logging_utils.h"
+#include "components/omnibox/browser/omnibox_metrics_constants.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/session_id.h"
 #include "net/cookies/cookie_util.h"
 #include "ui/base/page_transition_types.h"
 
+using metrics::OmniboxEventProto;
+
 namespace searchbox {
 
-void OpenMatch(AutocompleteController* autocomplete_controller,
-               OmniboxClient* client,
-               OmniboxPopupSelection selection,
-               AutocompleteMatch match,
-               WindowOpenDisposition disposition,
-               base::TimeTicks searchbox_focused_timestamp,
-               base::TimeTicks first_modification_timestamp,
-               base::TimeTicks match_selection_timestamp) {
+void OpenMatch(
+    AutocompleteController* autocomplete_controller,
+    OmniboxClient* client,
+    OmniboxPopupSelection selection,
+    AutocompleteMatch match,
+    WindowOpenDisposition disposition,
+    base::TimeTicks searchbox_focused_timestamp,
+    base::TimeTicks first_modification_timestamp,
+    base::TimeTicks match_selection_timestamp,
+    OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
   // TODO(crbug.com/530254690): Use the input associated with the result
   //  holding the match.
   const AutocompleteInput& input = autocomplete_controller->input();
   const AutocompleteResult& result = autocomplete_controller->result();
+
+  // TODO(crbug.com/530287131): Determine whether this still needs to be
+  //  received and used here.
+  const std::u16string pasted_text;
 
   // If the user is executing an action, this will be non-null and some match
   // opening and metrics behavior will be adjusted accordingly.
@@ -107,7 +116,7 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
     fake_single_entry_result.AppendMatches(fake_single_entry_matches);
   }
 
-  const metrics::OmniboxEventProto::PageClassification page_classification =
+  const OmniboxEventProto::PageClassification page_classification =
       client->GetPageClassification(/*is_prefetch=*/false);
 
   base::TimeDelta elapsed_time_since_last_change_to_default_match =
@@ -151,7 +160,7 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
 
       // TODO(crbug.com/529914184): Track the keyword mode entry method.
       input.in_keyword_mode(),
-      /*entry_method=*/metrics::OmniboxEventProto::INVALID,
+      /*entry_method=*/OmniboxEventProto::INVALID,
 
       /*is_popup_open=*/true,
       dropdown_ignored ? OmniboxPopupSelection(0) : selection, disposition,
@@ -180,10 +189,14 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
   }
 
   autocomplete_controller->AddProviderAndTriggeringLogs(&log);
+
+  RecordSuggestionUsedMetrics(match);
+
+  omnibox::LogIPv4PartsCount(user_text, destination_url, completed_length);
+
   client->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
-  // TODO(crbug.com/531799956): Factor out some UMA metrics calls for reuse.
 #if !BUILDFLAG(IS_IOS)
   if (auto* geolocation_header_service =
           autocomplete_controller->autocomplete_provider_client()
@@ -193,6 +206,63 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
 #endif  // !BUILDFLAG(IS_IOS)
 
   TemplateURLService* template_url_service = client->GetTemplateURLService();
+  TemplateURL* template_url = match.GetTemplateURL(template_url_service);
+  if (template_url) {
+    // `match` is a Search navigation or a URL navigation in keyword mode; log
+    // search engine usage metrics.
+    AutocompleteMatch::LogSearchEngineUsed(match, template_url_service);
+
+    if (ui::PageTransitionTypeIncludingQualifiersIs(
+            match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
+        match.provider->type() ==
+            AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+      // User is in keyword mode or accepted an unscoped extension suggestion,
+      // increment usage count for the keyword.
+      searchbox::EmitAcceptedKeywordSuggestionHistogram(
+          keyword_mode_entry_method, template_url);
+      template_url_service->IncrementUsageCount(template_url);
+
+      // Notify the extension of the selected input, but ignore if the selection
+      // corresponds to an action created by an extension in unscoped mode.
+      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION &&
+          !action) {
+        client->ProcessExtensionMatch(input.text(), template_url, match,
+                                      disposition);
+        // Avoid calling `OmniboxClient::OnAutocompleteAccept()`. The extension
+        // was notfied of the accepted input and will handle the navigation.
+        return;
+      }
+    } else {
+      DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
+                 match.transition, ui::PAGE_TRANSITION_GENERATED) ||
+             ui::PageTransitionTypeIncludingQualifiersIs(
+                 match.transition, ui::PAGE_TRANSITION_RELOAD));
+      // NOTE: We purposefully don't increment the usage count of the default
+      // search engine here like we do for explicit keywords above; see comments
+      // in template_url.h.
+    }
+  } else {
+    // `match` is a URL navigation, not a search.
+    // For logging the below histogram, only record uses that depend on the
+    // omnibox suggestion system, i.e., TYPED navigations.  That is, exclude
+    // omnibox URL interactions that are treated as reloads or link-following
+    // (i.e., cut-and-paste of URLs) or paste-and-go.
+    if (ui::PageTransitionTypeIncludingQualifiersIs(
+            match.transition, ui::PAGE_TRANSITION_TYPED) &&
+        pasted_text.empty()) {
+      navigation_metrics::RecordOmniboxURLNavigation(destination_url);
+    }
+
+    // The following histograms should be recorded for both TYPED and pasted
+    // URLs, but should still exclude reloads.
+    if (ui::PageTransitionTypeIncludingQualifiersIs(
+            match.transition, ui::PAGE_TRANSITION_TYPED) ||
+        ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
+                                                    ui::PAGE_TRANSITION_LINK)) {
+      net::cookie_util::RecordCookiePortOmniboxHistograms(destination_url);
+    }
+  }
+
   if (action) {
     const int enter_starter_pack_id = client->ExecuteAction(
         action, disposition, match_selection_timestamp,
@@ -209,48 +279,12 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
       }
     }
   } else {
+    RecordNonActionSearchMetrics(template_url_service, match, is_incognito,
+                                 match_selection_timestamp);
+
     bookmarks::BookmarkModel* bookmark_model = client->GetBookmarkModel();
     if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
       client->OnBookmarkLaunched();
-    }
-
-    if (template_url_service) {
-      if (template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-              destination_url)) {
-        RecordDefaultSearchProviderSearchMetrics(is_incognito);
-      }
-
-      TemplateURL* template_url = match.GetTemplateURL(template_url_service);
-      if (template_url) {
-        AutocompleteMatch::LogSearchEngineUsed(match, template_url_service);
-
-        if (ui::PageTransitionTypeIncludingQualifiersIs(
-                match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
-            match.provider->type() ==
-                AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
-          base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
-          // OEM state: EmitAcceptedKeywordSuggestionHistogram
-          template_url_service->IncrementUsageCount(template_url);
-
-          if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
-            client->ProcessExtensionMatch(input.text(), template_url, match,
-                                          disposition);
-            return;
-          }
-        }
-      } else {
-        if (ui::PageTransitionTypeIncludingQualifiersIs(
-                match.transition, ui::PAGE_TRANSITION_TYPED)) {
-          navigation_metrics::RecordOmniboxURLNavigation(destination_url);
-        }
-
-        if (ui::PageTransitionTypeIncludingQualifiersIs(
-                match.transition, ui::PAGE_TRANSITION_TYPED) ||
-            ui::PageTransitionTypeIncludingQualifiersIs(
-                match.transition, ui::PAGE_TRANSITION_LINK)) {
-          net::cookie_util::RecordCookiePortOmniboxHistograms(destination_url);
-        }
-      }
     }
 
     // TODO(crbug.com/531810530): Ensure this doesn't need to be plumbed in
@@ -281,10 +315,50 @@ void OpenMatch(AutocompleteController* autocomplete_controller,
   }
 }
 
-void RecordDefaultSearchProviderSearchMetrics(bool is_off_the_record) {
-  base::RecordAction(
-      base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
-  base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_off_the_record);
+void RecordNonActionSearchMetrics(TemplateURLService* template_url_service,
+                                  const AutocompleteMatch& match,
+                                  bool is_off_the_record,
+                                  base::TimeTicks match_selection_timestamp) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Track whether the destination URL sends us to a search results page
+  // using the default search provider.
+  if (template_url_service &&
+      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+          match.destination_url)) {
+    base::RecordAction(
+        base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
+    base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_off_the_record);
+  }
+
+  if (match.destination_url.is_valid()) {
+    base::UmaHistogramMicrosecondsTimes("Omnibox.InputToAcceptNonAction",
+                                        now - match_selection_timestamp);
+  }
+}
+
+void EmitAcceptedKeywordSuggestionHistogram(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* turl) {
+  base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
+  UMA_HISTOGRAM_ENUMERATION(
+      omnibox::kAcceptedKeywordSuggestionHistogram,
+      static_cast<int>(entry_method),
+      static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+
+  if (turl != nullptr) {
+    base::UmaHistogramEnumeration(
+        omnibox::kKeywordModeUsageByEngineTypeAcceptedHistogramName,
+        turl->GetBuiltinEngineType(),
+        BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
+  }
+}
+
+void RecordSuggestionUsedMetrics(const AutocompleteMatch& match) {
+  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
+                                match.rich_autocompletion_triggered);
+  LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
+  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 }
 
 }  // namespace searchbox

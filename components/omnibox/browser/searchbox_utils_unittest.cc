@@ -70,7 +70,8 @@ TEST_F(SearchboxUtilsTest, OpenMatchNormal) {
 
   OpenMatch(&controller_, &client_, OmniboxPopupSelection(0), match,
             WindowOpenDisposition::CURRENT_TAB, searchbox_focused_timestamp,
-            first_modification_timestamp, match_selection_timestamp);
+            first_modification_timestamp, match_selection_timestamp,
+            metrics::OmniboxEventProto::INVALID);
 }
 
 TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
@@ -100,7 +101,8 @@ TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
 
   OpenMatch(&controller_, &client_, selection, match,
             WindowOpenDisposition::CURRENT_TAB, searchbox_focused_timestamp,
-            first_modification_timestamp, match_selection_timestamp);
+            first_modification_timestamp, match_selection_timestamp,
+            metrics::OmniboxEventProto::INVALID);
 }
 
 }  // namespace searchbox

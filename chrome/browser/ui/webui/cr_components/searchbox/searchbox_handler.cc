@@ -1199,7 +1199,8 @@ void SearchboxHandler::OpenMatch(OmniboxPopupSelection selection,
       searchbox_focused_timestamp;
   searchbox::OpenMatch(autocomplete_controller(), client(), selection, match,
                        disposition, searchbox_focused_timestamp,
-                       first_modification_timestamp, match_selection_timestamp);
+                       first_modification_timestamp, match_selection_timestamp,
+                       metrics::OmniboxEventProto::INVALID);
 }
 
 void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
