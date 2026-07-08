@@ -61,7 +61,10 @@ public class SettingsHostFragmentTest {
         mActivity
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .add(android.R.id.content, mSettingsHostFragment)
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
                 .commitNow();
     }
 
@@ -128,6 +131,49 @@ public class SettingsHostFragmentTest {
         assertTrue(
                 "Initial fragment should be MultiColumnSettings",
                 initial instanceof MultiColumnSettings);
+    }
+
+    @Test
+    public void testGetAndShowFragment() {
+        attachHostFragment();
+        assertEquals(mSettingsHostFragment, SettingsHostFragment.get(mActivity));
+
+        boolean shown =
+                mSettingsHostFragment.showFragment(
+                        new SecondFakeSettingsFragment(),
+                        /* addToBackStack= */ true,
+                        /* tag= */ null);
+        assertTrue("showFragment should succeed when attached", shown);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        Fragment current = mSettingsHostFragment.getActiveFragment();
+        assertNotNull("Active fragment should be present", current);
+        assertTrue(
+                "Active fragment should be SecondFakeSettingsFragment",
+                current instanceof SecondFakeSettingsFragment);
+    }
+
+    @Test
+    public void testShowFragment_NullFragment_ShowsInitialFragment() {
+        attachHostFragment();
+        // First show some other fragment.
+        mSettingsHostFragment.showFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+        assertTrue(mSettingsHostFragment.getActiveFragment() instanceof SecondFakeSettingsFragment);
+
+        // Now show null fragment, which should show initial fragment (FakeSettingsFragment).
+        boolean shown =
+                mSettingsHostFragment.showFragment(
+                        null, /* addToBackStack= */ false, /* tag= */ null);
+        assertTrue("showFragment should succeed for null fragment", shown);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        Fragment current = mSettingsHostFragment.getActiveFragment();
+        assertNotNull("Active fragment should be present", current);
+        assertTrue(
+                "Active fragment should be FakeSettingsFragment after passing null",
+                current instanceof FakeSettingsFragment);
     }
 
     /** Fake settings fragment for testing. */
