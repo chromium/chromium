@@ -500,12 +500,49 @@ if (enable_bound_session_credentials) {
 source_set("unit_tests") {
   testonly = true
 
-  # Some signin unit tests have file-scope statics of non-trivial-destructor
-  # types, which -Wexit-time-destructors rejects.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [
+    "account_consistency_mode_manager_unittest.cc",
+    "account_id_from_account_info_unittest.cc",
+    "account_preview_data_service_factory_unittest.cc",
+    "chrome_device_id_helper_unittest.cc",
+    "chrome_signin_client_unittest.cc",
+    "chrome_signin_helper_unittest.cc",
+    "chrome_signin_proxying_url_loader_factory_unittest.cc",
+    "chrome_signin_url_loader_throttle_unittest.cc",
+    "header_modification_delegate_impl_unittest.cc",
+    "signin_policy_service_unittest.cc",
+    "signin_profile_attributes_updater_unittest.cc",
+  ]
+  deps = [
+    ":signin",
+    ":test_support",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
-  sources = []
-  deps = []
+  if (!is_chromeos) {
+    sources += [ "wait_for_network_callback_helper_chrome_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources += [ "signin_ui_delegate_impl_android_unittest.cc" ]
+    deps += [
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//components/contextual_tasks/public:feature_list",
+    ]
+  }
 
   if (enable_dice_support) {
     sources += [
