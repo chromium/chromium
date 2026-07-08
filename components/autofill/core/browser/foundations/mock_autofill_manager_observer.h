@@ -144,15 +144,17 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (AutofillManager&, SuggestionHidingReason),
               (override));
 
-  MOCK_METHOD(void,
-              OnFillOrPreviewForm,
-              (AutofillManager&,
-               FormGlobalId,
-               FieldGlobalId,
-               mojom::ActionPersistence,
-               (const base::flat_set<FieldGlobalId>&),
-               (const FillingPayload&)),
-              (override));
+  MOCK_METHOD(
+      void,
+      OnFillOrPreviewForm,
+      (AutofillManager&,
+       FormGlobalId,
+       FieldGlobalId,
+       mojom::ActionPersistence,
+       (const base::flat_set<FieldGlobalId>&),
+       (const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&),
+       (const FillingPayload&)),
+      (override));
 
   MOCK_METHOD(void,
               OnBeforeFormSubmitted,

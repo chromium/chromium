@@ -133,6 +133,7 @@ class PaymentMethodAccessoryControllerImpl
       FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&,
       const FillingPayload&) override;
 
   const PaymentsDataManager* paydm() const {

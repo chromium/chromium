@@ -208,7 +208,8 @@ class EmailVerifierDelegateTestBase
         form.field(0)->global_id()};
     delegate().OnFillOrPreviewForm(
         manager(), form.global_id(), form.field(0)->global_id(),
-        mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+        mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+        &profile);
   }
 
   void SetUpVerificationExpectations(
@@ -374,7 +375,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 
   popup_shown_run_loop_.Run();
 
@@ -408,7 +410,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationDismissed) {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 
   popup_shown_run_loop_.Run();
 
@@ -475,7 +478,8 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
       form->field(0)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kPreview, filled_field_ids, &profile);
+      mojom::ActionPersistence::kPreview, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 }
 
 // Verifies that if the form isn't comformant (no nonce), no verification is
@@ -567,7 +571,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 
   verify_called_run_loop.Run();
 
@@ -604,7 +609,8 @@ TEST_F(EmailVerifierDelegateTestBase, OriginTrialNotEnabledWithoutOverride) {
       form->field(0)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 }
 
 // Verifies that if the trigger field is NOT the email field, no verification is
@@ -628,7 +634,8 @@ TEST_F(EmailVerifierDelegateTest, NotEmailTriggerField) {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(1)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 }
 
 // Verifies that if the base feature is explicitly overridden to enabled,
@@ -662,7 +669,8 @@ TEST_F(EmailVerifierDelegateTest,
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 
   popup_shown_run_loop_.Run();
 }
@@ -696,7 +704,8 @@ TEST_F(EmailVerifierDelegateTest, BlockedByStrikes) {
 
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
-      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
 
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",

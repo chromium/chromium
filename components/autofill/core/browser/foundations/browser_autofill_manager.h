@@ -272,6 +272,8 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField& trigger_field,
       base::span<const AutofillField* const> safe_filled_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason);

@@ -651,6 +651,7 @@ void PaymentMethodAccessoryControllerImpl::OnFillOrPreviewForm(
     FieldGlobalId trigger_field_id,
     mojom::ActionPersistence action_persistence,
     const base::flat_set<FieldGlobalId>&,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&,
     const FillingPayload& filling_payload) {
   if (action_persistence == mojom::ActionPersistence::kFill &&
       std::holds_alternative<const CreditCard*>(filling_payload)) {

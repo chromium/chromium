@@ -22,6 +22,8 @@
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+class GURL;
+
 namespace tabs {
 class TabInterface;
 }
@@ -98,6 +100,14 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
       const tabs::TabInterface& tab,
       ActorSuggestionId suggestion_id,
       mojom::ActionPersistence action_persistence);
+
+  // Logs Autofill skip reasons for each field to the Glic aggregate journal.
+  void LogSkipReasonsToJournal(
+      const GURL& url,
+      const FieldGlobalId& trigger_field_id,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons);
 
   // Contains, within a single sequence of filling operations (all belonging to
   // a single round of suggestion generation), the errors (if any) that

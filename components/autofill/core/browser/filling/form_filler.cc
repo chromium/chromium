@@ -999,10 +999,10 @@ void FormFiller::FillOrPreviewForm(
     }
   }
 
-  manager_->OnDidFillOrPreviewForm(action_persistence, form, trigger_field,
-                                   safe_filled_fields,
-                                   std::move(filled_field_ids), filling_payload,
-                                   trigger_source, refill_options.reason());
+  manager_->OnDidFillOrPreviewForm(
+      action_persistence, form, trigger_field, safe_filled_fields,
+      std::move(filled_field_ids), skip_reasons, filling_payload,
+      trigger_source, refill_options.reason());
 }
 
 void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {

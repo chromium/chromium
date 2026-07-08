@@ -40,6 +40,8 @@ class AccountNameEmailStrikeManager : AutofillManager::Observer {
       FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       const FillingPayload& filling_payload) override;
 
  private:

@@ -584,10 +584,12 @@ class TestAutofillManagerSingleEventWaiter::Impl
       FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       const FillingPayload& filling_payload) override {
     MaybeQuit(&Observer::OnFillOrPreviewForm, manager, form_id,
               trigger_field_id, action_persistence, filled_field_ids,
-              filling_payload);
+              skip_reasons, filling_payload);
   }
   void OnFillOrPreviewField(AutofillManager& manager,
                             FormGlobalId form_id,

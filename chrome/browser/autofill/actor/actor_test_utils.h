@@ -136,6 +136,7 @@ class ActorTestBase : public ChromeRenderViewHostTestHarness {
   TestBrowserAutofillManagerWithTestCCAM& manager();
   ActorFormFillingServiceImpl& service() { return *service_; }
   tabs::TabInterface& tab() { return mock_tab; }
+  ::actor::AggregatedJournal& journal() { return journal_; }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;

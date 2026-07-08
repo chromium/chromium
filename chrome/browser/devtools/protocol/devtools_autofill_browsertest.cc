@@ -476,6 +476,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
       filled_fields_by_autofill[0].global_id(), mojom::ActionPersistence::kFill,
       base::MakeFlatSet<FieldGlobalId>(filled_fields_by_autofill, {},
                                        &FormFieldData::global_id),
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
       &profile);
 
   base::DictValue notification = WaitForNotification(
@@ -625,7 +626,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   main_autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, form.global_id(),
       *filled_fields_by_autofill.begin(), mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill, &profile);
+      filled_fields_by_autofill,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      &profile);
 
   base::DictValue notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);
@@ -657,7 +660,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   main_autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, form_a.global_id(),
       *filled_fields_by_autofill_a.begin(), mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill_a, &profile_a);
+      filled_fields_by_autofill_a,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      &profile_a);
 
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
 
@@ -676,7 +681,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   main_autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, form_b.global_id(),
       *filled_fields_by_autofill_b.begin(), mojom::ActionPersistence::kFill,
-      filled_fields_by_autofill_b, &profile_b);
+      filled_fields_by_autofill_b,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      &profile_b);
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
 }
 

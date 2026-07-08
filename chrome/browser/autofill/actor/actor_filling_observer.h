@@ -57,6 +57,15 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // autofilled.
   void Activate(Callback callback);
 
+  // Set a callback to receive the skip reasons. The skip reasons may be added
+  // to the actor's aggregated journal.
+  using SkipReasonsCallback = base::RepeatingCallback<void(
+      const FieldGlobalId& trigger_field_id,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons)>;
+  void SetSkipReasonsCallback(SkipReasonsCallback skip_reasons_callback);
+
  private:
   // AutofillManager::Observer:
   void OnFillOrPreviewForm(
@@ -65,6 +74,8 @@ class ActorFillingObserver final : public AutofillManager::Observer,
       FieldGlobalId trigger_field_id,
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
       const FillingPayload&) override;
 
   // CreditCardAccessManager::Observer:
@@ -116,6 +127,8 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   // Timers that reset `this` when triggered.
   base::OneShotTimer maximum_timeout_timer_;
   base::OneShotTimer filling_timeout_timer_;
+
+  SkipReasonsCallback skip_reasons_callback_;
 };
 
 }  // namespace autofill

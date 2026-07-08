@@ -2793,6 +2793,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     const AutofillField& trigger_field,
     base::span<const AutofillField* const> safe_filled_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     std::optional<RefillTriggerReason> refill_trigger_reason) {
@@ -2800,7 +2802,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       safe_filled_fields, /*comp=*/{}, &FormFieldData::global_id);
   NotifyObservers(&Observer::OnFillOrPreviewForm, form.global_id(),
                   trigger_field.global_id(), action_persistence,
-                  safe_filled_field_ids, filling_payload);
+                  safe_filled_field_ids, skip_reasons, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
   }

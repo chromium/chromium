@@ -108,6 +108,9 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
       autofill::FieldGlobalId trigger_field_id,
       autofill::mojom::ActionPersistence action_persistence,
       const base::flat_set<autofill::FieldGlobalId>& filled_field_ids,
+      const base::flat_map<
+          autofill::FieldGlobalId,
+          autofill::DenseSet<autofill::FieldFillingSkipReason>>&,
       const autofill::FillingPayload& filling_payload) override;
 
   raw_ref<RecordReplayClient> client_;

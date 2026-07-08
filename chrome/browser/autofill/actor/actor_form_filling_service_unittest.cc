@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -1026,6 +1028,19 @@ auto JournalEntryWithError(std::string_view expected_message) {
                              testing::HasSubstr(expected_message))))))));
 }
 
+auto JournalEntryWithSkipReason(std::string_view field_name,
+                                std::string_view expected_reason) {
+  return testing::Field(
+      &::actor::AggregatedJournal::Entry::data,
+      testing::Pointee(testing::Field(
+          &::actor::mojom::JournalEntry::details,
+          testing::Contains(testing::Pointee(testing::AllOf(
+              testing::Field(&::actor::mojom::JournalDetails::key,
+                             testing::Eq(std::string(field_name))),
+              testing::Field(&::actor::mojom::JournalDetails::value,
+                             testing::Eq(std::string(expected_reason)))))))));
+}
+
 TEST(ActorFormFillingServiceJournalTest,
      FillWithInvalidSuggestionId_LogsToJournal) {
   content::BrowserTaskEnvironment task_environment;
@@ -1047,6 +1062,37 @@ TEST(ActorFormFillingServiceJournalTest,
 
   service.FillForm(mock_tab, /*form_index=*/0,
                    ActorFormFillingSelection(ActorSuggestionId(123)));
+}
+
+TEST_F(ActorFormFillingServiceTest, LogsMultipleSkipReasonsToJournal) {
+  // We set role = CREDIT_CARD_NUMBER to trigger kFieldTypeUnrelated (15),
+  // and is_focusable = false to trigger kInvisibleField (5).
+  FormData form = SeeForm(
+      {.fields = {{.role = NAME_FULL},
+                  {.role = CREDIT_CARD_NUMBER, .is_focusable = false}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+
+  ASSERT_THAT(future.Get(), HasValue());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  MockJournalObserver observer(journal());
+
+  std::string expected_key = base::StrCat(
+      {"field_", base::ToString(form.fields()[1].renderer_id().value())});
+
+  // Expected skip reasons:
+  // - kNotInFilledSection (2)
+  // - kInvisibleField (5)
+  // - kNoValueToFill (16)
+  EXPECT_CALL(observer, WillAddJournalEntry(JournalEntryWithSkipReason(
+                            expected_key, "2, 5, 16")));
+
+  service().FillForm(tab(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
 }
 
 }  // namespace

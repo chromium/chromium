@@ -67,13 +67,24 @@ void ActorFillingObserver::Activate(Callback callback) {
                                                    base::Unretained(this)));
 }
 
+void ActorFillingObserver::SetSkipReasonsCallback(
+    ActorFillingObserver::SkipReasonsCallback skip_reasons_callback) {
+  skip_reasons_callback_ = std::move(skip_reasons_callback);
+}
+
 void ActorFillingObserver::OnFillOrPreviewForm(
     AutofillManager&,
     FormGlobalId,
     FieldGlobalId trigger_field_id,
     mojom::ActionPersistence action_persistence,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons,
     const FillingPayload&) {
+  if (skip_reasons_callback_) {
+    skip_reasons_callback_.Run(trigger_field_id, action_persistence,
+                               skip_reasons);
+  }
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill:
       break;

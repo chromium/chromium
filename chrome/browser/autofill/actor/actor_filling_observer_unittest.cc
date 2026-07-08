@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
@@ -26,6 +27,8 @@ using ::base::test::ErrorIs;
 using ::base::test::HasValue;
 using test::MakeFieldGlobalId;
 using test::MakeFormGlobalId;
+using ::testing::ContainerEq;
+using ::testing::FieldsAre;
 
 class ActorFillingObserverTest : public ::testing::Test,
                                  public WithTestAutofillClientDriverManager<> {
@@ -103,9 +106,42 @@ TEST_F(ActorFillingObserverTest, SingleFieldFill) {
 
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
-      field_ids[0], mojom::ActionPersistence::kFill, field_ids, AddProfile());
+      field_ids[0], mojom::ActionPersistence::kFill, field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      AddProfile());
 
   EXPECT_THAT(future.Get(), HasValue());
+}
+
+// Tests that the filling observer routes skip reasons to the skip reasons
+// callback.
+TEST_F(ActorFillingObserverTest, RoutesSkipReasons) {
+  std::vector<FieldGlobalId> field_ids = {MakeFieldGlobalId()};
+  FormGlobalId form_id = MakeFormGlobalId();
+  Future future;
+
+  base::test::TestFuture<
+      const FieldGlobalId&, mojom::ActionPersistence,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&>
+      skip_reasons_future;
+
+  ActorFillingObserver observer(autofill_client());
+  observer.SetSkipReasonsCallback(skip_reasons_future.GetRepeatingCallback());
+
+  observer.ObserveNewFilling(field_ids);
+  observer.Activate(future.GetCallback());
+
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons;
+  skip_reasons[field_ids[0]].insert(FieldFillingSkipReason::kNoValueToFill);
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFillOrPreviewForm, form_id, field_ids[0],
+      mojom::ActionPersistence::kFill, field_ids, skip_reasons, AddProfile());
+
+  ASSERT_THAT(future.Get(), HasValue());
+  EXPECT_THAT(skip_reasons_future.Get(),
+              FieldsAre(field_ids[0], mojom::ActionPersistence::kFill,
+                        ContainerEq(skip_reasons)));
 }
 
 // Tests that previewing a field does not trigger the success callback.
@@ -121,6 +157,7 @@ TEST_F(ActorFillingObserverTest, SingleFieldPreview) {
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       field_ids[0], mojom::ActionPersistence::kPreview, field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
       AddProfile());
   observer.reset();
 
@@ -141,11 +178,15 @@ TEST_F(ActorFillingObserverTest, MultiFieldFill) {
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       field_ids[0], mojom::ActionPersistence::kFill,
-      std::vector({field_ids[0]}), AddProfile());
+      std::vector({field_ids[0]}),
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      AddProfile());
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       field_ids[1], mojom::ActionPersistence::kFill,
-      std::vector({field_ids[1]}), AddProfile());
+      std::vector({field_ids[1]}),
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      AddProfile());
 
   EXPECT_THAT(future.Get(), HasValue());
 }
@@ -165,7 +206,9 @@ TEST_F(ActorFillingObserverTest, IncompleteMultiFieldFill) {
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
       field_ids[0], mojom::ActionPersistence::kFill,
-      std::vector({field_ids[0]}), AddProfile());
+      std::vector({field_ids[0]}),
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      AddProfile());
   observer.reset();
 
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
