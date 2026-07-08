@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/loader/response_head_update_params.h"
@@ -241,9 +242,12 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   std::vector<ScopedServiceWorkerClient> service_worker_clients_;
 };
 
-class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
+// A test ContentBrowserClient that unconditionally denies Service Worker access
+// to simulate the embedder blocking the Service Worker.
+class DisallowServiceWorkerContentBrowserClient
+    : public TestContentBrowserClient {
  public:
-  ServiceWorkerTestContentBrowserClient() = default;
+  DisallowServiceWorkerContentBrowserClient() = default;
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
@@ -326,7 +330,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, Error) {
 }
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, DisallowServiceWorker) {
-  ServiceWorkerTestContentBrowserClient test_browser_client;
+  DisallowServiceWorkerContentBrowserClient test_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&test_browser_client);
 
@@ -354,6 +358,52 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DisallowServiceWorker) {
   // Verify we did not use the worker.
   EXPECT_FALSE(test_resources.loader());
   EXPECT_FALSE(version_->HasControllee());
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+// When the embedder disallows the service worker, the registration loaded
+// from storage during navigation should not be associated with the client as
+// a matching registration. Otherwise navigator.serviceWorker.ready could
+// resolve for a client the embedder intended to block.
+TEST_F(ServiceWorkerControlleeRequestHandlerTest,
+       DisallowServiceWorkerDoesNotAddMatchingRegistration) {
+  DisallowServiceWorkerContentBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  // Store an activated worker.
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+  base::RunLoop loop;
+  context()->registry().StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+  // Drop the live references so the registration must be loaded from storage
+  // by FindRegistrationForClientUrl rather than picked up via
+  // SyncMatchingRegistrations.
+  int64_t registration_id = registration_->id();
+  version_ = nullptr;
+  registration_ = nullptr;
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !context()->GetLiveRegistration(registration_id); }));
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+  test_resources.WaitLoader();
+
+  // Verify we did not use the worker and did not expose the registration to
+  // the client.
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(service_worker_client_->controller());
+  EXPECT_FALSE(service_worker_client_->MatchRegistration());
 
   SetBrowserClientForTesting(old_browser_client);
 }

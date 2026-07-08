@@ -275,7 +275,6 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     CompleteWithoutLoader();
     return;
   }
-  service_worker_client_->AddMatchingRegistration(registration.get());
 
   if (!context_) {
     TRACE_EVENT(
@@ -306,6 +305,10 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     CompleteWithoutLoader();
     return;
   }
+
+  // Only expose the registration to the client (e.g. for .ready and claim())
+  // once the embedder has allowed the service worker for this client.
+  service_worker_client_->AddMatchingRegistration(registration.get());
 
   if (!service_worker_client_->IsEligibleForServiceWorkerController()) {
     // TODO(falken): Figure out a way to surface in the page's DevTools
