@@ -213,6 +213,7 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
   BrowserWindowInterface* const bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  Profile* const profile = bwi ? bwi->GetProfile() : nullptr;
 
   // Please keep the entries in alphabetized order base on the type.
   switch (type) {
@@ -254,8 +255,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser: {
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
-
       if (!profile) {
         return false;
       }
@@ -265,8 +264,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return true;
     }
     case InfoBarType::kSessionRestore: {
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
-
       if (!profile) {
         return false;
       }
@@ -296,7 +293,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
     case InfoBarType::kExtensionDevTools: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile) {
         return false;
       }
@@ -325,7 +321,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
     case InfoBarType::kIncognitoConnectability: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -416,8 +411,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #if BUILDFLAG(IS_MAC)
     case InfoBarType::kKeystone: {
 #if BUILDFLAG(ENABLE_UPDATER)
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
-
       if (!profile) {
         return false;
       }
@@ -472,7 +465,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case InfoBarType::kThemeInstalled: {
-      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile) {
         return false;
       }
