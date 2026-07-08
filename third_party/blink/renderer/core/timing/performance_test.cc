@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -44,7 +45,8 @@ class TestPerformance : public Performance {
                     ExecutionContext::From(script_state)
                         ->CrossOriginIsolatedCapability(),
                     ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kPerformanceTimeline)),
+                        ->GetTaskRunner(TaskType::kPerformanceTimeline),
+                    ExecutionContext::From(script_state)),
         execution_context_(ExecutionContext::From(script_state)) {}
   ~TestPerformance() override = default;
 
@@ -78,6 +80,10 @@ class TestPerformance : public Performance {
 };
 
 class PerformanceTest : public PageTestBase {
+ public:
+  PerformanceTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  protected:
   ~PerformanceTest() override { execution_context_->NotifyContextDestroyed(); }
 
@@ -408,6 +414,50 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
             PerformanceEntry::StartTimeCompareLessThan);
 
   EXPECT_EQ(all_entries, test_vector);
+}
+
+TEST_F(PerformanceTest, DeclarativePerformanceObserverOptimization) {
+  ScopedDeclarativePerformanceObserverForTest
+      enable_declarative_performance_observer(true);
+
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  int bind_count = 0;
+  scope.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::DeclarativePerformanceObserverHost::Name_,
+      BindRepeating(
+          [](int* count, mojo::ScopedMessagePipeHandle pipe) {
+            (*count)++;
+            // Drop pipe immediately (simulating non-opt-in page)
+          },
+          Unretained(&bind_count)));
+
+  // 1. Call performance.mark()
+  base_->mark(scope.GetScriptState(), AtomicString("mark_1"), nullptr,
+              scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // Fast-forward to trigger FlushPerformanceEntries and cause the pipe to drop
+  FastForwardBy(Performance::kBufferTimerDelay);
+
+  // The binding attempt should have been made once
+  EXPECT_EQ(bind_count, 1);
+
+  // 2. Call performance.mark() a second time.
+  // Because it was disconnected, it should skip detail conversion & binding,
+  // so bind_count should NOT increase!
+  base_->mark(scope.GetScriptState(), AtomicString("mark_2"), nullptr,
+              scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  FastForwardBy(Performance::kBufferTimerDelay);
+
+  EXPECT_EQ(bind_count, 1);  // Remains 1!
+
+  // Clean up binder
+  scope.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::DeclarativePerformanceObserverHost::Name_, {});
 }
 
 }  // namespace blink
