@@ -684,7 +684,8 @@ TEST_F(OmniboxAutofillDelegateTest,
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_shown());
 }
 
-TEST_F(OmniboxAutofillDelegateTest, OnGetIntersectionObserverInfo_IsVisible) {
+TEST_F(OmniboxAutofillDelegateTest,
+       OnGetIntersectionObserverInfo_IsVisible_ShowsChip) {
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
@@ -695,6 +696,27 @@ TEST_F(OmniboxAutofillDelegateTest, OnGetIntersectionObserverInfo_IsVisible) {
   delegate->OnGetIntersectionObserverInfo(/*is_visible=*/true);
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnGetIntersectionObserverInfo_IsVisible_LogsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnGetIntersectionObserverInfo(/*is_visible=*/true);
+
+  // Verify that suggestions count and secure form are logged. `SetUp()` adds 1
+  // credit card, so count should be 1.
+  histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.QueriedCreditCardFormIsSecure",
+                                      true, 1);
 }
 
 }  // namespace
