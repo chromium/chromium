@@ -69,7 +69,7 @@ int RunTest() {
   // This HANDLE leaks, but the process is terminated soon anyway, so it doesn't
   // matter.
   ::SetEvent(::OpenEventW(EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
-                          std::data(args[0])));
+                          args[0].c_str()));
 
   // The test parent process will kill this process.
   base::PlatformThread::Sleep(TestTimeouts::action_timeout());

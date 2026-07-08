@@ -117,11 +117,8 @@ class ElevationServiceTest : public ::testing::Test {
   }
 
  private:
-  static ServiceEnvironment* service_environment_;
+  static inline ServiceEnvironment* service_environment_ = nullptr;
 };
-
-// static
-ServiceEnvironment* ElevationServiceTest::service_environment_ = nullptr;
 
 TEST_F(ElevationServiceTest, AcceptInvitation) {
   base::win::ScopedCOMInitializer com_initializer;
@@ -175,7 +172,7 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeInChild) {
 
   base::WaitableEvent event(base::win::ScopedHandle(::CreateEventA(
       /*lpEventAttributes=*/nullptr, /*bManualReset=*/FALSE,
-      /*bInitialState=*/FALSE, /*lpName=*/std::data(event_name))));
+      /*bInitialState=*/FALSE, /*lpName=*/event_name.c_str())));
 
   DWORD last_error = 0;
   ULONG_PTR proc_handle;

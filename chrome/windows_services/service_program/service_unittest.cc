@@ -170,7 +170,7 @@ class ServiceTest : public testing::Test {
   }
 
  private:
-  static ServiceEnvironment* service_environment_;
+  static inline ServiceEnvironment* service_environment_ = nullptr;
 
   // The main thread is an STA thread, so it must run a UI message loop.
   base::test::TaskEnvironment task_environment_{
@@ -178,9 +178,6 @@ class ServiceTest : public testing::Test {
   base::win::ScopedCOMInitializer com_initializer_;
   LogCollector log_collector_{*service_environment_};
 };
-
-// static
-ServiceEnvironment* ServiceTest::service_environment_ = nullptr;
 
 namespace {
 
