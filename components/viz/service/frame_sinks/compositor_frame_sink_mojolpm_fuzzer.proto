@@ -1,0 +1,94 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proto grammar for the CompositorFrameSink MojoLPM fuzzer. It drives the real
+// viz.mojom.CompositorFrameSink interface methods against a
+// CompositorFrameSinkSupport backed by a FrameSinkManagerImpl. The mojolpm
+// message types (mojolpm.viz.mojom.*) are generated from the corresponding
+// .mojom files by //services/viz/public/mojom:mojom_mojolpm; this grammar only
+// composes them into a per-call Action stream.
+
+syntax = "proto2";
+
+package viz.fuzzing.compositor_frame_sink.proto;
+
+import "services/viz/public/mojom/compositing/compositor_frame.mojom.mojolpm.proto";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom.mojolpm.proto";
+import "services/viz/public/mojom/compositing/begin_frame_args.mojom.mojolpm.proto";
+import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.mojolpm.proto";
+
+// viz.mojom.CompositorFrameSink::SubmitCompositorFrame(
+//     LocalSurfaceId local_surface_id, CompositorFrame frame,
+//     HitTestRegionList? hit_test_region_list, uint64 submit_time)
+//
+// Routed through CompositorFrameSinkSupport::MaybeSubmitCompositorFrame() so a
+// rejected frame returns a SubmitResult instead of DCHECK-failing (the public
+// SubmitCompositorFrame() wrapper DCHECK_EQ()s ACCEPTED).
+//
+// `frame` carries the whole mojolpm.viz.mojom.CompositorFrame graph (render
+// pass list / quad list / shared quad state list / transferable resource list),
+// so libprotobuf-mutator mutates the entire attacker-shaped object graph. The
+// primary asymmetries the harness is aimed at live inside this graph:
+//   * RenderPassDrawQuad.render_pass_id  -- CompositorRenderPassDrawQuad traits
+//     reject only a zero id, NOT absence-from-render_pass_list.
+//   * TextureDrawQuad.resource_id        -- TextureDrawQuad traits read it with
+//     the resource_list cross-check deferred to draw time, not deserialize time.
+message SubmitCompositorFrameAction {
+  required mojolpm.viz.mojom.LocalSurfaceId local_surface_id = 1;
+  required mojolpm.viz.mojom.CompositorFrame frame = 2;
+  optional mojolpm.viz.mojom.HitTestRegionList hit_test_region_list = 3;
+  optional uint64 submit_time = 4;
+}
+
+// viz.mojom.CompositorFrameSink::DidNotProduceFrame(BeginFrameAck ack)
+message DidNotProduceFrameAction {
+  required mojolpm.viz.mojom.BeginFrameAck ack = 1;
+}
+
+// viz.mojom.CompositorFrameSink::SetNeedsBeginFrame(bool needs_begin_frame)
+message SetNeedsBeginFrameAction {
+  required bool needs_begin_frame = 1;
+}
+
+// CompositorFrameSinkSupport::NotifyNewLocalSurfaceIdExpectedWhilePaused()
+message NotifyNewLocalSurfaceIdExpectedWhilePausedAction {}
+
+// CompositorFrameSinkSupport::SetWantsAnimateOnlyBeginFrames()
+message SetWantsAnimateOnlyBeginFramesAction {}
+
+// Drives one pump of the task runner so posted continuations (acks, surface
+// activation, garbage collection) run between actions.
+message RunThreadAction {
+  enum ThreadId {
+    IO = 0;
+    UI = 1;
+  }
+  required ThreadId id = 1;
+}
+
+message Action {
+  oneof action {
+    SubmitCompositorFrameAction submit_compositor_frame = 1;
+    DidNotProduceFrameAction did_not_produce_frame = 2;
+    SetNeedsBeginFrameAction set_needs_begin_frame = 3;
+    NotifyNewLocalSurfaceIdExpectedWhilePausedAction
+        notify_new_local_surface_id_expected_while_paused = 4;
+    SetWantsAnimateOnlyBeginFramesAction set_wants_animate_only_begin_frames =
+        5;
+    RunThreadAction run_thread = 6;
+  }
+}
+
+// Sequence provides a level of indirection allowing Testcase to compactly
+// represent repeated runs of the same Action stream (mirrors the in-tree
+// layer_context_impl_mojolpm_fuzzer grammar).
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}

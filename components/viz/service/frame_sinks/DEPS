@@ -47,4 +47,8 @@ specific_include_rules = {
     "+gpu/command_buffer/service/scheduler.h",
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
   ],
+  "compositor_frame_sink_mojolpm_fuzzer\\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  ],
 }

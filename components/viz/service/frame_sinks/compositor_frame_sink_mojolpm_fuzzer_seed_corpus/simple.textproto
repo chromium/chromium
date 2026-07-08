@@ -1,0 +1,115 @@
+# Seed for compositor_frame_sink_mojolpm_fuzzer.
+#
+# MojoLPM execution is sequence-driven: sequence_indexes[i] -> sequences[that] ->
+# action_indexes[j] -> actions[that]. A seed that omits sequence_indexes runs
+# ZERO actions, because Testcase::IsFinished() (mojo/public/tools/fuzzers/
+# mojolpm.h) returns true as soon as next_sequence_idx_ >= sequence_indexes_size()
+# -- which is 0 when the field is absent. So this seed wires all three:
+# actions + sequences + sequence_indexes.
+#
+# It also drives a *meaningful* SubmitCompositorFrame so the seed exercises the
+# real deserialize + service-accept path rather than bouncing off an early
+# reject:
+#   * begin_frame_ack.sequence_number = 1 (>= kInvalidFrameNumber+1==1) so the
+#     IsSequenceValid() gate in compositor_frame_sink_support.cc passes and the
+#     frame reaches surface creation/activation + resource refcounting. (The
+#     harness's NudgeBeginFrameAck only backfills this when absent/zero; setting
+#     it here makes the seed self-sufficient.)
+#   * one CompositorRenderPass with a nonzero render_pass_id (id 0 is invalid)
+#     and an output_rect, so the frame is a structurally valid single-pass frame.
+#
+# Every field/enum name below is grounded in the actually-generated proto:
+#   out/simfuzz/gen/services/viz/public/mojom/compositing/
+#     compositor_frame.mojom.mojolpm.proto         (CompositorFrame_ProtoStruct)
+#     compositor_frame_metadata.mojom.mojolpm.proto(CompositorFrameMetadata_*)
+#     begin_frame_args.mojom.mojolpm.proto         (BeginFrameAck_ProtoStruct)
+#     compositor_render_pass.mojom.mojolpm.proto   (CompositorRenderPass_*)
+#     compositor_render_pass_id.mojom.mojolpm.proto(CompositorRenderPassId_*)
+#     local_surface_id.mojom.mojolpm.proto         (LocalSurfaceId_ProtoStruct)
+#   out/simfuzz/gen/ui/gfx/geometry/mojom/geometry.mojom.mojolpm.proto (Rect_*)
+# Missing proto2 `required` sub-fields are only warnings under `protoc --encode`
+# (the mojolpm corpus convert does not pass --fatal_warnings), so this encodes to
+# a partial binarypb at build time.
+actions {
+  set_needs_begin_frame {
+    needs_begin_frame: true
+  }
+}
+actions {
+  submit_compositor_frame {
+    local_surface_id {
+      new {
+        id: 1
+        m_parent_sequence_number: 1
+        m_child_sequence_number: 1
+      }
+    }
+    frame {
+      new {
+        id: 2
+        m_metadata {
+          new {
+            id: 3
+            m_device_scale_factor: 1.0
+            m_begin_frame_ack {
+              new {
+                id: 4
+                m_source_id: 1
+                m_sequence_number: 1
+                m_has_damage: true
+              }
+            }
+            m_frame_token: 1
+          }
+        }
+        m_passes {
+          values {
+            value {
+              new {
+                id: 5
+                m_id {
+                  new {
+                    id: 6
+                    m_value: 1
+                  }
+                }
+                m_output_rect {
+                  new {
+                    id: 7
+                    m_x: 0
+                    m_y: 0
+                    m_width: 100
+                    m_height: 100
+                  }
+                }
+                m_damage_rect {
+                  new {
+                    id: 8
+                    m_x: 0
+                    m_y: 0
+                    m_width: 100
+                    m_height: 100
+                  }
+                }
+                m_has_transparent_background: false
+                m_has_per_quad_damage: false
+              }
+            }
+          }
+        }
+      }
+    }
+    submit_time: 0
+  }
+}
+actions {
+  run_thread {
+    id: UI
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 2
+}
+sequence_indexes: 0

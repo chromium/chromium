@@ -897,11 +897,36 @@ mojolpm_fuzzer_test("layer_context_impl_mojolpm_fuzzer") {
   proto_deps = [ "//services/viz/public/mojom:mojom_mojolpm" ]
 }
 
+mojolpm_fuzzer_test("compositor_frame_sink_mojolpm_fuzzer") {
+  sources = [ "frame_sinks/compositor_frame_sink_mojolpm_fuzzer.cc" ]
+
+  proto_source = "frame_sinks/compositor_frame_sink_mojolpm_fuzzer.proto"
+
+  seed_corpus_sources = [ "frame_sinks/compositor_frame_sink_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
+  testcase_proto_kind = "viz.fuzzing.compositor_frame_sink.proto.Testcase"
+
+  deps = [
+    ":service",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/tools/fuzzers:mojolpm",
+    "//services/viz/public/mojom:mojom_mojolpm",
+    "//testing/gtest",
+  ]
+
+  proto_deps = [ "//services/viz/public/mojom:mojom_mojolpm" ]
+}
+
 group("viz_service_fuzzers") {
   testonly = true
   deps = [ ":hit_test_manager_fuzzer" ]
 
   if (enable_mojom_fuzzer) {
-    deps += [ ":layer_context_impl_mojolpm_fuzzer" ]
+    deps += [
+      ":compositor_frame_sink_mojolpm_fuzzer",
+      ":layer_context_impl_mojolpm_fuzzer",
+    ]
   }
 }
