@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 
@@ -29,6 +30,16 @@ public class BottomBarTestUtils {
             return false;
         }
         if (isRegularNtp(activity) && BottomBarConfigUtils.shouldDisableOnNtp()) {
+            return false;
+        }
+        if (activity instanceof ChromeTabbedActivity tabbedActivity
+                && !BottomBarConfigUtils.shouldShowOnGts()
+                && ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabbedActivity.getLayoutManager() != null
+                                        && tabbedActivity
+                                                .getLayoutManager()
+                                                .isLayoutVisible(LayoutType.HUB))) {
             return false;
         }
         return true;

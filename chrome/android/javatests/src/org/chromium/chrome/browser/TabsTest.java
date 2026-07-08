@@ -74,6 +74,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -242,14 +243,20 @@ public class TabsTest {
                         () -> {
                             return mActivityTestRule.getActivity().getCurrentTabModel().getCount();
                         });
-        onViewWaiting(withId(R.id.tab_switcher_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        View tabSwitcherBtn =
+                BottomBarTestUtils.findViewById(
+                        mActivityTestRule.getActivity(), R.id.tab_switcher_button);
+        onViewWaiting(Matchers.is(tabSwitcherBtn)).check(matches(isDisplayed())).perform(click());
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.HUB);
 
-        int newTabButtonId = R.id.toolbar_action_button;
-        onViewWaiting(withId(newTabButtonId)).check(matches(isDisplayed())).perform(click());
+        int newTabButtonId =
+                BottomBarTestUtils.isBottomBarVisible(mActivityTestRule.getActivity())
+                        ? R.id.new_tab_button
+                        : R.id.toolbar_action_button;
+        View newTabBtn =
+                BottomBarTestUtils.findViewById(mActivityTestRule.getActivity(), newTabButtonId);
+        onViewWaiting(Matchers.is(newTabBtn)).check(matches(isDisplayed())).perform(click());
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 

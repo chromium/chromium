@@ -435,6 +435,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_NotDrawnWhenZeroWidth() {
         Drawable drawable =
                 AppCompatResources.getDrawable(
@@ -479,6 +480,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_NotDrawnWhenNotVisible() {
 
         Drawable drawable =
@@ -524,6 +526,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_DrawnWhenVisible() {
 
         Drawable drawable =
