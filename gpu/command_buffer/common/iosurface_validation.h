@@ -15,13 +15,15 @@
 namespace gpu {
 
 // Ensure that the IOSurface has the same size and pixel format as those
-// specified by `size` and `format`. A malicious client could lie about
-// this, which, if subsequently used to determine parameters for bounds
+// specified by `size` and `format`. If `cpu_access` is specified, then also
+// ensure that the IOSurface supports CPU access. A malicious client could lie
+// about this, which, if subsequently used to determine parameters for bounds
 // checking, could result in an out-of-bounds memory access.
 bool GPU_COMMAND_BUFFER_COMMON_EXPORT
 ValidateIOSurface(const gfx::ScopedIOSurface& io_surface,
                   viz::SharedImageFormat format,
                   gfx::Size size,
+                  bool cpu_access,
                   std::string* out_error_str);
 
 }  // namespace gpu

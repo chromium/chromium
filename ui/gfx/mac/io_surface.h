@@ -123,6 +123,14 @@ bool IOSurfacePixelFormatIsWebGPUCompatible(uint32_t pixel_format);
 COMPONENT_EXPORT(GFX)
 bool IOSurfacePixelFormatSupportsCpuAccess(uint32_t pixel_format);
 
+// Return true if the specified IOSurface pixel format can be used with the
+// specified viz::SharedImageFormat. If `match_rgba_and_bgra` is true, then
+// allow matching BGRA to RGBA formats and vice-versa.
+COMPONENT_EXPORT(GFX)
+bool IOSurfacePixelFormatMatchesSharedImageFormat(uint32_t pixel_format,
+                                                  viz::SharedImageFormat format,
+                                                  bool match_rgba_and_bgra);
+
 // Return the expected CVPixelFormatType for an IOSurface with the specified
 // viz::SharedImageFormat. If `override_rgba_to_bgra` is true then map RGBA and
 // RGBX to BGRA.

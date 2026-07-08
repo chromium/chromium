@@ -136,7 +136,7 @@ MappableBufferIOSurface::CreateFromHandleImpl(
 
   std::string validation_error;
   if (!ValidateIOSurface(handle.io_surface(), format, size,
-                         &validation_error)) {
+                         /*cpu_access=*/true, &validation_error)) {
     LOG(ERROR) << validation_error;
     return nullptr;
   }

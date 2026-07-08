@@ -241,6 +241,31 @@ bool IOSurfacePixelFormatSupportsCpuAccess(uint32_t cv_pixel_format) {
   return false;
 }
 
+bool IOSurfacePixelFormatMatchesSharedImageFormat(uint32_t pixel_format,
+                                                  viz::SharedImageFormat format,
+                                                  bool match_rgba_and_bgra) {
+  for (const auto& info : kIOSurfaceFormats) {
+    if (pixel_format == info.cv_pixel_format) {
+      for (const auto& shared_image_format : info.shared_image_formats) {
+        if (shared_image_format == format) {
+          return true;
+        }
+      }
+    }
+  }
+  if (match_rgba_and_bgra) {
+    switch (pixel_format) {
+      case kCVPixelFormatType_32RGBA:
+        return IOSurfacePixelFormatMatchesSharedImageFormat(
+            kCVPixelFormatType_32BGRA, format, false);
+      case kCVPixelFormatType_32BGRA:
+        return IOSurfacePixelFormatMatchesSharedImageFormat(
+            kCVPixelFormatType_32RGBA, format, false);
+    }
+  }
+  return false;
+}
+
 namespace internal {
 
 // static

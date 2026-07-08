@@ -414,6 +414,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     std::optional<gfx::BufferUsage> buffer_usage) {
   const auto format = si_info.format;
   const auto size = si_info.size;
+  const bool cpu_access = si_info.usage.HasAny(
+      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+      SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD);
 
   if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface()) {
     LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
@@ -422,7 +425,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
 
   auto io_surface = std::move(handle).io_surface();
   std::string validation_error;
-  if (!ValidateIOSurface(io_surface, format, size, &validation_error)) {
+  if (!ValidateIOSurface(io_surface, format, size, cpu_access,
+                         &validation_error)) {
     LOG(ERROR) << validation_error;
     return nullptr;
   }
