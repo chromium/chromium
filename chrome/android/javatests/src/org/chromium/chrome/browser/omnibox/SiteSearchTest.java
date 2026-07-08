@@ -157,7 +157,6 @@ public class SiteSearchTest {
 
         // Press <tab>
         mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
 
         checkIsActionChipSelected("Search TestName");
 

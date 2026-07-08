@@ -26,7 +26,9 @@ public class LocationBarSelectionController extends SelectionController {
     private final List<SelectableView> mVisibleViewsHolder = new ArrayList<>();
 
     public interface SelectableView {
-        boolean isAutocompleteList();
+        default boolean isAutocompleteList() {
+            return false;
+        }
 
         boolean isVisible();
 
@@ -47,8 +49,10 @@ public class LocationBarSelectionController extends SelectionController {
     public SelectableView getSelectedView() {
         Integer position = getPosition();
         assertNonNull(position);
+        List<SelectableView> visibleViews = getVisibleViews();
+        position = Math.min(position, visibleViews.size() - 1);
 
-        return getVisibleViews().get(position);
+        return visibleViews.get(position);
     }
 
     @Override

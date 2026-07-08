@@ -241,6 +241,7 @@ public class LocationBarMediatorTest {
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock private View mUrlBar;
     @Mock private View mDeleteButton;
+    @Mock private View mActivationChip;
     @Mock private View mMicButton;
     @Mock private View mNavigateButton;
     @Mock private View mPlusButton;
@@ -417,6 +418,9 @@ public class LocationBarMediatorTest {
 
         doReturn(mUrlBar).when(mLocationBarLayout).getUrlBar();
         doReturn(mDeleteButton).when(mLocationBarLayout).getDeleteButton();
+        doReturn(mActivationChip)
+                .when(mLocationBarLayout)
+                .findViewById(R.id.fusebox_activation_chip);
         doReturn(mPlusButton).when(mLocationBarLayout).findViewById(R.id.fusebox_plus_button);
         doReturn(mMicButton).when(mLocationBarLayout).getMicButton();
         doReturn(mNavigateButton).when(mLocationBarLayout).getNavigateButton();
@@ -463,6 +467,9 @@ public class LocationBarMediatorTest {
                         mExactMatchUrlSupplier);
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
+        doReturn(mActivationChip)
+                .when(mLocationBarTablet)
+                .findViewById(R.id.fusebox_activation_chip);
         doReturn(mPlusButton).when(mLocationBarTablet).findViewById(R.id.fusebox_plus_button);
         doReturn(mMicButton).when(mLocationBarTablet).getMicButton();
         doReturn(mNavigateButton).when(mLocationBarTablet).getNavigateButton();
@@ -3468,6 +3475,13 @@ public class LocationBarMediatorTest {
         doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
         doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
+        doReturn(View.GONE).when(mActivationChip).getVisibility();
+        doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH).setUserText("user text");
+        mMediator.beginInput(input);
+
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         LocationBarSelectionController selectionController =
                 mMediator.getSelectionControllerForTesting();
@@ -3475,6 +3489,7 @@ public class LocationBarMediatorTest {
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
         assertEquals(2, selectionController.getPosition().intValue());
         verify(mAutocompleteCoordinator).selectFirstItem();
+        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_TAB, mKeyEvent);
         assertTrue(selectionController.isAutocompleteSelected());
 
         doReturn(true)
