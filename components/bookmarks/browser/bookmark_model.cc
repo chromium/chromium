@@ -269,6 +269,9 @@ void BookmarkModel::Load(const base::FilePath& profile_path) {
   }
 }
 
+// This is a killswitch if we encounter issues.
+BASE_FEATURE(kDoBookmarkFileCleanup, base::FEATURE_ENABLED_BY_DEFAULT);
+
 void BookmarkModel::ContinueLoadWithEncryptor(
     const base::FilePath& profile_path,
     scoped_refptr<const os_crypt_async::Encryptor> encryptor) {
@@ -302,6 +305,23 @@ void BookmarkModel::ContinueLoadWithEncryptor(
         account_file_path, encrypted_account_file_path);
   }
 
+  std::vector<base::FilePath> files_to_delete;
+  if (base::FeatureList::IsEnabled(kDoBookmarkFileCleanup)) {
+    // There was a rollback at one point and these files were abandoned.
+    files_to_delete.emplace_back(profile_path.Append(
+        kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName));
+    files_to_delete.emplace_back(
+        profile_path.Append(kOBSOLETE_EncryptedAccountBookmarksFileName));
+
+    if (!base::FeatureList::IsEnabled(kEncryptBookmarks)) {
+      // All encrypted files must be deleted if the experiment is disabled.
+      files_to_delete.emplace_back(
+          profile_path.Append(kEncryptedLocalOrSyncableBookmarksFileName));
+      files_to_delete.emplace_back(
+          profile_path.Append(kEncryptedAccountBookmarksFileName));
+    }
+  }
+
   // Loading the ModelLoader schedules the load on a backend task runner.
   model_loader_->Load(
       std::move(encryptor), local_or_syncable_file_path,
@@ -313,17 +333,7 @@ void BookmarkModel::ContinueLoadWithEncryptor(
           ? base::BindOnce(&BookmarkStorage::SaveSingleFileIfNoPreviousSave,
                            account_store_->AsWeakPtr())
           : base::DoNothing(),
-      /*files_to_delete=*/
-      {
-          // There was a rollback at one point and these files were abandoned.
-          profile_path.Append(
-              kOBSOLETE_EncryptedLocalOrSyncableBookmarksFileName),
-          profile_path.Append(kOBSOLETE_EncryptedAccountBookmarksFileName),
-
-          // TODO(crbug.com/479420496): All encrypted files should be deleted
-          // if we end up disabling the experiment again. That prevents the
-          // need to do future renames, and should be done in M152.
-      },
+      files_to_delete,
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 

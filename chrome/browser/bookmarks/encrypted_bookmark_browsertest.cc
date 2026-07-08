@@ -442,10 +442,9 @@ IN_PROC_BROWSER_TEST_F(MoveBackFromStage1Test, BookmarksStillAvailable) {
   AddMoreBookmarks(bookmark_model);
 
   EXPECT_THAT(bookmark_model, HasAdditionalBookmarksCount());
-  // All files always exist since we don't clean up encrypted files when going
-  // back to previous stage.
+  // Only cleartext files exist as encrypted files are cleaned up.
   EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
-  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesDontExist(GetProfile()->GetPath()));
 }
 
 // Move back from stage 2 (write both, read encrypted) to stage 1 (write both,
