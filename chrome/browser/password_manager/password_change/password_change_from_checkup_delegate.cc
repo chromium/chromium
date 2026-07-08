@@ -200,10 +200,12 @@ PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() =
 
 void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
     const password_manager::CredentialUIEntry& credential,
-    base::WeakPtr<content::WebContents> web_contents) {
+    base::WeakPtr<content::WebContents> web_contents,
+    StateChangeCallback callback) {
   if (!web_contents) {
     return;
   }
+  state_change_callback_ = std::move(callback);
   originator_ = std::move(web_contents);
 
   // TODO(crbug.com/485620841): Handle non-web URLs for Android passwords.
@@ -268,6 +270,10 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
             &PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged,
             base::Unretained(this)));
+    if (state_change_callback_) {
+      state_change_callback_.Run(
+          PasswordAutomaticChangeState::kAttemptingSignIn);
+    }
   }
 }
 
@@ -317,6 +323,9 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     }
     task.Stop(actor::ActorTask::StoppedReason::kShutdown);
     actor_task_state_subscription_ = {};
+    if (state_change_callback_) {
+      state_change_callback_.Run(PasswordAutomaticChangeState::kError);
+    }
     return;
   }
 
@@ -353,6 +362,10 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
     logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FOUND);
   }
 
+  if (state_change_callback_) {
+    state_change_callback_.Run(PasswordAutomaticChangeState::kChangingPassword);
+  }
+
   form_filler_ = std::make_unique<ChangePasswordFormFiller>(
       actuation_web_contents_.get(),
       ChromePasswordManagerClient::FromWebContents(
@@ -381,6 +394,11 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormFilled(
 
   if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FILLED);
+  }
+
+  if (state_change_callback_) {
+    state_change_callback_.Run(
+        PasswordAutomaticChangeState::kConfirmingChangedPassword);
   }
 
   glic::GlicKeyedService* glic_service = GetGlicService();
@@ -488,6 +506,12 @@ void PasswordChangeFromCheckupDelegate::HandleMaybeSuccessfulPasswordChange() {
   if (saved_form_manager_) {
     saved_form_manager_->Save();
     saved_form_manager_.reset();
+    if (state_change_callback_) {
+      state_change_callback_.Run(
+          PasswordAutomaticChangeState::kPasswordChangedSuccessfully);
+    }
+  } else if (state_change_callback_) {
+    state_change_callback_.Run(PasswordAutomaticChangeState::kError);
   }
 }
 

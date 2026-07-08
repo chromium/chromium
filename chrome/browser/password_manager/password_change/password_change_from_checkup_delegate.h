@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -39,13 +40,27 @@ class GlicKeyedService;
 // page.
 class PasswordChangeFromCheckupDelegate {
  public:
+  // Enumerates possible states the automatic change flow could be in
+  enum class PasswordAutomaticChangeState {
+    kInactive,
+    kAttemptingSignIn,
+    kChangingPassword,
+    kConfirmingChangedPassword,
+    kPasswordChangedSuccessfully,
+    kError
+  };
+
+  using StateChangeCallback =
+      base::RepeatingCallback<void(PasswordAutomaticChangeState)>;
+
   explicit PasswordChangeFromCheckupDelegate(
       password_manager::PasswordManagerClient* client);
   ~PasswordChangeFromCheckupDelegate();
 
   void StartPasswordChangeFlow(
       const password_manager::CredentialUIEntry& credential,
-      base::WeakPtr<content::WebContents> web_contents);
+      base::WeakPtr<content::WebContents> web_contents,
+      StateChangeCallback callback = base::NullCallback());
 
 #if defined(UNIT_TEST)
   std::optional<actor::ActorTask::State> GetFindFormTaskState() const {
@@ -98,6 +113,8 @@ class PasswordChangeFromCheckupDelegate {
   std::unique_ptr<password_manager::PasswordFormManager> saved_form_manager_;
   bool verification_task_created_ = false;
   base::OneShotTimer verification_timer_;
+
+  StateChangeCallback state_change_callback_;
 
   base::WeakPtrFactory<PasswordChangeFromCheckupDelegate> weak_ptr_factory_{
       this};

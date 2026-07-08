@@ -107,7 +107,9 @@ class ChromePasswordChangeService
   // given `credential`.
   virtual void StartPasswordChangeFromCheckup(
       const password_manager::CredentialUIEntry& credential,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      PasswordChangeFromCheckupDelegate::StateChangeCallback callback =
+          base::DoNothing());
 #endif
 
   // PasswordChangeServiceInterface implementation.

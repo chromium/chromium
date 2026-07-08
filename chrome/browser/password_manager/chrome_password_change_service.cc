@@ -46,8 +46,6 @@ inline constexpr base::TimeDelta kThrottleDuration = base::Days(14);
 // already.
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
-
-
 optimization_guide::prefs::FeatureOptInState GetFeatureState(
     PrefService* pref_service) {
   return static_cast<optimization_guide::prefs::FeatureOptInState>(
@@ -207,7 +205,8 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
     const password_manager::CredentialUIEntry& credential,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    PasswordChangeFromCheckupDelegate::StateChangeCallback callback) {
   if (!web_contents) {
     return;
   }
@@ -219,7 +218,7 @@ void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
   }
 
   password_change_from_checkup_delegate_->StartPasswordChangeFlow(
-      credential, web_contents->GetWeakPtr());
+      credential, web_contents->GetWeakPtr(), std::move(callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
