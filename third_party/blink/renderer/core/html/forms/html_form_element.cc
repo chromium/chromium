@@ -29,7 +29,6 @@
 #include <limits>
 
 #include "base/auto_reset.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -1290,10 +1289,7 @@ void HTMLFormElement::CollectListedElements(
   const bool nested_forms_have_form_associated_elements =
       std::ranges::any_of(nested_forms, [](const auto& form) {
         return form->has_elements_associated_by_form_attribute_ ||
-               (form->has_elements_associated_by_parser_ &&
-                base::FeatureList::IsEnabled(
-                    features::
-                        kAutofillFixFieldsAssociatedWithNestedFormsByParser));
+               form->has_elements_associated_by_parser_;
       });
   if (nested_forms_have_form_associated_elements && isConnected()) {
     root = &GetTreeScope().RootNode();
