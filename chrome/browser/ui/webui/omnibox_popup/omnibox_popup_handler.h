@@ -42,13 +42,13 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   // omnibox_popup::mojom::PageHandler:
   void ShowContextMenu(const gfx::Point& point) override;
   void CloseUI() override;
+  void OnManualBlur(uint32_t sequence_number) override;
   void OnSelectionChanged(const gfx::Range& selection,
                           uint32_t sequence_number,
                           bool show_full_url) override;
   void Revert(uint32_t sequence_number) override;
   void LogEscapeAction(
       omnibox_popup::mojom::OmniboxEscapeAction action) override;
-  void OnInputCleared(uint32_t sequence_number) override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();
@@ -60,7 +60,6 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      bool is_focused,
                      const std::string& permanent_display_text,
                      bool show_full_url);
-  void SetFocus(bool is_focused);
 
   const gfx::Range& latest_selection() const { return latest_selection_; }
   bool show_full_url() const { return show_full_url_; }

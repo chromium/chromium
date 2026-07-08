@@ -53,6 +53,9 @@ interface PageHandler {
   // Closes the Omnibox Popup.
   CloseUI();
 
+  // Called when the WebUI input is manually blurred (e.g. webpage click).
+  OnManualBlur(uint32 sequence_number);
+
   // Called when the selection changes in the WebUI.
   OnSelectionChanged(
     gfx.mojom.Range selection, uint32 sequence_number, bool show_full_url);
@@ -63,10 +66,6 @@ interface PageHandler {
 
   // Logs the Escape key press action to UMA.
   LogEscapeAction(OmniboxEscapeAction action);
-
-  // Notifies the browser that the user has cleared the Omnibox.
-  // Discards the call if `sequence_number` is stale.
-  OnInputCleared(uint32 sequence_number);
 };
 
 // The WebUI page for the Omnibox Popup.
@@ -80,7 +79,4 @@ interface Page {
   // Called by the browser to update the input state (e.g. input text
   // and selection range) of the WebUI Omnibox.
   SetInputState(OmniboxInputState state);
-
-  // Called by the browser when focus changes within the active tab.
-  SetFocus(bool is_focused);
 };

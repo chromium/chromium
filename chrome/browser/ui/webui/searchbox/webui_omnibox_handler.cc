@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
@@ -329,9 +330,9 @@ void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
     edit_model()->OnSetFocus(false);
   } else {
     edit_model()->OnWillKillFocus();
-    // Kill focus on focus loss to properly terminate the edit session and reset
-    // popup and keyword state.
-    edit_model()->OnKillFocus();
+    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      edit_model()->OnKillFocus();
+    }
   }
 }
 

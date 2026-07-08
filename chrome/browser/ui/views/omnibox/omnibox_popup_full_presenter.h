@@ -30,10 +30,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase {
   // OmniboxPopupPresenterBase:
   void Show() override;
   void Hide() override;
-  // Requests activation of the popup widget and focuses the WebUI content,
-  // while clearing stored focus on the container widget to prevent stealing
-  // focus back from the WebUI input field.
-  void RequestFocus() override;
 
   std::string_view GetPopupMetricPrefix() const override;
 
@@ -43,9 +39,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase {
 
  protected:
   // OmniboxPopupPresenterBase:
-  // Returns true so that explicit focus requests (`focus_requested_`) are
-  // preserved across asynchronous widget show/hide layout transitions.
-  bool ShouldPreserveRequestedFocus() const override;
   std::unique_ptr<RoundedOmniboxResultsFrame> CreateResultsFrame(
       std::unique_ptr<views::View> contents,
       LocationBar* location_bar,

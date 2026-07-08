@@ -39,21 +39,21 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   void SaveStateToTab(content::WebContents* tab) override;
   // Called when the active tab changes.
   void OnTabChanged(content::WebContents* contents) override;
-  // Called when the native omnibox gains focus. If the popup state changed,
-  // synchronizes full input state (`SyncNativeStateToWebUI()`). If the popup
-  // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
-  // DOM input focus in the WebUI is restored without resetting input state.
+  // Called when the omnibox gains focus.
   void OnFocus() override;
+  // Called when the WebUI omnibox reports a manual blur.
+  void OnManualBlur() override;
 
  private:
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
   OmniboxPopupHandler* GetPopupHandler();
 
+  // Track if the popup is logically focused.
+  bool is_popup_focused_ = true;
+
   // Caches the last text string sent to the WebUI to avoid redundant IPCs.
   // Null after a state reset (e.g., tab switch).
   std::optional<std::u16string> last_sent_text_;
-  // Caches the last focus state sent to the WebUI to detect focus transitions.
-  std::optional<bool> last_sent_focus_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_
