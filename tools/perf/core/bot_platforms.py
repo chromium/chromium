@@ -525,7 +525,8 @@ def _browser_startup_crossbench(estimated_runtime: int = 60,
                           'browser-startup',
                           estimated_runtime=estimated_runtime,
                           flags=(f'--enable-features={INITIAL_WEBUI_FEATURES}',
-                                 *flags))
+                                 *flags),
+                          repeat=10)
 
 
 
