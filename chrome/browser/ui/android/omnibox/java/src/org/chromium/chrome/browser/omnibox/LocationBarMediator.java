@@ -2643,11 +2643,12 @@ class LocationBarMediator
         mUrlCoordinator.clearFocus();
 
         // Restore the saved tab state.
-        var state = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null && state.isSessionActive()) {
-            state.getAutocompleteInput()
-                    .setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
-            beginInput(state.getAutocompleteInput());
+            AutocompleteInput input = state.getAutocompleteInput();
+            input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
+            input.setAutocompleteState(AutocompleteState.STANDBY);
+            beginInput(input);
         }
 
         // Set zoom indicator tooltip
