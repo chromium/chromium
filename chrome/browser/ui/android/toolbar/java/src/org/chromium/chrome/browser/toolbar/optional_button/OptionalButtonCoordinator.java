@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.transition.Transition;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -145,6 +146,15 @@ public class OptionalButtonCoordinator {
      */
     public void setCollapsedStateWidth(int width) {
         mMediator.setCollapsedStateWidth(width);
+    }
+
+    /**
+     * Sets the transition delegate that will be used to run transitions.
+     *
+     * @param delegate The transition delegate.
+     */
+    public void setTransitionDelegate(@Nullable Callback<Transition> delegate) {
+        mView.setTransitionDelegate(delegate);
     }
 
     /** Sets a runnable that's invoked before the optional button is hidden. */

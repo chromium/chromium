@@ -110,7 +110,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -3429,18 +3428,13 @@ public class ToolbarPhone extends ToolbarLayout
                             /* transitionRoot= */ mToolbarButtonsContainer,
                             isAnimationAllowedPredicate,
                             mTrackerSupplier);
-
             // Set the button's background to the same color as the URL bar background. This color
             // is only used when showing dynamic actions.
             mOptionalButtonCoordinator.setBackgroundColorFilter(mCurrentLocationBarColor);
             mOptionalButtonCoordinator.setOnBeforeHideTransitionCallback(
                     () -> {
                         mLayoutLocationBarWithoutExtraButton = true;
-                        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
-                            createAndRunFocusAnimatorRefactored(urlHasFocus());
-                        }
                     });
-
             mOptionalButtonCoordinator.setTransitionStartedCallback(
                     transitionType -> {
                         TraceEvent.startAsync(
@@ -3495,12 +3489,10 @@ public class ToolbarPhone extends ToolbarLayout
                 mOptionalButtonCoordinator.setOnBeforeShowTransitionCallback(
                         () -> {
                             mOptionalButtonShowTransitionRunning = true;
-                            createAndRunFocusAnimatorRefactored(urlHasFocus());
                         });
                 mOptionalButtonCoordinator.setOnBeforeWidthTransitionCallback(
                         (type, widthDelta) -> {
                             mOptionalButtonTransitionWidthDelta = widthDelta;
-                            createAndRunFocusAnimatorRefactored(urlHasFocus());
                         });
             }
 
@@ -3569,7 +3561,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // Update toolbar.
         boolean showInToolbar;
-        boolean isSignInLevelUp = SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON);
+        boolean isSignInLevelUp = SigninFeatureMap.sSigninLevelUpButton.isEnabled();
         if (shouldModifyButtons) {
             // New IA: Only show the button on the NTP for the identity disk if needed.
             showInToolbar =
