@@ -257,7 +257,7 @@ void PredictionManager::FetchModels() {
     }
 
     if (const ModelInfo* info = registry_.GetModel(target); info) {
-      model_info.set_version(info->version);
+      model_info.set_version(info->GetVersion());
     }
 
     models_info.push_back(model_info);
@@ -751,7 +751,7 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
     int64_t new_version) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (const ModelInfo* info = registry_.GetModel(optimization_target); info) {
-    return info->version != new_version;
+    return info->GetVersion() != new_version;
   }
   return true;
 }

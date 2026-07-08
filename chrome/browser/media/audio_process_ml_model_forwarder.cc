@@ -239,8 +239,8 @@ void AudioProcessMlModelForwarder::SingleModelForwarder::OnModelUpdated(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK_EQ(optimization_target, target_);
-  model_path_ =
-      model_info.has_value() ? model_info->model_file_path : base::FilePath();
+  model_path_ = model_info.has_value() ? model_info->GetModelFilePath()
+                                       : base::FilePath();
   if (model_path_.empty() && owner_->audio_process_model_manager_) {
     CancelModelLoadingTasks();
     owner_->audio_process_model_manager_->StopServingModel(mojo_type_);

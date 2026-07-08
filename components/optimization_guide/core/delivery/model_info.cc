@@ -4,15 +4,27 @@
 
 #include "components/optimization_guide/core/delivery/model_info.h"
 
-#include <memory>
-
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 
 namespace optimization_guide {
+
+ModelInfo::ModelInfo(const base::FilePath& model_file_path,
+                     const base::flat_map<base::FilePath::StringType,
+                                          base::FilePath>& additional_files,
+                     const int64_t version,
+                     const std::optional<proto::Any>& model_metadata)
+    : model_file_path_(model_file_path),
+      additional_files_(additional_files),
+      version_(version),
+      model_metadata_(model_metadata) {}
+
+ModelInfo::~ModelInfo() = default;
+ModelInfo::ModelInfo(const ModelInfo&) = default;
 
 // static
 std::unique_ptr<ModelInfo> ModelInfo::Create(
@@ -26,7 +38,7 @@ std::unique_ptr<ModelInfo> ModelInfo::Create(
     return nullptr;
   }
 
-  base::flat_set<base::FilePath> additional_files;
+  base::flat_map<base::FilePath::StringType, base::FilePath> additional_files;
   for (const proto::AdditionalModelFile& additional_file :
        model.model_info().additional_files()) {
     std::optional<base::FilePath> additional_file_path =
@@ -37,7 +49,8 @@ std::unique_ptr<ModelInfo> ModelInfo::Create(
     if (!additional_file_path->IsAbsolute()) {
       NOTREACHED() << FilePathToString(*additional_file_path);
     }
-    additional_files.insert(std::move(*additional_file_path));
+    additional_files[additional_file_path->BaseName().value()] =
+        *additional_file_path;
   }
 
   std::optional<proto::Any> model_metadata;
@@ -45,22 +58,40 @@ std::unique_ptr<ModelInfo> ModelInfo::Create(
     model_metadata = model.model_info().model_metadata();
   }
 
-  return std::make_unique<ModelInfo>(ModelInfo{
-      .model_file_path = *model_file_path,
-      .additional_files = std::move(additional_files),
-      .version = model.model_info().version(),
-      .model_metadata = std::move(model_metadata),
-  });
+  // Private ctor, so we can't use std::make_unique.
+  return base::WrapUnique(new ModelInfo(*model_file_path, additional_files,
+                                        model.model_info().version(),
+                                        model_metadata));
+}
+
+base::FilePath ModelInfo::GetModelFilePath() const {
+  return model_file_path_;
+}
+
+base::flat_set<base::FilePath> ModelInfo::GetAdditionalFiles() const {
+  base::flat_set<base::FilePath> files;
+  for (auto it = additional_files_.begin(); it != additional_files_.end();
+       it++) {
+    files.insert(it->second);
+  }
+  return files;
 }
 
 std::optional<base::FilePath> ModelInfo::GetAdditionalFileWithBaseName(
     const base::FilePath::StringType& base_name) const {
-  for (const auto& file : additional_files) {
-    if (file.BaseName().value() == base_name) {
-      return file;
-    }
+  if (auto it = additional_files_.find(base_name);
+      it != additional_files_.end()) {
+    return it->second;
   }
   return std::nullopt;
+}
+
+int64_t ModelInfo::GetVersion() const {
+  return version_;
+}
+
+std::optional<proto::Any> ModelInfo::GetModelMetadata() const {
+  return model_metadata_;
 }
 
 std::unique_ptr<proto::PredictionModel> LoadAndVerifyModelOffThread(
@@ -107,4 +138,5 @@ std::unique_ptr<ModelInfo> LoadAndVerifyModelInfoOffThread(
       LoadAndVerifyModelOffThread(optimization_target, base_model_dir);
   return model ? ModelInfo::Create(*model) : nullptr;
 }
+
 }  // namespace optimization_guide

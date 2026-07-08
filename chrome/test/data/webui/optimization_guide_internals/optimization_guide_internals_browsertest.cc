@@ -144,13 +144,13 @@ class OptimizationGuideInternalsModelsPageBrowserTest
               base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
               EXPECT_TRUE(model_info.has_value());
-              EXPECT_EQ(123, model_info->version);
-              EXPECT_TRUE(model_info->model_file_path.IsAbsolute());
-              EXPECT_TRUE(base::PathExists(model_info->model_file_path));
+              EXPECT_EQ(123, model_info->GetVersion());
+              EXPECT_TRUE(model_info->GetModelFilePath().IsAbsolute());
+              EXPECT_TRUE(base::PathExists(model_info->GetModelFilePath()));
 
-              EXPECT_EQ(1U, model_info->additional_files.size());
+              EXPECT_EQ(1U, model_info->GetAdditionalFiles().size());
               for (const base::FilePath& add_file :
-                   model_info->additional_files) {
+                   model_info->GetAdditionalFiles()) {
                 EXPECT_TRUE(add_file.IsAbsolute());
                 EXPECT_TRUE(base::PathExists(add_file));
               }

@@ -23,7 +23,7 @@
 #include "services/audio/public/mojom/ml_model_manager.mojom.h"
 
 namespace optimization_guide {
-struct ModelInfo;
+class ModelInfo;
 }  // namespace optimization_guide
 
 class PrefService;

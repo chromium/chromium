@@ -46,7 +46,7 @@ void LanguageDetectionModelService::OnModelUpdated(
     UnloadModelFile();
     return;
   }
-  ReplaceModelFile(model_info->model_file_path);
+  ReplaceModelFile(model_info->GetModelFilePath());
 }
 
 }  // namespace language_detection

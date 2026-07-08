@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -95,12 +95,13 @@ class AIEmbeddingsComponentInstallerPolicy
       version_num = (version_num << 16) + component;
     }
 
-    optimization_guide::ModelInfo model_info{
-        .model_file_path = GetInstalledModelPath(install_dir),
-        .additional_files = {GetInstalledSpModelPath(install_dir)},
-        .version = static_cast<int64_t>(version_num),
-        .model_metadata = any_metadata,
-    };
+    base::flat_map<base::FilePath::StringType, base::FilePath>
+        additional_files = {
+            {kSpModelFileName, GetInstalledSpModelPath(install_dir)}};
+
+    optimization_guide::ModelInfo model_info(
+        GetInstalledModelPath(install_dir), additional_files,
+        static_cast<int64_t>(version_num), any_metadata);
 
     AISemanticEmbedderServiceLauncher::Get()
         ->controller()

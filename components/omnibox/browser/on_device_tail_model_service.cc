@@ -165,7 +165,7 @@ void OnDeviceTailModelService::OnModelUpdated(
   }
 
   const std::optional<optimization_guide::proto::Any>& metadata =
-      model_info->model_metadata;
+      model_info->GetModelMetadata();
   std::optional<optimization_guide::proto::OnDeviceTailSuggestModelMetadata>
       tail_model_metadata = std::nullopt;
   if (metadata.has_value()) {
@@ -181,7 +181,8 @@ void OnDeviceTailModelService::OnModelUpdated(
   model_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&InitializeTailModelExecutor, tail_model_executor_.get(),
-                     model_info->model_file_path, model_info->additional_files,
+                     model_info->GetModelFilePath(),
+                     model_info->GetAdditionalFiles(),
                      tail_model_metadata.value()));
 }
 

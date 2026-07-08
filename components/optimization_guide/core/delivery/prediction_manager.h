@@ -54,7 +54,7 @@ class OptimizationTargetModelObserver;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class PredictionModelStore;
-struct ModelInfo;
+class ModelInfo;
 class ProfileDownloadServiceTracker;
 
 // A PredictionManager supported by the optimization guide that makes an

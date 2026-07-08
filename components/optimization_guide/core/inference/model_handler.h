@@ -261,7 +261,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
     model_available_ = model_info.has_value();
     if (model_info.has_value()) {
       model_info_ = *model_info;
-      model_file_path = model_info->model_file_path;
+      model_file_path = model_info->GetModelFilePath();
     } else {
       model_info_ = std::nullopt;
     }
@@ -307,10 +307,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
     requires(std::is_convertible_v<T*, google::protobuf::MessageLite*>)
   std::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!model_info_ || !model_info_->model_metadata) {
+    if (!model_info_ || !model_info_->GetModelMetadata()) {
       return std::nullopt;
     }
-    return ParsedAnyMetadata<T>(*model_info_->model_metadata);
+    return ParsedAnyMetadata<T>(*model_info_->GetModelMetadata());
   }
 
  private:

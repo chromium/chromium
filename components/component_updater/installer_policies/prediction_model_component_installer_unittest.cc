@@ -193,7 +193,7 @@ TEST_F(PredictionModelComponentInstallerTest, ComponentReadyNotifiesListener) {
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_EQ(observer.last_target(), kTestTarget);
   ASSERT_TRUE(observer.last_model_info());
-  EXPECT_EQ(observer.last_model_info()->version, 123);
+  EXPECT_EQ(observer.last_model_info()->GetVersion(), 123);
 
   listener_.RemoveObserverForOptimizationTargetModel(kTestTarget, &observer);
 }
@@ -302,12 +302,12 @@ TEST_F(PredictionModelComponentInstallerTest,
   EXPECT_EQ(observer1.call_count(), 1);
   EXPECT_EQ(observer1.last_target(), kTestTarget);
   ASSERT_TRUE(observer1.last_model_info());
-  EXPECT_EQ(observer1.last_model_info()->version, 123);
+  EXPECT_EQ(observer1.last_model_info()->GetVersion(), 123);
 
   EXPECT_EQ(observer2.call_count(), 1);
   EXPECT_EQ(observer2.last_target(), kTestTarget);
   ASSERT_TRUE(observer2.last_model_info());
-  EXPECT_EQ(observer2.last_model_info()->version, 123);
+  EXPECT_EQ(observer2.last_model_info()->GetVersion(), 123);
 
   listener_.RemoveObserverForOptimizationTargetModel(kTestTarget, &observer1);
   listener_.RemoveObserverForOptimizationTargetModel(kTestTarget, &observer2);

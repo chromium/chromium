@@ -155,8 +155,9 @@ TEST_F(NotificationContentDetectionModelTest, CheckModelUpdateAvailability) {
   // info available.
   EXPECT_TRUE(
       notification_content_detection_model()->GetModelInfo().has_value());
-  EXPECT_EQ(notification_content_detection_model()->GetModelInfo()->version,
-            kModelVersion);
+  EXPECT_EQ(
+      notification_content_detection_model()->GetModelInfo()->GetVersion(),
+      kModelVersion);
 
   // Expect relevant OptimizationGuide histograms to be logged.
   histogram_tester().ExpectTotalCount(

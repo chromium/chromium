@@ -156,9 +156,10 @@ void BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted(
   }
 
   auto webui_model_info = browsing_topics::mojom::WebUIModelInfo::New();
-  webui_model_info->model_version = base::NumberToString(model_info->version);
+  webui_model_info->model_version =
+      base::NumberToString(model_info->GetVersion());
   webui_model_info->model_file_path =
-      model_info->model_file_path.AsUTF8Unsafe();
+      model_info->GetModelFilePath().AsUTF8Unsafe();
 
   std::move(callback).Run(
       browsing_topics::mojom::WebUIGetModelInfoResult::NewModelInfo(

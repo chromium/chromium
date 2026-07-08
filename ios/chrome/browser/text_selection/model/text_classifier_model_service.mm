@@ -59,7 +59,7 @@ void TextClassifierModelService::OnModelUpdated(
     model_path_ = base::FilePath();
     return;
   }
-  model_path_ = model_info->model_file_path;
+  model_path_ = model_info->GetModelFilePath();
 }
 
 bool TextClassifierModelService::ShouldRecordInternalsPageLog() const {

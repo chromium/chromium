@@ -491,7 +491,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     return;
   }
 
-  const int64_t model_version = model_info->version;
+  const int64_t model_version = model_info->GetVersion();
   DCHECK_GT(model_version, 0);
 
   std::map<HashedHost, std::set<Topic>> host_topics_map;
