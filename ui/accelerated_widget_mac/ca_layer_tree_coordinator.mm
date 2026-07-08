@@ -43,7 +43,18 @@ CALayerTreeCoordinator::CALayerTreeCoordinator(
       no_post_task_for_callback_(no_post_task_for_callback) {
 }
 
-CALayerTreeCoordinator::~CALayerTreeCoordinator() = default;
+CALayerTreeCoordinator::~CALayerTreeCoordinator() {
+  // If the front frame has already been committed, its CALayer tree is active.
+  // We must explicitly pop and destroy it here under a ScopedCAActionDisabler
+  // to prevent triggering implicit CoreAnimation animations or transactions
+  // during destruction of the active layers, which can cause a crash in
+  // [ca_layer_ removeFromSuperlayer].
+  if (!presented_frames_.empty() && presented_frames_.front().has_committed &&
+      presented_frames_.front().layer_tree) {
+    ScopedCAActionDisabler disabler;
+    presented_frames_.pop();
+  }
+}
 
 void CALayerTreeCoordinator::Resize(const gfx::Size& pixel_size,
                                     float scale_factor) {
