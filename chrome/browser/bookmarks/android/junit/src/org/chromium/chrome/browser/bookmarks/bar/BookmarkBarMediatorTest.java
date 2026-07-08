@@ -16,10 +16,6 @@ import android.app.Activity;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -50,7 +46,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
@@ -58,7 +53,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
-import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -82,8 +76,6 @@ public class BookmarkBarMediatorTest {
     @Mock private RecyclerView mItemsRecyclerView;
     @Mock private BookmarkBar mBookmarkBarView;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
-    @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
-    @Mock private BasicListMenu mMockListMenu;
     @Mock private BookmarkBarItemsLayoutManager mLayoutManager;
 
     private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier =
@@ -122,13 +114,13 @@ public class BookmarkBarMediatorTest {
     @After
     public void tearDown() throws Exception {
         mMediator.destroy();
-        assertNull(BookmarkBarMediator.sFolderIconBitmap);
+        assertNull(mMediator.mFolderIconBitmap);
     }
 
     // Tests the behavior of sFolderIconBitmap.
     @Test
     @SmallTest
-    public void testStaticFolderIconBitmap() throws Exception {
+    public void testFolderIconBitmap() throws Exception {
         // Create a new folder inside the bookmarks bar.
         BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
         BookmarkId rootFolderId = mBookmarkModel.addFolder(desktopFolderId, 0, "Root Folder");
@@ -136,12 +128,12 @@ public class BookmarkBarMediatorTest {
         // Add a child folder to the root folder to ensure the caching logic is triggered.
         mBookmarkModel.addFolder(rootFolderId, 0, "Child Folder");
 
-        assertNull("Cache should be empty initially.", BookmarkBarMediator.sFolderIconBitmap);
+        assertNull("Cache should be empty initially.", mMediator.mFolderIconBitmap);
 
         // Trigger #createListItemForBookmarkFolder, which populates the sFolderIconBitmap cache.
         mMediator.buildMenuModelListForFolder(mBookmarkModel, rootFolderId);
 
-        assertNotNull("Cache should be populated.", BookmarkBarMediator.sFolderIconBitmap);
+        assertNotNull("Cache should be populated.", mMediator.mFolderIconBitmap);
 
         // Destroy behavior is tested in #tearDown.
     }
@@ -217,55 +209,6 @@ public class BookmarkBarMediatorTest {
                 "The last item in the model should be the last hidden bookmark.",
                 "Hidden 3",
                 hiddenItemsModel.get(2).model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetupEmptyView() {
-        // Create a fake content view structure that mirrors the real one.
-        ViewGroup contentParent = new LinearLayout(mActivity);
-        ListView menuList = new ListView(mActivity);
-        menuList.setId(R.id.menu_list);
-        contentParent.addView(menuList);
-
-        // The list layout has only one child with no empty view.
-        assertEquals(1, contentParent.getChildCount());
-        assertNull(menuList.getEmptyView());
-
-        mMediator.setupEmptyView(contentParent);
-
-        // Verify that a second child was added.
-        assertEquals(2, contentParent.getChildCount());
-
-        // Check that that second child is an empty view.
-        View emptyView = menuList.getEmptyView();
-        assertNotNull("The empty view should be set on the ListView.", emptyView);
-        assertEquals(
-                "The empty view's parent should be the contentParent.",
-                contentParent,
-                emptyView.getParent());
-        assertEquals(
-                "The empty view should have the correct message.",
-                mActivity.getString(R.string.bookmarks_bar_empty_message),
-                ((TextView) emptyView).getText());
-
-        // Verify that calling it again doesn't add another view.
-        mMediator.setupEmptyView(contentParent);
-        assertEquals("Should not add a second empty view", 2, contentParent.getChildCount());
-    }
-
-    @Test
-    @SmallTest
-    public void testConfigurePopupWindowSize_smokeTest() {
-        mMediator.setAnchoredPopupWindowForTesting(mAnchoredPopupWindow);
-        when(mMockListMenu.getMenuDimensions()).thenReturn(new int[] {300, 100});
-
-        mMediator.configurePopupWindowSize(mMockListMenu);
-
-        // Verify that the setDesiredContentSize method was called at least once with
-        // any integer values.
-        verify(mAnchoredPopupWindow, Mockito.atLeastOnce())
-                .setDesiredContentSize(Mockito.anyInt(), Mockito.anyInt());
     }
 
     @Test

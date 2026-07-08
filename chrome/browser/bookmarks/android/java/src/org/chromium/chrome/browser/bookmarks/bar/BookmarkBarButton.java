@@ -72,9 +72,10 @@ class BookmarkBarButton extends LinearLayout {
             mLastEventButtonState = event.getButtonState();
         }
 
-        // Consume events for the middle button. Since we consume ACTION_DOWN for middle-clicks,
-        // the standard OnClickListener (which only handles primary clicks) will not be triggered.
-        if ((mLastEventButtonState & MotionEvent.BUTTON_TERTIARY) != 0) {
+        // Consume events for the middle and secondary buttons. Since we consume ACTION_DOWN, the
+        // standard OnClickListener (which only handles primary clicks) will not be triggered.
+        if ((mLastEventButtonState & MotionEvent.BUTTON_TERTIARY) != 0
+                || (mLastEventButtonState & MotionEvent.BUTTON_SECONDARY) != 0) {
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 mLastEventButtonState = 0;
             }
@@ -104,13 +105,14 @@ class BookmarkBarButton extends LinearLayout {
         }
 
         if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
-            // Handle middle-click on release to match standard click behavior.
+            // Handle middle-click and right-click on release to match standard click behavior.
             // getActionButton() identifies the button that changed state.
             if (action == MotionEvent.ACTION_BUTTON_RELEASE
-                    && event.getActionButton() == MotionEvent.BUTTON_TERTIARY) {
-                // Manually set the button state to tertiary for the click callback, as
+                    && (event.getActionButton() == MotionEvent.BUTTON_TERTIARY
+                            || event.getActionButton() == MotionEvent.BUTTON_SECONDARY)) {
+                // Manually set the button state to tertiary or secondary for the click callback, as
                 // ACTION_BUTTON_RELEASE excludes the button being released from getButtonState().
-                mLastEventButtonState = MotionEvent.BUTTON_TERTIARY;
+                mLastEventButtonState = event.getActionButton();
                 onClick(this);
                 return true;
             }

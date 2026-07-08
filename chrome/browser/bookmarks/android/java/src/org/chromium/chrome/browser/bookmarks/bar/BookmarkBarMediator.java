@@ -12,18 +12,14 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -57,23 +53,15 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.base.KeyNavigationUtil;
-import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
-import org.chromium.ui.listmenu.ListMenuUtils;
-import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.RectProvider;
-import org.chromium.ui.widget.ViewRectProvider;
-import org.chromium.ui.widget.ViewRectUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +79,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     }
 
     private static final int INVALID_INDEX = -1;
-    @VisibleForTesting static @Nullable Bitmap sFolderIconBitmap;
+    @VisibleForTesting @Nullable Bitmap mFolderIconBitmap;
     private final Activity mActivity;
     private final PropertyModel mAllBookmarksButtonModel;
     private final Supplier<Pair<Integer, Integer>> mControlsHeightSupplier;
@@ -111,12 +99,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private @ColorRes int mCurrentIconTintRes = R.color.default_icon_color_tint_list;
     @DrawableRes private int mCurrentBackgroundId;
 
-    // The popup window that displays the contents of a bookmark folder. Instantiated in {@code
-    // showPopupMenu} when a folder is tapped.
-    private @Nullable AnchoredPopupWindow mAnchoredPopupWindow;
+    private final BookmarkBarPopupCoordinator mPopupCoordinator;
     private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
-    private @Nullable BrowserControlsRectProvider mBrowserControlsRectProvider;
 
     /**
      * Constructs the bookmark bar mediator.
@@ -194,15 +179,20 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mBookmarkBarView = bookmarkBarView;
         mBookmarkBarView.setContentDescription(
                 mActivity.getString(R.string.bookmark_bar_content_description));
+        mPopupCoordinator =
+                new BookmarkBarPopupCoordinator(
+                        mActivity, mBookmarkBarView, mProfileSupplier, mControlsHeightSupplier);
+        mBookmarkBarView.setRightClickCallback(this::onBookmarksBarBgRightClicked);
     }
 
     /** Destroys the bookmark bar mediator. */
     public void destroy() {
+        mBookmarkBarView.setRightClickCallback(null);
+        mPopupCoordinator.dismiss();
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
         mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
 
-        // TODO(crbug.com/430044890): Change it to a member variable.
-        sFolderIconBitmap = null;
+        mFolderIconBitmap = null;
 
         if (mImageFetcher != null) {
             mImageFetcher.destroy();
@@ -311,9 +301,27 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 });
     }
 
-    // TODO(crbug.com/394614166): Handle shift-click to open in new window.
+    private void onBookmarksBarBgRightClicked(float x, float y) {
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profileAfterLoading, modelAfterLoading) -> {
+                    mPopupCoordinator.showBookmarkBarEmptySpaceContextMenu(
+                            mBookmarkBarView, new Point((int) x, (int) y));
+                });
+    }
+
     private void onBookmarkItemClick(BookmarkItem item, int metaState, int buttonState) {
         final Profile profile = assumeNonNull(mProfileSupplier.get());
+
+        final boolean isRightClick = (buttonState & MotionEvent.BUTTON_SECONDARY) != 0;
+        if (isRightClick) {
+            View anchorView = getAnchorViewForBookmark(item);
+            if (anchorView == null) return;
+            runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                    (profileAfterLoading, modelAfterLoading) -> {
+                        mPopupCoordinator.showBookmarkItemContextMenu(anchorView, item);
+                    });
+            return;
+        }
 
         if (item.isFolder()) {
             // Get the view of the folder that was clicked.
@@ -326,7 +334,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         ModelList menuModel =
                                 buildMenuModelListForFolder(modelAfterLoading, item.getId());
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.BOOKMARK_BAR_FOLDER);
-                        showPopupMenu(menuModel, anchorView);
+                        mPopupCoordinator.showFolderItemsPopup(anchorView, menuModel);
                     });
             return;
         }
@@ -382,11 +390,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     if (anchorView == null) return;
 
                     // Show the popup with the filtered model. Notice that when we call
-                    // #showPopupMenu inside #onBookmarkItemClick, we are calling it for one
-                    // specific folder in the bookmarks bar, whereas here it is for all the hidden
-                    // items in the entire bookmarks bar ("desktopFolder").
+                    // mContextMenuCoordinator.showContextMenu inside #onBookmarkItemClick, we are
+                    // calling it for one specific folder in the bookmarks bar, whereas here it is
+                    // for all the hidden items in the entire bookmarks bar ("desktopFolder").
                     BookmarkBarUtils.recordClick(BookmarkBarClickType.OVERFLOW_MENU);
-                    showPopupMenu(hiddenItemsModelList, anchorView);
+                    mPopupCoordinator.showFolderItemsPopup(anchorView, hiddenItemsModelList);
                 });
     }
 
@@ -452,195 +460,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mModel.set(BookmarkBarProperties.VISIBILITY, isVisible ? View.VISIBLE : View.GONE);
     }
 
-    private void showPopupMenu(ModelList bookmarkItems, View anchorView) {
-        // Dismiss any existing popup windows.
-        if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
-
-        BasicListMenu popupListMenu =
-                BrowserUiListMenuUtils.getBasicListMenu(
-                        mActivity,
-                        bookmarkItems,
-                        (model, view) -> {
-                            View.OnClickListener clickListener =
-                                    model.get(ListMenuItemProperties.CLICK_LISTENER);
-                            if (clickListener != null) {
-                                clickListener.onClick(view);
-                            }
-                        });
-
-        // Go through the entire model list and add the click listeners.
-        popupListMenu.setupCallbacks(
-                () -> {
-                    if (mAnchoredPopupWindow != null) {
-                        mAnchoredPopupWindow.dismiss();
-                    }
-                },
-                ListMenuUtils.createHierarchicalMenuController(mActivity));
-
-        View popupContentView = popupListMenu.getContentView();
-        // This is needed because list_menu_layout.xml already sets a background, and we want to
-        // avoid double backgrounds. If we were to create a new BasicListMenu and pass 0 as the
-        // background drawable, the BasicListMenu would just use the pre-defined background.
-        popupContentView.setBackground(null);
-
-        setupEmptyView(popupContentView);
-
-        mBrowserControlsRectProvider = new BrowserControlsRectProvider(mActivity);
-
-        Pair<Integer, Integer> initialHeights = mControlsHeightSupplier.get();
-        mBrowserControlsRectProvider.updateRectAndNotify(
-                initialHeights.first, initialHeights.second);
-
-        mAnchoredPopupWindow =
-                new AnchoredPopupWindow(
-                        mActivity,
-                        mBookmarkBarView,
-                        AppCompatResources.getDrawable(mActivity, R.drawable.default_popup_menu_bg),
-                        popupListMenu::getContentView,
-                        new ViewRectProvider(
-                                anchorView,
-                                (view, rect, onRectChanged) -> {
-                                    var updater = new ViewRectUpdater(view, rect, onRectChanged);
-                                    updater.setIncludePadding(true);
-                                    return updater;
-                                }),
-                        mBrowserControlsRectProvider);
-
-        mAnchoredPopupWindow.setFocusable(true);
-        mAnchoredPopupWindow.setPreferredVerticalOrientation(
-                AnchoredPopupWindow.VerticalOrientation.BELOW);
-        mAnchoredPopupWindow.setHorizontalOverlapAnchor(true);
-        mAnchoredPopupWindow.setElevation(
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.bookmarks_bar_popup_elevation));
-
-        // Create an observer that will re-run the sizing logic whenever the list content changes.
-        // This is triggered when navigating into or out of a submenu. This observer is needed
-        // because the anchored popup and basic list menu are created only once when the root folder
-        // is tapped. When the user navigates into and out of submenus, the model list is updated
-        // but the container (popup window & list menu) itself is not. This means that without
-        // this observer, the dynamic sizing logic would only work on the root popups.
-        final ListObservable.ListObserver<Void> sizeUpdaterObserver =
-                new ListObservable.ListObserver<>() {
-                    private void updatePopupSize() {
-                        popupContentView.post(
-                                () -> {
-                                    if (mAnchoredPopupWindow != null
-                                            && mAnchoredPopupWindow.isShowing()) {
-                                        configurePopupWindowSize(popupListMenu);
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onItemRangeChanged(
-                            ListObservable<Void> source,
-                            int index,
-                            int count,
-                            @Nullable Void payload) {
-                        updatePopupSize();
-                    }
-
-                    @Override
-                    public void onItemRangeInserted(ListObservable source, int index, int count) {
-                        updatePopupSize();
-                    }
-
-                    @Override
-                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                        updatePopupSize();
-                    }
-                };
-
-        // Add the observer to the model list.
-        bookmarkItems.addObserver(sizeUpdaterObserver);
-
-        mAnchoredPopupWindow.addOnDismissListener(
-                () -> {
-                    mBrowserControlsRectProvider = null;
-                    bookmarkItems.removeObserver(sizeUpdaterObserver);
-                });
-
-        configurePopupWindowSize(popupListMenu);
-        mAnchoredPopupWindow.show();
-    }
-
-    // popupContentView is list_menu_layout, which is the root view of the menu.
-    @VisibleForTesting
-    void setupEmptyView(View popupContentView) {
-        ListView menuList = popupContentView.findViewById(R.id.menu_list);
-
-        ViewGroup contentParent = (ViewGroup) popupContentView;
-
-        TextView emptyView = contentParent.findViewById(R.id.bookmarks_bar_empty_view);
-        // The empty view will be added as a sibling to menu_list, menu_header, etc.
-        if (emptyView == null) {
-            emptyView = new TextView(mActivity);
-            emptyView.setId(R.id.bookmarks_bar_empty_view);
-            emptyView.setText(R.string.bookmarks_bar_empty_message);
-            emptyView.setGravity(Gravity.CENTER);
-
-            // Fill the entire space.
-            emptyView.setLayoutParams(
-                    new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT));
-
-            contentParent.addView(emptyView);
-        }
-
-        // #setupEmptyView is called once when a folder in the bookmarks bar is tapped, but
-        // setEmptyView will be applied to the submenus as well because menu_list (ListView) has a
-        // built-in observer.
-        menuList.setEmptyView(emptyView);
-    }
-
-    @VisibleForTesting
-    void configurePopupWindowSize(BasicListMenu popupListMenu) {
-        if (mAnchoredPopupWindow == null) {
-            return;
-        }
-
-        Resources resources = mActivity.getResources();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-
-        // Configure the width.
-        int maxWidthPx = resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_max_width);
-        int marginPx = resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_margin);
-        // The maximum available width on screen is the screen width minus the margin.
-        int availableWidth = displayMetrics.widthPixels - marginPx;
-        // The final width is the smaller of the desired max width and the available screen width.
-        int finalWidth = Math.min(maxWidthPx, availableWidth);
-
-        // When we are in the empty state, there is a set height defined by the UI spec.
-        if (popupListMenu.getContentAdapter() == null
-                || popupListMenu.getContentAdapter().getCount() == 0) {
-            mAnchoredPopupWindow.setDesiredContentSize(
-                    finalWidth,
-                    resources.getDimensionPixelSize(R.dimen.bookmarks_bar_popup_min_height));
-            return;
-        }
-
-        // Measure the size of the menu_list, which includes all items plus padding.
-        int[] measuredDimensions = popupListMenu.getMenuDimensions();
-        int desiredHeight = measuredDimensions[1];
-
-        // When there is a non-null rect provider, we can set scroll bars to only be shown when
-        // the desired height for the content is more than the available height.
-        if (mBrowserControlsRectProvider != null
-                && mBrowserControlsRectProvider.getRect() != null) {
-            int availableHeight = mBrowserControlsRectProvider.getRect().height();
-
-            ListView menuList = popupListMenu.getContentView().findViewById(R.id.menu_list);
-            boolean needsScrollbar = desiredHeight > availableHeight;
-            menuList.setVerticalScrollBarEnabled(needsScrollbar);
-            menuList.setScrollbarFadingEnabled(needsScrollbar);
-        }
-
-        mAnchoredPopupWindow.setDesiredContentSize(finalWidth, desiredHeight);
-    }
-
     private int getIndexInBookmarksBar(BookmarkItem item) {
         // Get the main data model for all bookmarks for the user.
         BookmarkModel bookmarkModel =
@@ -696,7 +515,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private ListItem createListItemForBookmarkFolder(
             BookmarkItem bookmarkItem, ModelList children) {
 
-        if (sFolderIconBitmap == null) {
+        if (mFolderIconBitmap == null) {
             BookmarkModel bookmarkModel =
                     BookmarkModel.getForProfile(assertNonNull(mProfileSupplier.get()));
             Drawable folderIcon =
@@ -705,9 +524,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             bookmarkItem.getId(),
                             bookmarkModel,
                             BookmarkRowDisplayPref.VISUAL);
-            // Utilize lazy static caching and call this only once for the entire time the app is
-            // running.
-            sFolderIconBitmap = drawableToBitmap(folderIcon);
+            mFolderIconBitmap = drawableToBitmap(folderIcon);
         }
 
         // Convert ModelList to ArrayList.
@@ -730,7 +547,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> childrenList)
-                        .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
+                        .with(ListMenuItemProperties.START_ICON_BITMAP, mFolderIconBitmap)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
                         // Use the default theme-aware tint list instead of mCurrentIconTintRes
@@ -793,7 +610,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         }
 
                         // Dismiss the popup after any click.
-                        if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
+                        mPopupCoordinator.dismiss();
                         // It is critical that this listener returns true to consume the event. This
                         // prevents the BasicListMenu's generic click handler from firing, which
                         // would cause a double navigation because this item also has a
@@ -856,10 +673,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     }
 
     public void onBrowserControlsChanged(int topControlsHeight, int bottomControlsHeight) {
-        if (mBrowserControlsRectProvider != null) {
-            mBrowserControlsRectProvider.updateRectAndNotify(
-                    topControlsHeight, bottomControlsHeight);
-        }
+        mPopupCoordinator.onBrowserControlsChanged(topControlsHeight, bottomControlsHeight);
     }
 
     /**
@@ -867,49 +681,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
      * changes from external components, e.g. screen width change.
      */
     public void dismissPopupMenu() {
-        if (mAnchoredPopupWindow != null) {
-            mAnchoredPopupWindow.dismiss();
-        }
-    }
-
-    // A {@link RectProvider} that provides the visible area of the screen, accounting for the
-    // browser controls. Flow:
-    // 1. BrowserControlsStateProvider.Observer in BookmarkBarCoordinator calls
-    // #onBrowserControlsChanged whenever the toolbars change.
-    // 2. #onBrowserControlsChanged calls #updateRectAndNotify.
-    // 3. #updateRectAndNotify calculates the new Rect and calls #notifyRectChanged, which is picked
-    // up by AnchoredPopupWindow.
-    // 4. AnchoredPopupWindow calls .getRect() on BrowserControlsRectProvider and gets the new
-    // Rect.
-    // 5. The new Rect is used in #calculatePopupWindowSpec.
-
-    private static class BrowserControlsRectProvider extends RectProvider {
-        private final Activity mActivity;
-
-        BrowserControlsRectProvider(Activity activity) {
-            mActivity = activity;
-        }
-
-        // Provides the available screen by obtaining the entire device screen and then cutting off
-        // the top and bottom controls.
-        public void updateRectAndNotify(int topControlsHeight, int bottomControlsHeight) {
-            DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
-            // Creates a Rect that covers the entire physical screen.
-            mRect.set(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-            mRect.top += topControlsHeight;
-            mRect.bottom -= bottomControlsHeight;
-
-            // Add a margin to the bottom of the rect to prevent the popup from getting too close
-            // to the bottom of the screen.
-            int marginPx =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.bookmarks_bar_popup_margin);
-            mRect.bottom -= marginPx;
-
-            // Notify the observer that the rect has changed.
-            notifyRectChanged();
-        }
+        mPopupCoordinator.dismiss();
     }
 
     // Builds and returns an OnKeyListener for every item in the popup menu.
@@ -978,7 +750,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
                 // Dismiss only when opening a bookmark (webpage) and not a folder, and always
                 // consume the event to prevent fallback.
-                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
+                mPopupCoordinator.dismiss();
                 return true;
             }
             return false;
@@ -1089,10 +861,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 imageFetcher.fetchFaviconForBookmark(item, this::set);
             }
         };
-    }
-
-    void setAnchoredPopupWindowForTesting(AnchoredPopupWindow anchoredPopupWindow) {
-        mAnchoredPopupWindow = anchoredPopupWindow;
     }
 
     /**

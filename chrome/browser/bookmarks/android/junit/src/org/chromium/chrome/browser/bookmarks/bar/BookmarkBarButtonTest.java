@@ -82,6 +82,29 @@ public class BookmarkBarButtonTest {
 
     @Test
     @SmallTest
+    public void testOnGenericMotionEvent_RightClick() {
+        // Initial press to set the button state.
+        MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
+        when(pressEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(pressEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_PRESS);
+        when(pressEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(pressEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        mButton.onGenericMotionEvent(pressEvent);
+
+        // Release event triggers the callback.
+        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        when(releaseEvent.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
+        when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
+        when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(releaseEvent.getMetaState()).thenReturn(KeyEvent.META_CTRL_ON);
+        when(releaseEvent.getButtonState()).thenReturn(0);
+
+        assertTrue(mButton.onGenericMotionEvent(releaseEvent));
+        verify(mClickCallback).onClickWithMeta(KeyEvent.META_CTRL_ON, MotionEvent.BUTTON_SECONDARY);
+    }
+
+    @Test
+    @SmallTest
     public void testOnGenericMotionEvent_NotMiddleClick() {
         MotionEvent event = Mockito.mock(MotionEvent.class);
         when(event.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);

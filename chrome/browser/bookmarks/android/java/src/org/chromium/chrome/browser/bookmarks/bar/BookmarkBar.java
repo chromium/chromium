@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -20,7 +21,12 @@ import org.chromium.ui.util.MotionEventUtils;
 @NullMarked
 class BookmarkBar extends LinearLayout {
 
+    public interface RightClickCallback {
+        void onRightClick(float x, float y);
+    }
+
     private FrameLayout mOverflowButton;
+    private @Nullable RightClickCallback mRightClickCallback;
 
     /**
      * Constructor that is called when inflating a bookmark bar from XML.
@@ -50,6 +56,15 @@ class BookmarkBar extends LinearLayout {
     public boolean onGenericMotionEvent(MotionEvent event) {
         if (MotionEventUtils.isPointerEvent(event)) {
             int action = event.getActionMasked();
+            if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+                if (action == MotionEvent.ACTION_BUTTON_RELEASE
+                        && event.getActionButton() == MotionEvent.BUTTON_SECONDARY) {
+                    if (mRightClickCallback != null) {
+                        mRightClickCallback.onRightClick(event.getX(), event.getY());
+                        return true;
+                    }
+                }
+            }
             if (action == MotionEvent.ACTION_BUTTON_PRESS
                     || action == MotionEvent.ACTION_BUTTON_RELEASE
                     || action == MotionEvent.ACTION_SCROLL) {
@@ -57,6 +72,15 @@ class BookmarkBar extends LinearLayout {
             }
         }
         return super.onGenericMotionEvent(event);
+    }
+
+    /**
+     * Sets the callback to notify when the bookmark bar is right-clicked on empty space.
+     *
+     * @param callback the callback to notify.
+     */
+    public void setRightClickCallback(@Nullable RightClickCallback callback) {
+        mRightClickCallback = callback;
     }
 
     /**
