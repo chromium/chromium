@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_enum_values.h"
 
 namespace blink {
 
@@ -36,12 +37,23 @@ std::unique_ptr<DocumentPolicy> DocumentPolicy::CopyStateFrom(
 }
 
 namespace {
-net::structured_headers::Item PolicyValueToItem(const PolicyValue& value) {
+
+net::structured_headers::Item PolicyValueToItem(
+    mojom::DocumentPolicyFeature feature,
+    const PolicyValue& value) {
   switch (value.Type()) {
     case mojom::PolicyValueType::kBool:
       return net::structured_headers::Item{value.BoolValue()};
     case mojom::PolicyValueType::kDecDouble:
       return net::structured_headers::Item{value.DoubleValue()};
+    case mojom::PolicyValueType::kEnum: {
+      std::optional<std::string_view> token =
+          DocumentPolicyEnumValueToToken(feature, value.IntValue());
+      CHECK(token);
+      return net::structured_headers::Item{
+          std::string(*token),
+          net::structured_headers::Item::ItemType::kTokenType};
+    }
     default:
       NOTREACHED();
   }
@@ -78,8 +90,16 @@ std::optional<std::string> DocumentPolicy::SerializeInternal(
     const std::string& feature_name = feature_info_map.at(feature).feature_name;
     const PolicyValue& value = policy_entry.second;
 
+    // Skip enum features whose value has no token representation — this covers
+    // the sentinel default (value out of valid token range) meaning "not
+    // explicitly set in the header".
+    if (value.Type() == mojom::PolicyValueType::kEnum &&
+        !DocumentPolicyEnumValueToToken(feature, value.IntValue())) {
+      continue;
+    }
+
     root[feature_name] = net::structured_headers::ParameterizedMember(
-        PolicyValueToItem(value), /* parameters */ {});
+        PolicyValueToItem(feature, value), /* parameters */ {});
   }
 
   return net::structured_headers::SerializeDictionary(root);

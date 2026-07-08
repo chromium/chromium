@@ -259,6 +259,12 @@ bool SecurityContext::IsFeatureEnabled(
   return IsFeatureEnabled(feature, PolicyValue::CreateBool(true)).enabled;
 }
 
+PolicyValue SecurityContext::GetDocumentPolicyValue(
+    mojom::blink::DocumentPolicyFeature feature) const {
+  CHECK(document_policy_);
+  return document_policy_->GetFeatureValue(feature);
+}
+
 SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature,
     PolicyValue threshold_value) const {

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_enum_values.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 
 namespace blink {
@@ -28,7 +29,8 @@ const char* PolicyValueTypeToString(mojom::blink::PolicyValueType type) {
 
 std::optional<PolicyValue> ItemToPolicyValue(
     const net::structured_headers::Item& item,
-    mojom::blink::PolicyValueType type) {
+    mojom::blink::PolicyValueType type,
+    mojom::blink::DocumentPolicyFeature feature) {
   switch (type) {
     case mojom::blink::PolicyValueType::kBool: {
       if (item.is_boolean()) {
@@ -47,6 +49,17 @@ std::optional<PolicyValue> ItemToPolicyValue(
         default:
           return std::nullopt;
       }
+    case mojom::blink::PolicyValueType::kEnum: {
+      if (item.Type() != net::structured_headers::Item::ItemType::kTokenType) {
+        return std::nullopt;
+      }
+      std::optional<int32_t> enum_value =
+          DocumentPolicyEnumTokenToValue(feature, item.GetString());
+      if (!enum_value) {
+        return std::nullopt;
+      }
+      return PolicyValue::CreateEnum(*enum_value);
+    }
     default:
       return std::nullopt;
   }
@@ -96,8 +109,8 @@ std::optional<ParsedFeature> ParseFeature(
       feature_info_map.at(parsed_feature.feature).default_value.Type();
   const net::structured_headers::Item& item =
       directive.second.member.front().item;
-  std::optional<PolicyValue> policy_value =
-      ItemToPolicyValue(item, expected_policy_value_type);
+  std::optional<PolicyValue> policy_value = ItemToPolicyValue(
+      item, expected_policy_value_type, parsed_feature.feature);
   if (!policy_value) {
     logger.Warn(UNSAFE_TODO(String::Format(
         "Parameter for feature %s should be %s, not %s.", feature_name.c_str(),

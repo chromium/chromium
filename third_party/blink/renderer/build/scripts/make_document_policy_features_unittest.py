@@ -21,6 +21,10 @@ class MakeDocumentPolicyFeaturesTest(unittest.TestCase):
                          "PolicyValue::CreateBool(false)")
         self.assertEqual(parse_default_value("0.5", "DecDouble"),
                          "PolicyValue::CreateDecDouble(0.5)")
+        self.assertEqual(parse_default_value("0", "Enum"),
+                         "PolicyValue::CreateEnum(0)")
+        self.assertEqual(parse_default_value("1", "Enum"),
+                         "PolicyValue::CreateEnum(1)")
 
         with self.assertRaises(ValueError):
             parse_default_value("max", "NotImplemented")

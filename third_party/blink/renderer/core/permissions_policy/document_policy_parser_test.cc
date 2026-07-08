@@ -17,6 +17,10 @@ constexpr const mojom::blink::DocumentPolicyFeature kBoolFeature =
     static_cast<mojom::blink::DocumentPolicyFeature>(1);
 constexpr const mojom::blink::DocumentPolicyFeature kDoubleFeature =
     static_cast<mojom::blink::DocumentPolicyFeature>(2);
+// kEnumFeature aliases kJSProfilingMode — the only registered enum feature —
+// so that serialization round-trips go through DocumentPolicyEnumValueToToken.
+constexpr const mojom::blink::DocumentPolicyFeature kEnumFeature =
+    mojom::blink::DocumentPolicyFeature::kJSProfilingMode;
 
 // This is the test version of |PolicyParserMessageBuffer::Message| as
 // blink::String cannot be statically allocated.
@@ -40,14 +44,17 @@ class DocumentPolicyParserTest
             {"*", kDefault},
             {"f-bool", kBoolFeature},
             {"f-double", kDoubleFeature},
+            {"f-enum", kEnumFeature},
         }),
         feature_info_map(DocumentPolicyFeatureInfoMap{
             {kDefault, {"*", PolicyValue::CreateBool(true)}},
             {kBoolFeature, {"f-bool", PolicyValue::CreateBool(true)}},
             {kDoubleFeature, {"f-double", PolicyValue::CreateDecDouble(1.0)}},
+            {kEnumFeature, {"f-enum", PolicyValue::CreateEnum(0)}},
         }) {
     available_features.insert(kBoolFeature);
     available_features.insert(kDoubleFeature);
+    available_features.insert(kEnumFeature);
   }
 
   ~DocumentPolicyParserTest() override = default;
@@ -389,6 +396,80 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
         {{mojom::blink::ConsoleMessageLevel::kWarning,
           "\"report-to\" parameter should be a token in feature f-bool."}},
     },
+    //
+    // Enum feature tests.
+    //
+    {
+        "ParseEnumFeatureEager",
+        "f-enum=eager",
+        /* parsed_policy */
+        {
+            /* feature_state */ {{kEnumFeature, PolicyValue::CreateEnum(1)}},
+            /* endpoint_map */ {},
+        },
+        /* messages */ {},
+    },
+    {
+        "ParseEnumFeatureLazy",
+        "f-enum=lazy",
+        /* parsed_policy */
+        {
+            /* feature_state */ {{kEnumFeature, PolicyValue::CreateEnum(2)}},
+            /* endpoint_map */ {},
+        },
+        /* messages */ {},
+    },
+    {
+        // When js-profiling-mode is absent the feature is not present in
+        // feature_state; callers fall back to the default value (kNone/0).
+        "ParseEnumFeatureAbsent",
+        "",
+        /* parsed_policy */
+        {
+            /* feature_state */ {},
+            /* endpoint_map */ {},
+        },
+        /* messages */ {},
+    },
+    {
+        // Enum features require an explicit value; a bare token (no =value)
+        // is parsed as a boolean true by the structured header parser, which
+        // is the wrong type and should produce a warning.
+        "ParseEnumFeatureNoValue",
+        "f-enum",
+        /* parsed_policy */
+        {
+            /* feature_state */ {},
+            /* endpoint_map */ {},
+        },
+        /* messages */
+        {{mojom::blink::ConsoleMessageLevel::kWarning,
+          "Parameter for feature f-enum should be enum, not boolean."}},
+    },
+    {
+        "ParseEnumFeatureInvalidToken",
+        "f-enum=unknown",
+        /* parsed_policy */
+        {
+            /* feature_state */ {},
+            /* endpoint_map */ {},
+        },
+        /* messages */
+        {{mojom::blink::ConsoleMessageLevel::kWarning,
+          "Parameter for feature f-enum should be enum, not token."}},
+    },
+    {
+        "ParseEnumFeatureWrongTypeBool",
+        "f-enum=?1",
+        /* parsed_policy */
+        {
+            /* feature_state */ {},
+            /* endpoint_map */ {},
+        },
+        /* messages */
+        {{mojom::blink::ConsoleMessageLevel::kWarning,
+          "Parameter for feature f-enum should be enum, not boolean."}},
+    },
 };
 
 const std::pair<DocumentPolicyFeatureState, std::string>
@@ -405,7 +486,11 @@ const std::pair<DocumentPolicyFeatureState, std::string>
         // result ordering of feature.
         {{{kBoolFeature, PolicyValue::CreateBool(true)},
           {kDoubleFeature, PolicyValue::CreateDecDouble(1.0)}},
-         "f-bool, f-double=1.0"}};
+         "f-bool, f-double=1.0"},
+        // Enum features serialize to tokens (value 0 has no token and is
+        // skipped).
+        {{{kEnumFeature, PolicyValue::CreateEnum(1)}}, "f-enum=eager"},
+        {{{kEnumFeature, PolicyValue::CreateEnum(2)}}, "f-enum=lazy"}};
 
 const DocumentPolicyFeatureState kParsedPolicies[] = {
     {},  // An empty policy
@@ -413,7 +498,9 @@ const DocumentPolicyFeatureState kParsedPolicies[] = {
     {{kBoolFeature, PolicyValue::CreateBool(true)}},
     {{kDoubleFeature, PolicyValue::CreateDecDouble(1.0)}},
     {{kBoolFeature, PolicyValue::CreateBool(true)},
-     {kDoubleFeature, PolicyValue::CreateDecDouble(1.0)}}};
+     {kDoubleFeature, PolicyValue::CreateDecDouble(1.0)}},
+    {{kEnumFeature, PolicyValue::CreateEnum(1)}},
+    {{kEnumFeature, PolicyValue::CreateEnum(2)}}};
 
 // Serialize and then Parse the result of serialization should cancel each
 // other out, i.e. d == Parse(Serialize(d)).

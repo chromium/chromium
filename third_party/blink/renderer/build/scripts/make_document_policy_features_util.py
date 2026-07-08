@@ -5,7 +5,7 @@
 
 def parse_default_value(default_value,
                         value_type,
-                        recognized_types=('Bool', 'DecDouble')):
+                        recognized_types=('Bool', 'DecDouble', 'Enum')):
     """ Parses default_value string to actual usable C++ expression.
     @param default_value_str: default_value field specified in document_policy_features.json5
     @param value_type: value_type field specified in document_policy_features.json5
@@ -24,5 +24,4 @@ def parse_default_value(default_value,
     if default_value == 'min':
         return "PolicyValue::CreateMinPolicyValue({})".format(
             policy_value_type)
-
     return "PolicyValue::Create{}({})".format(value_type, default_value)

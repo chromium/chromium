@@ -47,6 +47,8 @@ enum DocumentPolicyFeature {
   // the document.
   // https://aka.ms/webembeddedperf
   kNetworkEfficiencyGuardrails = 16,
+  // Controls the JS Self-Profiling API mode (eager or lazy V8 profiler init).
+  kJSProfilingMode = 17,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

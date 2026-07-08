@@ -8,6 +8,9 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
+#include "third_party/blink/public/common/permissions_policy/policy_value.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -68,6 +71,30 @@ class ProfilerGroup::ProfilingContextObserver
   Member<ProfilerGroup> profiler_group_;
 };
 
+JSProfilingMode ProfilerGroup::GetProfilingMode(
+    ExecutionContext* execution_context,
+    ReportOptions report_options) {
+  DCHECK(execution_context);
+  // Check the new js-profiling-mode enum policy first.
+  PolicyValue mode_value = execution_context->GetDocumentPolicyValue(
+      mojom::blink::DocumentPolicyFeature::kJSProfilingMode);
+  if (mode_value.Type() == mojom::blink::PolicyValueType::kEnum) {
+    int32_t v = mode_value.IntValue();
+    if (v >= 1 && v <= static_cast<int32_t>(JSProfilingMode::kMax)) {
+      // "eager" or "lazy" explicitly set in the header — honour it.
+      return static_cast<JSProfilingMode>(v);
+    }
+    // v == 0: default "not set", meaning the header was absent. Fall through
+    // to the legacy kJSProfiling boolean policy.
+  }
+  // Fall back to the legacy js-profiling boolean policy.
+  if (execution_context->IsFeatureEnabled(
+          mojom::blink::DocumentPolicyFeature::kJSProfiling, report_options)) {
+    return JSProfilingMode::kEager;
+  }
+  return JSProfilingMode::kNone;
+}
+
 bool ProfilerGroup::CanProfile(ExecutionContext* execution_context,
                                ExceptionState* exception_state,
                                ReportOptions report_options) {
@@ -83,27 +110,27 @@ bool ProfilerGroup::CanProfile(ExecutionContext* execution_context,
     return false;
   }
 
-  if (!execution_context->IsFeatureEnabled(
-          mojom::blink::DocumentPolicyFeature::kJSProfiling, report_options)) {
-    if (exception_state) {
-      exception_state->ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "JS profiling is disabled by Document Policy.");
-    }
-    return false;
+  if (GetProfilingMode(execution_context, report_options) !=
+      JSProfilingMode::kNone) {
+    return true;
   }
 
-  return true;
+  if (exception_state) {
+    exception_state->ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "JS profiling is disabled by Document Policy.");
+  }
+  return false;
 }
 
 void ProfilerGroup::InitializeIfEnabled(ExecutionContext* execution_context) {
-  if (ProfilerGroup::CanProfile(execution_context)) {
-    ProfilerGroup* profiler_group =
-        ProfilerGroup::From(execution_context->GetIsolate());
-    if (profiler_group) {
-      profiler_group->OnProfilingContextAdded(execution_context);
-    }
+  if (!CanProfile(execution_context)) {
+    return;
   }
+  JSProfilingMode mode = GetProfilingMode(execution_context);
+  CHECK_NE(mode, JSProfilingMode::kNone);
+  auto* profiler_group = ProfilerGroup::From(execution_context->GetIsolate());
+  profiler_group->OnProfilingContextAdded(execution_context, mode);
 }
 
 ProfilerGroup* ProfilerGroup::From(v8::Isolate* isolate) {
@@ -135,7 +162,9 @@ void DiscardedSamplesDelegate::Notify() {
   }
 }
 
-void ProfilerGroup::OnProfilingContextAdded(ExecutionContext* context) {
+void ProfilerGroup::OnProfilingContextAdded(ExecutionContext* context,
+                                            JSProfilingMode mode) {
+  CHECK_NE(mode, JSProfilingMode::kNone);
   // Retain an observer for the context's lifetime. During which, keep the V8
   // profiler alive.
   auto* observer =
@@ -143,7 +172,14 @@ void ProfilerGroup::OnProfilingContextAdded(ExecutionContext* context) {
   context_observers_.insert(observer);
 
   if (!cpu_profiler_) {
-    InitV8Profiler();
+    if (mode == JSProfilingMode::kEager) {
+      InitV8Profiler(v8::kEagerLogging);
+    } else if (mode == JSProfilingMode::kLazy) {
+      // Initialize with kLazyLogging: the V8 profiler is created now but
+      // defers JIT event logging until StartProfiling() is called, avoiding
+      // the page-load overhead of eager JIT enumeration.
+      InitV8Profiler(v8::kLazyLogging);
+    }
     DCHECK(cpu_profiler_);
   }
 }
@@ -268,12 +304,12 @@ void ProfilerGroup::OnProfilingContextDestroyed(
   }
 }
 
-void ProfilerGroup::InitV8Profiler() {
+void ProfilerGroup::InitV8Profiler(v8::CpuProfilingLoggingMode logging_mode) {
   DCHECK(!cpu_profiler_);
   DCHECK_EQ(num_active_profilers_, 0);
 
   cpu_profiler_ =
-      v8::CpuProfiler::New(isolate_, v8::kStandardNaming, v8::kEagerLogging);
+      v8::CpuProfiler::New(isolate_, v8::kStandardNaming, logging_mode);
 #if BUILDFLAG(IS_WIN)
   // Avoid busy-waiting on Windows, clamping us to the system clock interrupt
   // interval in the worst case.

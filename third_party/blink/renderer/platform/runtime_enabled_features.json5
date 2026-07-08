@@ -2523,6 +2523,10 @@
       status: "experimental",
     },
     {
+      name: "DocumentPolicyJSProfilingMode",
+      status: "experimental",
+    },
+    {
       name: "DocumentPolicyNegotiation",
       origin_trial_feature_name: "DocumentPolicyNegotiation",
       public: true,

@@ -620,6 +620,11 @@ bool ExecutionContext::IsFeatureEnabled(
   return security_context_.IsFeatureEnabled(feature, threshold_value).enabled;
 }
 
+PolicyValue ExecutionContext::GetDocumentPolicyValue(
+    mojom::blink::DocumentPolicyFeature feature) const {
+  return security_context_.GetDocumentPolicyValue(feature);
+}
+
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature,
     ReportOptions report_option,

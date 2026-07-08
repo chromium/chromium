@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 
 namespace blink {
 namespace {
@@ -87,6 +88,26 @@ TEST_F(DocumentPolicyTest, MergeFeatureState) {
 //       DocumentPolicyFeatureState{}              /* incoming policy */
 //       ));
 // }
+
+// Verify that every Enum-typed Document Policy feature has a token mapping in
+// document_policy_enum_values.h. If this test crashes with NOTREACHED(), a
+// new Enum feature was added to document_policy_features.json5 without a
+// corresponding case in DocumentPolicyEnumValueToToken.
+TEST_F(DocumentPolicyTest, AllEnumFeaturesHaveTokenMappings) {
+  for (const auto& [feature, info] : GetDocumentPolicyFeatureInfoMap()) {
+    if (info.default_value.Type() != mojom::PolicyValueType::kEnum) {
+      continue;
+    }
+    // Use value 1 (the first valid token, e.g. "eager") rather than the
+    // default value 0 which intentionally has no token representation.
+    DocumentPolicyFeatureState state{{feature, PolicyValue::CreateEnum(1)}};
+    std::optional<std::string> serialized = DocumentPolicy::Serialize(state);
+    EXPECT_TRUE(serialized.has_value())
+        << "Enum feature " << static_cast<int>(feature)
+        << " failed to serialize. Add a mapping in "
+           "document_policy_enum_values.h.";
+  }
+}
 
 }  // namespace
 }  // namespace blink

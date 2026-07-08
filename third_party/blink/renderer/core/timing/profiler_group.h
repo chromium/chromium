@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/permissions_policy/js_profiling_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -30,6 +31,15 @@ class ScriptState;
 // v8::CpuProfiler attached to a common isolate.
 class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
  public:
+  // Returns the JS profiling mode for the given execution context based on
+  // document policy headers, considering both the new js-profiling-mode enum
+  // policy and the legacy js-profiling boolean policy. report_options controls
+  // whether a violation report is emitted when the legacy kJSProfiling policy
+  // blocks profiling.
+  static JSProfilingMode GetProfilingMode(
+      ExecutionContext*,
+      ReportOptions = ReportOptions::kDoNotReport);
+
   // Determines whether or not the given frame can profile. Logs an exception
   // in the given ExceptionState (if non-null) if profiling is not permitted,
   // and returns false.
@@ -56,8 +66,10 @@ class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
                            ExceptionState&);
 
   // Tracks a profiling-enabled document's lifecycle, ensuring that the
-  // profiler is ready during its lifetime.
-  void OnProfilingContextAdded(ExecutionContext* context);
+  // profiler is ready during its lifetime. In kEager mode the V8 profiler is
+  // initialized with eager logging; in kLazy mode it is initialized with lazy
+  // logging (JIT event enumeration deferred until StartProfiling).
+  void OnProfilingContextAdded(ExecutionContext* context, JSProfilingMode mode);
 
   void DispatchSampleBufferFullEvent(String profiler_id);
   void WillBeDestroyed() override;
@@ -69,7 +81,7 @@ class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
 
   void OnProfilingContextDestroyed(ProfilingContextObserver*);
 
-  void InitV8Profiler();
+  void InitV8Profiler(v8::CpuProfilingLoggingMode logging_mode);
   void TeardownV8Profiler();
 
   void StopProfiler(ScriptState*,

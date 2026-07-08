@@ -14,6 +14,7 @@
     value_type: {},
     // valid c++ expression strings, e.g. true/false, 1.0, -1.
     // or use reserved keyword 'min'/'max'.
+    // For Enum features, use the underlying integer value (not a named constant).
     default_value: {},
     // "depends_on" specifies relationship to runtime features defined
     // in "runtime_enabled_features.json5":
@@ -100,6 +101,17 @@
       value_type: "Bool",
       default_value: "false",
       depends_on: ["DocumentPolicyNetworkEfficiencyGuardrails"]
+    },
+    {
+      name: "JSProfilingMode",
+      document_policy_name: "js-profiling-mode",
+      value_type: "Enum",
+      // 0 is the default "not set" representation. The only valid header tokens
+      // are "eager" (1) and "lazy" (2); there is no "none" token. So value 0
+      // can only come from the default — GetProfilingMode treats it as "not
+      // explicitly set" and falls through to the legacy kJSProfiling policy.
+      default_value: "0",
+      depends_on: ["DocumentPolicyJSProfilingMode"]
     }
   ],
 }

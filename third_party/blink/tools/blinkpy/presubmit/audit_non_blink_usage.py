@@ -3068,6 +3068,9 @@ _CONFIG = [
             'third_party/blink/public/web/',
         ],
         'allowed': [
+            'mojom::DocumentPolicyFeature',
+            'mojom::PolicyValueType',
+            'net::structured_headers::Item',
             'network::GetPermissionsPolicyFeatureList',
             'network::mojom::PermissionsPolicyFeature',
             'network::OriginWithPossibleWildcards',

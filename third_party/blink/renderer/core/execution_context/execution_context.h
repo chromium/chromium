@@ -364,6 +364,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string);
 
+  PolicyValue GetDocumentPolicyValue(mojom::blink::DocumentPolicyFeature) const;
+
   // Report policy violations is delegated to Document because in order
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.

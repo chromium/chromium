@@ -182,6 +182,7 @@ class CORE_EXPORT SecurityContext {
   bool IsFeatureEnabled(mojom::blink::DocumentPolicyFeature) const;
   FeatureStatus IsFeatureEnabled(mojom::blink::DocumentPolicyFeature,
                                  PolicyValue threshold_value) const;
+  PolicyValue GetDocumentPolicyValue(mojom::blink::DocumentPolicyFeature) const;
 
   SecureContextMode GetSecureContextMode() const {
     return secure_context_mode_;

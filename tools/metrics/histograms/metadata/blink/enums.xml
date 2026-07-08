@@ -255,6 +255,7 @@ Called by update_document_policy_enum.py.-->
   <int value="14" label="IncludeJSCallStacksInCrashReports"/>
   <int value="15" label="ExpectNoLinkedResources"/>
   <int value="16" label="NetworkEfficiencyGuardrails"/>
+  <int value="17" label="JSProfilingMode"/>
 </enum>
 
 <!-- LINT.IfChange(EvpAutofillFlowResult) -->
