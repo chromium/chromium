@@ -346,9 +346,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
                                   IDS_INDIGO_TOOLBAR_REPLACE_ORIGINAL_PHOTO),
-                              features::IsRoundedIconsEnabled()
-                                  ? vector_icons::kPhotoFilledIcon
-                                  : vector_icons::kPhotoOldIcon,
+                              vector_icons::kPhotoSparkIcon,
                               base::BindRepeating(
                                   &IndigoToolbar::OnReplacePhotoClicked,
                                   base::Unretained(this))))
