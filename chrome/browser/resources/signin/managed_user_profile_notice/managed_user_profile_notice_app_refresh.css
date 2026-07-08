@@ -18,10 +18,16 @@
   flex-direction: column;
   gap: 48px;
   height: 100vh;
-  width: 100vw;
   justify-content: center;
-  min-height: 560px;
   min-width: 600px;
+  width: 100vw;
+}
+
+/* Keep consistent with managed_user_profile_notice_disclosure_refresh.css */
+@media screen and ((max-width: 1024px) or (max-height: 750px)) {
+  :host {
+    gap: 24px;
+  }
 }
 
 :host(:not([revamp-enabled])),
@@ -41,16 +47,19 @@
 .main-container {
   box-sizing: border-box;
   display: flex;
+  flex: 0 1 auto;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0;
+  overflow-y: auto;
   padding-inline: 16px;
   width: 100%;
 }
 
 .action-container {
   align-items: center;
+  flex-shrink: 0;
   justify-content: center;
-  padding: 0;
+  padding: 24px;
 }
 
 .action-button {
