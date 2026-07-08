@@ -127,21 +127,39 @@ ChromeSpeechRecognitionManagerDelegate::GetEventListener() {
 void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
         recognition_receiver,
-    const std::string& language) {
+    const std::string& language,
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const std::string& language,
+          [](const content::GlobalRenderFrameHostId& render_frame_host_id,
+             const std::string& language,
              mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                  receiver) {
+            if (!render_frame_host_id) {
+              return;
+            }
+
+            content::RenderFrameHost* rfh =
+                content::RenderFrameHost::FromID(render_frame_host_id);
+            if (!rfh) {
+              // The frame was destroyed before we could bind. Drop the
+              // request to avoid routing to an incorrect profile.
+              return;
+            }
+
+            Profile* profile =
+                Profile::FromBrowserContext(rfh->GetBrowserContext());
+            if (!profile) {
+              return;
+            }
+
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-            auto* profile = ProfileManager::GetLastUsedProfileIfLoaded();
             auto* factory =
                 SpeechRecognitionServiceFactory::GetForProfile(profile);
 #elif BUILDFLAG(IS_CHROMEOS)
-            auto* profile = ProfileManager::GetPrimaryUserProfile();
             auto* factory =
                 CrosSpeechRecognitionServiceFactory::GetForProfile(profile);
 #else
@@ -150,13 +168,12 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
             if (factory) {
               factory->BindSpeechRecognitionContext(std::move(receiver));
             }
-            // Reset the SODA uninstall timer when used by the Web Speech API.
-            if (profile) {
-              SodaInstaller::GetInstance()->SetUninstallTimer(
-                  g_browser_process->local_state(), language);
-            }
+            // Reset the SODA uninstall timer when used by the Web Speech
+            // API.
+            SodaInstaller::GetInstance()->SetUninstallTimer(
+                g_browser_process->local_state(), language);
           },
-          language, std::move(recognition_receiver)));
+          render_frame_host_id, language, std::move(recognition_receiver)));
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -23,6 +23,12 @@ SpeechRecognitionServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+SpeechRecognitionServiceFactory*
+SpeechRecognitionServiceFactory::GetInstanceForTest() {
+  return GetInstance();
+}
+
 SpeechRecognitionServiceFactory::SpeechRecognitionServiceFactory()
     : ProfileKeyedServiceFactory(
           "SpeechRecognitionService",

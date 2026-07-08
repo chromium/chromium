@@ -6,9 +6,17 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
+#include "chrome/browser/speech/fake_speech_recognition_service.h"
+#include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#endif
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -21,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -36,7 +45,12 @@ namespace speech {
 
 class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  public:
-  ChromeSpeechRecognitionTest() = default;
+  ChromeSpeechRecognitionTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOnDeviceSpeechRecognition);
+#endif
+  }
 
   ChromeSpeechRecognitionTest(const ChromeSpeechRecognitionTest&) = delete;
   ChromeSpeechRecognitionTest& operator=(const ChromeSpeechRecognitionTest&) =
@@ -71,6 +85,10 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  protected:
   ChromeSpeechRecognitionManagerDelegate delegate_;
   content::FakeSpeechRecognitionManager fake_speech_recognition_manager_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 class SpeechWebContentsObserver : public content::WebContentsObserver {
@@ -216,5 +234,59 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
   EXPECT_TRUE(future.Get<1>());
 }
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
+                       IncognitoRoutesToIncognitoService) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+
+  struct TestContext {
+    base::OnceClosure quit_closure;
+    bool created = false;
+  };
+  auto context = std::make_unique<TestContext>();
+  base::RunLoop run_loop;
+  context->quit_closure = run_loop.QuitClosure();
+  TestContext* context_ptr = context.get();
+
+  auto testing_factory = base::BindRepeating(
+      [](TestContext* ctx,
+         content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
+        ctx->created = true;
+        if (ctx->quit_closure) {
+          std::move(ctx->quit_closure).Run();
+        }
+        return std::make_unique<FakeSpeechRecognitionService>();
+      },
+      base::Unretained(context_ptr));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  CrosSpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
+      incognito_browser->profile(), std::move(testing_factory));
+#else
+  SpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
+      incognito_browser->profile(), std::move(testing_factory));
+#endif
+
+  WebContents* web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+
+  mojo::Remote<media::mojom::SpeechRecognitionContext> remote;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&content::SpeechRecognitionManagerDelegate::
+                         BindSpeechRecognitionContext,
+                     base::Unretained(&delegate_),
+                     remote.BindNewPipeAndPassReceiver(), "en-US", rfh_id));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(context_ptr->created);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace speech

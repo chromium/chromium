@@ -229,9 +229,6 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   std::unique_ptr<SpeechRecognitionManagerDelegate> delegate_;
   const int requester_id_;
 
-  mojo::Remote<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_;
-
   // Used for posting asynchronous tasks (on the IO thread) without worrying
   // about this class being destroyed in the meanwhile (due to browser shutdown)
   // since tasks pending on a destroyed WeakPtr are automatically discarded.

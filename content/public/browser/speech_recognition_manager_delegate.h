@@ -17,6 +17,8 @@ namespace content {
 
 class SpeechRecognitionEventListener;
 
+struct GlobalRenderFrameHostId;
+
 // Allows embedders to display the current state of recognition, for getting the
 // user's permission and for fetching optional request information.
 class SpeechRecognitionManagerDelegate {
@@ -40,7 +42,8 @@ class SpeechRecognitionManagerDelegate {
   // This is called on the IO thread.
   virtual void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
-      const std::string& language) = 0;
+      const std::string& language,
+      const GlobalRenderFrameHostId& render_frame_host_id) = 0;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 };
 

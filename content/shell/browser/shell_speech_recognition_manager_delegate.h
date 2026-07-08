@@ -11,6 +11,8 @@
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
+
 // This is content_shell's delegate used by the speech recognition manager to
 // check for permission to record audio. For content_shell, we always authorize
 // speech recognition (see crbug.com/237119).
@@ -36,7 +38,8 @@ class ShellSpeechRecognitionManagerDelegate
   // It is empty in this delegate.
   void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
-      const std::string& language) override;
+      const std::string& language,
+      const GlobalRenderFrameHostId& render_frame_host_id) override;
 #endif  //! BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 };
 

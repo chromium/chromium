@@ -20,6 +20,8 @@ class SpeechRecognitionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static speech::SpeechRecognitionService* GetForProfile(Profile* profile);
 
+  static SpeechRecognitionServiceFactory* GetInstanceForTest();
+
   static void EnsureFactoryBuilt();
 
  private:

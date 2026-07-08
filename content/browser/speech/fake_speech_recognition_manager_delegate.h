@@ -98,6 +98,8 @@ class MockOnDeviceWebSpeechRecognitionService
       this};
 };
 
+struct GlobalRenderFrameHostId;
+
 class FakeSpeechRecognitionManagerDelegate
     : public SpeechRecognitionManagerDelegate {
  public:
@@ -115,7 +117,8 @@ class FakeSpeechRecognitionManagerDelegate
   SpeechRecognitionEventListener* GetEventListener() override;
   void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
-      const std::string& language) override;
+      const std::string& language,
+      const GlobalRenderFrameHostId& render_frame_host_id) override;
 
   void Reset(MockOnDeviceWebSpeechRecognitionService* service);
 

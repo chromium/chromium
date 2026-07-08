@@ -61,7 +61,8 @@ class ChromeSpeechRecognitionManagerDelegate
   // This will bind to the Speech Recognition Service if available.
   void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
-      const std::string& language) override;
+      const std::string& language,
+      const content::GlobalRenderFrameHostId& render_frame_host_id) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:

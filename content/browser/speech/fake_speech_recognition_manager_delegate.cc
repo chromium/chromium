@@ -106,7 +106,8 @@ FakeSpeechRecognitionManagerDelegate::GetEventListener() {
 
 void FakeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
-    const std::string& language) {
+    const std::string& language,
+    const GlobalRenderFrameHostId& render_frame_host_id) {
   if (speech_service_) {
     speech_service_->BindSpeechRecognitionContext(std::move(receiver));
   }
