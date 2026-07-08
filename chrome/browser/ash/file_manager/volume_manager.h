@@ -38,6 +38,7 @@
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
+class PrefService;
 class Profile;
 
 namespace chromeos {
@@ -87,7 +88,9 @@ class VolumeManager
   // Callback for `RemoveSftpGuestOsVolume`.
   using RemoveSftpGuestOsVolumeCallback = base::OnceCallback<void(bool)>;
 
+  // `local_state` must be non-null and must outlive `this`.
   VolumeManager(
+      PrefService* local_state,
       Profile* profile,
       drive::DriveIntegrationService* drive_integration_service,
       chromeos::PowerManagerClient* power_manager_client,

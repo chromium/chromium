@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -38,6 +39,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildVolumeManager(
     content::BrowserContext* context) {
   return std::make_unique<file_manager::VolumeManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */, DiskMountManager::GetInstance(),

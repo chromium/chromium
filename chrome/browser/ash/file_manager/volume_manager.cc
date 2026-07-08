@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/policy/external_storage/device_id.h"
@@ -242,14 +241,14 @@ bool IsSkyVaultV2Enabled() {
 int VolumeManager::counter_ = 0;
 
 VolumeManager::VolumeManager(
+    PrefService* local_state,
     Profile* profile,
     drive::DriveIntegrationService* drive_integration_service,
     chromeos::PowerManagerClient* power_manager_client,
     ash::disks::DiskMountManager* disk_mount_manager,
     ash::file_system_provider::Service* file_system_provider_service,
     GetMtpStorageInfoCallback get_mtp_storage_info_callback)
-    // TODO(crbug.com/404132053): Avoid using g_browser_process.
-    : LocalUserFilesPolicyObserver(g_browser_process->local_state()),
+    : LocalUserFilesPolicyObserver(local_state),
       profile_(profile),
       drive_integration_service_(drive_integration_service),
       disk_mount_manager_(disk_mount_manager),

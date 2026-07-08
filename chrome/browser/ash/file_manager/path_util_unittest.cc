@@ -98,6 +98,7 @@ class FileManagerPathUtilTest : public testing::Test {
         profile_.get(),
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              TestingBrowserProcess::GetGlobal()->local_state(),
               Profile::FromBrowserContext(context), nullptr, nullptr,
               ash::disks::DiskMountManager::GetInstance(), nullptr,
               VolumeManager::GetMtpStorageInfoCallback()));

@@ -98,7 +98,7 @@ specific_include_rules = {
   "file_manager_browsertest_base\\.cc": [
     "+chrome/common/pref_names.h",
   ],
-  "volume_manager\\.cc": [
+  "volume_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
 }

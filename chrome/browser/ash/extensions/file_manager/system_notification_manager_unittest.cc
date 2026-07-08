@@ -203,6 +203,7 @@ class SystemNotificationManagerTest
         profile_,
         base::BindLambdaForTesting([this](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+              TestingBrowserProcess::GetGlobal()->local_state(),
               Profile::FromBrowserContext(context), nullptr, nullptr,
               &disk_mount_manager_, nullptr,
               VolumeManager::GetMtpStorageInfoCallback()));

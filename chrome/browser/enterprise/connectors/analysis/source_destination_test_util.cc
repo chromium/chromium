@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +39,7 @@ SourceDestinationTestingHelper::SourceDestinationTestingHelper(
       profile, base::BindLambdaForTesting([](content::BrowserContext* context) {
         return std::unique_ptr<KeyedService>(
             std::make_unique<file_manager::VolumeManager>(
+                TestingBrowserProcess::GetGlobal()->local_state(),
                 Profile::FromBrowserContext(context), nullptr, nullptr,
                 ash::disks::DiskMountManager::GetInstance(), nullptr,
                 file_manager::VolumeManager::GetMtpStorageInfoCallback()));

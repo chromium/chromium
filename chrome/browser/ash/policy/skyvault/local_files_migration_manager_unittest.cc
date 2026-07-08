@@ -108,6 +108,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
               std::make_unique<file_manager::VolumeManager>(
+                  TestingBrowserProcess::GetGlobal()->local_state(),
                   Profile::FromBrowserContext(context),
                   /*drive_integration_service=*/nullptr,
                   /*power_manager_client=*/nullptr,

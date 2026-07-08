@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -105,6 +106,7 @@ class FileResultTest : public testing::Test {
         base::BindLambdaForTesting([&](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
               std::make_unique<file_manager::VolumeManager>(
+                  TestingBrowserProcess::GetGlobal()->local_state(),
                   Profile::FromBrowserContext(context), nullptr, nullptr,
                   &disk_mount_manager_, nullptr,
                   file_manager::VolumeManager::GetMtpStorageInfoCallback()));

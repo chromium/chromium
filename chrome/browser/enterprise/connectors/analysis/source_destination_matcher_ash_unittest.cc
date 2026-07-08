@@ -122,6 +122,7 @@ class BaseTest : public testing::Test {
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
               std::make_unique<file_manager::VolumeManager>(
+                  TestingBrowserProcess::GetGlobal()->local_state(),
                   Profile::FromBrowserContext(context), nullptr, nullptr,
                   ash::disks::DiskMountManager::GetInstance(), nullptr,
                   file_manager::VolumeManager::GetMtpStorageInfoCallback()));

@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -49,8 +50,11 @@ VolumeManagerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* const profile = Profile::FromBrowserContext(context);
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
   std::unique_ptr<VolumeManager> instance = std::make_unique<VolumeManager>(
-      profile, drive::DriveIntegrationServiceFactory::GetForProfile(profile),
+      g_browser_process->local_state(), profile,
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile),
       chromeos::PowerManagerClient::Get(),
       ash::disks::DiskMountManager::GetInstance(),
       ash::file_system_provider::ServiceFactory::Get(context),

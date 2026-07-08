@@ -343,6 +343,7 @@ class VolumeManagerTest : public testing::Test {
                   std::string(),
                   base::FilePath())),
           volume_manager_(std::make_unique<VolumeManager>(
+              TestingBrowserProcess::GetGlobal()->local_state(),
               profile_,
               drive_integration_service_.get(),  // DriveIntegrationService
               chromeos::PowerManagerClient::Get(),
