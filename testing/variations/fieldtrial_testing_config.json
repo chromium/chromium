@@ -4741,45 +4741,6 @@
             ]
         }
     ],
-    "CacheCertVerification": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "CacheCertVerification"
-                    ]
-                },
-                {
-                    "name": "Enabled_900s",
-                    "params": {
-                        "CacheCertVerificationTtlSecs": "900"
-                    },
-                    "enable_features": [
-                        "CacheCertVerification"
-                    ]
-                },
-                {
-                    "name": "Enabled_300s",
-                    "params": {
-                        "CacheCertVerificationTtlSecs": "300"
-                    },
-                    "enable_features": [
-                        "CacheCertVerification"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheCertVerification"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheGurlSchemeIsHttpOrHttpsResult": [
         {
             "platforms": [
@@ -26883,6 +26844,45 @@
                     "name": "Control_20260518",
                     "disable_features": [
                         "WebUIToolbarProcessOverheadExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewAblateVerificationCaching": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CacheCertVerification"
+                    ]
+                },
+                {
+                    "name": "Enabled_900s",
+                    "params": {
+                        "CacheCertVerificationTtlSecs": "900"
+                    },
+                    "enable_features": [
+                        "CacheCertVerification"
+                    ]
+                },
+                {
+                    "name": "Enabled_300s",
+                    "params": {
+                        "CacheCertVerificationTtlSecs": "300"
+                    },
+                    "enable_features": [
+                        "CacheCertVerification"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheCertVerification"
                     ]
                 }
             ]
