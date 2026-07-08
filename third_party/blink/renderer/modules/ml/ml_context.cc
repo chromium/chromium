@@ -1495,7 +1495,8 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
       OperandUsageToSharedImageUsageSet(usage));
   CHECK(shared_image);
 
-  shared_image_create_finished_token = sii->GenVerifiedSyncToken();
+  shared_image_create_finished_token = shared_image->creation_sync_token();
+  sii->VerifySyncToken(shared_image_create_finished_token);
 
   auto tensor_info =
       webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);

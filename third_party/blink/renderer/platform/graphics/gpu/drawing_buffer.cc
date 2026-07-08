@@ -463,9 +463,10 @@ DrawingBuffer::CreateOrRecycleSoftwareResource() {
           {format, size_, color_space, kBottomLeft_GrSurfaceOrigin,
            kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
            "DrawingBufferBitmap"});
+  auto sync_token = shared_image->creation_sync_token();
+  shared_image_interface->VerifySyncToken(sync_token);
 
-  SoftwareResource resource = {std::move(shared_image),
-                               shared_image_interface->GenVerifiedSyncToken(),
+  SoftwareResource resource = {std::move(shared_image), sync_token,
                                sii_provider->GetWeakPtr()};
 
   return resource;

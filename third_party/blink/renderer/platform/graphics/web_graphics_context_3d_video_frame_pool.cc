@@ -63,7 +63,9 @@ class Context
     if (!client_shared_image) {
       return nullptr;
     }
-    sync_token = sii->GenVerifiedSyncToken();
+    sync_token = client_shared_image->creation_sync_token();
+    sii->VerifySyncToken(sync_token);
+
     return client_shared_image;
   }
 

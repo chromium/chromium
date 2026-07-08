@@ -395,7 +395,8 @@ ImageBitmapRenderingContext::CreateOrRecycleSoftwareResource(
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "ImageLayerBridgeBitmap"});
 
   resource.sii_provider = sii_provider->GetWeakPtr();
-  resource.sync_token = shared_image_interface->GenVerifiedSyncToken();
+  resource.sync_token = resource.shared_image->creation_sync_token();
+  shared_image_interface->VerifySyncToken(resource.sync_token);
 
   return resource;
 }
