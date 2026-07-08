@@ -64,6 +64,10 @@ enum class ToolbarPosition {
 - (void)layoutState:(LayoutState*)layoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition;
 
+// Called when the Gemini Floaty invocation state changes.
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeGeminiFloatyInvoked:(BOOL)geminiFloatyInvoked;
+
 @end
 
 // Object containing the state of the layout.
@@ -94,6 +98,9 @@ enum class ToolbarPosition {
 // The position of the toolbar (omnibox).
 @property(nonatomic, readonly) ToolbarPosition toolbarPosition;
 
+// Indicates whether the Gemini Floaty is currently invoked.
+@property(nonatomic, readonly) BOOL geminiFloatyInvoked;
+
 // Custom setters requiring domain-level passkeys.
 - (void)setContainedLayoutActive:(BOOL)active
                     scenePassKey:(LayoutStateScenePassKey)passKey;
@@ -107,6 +114,8 @@ enum class ToolbarPosition {
                                   passKey:(LayoutStateAssistantPassKey)passKey;
 - (void)setAppBarLockedInFullscreen:(BOOL)locked
                             passKey:(LayoutStateAssistantPassKey)passKey;
+- (void)setGeminiFloatyInvoked:(BOOL)invoked
+                       passKey:(LayoutStateAssistantPassKey)passKey;
 - (void)setToolbarPosition:(ToolbarPosition)position
                    passKey:(LayoutStateToolbarPassKey)passKey;
 - (void)setAppBarPosition:(AppBarPosition)position

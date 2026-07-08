@@ -111,7 +111,7 @@
       CGFloat minHeight =
           IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
       agent->AddObscuredInsetRange(UIRectEdgeBottom, minHeight,
-                                   AppBarHeightPortrait());
+                                   [self appBarHeightPortrait]);
       break;
     }
     case AppBarPosition::kLeft:
@@ -140,8 +140,9 @@
       _fullscreenProgress = agent->bottom_progress();
       CGFloat minHeight =
           IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
-      CGFloat currentHeight = minHeight + (AppBarHeightPortrait() - minHeight) *
-                                              _fullscreenProgress;
+      CGFloat currentHeight =
+          minHeight +
+          ([self appBarHeightPortrait] - minHeight) * agent->bottom_progress();
       agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
       [self updateLayout];
       // If this is inside an animation, layout immediately.
@@ -218,6 +219,10 @@
   [self updateLayout];
   [self.view setNeedsLayout];
   [self.view layoutIfNeeded];
+}
+
+- (CGFloat)appBarHeightPortrait {
+  return [_appBar currentAppBarHeightPortrait];
 }
 
 @end

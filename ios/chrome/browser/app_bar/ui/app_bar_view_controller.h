@@ -55,6 +55,10 @@
 // Hides the blue-ish background.
 - (void)hideIPHBackground;
 
+// Returns the current portrait height of the App Bar, taking into account
+// whether the Gemini floaty is currently invoked.
+- (CGFloat)currentAppBarHeightPortrait;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_VIEW_CONTROLLER_H_

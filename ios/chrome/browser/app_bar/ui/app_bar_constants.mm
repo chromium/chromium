@@ -20,6 +20,13 @@ CGFloat AppBarHeightPortrait() {
   return kAppBarHeightDefault;
 }
 
+CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked) {
+  if (gemini_floaty_invoked && IsAppBarHiddenInFullscreen()) {
+    return kAppBarHeightFullscreen;
+  }
+  return AppBarHeightPortrait();
+}
+
 CGFloat AppBarHeightLandscape() {
   return kAppBarHeightLandscapeDefault;
 }

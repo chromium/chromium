@@ -49,6 +49,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_passkey.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -80,6 +82,21 @@
 #import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
+
+namespace layout_state {
+class AppBarMediatorPassKeyFactory {
+ public:
+  static base::PassKey<AppBarMediatorPassKeyFactory> CreateKey() {
+    return base::PassKey<AppBarMediatorPassKeyFactory>();
+  }
+};
+}  // namespace layout_state
+
+namespace {
+inline LayoutStateAssistantPassKey PassKey() {
+  return layout_state::AppBarMediatorPassKeyFactory::CreateKey();
+}
+}  // namespace
 
 @interface AppBarMediator () <GeminiBrowserAgentObserving,
                               GeminiServiceObserving,
@@ -631,6 +648,25 @@ using base::UmaHistogramEnumeration;
 
 - (void)geminiFloatyInvokedChanged:(BOOL)isInvoked {
   [self updateAssistantButton];
+  [self.layoutState setGeminiFloatyInvoked:isInvoked passKey:PassKey()];
+
+  if (IsAppBarHiddenInFullscreen()) {
+    if (IsFullscreenRefactoringEnabled()) {
+      if (_regularFullscreenBrowserAgent) {
+        _regularFullscreenBrowserAgent->InvalidateInsetRange();
+      }
+      if (_incognitoFullscreenBrowserAgent) {
+        _incognitoFullscreenBrowserAgent->InvalidateInsetRange();
+      }
+    } else {
+      if (_regularFullscreenController) {
+        _regularFullscreenController->ExitFullscreen();
+      }
+      if (_incognitoFullscreenController) {
+        _incognitoFullscreenController->ExitFullscreen();
+      }
+    }
+  }
 }
 
 - (void)geminiAvailabilityChanged:(BOOL)available {

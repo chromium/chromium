@@ -30,6 +30,10 @@
 // layout. Clamps the radius between the default and max corner radius.
 - (void)updateCutoutRadius:(CGFloat)cutoutRadius;
 
+// Returns the current portrait height of the App Bar, taking into account
+// whether the Gemini floaty is currently invoked.
+- (CGFloat)appBarHeightPortrait;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONTAINER_VIEW_CONTROLLER_H_
