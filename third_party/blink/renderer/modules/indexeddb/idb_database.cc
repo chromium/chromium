@@ -294,7 +294,7 @@ void IDBDatabase::ForcedClose() {
 
 void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
   TRACE_EVENT0("IndexedDB", "IDBDatabase::onVersionChange");
-  if (!GetExecutionContext()) {
+  if (!GetExecutionContext() || !IsConnectionOpen()) {
     return;
   }
 
