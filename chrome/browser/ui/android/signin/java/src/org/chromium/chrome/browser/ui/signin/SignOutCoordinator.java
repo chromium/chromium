@@ -371,6 +371,14 @@ public class SignOutCoordinator {
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(R.string.sign_out_message))
+                        // Setting CHECKBOX_TEXT to an empty string hides the checkbox.
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                signinManager.hasSignedInAccountExtensions()
+                                        ? context.getString(
+                                                R.string.sign_out_remove_extensions_message)
+                                        : "")
+                        .with(ModalDialogProperties.CHECKBOX_CHECKED, false)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.sign_out))
@@ -395,6 +403,8 @@ public class SignOutCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                    signinManager.setUninstallAccountExtensionsOnSignout(
+                            model.get(ModalDialogProperties.CHECKBOX_CHECKED));
                     signOut(
                             signinManager,
                             signOutReason,

@@ -142,6 +142,15 @@ public interface SigninManager {
      */
     boolean isSignOutAllowed();
 
+    /**
+     * Sets whether extensions associated with the account will be uninstalled during the next
+     * sign-out event.
+     */
+    void setUninstallAccountExtensionsOnSignout(boolean uninstall);
+
+    /** Returns true if there are extensions associated with the signed-in account. */
+    boolean hasSignedInAccountExtensions();
+
     /** Invokes signOut with no callback. */
     default void signOut(@SignoutReason int signoutSource) {
         signOut(signoutSource, () -> {});

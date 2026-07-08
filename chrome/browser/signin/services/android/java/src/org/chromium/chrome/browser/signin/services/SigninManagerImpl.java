@@ -176,8 +176,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             runAfterOperationInProgress(this::onAccountsChanged);
         } else {
             // When the account is removed from the device, we should also uninstall its extensions.
-            SigninManagerImplJni.get()
-                    .setUninstallAccountExtensionsOnSignout(mNativeSigninManagerAndroid, true);
+            setUninstallAccountExtensionsOnSignout(true);
 
             // Sign out if the current primary account is no longer on the device.
             // {@link #signOut} will trigger the re-seeding in this case.
@@ -431,6 +430,17 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             Runnable callback = mCallbacksWaitingForPendingOperation.remove(0);
             PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
         }
+    }
+
+    @Override
+    public void setUninstallAccountExtensionsOnSignout(boolean uninstall) {
+        SigninManagerImplJni.get()
+                .setUninstallAccountExtensionsOnSignout(mNativeSigninManagerAndroid, uninstall);
+    }
+
+    @Override
+    public boolean hasSignedInAccountExtensions() {
+        return SigninManagerImplJni.get().hasSignedInAccountExtensions(mNativeSigninManagerAndroid);
     }
 
     @Override
