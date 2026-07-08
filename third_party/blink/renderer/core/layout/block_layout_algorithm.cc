@@ -350,15 +350,21 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.data.lines_until_clamp;
+    line_clamp_data_.data.block_ellipsis =
+        previous.line_clamp_data_.data.block_ellipsis;
   } else if (relayout_type == kRelayoutClampingAfterLayoutObject) {
     line_clamp_data_.data.state = LineClampData::kClampAfterLayoutObject;
     line_clamp_data_.data.clamp_after_layout_object =
         previous.line_clamp_data_.last_layout_object;
+    line_clamp_data_.data.block_ellipsis =
+        previous.line_clamp_data_.data.block_ellipsis;
   } else if (previous.line_clamp_data_.data.IsClampByLines()) {
     line_clamp_data_.data.state = LineClampData::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.initial_lines_until_clamp;
+    line_clamp_data_.data.block_ellipsis =
+        previous.line_clamp_data_.data.block_ellipsis;
   }
 
   if (relayout_type == kRelayoutForTextBoxTrim) {
