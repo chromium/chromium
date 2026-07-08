@@ -23,6 +23,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -108,6 +109,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @Nullable Handler mHandlerForTesting;
 
     private @State int mState;
+    private boolean mTransitionStarted;
 
     private @AdaptiveToolbarButtonVariant int mCurrentButtonVariant =
             AdaptiveToolbarButtonVariant.NONE;
@@ -624,6 +626,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      */
     @Override
     public void onTransitionStart(@Nullable Transition transition) {
+        mTransitionStarted = true;
         if (mState != State.RUNNING_ACTION_CHIP_COLLAPSE_TRANSITION
                 && (transition == null || transition.getDuration() != 0)) {
             // Disable click listeners during the transitions (except action chip collapse, which
@@ -1113,16 +1116,36 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     private void beginDelayedTransition(Transition transition) {
         mOnBeforeDelayedTransitionCallback.run();
+
+        mTransitionStarted = false;
         if (mFakeBeginTransitionForTesting != null) {
             mFakeBeginTransitionForTesting.onResult(transition);
-            return;
-        }
-
-        if (mTransitionDelegate != null) {
+        } else if (mTransitionDelegate != null) {
             mTransitionDelegate.onResult(transition);
         } else {
             TransitionManager.beginDelayedTransition(mTransitionRoot, transition);
         }
+
+        // Add a pre-draw listener to detect if the transition was dropped by the framework.
+        // It will run after TransitionManager's OnPreDrawListener.
+        getViewTreeObserver()
+                .addOnPreDrawListener(
+                        new OnPreDrawListener() {
+                            @Override
+                            public boolean onPreDraw() {
+                                getViewTreeObserver().removeOnPreDrawListener(this);
+                                // Post to the handler to avoid modifying state during traversal
+                                getHandler()
+                                        .post(
+                                                () -> {
+                                                    if (isRunningTransition()
+                                                            && !mTransitionStarted) {
+                                                        onTransitionEnd(null);
+                                                    }
+                                                });
+                                return true;
+                            }
+                        });
     }
 
     private int getDimensionPixelSize(@DimenRes int dimenId) {
