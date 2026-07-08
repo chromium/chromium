@@ -413,4 +413,124 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceZeroStateDisabledTest,
   EXPECT_EQ(task_id_str, new_task_id_str);
 }
 
+class ContextualTasksUiServiceTaskReuseTest
+    : public ContextualTasksUiServiceZeroStateTestBase {
+ public:
+  ContextualTasksUiServiceTaskReuseTest() {
+    feature_list_.InitWithFeatures({contextual_tasks::kContextualTasks}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
+                       TaskReuse_ByMstk) {
+  // 1. Setup Tab 1
+  GURL url1("data:text/html,<html><body>Tab 1</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(0, url1, ui::PAGE_TRANSITION_TYPED));
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  // 2. Start task on Tab 1 with mstk
+  GURL launch_url1("https://google.com/aim?mstk=abc");
+  ui_service->StartTaskUiInSidePanel(
+      browser(), tab1, launch_url1, /*session_handle=*/nullptr,
+      /*associate_web_contents=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_mstk_for_task_association=*/true);
+
+  auto* controller = ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+  content::WebContents* panel_contents1 = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents1);
+  content::WaitForLoadStop(panel_contents1);
+
+  std::string task_id1 = GetTaskIdFromPanel(panel_contents1);
+  ASSERT_FALSE(task_id1.empty());
+
+  // 3. Setup Tab 2
+  GURL url2("data:text/html,<html><body>Tab 2</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_TYPED));
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetActiveTab();
+  EXPECT_NE(tab1, tab2);
+
+  // 4. Start task on Tab 2 with same mstk
+  GURL launch_url2("https://google.com/aim?mstk=abc");
+  ui_service->StartTaskUiInSidePanel(
+      browser(), tab2, launch_url2, /*session_handle=*/nullptr,
+      /*associate_web_contents=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_mstk_for_task_association=*/true);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+  content::WebContents* panel_contents2 = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents2);
+  content::WaitForLoadStop(panel_contents2);
+
+  std::string task_id2 = GetTaskIdFromPanel(panel_contents2);
+  EXPECT_EQ(task_id1, task_id2);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
+                       NoTaskReuse_WithoutFlag) {
+  // 1. Setup Tab 1
+  GURL url1("data:text/html,<html><body>Tab 1</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(0, url1, ui::PAGE_TRANSITION_TYPED));
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  // 2. Start task on Tab 1 with mstk, flag=true (so it registers in map)
+  GURL launch_url1("https://google.com/aim?mstk=abc");
+  ui_service->StartTaskUiInSidePanel(
+      browser(), tab1, launch_url1, /*session_handle=*/nullptr,
+      /*associate_web_contents=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_mstk_for_task_association=*/true);
+
+  auto* controller = ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+  content::WebContents* panel_contents1 = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents1);
+  content::WaitForLoadStop(panel_contents1);
+
+  std::string task_id1 = GetTaskIdFromPanel(panel_contents1);
+  ASSERT_FALSE(task_id1.empty());
+
+  // 3. Setup Tab 2
+  GURL url2("data:text/html,<html><body>Tab 2</body></html>");
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_TYPED));
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetActiveTab();
+
+  // 4. Start task on Tab 2 with same mstk, flag=false
+  GURL launch_url2("https://google.com/aim?mstk=abc");
+  ui_service->StartTaskUiInSidePanel(
+      browser(), tab2, launch_url2, /*session_handle=*/nullptr,
+      /*associate_web_contents=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_mstk_for_task_association=*/false);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+  content::WebContents* panel_contents2 = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents2);
+  content::WaitForLoadStop(panel_contents2);
+
+  std::string task_id2 = GetTaskIdFromPanel(panel_contents2);
+  EXPECT_NE(task_id1, task_id2);
+}
+
 }  // namespace contextual_tasks
