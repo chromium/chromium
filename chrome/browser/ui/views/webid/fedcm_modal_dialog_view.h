@@ -28,20 +28,6 @@ class FedCmModalDialogView : public content::WebContentsObserver {
     virtual void OnPopupWindowDestroyed() = 0;
   };
 
-  // This enum describes the outcome of attempting to open the pop-up window and
-  // is used for histograms. Do not remove or modify existing values, but you
-  // may add new values at the end.
-  // LINT.IfChange(ShowPopupWindowResult)
-
-  enum class ShowPopupWindowResult {
-    kSuccess = 0,
-    kFailedByInvalidUrl = 1,
-    kFailedForOtherReasons = 2,
-    kMaxValue = kFailedForOtherReasons
-  };
-
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmShowPopupWindowResult)
-
   // This enum describes the reason for closing the pop-up window and is used
   // for histograms. Do not remove or modify existing values, but you may add
   // new values at the end.

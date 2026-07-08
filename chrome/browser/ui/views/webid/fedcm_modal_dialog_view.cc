@@ -56,10 +56,6 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
   }
 
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-        ShowPopupWindowResult::kFailedByInvalidUrl);
-
     return nullptr;
   }
 
@@ -82,10 +78,6 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
       source_window_, params, /*navigation_handle_callback=*/{});
 
   if (!popup_window_) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-        ShowPopupWindowResult::kFailedForOtherReasons);
-
     return nullptr;
   }
 
@@ -95,9 +87,6 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
     ResizeAndFocusPopupWindow();
   }
   Observe(popup_window_);
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-                            ShowPopupWindowResult::kSuccess);
 
   return popup_window_;
 }

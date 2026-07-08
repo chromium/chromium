@@ -7353,16 +7353,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:SheetType) -->
 
-<!-- LINT.IfChange(FedCmShowPopupWindowResult) -->
-
-<enum name="FedCmShowPopupWindowResult">
-  <int value="0" label="Successfully opened"/>
-  <int value="1" label="Invalid URL"/>
-  <int value="2" label="Failed for other reasons"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h:ShowPopupWindowResult) -->
-
 <!-- LINT.IfChange(FedCmSignInStateMatchStatus) -->
 
 <enum name="FedCmSignInStateMatchStatus">

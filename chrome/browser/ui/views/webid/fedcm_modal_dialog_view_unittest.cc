@@ -97,17 +97,11 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
   std::unique_ptr<FedCmModalDialogView> popup_window_view =
       std::make_unique<FedCmModalDialogView>(web_contents(),
                                              /*observer=*/nullptr);
-  histogram_tester_->ExpectTotalCount(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
   content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
       GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
-  histogram_tester_->ExpectUniqueSample(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-      static_cast<int>(FedCmModalDialogView::ShowPopupWindowResult::kSuccess),
-      1);
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowInFullscreen) {
@@ -133,18 +127,11 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {
   std::unique_ptr<FedCmModalDialogView> popup_window_view =
       std::make_unique<FedCmModalDialogView>(web_contents(),
                                              /*observer=*/nullptr);
-  histogram_tester_->ExpectTotalCount(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
   content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
       GURL(u"invalid"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
-  histogram_tester_->ExpectUniqueSample(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-      static_cast<int>(
-          FedCmModalDialogView::ShowPopupWindowResult::kFailedByInvalidUrl),
-      1);
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedForOtherReasons) {
@@ -159,18 +146,11 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedForOtherReasons) {
   std::unique_ptr<FedCmModalDialogView> popup_window_view =
       std::make_unique<FedCmModalDialogView>(web_contents(),
                                              /*observer=*/nullptr);
-  histogram_tester_->ExpectTotalCount(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
   content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
       GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
-  histogram_tester_->ExpectUniqueSample(
-      "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
-      static_cast<int>(
-          FedCmModalDialogView::ShowPopupWindowResult::kFailedForOtherReasons),
-      1);
 }
 
 TEST_F(FedCmModalDialogViewTest, IdpInitiatedCloseMetric) {

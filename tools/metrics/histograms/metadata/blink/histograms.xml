@@ -2107,17 +2107,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult"
-    enum="FedCmShowPopupWindowResult" expires_after="2026-08-09">
-  <owner>yigu@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the outcome of attempting to show a pop-up window, triggered by the
-    user clicking on the &quot;Continue&quot; button on the IDP sign-in status
-    mismatch dialog. Recorded once per click of the &quot;Continue&quot; button.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean"
     expires_after="2026-12-27">
   <owner>yigu@chromium.org</owner>
