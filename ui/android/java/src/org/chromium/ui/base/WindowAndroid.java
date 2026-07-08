@@ -1205,6 +1205,10 @@ public class WindowAndroid
         mUnownedUserDataHost.destroy();
         mApplicationBottomInsetSupplier.destroy();
 
+        if (KeyboardVisibilityDelegate.getInstance() == mKeyboardVisibilityDelegate) {
+            KeyboardVisibilityDelegate.setInstance(new KeyboardVisibilityDelegate() {});
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
             if (mOverlayTransformApiHelper != null) {
                 mOverlayTransformApiHelper.destroy();
