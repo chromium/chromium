@@ -20,61 +20,6 @@
     "extension_types": ["extension"],
     "platforms": ["win", "mac"]
   },
-  "content_scripts": [
-    {
-      "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app"]
-    },
-    {
-      // The URLs that can be matched with content scripts added by login screen
-      // extensions are restricted to the Imprivata IdP.
-      "channel": "stable",
-      "dependencies": ["behavior:imprivata_login_screen_extension"],
-      "extension_types": ["login_screen_extension"]
-    }
-  ],
-  "converted_from_user_script": {
-    "channel": "stable",
-    "extension_types": [
-      "extension", "legacy_packaged_app", "hosted_app"
-    ]
-  },
-  "display_in_launcher": [
-    {
-      "channel": "stable",
-      "extension_types": ["legacy_packaged_app", "platform_app", "hosted_app"],
-      "location": "component"
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["legacy_packaged_app", "platform_app"],
-      "allowlist": [
-        "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",
-        "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/41154924
-        "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/41154924
-        "11A01C82EF355E674E4F9728A801F5C3CB40D83F",  // http://crbug.com/41154924
-        "F410C88469990EE7947450311D24B8AF2ADB2595"   // http://crbug.com/41154924
-      ]
-    }
-  ],
-  "display_in_new_tab_page": [
-    {
-      "channel": "stable",
-      "extension_types": ["legacy_packaged_app", "platform_app", "hosted_app"],
-      "location": "component"
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["legacy_packaged_app", "platform_app"],
-      "allowlist": [
-        "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",
-        "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/41154924
-        "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/41154924
-        "11A01C82EF355E674E4F9728A801F5C3CB40D83F",  // http://crbug.com/41154924
-        "F410C88469990EE7947450311D24B8AF2ADB2595"   // http://crbug.com/41154924
-      ]
-    }
-  ],
   "file_browser_handlers": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -104,16 +49,6 @@
   "omnibox": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
-  },
-  "optional_permissions": {
-    "channel": "stable",
-    "extension_types": [
-      "extension",
-      "legacy_packaged_app",
-      "hosted_app",
-      "platform_app",
-      "chromeos_system_extension"
-    ]
   },
   "platforms": {
     "channel": "stable",
