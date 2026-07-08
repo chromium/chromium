@@ -6136,6 +6136,29 @@
             ]
         }
     ],
+    "ClearBrowsingHistoryJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ClearBrowsingHistoryJourney",
+                        "HappinessTrackingSurveysForClearBrowsingHistory"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearGrShaderDiskCacheOnInvalidPrefix": [
         {
             "platforms": [
@@ -19466,6 +19489,29 @@
             ]
         }
     ],
+    "PinExtensionJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForPinExtensionJourney",
+                        "PinExtensionJourney"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinTimeoutMigration": [
         {
             "platforms": [
@@ -25753,6 +25799,30 @@
                     "name": "BackgroundReplaceOnlyEnabled",
                     "enable_features": [
                         "VCBackgroundReplace"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ViewDownloadedFileJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "Y2We4jMf70ugnJ3q1cK0QFVzpBEr",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDownloadJourney",
+                        "ViewDownloadedFileFromAppMenuJourney",
+                        "ViewDownloadedFileJourney"
                     ]
                 }
             ]
