@@ -12,7 +12,6 @@
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -324,11 +323,12 @@ void NetworkPortalSigninController::ShowSigninWindow(const GURL& url) {
 
 void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  if (!displayer.browser()) {
+  if (!displayer.browser_window_interface()) {
     return;
   }
 
-  NavigateParams params(displayer.browser(), url, ui::PAGE_TRANSITION_LINK);
+  NavigateParams params(displayer.browser_window_interface(), url,
+                        ui::PAGE_TRANSITION_LINK);
   // `captive_portal_window_type = kTab` is used on desktop Chrome to identify
   // captive portal signin tabs. This disables HTTPS-Upgrades for the captive
   // portal navigation.

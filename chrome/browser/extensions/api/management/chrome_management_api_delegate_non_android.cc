@@ -250,7 +250,7 @@ void OnWebAppInstallabilityChecked(
       chrome::ScopedTabbedBrowserDisplayer displayer(profile.get());
       const GURL& url = web_contents->GetLastCommittedURL();
 
-      chrome::AddWebContents(displayer.browser(), nullptr,
+      chrome::AddWebContents(displayer.browser_window_interface(), nullptr,
                              std::move(web_contents), url,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              blink::mojom::WindowFeatures());

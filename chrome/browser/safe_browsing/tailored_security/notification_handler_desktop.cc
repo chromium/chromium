@@ -12,7 +12,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -103,7 +102,8 @@ void TailoredSecurityNotificationHandler::OnClick(
   if (*action_index == 0) {
     LogUnconsentedOutcome(TailoredSecurityOutcome::kAccepted);
     chrome::ShowSafeBrowsingEnhancedProtection(
-        chrome::ScopedTabbedBrowserDisplayer(profile).browser());
+        chrome::ScopedTabbedBrowserDisplayer(profile)
+            .browser_window_interface());
   } else {
     LogUnconsentedOutcome(TailoredSecurityOutcome::kRejected);
   }

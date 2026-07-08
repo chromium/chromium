@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -252,7 +251,7 @@ void ChromeNewWindowClient::NewTab() {
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     }
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    browser = displayer.browser();
+    browser = displayer.browser_window_interface();
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
   }
 

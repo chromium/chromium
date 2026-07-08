@@ -16,7 +16,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -184,7 +183,7 @@ void NearbyShareDialogUI::WebContentsCreated(
     const GURL& target_url,
     content::WebContents* new_contents) {
   chrome::ScopedTabbedBrowserDisplayer displayer(Profile::FromWebUI(web_ui()));
-  NavigateParams nav_params(displayer.browser(), target_url,
+  NavigateParams nav_params(displayer.browser_window_interface(), target_url,
                             ui::PageTransition::PAGE_TRANSITION_LINK);
   Navigate(&nav_params);
 }

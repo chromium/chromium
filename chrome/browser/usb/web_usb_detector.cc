@@ -18,7 +18,6 @@
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -95,7 +94,7 @@ GURL GetActiveTabURL() {
 void OpenURL(const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
-  browser_displayer.browser()->OpenURL(
+  browser_displayer.browser_window_interface()->OpenURL(
       content::OpenURLParams(url, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL,

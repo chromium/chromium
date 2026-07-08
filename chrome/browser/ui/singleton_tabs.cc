@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -19,7 +18,7 @@
 void ShowSingletonTab(Profile* profile, const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   NavigateParams params(
-      GetSingletonTabNavigateParams(displayer.browser(), url));
+      GetSingletonTabNavigateParams(displayer.browser_window_interface(), url));
   Navigate(&params);
 }
 
@@ -34,7 +33,7 @@ void ShowSingletonTabOverwritingNTP(
     NavigateParams::PathBehavior path_behavior) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   NavigateParams params(
-      GetSingletonTabNavigateParams(displayer.browser(), url));
+      GetSingletonTabNavigateParams(displayer.browser_window_interface(), url));
   params.path_behavior = path_behavior;
   ShowSingletonTabOverwritingNTP(&params);
 }

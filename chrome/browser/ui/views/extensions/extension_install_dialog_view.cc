@@ -491,7 +491,8 @@ void ExtensionInstallDialogView::LinkClicked() {
         params, /*navigation_handle_callback=*/{});
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-    displayer.browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+    displayer.browser_window_interface()->OpenURL(
+        params, /*navigation_handle_callback=*/{});
   }
   CloseDialog();
 }

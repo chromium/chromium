@@ -20,7 +20,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -45,7 +44,7 @@ void ShowInProgressDownloads(Profile* profile) {
   if (download_core_service &&
       download_core_service->BlockingShutdownCount() > 0) {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    chrome::ShowDownloads(displayer.browser());
+    chrome::ShowDownloads(displayer.browser_window_interface());
   }
 }
 

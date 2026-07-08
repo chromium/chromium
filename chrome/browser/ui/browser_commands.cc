@@ -1247,7 +1247,8 @@ content::WebContents& NewTab(BrowserWindowInterface* browser,
   }
 
   ScopedTabbedBrowserDisplayer displayer(browser->GetProfile());
-  BrowserWindowInterface* displayer_browser = displayer.browser();
+  BrowserWindowInterface* displayer_browser =
+      displayer.browser_window_interface();
   auto* contents = AddAndReturnTabAt(displayer_browser, GURL(), -1, true);
   displayer_browser->GetWindow()->Show();
   // The call to AddBlankTabAt above did not set the focus to the tab as its
