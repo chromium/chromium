@@ -415,7 +415,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mLayerTitleCache.getUpdatedGlicButtonText(any(), anyBoolean(), anyBoolean()))
                 .thenReturn(123);
         when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
-        mCoordinator.setGlicButtonText("Actor Text", /* isActor= */ true, /* forceUpdate= */ false);
+        mCoordinator.setGlicActorButtonText("Actor Text", /* forceUpdate= */ false);
         mCoordinator.updateButtonTextProperties(mGlicActorButton);
 
         assertEquals(
@@ -756,8 +756,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         Mockito.clearInvocations(coordinatorSpy);
 
         // 3. Test Glic Actor Button Expansion Transition (Simulating actor task nudge)
-        coordinatorSpy.setGlicButtonText(
-                "Actor Nudge", /* isActor= */ true, /* forceUpdate= */ false);
+        coordinatorSpy.setGlicActorButtonText("Actor Nudge", /* forceUpdate= */ false);
         coordinatorSpy.updateButtonTextProperties(mGlicActorButton);
         Mockito.verify(coordinatorSpy, Mockito.atLeastOnce())
                 .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());

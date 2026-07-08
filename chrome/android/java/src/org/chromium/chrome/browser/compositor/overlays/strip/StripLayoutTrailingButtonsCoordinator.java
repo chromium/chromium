@@ -450,7 +450,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
             mGlicButton.setText(
                     mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
-            updateButtonAccessibilityDescription(/* isActor= */ false);
+            updateGlicButtonAccessibilityDescription();
 
             mGlicActorButton =
                     new TintedCompositorTextButton(
@@ -577,7 +577,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mIsGlicUiVisible == isOpened) return;
 
         mIsGlicUiVisible = isOpened;
-        updateButtonAccessibilityDescription(/* isActor= */ false);
+        updateGlicButtonAccessibilityDescription();
     }
 
     private void onGlicPrefChanged() {
@@ -770,7 +770,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
     @VisibleForTesting
     /* package */ void updateButtonTextProperties(TintedCompositorTextButton button) {
-        boolean isActor = button == mGlicActorButton;
+        boolean isActor = button.getType() == ButtonType.GLIC_ACTOR;
         String text = button.getText();
         if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
             button.setTextResourceId(
@@ -778,29 +778,18 @@ public class StripLayoutTrailingButtonsCoordinator {
         } else {
             button.setTextResourceId(Resources.ID_NULL);
         }
-        updateGlicButtonWidth(mLayerTitleCache, isActor);
+        updateGlicButtonWidth(button, mLayerTitleCache);
         updateButtonPositions();
         mObserver.onTrailingButtonsLayoutStateChanged();
     }
 
-    private void updateGlicButtonWidth(@Nullable LayerTitleCache titleCache, boolean isActor) {
-        if (mGlicButton == null || mGlicActorButton == null) return;
-        if (isActor) {
-            float targetWidth = calculateButtonWidth(mGlicActorButton, titleCache);
-            animateGlicButton(
-                    mGlicActorButton,
-                    targetWidth,
-                    1.0f,
-                    /* isActor= */ true,
-                    /* endAction= */ null);
-        } else {
-            float targetWidth = calculateButtonWidth(mGlicButton, titleCache);
-            animateGlicButton(
-                    mGlicButton, targetWidth, 1.0f, /* isActor= */ false, /* endAction= */ null);
-        }
+    private void updateGlicButtonWidth(
+            TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
+        float targetWidth = calculateGlicButtonWidth(button, titleCache);
+        animateGlicButton(button, targetWidth, 1.0f, /* endAction= */ null);
     }
 
-    private float calculateButtonWidth(
+    private float calculateGlicButtonWidth(
             TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
         String text = button.getText();
         float width = GLIC_BUTTON_BACKGROUND_WIDTH_DP;
@@ -812,7 +801,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             + GLIC_ICON_TEXT_PADDING_DP
                             + (titleCache.getButtonTextWidth(text) / mDensity);
 
-            if (isGlicDismissNudgeButtonVisible() && button == mGlicButton) {
+            if (isGlicDismissNudgeButtonVisible() && button.getType() == ButtonType.GLIC) {
                 width += GLIC_BUTTON_SHORTENED_END_PADDING_DP + GLIC_DISMISS_ICON_WIDTH_DP;
             } else {
                 width += GLIC_BUTTON_STANDARD_END_PADDING_DP;
@@ -826,8 +815,8 @@ public class StripLayoutTrailingButtonsCoordinator {
             TintedCompositorTextButton button,
             float targetWidth,
             float targetOpacity,
-            boolean isActor,
             @Nullable Runnable endAction) {
+        boolean isActor = button.getType() == ButtonType.GLIC_ACTOR;
         CompositorAnimator widthAnimator =
                 isActor ? mGlicActorButtonWidthAnimator : mGlicButtonWidthAnimator;
         if (widthAnimator != null && widthAnimator.isRunning()) {
@@ -1054,14 +1043,14 @@ public class StripLayoutTrailingButtonsCoordinator {
                 setGlicActorButtonVisible(targetActorVisible, animate);
             }
 
-            setGlicButtonText(targetGlicText, /* isActor= */ false, forceLayoutChanged);
-            setGlicButtonText(targetActorText, /* isActor= */ true, forceLayoutChanged);
+            setGlicButtonText(targetGlicText, forceLayoutChanged);
+            setGlicActorButtonText(targetActorText, forceLayoutChanged);
 
             // 4. Recalculate button widths and apply transitions
-            float targetGlicWidth = calculateButtonWidth(mGlicButton, mLayerTitleCache);
+            float targetGlicWidth = calculateGlicButtonWidth(mGlicButton, mLayerTitleCache);
             float targetActorWidth =
                     targetActorVisible
-                            ? calculateButtonWidth(mGlicActorButton, mLayerTitleCache)
+                            ? calculateGlicButtonWidth(mGlicActorButton, mLayerTitleCache)
                             : 0.0f;
             float currentGlicWidth = mGlicButton.getWidth();
             float currentActorWidth = mGlicActorButton.getWidth();
@@ -1091,15 +1080,9 @@ public class StripLayoutTrailingButtonsCoordinator {
         boolean targetActorVisible = shouldGlicActorBeVisible();
 
         if (animate) {
-            animateGlicButton(
-                    mGlicButton, targetGlicWidth, targetOpacity, /* isActor= */ false, null);
+            animateGlicButton(mGlicButton, targetGlicWidth, targetOpacity, null);
             if (targetActorVisible) {
-                animateGlicButton(
-                        mGlicActorButton,
-                        targetActorWidth,
-                        targetOpacity,
-                        /* isActor= */ true,
-                        null);
+                animateGlicButton(mGlicActorButton, targetActorWidth, targetOpacity, null);
             }
         } else {
             // 1. Cancel running animators instantly to prevent property fighting
@@ -1115,50 +1098,66 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     @VisibleForTesting
-    /* package */ void setGlicButtonText(
-            @Nullable String text, boolean isActor, boolean forceUpdate) {
-        TintedCompositorTextButton button = isActor ? mGlicActorButton : mGlicButton;
-        if (button == null) return;
-        if (TextUtils.equals(button.getText(), text) && !forceUpdate) return;
+    /* package */ void setGlicButtonText(@Nullable String text, boolean forceUpdate) {
+        if (mGlicButton == null) return;
+        if (TextUtils.equals(mGlicButton.getText(), text) && !forceUpdate) return;
 
-        button.setText(text);
+        mGlicButton.setText(text);
 
         if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
-            button.setTextResourceId(
+            mGlicButton.setTextResourceId(
                     mLayerTitleCache.getUpdatedGlicButtonText(
-                            text, /* isActor= */ button == mGlicActorButton, mIsIncognito));
+                            text, /* isActor= */ false, mIsIncognito));
         } else {
-            button.setTextResourceId(Resources.ID_NULL);
+            mGlicButton.setTextResourceId(Resources.ID_NULL);
         }
 
-        updateButtonAccessibilityDescription(isActor);
+        updateGlicButtonAccessibilityDescription();
     }
 
-    private void updateButtonAccessibilityDescription(boolean isActor) {
-        if (isActor) {
-            if (mGlicActorButton == null) return;
-            String text = mGlicActorButton.getText();
-            String desc =
-                    TextUtils.isEmpty(text)
-                            ? mContext.getString(R.string.actor_task_indicator_tooltip)
-                            : text;
-            mGlicActorButton.setAccessibilityDescription(desc);
+    @VisibleForTesting
+    /* package */ void setGlicActorButtonText(@Nullable String text, boolean forceUpdate) {
+        if (mGlicActorButton == null) return;
+        if (TextUtils.equals(mGlicActorButton.getText(), text) && !forceUpdate) return;
+
+        mGlicActorButton.setText(text);
+
+        if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
+            mGlicActorButton.setTextResourceId(
+                    mLayerTitleCache.getUpdatedGlicButtonText(
+                            text, /* isActor= */ true, mIsIncognito));
         } else {
-            if (mGlicButton == null) return;
-            mGlicButton.setEnabled(!mIsIncognito);
-            if (mIsGlicUiVisible) {
-                mGlicButton.setAccessibilityDescription(
-                        mContext.getString(R.string.glic_tab_strip_button_tooltip_close));
-                // If no tooltip is set, tooltip defaults to a11y description
-                mGlicButton.setTooltipText(null);
-            } else {
-                String defaultTooltip = mContext.getString(R.string.glic_tab_strip_button_tooltip);
-                String buttonText = mGlicButton.getText();
-                String desc = TextUtils.isEmpty(buttonText) ? defaultTooltip : buttonText;
-                mGlicButton.setAccessibilityDescription(desc);
-                mGlicButton.setTooltipText(defaultTooltip);
-            }
+            mGlicActorButton.setTextResourceId(Resources.ID_NULL);
         }
+
+        updateGlicActorButtonAccessibilityDescription();
+    }
+
+    private void updateGlicButtonAccessibilityDescription() {
+        if (mGlicButton == null) return;
+        mGlicButton.setEnabled(!mIsIncognito);
+        if (mIsGlicUiVisible) {
+            mGlicButton.setAccessibilityDescription(
+                    mContext.getString(R.string.glic_tab_strip_button_tooltip_close));
+            // If no tooltip is set, tooltip defaults to a11y description
+            mGlicButton.setTooltipText(null);
+        } else {
+            String defaultTooltip = mContext.getString(R.string.glic_tab_strip_button_tooltip);
+            String buttonText = mGlicButton.getText();
+            String desc = TextUtils.isEmpty(buttonText) ? defaultTooltip : buttonText;
+            mGlicButton.setAccessibilityDescription(desc);
+            mGlicButton.setTooltipText(defaultTooltip);
+        }
+    }
+
+    private void updateGlicActorButtonAccessibilityDescription() {
+        if (mGlicActorButton == null) return;
+        String text = mGlicActorButton.getText();
+        String desc =
+                TextUtils.isEmpty(text)
+                        ? mContext.getString(R.string.actor_task_indicator_tooltip)
+                        : text;
+        mGlicActorButton.setAccessibilityDescription(desc);
     }
 
     /** Updates the position of the trailing buttons based on layout parameters. */
@@ -1350,12 +1349,11 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicActorButton.setVisible(true);
         } else {
             if (animate) {
-                setGlicButtonText(null, /* isActor= */ true, /* forceUpdate= */ false);
+                setGlicActorButtonText(null, /* forceUpdate= */ false);
                 animateGlicButton(
                         mGlicActorButton,
                         0.0f,
                         0.0f,
-                        /* isActor= */ true,
                         () -> {
                             if (mGlicActorButton != null) {
                                 mGlicActorButton.setVisible(false);
