@@ -2769,15 +2769,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                if (DeviceInfo.isDesktop()) {
-                    // Desktop uses the synced UserPref.
-                    BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
-                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
-                } else {
-                    // Tablet uses the local shared pref (but interacts with policy via Profile).
-                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
-                            mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
-                }
+                BookmarkBarUtils.toggleShowBookmarksBar(
+                        mProfileSupplier.asNonNull().get(), /* fromKeyboardShortcut= */ true);
                 return true;
             }
         } else if (id == R.id.close_window) {

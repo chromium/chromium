@@ -259,8 +259,7 @@ public class BookmarkBarUtilsTest {
                 BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
 
         // First toggle: false -> true.
-        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
-                mProfile, /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, /* fromKeyboardShortcut= */ false);
         assertTrue(
                 "Should be true after first toggle.",
                 BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
@@ -270,8 +269,7 @@ public class BookmarkBarUtilsTest {
                 BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
         // Second toggle: true -> false.
-        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
-                mProfile, /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, /* fromKeyboardShortcut= */ false);
         assertFalse(
                 "Should be false after second toggle.",
                 BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
@@ -491,10 +489,10 @@ public class BookmarkBarUtilsTest {
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile, true);
+        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, true);
         assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
-        BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile, false);
+        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
     }
 

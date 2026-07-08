@@ -432,7 +432,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* openInAppMenuItemProvider= */ null,
                         /* recentlyClosedEntriesManagerSupplier= */ () ->
                                 mRecentlyClosedEntriesManager,
-                        () -> mSideUiStateProvider);
+                        () -> mSideUiStateProvider,
+                        /* isXrFullSpaceModeSupplier= */ () -> false);
         RobolectricUtil.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
         mSaveAndShareItemBuilder =

@@ -3813,7 +3813,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mHubManagerSupplier,
                 mRootUiCoordinator.getOpenInAppMenuItemProvider(),
                 () -> mRecentlyClosedEntriesManager,
-                ((TabbedRootUiCoordinator) mRootUiCoordinator).getSideUiStateProviderSupplier());
+                ((TabbedRootUiCoordinator) mRootUiCoordinator).getSideUiStateProviderSupplier(),
+                getXrSpaceModeObservableSupplier());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

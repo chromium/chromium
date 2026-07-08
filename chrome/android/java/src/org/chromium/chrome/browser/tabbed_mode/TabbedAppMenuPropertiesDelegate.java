@@ -165,7 +165,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             OneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider,
             Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
-            Supplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+            Supplier<SideUiStateProvider> sideUiStateProviderSupplier,
+            Supplier<Boolean> isXrFullSpaceModeSupplier) {
         super(
                 context,
                 activityTabProvider,
@@ -223,7 +224,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         mBookmarkModelSupplier,
                         tabModelSelector,
                         isMenuIconAtStart(),
-                        shouldShowIconBeforeItem());
+                        shouldShowIconBeforeItem(),
+                        isXrFullSpaceModeSupplier);
 
         mSaveAndShareItemBuilder =
                 new SaveAndShareItemBuilder(

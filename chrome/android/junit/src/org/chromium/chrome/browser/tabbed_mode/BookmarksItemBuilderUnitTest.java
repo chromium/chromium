@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -43,6 +44,8 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,6 +81,7 @@ public class BookmarksItemBuilderUnitTest {
     @Mock private Tab mTab;
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    private boolean mIsXrFullSpaceMode;
 
     @Mock
     @SuppressWarnings("MockNotUsedInProduction")
@@ -123,51 +127,66 @@ public class BookmarksItemBuilderUnitTest {
                         () -> mBookmarkModel,
                         mTabModelSelector,
                         /* isMenuIconAtStart= */ false,
-                        /* shouldShowIconBeforeItem= */ true);
+                        /* shouldShowIconBeforeItem= */ true,
+                        /* isXrFullSpaceModeSupplier= */ () -> false);
         mBookmarksItemBuilder.setImageFetcherForTesting(mBookmarkImageFetcher);
+
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(true);
     }
 
-    @Test
-    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
-    public void testToggleBookmarksBarMenuItemString() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-
-        // Bookmark bar is visible.
-        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
+    private void verifyToggleItemTitle(int expectedTitleResId) {
         ListItem bookmarksParent = mBookmarksItemBuilder.buildBookmarksParentItem(mTab);
         assertNotNull(bookmarksParent);
         List<ListItem> subItems =
                 bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        ListItem toggleItem = null;
-        for (ListItem item : subItems) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
-                    == R.id.toggle_bookmarks_bar_menu_id) {
-                toggleItem = item;
-                break;
-            }
-        }
+        ListItem toggleItem = findItemById(subItems, R.id.toggle_bookmarks_bar_menu_id);
         assertNotNull(toggleItem);
         assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.menu_hide_bookmarks_bar),
+                ContextUtils.getApplicationContext().getString(expectedTitleResId),
                 toggleItem.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testToggleBookmarksBarMenuItemString_Desktop() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        // Bookmark bar is visible.
+        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
+        verifyToggleItemTitle(R.string.menu_hide_bookmarks_bar);
 
         // Bookmark bar is hidden.
         when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
-        bookmarksParent = mBookmarksItemBuilder.buildBookmarksParentItem(mTab);
-        subItems =
-                bookmarksParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
-        toggleItem = null;
-        for (ListItem item : subItems) {
-            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID)
-                    == R.id.toggle_bookmarks_bar_menu_id) {
-                toggleItem = item;
-                break;
-            }
-        }
-        assertNotNull(toggleItem);
-        assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.menu_show_bookmarks_bar),
-                toggleItem.model.get(AppMenuItemProperties.TITLE));
+        verifyToggleItemTitle(R.string.menu_show_bookmarks_bar);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testToggleBookmarksBarMenuItemString_NonDesktop() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        DeviceInfo.setIsDesktopForTesting(false);
+
+        // Ensure no policy overrides.
+        when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+        when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+
+        // Bookmark bar is visible (via SharedPreferences).
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, true)
+                .apply();
+        verifyToggleItemTitle(R.string.menu_hide_bookmarks_bar);
+
+        // Bookmark bar is hidden (via SharedPreferences).
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false)
+                .apply();
+        verifyToggleItemTitle(R.string.menu_show_bookmarks_bar);
     }
 
     @Test

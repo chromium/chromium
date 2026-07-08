@@ -53,6 +53,7 @@ public class BookmarksItemBuilder implements Destroyable {
     private final TabModelSelector mTabModelSelector;
     private final boolean mIsMenuIconAtStart;
     private final boolean mShouldShowIconBeforeItem;
+    private final Supplier<Boolean> mIsXrFullSpaceModeSupplier;
 
     private @Nullable BookmarkImageFetcher mImageFetcher;
 
@@ -66,6 +67,8 @@ public class BookmarksItemBuilder implements Destroyable {
      * @param tabModelSelector The selector used to query tab state.
      * @param isMenuIconAtStart Whether the menu icon is displayed at the start.
      * @param shouldShowIconBeforeItem Whether an icon should be shown before the item text.
+     * @param isXrFullSpaceModeSupplier The supplier for whether the device is XR in full space
+     *     mode.
      */
     public BookmarksItemBuilder(
             Context context,
@@ -73,13 +76,15 @@ public class BookmarksItemBuilder implements Destroyable {
             Supplier<@Nullable BookmarkModel> bookmarkModelSupplier,
             TabModelSelector tabModelSelector,
             boolean isMenuIconAtStart,
-            boolean shouldShowIconBeforeItem) {
+            boolean shouldShowIconBeforeItem,
+            Supplier<Boolean> isXrFullSpaceModeSupplier) {
         mContext = context;
         mAppMenuItemTheme = appMenuItemTheme;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mTabModelSelector = tabModelSelector;
         mIsMenuIconAtStart = isMenuIconAtStart;
         mShouldShowIconBeforeItem = shouldShowIconBeforeItem;
+        mIsXrFullSpaceModeSupplier = isXrFullSpaceModeSupplier;
     }
 
     /** Cleans up resources used by this builder, specifically the image fetcher. */
@@ -278,8 +283,10 @@ public class BookmarksItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.toggle_bookmarks_bar_menu_id,
-                        BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(
-                                        mTabModelSelector.getCurrentModel().getProfile())
+                        BookmarkBarUtils.isBookmarkBarVisible(
+                                        mContext,
+                                        mTabModelSelector.getCurrentModel().getProfile(),
+                                        mIsXrFullSpaceModeSupplier.get())
                                 ? R.string.menu_hide_bookmarks_bar
                                 : R.string.menu_show_bookmarks_bar,
                         Resources.ID_NULL,

@@ -2932,10 +2932,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.toggle_bookmarks_bar_menu_id) {
-            BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
-                    currentTab.getProfile(), /* fromKeyboardShortcut= */ false);
-            RecordUserAction.record("MobileMenuToggleBookmarksBar");
-            return true;
+            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(this)) {
+                BookmarkBarUtils.toggleShowBookmarksBar(
+                        currentTab.getProfile(), /* fromKeyboardShortcut= */ false);
+                RecordUserAction.record("MobileMenuToggleBookmarksBar");
+                return true;
+            }
         }
 
         if (id == R.id.back_menu_id) {
