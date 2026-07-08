@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chrome_build.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos)
@@ -29,23 +28,18 @@ build_webui("build") {
   web_component_files = [ "app.ts" ]
 
   ts_files = [
+    "api_session.ts",
     "audio_capturer.ts",
     "audio_player.ts",
     "audio_processor.ts",
     "audio_utils.ts",
+    "conversation.ts",
     "journal.ts",
     "logging.ts",
     "page_context_manager.ts",
+    "persona.ts",
+    "tools/tool_executor.ts",
   ]
-
-  if (is_chrome_branded) {
-    ts_files += [
-      "internal/api_session.ts",
-      "internal/conversation.ts",
-      "internal/persona.ts",
-      "internal/tools/tool_executor.ts",
-    ]
-  }
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

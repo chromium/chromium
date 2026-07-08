@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// NOTE: These tests exercise branded internal persona functionality (`internal/persona.js`).
-// TODO(crbug.com/532099566): Move branded-specific WebUI tests into an internal test subdirectory.
-import 'chrome-untrusted://ai-overlay-dialog/internal/persona.js';
+import 'chrome-untrusted://ai-overlay-dialog/persona.js';
 
-import type {ConversationConfig} from 'chrome-untrusted://ai-overlay-dialog/internal/conversation.js';
-import {buildSystemInstruction, processConditionals, processNumbering, processTemplate} from 'chrome-untrusted://ai-overlay-dialog/internal/persona.js';
+import type {ConversationConfig} from 'chrome-untrusted://ai-overlay-dialog/conversation.js';
+import {buildSystemInstruction, processConditionals, processNumbering, processTemplate} from 'chrome-untrusted://ai-overlay-dialog/persona.js';
 import {assertEquals, assertThrows} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('PersonaTest', () => {

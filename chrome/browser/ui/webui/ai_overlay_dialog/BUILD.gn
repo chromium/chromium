@@ -38,9 +38,9 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/page_content_annotations:screenshot_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/ai_overlay_dialog:resources",
     "//chrome/browser/search_engines",
     "//chrome/browser/translate",
-    "//chrome/browser/ttc/resources",
 
     # This target includes //chrome/browser/ui:ui's headers, but :ui depends
     # back on this target (it owns the desktop interface-binders parts file that
