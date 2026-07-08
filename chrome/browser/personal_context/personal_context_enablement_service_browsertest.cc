@@ -45,7 +45,7 @@ class MockPersonalContextEnablementServiceObserver
     : public PersonalContextEnablementService::Observer {
  public:
   MOCK_METHOD(void,
-              OnEnablementStateChanged,
+              OnEligibilityStateChanged,
               (PersonalContextEligibilityState),
               (override));
 };
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
                        ConsentAgeGateDisablesService) {
   SignIn(kUnderagedUserEmail, /*is_underaged=*/true);
 
-  EXPECT_EQ(enablement_service_->GetEnablementState(),
+  EXPECT_EQ(enablement_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
                        ConsentManagedAccountDisablesService) {
   SignIn(kCorpUserEmail, /*is_underaged=*/false, /*is_managed=*/true);
 
-  EXPECT_EQ(enablement_service_->GetEnablementState(),
+  EXPECT_EQ(enablement_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
                        ConsentCloudPreferencesDeactivate) {
   SignIn(kAdultUserEmail);
-  EXPECT_EQ(enablement_service_->GetEnablementState(),
+  EXPECT_EQ(enablement_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 
   // Simulate preferences opt-out
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
   // Enablement check should update after change events
   enablement_service_->OnAccountSettingDataUpdated("any_setting");
 
-  EXPECT_EQ(enablement_service_->GetEnablementState(),
+  EXPECT_EQ(enablement_service_->GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(PersonalContextEnablementServiceImplBrowserTest,
 
   // Toggling settings should fire state update notification to the observer
   EXPECT_CALL(observer,
-              OnEnablementStateChanged(
+              OnEligibilityStateChanged(
                   PersonalContextEligibilityState::kDisabledNotEligible))
       .Times(1);
 

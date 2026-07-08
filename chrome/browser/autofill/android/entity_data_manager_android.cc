@@ -175,7 +175,7 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
   const personal_context::PersonalContextEligibilityState
       personal_context_enablement_state =
           personal_context_enablement_service_
-              ? personal_context_enablement_service_->GetEnablementState()
+              ? personal_context_enablement_service_->GetEligibilityState()
               : personal_context::PersonalContextEligibilityState::
                     kDisabledNotEligible;
 
@@ -435,7 +435,7 @@ bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
   const personal_context::PersonalContextEligibilityState
       personal_context_enablement_state =
           personal_context_enablement_service_
-              ? personal_context_enablement_service_->GetEnablementState()
+              ? personal_context_enablement_service_->GetEligibilityState()
               : personal_context::PersonalContextEligibilityState::
                     kDisabledNotEligible;
 

@@ -41,7 +41,7 @@ class PersonalContextEnablementServiceImpl
       PersonalContextEnablementService::Observer* observer) override;
   void RemoveObserver(
       PersonalContextEnablementService::Observer* observer) override;
-  PersonalContextEligibilityState GetEnablementState() override;
+  PersonalContextEligibilityState GetEligibilityState() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

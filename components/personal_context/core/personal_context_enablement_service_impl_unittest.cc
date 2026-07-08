@@ -35,7 +35,7 @@ class MockPersonalContextEnablementServiceObserver
     : public PersonalContextEnablementService::Observer {
  public:
   MOCK_METHOD(void,
-              OnEnablementStateChanged,
+              OnEligibilityStateChanged,
               (PersonalContextEligibilityState),
               (override));
 };
@@ -112,7 +112,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "0"}});
-    EXPECT_EQ(service().GetEnablementState(),
+    EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kDisabledNotEligible);
   }
 
@@ -121,7 +121,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "1"}});
-    EXPECT_EQ(service().GetEnablementState(),
+    EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kDisabledNeedsOptIn);
   }
 
@@ -130,7 +130,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "2"}});
-    EXPECT_EQ(service().GetEnablementState(),
+    EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
   }
 }
@@ -138,7 +138,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
 // Verifies that the service is enabled when all feature flags and other
 // requirements (set up in the test fixture) are met.
 TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
   histogram_tester().ExpectBucketCount(
       "Autofill.PersonalContext.NonEligibilityReason",
@@ -149,7 +149,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
 // Verifies that the service is disabled when the user is not signed in.
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   histogram_tester().ExpectBucketCount(
@@ -163,7 +163,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
 
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   histogram_tester().ExpectBucketCount(
@@ -175,7 +175,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
 TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
   SignIn("managed@example.com", /*is_underaged=*/false, /*is_managed=*/true);
 
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   histogram_tester().ExpectBucketCount(
@@ -191,7 +191,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       nullptr, identity_test_env_.identity_manager(), &pref_service_,
       GeoIpCountryCode("US"), "en-US");
 
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -206,7 +206,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   histogram_tester().ExpectBucketCount(
@@ -233,7 +233,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   histogram_tester().ExpectBucketCount(
@@ -262,7 +262,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
-    EXPECT_EQ(service().GetEnablementState(),
+    EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
   }
   {
@@ -278,7 +278,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
-    EXPECT_EQ(service().GetEnablementState(),
+    EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
   }
 }
@@ -288,7 +288,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 TEST_F(PersonalContextEnablementServiceImplTest,
        CacheUpdatedOnAccountSettingChanged) {
   // Initial state is kEligible.
-  ASSERT_EQ(service().GetEnablementState(),
+  ASSERT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 
   // Opt out of context in account settings.
@@ -302,7 +302,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       account_settings::kAccountSettingContext.name);
 
   // The cache should be updated to kDisabledNotEligible.
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   // Opt back in.
@@ -324,7 +324,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       account_settings::kAccountSettingContext.name);
 
   // The cache should be updated back to kEligible.
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 }
 
@@ -337,7 +337,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       nullptr, identity_test_env_.identity_manager(), &pref_service_,
       GeoIpCountryCode("US"), "en-US");
 
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
@@ -356,7 +356,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNeedsOptIn);
 }
 
@@ -383,7 +383,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
 
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEnablementState(),
+  EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNeedsOptIn);
 }
 
@@ -408,7 +408,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
-  EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
+  EXPECT_EQ(service().GetEligibilityState(), std::get<1>(GetParam()));
 
   if (std::get<1>(GetParam()) == PersonalContextEligibilityState::kEligible) {
     histogram_tester().ExpectBucketCount(
@@ -443,7 +443,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Verifies that the service is only enabled for the en-US locale.
 TEST_P(PersonalContextEnablementServiceImplLocaleTest, CheckLocaleEnablement) {
   CreateService("us", std::get<0>(GetParam()));
-  EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
+  EXPECT_EQ(service().GetEligibilityState(), std::get<1>(GetParam()));
 
   if (std::get<1>(GetParam()) == PersonalContextEligibilityState::kEligible) {
     histogram_tester().ExpectBucketCount(

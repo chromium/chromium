@@ -420,7 +420,7 @@ void PersonalContextAccessManagerImpl::WipeCache() {
   spii_presence_signal_cache_.clear();
 }
 
-void PersonalContextAccessManagerImpl::OnEnablementStateChanged(
+void PersonalContextAccessManagerImpl::OnEligibilityStateChanged(
     personal_context::PersonalContextEligibilityState new_state) {
   if (!IsPersonalContextEligible(new_state)) {
     WipeCache();

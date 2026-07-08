@@ -32,7 +32,7 @@ class MockPersonalContextEnablementService
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(PersonalContextEligibilityState,
-              GetEnablementState,
+              GetEligibilityState,
               (),
               (override));
 };
@@ -78,7 +78,7 @@ TEST_F(PersonalContextAutofillUtilTest,
   NiceMock<MockPersonalContextEnablementService> service;
 
   auto check_state = [&](PersonalContextEligibilityState state) {
-    ON_CALL(service, GetEnablementState()).WillByDefault(Return(state));
+    ON_CALL(service, GetEligibilityState()).WillByDefault(Return(state));
     return ShouldShowPersonalContextAutofillSetting(client_, &service);
   };
 
@@ -93,7 +93,7 @@ TEST_F(PersonalContextAutofillUtilTest,
 TEST_F(PersonalContextAutofillUtilTest,
        ShouldShowPersonalContextAutofillSetting_BothDisabled) {
   NiceMock<MockPersonalContextEnablementService> service;
-  ON_CALL(service, GetEnablementState())
+  ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 
   base::test::ScopedFeatureList feature_list;
@@ -107,7 +107,7 @@ TEST_F(PersonalContextAutofillUtilTest,
 TEST_F(PersonalContextAutofillUtilTest,
        ShouldShowPersonalContextAutofillSetting_AmbientAutofillEnabled) {
   NiceMock<MockPersonalContextEnablementService> service;
-  ON_CALL(service, GetEnablementState())
+  ON_CALL(service, GetEligibilityState())
       .WillByDefault(Return(PersonalContextEligibilityState::kEligible));
 
   EXPECT_TRUE(ShouldShowPersonalContextAutofillSetting(client_, &service));

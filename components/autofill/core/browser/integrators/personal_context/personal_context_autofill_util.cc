@@ -50,7 +50,7 @@ bool ShouldShowPersonalContextAutofillSetting(
 #endif
       prefs, edm, identity_manager, sync_service,
       is_wallet_public_pass_storage_enabled, is_off_the_record, country_code,
-      subscription_service, enablement_service->GetEnablementState(),
+      subscription_service, enablement_service->GetEligibilityState(),
       AutofillAiAction::kShowAmbientAutofillInSettings);
 
   const bool at_memory_enabled =

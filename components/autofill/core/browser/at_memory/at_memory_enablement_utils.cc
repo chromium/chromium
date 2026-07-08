@@ -38,7 +38,7 @@ namespace {
     return false;
   }
   using enum personal_context::PersonalContextEligibilityState;
-  switch (personal_context_service->GetEnablementState()) {
+  switch (personal_context_service->GetEligibilityState()) {
     case kDisabledNotEligible:
     // TODO(crbug.com/504893949) Consider handling this status differently when
     // implementing opt-in logic.

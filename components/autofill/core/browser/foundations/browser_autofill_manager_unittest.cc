@@ -1338,7 +1338,7 @@ class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
     autofill_client().GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
-    ON_CALL(mock_personal_context_service_, GetEnablementState())
+    ON_CALL(mock_personal_context_service_, GetEligibilityState())
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client().set_personal_context_enablement_service(
@@ -1368,7 +1368,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  ON_CALL(mock_personal_context_service_, GetEnablementState())
+  ON_CALL(mock_personal_context_service_, GetEligibilityState())
       .WillByDefault(Return(personal_context::PersonalContextEligibilityState::
                                 kDisabledNotEligible));
 

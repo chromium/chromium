@@ -115,7 +115,7 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
     access_manager_ = std::make_unique<PersonalContextAccessManagerImpl>(
         &mock_personal_context_service_, &mock_enablement_service_,
         &pref_service_);
-    ON_CALL(mock_enablement_service_, GetEnablementState)
+    ON_CALL(mock_enablement_service_, GetEligibilityState)
         .WillByDefault(testing::Return(
             personal_context::PersonalContextEligibilityState::kEligible));
     observation_.Observe(access_manager_.get());
@@ -818,8 +818,8 @@ TEST_F(PersonalContextAccessManagerImplTest,
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
 }
 
-// Tests that when OnEnablementStateChanged is called with a disabled state, all
-// state is wiped.
+// Tests that when OnEligibilityStateChanged is called with a disabled state,
+// all state is wiped.
 TEST_F(PersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   // 1. Prefetch a (masked) passport.
   personal_context::proto::ContextMemoryAmbientAutofillResponse
@@ -843,18 +843,18 @@ TEST_F(PersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   ASSERT_EQ(entities.size(), 1u);
   EntityInstance::EntityId passport_guid = entities[0].guid();
 
-  // 2. Call OnEnablementStateChanged with an ENABLED state. State should not
+  // 2. Call OnEligibilityStateChanged with an ENABLED state. State should not
   // be wiped.
-  access_manager().OnEnablementStateChanged(
+  access_manager().OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState::kEligible);
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
-  // 3. Call OnEnablementStateChanged with a DISABLED state. State should be
+  // 3. Call OnEligibilityStateChanged with a DISABLED state. State should be
   // wiped.
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
-  access_manager().OnEnablementStateChanged(
+  access_manager().OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
@@ -1083,7 +1083,7 @@ TEST_F(PersonalContextAccessManagerImplTest, PrefetchStatusAndObserverFailure) {
             RequestStatus::kFailure);
 
   // 3. Wipe state. Status should transition back to `kNotStarted`.
-  access_manager().OnEnablementStateChanged(
+  access_manager().OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
   EXPECT_EQ(access_manager().GetPrefetchStatusByEntityType(order_type),
             RequestStatus::kNotStarted);

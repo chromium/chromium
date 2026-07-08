@@ -93,7 +93,7 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         base::Value(true));
     // Set PersonalContextService to return not eligible by default.
-    ON_CALL(personal_context_service_, GetEnablementState)
+    ON_CALL(personal_context_service_, GetEligibilityState)
         .WillByDefault(
             Return(personal_context::PersonalContextEligibilityState::
                        kDisabledNotEligible));
@@ -123,7 +123,7 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
 TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -140,7 +140,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
 // enterprise policy disables Gemini.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_GeminiPolicyDisabled) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -180,7 +180,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // `subscription_eligibility_service` is null.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_NullSubscriptionTierEligibilityService) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -196,7 +196,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 
 // Tests `MayPerformAtMemoryAction` when `pref_service` is null.
 TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NullPrefService) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -223,14 +223,14 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_States) {
       base::Value(true));
 
   // State: kEnabled
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillOnce(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   EXPECT_TRUE(MayPerformAtMemoryAction(
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 
   // State: kDisabledNeedsOptIn
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillOnce(Return(personal_context::PersonalContextEligibilityState::
                            kDisabledNeedsOptIn));
   autofill_client().GetPrefs()->SetUserPref(
@@ -240,7 +240,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_States) {
                                         autofill_client()));
 
   // State: kDisabledNotEligible
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillOnce(Return(personal_context::PersonalContextEligibilityState::
                            kDisabledNotEligible));
   EXPECT_FALSE(MayPerformAtMemoryAction(
@@ -250,7 +250,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_States) {
 
 // Tests `MayPerformAtMemoryAction` when the toggle pref is off.
 TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_ToggleOff) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   autofill_client().GetPrefs()->SetUserPref(
@@ -269,7 +269,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_ToggleOff) {
 // Tests that `MayPerformAtMemoryAction` returns false when
 // `personal_context_service` returns `kDisabledNotEligible`.
 TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NotSupported) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
                                  kDisabledNotEligible));
   EXPECT_FALSE(MayPerformAtMemoryAction(
@@ -281,7 +281,7 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NotSupported) {
 // AtMemory and the settings toggle is enabled.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_SupportedAndToggleOn) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   autofill_client().GetPrefs()->SetUserPref(
@@ -300,7 +300,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
   base::test::ScopedFeatureList debug_features(
       features::debug::kAtMemorySkipEligibilityChecks);
 
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
                                  kDisabledNotEligible));
 
@@ -313,7 +313,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // the list of eligible tiers configured by the feature parameters.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_SubscriptionTierEligibility) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -344,7 +344,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // regardless of their tier, and even if SubscriptionEligibilityService is null.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_SubscriptionTierEligibility_EmptyList) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -371,7 +371,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // eligible.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_SubscriptionTierEligibility_NotDefined) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -397,7 +397,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // blocklisted by the optimization guide.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_BlocklistedByOptimizationGuide) {
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -444,7 +444,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
 
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   pref_store->SetBoolean(
@@ -476,7 +476,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
 
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   pref_store->SetBoolean(
@@ -509,7 +509,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(features::kAutofillAtMemory);
 
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(Return(personal_context::PersonalContextEligibilityState::
                                 kDisabledNotEligible));
   pref_store->SetBoolean(
@@ -533,7 +533,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
 // build even when all conditions are met.
 TEST_F(AtMemoryEnablementUtilsTest,
        MayPerformAtMemoryAction_SupportedAndToggleOn) {
-  EXPECT_CALL(personal_context_service_, GetEnablementState)
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   autofill_client().GetPrefs()->SetUserPref(
@@ -594,7 +594,7 @@ TEST_F(AtMemoryEnablementUtilsWithGroupsTest,
       {{variations::internal::kGoogleGroupFeatureParamName, kRequiredGroup}});
 
   SetUserGroups({"some-other-group", "another-group"});
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -614,7 +614,7 @@ TEST_F(AtMemoryEnablementUtilsWithGroupsTest,
       {{variations::internal::kGoogleGroupFeatureParamName, kRequiredGroup}});
 
   SetUserGroups({"some-other-group", kRequiredGroup});
-  ON_CALL(personal_context_service_, GetEnablementState)
+  ON_CALL(personal_context_service_, GetEligibilityState)
       .WillByDefault(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 

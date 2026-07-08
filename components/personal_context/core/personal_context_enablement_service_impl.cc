@@ -190,7 +190,7 @@ void PersonalContextEnablementServiceImpl::RemoveObserver(
 }
 
 PersonalContextEligibilityState
-PersonalContextEnablementServiceImpl::GetEnablementState() {
+PersonalContextEnablementServiceImpl::GetEligibilityState() {
   if (base::FeatureList::IsEnabled(
           features::debug::kPersonalContextForceEnablementState)) {
     return GetForcedEnablementState().value_or(enablement_state_);
@@ -239,7 +239,7 @@ void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
   if (new_enablement_state != enablement_state_) {
     enablement_state_ = new_enablement_state;
     observers_.Notify(
-        &PersonalContextEnablementService::Observer::OnEnablementStateChanged,
+        &PersonalContextEnablementService::Observer::OnEligibilityStateChanged,
         enablement_state_);
   }
   if (base::FeatureList::IsEnabled(

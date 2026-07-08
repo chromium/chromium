@@ -142,7 +142,7 @@ class MockPersonalContextEnablementService
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(personal_context::PersonalContextEligibilityState,
-              GetEnablementState,
+              GetEligibilityState,
               (),
               (override));
 };
@@ -883,7 +883,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
        ShowAutofillAtMemoryPromo_Enabled) {
   base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -906,7 +906,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
        ShowAutofillAtMemoryPromo_ServiceDisabled) {
   base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
                                  kDisabledNotEligible));
 
@@ -924,7 +924,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -941,7 +941,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
        ShowAutofillAtMemoryPromo_PersonalContextToggleOff) {
   base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   profile()->GetPrefs()->SetBoolean(
@@ -1037,7 +1037,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
        AtMemoryCopyPasteObserver_RegularProfileTracking) {
   base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -1099,7 +1099,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
        ShowAutofillAtMemoryPromo_NonBrandedBuild) {
   base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
   InitializePersonalContextEnablementService();
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
@@ -1124,7 +1124,7 @@ TEST_F(ChromeAutofillClientTest, GetPersonalContextEligibilityState_NoService) {
 TEST_F(ChromeAutofillClientTest, GetPersonalContextEligibilityState_HappyPath) {
   InitializePersonalContextEnablementService();
 
-  EXPECT_CALL(*personal_context_enablement_service(), GetEnablementState())
+  EXPECT_CALL(*personal_context_enablement_service(), GetEligibilityState())
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
   EXPECT_EQ(client()->GetPersonalContextEligibilityState(),

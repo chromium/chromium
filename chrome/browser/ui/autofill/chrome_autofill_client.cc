@@ -545,7 +545,7 @@ ChromeAutofillClient::GetPersonalContextEligibilityState() const {
   Profile* profile = GetProfile();
   personal_context::PersonalContextEnablementService* service =
       PersonalContextEnablementServiceFactory::GetForProfile(profile);
-  return service ? service->GetEnablementState()
+  return service ? service->GetEligibilityState()
                  : personal_context::PersonalContextEligibilityState::
                        kDisabledNotEligible;
 }

@@ -1089,7 +1089,7 @@ class AtMemoryContextMenuManagerTest
     autofill_client()->GetPrefs()->SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
-    ON_CALL(mock_personal_context_service_, GetEnablementState())
+    ON_CALL(mock_personal_context_service_, GetEligibilityState())
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client()->set_personal_context_enablement_service(
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest, AddAtMemoryFallback) {
 // AtMemory fallback is dropped.
 IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
                        AtMemoryFallbackDroppedWhenProfileNotEligible) {
-  EXPECT_CALL(mock_personal_context_service_, GetEnablementState())
+  EXPECT_CALL(mock_personal_context_service_, GetEligibilityState())
       .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
                                  kDisabledNotEligible));
 
