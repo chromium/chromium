@@ -491,7 +491,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   }
 
   requestChangePassword(id: number): void {
-    this.methodCalled('requestChangePassword', [id]);
+    this.methodCalled('requestChangePassword', id);
   }
 
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {

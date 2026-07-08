@@ -622,6 +622,11 @@ suite('CheckupDetailsSectionTest', function() {
 
             // Verify ARIA label is set.
             assertTrue(!!autoChangePassword.getAttribute('aria-label'));
+
+            autoChangePassword.click();
+            const id =
+                await passwordManager.whenCalled('requestChangePassword');
+            assertEquals(insecureCredential.id, id);
           }));
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]

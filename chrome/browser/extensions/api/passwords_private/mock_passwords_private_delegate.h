@@ -132,10 +132,7 @@ class MockPasswordsPrivateDelegate
               StartPasswordCheck,
               (StartPasswordCheckCallback callback),
               (override));
-  MOCK_METHOD(void,
-              StartPasswordChange,
-              (int credential_id, content::WebContents* web_contents),
-              (override));
+
   MOCK_METHOD(extensions::api::passwords_private::PasswordCheckStatus,
               GetPasswordCheckStatus,
               (),
@@ -179,6 +176,10 @@ class MockPasswordsPrivateDelegate
   MOCK_METHOD(void,
               DeleteAllPasswordManagerData,
               (base::OnceCallback<void(bool)> success_callback),
+              (override));
+  MOCK_METHOD(std::optional<password_manager::CredentialUIEntry>,
+              GetCredentialFromId,
+              (int credential_id),
               (override));
   MOCK_METHOD(base::WeakPtr<PasswordsPrivateDelegate>,
               AsWeakPtr,

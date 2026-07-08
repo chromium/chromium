@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 
+#include <map>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -92,8 +93,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
-  void StartPasswordChange(int credential_id,
-                           content::WebContents* web_contents) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
@@ -115,6 +114,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void DeleteAllPasswordManagerData(
       base::OnceCallback<void(bool)> success_callback) override;
 
+  std::optional<password_manager::CredentialUIEntry> GetCredentialFromId(
+      int credential_id) override;
+
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
   void SetProfile(Profile* profile);
@@ -125,6 +127,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter);
 
   void ClearSavedPasswordsList() { current_entries_.clear(); }
+  void SetCredentialFromId(int id,
+                           password_manager::CredentialUIEntry credential) {
+    credentials_from_id_[id] = std::move(credential);
+  }
   void ResetPlaintextPassword() { plaintext_password_.reset(); }
   bool ImportPasswordsTriggered() const { return import_passwords_triggered_; }
   bool ContinueImportTriggered() const { return continue_import_triggered_; }
@@ -179,10 +185,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   }
 
   bool remove_backup_password() const { return remove_backup_password_; }
-
-  bool start_password_change_called() const {
-    return start_password_change_called_;
-  }
 
  protected:
   ~TestPasswordsPrivateDelegate() override;
@@ -266,13 +268,12 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Used to track whether `RemoveBackupPassword` was called.
   bool remove_backup_password_ = false;
 
-  // Used to track whether `StartPasswordChange` was called.
-  bool start_password_change_called_ = false;
-
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       saved_passwords_presenter_;
 
   base::ObserverList<PasswordsPrivateDelegate::Observer> observers_;
+
+  std::map<int, password_manager::CredentialUIEntry> credentials_from_id_;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

@@ -13,12 +13,10 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/profile_util.h"
-#include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/factories/password_sender_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
-#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -112,7 +110,6 @@ PasswordsPrivateDelegateProxy::GetOrCreateDelegate() {
           PasswordSenderServiceFactory::GetForProfile(profile),
           SyncServiceFactory::GetForProfile(profile),
           TrustSafetySentimentServiceFactory::GetForProfile(profile),
-          PasswordChangeServiceFactory::GetForProfile(profile),
           AffiliationServiceFactory::GetForProfile(profile),
           ProfilePasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
@@ -172,7 +169,6 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
   DependsOn(PasswordSenderServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
-  DependsOn(PasswordChangeServiceFactory::GetInstance());
   DependsOn(PasskeyModelFactory::GetInstance());
   DependsOn(EnclaveManagerFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());

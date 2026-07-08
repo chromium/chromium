@@ -7,14 +7,18 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -93,6 +97,32 @@ password_manager::mojom::PasswordManagerActionableError ToActionableMojomError(
       return PasswordManagerActionableError::kTrustedVaultKeyNeeded;
     case password_manager::ActionableError::kNeedsPassphrase:
       return PasswordManagerActionableError::kNeedsPassphrase;
+  }
+}
+
+password_manager::mojom::PasswordAutomaticChangeState
+ToPasswordAutomaticChangeMojomState(
+    PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state) {
+  using password_manager::mojom::PasswordAutomaticChangeState;
+  switch (state) {
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kInactive:
+      return PasswordAutomaticChangeState::kInactive;
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kAttemptingSignIn:
+      return PasswordAutomaticChangeState::kAttemptingSignIn;
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kChangingPassword:
+      return PasswordAutomaticChangeState::kChangingPassword;
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kConfirmingChangedPassword:
+      return PasswordAutomaticChangeState::kConfirmingChangedPassword;
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kPasswordChangedSuccessfully:
+      return PasswordAutomaticChangeState::kPasswordChangedSuccessfully;
+    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
+        kError:
+      return PasswordAutomaticChangeState::kError;
   }
 }
 
@@ -220,8 +250,31 @@ void PasswordManagerUIHandler::SwitchBiometricAuthBeforeFillingState(
 }
 
 void PasswordManagerUIHandler::StartPasswordChange(int credential_id) {
-  passwords_private_delegate_->StartPasswordChange(credential_id,
-                                                   web_contents_);
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordCheckupPrototype));
+  CHECK(web_contents_);
+  auto credential =
+      passwords_private_delegate_->GetCredentialFromId(credential_id);
+  if (!credential) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  auto* service = PasswordChangeServiceFactory::GetForProfile(profile);
+  if (service) {
+    service->StartPasswordChangeFromCheckup(
+        *credential, web_contents_,
+        base::BindRepeating(&PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated,
+                            weak_ptr_factory_.GetWeakPtr(), credential_id));
+  }
+}
+
+void PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated(
+    int credential_id,
+    PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state) {
+  page_->OnPasswordAutomaticChangeStateUpdated(
+      credential_id, ToPasswordAutomaticChangeMojomState(state));
 }
 
 void PasswordManagerUIHandler::GetPasswordManagerActionableError(

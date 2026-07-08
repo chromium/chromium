@@ -20,9 +20,11 @@ source_set("password_manager_ui_handler") {
   public_deps = [ "//chrome/browser/extensions/api/passwords_private" ]
   deps = [
     ":mojo_bindings",
+    "//chrome/browser/password_manager",
     "//chrome/browser/sync",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/features:password_features",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]
@@ -136,11 +138,13 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/extensions/api/passwords_private:test_support",
+    "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/password_store:test_support",
     "//content/test:test_support",
     "//testing/gmock",

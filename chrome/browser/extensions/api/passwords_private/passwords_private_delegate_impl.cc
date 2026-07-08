@@ -306,7 +306,6 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
     password_manager::PasswordSenderService* password_sender_service,
     syncer::SyncService* sync_service,
     TrustSafetySentimentService* trust_safety_sentiment_service,
-    ChromePasswordChangeService* password_change_service,
     affiliations::AffiliationService* affiliation_service,
     scoped_refptr<password_manager::PasswordStoreInterface>
         profile_password_store,
@@ -325,7 +324,6 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(
       password_sender_service_(password_sender_service),
       sync_service_(sync_service),
       trust_safety_sentiment_service_(trust_safety_sentiment_service),
-      password_change_service_(password_change_service),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
       event_router_(event_router),
@@ -878,24 +876,14 @@ void PasswordsPrivateDelegateImpl::StartPasswordCheck(
   trust_safety_sentiment_service_->RanPasswordCheck();
 }
 
-void PasswordsPrivateDelegateImpl::StartPasswordChange(
-    int credential_id,
-    content::WebContents* web_contents) {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordCheckupPrototype));
-  CHECK(web_contents);
-  const CredentialUIEntry* credential =
+std::optional<password_manager::CredentialUIEntry>
+PasswordsPrivateDelegateImpl::GetCredentialFromId(int credential_id) {
+  const password_manager::CredentialUIEntry* credential =
       credential_id_generator_.TryGetKey(credential_id);
   if (!credential) {
-    // TODO(crbug.com/485620841): Show error, instead of returning.
-    // There should always be a credential, unless something went wrong.
-    return;
+    return std::nullopt;
   }
-
-  if (password_change_service_) {
-    password_change_service_->StartPasswordChangeFromCheckup(*credential,
-                                                             web_contents);
-  }
+  return *credential;
 }
 
 api::passwords_private::PasswordCheckStatus

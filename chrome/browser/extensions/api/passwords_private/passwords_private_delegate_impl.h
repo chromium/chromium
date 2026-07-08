@@ -44,7 +44,6 @@
 #include "extensions/browser/extension_function.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 
-class ChromePasswordChangeService;
 class EnclaveManagerInterface;
 class PrefService;
 class TrustSafetySentimentService;
@@ -113,7 +112,6 @@ class PasswordsPrivateDelegateImpl
       password_manager::PasswordSenderService* password_sender_service,
       syncer::SyncService* sync_service,
       TrustSafetySentimentService* trust_safety_sentiment_service,
-      ChromePasswordChangeService* password_change_service,
       affiliations::AffiliationService* affiliation_service,
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
@@ -192,8 +190,6 @@ class PasswordsPrivateDelegateImpl
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
-  void StartPasswordChange(int credential_id,
-                           content::WebContents* web_contents) override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
@@ -214,6 +210,9 @@ class PasswordsPrivateDelegateImpl
   password_manager::ActionableError GetActionableError() override;
   void DeleteAllPasswordManagerData(
       base::OnceCallback<void(bool)> success_callback) override;
+
+  std::optional<password_manager::CredentialUIEntry> GetCredentialFromId(
+      int credential_id) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
@@ -356,7 +355,6 @@ class PasswordsPrivateDelegateImpl
       password_sender_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<TrustSafetySentimentService> trust_safety_sentiment_service_;
-  const raw_ptr<ChromePasswordChangeService> password_change_service_;
   const scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;
   const scoped_refptr<password_manager::PasswordStoreInterface>

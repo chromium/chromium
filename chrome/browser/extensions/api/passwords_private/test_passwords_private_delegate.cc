@@ -381,14 +381,6 @@ void TestPasswordsPrivateDelegate::StartPasswordCheck(
   std::move(callback).Run(start_password_check_state_);
 }
 
-void TestPasswordsPrivateDelegate::StartPasswordChange(
-    int credential_id,
-    content::WebContents* web_contents) {
-  // TODO(crbug.com/485620841): Implement this, when the method does something
-  // more than just opening a URL.
-  start_password_change_called_ = true;
-}
-
 api::passwords_private::PasswordCheckStatus
 TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   api::passwords_private::PasswordCheckStatus status;
@@ -478,6 +470,15 @@ void TestPasswordsPrivateDelegate::DeleteAllPasswordManagerData(
     base::OnceCallback<void(bool)> success_callback) {
   delete_all_password_manager_data_called_ = true;
   std::move(success_callback).Run(true);
+}
+
+std::optional<password_manager::CredentialUIEntry>
+TestPasswordsPrivateDelegate::GetCredentialFromId(int credential_id) {
+  auto it = credentials_from_id_.find(credential_id);
+  if (it != credentials_from_id_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
 }
 
 void TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(

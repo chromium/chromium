@@ -226,7 +226,6 @@ class PasswordsPrivateDelegateImplTest : public InProcessBrowserTest {
         PasswordSenderServiceFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile),
         TrustSafetySentimentServiceFactory::GetForProfile(profile),
-        PasswordChangeServiceFactory::GetForProfile(profile),
         AffiliationServiceFactory::GetForProfile(profile),
         ProfilePasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),

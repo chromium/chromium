@@ -220,7 +220,6 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
             &test_url_loader_factory_),
         &password_sender_service_, &sync_service_,
         /*trust_safety_sentiment_service=*/nullptr,
-        /*password_change_service=*/nullptr,
         /*affiliation_service=*/&mock_affiliation_service_, profile_store_,
         account_store_, &passkey_model_, &mock_bulk_leak_check_service_,
         /*event_router=*/nullptr, &web_app_install_manager_, &enclave_manager_,
