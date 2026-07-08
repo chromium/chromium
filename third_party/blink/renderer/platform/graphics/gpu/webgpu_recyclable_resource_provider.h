@@ -74,6 +74,10 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   SkAlphaType GetAlphaType() const { return alpha_type_; }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
+  gpu::SyncToken GetSyncToken() const;
+
+  void EndWriteAccess();
 
   // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
@@ -145,7 +149,6 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider
   size_t GetSize() const override;
 
   void EnsureWriteAccess();
-  void EndWriteAccess();
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   bool IsValid() const;

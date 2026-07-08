@@ -120,15 +120,17 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     }
   }
 
-  scoped_refptr<CanvasResource> canvas_resource =
-      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
-  if (!canvas_resource) {
+  resource_provider->EndWriteAccess();
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      resource_provider->GetSharedImage();
+  if (!shared_image) {
     return nullptr;
   }
 
   return WebGPUMailboxTexture::FromCanvasResource(
-      dawn_control_client, device, usage, canvas_resource->GetSharedImage(),
-      canvas_resource->sync_token(), std::move(recyclable_canvas_resource));
+      dawn_control_client, device, usage, std::move(shared_image),
+      resource_provider->GetSyncToken(), std::move(recyclable_canvas_resource));
 }
 
 // static

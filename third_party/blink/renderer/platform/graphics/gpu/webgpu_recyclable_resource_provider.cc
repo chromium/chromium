@@ -472,6 +472,21 @@ WebGpuRecyclableResourceProvider::ProduceCanvasResource() {
   return resource_;
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+WebGpuRecyclableResourceProvider::GetSharedImage() const {
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+  return resource_ ? resource_->GetSharedImage() : nullptr;
+}
+
+gpu::SyncToken WebGpuRecyclableResourceProvider::GetSyncToken() const {
+  if (IsGpuContextLost()) {
+    return gpu::SyncToken();
+  }
+  return resource_ ? resource_->sync_token() : gpu::SyncToken();
+}
+
 CanvasImageProvider*
 WebGpuRecyclableResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
