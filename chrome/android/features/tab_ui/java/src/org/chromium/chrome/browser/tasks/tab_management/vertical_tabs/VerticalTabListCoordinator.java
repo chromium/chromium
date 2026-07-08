@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -235,8 +236,8 @@ public class VerticalTabListCoordinator {
         TabListRecyclerView recyclerView = mContainerView.findViewById(R.id.tab_list_recycler_view);
         mRecyclerView = recyclerView;
 
-        // TODO(crbug.com/509226293): This can just be a LinearLayout now.
-        GridLayoutManager layoutManager = createGridLayoutManager(activity, adapter);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -564,17 +565,23 @@ public class VerticalTabListCoordinator {
         int activeTabId = mTabModelSelector.getCurrentTabId();
         if (activeTabId == Tab.INVALID_TAB_ID) return;
 
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        if (tabModel == null) return;
+        Tab activeTab = tabModel.getTabById(activeTabId);
+        if (activeTab == null || activeTab.getIsPinned()) return;
+
         int uiIndex = getIndexForTabScroll(activeTabId);
 
         if (uiIndex != TabModel.INVALID_TAB_INDEX) {
             RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-            if (layoutManager instanceof GridLayoutManager gridLayoutManager) {
+            if (layoutManager instanceof LinearLayoutManager linearLayoutManager) {
                 // Wait for the RecyclerView to finish drawing before scrolling, to prevent
                 // incorrect visible item positions.
                 mRecyclerView.post(
                         () -> {
-                            int first = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-                            int last = gridLayoutManager.findLastCompletelyVisibleItemPosition();
+                            int first =
+                                    linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+                            int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
 
                             // Only scroll if the active tab is not fully visible on screen.
                             if (uiIndex < first || uiIndex > last) {
@@ -583,7 +590,7 @@ public class VerticalTabListCoordinator {
                                 int offset =
                                         Math.round(
                                                 mRecyclerView.getHeight() / SCROLL_OFFSET_DIVISOR);
-                                gridLayoutManager.scrollToPositionWithOffset(
+                                linearLayoutManager.scrollToPositionWithOffset(
                                         uiIndex, Math.max(0, offset));
                             }
                         });
@@ -632,24 +639,6 @@ public class VerticalTabListCoordinator {
                 /* tabGroupSyncIds */ null,
                 /* quickMode */ false);
         mPinnedTabsMediator.updateTabModel(tabModel);
-    }
-
-    private GridLayoutManager createGridLayoutManager(
-            Activity activity, SimpleRecyclerViewAdapter adapter) {
-        GridLayoutManager layoutManager = new GridLayoutManager(activity, getSpanCount());
-        // Custom SpanSizeLookup: Pinned tabs take 1 column, regular tabs span the full grid width
-        layoutManager.setSpanSizeLookup(
-                new GridLayoutManager.SpanSizeLookup() {
-                    @Override
-                    public int getSpanSize(int position) {
-                        int type = adapter.getItemViewType(position);
-                        if (type == UiType.PINNED_TAB) {
-                            return 1;
-                        }
-                        return layoutManager.getSpanCount();
-                    }
-                });
-        return layoutManager;
     }
 
     private void handleNewTabButtonClick() {

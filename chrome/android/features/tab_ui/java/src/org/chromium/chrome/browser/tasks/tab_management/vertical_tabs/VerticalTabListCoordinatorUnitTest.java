@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -81,6 +82,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -99,6 +101,7 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.RectProvider;
@@ -280,8 +283,8 @@ public class VerticalTabListCoordinatorUnitTest {
         assertNotNull(recyclerView.getAdapter());
         assertNotNull(recyclerView.getLayoutManager());
 
-        GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-        assertEquals(4, layoutManager.getSpanCount());
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        assertEquals(LinearLayoutManager.VERTICAL, layoutManager.getOrientation());
 
         // Verify the pinned tabs RecyclerView is initialized but hidden when empty.
         TabListRecyclerView pinnedRecyclerView = view.findViewById(R.id.pinned_tabs_recycler_view);
@@ -637,14 +640,12 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testAdapterInterceptionAndSpanLookup() {
+    public void testAdapterInterception() {
         createCoordinator();
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
         assertNotNull(recycler.getLayoutManager());
-        GridLayoutManager.SpanSizeLookup lookup =
-                ((GridLayoutManager) recycler.getLayoutManager()).getSpanSizeLookup();
 
         PropertyModel reg = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
         PropertyModel pin = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
@@ -660,9 +661,6 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(UiType.TAB, adapter.getItemViewType(0));
         assertEquals(UiType.PINNED_TAB, adapter.getItemViewType(1));
         assertEquals(UiType.TAB_GROUP, adapter.getItemViewType(2));
-        assertEquals(4, lookup.getSpanSize(0));
-        assertEquals(1, lookup.getSpanSize(1));
-        assertEquals(4, lookup.getSpanSize(2));
     }
 
     @Test
@@ -900,5 +898,74 @@ public class VerticalTabListCoordinatorUnitTest {
         observer.onAppHeaderStateChanged(appHeaderState2);
 
         assertEquals("Spacer view should be hidden.", View.GONE, spacer.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollActiveTabIntoView_PinnedTab_NoScroll() {
+        int pinnedTabId = 111;
+        Tab pinnedTab = prepareMockTab(pinnedTabId);
+        when(pinnedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getTabById(pinnedTabId)).thenReturn(pinnedTab);
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(pinnedTabId);
+
+        mIsVerticalTabsActiveSupplier.set(false);
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+
+        ViewGroup view = (ViewGroup) mCoordinator.getView();
+        TabListRecyclerView recyclerView = view.findViewById(R.id.tab_list_recycler_view);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.setLayoutManager(null);
+        assert layoutManager != null;
+        LinearLayoutManager spyLayoutManager = spy(layoutManager);
+        recyclerView.setLayoutManager(spyLayoutManager);
+
+        mIsVerticalTabsActiveSupplier.set(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(spyLayoutManager, never()).scrollToPositionWithOffset(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollActiveTabIntoView_RegularTab_Scrolls() {
+        int regTabId = 222;
+        Tab regTab = prepareMockTab(regTabId);
+        when(regTab.getIsPinned()).thenReturn(false);
+        when(mTabModel.getTabById(regTabId)).thenReturn(regTab);
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(regTabId);
+
+        mIsVerticalTabsActiveSupplier.set(false);
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+
+        ViewGroup view = (ViewGroup) mCoordinator.getView();
+        TabListRecyclerView recyclerView = view.findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        assertNotNull(adapter);
+
+        PropertyModel model =
+                new PropertyModel.Builder(
+                                PropertyModel.concatKeys(
+                                        TabProperties.ALL_KEYS_VERTICAL_TAB,
+                                        new PropertyKey[] {CardProperties.CARD_TYPE}))
+                        .with(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_ID, regTabId)
+                        .build();
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, model));
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.setLayoutManager(null);
+        assert layoutManager != null;
+        LinearLayoutManager spyLayoutManager = spy(layoutManager);
+        recyclerView.setLayoutManager(spyLayoutManager);
+
+        mIsVerticalTabsActiveSupplier.set(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(spyLayoutManager).scrollToPositionWithOffset(eq(0), anyInt());
     }
 }
