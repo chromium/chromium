@@ -73,6 +73,7 @@ source_set("fcp_simple_task_environment") {
   visibility = [ ":*" ]
   public = [ "fcp_simple_task_environment.h" ]
   sources = [ "fcp_simple_task_environment.cc" ]
+  include_dirs = [ "$root_gen_dir/third_party/federated_compute/chromium" ]
   public_deps = [
     "//third_party/federated_compute:client_proto",
     "//third_party/federated_compute:fl_runner",
@@ -80,6 +81,8 @@ source_set("fcp_simple_task_environment") {
   deps = [
     ":fcp_http_client",
     "//base",
+    "//components/resources:components_resources",
+    "//ui/base",
   ]
 }
 
@@ -130,5 +133,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/federated_compute:confidential_compute_crypto_test_util",
+    "//ui/base",
   ]
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Packs the binarypb file and compresses it with gzip -->
+  <include name="IDR_CONTEXTUAL_CUES_ENDORSEMENT_OPTIONS" file="${root_gen_dir}/components/metrics/private_metrics/private_insights/endorsement_options/contextual_cues_endorsement_options.binpb" type="BINDATA" compress="gzip" use_base_dir="false" />
+</grit-part>

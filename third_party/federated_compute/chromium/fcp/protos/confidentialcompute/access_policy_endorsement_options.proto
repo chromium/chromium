@@ -1,0 +1,46 @@
+syntax = "proto3";  // Our OSS build does not support editions.
+
+package fcp.confidentialcompute;
+
+import "fcp/protos/confidentialcompute/key.proto";
+
+option java_package = "com.google.intelligence.fcp.confidentialcompute";
+option java_multiple_files = true;
+
+message AccessPolicyEndorsementOptions {
+  // In order to be accepted, KMS TEE evidence must be signed by one of these
+  // keys.
+  //
+  // This field only applies when using the Attestation Transparency Service.
+  repeated Key kms_verifying_keys = 2;
+
+  // In order to be accepted, a DataAccessPolicy must be signed by one of these
+  // keys.
+  //
+  // This field only applies when using the Attestation Transparency Service.
+  repeated Key access_policy_verifying_keys = 3;
+
+  // Requirements for KMS and access policy artifacts to be included in a
+  // transparency log.
+  //
+  // This field only applies when using the Attestation Transparency Service.
+  TransparencyLogOptions transparency_log_options = 4;
+
+  // Requirements for artifacts (e.g. TEE evidence or access policies) to be
+  // included in a transparency log. Currently only Rekor is supported.
+  //
+  // These options only apply when using the Attestation Transparency Service.
+  message TransparencyLogOptions {
+    // If true, the upload encryption key and access policy must have an
+    // endorsement in a transparency log. Setting this to false won't cause
+    // SignedPayload messages with a transparency log entry to be rejected.
+    //
+    // This should be set to true for all production uses that want to guarantee
+    // public transparency.
+    bool require_transparency_log_entry = 1;
+
+    // The Rekor verifying key(s) used to validate Rekor log entry inclusion
+    // proofs. If omitted, Rekor log entries will not be accepted.
+    repeated Key rekor_verifying_keys = 2;
+  }
+}

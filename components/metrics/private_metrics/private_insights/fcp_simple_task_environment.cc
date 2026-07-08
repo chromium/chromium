@@ -4,10 +4,14 @@
 
 #include "components/metrics/private_metrics/private_insights/fcp_simple_task_environment.h"
 
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/grit/components_resources.h"
 #include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
 #include "third_party/federated_compute/chromium/fcp/client/attestation/attestation_transparency_verifier.h"
+#include "third_party/federated_compute/chromium/fcp/protos/confidentialcompute/access_policy_endorsement_options.pb.h"
 #include "third_party/federated_compute/src/fcp/client/attestation/attestation_verifier.h"
-#include "third_party/federated_compute/src/fcp/protos/confidentialcompute/access_policy_endorsement_options.pb.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace private_insights {
 
@@ -72,13 +76,29 @@ FcpSimpleTaskEnvironment::CreateHttpClient() {
   return std::make_unique<FcpHttpClient>(http_request_manager_.get());
 }
 
+inline constexpr char kEndorsementOptionsParsingOutcomeHistogram[] =
+    "PrivateMetrics.PrivateInsights.EndorsementOptions.ParsingOutcome";
+
 std::unique_ptr<fcp::client::attestation::AttestationVerifier>
 FcpSimpleTaskEnvironment::CreateAttestationVerifier() {
   if (use_attestation_transparency_verifier_) {
+    fcp::confidentialcompute::AccessPolicyEndorsementOptions options;
+    std::string resource_string =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_CONTEXTUAL_CUES_ENDORSEMENT_OPTIONS);
+    bool parse_success = options.ParseFromString(resource_string);
+    base::UmaHistogramBoolean(kEndorsementOptionsParsingOutcomeHistogram,
+                              parse_success);
+    if (!parse_success) {
+      LOG(ERROR)
+          << "Failed to parse AccessPolicyEndorsementOptions from resource. "
+             "Falling back to AlwaysFailingAttestationVerifier.";
+      return std::make_unique<
+          fcp::client::attestation::AlwaysFailingAttestationVerifier>();
+    }
     return std::make_unique<
         fcp::client::attestation::AttestationTransparencyVerifier>(
-        fcp::confidentialcompute::AccessPolicyEndorsementOptions::
-            default_instance());
+        std::move(options));
   } else {
     return std::make_unique<
         fcp::client::attestation::AlwaysPassingAttestationVerifier>();
