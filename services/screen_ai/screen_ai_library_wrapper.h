@@ -49,6 +49,8 @@ class ScreenAILibraryWrapper {
   virtual bool InitOCR() = 0;
   virtual void SetOCRLightMode(bool enabled) = 0;
   virtual uint32_t GetMaxImageDimension() = 0;
+
+  // The image is expected to be non-empty and draw something.
   virtual std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image) = 0;
 };

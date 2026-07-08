@@ -168,6 +168,9 @@ ScreenAILibraryWrapperImpl::PerformOcr(const SkBitmap& image) {
   CHECK(perform_ocr_);
   CHECK(free_library_allocated_char_array_);
 
+  // Expected to be prevented upstream.
+  CHECK(!image.drawsNothing());
+
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
 
   uint32_t annotation_proto_length = 0;

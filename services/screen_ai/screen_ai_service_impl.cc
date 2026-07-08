@@ -366,6 +366,11 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
                                 client_type);
 
+  if (image.drawsNothing()) {
+    VLOG(1) << "Skipping OCR because image is empty.";
+    return std::nullopt;
+  }
+
   bool light_client =
       light_ocr_clients_.contains(screen_ai_annotators_.current_receiver());
   if (light_client != last_ocr_light_) {

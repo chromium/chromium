@@ -31,6 +31,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkMallocPixelRef.h"
+#include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
@@ -381,6 +383,32 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // The status callback should still be run without crashing even though the
   // created scoped_refptr was destroyed.
   EXPECT_TRUE(future.Wait());
+}
+
+// Test OCR on an image that draws nothing.
+// Note: We cannot have a separate test for a pure drawsNothing() image (where
+// drawsNothing() is true but empty() is false). Such a bitmap must have
+// isNull() == true in Skia, which is rejected by Mojo's serialization
+// validation on the client side before the message is sent. Hence, we use a
+// non-null 1x0 empty image to cover the drawsNothing() || empty() check in the
+// service.
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       PerformOCR_DrawsNothing) {
+  ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
+
+  SkBitmap bitmap;
+  SkImageInfo info = SkImageInfo::MakeN32Premul(1, 0);
+  bitmap.setInfo(info);
+  sk_sp<SkPixelRef> pr = SkMallocPixelRef::MakeAllocate(info, 0);
+  ASSERT_TRUE(pr);
+  bitmap.setPixelRef(std::move(pr), 0, 0);
+
+  ASSERT_TRUE(bitmap.drawsNothing());
+  ASSERT_TRUE(bitmap.empty());
+  ASSERT_FALSE(bitmap.isNull());
+
+  mojom::VisualAnnotationPtr results = PerformOCR(bitmap);
+  ASSERT_TRUE(results->lines.empty());
 }
 
 // Test OCR on an blank white image with no text.
