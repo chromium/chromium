@@ -1021,15 +1021,21 @@ void TabStripModel::SendDetachWebContentsNotifications(
 
 void TabStripModel::ActivateTabAt(int index,
                                   TabStripUserGestureDetails user_gesture) {
+  CHECK(ContainsIndex(index));
+  ActivateTab(GetTabAtIndex(index), user_gesture);
+}
+
+void TabStripModel::ActivateTab(tabs::TabInterface* tab,
+                                TabStripUserGestureDetails user_gesture) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  CHECK(ContainsIndex(index));
+  CHECK(tab);
+  CHECK(static_cast<tabs::TabModel*>(tab)->owning_model() == this)
+      << "Tab does not belong to this TabStripModel.";
 
-  TRACE_EVENT0("ui", "TabStripModel::ActivateTabAt");
+  TRACE_EVENT0("ui", "TabStripModel::ActivateTab");
 
   scrubbing_metrics_.IncrementPressCount(user_gesture);
-
-  tabs::TabInterface* tab = GetTabAtIndex(index);
 
   // If this tab was activated, eg. by an extension, but is not in the focused
   // group, unfocus the focused group.

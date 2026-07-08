@@ -236,16 +236,12 @@ void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(
 
   for (const base::WeakPtr<tabs::TabInterface>& tab :
        latest_tabs_opened_in_background_) {
-    if (!tab) {
+    if (!tab || tab->GetBrowserWindowInterface() != browser) {
       continue;
     }
-    int index = browser->GetTabStripModel()->GetIndexOfTab(tab.get());
-    if (index != TabStripModel::kNoTab) {
-      SendTabToSelfActivationTracker::SetEntryOpenedViaToast(
-          tab->GetContents());
-      browser->GetTabStripModel()->ActivateTabAt(index);
-      return;
-    }
+    SendTabToSelfActivationTracker::SetEntryOpenedViaToast(tab->GetContents());
+    browser->GetTabStripModel()->ActivateTab(tab.get());
+    return;
   }
 }
 

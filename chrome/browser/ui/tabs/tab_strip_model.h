@@ -360,6 +360,13 @@ class TabStripModel {
                            std::unique_ptr<DetachedTabCollection>>>
   DetachTabsAndCollectionsForInsertion(const std::vector<int>& tab_indices);
 
+  // Activates `tab`, which must be in this tab strip model. Prefer this over
+  // ActivateTabAt() when a TabInterface* is already available.
+  void ActivateTab(
+      tabs::TabInterface* tab,
+      TabStripUserGestureDetails user_gesture = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kNone));
+
   // Makes the tab at the specified index the active tab. |gesture_detail.type|
   // contains the gesture type that triggers the tab activation.
   // |gesture_detail.time_stamp| contains the timestamp of the user gesture, if
