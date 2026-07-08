@@ -2196,6 +2196,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillCreditCardScannerIosDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardScannerIos)},
+    {"autofill-save-card-bottom-sheet-strike-limit-ios",
+     flag_descriptions::kAutofillSaveCardBottomSheetStrikeLimitIosName,
+     flag_descriptions::kAutofillSaveCardBottomSheetStrikeLimitIosDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillSaveCardBottomSheetStrikeLimitIos)},
     {"lens-strokes-api-enabled", flag_descriptions::kStrokesAPIEnabledName,
      flag_descriptions::kStrokesAPIEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensStrokesAPIEnabled)},

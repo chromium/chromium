@@ -1124,15 +1124,27 @@
     "owners": [ "vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
   },
-    {
+  {
     "name": "autofill-prioritize-save-card-over-mandatory-reauth",
     "owners": [ "averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
   },
   {
     "name": "autofill-reject-form-submissions-without-user-gesture",
-    "owners": [ "sugoi@chromium.org", "vincb@google.com", "bling-transactions@google.com" ],
+    "owners": [
+      "sugoi@chromium.org",
+      "vincb@google.com",
+      "bling-transactions@google.com"
+    ],
     "expiry_milestone": 170
+  },
+  {
+    "name": "autofill-save-card-bottom-sheet-strike-limit-ios",
+    "owners": [
+      "jamessun@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 160
   },
   {
     "name": "autofill-support-date-input",

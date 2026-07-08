@@ -8296,6 +8296,8 @@ from previous Chrome versions.
   <int value="-2014051368" label="DefferOsClipboardReadCallToGettype:enabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
+  <int value="-2013622831"
+      label="AutofillSaveCardBottomSheetStrikeLimitIos:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2013085118" label="ClearLoginDatabaseForUPMUsers:enabled"/>
@@ -9452,6 +9454,8 @@ from previous Chrome versions.
   <int value="-1637649767" label="SingleCaCertVerificationPhase2:enabled"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
   <int value="-1637519819" label="EnablePolicyTestPage:disabled"/>
+  <int value="-1637496014"
+      label="AutofillSaveCardBottomSheetStrikeLimitIos:enabled"/>
   <int value="-1636940108" label="EcheSWACheckAndroidNetworkInfo:enabled"/>
   <int value="-1636188191" label="IncognitoNtpRevamp:enabled"/>
   <int value="-1635048938" label="DetectFormSubmissionOnFormClear:disabled"/>

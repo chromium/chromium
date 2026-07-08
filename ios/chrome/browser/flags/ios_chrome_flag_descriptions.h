@@ -297,6 +297,13 @@ inline constexpr char
         "When enabled, form submission events will be ignored if they lack a "
         "user gesture.";
 
+inline constexpr char kAutofillSaveCardBottomSheetStrikeLimitIosName[] =
+    "Autofill Save Card Bottom Sheet Strike Limit on iOS";
+inline constexpr char kAutofillSaveCardBottomSheetStrikeLimitIosDescription[] =
+    "Enables the experiment to increase the strike limit for showing the "
+    "native "
+    "save card bottom sheet on iOS from 1 to 3.";
+
 inline constexpr char kAutofillSupportDateInputName[] =
     "Autofill support for date input";
 inline constexpr char kAutofillSupportDateInputDescription[] =

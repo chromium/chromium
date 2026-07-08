@@ -319,6 +319,18 @@ BASE_FEATURE(kAutofillPrioritizeSaveCardOverMandatoryReauth,
 BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, the strike limit for showing the save card bottom sheet on iOS
+// is increased from 1 to the value specified in the parameter and the default
+// value of the strike is 3.
+BASE_FEATURE(kAutofillSaveCardBottomSheetStrikeLimitIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxStrikesForSaveCardBottomSheetIos{
+    &kAutofillSaveCardBottomSheetStrikeLimitIos,
+    "max_strikes_for_bottom_sheet_ios", 3};
+#endif
+
 // Kill switch, when enabled, will prevent the display of the save card bubble
 // within a tab modal pop-up window.
 BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
