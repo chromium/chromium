@@ -31,6 +31,7 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -786,6 +787,146 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
   // preventing dangling pointer warnings.
   InProcessBrowserTest::browser()->tab_strip_model()->InsertDetachedTabAt(
       0, std::move(detached_tab), AddTabTypes::ADD_NONE);
+}
+
+// -----------------------------------------------------------------------------
+// Verify that glicPrivate.invoke requires the calling frame to be the primary
+// main frame.
+//
+// If a connectable origin (e.g. *.google.com) subframe is embedded inside a
+// non-connectable top-level frame (e.g. example.com), the subframe can reach
+// the Glic component extension via frame-scoped externally_connectable.
+// However, calling glicPrivate.invoke from the subframe must be rejected by the
+// browser because it is not a primary main frame.
+// -----------------------------------------------------------------------------
+class GlicSubframeInvokeBrowserTest : public GlicPrivateApiTestBase {
+ public:
+  GlicSubframeInvokeBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
+         {features::kGlicActor,
+          {{"glic_actor_policy_control_exemption", "true"}}}},
+        {});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    GlicPrivateApiTestBase::SetUpBrowserContextKeyedServices(context);
+    // Bind the SigninClient to our TestURLLoaderFactory so that
+    // SetCookieAccounts() can intercept the ListAccounts request.
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTestBase::SetUpOnMainThread();
+    // GlicTestEnvironment has already signed in a primary account with the
+    // Glic capability. Additionally:
+    //   - Put that account in the Gaia cookie jar so that
+    //     IsAccountConsistent() passes for *.google.com URLs (this is the
+    //     normal state for a signed-in Glic user; it is a precondition, not a
+    //     security gate against this bug).
+    //   - Enable automatic OAuth token issuance so the prompt EndpointFetcher
+    //     completes (production users have a real refresh token).
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+    CoreAccountInfo primary =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(primary.IsEmpty());
+    identity_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    identity_adaptor_->identity_test_env()->SetTestURLLoaderFactory(
+        &test_url_loader_factory_);
+    identity_adaptor_->identity_test_env()->SetCookieAccounts(
+        {{primary.email, primary.gaia}});
+    identity_adaptor_->identity_test_env()->SetAutomaticIssueOfAccessTokens(
+        true);
+  }
+
+  void TearDownOnMainThread() override {
+    identity_adaptor_.reset();
+    GlicPrivateApiTestBase::TearDownOnMainThread();
+  }
+
+ private:
+  glic::GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> identity_adaptor_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicSubframeInvokeBrowserTest,
+                       SubframeInNonConnectableOuterTab) {
+  // The Glic component extension must be loaded (kApiGlicPrivate enabled).
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  // Intercept the prompt-fetch endpoint so OnPromptRetrieved runs to
+  // completion (this is a server response, not a security check; in
+  // production a Glic-eligible signed-in user would receive a real prompt).
+  auto interceptor = CreateMockPromptResponseInterceptor("test prompt");
+
+  // 1) Top-level navigation to an origin that is not in
+  //    externally_connectable.matches (example.com).
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(tab, GURL("https://example.com/iframe.html")));
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
+  ASSERT_EQ("example.com", main_frame->GetLastCommittedURL().host());
+
+  // The top-level main frame CANNOT reach the Glic extension.
+  EXPECT_EQ("no_runtime",
+            content::EvalJs(main_frame,
+                            "(chrome.runtime && chrome.runtime.sendMessage) "
+                            "? 'has_runtime' : 'no_runtime'"));
+
+  // 2) Embed a *.google.com SUBFRAME inside the top-level tab.
+  ASSERT_TRUE(content::NavigateIframeToURL(
+      tab, "test", GURL("https://gemini.google.com/empty.html")));
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ("gemini.google.com", subframe->GetLastCommittedURL().host());
+  ASSERT_FALSE(subframe->IsInPrimaryMainFrame());
+
+  // The *.google.com SUBFRAME *can* reach the Glic extension
+  // (externally_connectable is frame-scoped, not top-level-scoped).
+  ASSERT_EQ("has_runtime",
+            content::EvalJs(subframe,
+                            "(chrome.runtime && chrome.runtime.sendMessage) "
+                            "? 'has_runtime' : 'no_runtime'"));
+
+  // 3) From the SUBFRAME, send glicPrivate.invoke to the component extension.
+  //    background.ts forwards sender.documentId (the SUBFRAME's document) to
+  //    chrome.glicPrivate.invoke.
+  std::string invoke_script = base::StringPrintf(
+      R"(
+      new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+            '%s',
+            {type: 'glicPrivate.invoke',
+             args: {promptId: 'p1', invocationSource: 'universal-cart'}},
+            (response) => {
+              if (chrome.runtime.lastError) {
+                resolve('error: ' + chrome.runtime.lastError.message);
+              } else {
+                resolve('success');
+              }
+            });
+      })
+      )",
+      extension_misc::kGlicExtensionId);
+
+  std::string result = content::EvalJs(subframe, invoke_script).ExtractString();
+
+  // The browser rejects the request because the calling document is not the
+  // tab's primary main frame.
+  EXPECT_EQ("error: Uncaught Error: local-invalid-document-id", result);
+
+  // Verify that the top-level frame remains example.com.
+  EXPECT_EQ("example.com",
+            tab->GetPrimaryMainFrame()->GetLastCommittedURL().host());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

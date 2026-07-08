@@ -358,6 +358,19 @@ content::RenderFrameHost* GetRfhForDocumentId(
       document_id);
 }
 
+std::optional<extensions::api::glic_private::ErrorCode> ValidateRenderFrameHost(
+    Profile* profile,
+    content::RenderFrameHost* rfh) {
+  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+    return api::glic_private::ErrorCode::kLocalInvalidDocumentId;
+  }
+  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
+                           *rfh)) {
+    return api::glic_private::ErrorCode::kLocalAccountMismatch;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 GlicPrivateFunction::GlicPrivateFunction() = default;
@@ -385,15 +398,10 @@ ExtensionFunction::ResponseAction GlicPrivateGetStateFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
   content::RenderFrameHost* rfh = GetRfhForDocumentId(params->document_id);
-  if (!rfh) {
-    return RespondNow(Error(api::glic_private::ToString(
-        api::glic_private::ErrorCode::kLocalInvalidDocumentId)));
-  }
-
-  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
-                           *rfh)) {
-    return RespondNow(Error(api::glic_private::ToString(
-        api::glic_private::ErrorCode::kLocalAccountMismatch)));
+  std::optional<extensions::api::glic_private::ErrorCode> validation_error =
+      ValidateRenderFrameHost(profile, rfh);
+  if (validation_error.has_value()) {
+    return RespondNow(Error(api::glic_private::ToString(*validation_error)));
   }
 
   api::glic_private::InvocationSource invocation_source =
@@ -463,15 +471,10 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
   }
   content::RenderFrameHost* rfh =
       GetRfhForDocumentId(params->details.document_id);
-  if (!rfh) {
-    return RespondNow(GetPromptResponseValueAndLog(
-        api::glic_private::ErrorCode::kLocalInvalidDocumentId));
-  }
-
-  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
-                           *rfh)) {
-    return RespondNow(GetPromptResponseValueAndLog(
-        api::glic_private::ErrorCode::kLocalAccountMismatch));
+  std::optional<extensions::api::glic_private::ErrorCode> validation_error =
+      ValidateRenderFrameHost(profile, rfh);
+  if (validation_error.has_value()) {
+    return RespondNow(GetPromptResponseValueAndLog(*validation_error));
   }
 
   glic::mojom::InvocationSource source =
@@ -571,16 +574,10 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
   tabs::TabInterface* tab_interface = nullptr;
 
   content::RenderFrameHost* rfh = GetRfhForDocumentId(document_id);
-  if (!rfh) {
-    Respond(GetPromptResponseValueAndLog(
-        api::glic_private::ErrorCode::kLocalInvalidDocumentId));
-    return;
-  }
-
-  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
-                           *rfh)) {
-    Respond(GetPromptResponseValueAndLog(
-        api::glic_private::ErrorCode::kLocalAccountMismatch));
+  std::optional<extensions::api::glic_private::ErrorCode> validation_error =
+      ValidateRenderFrameHost(profile, rfh);
+  if (validation_error.has_value()) {
+    Respond(GetPromptResponseValueAndLog(*validation_error));
     return;
   }
 
