@@ -41,6 +41,7 @@ how that happens.
 
 For example, do not assume an attacker can compromise:
 * **Spare renderers** (there is no attacker content loaded in them).
+* **Error page processes** (which are isolated and load no attacker content).
 * **WebUI processes** (e.g., `chrome://`), though note that
   `chrome-untrusted://` processes *can* be assumed to be compromised (see
   [chrome_untrusted.md](https://chromium.googlesource.com/chromium/src/+/main/docs/webui/chrome_untrusted.md)).
