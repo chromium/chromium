@@ -44,7 +44,7 @@ class IndigoOnboardingDialogBrowserTest : public InteractiveBrowserTest {
   IndigoOnboardingDialogBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
-        {{features::kIndigoAllowForEnterprise.name, "true"}});
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"}});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

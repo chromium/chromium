@@ -1251,6 +1251,8 @@ const base::FeatureParam<bool> kIndigoRequireGlicEnabling{
     &kIndigo, "indigo_require_glic_enabling", false};
 const base::FeatureParam<bool> kIndigoAllowForEnterprise{
     &kIndigo, "allow_indigo_for_enterprise", false};
+const base::FeatureParam<bool> kIndigoSkipEnterpriseCheck{
+    &kIndigo, "indigo_skip_enterprise_check", false};
 
 const base::FeatureParam<base::TimeDelta> kIndigoAnchoredMessageResetDuration{
     &kIndigo, "indigo_anchored_message_reset_duration", base::Hours(24)};

@@ -49,6 +49,10 @@ namespace {
 // Returns true if there is any enterprise management at the profile, browser,
 // or physical device level.
 bool IsBrowserUnderAnyEnterpriseManagement(Profile* profile) {
+  if (features::kIndigoSkipEnterpriseCheck.Get()) {
+    return false;
+  }
+
   // 1. Browser / Profile Level: Check if administrative policies (cloud policy,
   // local machine Group Policy Object, macOS plist, Linux
   // /etc/opt/chrome/policies, or local device management) are actively managing

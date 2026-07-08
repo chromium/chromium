@@ -50,7 +50,7 @@ class IndigoServiceTest : public testing::Test {
   IndigoServiceTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
-        {{features::kIndigoAllowForEnterprise.name, "true"}});
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"}});
   }
 
   void SetUp() override {
@@ -208,7 +208,7 @@ TEST_F(IndigoServiceTest, GlicRequirementEnabledAndDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       features::kIndigo, {{features::kIndigoRequireGlicEnabling.name, "true"},
-                          {features::kIndigoAllowForEnterprise.name, "true"}});
+                          {features::kIndigoSkipEnterpriseCheck.name, "true"}});
 
   CreateService();
   MakeAccountAvailableAndCapable();
@@ -644,6 +644,22 @@ TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest, ManagedDomain) {
   CreateService();
   MakeAccountAvailableAndCapable("test@example.com", "example.com");
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kManagedDomain));
+}
+
+TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
+       SkipEnterpriseCheckKillswitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigo, {{features::kIndigoSkipEnterpriseCheck.name, "true"}});
+
+  CreateService();
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override(
+          policy::ManagementServiceFactory::GetForProfile(&profile_),
+          policy::EnterpriseManagementAuthority::CLOUD);
+  MakeAccountAvailableAndCapable();
+
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
 }
 
 TEST_P(IndigoServiceManagementPolicyDefaultEnabledTest,
