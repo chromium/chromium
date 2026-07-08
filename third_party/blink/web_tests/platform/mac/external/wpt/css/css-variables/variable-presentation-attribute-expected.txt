@@ -13,8 +13,6 @@ This is a testharness.js-based test.
   assert_equals: Default value. expected "" but got "rgb(0, 0, 0)"
 [FAIL] Testing 'font-family'.
   assert_equals: Default value. expected "Times New Roman" but got "Times"
-[FAIL] Testing 'glyph-orientation-horizontal'.
-  assert_equals: Default value. expected "0deg" but got ""
 [FAIL] Testing 'glyph-orientation-vertical'.
   assert_equals: Default value. expected "auto" but got ""
 [FAIL] Testing 'kerning'.

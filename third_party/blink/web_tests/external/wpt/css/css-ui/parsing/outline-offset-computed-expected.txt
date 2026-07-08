@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Property outline-offset value 'inset'
+  assert_true: 'inset' is a supported value for outline-offset. expected true got false
+Harness: the test ran to completion.
+

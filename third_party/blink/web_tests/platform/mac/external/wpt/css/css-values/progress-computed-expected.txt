@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+[FAIL] calc(progress(no-clamp 100px, 0px, 50px) * 10px + 100px) should be used-value-equivalent to 120px
+  assert_not_equals: calc(progress(no-clamp 100px, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(progress(no-clamp 100, 0, sign(1rem - 5px))) should be used-value-equivalent to 100
+  assert_not_equals: calc(progress(no-clamp 100, 0, sign(1rem - 5px))) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(progress(no-clamp abs(5%), hypot(3%, 4%), 10%)) should be used-value-equivalent to 0
+  assert_not_equals: calc(progress(no-clamp abs(5%), hypot(3%, 4%), 10%)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(no-clamp 50em, 10em, 110em) should be used-value-equivalent to 0.4
+  assert_not_equals: progress(no-clamp 50em, 10em, 110em) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(no-clamp 1000em, 10em, 110em) should be used-value-equivalent to 9.9
+  assert_not_equals: progress(no-clamp 1000em, 10em, 110em) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(no-clamp 10em, 50em, 100em) should be used-value-equivalent to -0.8
+  assert_not_equals: progress(no-clamp 10em, 50em, 100em) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(100px, 10px, 10px) should be used-value-equivalent to 0
+  assert_equals: progress(100px, 10px, 10px) and 0 serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] progress(no-clamp 100px, 10px, 10px) should be used-value-equivalent to calc(infinity)
+  assert_not_equals: progress(no-clamp 100px, 10px, 10px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(no-clamp 1px, 10px, 10px) should be used-value-equivalent to calc(-infinity)
+  assert_not_equals: progress(no-clamp 1px, 10px, 10px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(no-clamp 10px, 10px, 10px) should be used-value-equivalent to 0
+  assert_not_equals: progress(no-clamp 10px, 10px, 10px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.

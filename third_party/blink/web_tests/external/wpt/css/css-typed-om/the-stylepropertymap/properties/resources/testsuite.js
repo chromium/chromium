@@ -106,7 +106,10 @@ const gTestSyntaxExamples = {
         input: new CSSMathSum(new CSSUnitValue(0, 'px'), new CSSUnitValue(0, 'em')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('px', result)
       }
     ],
@@ -135,7 +138,10 @@ const gTestSyntaxExamples = {
         specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 'percent')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('percent', result)
       }
     ],
@@ -165,7 +171,10 @@ const gTestSyntaxExamples = {
         // specifiedExpected once all engines do simplification during
         // association.
         specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 's')),
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('s', result)
       }
     ],
@@ -196,7 +205,10 @@ const gTestSyntaxExamples = {
         specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(0, 'deg')),
         // Specified/computed calcs are usually simplified.
         // FIXME: Test this properly
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => assert_is_unit('deg', result)
       }
     ],
@@ -247,7 +259,10 @@ const gTestSyntaxExamples = {
         // specifiedExpected once all engines do simplification during
         // association.
         specifiedAlternateExpected: new CSSMathSum(new CSSUnitValue(5, 'number')),
-        defaultSpecified: (_, result) => assert_is_calc_sum(result),
+        defaultSpecified: (input, result) => {
+          assert_is_calc_sum(result);
+          assert_numeric_type_equals(result.type(), input.type());
+        },
         defaultComputed: (_, result) => {
           assert_style_value_equals(result, new CSSUnitValue(5, 'number'));
         }
@@ -337,14 +352,6 @@ function testPropertyValid(propertyName, examples, specified, computed, descript
         (specified || example.defaultSpecified)(example.specifiedExpected || example.input, specifiedResult, example.specifiedAlternateExpected);
       } else {
         assert_style_value_equals(specifiedResult, example.input);
-
-        // Verify that reification preserves the numeric type. This check is
-        // only reached for properties using the generic checking path and
-        // currently covers only CSSUnitValue inputs, but will be extended to
-        // cover all CSSNumericValue subclasses.
-        if (example.input instanceof CSSUnitValue) {
-          assert_numeric_type_equals(specifiedResult.type(), example.input.type());
-        }
       }
 
       // computed style
@@ -358,14 +365,6 @@ function testPropertyValid(propertyName, examples, specified, computed, descript
         (computed || example.defaultComputed)(example.input, computedResult);
       } else {
         assert_style_value_equals(computedResult, example.input);
-
-        // Verify that reification preserves the numeric type. This check is
-        // only reached for properties using the generic checking path and
-        // currently covers only CSSUnitValue inputs, but will be extended to
-        // cover all CSSNumericValue subclasses.
-        if (example.input instanceof CSSUnitValue) {
-          assert_numeric_type_equals(computedResult.type(), example.input.type());
-        }
       }
     }, `Can set '${propertyName}' to ${description}: ${example.input}`);
   }

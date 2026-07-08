@@ -1,5 +1,23 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'hsl(none none none)'
+  assert_equals: expected "hsl(none none none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'hsl(none none none / none)'
+  assert_equals: expected "hsl(none none none / none)" but got "rgba(0, 0, 0, 0)"
+[FAIL] Property color value 'hsla(none none none)'
+  assert_equals: expected "hsl(none none none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'hsla(none none none / none)'
+  assert_equals: expected "hsl(none none none / none)" but got "rgba(0, 0, 0, 0)"
+[FAIL] Property color value 'hsl(120 none none)'
+  assert_equals: expected "hsl(120 none none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'hsl(120 80% none)'
+  assert_equals: expected "hsl(120 80% none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'hsl(120 none 50%)'
+  assert_equals: expected "hsl(120 none 50%)" but got "rgb(128, 128, 128)"
+[FAIL] Property color value 'hsl(120 100% 50% / none)'
+  assert_equals: expected "hsl(120 100% 50% / none)" but got "rgba(0, 255, 0, 0)"
+[FAIL] Property color value 'hsl(none 100% 50%)'
+  assert_equals: expected "hsl(none 100% 50%)" but got "rgb(255, 0, 0)"
 [FAIL] Property color value 'hsla(calc(50deg + (sign(2cqw - 10px) * 10deg)), 100%, 37.5%, 52%)'
   assert_equals: expected "rgba(191, 128, 0, 0.52)" but got "rgba(191, 127, 0, 0.52)"
 Harness: the test ran to completion.

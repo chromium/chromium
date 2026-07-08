@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] readAsText() uses the charset parameter of the Blob's type (windows-1252)
+  assert_equals: readAsText should honor the windows-1252 charset from the Blob type and decode 0x80 as U+20AC, not UTF-8 U+FFFD. expected "€" but got "\\ufffd"
+[FAIL] readAsText() decodes a windows-1252 Blob body using the type's charset
+  assert_equals: readAsText should decode the body using the windows-1252 charset declared in the Blob type. expected "héllo" but got "h\\ufffdllo"
+Harness: the test ran to completion.
+

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] A second get() call while another is pending should reject with NotAllowedError.
+  promise_test: Unhandled rejection with value: "error: Unexpected exception: 'BidiDigitalCredentialsSetVirtualWalletBehaviorAction' object is not callable"
+Harness: the test ran to completion.

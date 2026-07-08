@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'hwb(none none none)'
+  assert_equals: expected "hwb(none none none)" but got "rgb(255, 0, 0)"
+[FAIL] Property color value 'hwb(none none none / none)'
+  assert_equals: expected "hwb(none none none / none)" but got "rgba(255, 0, 0, 0)"
+[FAIL] Property color value 'hwb(120 none none)'
+  assert_equals: expected "hwb(120 none none)" but got "rgb(0, 255, 0)"
+[FAIL] Property color value 'hwb(120 80% none)'
+  assert_equals: expected "hwb(120 80% none)" but got "rgb(204, 255, 204)"
+[FAIL] Property color value 'hwb(120 none 50%)'
+  assert_equals: expected "hwb(120 none 50%)" but got "rgb(0, 128, 0)"
+[FAIL] Property color value 'hwb(120 30% 50% / none)'
+  assert_equals: expected "hwb(120 30% 50% / none)" but got "rgba(77, 128, 77, 0)"
+[FAIL] Property color value 'hwb(none 100% 50% / none)'
+  assert_equals: expected "hwb(none 100% 50% / none)" but got "rgba(170, 170, 170, 0)"
+Harness: the test ran to completion.
+

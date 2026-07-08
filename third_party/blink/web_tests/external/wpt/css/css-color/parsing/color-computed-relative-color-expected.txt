@@ -1,0 +1,88 @@
+This is a testharness.js-based test.
+Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'rgb(from rgb(none none none) r g b)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'rgb(from rgb(none none none / none) r g b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0 0 0 / 0)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] Property color value 'rgb(from rgb(20% none 60%) r g b)'
+  Colors do not match.\nActual:   color(srgb 0.2 0 0.6)\nExpected: color(srgb 0.2 none 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'rgb(from rgb(20% 40% 60% / none) r g b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.2 0.4 0.6 / 0)\nExpected: color(srgb 0.2 0.4 0.6 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hsl(from rebeccapurple none none none)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hsl(from rebeccapurple none none none / none)'
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: hsl(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hsl(from rebeccapurple h s none)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(270 50 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hsl(from rebeccapurple h s none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(270 50 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hsl(from rebeccapurple h s l / none)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0.6 / none)\nExpected: hsl(270 50 40 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 270 +/- 0.01, expected 270 but got 0.4
+[FAIL] Property color value 'hsl(from rebeccapurple none s l / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.2)\nExpected: hsl(none 50 40).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hsl(from hsl(120deg 20% 50% / .5) h s none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0 0 0 / 0.5)\nExpected: hsl(120 20 none / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hsl(from hsl(120deg 20% 50% / .5) h s l / none)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.6 0.4 / none)\nExpected: hsl(120 20 50 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 120 +/- 0.01, expected 120 but got 0.4
+[FAIL] Property color value 'hsl(from hsl(120deg 20% 50% / .5) none s l / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: hsl(none 20 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hsl(from hsl(none none none) h s l)'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hsl(from hsl(none none none / none) h s l / alpha)'
+  Colors do not match.\nActual:   color(srgb 0 0 0 / 0)\nExpected: hsl(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] Property color value 'hsl(from hsl(120deg none 50% / .5) h s l)'
+  Colors do not match.\nActual:   color(srgb 0.5 0.5 0.5 / 0.5)\nExpected: hsl(120 none 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hsl(from hsl(120deg 20% 50% / none) h s l / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.6 0.4 / 0)\nExpected: hsl(120 20 50 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hsl(from hsl(none 20% 50% / .5) h s l / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: hsl(none 20 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hwb(from rebeccapurple none none none)'
+  Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hwb(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hwb(from rebeccapurple none none none / none)'
+  Colors do not match.\nActual:   color(srgb 1 0 0 / none)\nExpected: hwb(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hwb(from rebeccapurple h w none)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 1)\nExpected: hwb(270 20 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hwb(from rebeccapurple h w none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 1)\nExpected: hwb(270 20 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hwb(from rebeccapurple h w b / none)'
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0.6 / none)\nExpected: hwb(270 20 40 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 270 +/- 0.01, expected 270 but got 0.4
+[FAIL] Property color value 'hwb(from rebeccapurple none w b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.2)\nExpected: hwb(none 20 40).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'hwb(from hwb(120deg 20% 50% / .5) h w none / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.2 1 0.2 / 0.5)\nExpected: hwb(120 20 none / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hwb(from hwb(120deg 20% 50% / .5) h w b / none)'
+  Colors do not match.\nActual:   color(srgb 0.2 0.5 0.2 / none)\nExpected: hwb(120 20 50 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 120 +/- 0.01, expected 120 but got 0.2
+[FAIL] Property color value 'hwb(from hwb(120deg 20% 50% / .5) none w b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.5 0.2 0.2 / 0.5)\nExpected: hwb(none 20 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hwb(from hwb(none none none) h w b)'
+  Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hwb(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'hwb(from hwb(none none none / none) h w b / alpha)'
+  Colors do not match.\nActual:   color(srgb 1 0 0 / 0)\nExpected: hwb(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] Property color value 'hwb(from hwb(120deg none 50% / .5) h w b)'
+  Colors do not match.\nActual:   color(srgb 0 0.5 0 / 0.5)\nExpected: hwb(120 none 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hwb(from hwb(120deg 20% 50% / none) h w b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.2 0.5 0.2 / 0)\nExpected: hwb(120 20 50 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'hwb(from hwb(none 20% 50% / .5) h w b / alpha)'
+  Colors do not match.\nActual:   color(srgb 0.5 0.2 0.2 / 0.5)\nExpected: hwb(none 20 50 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'lab(from lab(none none none) l a b)'
+  Colors do not match.\nActual:   lab(0 0 0)\nExpected: lab(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'lab(from lab(none none none / none) l a b / alpha)'
+  Colors do not match.\nActual:   lab(0 0 0 / 0)\nExpected: lab(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] Property color value 'lab(from lab(25 none 50) l a b)'
+  Colors do not match.\nActual:   lab(25 0 50)\nExpected: lab(25 none 50).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'lab(from lab(25 20 50 / none) l a b / alpha)'
+  Colors do not match.\nActual:   lab(25 20 50 / 0)\nExpected: lab(25 20 50 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'oklab(from oklab(none none none) l a b)'
+  Colors do not match.\nActual:   oklab(0 0 0)\nExpected: oklab(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'oklab(from oklab(none none none / none) l a b / alpha)'
+  Colors do not match.\nActual:   oklab(0 0 0 / 0)\nExpected: oklab(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] Property color value 'oklab(from oklab(0.25 none 0.5) l a b)'
+  Colors do not match.\nActual:   oklab(0.25 0 0.5)\nExpected: oklab(0.25 none 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)'
+  Colors do not match.\nActual:   oklab(0.25 0.2 0.5 / 0)\nExpected: oklab(0.25 0.2 0.5 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] Property color value 'lch(from color(display-p3 0 0 0) l c h / alpha)'
+  Colors do not match.\nActual:   lch(0 0 0)\nExpected: lch(0 0 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] Property color value 'oklch(from color(display-p3 0 0 0) l c h / alpha)'
+  Colors do not match.\nActual:   oklch(0 0 0)\nExpected: oklch(0 0 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+Harness: the test ran to completion.
+

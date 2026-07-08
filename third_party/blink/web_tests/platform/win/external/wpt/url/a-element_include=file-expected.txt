@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <file:/example.com/> against <http://example.org/foo/bar>
@@ -116,8 +116,6 @@ Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "file:////p" but got "file://.//p"
 [FAIL] Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> against <about:blank>
   assert_equals: href expected "file:///usr/bin" but got "file://localhost/usr/bin"
-[FAIL] Parsing: <file://xn--/p> against <about:blank>
-  assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: </\\//\\/a/../> against <file:///>
   assert_equals: href expected "file://////" but got "file://a/"
 Harness: the test ran to completion.

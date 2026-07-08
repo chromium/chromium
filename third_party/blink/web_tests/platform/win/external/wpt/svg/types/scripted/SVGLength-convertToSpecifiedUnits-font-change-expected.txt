@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] SVGLength, value updates after font-size change on em/ex conversion, changing ex basis
+  assert_approx_equals: expected 10 +/- 1 but got 8.88286304473877
+Harness: the test ran to completion.

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] <?import namespace="foo" implementation="#bar">
+  assert_equals: expected "#document\\n| <?import namespace=\\"foo\\" implementation=\\"#bar\\"?>\\n| <html>\\n|   <head>\\n|   <body>" but got "#document\\n| <!-- ?import namespace=\\"foo\\" implementation=\\"#bar\\" -->\\n| <html>\\n|   <head>\\n|   <body>"
+Harness: the test ran to completion.
+

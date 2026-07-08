@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] currentTranslate returns the same object on consecutive reads ([SameObject])
+  assert_equals: expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] currentTranslate identity is stable across value changes
+  assert_equals: same object after mutating x expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] The compatibility mouse events should set :hover, but shouldn't be preserved after the target is replaced
+  assert_equals: The compatibility mouse events should set :hover, but shouldn't be preserved after the target is replaced: The target parent should keep having :hover state even after the target is removed expected Element node <div id="container">\n    \n  <div class="target"></div></div> but got null
+[FAIL] The compatibility mouse events should set :hover, but shouldn't be preserved after the target is replaced: mouseleave: The tapped element should  have :hover state
+  assert_equals: expected Element node <div class="target"></div> but got null
+[FAIL] The compatibility mouse events should set :hover, but shouldn't be preserved after the target is replaced: The compatibility mouse events should be fired
+  assert_equals: expected "[{ type: \\"mouseover\\", target: div.target },{ type: \\"mousemove\\", target: div.target },{ type: \\"mousedown\\", target: div.target },{ type: \\"mouseup\\", target: div.target },{ type: \\"click\\", target: div.target }]" but got "[{ type: \\"mouseover\\", target: div.target },{ type: \\"mousemove\\", target: div.target },{ type: \\"mousedown\\", target: div.target },{ type: \\"mouseup\\", target: div.target },{ type: \\"click\\", target: div.target },{ type: \\"mouseleave\\", target: #container }]"
+Harness: the test ran to completion.
+

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] e.style['color'] = "hwb(none none none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(none none none)" but got "rgb(255, 0, 0)"
+[FAIL] e.style['color'] = "hwb(none none none / none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(none none none / none)" but got "rgba(255, 0, 0, 0)"
+[FAIL] e.style['color'] = "hwb(120 none none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 none none)" but got "rgb(0, 255, 0)"
+[FAIL] e.style['color'] = "hwb(120 80% none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 80 none)" but got "rgb(204, 255, 204)"
+[FAIL] e.style['color'] = "hwb(120 none 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 none 50)" but got "rgb(0, 128, 0)"
+[FAIL] e.style['color'] = "hwb(120 30% 50% / none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 30 50 / none)" but got "rgba(77, 128, 77, 0)"
+[FAIL] e.style['color'] = "hwb(none 100% 50% / none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(none 100 50 / none)" but got "rgba(170, 170, 170, 0)"
+[FAIL] e.style['color'] = "hwb(120 none 50)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 none 50)" but got "rgb(0, 128, 0)"
+[FAIL] e.style['color'] = "hwb(120 none 50 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 none 50 / 0.5)" but got "rgba(0, 128, 0, 0.5)"
+[FAIL] e.style['color'] = "hwb(120 30 none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 30 none)" but got "rgb(77, 255, 77)"
+[FAIL] e.style['color'] = "hwb(120 30 none / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 30 none / 0.5)" but got "rgba(77, 255, 77, 0.5)"
+[FAIL] e.style['color'] = "hwb(120 30 50 / none)" should set the property value
+  assert_equals: serialization should be canonical expected "hwb(120 30 50 / none)" but got "rgba(77, 128, 77, 0)"
+Harness: the test ran to completion.
+

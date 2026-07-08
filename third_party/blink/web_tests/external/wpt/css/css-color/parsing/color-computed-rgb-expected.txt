@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'rgb(none none none)'
+  assert_equals: expected "color(srgb none none none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'rgb(none none none / none)'
+  assert_equals: expected "color(srgb none none none / none)" but got "rgba(0, 0, 0, 0)"
+[FAIL] Property color value 'rgb(128 none none)'
+  assert_equals: expected "color(srgb 0.50196078 none none)" but got "rgb(128, 0, 0)"
+[FAIL] Property color value 'rgb(128 none none / none)'
+  assert_equals: expected "color(srgb 0.50196078 none none / none)" but got "rgba(128, 0, 0, 0)"
+[FAIL] Property color value 'rgb(none none none / .5)'
+  assert_equals: expected "color(srgb none none none / 0.5)" but got "rgba(0, 0, 0, 0.5)"
+[FAIL] Property color value 'rgb(20% none none)'
+  assert_equals: expected "color(srgb 0.2 none none)" but got "rgb(51, 0, 0)"
+[FAIL] Property color value 'rgb(20% none none / none)'
+  assert_equals: expected "color(srgb 0.2 none none / none)" but got "rgba(51, 0, 0, 0)"
+[FAIL] Property color value 'rgb(none none none / 50%)'
+  assert_equals: expected "color(srgb none none none / 0.5)" but got "rgba(0, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(none none none)'
+  assert_equals: expected "color(srgb none none none)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'rgba(none none none / none)'
+  assert_equals: expected "color(srgb none none none / none)" but got "rgba(0, 0, 0, 0)"
+[FAIL] Property color value 'rgba(128 none none)'
+  assert_equals: expected "color(srgb 0.50196078 none none)" but got "rgb(128, 0, 0)"
+[FAIL] Property color value 'rgba(128 none none / none)'
+  assert_equals: expected "color(srgb 0.50196078 none none / none)" but got "rgba(128, 0, 0, 0)"
+[FAIL] Property color value 'rgba(none none none / .5)'
+  assert_equals: expected "color(srgb none none none / 0.5)" but got "rgba(0, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(20% none none)'
+  assert_equals: expected "color(srgb 0.2 none none)" but got "rgb(51, 0, 0)"
+[FAIL] Property color value 'rgba(20% none none / none)'
+  assert_equals: expected "color(srgb 0.2 none none / none)" but got "rgba(51, 0, 0, 0)"
+[FAIL] Property color value 'rgba(none none none / 50%)'
+  assert_equals: expected "color(srgb none none none / 0.5)" but got "rgba(0, 0, 0, 0.5)"
+Harness: the test ran to completion.
+

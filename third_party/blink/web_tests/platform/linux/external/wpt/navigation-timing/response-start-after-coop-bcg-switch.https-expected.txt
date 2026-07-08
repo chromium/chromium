@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Test named 'Navigation responseStart is not clamped to zero after a cross-origin COOP browsing context group switch' specified 1 'cleanup' function, and 1 failed.
+[FAIL] Navigation responseStart is not clamped to zero after a cross-origin COOP browsing context group switch
+  assert_equals: The cross-origin navigation should not expose the redirect count expected 0 but got 2
+Harness: the test ran to completion.
+

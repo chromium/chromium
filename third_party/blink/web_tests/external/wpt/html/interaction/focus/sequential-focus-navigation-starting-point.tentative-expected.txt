@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Focus navigation starting point should be used when it's a descendant of the focused element.
+  assert_equals: Forwards sequential focus navigation should go to BUTTON#button2 expected Element node <button data-next="" id="button2" tabindex="0">button 2</... but got Element node <button data-prev="" id="button1" tabindex="0">button 1</...
+Harness: the test ran to completion.

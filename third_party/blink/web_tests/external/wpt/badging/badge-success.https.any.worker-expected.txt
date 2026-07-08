@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Badging API interface exists
+  assert_true: navigator.setAppBadge should exist expected true got false
+[FAIL] Resolves successfully for number input cases
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+[FAIL] Resolves successfully for string input cases
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+[FAIL] Resolves successfully for boolean input cases
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+[FAIL] clearAppBadge resolves successfully
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.clearAppBadge is not a function"
+[FAIL] setAppBadge with no arguments succeeds (flag mode)
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+Harness: the test ran to completion.
+

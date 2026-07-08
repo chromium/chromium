@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
 [FAIL] <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -76,10 +76,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
 [FAIL] <area>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
-[FAIL] <a>: Setting <https://example.com/>.host = 'xn--'
-  assert_equals: expected "https://example.com/" but got "https://xn--/"
-[FAIL] <area>: Setting <https://example.com/>.host = 'xn--'
-  assert_equals: expected "https://example.com/" but got "https://xn--/"
 [FAIL] <a>: Setting <https://test.invalid/>.host = '*'
   assert_equals: expected "https://*/" but got "https://%2A/"
 [FAIL] <area>: Setting <https://test.invalid/>.host = '*'
@@ -88,10 +84,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
 [FAIL] <area>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
-[FAIL] <a>: Setting <https://example.com/>.hostname = 'xn--'
-  assert_equals: expected "https://example.com/" but got "https://xn--/"
-[FAIL] <area>: Setting <https://example.com/>.hostname = 'xn--'
-  assert_equals: expected "https://example.com/" but got "https://xn--/"
 [FAIL] <a>: Setting <https://test.invalid/>.hostname = '*'
   assert_equals: expected "https://*/" but got "https://%2A/"
 [FAIL] <area>: Setting <https://test.invalid/>.hostname = '*'

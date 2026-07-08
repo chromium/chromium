@@ -1,9 +1,17 @@
 This is a testharness.js-based test.
-Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color-mix(in hsl, hsl(none none none), hsl(none none none))'
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / none))'
+  Colors do not match.\nActual:   color(srgb 0.56 0.56 0.24 / none)\nExpected: hsl(60 40 40 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 60 +/- 0.01, expected 60 but got 0.56
 [FAIL] Property color value 'color-mix(in hsl, hsl(120deg 10% 20%) 0%, hsl(30deg 30% 40%) 0%)'
   assert_true: 'color-mix(in hsl, hsl(120deg 10% 20%) 0%, hsl(30deg 30% 40%) 0%)' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in hsl, hsl(120deg 10% 20% / .4) 0%, hsl(30deg 30% 40% / .8) 0%)'
   assert_true: 'color-mix(in hsl, hsl(120deg 10% 20% / .4) 0%, hsl(30deg 30% 40% / .8) 0%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(in hwb, hwb(none none none), hwb(none none none))'
+  Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hwb(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / none))'
+  Colors do not match.\nActual:   color(srgb 0.575 0.7 0.2 / none)\nExpected: hwb(75 20 30 / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 75 +/- 0.01, expected 75 but got 0.575
 [FAIL] Property color value 'color-mix(in hwb, hwb(120deg 10% 20%) 0%, hwb(30deg 30% 40%) 0%)'
   assert_true: 'color-mix(in hwb, hwb(120deg 10% 20%) 0%, hwb(30deg 30% 40%) 0%)' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / .4) 0%, hwb(30deg 30% 40% / .8) 0%)'

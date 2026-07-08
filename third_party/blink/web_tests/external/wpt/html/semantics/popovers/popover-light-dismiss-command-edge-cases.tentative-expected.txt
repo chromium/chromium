@@ -5,15 +5,9 @@ This is a testharness.js-based test.
   assert_false: popover should light dismiss expected false got true
 [FAIL] commandfor with custom command light dismisses the popover
   assert_false: popover should light dismiss expected false got true
-[FAIL] commandfor on submit button with form owner light dismisses the popover
-  assert_false: popover should light dismiss expected false got true
 [FAIL] commandfor on reset button with form owner light dismisses the popover
   assert_false: popover should light dismiss expected false got true
 [FAIL] commandfor on auto-type button with form owner light dismisses the popover
-  assert_false: popover should light dismiss expected false got true
-[FAIL] commandfor on disabled button light dismisses the popover
-  assert_false: popover should light dismiss expected false got true
-[FAIL] commandfor pointing to non-popover element light dismisses the popover
   assert_false: popover should light dismiss expected false got true
 Harness: the test ran to completion.
 

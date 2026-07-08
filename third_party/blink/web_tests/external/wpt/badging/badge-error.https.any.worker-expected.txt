@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test various invalid input cases for setAppBadge()
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+[FAIL] Sequential badge operations work correctly
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.setAppBadge is not a function"
+Harness: the test ran to completion.
+

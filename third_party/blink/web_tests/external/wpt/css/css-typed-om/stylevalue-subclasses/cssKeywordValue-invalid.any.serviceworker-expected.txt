@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Constructing CSSKeywordValue with an empty string throws a TypeError
+  assert_throws_js: function "() => new CSSKeywordValue('')" threw object "ReferenceError: CSSKeywordValue is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+
