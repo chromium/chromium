@@ -581,3 +581,66 @@ source_set("unit_tests") {
     ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = []
+    deps = []
+
+    if (enable_dice_support) {
+      sources += [
+        "account_metrics_id_allocator_browsertest.cc",
+        "account_preview_data_service_browsertest.cc",
+        "accounts_policy_manager_browsertest.cc",
+        "chrome_signin_client_browsertest.cc",
+        "dice_browsertest.cc",
+        "dice_mtls_browsertest.cc",
+        "dice_web_signin_interceptor_browsertest.cc",
+        "signin_ui_util_browsertest.cc",
+        "signin_ui_util_extensions_browsertest.cc",
+      ]
+      deps += [
+        ":signin",
+        ":test_support",
+        "//chrome/browser/autofill",
+        "//chrome/browser/enterprise",
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/search_engines",
+        "//chrome/browser/sync",
+        "//chrome/browser/ui",
+        "//chrome/browser/ui:simple_message_box_internal",
+        "//chrome/browser/ui:ui_features",
+        "//chrome/browser/ui/hats:test_support",
+        "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/webui/signin",
+        "//chrome/browser/ui/webui/signin:login_ui_service",
+        "//chrome/browser/ui/webui/signin:signin_ui_error",
+        "//chrome/browser/ui/webui/signin:test_support_ui",
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//chrome/test:test_support",
+        "//chrome/test:test_support_ui",
+        "//chrome/test/user_education",
+        "//components/embedder_support:user_agent",
+        "//components/signin/public/base",
+        "//components/signin/public/identity_manager",
+        "//components/signin/public/identity_manager:test_support",
+        "//components/sync/base",
+        "//components/sync/service",
+        "//components/user_education/views",
+        "//content/test:test_support",
+        "//crypto:test_support",
+        "//google_apis",
+        "//testing/gmock",
+        "//testing/gtest",
+      ]
+
+      if (is_win) {
+        sources += [ "signin_util_win_browsertest.cc" ]
+        deps += [ "//chrome/browser/ui/startup" ]
+      }
+    }
+  }
+}

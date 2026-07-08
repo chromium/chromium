@@ -3902,20 +3902,6 @@ if (!is_android) {
     }
 
     if (enable_dice_support) {
-      sources += [
-        "../browser/signin/account_metrics_id_allocator_browsertest.cc",
-        "../browser/signin/account_preview_data_service_browsertest.cc",
-        "../browser/signin/accounts_policy_manager_browsertest.cc",
-        "../browser/signin/chrome_signin_client_browsertest.cc",
-        "../browser/signin/dice_browsertest.cc",
-        "../browser/signin/dice_mtls_browsertest.cc",
-        "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
-        "../browser/signin/signin_ui_util_browsertest.cc",
-        "../browser/signin/signin_ui_util_extensions_browsertest.cc",
-      ]
-      if (is_win) {
-        sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
-      }
       if (is_win || is_linux) {
         sources += [
           "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
@@ -3930,6 +3916,7 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]
       }
       deps += [
+        "//chrome/browser/signin:browser_tests",
         "//chrome/browser/signin:signin_promo",
 
         # TODO(crubug.com/430804948): This dependency is needed because
