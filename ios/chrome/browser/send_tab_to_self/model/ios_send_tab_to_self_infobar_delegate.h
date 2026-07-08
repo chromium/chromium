@@ -11,10 +11,11 @@
 #include <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
-#include "url/gurl.h"
 
 @protocol SceneCommands;
+class WebStateList;
 
 namespace send_tab_to_self {
 
@@ -26,11 +27,13 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   static std::unique_ptr<IOSSendTabToSelfInfoBarDelegate> Create(
       const SendTabToSelfEntry* entry,
       SendTabToSelfModel* model,
-      id<SceneCommands> scene_handler);
+      id<SceneCommands> scene_handler,
+      WebStateList* web_state_list);
 
   IOSSendTabToSelfInfoBarDelegate(const SendTabToSelfEntry* entry,
                                   SendTabToSelfModel* model,
-                                  id<SceneCommands> scene_handler);
+                                  id<SceneCommands> scene_handler,
+                                  WebStateList* web_state_list);
 
   IOSSendTabToSelfInfoBarDelegate(const IOSSendTabToSelfInfoBarDelegate&) =
       delete;
@@ -65,6 +68,9 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Handler for scene commands.
   __weak id<SceneCommands> scene_handler_ = nil;
+
+  // The WebStateList. Must outlive this instance.
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
 
   // The GUID of the entry.
   std::string guid_;

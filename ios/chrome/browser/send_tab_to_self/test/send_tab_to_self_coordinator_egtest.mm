@@ -811,7 +811,8 @@ void DismissSnackbar() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:labelsStackMatcher];
 
-  // Tap "Open" on the banner and verify that the Tab Grid opens.
+  // Tap "Open" on the banner and verify that the received tab is opened
+  // directly in the foreground.
   NSString* buttonText =
       l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE_URL);
   [[EarlGrey
@@ -819,8 +820,8 @@ void DismissSnackbar() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(kExampleURL))];
 }
 
 // Tests that when kSendTabToSelfAutoOpen is enabled and a shared tab is

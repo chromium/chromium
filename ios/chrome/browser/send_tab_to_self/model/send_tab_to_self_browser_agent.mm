@@ -283,8 +283,8 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       send_tab_to_self::IOSSendTabToSelfInfoBarDelegate::Create(
           entry, model_,
-          HandlerForProtocol(browser_->GetCommandDispatcher(),
-                             SceneCommands))));
+          HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands),
+          browser_->GetWebStateList())));
 }
 
 void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
