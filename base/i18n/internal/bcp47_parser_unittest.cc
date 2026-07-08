@@ -44,6 +44,19 @@ TEST(Bcp47ParserTest, Constexprness) {
            parsed->script == "Latn" && parsed->region == "US" &&
            parsed->variants.empty();
   }());
+
+  // Constexpr check for AreSubtagsKnown.
+  static_assert([] {
+    std::optional<ParsedBcp47Tag> parsed = ParseBcp47Tag("en-Latn-US");
+    return parsed.has_value() && AreSubtagsKnown(*parsed);
+  }());
+
+  static_assert([] {
+    std::optional<ParsedBcp47Tag> parsed = ParseBcp47Tag("xx-Latn-US");
+    // ParseBcp47Tag only checks if language subtag is well-formed, not if it is
+    // known. "xx" is 2 alpha, so it is a valid language subtag.
+    return parsed.has_value() && !AreSubtagsKnown(*parsed);
+  }());
 }
 
 TEST(Bcp47ParserTest, IsLanguageSubtag) {

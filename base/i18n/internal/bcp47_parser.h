@@ -7,8 +7,11 @@
 
 #include <algorithm>
 #include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/i18n/internal/bcp47_known_subtags.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
@@ -81,6 +84,20 @@ struct ParsedBcp47Tag {
   // See the comments in `IsVariantSubtag`.
   std::vector<std::string_view> variants;
 };
+
+// Returns true if all subtags in `parsed_tag` are known in Chromium.
+constexpr bool AreSubtagsKnown(const ParsedBcp47Tag& parsed_tag) {
+  if (!IsKnownLanguageSubtag(parsed_tag.language)) {
+    return false;
+  }
+  if (!parsed_tag.script.empty() && !IsKnownScriptSubtag(parsed_tag.script)) {
+    return false;
+  }
+  if (!parsed_tag.region.empty() && !IsKnownRegionSubtag(parsed_tag.region)) {
+    return false;
+  }
+  return std::ranges::all_of(parsed_tag.variants, IsKnownVariantSubtag);
+}
 
 // Parses a language tag according to the ABNF in RFC 5646 Section 2.1.
 // This does not support extended language subtags or extensions.

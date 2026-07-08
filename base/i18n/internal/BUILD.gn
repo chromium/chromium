@@ -7,6 +7,7 @@ import("//build/rust/rust_static_library.gni")
 
 source_set("internal") {
   sources = [
+    "bcp47_known_subtags.h",
     "bcp47_parser.h",
     "immutable_string.cc",
     "immutable_string.h",
@@ -15,6 +16,10 @@ source_set("internal") {
   ]
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
   public_deps = [
+    ":bcp47_languages_gen",
+    ":bcp47_regions_gen",
+    ":bcp47_scripts_gen",
+    ":bcp47_variants_gen",
     "//base",
     "//base/i18n:base_i18n_export",
   ]
@@ -61,9 +66,38 @@ source_set("canonical_language_tags") {
   ]
 }
 
+action("bcp47_languages_gen") {
+  script = "//tools/i18n/generate_known_bcp47_subtags.py"
+  outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_languages.inc" ]
+  args = rebase_path(outputs, root_build_dir) + [ "language" ] +
+         [ "${enable_pseudolocales}" ]
+}
+
+action("bcp47_scripts_gen") {
+  script = "//tools/i18n/generate_known_bcp47_subtags.py"
+  outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_scripts.inc" ]
+  args = rebase_path(outputs, root_build_dir) + [ "script" ] +
+         [ "${enable_pseudolocales}" ]
+}
+
+action("bcp47_regions_gen") {
+  script = "//tools/i18n/generate_known_bcp47_subtags.py"
+  outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_regions.inc" ]
+  args = rebase_path(outputs, root_build_dir) + [ "region" ] +
+         [ "${enable_pseudolocales}" ]
+}
+
+action("bcp47_variants_gen") {
+  script = "//tools/i18n/generate_known_bcp47_subtags.py"
+  outputs = [ "$root_gen_dir/base/i18n/internal/bcp47_variants.inc" ]
+  args = rebase_path(outputs, root_build_dir) + [ "variant" ] +
+         [ "${enable_pseudolocales}" ]
+}
+
 source_set("unittests") {
   testonly = true
   sources = [
+    "bcp47_known_subtags_unittest.cc",
     "bcp47_parser_unittest.cc",
     "immutable_string_unittest.cc",
   ]
