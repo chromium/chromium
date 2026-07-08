@@ -346,7 +346,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return 'history-internal:arrow-selector-spark';
     // </if>
     // <if expr="not _google_chrome">
-    return 'history20:arrow-selector-tool';
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'history20:arrow-selector-tool' :
+        'history20:arrow-selector-tool-old';
     // </if>
   }
 }
