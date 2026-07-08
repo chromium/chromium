@@ -9,11 +9,13 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/service_process_observer_hub.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/network_service.mojom-forward.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -27,13 +29,19 @@ namespace net {
 class NetworkChangeNotifier;
 }  // namespace net
 
-namespace network {
-namespace mojom {
-class NetworkService;
-}
-}  // namespace network
-
 namespace content {
+
+using NetworkServiceProcessObserver =
+    ServiceProcessObserverHub<network::mojom::NetworkService>::Observer;
+
+// If the network service is already running, the observer will be immediately
+// notified via OnServiceLaunched. Must be called on the UI thread.
+CONTENT_EXPORT void AddNetworkServiceProcessObserver(
+    NetworkServiceProcessObserver* observer);
+
+// Must be called before the observer is destroyed. UI thread only.
+CONTENT_EXPORT void RemoveNetworkServiceProcessObserver(
+    NetworkServiceProcessObserver* observer);
 
 // If this feature is enabled, the Network Service will run on its own thread
 // when running in-process; otherwise it will run on the IO thread.

@@ -40,7 +40,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -254,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
 // service must be restarted so the sandbox can be removed.
 class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
-      public content::ServiceProcessHost::Observer,
+      public content::NetworkServiceProcessObserver,
       public testing::WithParamInterface<bool> {
  public:
   // On both ChromeOS and Linux, a pref determines whether GSSAPI is desired in
@@ -283,15 +282,12 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
 
     SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
 
-    content::ServiceProcessHost::AddObserver(this);
-    auto running_processes =
-        content::ServiceProcessHost::GetRunningProcessInfo();
-    for (const auto& info : running_processes) {
-      if (info.IsService<network::mojom::NetworkService>()) {
-        network_process_ = info.GetProcess().Duplicate();
-        break;
-      }
-    }
+    content::AddNetworkServiceProcessObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    content::RemoveNetworkServiceProcessObserver(this);
+    SystemNetworkContextManagerBrowsertest::TearDownOnMainThread();
   }
 
   void WaitForNextLaunch() {
@@ -331,22 +327,17 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
   bool sandbox_desired_;
 
  private:
-  void OnServiceProcessLaunched(
-      const content::ServiceProcessInfo& info) override {
-    if (!info.IsService<network::mojom::NetworkService>()) {
-      return;
-    }
+  void OnServiceLaunched(const content::ServiceProcessInfo& info) override {
     network_process_ = info.GetProcess().Duplicate();
     if (launch_run_loop_) {
       launch_run_loop_->Quit();
     }
   }
 
-  void OnServiceProcessTerminatedNormally(
+  void OnServiceTerminatedNormally(
       const content::ServiceProcessInfo& info) override {}
 
-  void OnServiceProcessCrashed(
-      const content::ServiceProcessInfo& info) override {}
+  void OnServiceCrashed(const content::ServiceProcessInfo& info) override {}
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Process network_process_;
@@ -421,7 +412,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
-      public content::ServiceProcessHost::Observer {
+      public content::NetworkServiceProcessObserver {
  public:
   SystemNetworkContextManagerNetworkServiceSandboxBrowsertest() {
     scoped_feature_list_.InitWithFeatures(
@@ -433,19 +424,11 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
   void SetUpOnMainThread() override {
     SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
     launch_run_loop_.emplace();
-    content::ServiceProcessHost::AddObserver(this);
-    auto running_processes =
-        content::ServiceProcessHost::GetRunningProcessInfo();
-    for (const auto& info : running_processes) {
-      if (info.IsService<network::mojom::NetworkService>()) {
-        RecordProcessSandboxState(info.GetProcess());
-        break;
-      }
-    }
+    content::AddNetworkServiceProcessObserver(this);
   }
 
   void TearDownOnMainThread() override {
-    content::ServiceProcessHost::RemoveObserver(this);
+    content::RemoveNetworkServiceProcessObserver(this);
   }
 
  protected:
@@ -460,11 +443,7 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
     network_service_sandboxed_ = integrity_level < base::MEDIUM_INTEGRITY;
   }
 
-  void OnServiceProcessLaunched(
-      const content::ServiceProcessInfo& info) override {
-    if (!info.IsService<network::mojom::NetworkService>()) {
-      return;
-    }
+  void OnServiceLaunched(const content::ServiceProcessInfo& info) override {
     RecordProcessSandboxState(info.GetProcess());
     // Expect two launches, first for the restart due to intentional crash, then
     // for the restart after the intentional crash at startup.

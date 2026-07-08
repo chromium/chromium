@@ -17,10 +17,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
-#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 
@@ -35,7 +34,7 @@ constexpr base::TimeDelta kKeepOldProcessHandlePeriod = base::Minutes(1);
 constinit base::TimeDelta g_keep_old_process_handle_period =
     kKeepOldProcessHandlePeriod;
 
-class NetworkServiceListener : public ServiceProcessHost::Observer {
+class NetworkServiceListener : public NetworkServiceProcessObserver {
  public:
   NetworkServiceListener();
 
@@ -76,11 +75,10 @@ class NetworkServiceListener : public ServiceProcessHost::Observer {
   // Frees `old_network_service_process_`.
   void ResetOldNetworkServiceProcess();
 
-  // ServiceProcessHost::Observer implementation:
-  void OnServiceProcessLaunched(const ServiceProcessInfo& info) override;
-  void OnServiceProcessTerminatedNormally(
-      const ServiceProcessInfo& info) override;
-  void OnServiceProcessCrashed(const ServiceProcessInfo& info) override;
+  // NetworkServiceProcessObserver implementation:
+  void OnServiceLaunched(const ServiceProcessInfo& info) override;
+  void OnServiceTerminatedNormally(const ServiceProcessInfo& info) override;
+  void OnServiceCrashed(const ServiceProcessInfo& info) override;
 
   base::Process network_process_ GUARDED_BY_CONTEXT(owning_sequence_);
 
@@ -100,19 +98,11 @@ NetworkServiceListener& GetInstance() {
 }
 
 NetworkServiceListener::NetworkServiceListener() {
-  ServiceProcessHost::AddObserver(this);
-  auto running_processes = ServiceProcessHost::GetRunningProcessInfo();
-  for (const auto& info : running_processes) {
-    if (info.IsService<network::mojom::NetworkService>()) {
-      network_process_ = info.GetProcess().Duplicate();
-      break;
-    }
-  }
+  AddNetworkServiceProcessObserver(this);
 }
 
 NetworkServiceListener::~NetworkServiceListener() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  ServiceProcessHost::RemoveObserver(this);
+  RemoveNetworkServiceProcessObserver(this);
 }
 
 const base::Process& NetworkServiceListener::GetNetworkServiceProcess() const {
@@ -138,28 +128,19 @@ void NetworkServiceListener::ResetOldNetworkServiceProcess() {
   old_network_service_process_.reset();
 }
 
-void NetworkServiceListener::OnServiceProcessLaunched(
-    const ServiceProcessInfo& info) {
+void NetworkServiceListener::OnServiceLaunched(const ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (!info.IsService<network::mojom::NetworkService>()) {
-    return;
-  }
   SetNewNetworkProcess(info.GetProcess().Duplicate());
 }
 
-void NetworkServiceListener::OnServiceProcessTerminatedNormally(
+void NetworkServiceListener::OnServiceTerminatedNormally(
     const ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (!info.IsService<network::mojom::NetworkService>())
-    return;
   SetNewNetworkProcess(base::Process());
 }
 
-void NetworkServiceListener::OnServiceProcessCrashed(
-    const ServiceProcessInfo& info) {
+void NetworkServiceListener::OnServiceCrashed(const ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (!info.IsService<network::mojom::NetworkService>())
-    return;
   SetNewNetworkProcess(base::Process());
 }
 

@@ -364,13 +364,13 @@ BASE_FEATURE(kPersistFailedLaunchState, base::FEATURE_ENABLED_BY_DEFAULT);
 
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher
     : public content::BrowserChildProcessObserver,
-      public content::ServiceProcessHost::Observer {
+      public content::NetworkServiceProcessObserver {
  public:
   explicit NetworkProcessLaunchWatcher(PrefService* prefs) : prefs_(prefs) {
     if (!base::FeatureList::IsEnabled(features::kPersistFailedLaunchState)) {
       prefs->ClearPref(prefs::kNetworkServiceFailedLaunchMajorVersion);
     }
-    content::ServiceProcessHost::AddObserver(this);
+    content::AddNetworkServiceProcessObserver(this);
     BrowserChildProcessObserver::Add(this);
   }
 
@@ -380,7 +380,7 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
 
   ~NetworkProcessLaunchWatcher() override {
     BrowserChildProcessObserver::Remove(this);
-    content::ServiceProcessHost::RemoveObserver(this);
+    content::RemoveNetworkServiceProcessObserver(this);
   }
 
   static void RegisterPrefs(PrefRegistrySimple* registry) {
@@ -429,10 +429,8 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
     }
   }
 
-  void OnServiceProcessCrashed(
-      const content::ServiceProcessInfo& info) override {
-    if (info.IsService<network::mojom::NetworkService>() &&
-        *info.crashed_pre_ipc()) {
+  void OnServiceCrashed(const content::ServiceProcessInfo& info) override {
+    if (*info.crashed_pre_ipc()) {
       base::UmaHistogramBoolean(
           "Chrome.SystemNetworkContextManager.NetworkSandboxEarlyLaunchCrashed",
           true);

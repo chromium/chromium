@@ -58,6 +58,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/observed_service_remote.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -128,8 +129,8 @@ constexpr char kKrb5ConfFilePath[] = "/home/chronos/user/kerberos/krb5.conf";
 
 bool g_force_create_network_service_directly = false;
 bool g_network_service_crashes_on_next_startup = false;
-mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
-    nullptr;
+ObservedServiceRemote<network::mojom::NetworkService>*
+    g_observed_network_service = nullptr;
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
 
@@ -470,9 +471,9 @@ base::RepeatingCallbackList<void(bool)>& GetProcessGoneHandlersList() {
 
 void OnNetworkServiceProcessGone(bool crashed) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(g_network_service_remote);
-  DCHECK(g_network_service_remote->is_bound());
-  DCHECK(!crashed || !g_network_service_remote->is_connected());
+  DCHECK(g_observed_network_service);
+  DCHECK(g_observed_network_service->remote().is_bound());
+  DCHECK(!crashed || !g_observed_network_service->remote().is_connected());
   GetProcessGoneHandlersList().Notify(crashed);
 }
 
@@ -591,25 +592,28 @@ class NetworkServiceInstancePrivate {
 };
 
 network::mojom::NetworkService* GetNetworkService() {
-  if (!g_network_service_remote)
-    g_network_service_remote = new mojo::Remote<network::mojom::NetworkService>;
-  if (!g_network_service_remote->is_bound() ||
-      !g_network_service_remote->is_connected()) {
-    bool service_was_bound = g_network_service_remote->is_bound();
-    g_network_service_remote->reset();
+  if (!g_observed_network_service) {
+    g_observed_network_service =
+        new ObservedServiceRemote<network::mojom::NetworkService>;
+  }
+  if (!g_observed_network_service->remote().is_bound() ||
+      !g_observed_network_service->remote().is_connected()) {
+    bool service_was_bound = g_observed_network_service->remote().is_bound();
+    g_observed_network_service->remote().reset();
     if (GetContentClient()->browser()->IsShuttingDown()) {
       // This happens at system shutdown, since in other scenarios the network
       // process would only be torn down once the message loop stopped running.
       // We don't want to start the network service again so just create message
       // pipe that's not bound to stop consumers from requesting creation of the
       // service.
-      auto receiver = g_network_service_remote->BindNewPipeAndPassReceiver();
+      auto receiver =
+          g_observed_network_service->remote().BindNewPipeAndPassReceiver();
       auto leaked_pipe = receiver.PassPipe().release();
     } else {
       if (!g_force_create_network_service_directly) {
         mojo::PendingReceiver<network::mojom::NetworkService> receiver =
-            g_network_service_remote->BindNewPipeAndPassReceiver();
-        g_network_service_remote->set_disconnect_handler(
+            g_observed_network_service->remote().BindNewPipeAndPassReceiver();
+        g_observed_network_service->remote().set_disconnect_handler(
             base::BindOnce(&OnNetworkServiceProcessGone, /*crashed=*/true));
         if (IsInProcessNetworkService()) {
           CreateInProcessNetworkService(std::move(receiver));
@@ -624,6 +628,7 @@ network::mojom::NetworkService* GetNetworkService() {
             options.WithExtraCommandLineSwitches(
                 {switches::kUtilityImmediateCrashForTesting});
           }
+          options.WithObserver(g_observed_network_service->AsWeakObserver());
           ServiceProcessHost::Launch(std::move(receiver), std::move(options));
         }
       } else {
@@ -633,16 +638,15 @@ network::mojom::NetworkService* GetNetworkService() {
         // This should only be reached in unit tests.
         if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
           CreateNetworkServiceOnIOForTesting(
-              g_network_service_remote->BindNewPipeAndPassReceiver(),
+              g_observed_network_service->remote().BindNewPipeAndPassReceiver(),
               /*completion_event=*/nullptr);
         } else {
           base::WaitableEvent event;
           GetIOThreadTaskRunner({})->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  CreateNetworkServiceOnIOForTesting,
-                  g_network_service_remote->BindNewPipeAndPassReceiver(),
-                  base::Unretained(&event)));
+              FROM_HERE, base::BindOnce(CreateNetworkServiceOnIOForTesting,
+                                        g_observed_network_service->remote()
+                                            .BindNewPipeAndPassReceiver(),
+                                        base::Unretained(&event)));
           event.Wait();
         }
       }
@@ -650,11 +654,13 @@ network::mojom::NetworkService* GetNetworkService() {
       delete g_client;  // In case we're recreating the network service.
       g_client = new NetworkServiceClient();
 
-      (*g_network_service_remote)->SetParams(CreateNetworkServiceParams());
-      g_client->OnNetworkServiceInitialized(g_network_service_remote->get());
+      g_observed_network_service->remote()->SetParams(
+          CreateNetworkServiceParams());
+      g_client->OnNetworkServiceInitialized(
+          g_observed_network_service->remote().get());
 
       g_network_service_is_responding = false;
-      g_network_service_remote->QueryVersion(base::BindOnce(
+      g_observed_network_service->remote().QueryVersion(base::BindOnce(
           [](uint32_t) { g_network_service_is_responding = true; }));
 
       const base::CommandLine* command_line =
@@ -673,13 +679,12 @@ network::mojom::NetworkService* GetNetworkService() {
         if (!file.IsValid()) {
           LOG(ERROR) << "Failed opening NetLog: " << log_path.value();
         } else {
-          (*g_network_service_remote)
-              ->StartNetLog(
-                  std::move(file),
-                  GetNetLogMaximumFileSizeFromCommandLine(*command_line),
-                  GetNetCaptureModeFromCommandLine(*command_line),
-                  GetContentClient()->browser()->GetNetLogConstants(),
-                  GetNetLogDurationFromCommandLine(*command_line));
+          g_observed_network_service->remote()->StartNetLog(
+              std::move(file),
+              GetNetLogMaximumFileSizeFromCommandLine(*command_line),
+              GetNetCaptureModeFromCommandLine(*command_line),
+              GetContentClient()->browser()->GetNetLogConstants(),
+              GetNetLogDurationFromCommandLine(*command_line));
         }
       }
 
@@ -717,7 +722,8 @@ network::mojom::NetworkService* GetNetworkService() {
         } else {
           UMA_HISTOGRAM_ENUMERATION(kSSLKeyLogFileHistogram,
                                     SSLKeyLogFileAction::kLogFileEnabled);
-          (*g_network_service_remote)->SetSSLKeyLogFile(std::move(file));
+          g_observed_network_service->remote()->SetSSLKeyLogFile(
+              std::move(file));
         }
       }
 
@@ -728,16 +734,16 @@ network::mojom::NetworkService* GetNetworkService() {
                       GetNetworkService()->SetFirstPartySets(std::move(sets));
                     }));
             sets.has_value()) {
-          g_network_service_remote->get()->SetFirstPartySets(
+          g_observed_network_service->remote()->SetFirstPartySets(
               std::move(sets.value()));
         }
       }
 
       GetContentClient()->browser()->OnNetworkServiceCreated(
-          g_network_service_remote->get());
+          g_observed_network_service->remote().get());
     }
   }
-  return g_network_service_remote->get();
+  return g_observed_network_service->remote().get();
 }
 
 base::CallbackListSubscription RegisterNetworkServiceProcessGoneHandler(
@@ -746,6 +752,24 @@ base::CallbackListSubscription RegisterNetworkServiceProcessGoneHandler(
   DCHECK(!handler.is_null());
 
   return GetProcessGoneHandlersList().Add(std::move(handler));
+}
+
+void AddNetworkServiceProcessObserver(NetworkServiceProcessObserver* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!g_observed_network_service) {
+    g_observed_network_service =
+        new ObservedServiceRemote<network::mojom::NetworkService>;
+  }
+  g_observed_network_service->AddObserver(observer);
+}
+
+void RemoveNetworkServiceProcessObserver(
+    NetworkServiceProcessObserver* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!g_observed_network_service) {
+    return;
+  }
+  g_observed_network_service->RemoveObserver(observer);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -757,8 +781,9 @@ net::NetworkChangeNotifier* GetNetworkChangeNotifier() {
 void FlushNetworkServiceInstanceForTesting() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  if (g_network_service_remote)
-    g_network_service_remote->FlushForTesting();
+  if (g_observed_network_service) {
+    g_observed_network_service->remote().FlushForTesting();  // IN-TEST
+  }
 }
 
 network::NetworkConnectionTracker* GetNetworkConnectionTracker() {
@@ -810,11 +835,17 @@ void SetNetworkServiceCrashOnNextStartupImplForTesting() {
 
 void ResetNetworkServiceForTesting() {
   ShutDownNetworkService();
+  delete g_observed_network_service;
+  g_observed_network_service = nullptr;
 }
 
 void ShutDownNetworkService() {
-  delete g_network_service_remote;
-  g_network_service_remote = nullptr;
+  // Reset the remote but preserve the ObservedServiceRemote (and its observer
+  // hub) so that observers registered via AddNetworkServiceProcessObserver()
+  // survive across RestartNetworkService() calls.
+  if (g_observed_network_service) {
+    g_observed_network_service->remote().reset();
+  }
   delete g_client;
   g_client = nullptr;
   if (g_in_process_instance) {

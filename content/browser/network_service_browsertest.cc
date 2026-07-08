@@ -5,6 +5,7 @@
 #include "services/network/network_service.h"
 
 #include <array>
+#include <memory>
 #include <optional>
 
 #include "base/base_paths.h"
@@ -24,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -1968,6 +1970,115 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCodeIntegrityTest, Enabled) {
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+class NetworkServiceObserverBeforeLaunchTest
+    : public ContentBrowserTest,
+      public NetworkServiceProcessObserver {
+ public:
+  NetworkServiceObserverBeforeLaunchTest() {
+    ForceOutOfProcessNetworkService();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    // Register observer before any call to GetNetworkService(). This is the
+    // scenario that caused the startup crash.
+    AddNetworkServiceProcessObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    RemoveNetworkServiceProcessObserver(this);
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  void WaitForLaunch() {
+    if (launched_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    launch_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  bool launched() const { return launched_; }
+  const base::Process& network_process() const { return network_process_; }
+
+ private:
+  // NetworkServiceProcessObserver:
+  void OnServiceLaunched(const ServiceProcessInfo& info) override {
+    launched_ = true;
+    network_process_ = info.GetProcess().Duplicate();
+    if (launch_closure_) {
+      std::move(launch_closure_).Run();
+    }
+  }
+
+  void OnServiceTerminatedNormally(const ServiceProcessInfo&) override {}
+  void OnServiceCrashed(const ServiceProcessInfo&) override {}
+
+  bool launched_ = false;
+  base::Process network_process_;
+  base::OnceClosure launch_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceObserverBeforeLaunchTest,
+                       ObserverRegisteredBeforeServiceStart) {
+  // GetNetworkService() triggers the service launch. Our observer was
+  // registered in SetUpOnMainThread() before this call.
+  GetNetworkService();
+  WaitForLaunch();
+
+  EXPECT_TRUE(launched());
+  EXPECT_TRUE(network_process().IsValid());
+}
+
+// Regression test: observers registered via AddNetworkServiceProcessObserver()
+// must survive RestartNetworkService(). Previously, ShutDownNetworkService()
+// deleted the ObservedServiceRemote (and its observer hub), so observers were
+// silently lost on restart.
+class NetworkServiceObserverSurvivesRestartTest
+    : public ContentBrowserTest,
+      public NetworkServiceProcessObserver {
+ public:
+  NetworkServiceObserverSurvivesRestartTest() {
+    ForceOutOfProcessNetworkService();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    AddNetworkServiceProcessObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    RemoveNetworkServiceProcessObserver(this);
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  int launch_count() const { return launch_count_; }
+
+ private:
+  // NetworkServiceProcessObserver:
+  void OnServiceLaunched(const ServiceProcessInfo& info) override {
+    ++launch_count_;
+  }
+  void OnServiceTerminatedNormally(const ServiceProcessInfo&) override {}
+  void OnServiceCrashed(const ServiceProcessInfo&) override {}
+
+  int launch_count_ = 0;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceObserverSurvivesRestartTest,
+                       ObserverNotifiedAfterRestart) {
+  // The service is launched during browser startup, but the launch
+  // notification is asynchronous. Wait for it if it hasn't arrived yet.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return launch_count() >= 1; }));
+  int count_before = launch_count();
+
+  // Restart and verify the same observer gets notified again.
+  RestartNetworkService();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return launch_count() >= count_before + 1; }));
+}
 
 }  // namespace
 
