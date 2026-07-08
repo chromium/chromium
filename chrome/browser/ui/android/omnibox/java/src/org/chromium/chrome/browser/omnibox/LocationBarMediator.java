@@ -594,6 +594,13 @@ class LocationBarMediator
                         new AutocompleteInput(OmniboxFocusReason.KEYBOARD_NAVIGATION_FOCUS)
                                 .setAutocompleteState(AutocompleteState.STANDBY)
                                 .setSelection(TextSelection.SELECT_ALL));
+            } else {
+                FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+                if (session != null
+                        && session.getAutocompleteInput().getAutocompleteState()
+                                == AutocompleteState.DISABLED) {
+                    session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+                }
             }
         } else {
             mUrlFocusedWithoutAnimations = false;
@@ -747,6 +754,14 @@ class LocationBarMediator
         // to whether Software keyboard would be called up when Physical keyboard is in use on
         // Pixel devices.
         if (KeyboardUtils.shouldShowImeWithHardwareKeyboard(mContext)) return;
+
+        // Do not go to standby for existing NTPs that have already been unfocused.
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        if (session != null
+                && session.getAutocompleteInput().getAutocompleteState()
+                        == AutocompleteState.DISABLED) {
+            return;
+        }
 
         mUrlFocusedWithoutAnimations = true;
         // This method should only be called on devices with a hardware keyboard attached, as

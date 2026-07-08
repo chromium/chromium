@@ -22,6 +22,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -209,6 +210,8 @@ public class FuseboxSessionState implements UserData {
         if (!mIsActive) return;
 
         mAutocompleteInput.reset();
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.DISABLED);
+
         if (mProfileSupplier != null && mPendingProfileCallback != null) {
             mProfileSupplier.removeObserver(mPendingProfileCallback);
             mPendingProfileCallback = null;

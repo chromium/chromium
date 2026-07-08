@@ -3532,4 +3532,40 @@ public class LocationBarMediatorTest {
         verify(mAutocompleteCoordinator, times(2)).resetSelection();
         assertEquals(1, selectionController.getPosition().intValue());
     }
+
+    @Test
+    public void testShowUrlBarCursorWithoutFocusAnimations_disabledState_earlyReturns() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.DISABLED);
+
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+
+        assertFalse(mSessionState.isSessionActive());
+    }
+
+    @Test
+    public void testShowUrlBarCursorWithoutFocusAnimations_enabledState_startsSession() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+    }
+
+    @Test
+    public void testOnUrlFocusChange_regularFocus_transitionsToEnabledState() {
+        mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.DISABLED);
+
+        mMediator.onUrlFocusChange(true);
+
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+    }
 }
