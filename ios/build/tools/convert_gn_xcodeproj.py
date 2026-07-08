@@ -125,14 +125,22 @@ def GenerateSchemeForTarget(root, project, old_project, name, path, is_test):
 
       template_tree_root = template_tree.getroot()
       for child in tree_root:
-        if child.tag != 'BuildAction':
-          continue
+        if child.tag == 'BuildAction':
+          for subchild in list(child):
+            child.remove(subchild)
 
-        for subchild in list(child):
-          child.remove(subchild)
-
-        for post_action in template_tree_root.findall('.//PostActions'):
-          child.append(post_action)
+          for post_action in template_tree_root.findall('.//PostActions'):
+            child.append(post_action)
+        elif child.tag == 'TestAction':
+          # Disabling shouldUseLaunchSchemeArgsEnv and adding explicit
+          # MacroExpansion is required so $(PROJECT_DIR) resolves for the
+          # custom LLDB init file, ensuring breakpoints work in EG tests.
+          child.set('shouldUseLaunchSchemeArgsEnv', 'NO')
+          if child.find('MacroExpansion') is None:
+            macro_expansion = template_tree_root.find(
+                './/TestAction/MacroExpansion')
+            if macro_expansion is not None:
+              child.insert(0, macro_expansion)
 
     tree.write(scheme_path, xml_declaration=True, encoding='UTF-8')
 

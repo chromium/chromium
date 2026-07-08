@@ -30,7 +30,16 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       customLLDBInitFile = "@{LLDBINIT_PATH}"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "@{BLUEPRINT_IDENTIFIER}"
+            BuildableName = "@{BUILDABLE_NAME}"
+            BlueprintName = "@{BLUEPRINT_NAME}"
+            ReferencedContainer = "container:@{PROJECT_NAME}">
+         </BuildableReference>
+      </MacroExpansion>
       <Testables>
          <TestableReference
             skipped = "NO">
