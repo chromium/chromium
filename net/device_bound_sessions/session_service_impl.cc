@@ -25,12 +25,15 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/cert/x509_certificate.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_store.h"
+#include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -172,18 +175,28 @@ SessionServiceImpl::SessionServiceImpl(
     const URLRequestContext* request_context,
     SessionStore* store,
     const std::vector<SchemefulSite>& restricted_sites,
-    CookieAccessCallback has_cookie_access_cb)
+    CookieAccessCallback has_cookie_access_cb,
+    SelectClientCertificateHandler client_cert_handler)
     : pending_initialization_(!!store),
       key_service_(key_service),
       context_(request_context),
       session_store_(store),
       restricted_sites_(restricted_sites),
+      client_cert_handler_(std::move(client_cert_handler)),
       has_cookie_access_cb_(std::move(has_cookie_access_cb)) {
   ignore_refresh_quota_ = !features::kDeviceBoundSessionsRefreshQuota.Get();
   CHECK(context_);
+  CHECK(client_cert_handler_);
 }
 
 SessionServiceImpl::~SessionServiceImpl() = default;
+
+void SessionServiceImpl::SelectClientCertificate(
+    const GURL& url,
+    scoped_refptr<SSLCertRequestInfo> cert_info,
+    SelectClientCertificateCallback callback) {
+  client_cert_handler_.Run(url, std::move(cert_info), std::move(callback));
+}
 
 void SessionServiceImpl::LoadSessionsAsync() {
   if (!session_store_) {

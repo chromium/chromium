@@ -4,8 +4,10 @@
 
 #include "net/device_bound_sessions/session_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -45,14 +47,16 @@ class SessionServiceTest : public TestWithTaskEnvironment {
 TEST_F(SessionServiceTest, HasService) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   auto service = SessionService::Create(
-      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>());
+      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>(),
+      /*client_cert_handler=*/base::DoNothing());
   EXPECT_TRUE(service);
 }
 
 TEST_F(SessionServiceTest, NoService) {
   ScopedNullUnexportableKeyFactory null_factory;
   auto service = SessionService::Create(
-      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>());
+      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>(),
+      /*client_cert_handler=*/base::DoNothing());
   EXPECT_FALSE(service);
 }
 }  // namespace

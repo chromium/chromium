@@ -12,6 +12,7 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -118,6 +119,12 @@ class SessionServiceMock : public SessionService {
               (DbscRequest & request,
                HttpResponseHeaders* headers,
                const FirstPartySetMetadata& first_party_set_metadata),
+              (override));
+  MOCK_METHOD(void,
+              SelectClientCertificate,
+              (const GURL& url,
+               scoped_refptr<SSLCertRequestInfo> cert_info,
+               SelectClientCertificateCallback callback),
               (override));
 };
 

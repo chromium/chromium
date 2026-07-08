@@ -36,6 +36,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/network_handle.h"
 #include "net/base/proxy_delegate.h"
+#include "net/device_bound_sessions/session_service.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/dns_platform_attempt_factory.h"
@@ -459,6 +460,13 @@ class NET_EXPORT URLRequestContextBuilder {
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void set_device_bound_sessions_client_cert_handler(
+      device_bound_sessions::SelectClientCertificateHandler handler) {
+    device_bound_sessions_client_cert_handler_ = std::move(handler);
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   void set_cache_encryption_delegate(
       std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate);
 
@@ -587,6 +595,8 @@ class NET_EXPORT URLRequestContextBuilder {
   base::RepeatingCallback<bool(
       const device_bound_sessions::CookieAccessCheckParams&)>
       device_bound_sessions_cookie_access_callback_;
+  device_bound_sessions::SelectClientCertificateHandler
+      device_bound_sessions_client_cert_handler_;
   base::FilePath device_bound_sessions_file_path_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   // When DnsTransaction receives AttemptMode == kPlatform, it uses

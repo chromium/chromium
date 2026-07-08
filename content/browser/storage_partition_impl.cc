@@ -2480,10 +2480,14 @@ void StoragePartitionImpl::OnCertificateRequested(
 
   base::WeakPtr<WebContents> web_contents_weak;
   int process_id = network::mojom::kInvalidProcessId;
-  if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    // TODO(crbug.com/479742988) This can be the browser process and shouldn't.
-    process_id = context.process_id().GetUnsafeValue();
+  if (context.type() == ContextType::kSharedOrServiceWorkerContext ||
+      context.type() == ContextType::kDeviceBoundSessionContext) {
+    if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+      // TODO(crbug.com/479742988) This can be the browser process and
+      // shouldn't.
+      process_id = context.process_id().GetUnsafeValue();
+    }
   } else {
     WebContents* web_contents = context.GetWebContents();
     // The WebContents is already invalid. Bail.
@@ -2703,7 +2707,17 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      URLLoaderNetworkContext(process_id, worker_origin));
+      URLLoaderNetworkContext::CreateForServiceOrSharedWorker(process_id,
+                                                              worker_origin));
+  return remote;
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+StoragePartitionImpl::CreateURLLoaderNetworkObserverForDeviceBoundSessions() {
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver(),
+      URLLoaderNetworkContext::CreateForDeviceBoundSessions());
   return remote;
 }
 
@@ -3681,6 +3695,16 @@ void StoragePartitionImpl::InitNetworkContext() {
     }
   }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS) && !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/353770817): Android does not support non-interactive
+  // certificate selection. Do not enable this for Android.
+  if (base::FeatureList::IsEnabled(
+          net::features::kDeviceBoundSessionsClientCertSelection)) {
+    context_params->device_bound_sessions_network_observer =
+        CreateURLLoaderNetworkObserverForDeviceBoundSessions();
+  }
+#endif
+
   network_context_owner_->network_context.reset();
   CreateNetworkContextInNetworkService(
       network_context_owner_->network_context.BindNewPipeAndPassReceiver(),
@@ -3932,6 +3956,9 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     const URLLoaderNetworkContext& other) = default;
 
+StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext()
+    : type_(Type::kDeviceBoundSessionContext) {}
+
 StoragePartitionImpl::URLLoaderNetworkContext&
 StoragePartitionImpl::URLLoaderNetworkContext::operator=(
     const URLLoaderNetworkContext& other) = default;
@@ -3949,6 +3976,19 @@ StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForNavigation(
     NavigationRequest& navigation_request) {
   return StoragePartitionImpl::URLLoaderNetworkContext(navigation_request);
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext
+StoragePartitionImpl::URLLoaderNetworkContext::CreateForServiceOrSharedWorker(
+    const network::OriginatingProcessId& process_id,
+    const url::Origin& worker_origin) {
+  return StoragePartitionImpl::URLLoaderNetworkContext(process_id,
+                                                       worker_origin);
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext
+StoragePartitionImpl::URLLoaderNetworkContext::CreateForDeviceBoundSessions() {
+  return StoragePartitionImpl::URLLoaderNetworkContext();
 }
 
 bool StoragePartitionImpl::URLLoaderNetworkContext::IsNavigationRequestContext()

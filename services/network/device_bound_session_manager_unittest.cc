@@ -4,6 +4,7 @@
 
 #include "services/network/device_bound_session_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "net/device_bound_sessions/session_service_impl.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -147,7 +149,8 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
             context_.get(),
             /*store=*/nullptr,
             /*restricted_sites=*/std::vector<net::SchemefulSite>(),
-            /*has_cookie_access_cb=*/base::NullCallback())),
+            /*has_cookie_access_cb=*/base::NullCallback(),
+            /*client_cert_handler=*/base::DoNothing())),
         cookie_manager_(std::make_unique<CookieManager>(
             context_.get(),
             nullptr,

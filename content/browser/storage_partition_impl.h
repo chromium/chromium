@@ -493,6 +493,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       const network::OriginatingProcessId& process_id,
       const url::Origin& worker_origin);
 
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  CreateURLLoaderNetworkObserverForDeviceBoundSessions();
+
   mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
   CreateDeviceBoundSessionObserverForServiceWorker();
 
@@ -583,6 +586,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     kRenderFrameHostContext,
     kNavigationRequestContext,
     kSharedOrServiceWorkerContext,
+    kDeviceBoundSessionContext,
   };
 
  private:
@@ -651,16 +655,16 @@ class CONTENT_EXPORT StoragePartitionImpl
     static StoragePartitionImpl::URLLoaderNetworkContext CreateForNavigation(
         NavigationRequest& navigation_request);
 
-    // Used when `type` is `kRenderFrameHostContext`.
-    explicit URLLoaderNetworkContext(
-        GlobalRenderFrameHostId global_render_frame_host_id);
+    // Creates a URLLoaderNetworkContext for the service or shared worker.
+    static StoragePartitionImpl::URLLoaderNetworkContext
+    CreateForServiceOrSharedWorker(
+        const network::OriginatingProcessId& process_id,
+        const url::Origin& worker_origin);
 
-    // Used when `type` is `kSharedOrServiceWorkerContext`.
-    URLLoaderNetworkContext(const network::OriginatingProcessId& process_id,
-                            const url::Origin& worker_origin);
-
-    // Used when `type` is `kNavigationRequestContext`.
-    explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
+    // Creates a URLLoaderNetworkContext for background Device Bound Sessions
+    // requests.
+    static StoragePartitionImpl::URLLoaderNetworkContext
+    CreateForDeviceBoundSessions();
 
     // Returns true if `type` is `kNavigationRequestContext`.
     bool IsNavigationRequestContext() const;
@@ -684,6 +688,20 @@ class CONTENT_EXPORT StoragePartitionImpl
     bool IsPrimaryMainFrameRequest();
 
    private:
+    // Used when `type` is `kRenderFrameHostContext`.
+    explicit URLLoaderNetworkContext(
+        GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Used when `type` is `kSharedOrServiceWorkerContext`.
+    URLLoaderNetworkContext(const network::OriginatingProcessId& process_id,
+                            const url::Origin& worker_origin);
+
+    // Used when `type` is `kNavigationRequestContext`.
+    explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
+
+    // Used when `type` is `kDeviceBoundSessionContext`.
+    URLLoaderNetworkContext();
+
     ContextType type_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
 

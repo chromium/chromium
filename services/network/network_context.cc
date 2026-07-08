@@ -180,6 +180,11 @@
 #include "services/network/web_transport.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/device_bound_session_service_delegate.h"
+#include "services/network/ssl_private_key_proxy.h"
+#endif
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
 // gn check does not account for BUILDFLAG(). So, for iOS builds, it will
 // complain about a missing dependency on the target exposing this header. Add a
@@ -3265,6 +3270,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
               // callback.
               base::Unretained(this)));
     }
+    device_bound_session_service_delegate_ =
+        std::make_unique<DeviceBoundSessionServiceDelegate>(
+            std::move(params_->device_bound_sessions_network_observer));
+    builder.set_device_bound_sessions_client_cert_handler(base::BindRepeating(
+        &DeviceBoundSessionServiceDelegate::SelectClientCertificate,
+        base::Unretained(device_bound_session_service_delegate_.get())));
     if (params_->bound_sessions_unexportable_key_service.is_valid()) {
       builder.set_unexportable_key_service(
           std::make_unique<unexportable_keys::UnexportableKeyServiceProxied>(

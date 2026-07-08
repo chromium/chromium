@@ -656,6 +656,15 @@ struct NetworkContextParams {
   // If true, EchMode should be queried via the platform API. This enables
   // embedders like Android WebView to respect the system's ECH policy.
   bool use_platform_ech_policy = false;
+
+  // Used to notify clients about authentication and certificate events for
+  // background requests related to Device Bound Sessions that originate
+  // directly from the Network Service. Reuses the
+  // `URLLoaderNetworkServiceObserver` interface to avoid duplicating Mojo IPC
+  // definitions for certificate request handling, even though these requests
+  // do not have an associated `URLLoaderFactory`.
+  pending_remote<URLLoaderNetworkServiceObserver>?
+      device_bound_sessions_network_observer;
 };
 
 struct NetworkConditions {

@@ -512,6 +512,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching);
 // `NetworkContextParams`.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsForRestrictedSites);
 
+// This feature controls whether DBSC allows mTLS / client certificate
+// selection for background registration and refresh requests.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsClientCertSelection);
+
 // This feature will enable the browser to use Device Bound Session Credentials
 // for Single Sign On. This feature is only valid if `kDeviceBoundSessions` is
 // enabled.

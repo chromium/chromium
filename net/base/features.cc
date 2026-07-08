@@ -434,6 +434,9 @@ BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
 BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionsClientCertSelection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeviceBoundSessionsForSingleSignOn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
