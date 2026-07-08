@@ -648,7 +648,8 @@ void OffscreenCanvas::DidDraw(const gfx::Rect& rect) {
           if (placeholder_canvas &&
               placeholder_canvas->IsOffscreenCanvasRegistered() &&
               placeholder_canvas->HasCanvasCapture()) {
-            BeginFrame();
+            GetOrCreateResourceDispatcher()->SetNeedsBeginFrame(false);
+            PushFrameIfNeeded();
           }
         }
       }
