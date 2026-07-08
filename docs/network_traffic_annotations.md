@@ -38,15 +38,20 @@ cover the whole repository.
 
 ## Best Practices
 
-> ℹ️️ An AI agent (e.g., Gemini CLI) can help you write your traffic
+> ℹ️️ An AI agent (e.g., Antigravity) can help you write your traffic
 > annotation. Add the
 > [network-traffic-annotations](https://source.chromium.org/chromium/chromium/src/+/main:agents/skills/network-traffic-annotations/)
 > skill, then ask your agent to write the annotation.
 >
-> Example for Gemini CLI:
+> For Antigravity 2.0 and `agy`, put the following in
+> `chromium/src/.agents/skills.json`:
 >
-> ```sh
-> gemini skills link agents/skills/network-traffic-annotations
+> ```json
+> {
+>   "entries": [
+>     {"path": "agents/skills/network-traffic-annotations"}
+>   ]
+> }
 > ```
 >
 > If you want to use an agent, we recommend this workflow:
