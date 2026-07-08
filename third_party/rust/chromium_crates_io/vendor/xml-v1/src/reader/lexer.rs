@@ -230,6 +230,7 @@ pub(crate) struct Lexer {
     inside_token: bool,
     eof_handled: bool,
     reparse_depth: u8,
+    last_was_cr: bool,
     #[cfg(test)]
     skip_errors: bool,
 
@@ -257,6 +258,7 @@ impl Lexer {
             inside_token: false,
             eof_handled: false,
             reparse_depth: 0,
+            last_was_cr: false,
             #[cfg(test)]
             skip_errors: false,
 
@@ -313,7 +315,17 @@ impl Lexer {
         }
         // if char_queue is empty, all circular reparsing is done
         self.reparse_depth = 0;
-        while let Some(c) = self.reader.next_char_from(b)? {
+        while let Some(mut c) = self.reader.next_char_from(b)? {
+            if self.last_was_cr && c == '\n' {
+                self.last_was_cr = false;
+                continue;
+            }
+            self.last_was_cr = false;
+            if c == '\r' {
+                self.last_was_cr = true;
+                c = '\n';
+            }
+
             if c == '\n' {
                 self.head_pos.new_line();
             } else {

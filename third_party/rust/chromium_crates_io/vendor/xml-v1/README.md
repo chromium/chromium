@@ -35,8 +35,7 @@ clean manner.
 
 This parser is mostly full-featured, however, there are limitations:
 * Legacy code pages and non-Unicode encodings are not supported;
-* DTD validation is not supported (but entities defined in the internal subset are supported);
-* attribute value normalization is not performed, and end-of-line characters are not normalized either.
+* DTD validation is not supported (but entities defined in the internal subset are supported).
 
 Other than that the parser tries to be mostly XML-1.1-compliant.
 

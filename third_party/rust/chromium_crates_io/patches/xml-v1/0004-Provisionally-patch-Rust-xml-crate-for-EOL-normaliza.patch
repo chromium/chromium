@@ -1,0 +1,71 @@
+From 610044f64f77d228193f892997b95a34f7026b77 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dominik=20R=C3=B6ttsches?= <drott@chromium.org>
+Date: Mon, 6 Jul 2026 16:36:55 +0300
+Subject: [PATCH] Provisionally patch Rust xml crate for EOL normalization
+
+This patch normalizes CRLF and CR to LF in the Rust xml crate lexer,
+bringing it closer to XML 1.1 compliance and ensuring consistent
+behavior in Chromium's XML parser.
+
+Bug: 531506229
+---
+ .../chromium_crates_io/vendor/xml-v1/README.md     |  3 +--
+ .../vendor/xml-v1/src/reader/lexer.rs              | 14 +++++++++++++-
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/README.md b/third_party/rust/chromium_crates_io/vendor/xml-v1/README.md
+index 1abe6991855cd..c6cfc2983a5c2 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/README.md
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/README.md
+@@ -35,8 +35,7 @@ clean manner.
+ 
+ This parser is mostly full-featured, however, there are limitations:
+ * Legacy code pages and non-Unicode encodings are not supported;
+-* DTD validation is not supported (but entities defined in the internal subset are supported);
+-* attribute value normalization is not performed, and end-of-line characters are not normalized either.
++* DTD validation is not supported (but entities defined in the internal subset are supported).
+ 
+ Other than that the parser tries to be mostly XML-1.1-compliant.
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/lexer.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/lexer.rs
+index 8dfb1ecb61ebb..a8f77853bfb6d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/lexer.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/lexer.rs
+@@ -230,6 +230,7 @@ pub(crate) struct Lexer {
+     inside_token: bool,
+     eof_handled: bool,
+     reparse_depth: u8,
++    last_was_cr: bool,
+     #[cfg(test)]
+     skip_errors: bool,
+ 
+@@ -257,6 +258,7 @@ impl Lexer {
+             inside_token: false,
+             eof_handled: false,
+             reparse_depth: 0,
++            last_was_cr: false,
+             #[cfg(test)]
+             skip_errors: false,
+ 
+@@ -313,7 +315,17 @@ impl Lexer {
+         }
+         // if char_queue is empty, all circular reparsing is done
+         self.reparse_depth = 0;
+-        while let Some(c) = self.reader.next_char_from(b)? {
++        while let Some(mut c) = self.reader.next_char_from(b)? {
++            if self.last_was_cr && c == '\n' {
++                self.last_was_cr = false;
++                continue;
++            }
++            self.last_was_cr = false;
++            if c == '\r' {
++                self.last_was_cr = true;
++                c = '\n';
++            }
++
+             if c == '\n' {
+                 self.head_pos.new_line();
+             } else {
+-- 
+2.55.0.795.g602f6c329a-goog
+
