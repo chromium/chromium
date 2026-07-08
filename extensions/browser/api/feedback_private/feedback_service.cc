@@ -47,6 +47,8 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "crypto/hpke.h"
+#include "crypto/keypair.h"
 #include "extensions/browser/api/feedback_private/proto/hpke.pb.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -54,7 +56,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -580,52 +581,31 @@ void FeedbackService::VariationsEncryptWithHpkeKey(
     LOG(ERROR) << "Unable to get valid variations.";
     return VariationsFinished(false, std::move(barrier_closure));
   }
-  auto variations_span = base::as_byte_span(variations_string);
-  bssl::ScopedEVP_HPKE_CTX sender_context;
 
-  // This vector will hold the encapsulated shared secret "enc" followed by the
-  // symmetrically encrypted ciphertext "ct". Start with a size big enough for
-  // the shared secret.
-  std::vector<uint8_t> encrypted_variations(EVP_HPKE_MAX_ENC_LENGTH);
-  size_t encapsulated_shared_secret_len;
-
-  if (!EVP_HPKE_CTX_setup_sender(
-          /*ctx=*/sender_context.get(),
-          /*out_enc=*/encrypted_variations.data(),
-          /*out_enc_len=*/&encapsulated_shared_secret_len,
-          /*max_enc=*/encrypted_variations.size(),
-          /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
-          /*kdf=*/EVP_hpke_hkdf_sha256(),
-          /*aead=*/EVP_hpke_aes_256_gcm(),
-          /*peer_public_key=*/hpke_public_key.data(),
-          /*peer_public_key_len=*/hpke_public_key.size(),
-          /*info=*/nullptr,
-          /*info_len=*/0)) {
-    LOG(ERROR) << "hpke setup failed";
+  const auto pubkey_span = hpke_public_key.to_fixed_extent<32>();
+  if (!pubkey_span) {
+    LOG(ERROR) << "Public key is of wrong size: " << hpke_public_key.size();
     return VariationsFinished(false, std::move(barrier_closure));
   }
-  encrypted_variations.resize(encapsulated_shared_secret_len +
-                              variations_span.size() +
-                              EVP_HPKE_CTX_max_overhead(sender_context.get()));
-  base::span<uint8_t> ciphertext =
-      base::span(encrypted_variations).subspan(encapsulated_shared_secret_len);
-  size_t ciphertext_len;
 
-  if (!EVP_HPKE_CTX_seal(
-          /*ctx=*/sender_context.get(),
-          /*out=*/ciphertext.data(),
-          /*out_len=*/&ciphertext_len,
-          /*max_out_len=*/ciphertext.size(),
-          /*in=*/variations_span.data(),
-          /*in_len*/ variations_span.size(),
-          /*ad=*/nullptr,
-          /*ad_len=*/0)) {
-    LOG(ERROR) << "hpke seal failed";
+  const auto pubkey =
+      crypto::keypair::PublicKey::FromX25519PublicKey(*pubkey_span);
+
+  const crypto::hpke::HpkeParams kParams = {
+      .kem = crypto::hpke::KemType::kX25519HkdfSha256,
+      .kdf = crypto::hpke::KdfType::kHkdfSha256,
+      .aead = crypto::hpke::AeadType::kAes256Gcm,
+  };
+
+  std::optional<std::vector<uint8_t>> ciphertext =
+      crypto::hpke::Seal(kParams, pubkey, base::as_byte_span(variations_string),
+                         /*info=*/{}, /*ad=*/{});
+  if (!ciphertext) {
+    LOG(ERROR) << "HPKE seal failed";
     return VariationsFinished(false, std::move(barrier_closure));
   }
-  encrypted_variations.resize(encapsulated_shared_secret_len + ciphertext_len);
-  feedback_data->AddFile(kVariationsAttachmentName,
-                         std::move(encrypted_variations));
+
+  feedback_data->AddFile(kVariationsAttachmentName, std::move(*ciphertext));
   return VariationsFinished(true, std::move(barrier_closure));
 }
 
