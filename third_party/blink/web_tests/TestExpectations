@@ -95,8 +95,6 @@ http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass ]
 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 http/tests/devtools/security/security-unknown-resource.js [ Failure Pass ]
 
-# Disable layout test to land crrev.com/c/8040469
-http/tests/devtools/console/console-clear-function.js [ Failure Pass ]
 
 # Reftest failure related to off-main-thread interaction (imperceptible AA differences)
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
