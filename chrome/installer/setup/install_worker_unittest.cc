@@ -348,6 +348,11 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
           std::wstring(google_update::kRegAutoRunOnOSUpgradeField), 1, true))
       .WillOnce(Return(set_reg_value_work_item.get()));
 
+  EXPECT_CALL(work_item_list, AddSetRegStringValueWorkItem(
+                                  _, _, _, std::wstring(L"InstallDate"),
+                                  InstallUtil::GetCurrentDate(), true))
+      .WillOnce(Return(set_reg_value_work_item.get()));
+
   EXPECT_CALL(work_item_list, AddSetRegDwordValueWorkItem(
                                   _, _, _, std::wstring(L"EstimatedSize"),
                                   kEstimatedSizeKb, true))

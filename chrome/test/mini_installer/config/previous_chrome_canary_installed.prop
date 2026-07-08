@@ -53,6 +53,9 @@
         },
         "EstimatedSize": {
           "type": "DWORD"
+        },
+        "InstallDate": {
+          "type": "SZ"
         }
       },
       "wow_key": "KEY_WOW64_32KEY"
