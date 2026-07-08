@@ -22,3 +22,11 @@ include_rules = [
   # Resolve it.
   "+ash/public/cpp/network_config_service.h",
 ]
+
+specific_include_rules = {
+  "network_test_helper\.cc": [
+    "+components/session_manager/core",
+    "+components/session_manager/test",
+  ],
+}
+

@@ -23,8 +23,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -40,6 +41,13 @@ NetworkTestHelper::NetworkTestHelper()
       AccountId::FromUserEmailGaiaId("primary@test.com", GaiaId("fakegaia1"));
   auto secondary_account_id =
       AccountId::FromUserEmailGaiaId("secondary@test.com", GaiaId("fakegaia2"));
+
+  ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+      local_state_.registry());
+  user_session_manager_ =
+      std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
+  primary_user_ = user_session_manager_->AddRegularUser(primary_account_id);
+  secondary_user_ = user_session_manager_->AddRegularUser(secondary_account_id);
 
   network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
   network_configuration_handler_ =
@@ -62,17 +70,9 @@ NetworkTestHelper::NetworkTestHelper()
       /*global_network_config=*/base::DictValue());
   managed_network_configuration_handler_->SetPolicy(
       ::onc::ONC_SOURCE_USER_POLICY,
-      user_manager::FakeUserManager::GetFakeUsernameHash(primary_account_id),
+      user_manager::TestHelper::GetFakeUsernameHash(primary_account_id),
       /*network_configs_onc=*/base::ListValue(),
       /*global_network_config=*/base::DictValue());
-
-  user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-  fake_user_manager_.Reset(
-      std::make_unique<user_manager::FakeUserManager>(&local_state_));
-  primary_user_ = fake_user_manager_->AddGaiaUser(
-      primary_account_id, user_manager::UserType::kRegular);
-  secondary_user_ = fake_user_manager_->AddGaiaUser(
-      secondary_account_id, user_manager::UserType::kRegular);
 
   browser_context_helper_ = std::make_unique<BrowserContextHelper>(
       std::make_unique<FakeBrowserContextHelperDelegate>());
@@ -87,14 +87,16 @@ NetworkTestHelper::NetworkTestHelper()
 }
 
 NetworkTestHelper::~NetworkTestHelper() {
-  Shutdown();
-  network_handler_test_helper_.reset();
-  browser_context_helper_.reset();
-  secondary_user_ = nullptr;
   primary_user_ = nullptr;
-  fake_user_manager_.Reset();
-  LoginState::Shutdown();
+  secondary_user_ = nullptr;
+  network_handler_test_helper_.reset();
+  Shutdown();
+  browser_context_helper_.reset();
+  managed_network_configuration_handler_.reset();
   ui_proxy_config_service_.reset();
+  network_configuration_handler_.reset();
+  user_session_manager_.reset();
+  LoginState::Shutdown();
 }
 
 void NetworkTestHelper::SetUp() {
@@ -109,10 +111,14 @@ void NetworkTestHelper::SetUp() {
 }
 
 void NetworkTestHelper::LoginUser(const user_manager::User* user) {
-  fake_user_manager_->UserLoggedIn(
-      user->GetAccountId(),
-      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
-  fake_user_manager_->SwitchActiveUser(user->GetAccountId());
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (!session_manager->HasSessionForAccountId(user->GetAccountId())) {
+    user_session_manager_->LogIn(user->GetAccountId());
+  }
+  const auto* active_session = session_manager->GetActiveSession();
+  if (!active_session || active_session->account_id() != user->GetAccountId()) {
+    session_manager->SwitchActiveSession(user->GetAccountId());
+  }
 }
 
 std::string NetworkTestHelper::ConfigureWiFiNetwork(

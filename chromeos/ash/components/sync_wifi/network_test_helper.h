@@ -17,8 +17,10 @@
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+
+namespace ash::test {
+class TestUserSessionManager;
+}  // namespace ash::test
 
 namespace user_manager {
 class User;
@@ -62,21 +64,25 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
  private:
   void LoginUser(const user_manager::User* user);
 
+  // 1. Independent dependencies (must be destroyed last, so declared first)
+  sync_preferences::TestingPrefServiceSyncable user_prefs_;
+  TestingPrefServiceSimple local_state_;
+
+  // 2. Objects depending on prefs
+  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
-  std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
+
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
+  // 3. Pointers to objects owned by user_session_manager_ (must be destroyed
+  // before user_session_manager_)
   raw_ptr<const user_manager::User> primary_user_;
   raw_ptr<const user_manager::User> secondary_user_;
-
-  TestingPrefServiceSimple local_state_;
 };
 
 }  // namespace sync_wifi
