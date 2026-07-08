@@ -504,7 +504,47 @@ cx_events::InputTouchButton Convert(crosapi::TelemetryInputTouchButton button) {
   NOTREACHED();
 }
 
-crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
+ash::cros_healthd::mojom::EventCategoryEnum Convert(
+    cx_events::EventCategory input) {
+  switch (input) {
+    case cx_events::EventCategory::kNone:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kUnmappedEnumField;
+    case cx_events::EventCategory::kAudioJack:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kAudioJack;
+    case cx_events::EventCategory::kLid:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kLid;
+    case cx_events::EventCategory::kUsb:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kUsb;
+    case cx_events::EventCategory::kExternalDisplay:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kExternalDisplay;
+    case cx_events::EventCategory::kSdCard:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kSdCard;
+    case cx_events::EventCategory::kPower:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kPower;
+    case cx_events::EventCategory::kKeyboardDiagnostic:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic;
+    case cx_events::EventCategory::kStylusGarage:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kStylusGarage;
+    case cx_events::EventCategory::kTouchpadButton:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case cx_events::EventCategory::kTouchpadTouch:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case cx_events::EventCategory::kTouchpadConnected:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case cx_events::EventCategory::kTouchscreenTouch:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kTouchscreen;
+    case cx_events::EventCategory::kTouchscreenConnected:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kTouchscreen;
+    case cx_events::EventCategory::kStylusTouch:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kStylus;
+    case cx_events::EventCategory::kStylusConnected:
+      return ash::cros_healthd::mojom::EventCategoryEnum::kStylus;
+  }
+  NOTREACHED();
+}
+
+crosapi::TelemetryEventCategoryEnum ConvertCrosapi(
+    cx_events::EventCategory input) {
   switch (input) {
     case cx_events::EventCategory::kNone:
       return crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField;

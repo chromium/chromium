@@ -330,51 +330,102 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kNone),
-            crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
+            ash::cros_healthd::mojom::EventCategoryEnum::kUnmappedEnumField);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kAudioJack),
-            crosapi::TelemetryEventCategoryEnum::kAudioJack);
+            ash::cros_healthd::mojom::EventCategoryEnum::kAudioJack);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kLid),
-            crosapi::TelemetryEventCategoryEnum::kLid);
+            ash::cros_healthd::mojom::EventCategoryEnum::kLid);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kUsb),
-            crosapi::TelemetryEventCategoryEnum::kUsb);
+            ash::cros_healthd::mojom::EventCategoryEnum::kUsb);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kExternalDisplay),
-            crosapi::TelemetryEventCategoryEnum::kExternalDisplay);
+            ash::cros_healthd::mojom::EventCategoryEnum::kExternalDisplay);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kSdCard),
-            crosapi::TelemetryEventCategoryEnum::kSdCard);
+            ash::cros_healthd::mojom::EventCategoryEnum::kSdCard);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kPower),
-            crosapi::TelemetryEventCategoryEnum::kPower);
+            ash::cros_healthd::mojom::EventCategoryEnum::kPower);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kKeyboardDiagnostic),
-            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic);
+            ash::cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kStylusGarage),
-            crosapi::TelemetryEventCategoryEnum::kStylusGarage);
+            ash::cros_healthd::mojom::EventCategoryEnum::kStylusGarage);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchpadButton),
-            crosapi::TelemetryEventCategoryEnum::kTouchpadButton);
+            ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchpadTouch),
-            crosapi::TelemetryEventCategoryEnum::kTouchpadTouch);
+            ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchpadConnected),
-            crosapi::TelemetryEventCategoryEnum::kTouchpadConnected);
+            ash::cros_healthd::mojom::EventCategoryEnum::kTouchpad);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchscreenTouch),
-            crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch);
+            ash::cros_healthd::mojom::EventCategoryEnum::kTouchscreen);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kTouchscreenConnected),
-            crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected);
+            ash::cros_healthd::mojom::EventCategoryEnum::kTouchscreen);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kStylusTouch),
-            crosapi::TelemetryEventCategoryEnum::kStylusTouch);
+            ash::cros_healthd::mojom::EventCategoryEnum::kStylus);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kStylusConnected),
+            ash::cros_healthd::mojom::EventCategoryEnum::kStylus);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertCrosapiEventCategoryEnum) {
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kNone),
+            crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kAudioJack),
+            crosapi::TelemetryEventCategoryEnum::kAudioJack);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kLid),
+            crosapi::TelemetryEventCategoryEnum::kLid);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kUsb),
+            crosapi::TelemetryEventCategoryEnum::kUsb);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kExternalDisplay),
+            crosapi::TelemetryEventCategoryEnum::kExternalDisplay);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kSdCard),
+            crosapi::TelemetryEventCategoryEnum::kSdCard);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kPower),
+            crosapi::TelemetryEventCategoryEnum::kPower);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kKeyboardDiagnostic),
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kStylusGarage),
+            crosapi::TelemetryEventCategoryEnum::kStylusGarage);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kTouchpadButton),
+            crosapi::TelemetryEventCategoryEnum::kTouchpadButton);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kTouchpadTouch),
+            crosapi::TelemetryEventCategoryEnum::kTouchpadTouch);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kTouchpadConnected),
+            crosapi::TelemetryEventCategoryEnum::kTouchpadConnected);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kTouchscreenTouch),
+            crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kTouchscreenConnected),
+            crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kStylusTouch),
+            crosapi::TelemetryEventCategoryEnum::kStylusTouch);
+
+  EXPECT_EQ(ConvertCrosapi(cx_events::EventCategory::kStylusConnected),
             crosapi::TelemetryEventCategoryEnum::kStylusConnected);
 }
 

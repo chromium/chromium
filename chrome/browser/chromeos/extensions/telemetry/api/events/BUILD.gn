@@ -24,7 +24,7 @@ source_set("events") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/navigator",
     "//chrome/common/chromeos/extensions/api",
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//extensions/browser",
     "//url",
   ]
@@ -66,6 +66,8 @@ source_set("event_manager") {
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/events",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
@@ -85,6 +87,7 @@ source_set("event_converters") {
   deps = [
     "//base",
     "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//third_party/abseil-cpp:absl",
   ]

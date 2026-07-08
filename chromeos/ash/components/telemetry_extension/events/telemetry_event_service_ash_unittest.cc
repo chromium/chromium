@@ -112,22 +112,6 @@ TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
                         kHeadphone)));
 }
 
-TEST_F(TelemetryEventServiceAshTest, IsEventSupported) {
-  // Set the expected result in cros_healthd.
-  cros_healthd::FakeCrosHealthd::Get()->SetIsEventSupportedResponseForTesting(
-      cros_healthd::mojom::SupportStatus::NewSupported(
-          cros_healthd::mojom::Supported::New()));
-
-  base::test::TestFuture<crosapi::mojom::TelemetryExtensionSupportStatusPtr>
-      future;
-
-  event_service().IsEventSupported(
-      crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,
-      future.GetCallback());
-
-  EXPECT_TRUE(future.Get()->is_supported());
-}
-
 TEST_F(TelemetryEventServiceAshTest, OnCrosapiDisconnect) {
   event_service().AddEventObserver(
       crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack,

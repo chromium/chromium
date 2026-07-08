@@ -51,22 +51,6 @@ void TelemetryEventServiceAsh::AddEventObserver(
                                                   std::move(cb), category));
 }
 
-void TelemetryEventServiceAsh::IsEventSupported(
-    crosapi::mojom::TelemetryEventCategoryEnum category,
-    IsEventSupportedCallback callback) {
-  cros_healthd::ServiceConnection::GetInstance()
-      ->GetEventService()
-      ->IsEventSupported(
-          converters::events::Convert(category),
-          base::BindOnce(
-              [](IsEventSupportedCallback callback,
-                 cros_healthd::mojom::SupportStatusPtr ptr) {
-                std::move(callback).Run(
-                    converters::ConvertCommonPtr(std::move(ptr)));
-              },
-              std::move(callback)));
-}
-
 void TelemetryEventServiceAsh::OnConnectionClosed(
     base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
   std::erase_if(observers_, [&closed_connection](const auto& ptr) {

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
@@ -132,7 +133,10 @@ api::os_events::InputTouchButtonState Convert(
 api::os_events::DisplayInputType Convert(
     crosapi::mojom::ProbeDisplayInputType input);
 
-crosapi::mojom::TelemetryEventCategoryEnum Convert(
+ash::cros_healthd::mojom::EventCategoryEnum Convert(
+    api::os_events::EventCategory input);
+
+crosapi::mojom::TelemetryEventCategoryEnum ConvertCrosapi(
     api::os_events::EventCategory input);
 
 int Convert(uint32_t input);

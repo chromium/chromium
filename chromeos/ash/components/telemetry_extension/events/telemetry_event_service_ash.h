@@ -18,9 +18,6 @@ namespace ash {
 
 class TelemetryEventServiceAsh {
  public:
-  using IsEventSupportedCallback = base::OnceCallback<void(
-      crosapi::mojom::TelemetryExtensionSupportStatusPtr status)>;
-
   TelemetryEventServiceAsh();
   TelemetryEventServiceAsh(const TelemetryEventServiceAsh&) = delete;
   TelemetryEventServiceAsh& operator=(const TelemetryEventServiceAsh&) = delete;
@@ -35,17 +32,6 @@ class TelemetryEventServiceAsh {
   void AddEventObserver(
       crosapi::mojom::TelemetryEventCategoryEnum category,
       mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> observer);
-
-  // Checks whether an event is supported. It does the same support status check
-  // as in `AddEventObserver()` and returns immediately after the check.
-  //
-  // The request:
-  // * |category| - Event category to check.
-  //
-  // The response:
-  // * |status| - See the documentation of `TelemetryExtensionSupportStatus`.
-  void IsEventSupported(crosapi::mojom::TelemetryEventCategoryEnum category,
-                        IsEventSupportedCallback callback);
 
   // Called by a connection when it is reset from either side (crosapi or
   // cros_healthd). Unregisters the connection.

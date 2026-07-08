@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/features/feature_provider.h"
 #include "ui/base/page_transition_types.h"
@@ -24,11 +23,10 @@ namespace chromeos {
 
 namespace {
 
-const char kKeyboardDiagnosticsUrl[] =
+constexpr char kKeyboardDiagnosticsUrl[] =
     "chrome://diagnostics?input&showDefaultKeyboardTester";
 
 namespace cx_events = ::chromeos::api::os_events;
-namespace crosapi = ::crosapi::mojom;
 
 void OpenDiagnosticsKeyboardPage(content::BrowserContext* browser_context) {
   NavigateParams navigate_params(Profile::FromBrowserContext(browser_context),
@@ -139,27 +137,27 @@ void OsEventsIsEventSupportedFunction::RunIfAllowed() {
 }
 
 void OsEventsIsEventSupportedFunction::OnEventManagerResult(
-    crosapi::TelemetryExtensionSupportStatusPtr status) {
+    ash::cros_healthd::mojom::SupportStatusPtr status) {
   if (!status) {
     Respond(Error("API internal error."));
     return;
   }
 
   switch (status->which()) {
-    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnmappedUnionField:
+    case ash::cros_healthd::mojom::SupportStatus::Tag::kUnmappedUnionField:
       Respond(Error("API internal error."));
       break;
-    case crosapi::TelemetryExtensionSupportStatus::Tag::kException:
+    case ash::cros_healthd::mojom::SupportStatus::Tag::kException:
       Respond(Error(status->get_exception()->debug_message));
       break;
-    case crosapi::TelemetryExtensionSupportStatus::Tag::kSupported: {
+    case ash::cros_healthd::mojom::SupportStatus::Tag::kSupported: {
       cx_events::EventSupportStatusInfo success;
       success.status = cx_events::EventSupportStatus::kSupported;
       Respond(
           ArgumentList(cx_events::IsEventSupported::Results::Create(success)));
       break;
     }
-    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnsupported:
+    case ash::cros_healthd::mojom::SupportStatus::Tag::kUnsupported:
       cx_events::EventSupportStatusInfo result;
       result.status = cx_events::EventSupportStatus::kUnsupported;
 

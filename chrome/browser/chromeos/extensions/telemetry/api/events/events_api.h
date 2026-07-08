@@ -8,8 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
@@ -39,8 +38,7 @@ class OsEventsIsEventSupportedFunction : public EventsApiFunctionBase {
 
  private:
   ~OsEventsIsEventSupportedFunction() override = default;
-  void OnEventManagerResult(
-      crosapi::mojom::TelemetryExtensionSupportStatusPtr status);
+  void OnEventManagerResult(ash::cros_healthd::mojom::SupportStatusPtr status);
 };
 
 class OsEventsStartCapturingEventsFunction : public EventsApiFunctionBase {

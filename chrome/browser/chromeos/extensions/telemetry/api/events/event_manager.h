@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -67,9 +68,9 @@ class EventManager : public extensions::BrowserContextKeyedAPI,
       chromeos::api::os_events::EventCategory category);
 
   // Checks whether a certain event category is supported.
-  void IsEventSupported(
-      chromeos::api::os_events::EventCategory category,
-      ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback);
+  void IsEventSupported(chromeos::api::os_events::EventCategory category,
+                        ash::cros_healthd::mojom::CrosHealthdEventService::
+                            IsEventSupportedCallback callback);
 
  private:
   friend class extensions::BrowserContextKeyedAPIFactory<EventManager>;

@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -97,7 +98,7 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     }
   }
 
-  auto crosapi_category = converters::events::Convert(category);
+  auto crosapi_category = converters::events::ConvertCrosapi(category);
   GetEventService().AddEventObserver(
       crosapi_category, event_router_.GetPendingRemoteForCategoryAndExtension(
                             category, extension_id));
@@ -115,9 +116,12 @@ void EventManager::RemoveObservationsForExtensionAndCategory(
 
 void EventManager::IsEventSupported(
     chromeos::api::os_events::EventCategory category,
-    ash::TelemetryEventServiceAsh::IsEventSupportedCallback callback) {
-  GetEventService().IsEventSupported(converters::events::Convert(category),
-                                     std::move(callback));
+    ash::cros_healthd::mojom::CrosHealthdEventService::IsEventSupportedCallback
+        callback) {
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetEventService()
+      ->IsEventSupported(converters::events::Convert(category),
+                         std::move(callback));
 }
 
 ash::TelemetryEventServiceAsh& EventManager::GetEventService() {
