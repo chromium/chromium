@@ -1630,4 +1630,18 @@
   <message name="IDS_SETTINGS_SUGGESTIONS_FROM_GEMINI_CONSIDER_3" desc="Bullet point 3 under Things to consider in the quality logging section.">
     Your content will not be used to improve AI. Your organization may change these settings at any time.
   </message>
+
+  <!-- Personal Context Notice in Autofill Popup -->
+  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in Autofill popup.">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+  </message>
+  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in Autofill popup.">
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </message>
+  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in Autofill popup.">
+    lorem ipsum
+  </message>
+  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in Autofill popup personal context notice.">
+    OK
+  </message>
 </grit-part>

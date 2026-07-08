@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -79,27 +82,37 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   raw_ptr<PopupPersonalContextNoticeView> view_ = nullptr;
 };
 
-// TODO(crbug.com/517520354): Update GetText() instances with localized strings.
 // Tests the notice view is correctly created and displays its initial elements.
 TEST_F(PopupPersonalContextNoticeViewTest, InitialState) {
   ShowView();
+
+  std::u16string expected_title = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+  std::u16string expected_context = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+  std::u16string expected_link = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string expected_ok = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
   // Check that the description is visible and has the correct text.
   views::StyledLabel* description = view().description_for_testing();
   ASSERT_NE(description, nullptr);
   EXPECT_TRUE(description->GetVisible());
-  EXPECT_EQ(u"lorem ipsum lorem ipsum lorem ipsum", description->GetText());
+  EXPECT_EQ(
+      base::JoinString({expected_title, expected_context, expected_link}, u" "),
+      description->GetText());
 
   // Check that the description contains a link with a correct text.
   views::Link* settings_link = description->GetFirstLinkForTesting();
   EXPECT_TRUE(settings_link);
-  EXPECT_EQ(u"lorem ipsum", settings_link->GetText());
+  EXPECT_EQ(expected_link, settings_link->GetText());
 
   // Check that the "Got it" button is visible and has the correct text.
   views::MdTextButton* got_it_button = view().got_it_button_for_testing();
   ASSERT_NE(got_it_button, nullptr);
   EXPECT_TRUE(got_it_button->GetVisible());
-  EXPECT_EQ(u"OK", got_it_button->GetText());
+  EXPECT_EQ(expected_ok, got_it_button->GetText());
 }
 
 // Tests that clicking on GotIt button triggers the removal of the notice.

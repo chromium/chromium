@@ -124,6 +124,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }
+  const PopupRowContentView& GetContentView() const { return *content_view_; }
 
   // Returns the view representing the suggestions expanding control of the row.
   views::View* GetExpandChildSuggestionsView() {
