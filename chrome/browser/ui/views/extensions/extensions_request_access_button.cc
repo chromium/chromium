@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -24,15 +25,19 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -144,6 +149,69 @@ void ExtensionsRequestAccessButton::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   ToolbarChipButton::OnBoundsChanged(previous_bounds);
   input_protector_->MaybeUpdateViewProtectedTimeStamp();
+
+  auto* extensions_toolbar =
+      views::AsViewClass<ExtensionsToolbarDesktop>(parent());
+  if (extensions_toolbar) {
+    views::View* extensions_button = extensions_toolbar->GetExtensionsButton();
+    if (extensions_button) {
+      UpdateClipPath(extensions_button);
+    }
+  }
+}
+
+void ExtensionsRequestAccessButton::AddedToWidget() {
+  ToolbarChipButton::AddedToWidget();
+  auto* extensions_toolbar =
+      views::AsViewClass<ExtensionsToolbarDesktop>(parent());
+  if (extensions_toolbar) {
+    views::View* extensions_button = extensions_toolbar->GetExtensionsButton();
+    if (extensions_button && !sibling_observation_.IsObserving()) {
+      sibling_observation_.Observe(extensions_button);
+      UpdateClipPath(extensions_button);
+    }
+  }
+}
+
+void ExtensionsRequestAccessButton::RemovedFromWidget() {
+  sibling_observation_.Reset();
+  ToolbarChipButton::RemovedFromWidget();
+}
+
+ExtensionsRequestAccessButton::SiblingObserver::SiblingObserver(
+    ExtensionsRequestAccessButton* button)
+    : button_(button) {}
+
+ExtensionsRequestAccessButton::SiblingObserver::~SiblingObserver() = default;
+
+void ExtensionsRequestAccessButton::SiblingObserver::OnViewBoundsChanged(
+    views::View* observed_view) {
+  button_->UpdateClipPath(observed_view);
+}
+
+void ExtensionsRequestAccessButton::SiblingObserver::OnViewIsDeleting(
+    views::View* observed_view) {
+  button_->OnSiblingDeleting();
+}
+
+void ExtensionsRequestAccessButton::OnSiblingDeleting() {
+  sibling_observation_.Reset();
+}
+
+void ExtensionsRequestAccessButton::UpdateClipPath(
+    views::View* extensions_button) {
+  if (GetVisible() && extensions_button && extensions_button->GetVisible()) {
+    int clip_width = std::max(0, extensions_button->x() - x());
+
+    gfx::Rect clip_rect =
+        base::i18n::IsRTL()
+            ? gfx::Rect(width() - clip_width, 0, clip_width, height())
+            : gfx::Rect(0, 0, clip_width, height());
+
+    SetClipPath(SkPath::Rect(gfx::RectToSkRect(clip_rect)));
+  } else {
+    SetClipPath(SkPath());
+  }
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed(const ui::Event& event) {

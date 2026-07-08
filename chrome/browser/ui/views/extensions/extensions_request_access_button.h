@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/view_observer.h"
 
 namespace ui {
 class Event;
@@ -89,6 +91,8 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<ExtensionsToolbarViewModel> extensions_toolbar_view_model_;
@@ -111,6 +115,27 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   bool remove_confirmation_for_testing_{false};
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
+
+  class SiblingObserver : public views::ViewObserver {
+   public:
+    explicit SiblingObserver(ExtensionsRequestAccessButton* button);
+    ~SiblingObserver() override;
+
+    // views::ViewObserver:
+    void OnViewBoundsChanged(views::View* observed_view) override;
+    void OnViewIsDeleting(views::View* observed_view) override;
+
+   private:
+    raw_ptr<ExtensionsRequestAccessButton> button_;
+  };
+
+  void OnSiblingDeleting();
+
+  SiblingObserver sibling_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      sibling_observation_{&sibling_observer_};
+
+  void UpdateClipPath(views::View* extensions_button);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_REQUEST_ACCESS_BUTTON_H_
