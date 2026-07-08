@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/component_updater/ai_embeddings_component_installer.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/captcha_provider_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
@@ -169,6 +170,7 @@ void RegisterComponentsForUpdate() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   RegisterOriginTrialsComponent(cus);
+  RegisterAIEmbeddingsComponent(cus);
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
   MaybeRegisterPKIMetadataComponent(cus);

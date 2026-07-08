@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_MODEL_INFO_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_MODEL_INFO_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
@@ -48,12 +50,16 @@ class ModelInfo {
   // applicable.
   std::optional<proto::Any> GetModelMetadata() const;
 
- private:
+  // This constructor is made public to allow non-Optimization-Guide clients
+  // (like Component Updater) to construct a ModelInfo for the AI Embeddings
+  // API.
   ModelInfo(const base::FilePath& model_file_path,
             const base::flat_map<base::FilePath::StringType, base::FilePath>&
                 additional_files,
             const int64_t version,
             const std::optional<proto::Any>& model_metadata);
+
+ private:
   base::FilePath model_file_path_;
   base::flat_map<base::FilePath::StringType, base::FilePath> additional_files_;
   int64_t version_;

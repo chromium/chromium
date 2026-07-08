@@ -162,6 +162,8 @@ chromium-metrics-reviews@google.com.
       summary="Permissions: Use snapshot to decide on relevance for a
                Geolocation permission request"/>
   <variant name="LanguageDetection" summary="Language detection"/>
+  <variant name="ModelExecutionFeatureAiEmbeddings"
+      summary="Model Execution Feature: AI Embeddings"/>
   <variant name="ModelExecutionFeatureHistoryQueryIntent"
       summary="Model Execution Feature: History Query Intent"/>
   <variant name="ModelExecutionFeatureHistorySearch"

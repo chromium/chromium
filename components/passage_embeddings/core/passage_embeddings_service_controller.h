@@ -50,6 +50,11 @@ class PassageEmbeddingsServiceController : public EmbedderMetadataProvider {
   // Returns the embedder used to generate embeddings.
   Embedder* GetEmbedder();
 
+  const base::FilePath& embeddings_model_path() const {
+    return embeddings_model_path_;
+  }
+  const base::FilePath& sp_model_path() const { return sp_model_path_; }
+
   // EmbedderMetadataProvider:
   void AddObserver(EmbedderMetadataObserver* observer) override;
   void RemoveObserver(EmbedderMetadataObserver* observer) override;

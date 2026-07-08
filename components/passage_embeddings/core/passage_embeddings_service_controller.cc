@@ -109,6 +109,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   embeddings_model_path_.clear();
   sp_model_path_.clear();
   model_metadata_ = std::nullopt;
+  model_version_ = 0;
   ResetEmbedderRemote();
 
   ScopedEmbeddingsModelInfoStatusLogger logger;
