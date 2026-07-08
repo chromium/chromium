@@ -1,0 +1,20 @@
+description: Verify the experimental-test-suite-mapper skill correctly maps base unittests.
+owner: aadarshb@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - experimental-test-suite-mapper
+tests:
+  - vars:
+      query: "Identify the parent executable test suite for the base library source file `base/strings/string_number_conversions.cc` using the experimental-test-suite-mapper skill."
+    assert:
+      - type: contains
+        value: "base_unittests"
+    metadata:
+      pass_k_threshold: 1
+      runs_per_test: 3
