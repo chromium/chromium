@@ -266,7 +266,7 @@ void WebGpuRecyclableResourceProvider::ClearUnusedResources() {
 
 void WebGpuRecyclableResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
-  if (!resource->IsLost() && image_pool_) {
+  if (image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
 }
@@ -286,11 +286,6 @@ bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
 }
 
 bool WebGpuRecyclableResourceProvider::ShouldReplaceTargetBuffer() {
-  // If the resource was lost, we can not use it for writes again.
-  if (resource()->IsLost()) {
-    return true;
-  }
-
   // This class holds the only ref to `resource_` internally.
   return false;
 }
