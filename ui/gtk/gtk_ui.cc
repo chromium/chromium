@@ -289,7 +289,7 @@ bool IsValidSchema(ui::LinuxUiBackend backend) {
   return true;
 }
 
-bool IsValidIconThemeName(const std::string& theme) {
+bool IsValidIconThemeName(std::string_view theme) {
   base::FilePath theme_path(theme);
   return !theme.empty() && theme != "." && !theme_path.IsAbsolute() &&
          !theme_path.ReferencesParent() && theme_path.BaseName() == theme_path;
@@ -305,6 +305,32 @@ std::string GetIconThemeName() {
     g_free(theme);
   }
   return theme_string;
+}
+
+void (*g_orig_set_property)(GObject* object,
+                            guint property_id,
+                            const GValue* value,
+                            GParamSpec* pspec) = nullptr;
+
+void GtkSettingsSetProperty(GObject* object,
+                            guint property_id,
+                            const GValue* value,
+                            GParamSpec* pspec) {
+  if (pspec && pspec->name &&
+      std::string_view(pspec->name) == "gtk-key-theme-name") {
+    const gchar* name = g_value_get_string(value);
+    if (name && *name) {
+      if (!IsValidIconThemeName(name)) {
+        GValue sanitized_value = G_VALUE_INIT;
+        g_value_init(&sanitized_value, G_TYPE_STRING);
+        g_value_set_string(&sanitized_value, nullptr);
+        g_orig_set_property(object, property_id, &sanitized_value, pspec);
+        g_value_unset(&sanitized_value);
+        return;
+      }
+    }
+  }
+  g_orig_set_property(object, property_id, value, pspec);
 }
 
 }  // namespace
@@ -366,6 +392,14 @@ bool GtkUi::Initialize() {
   GtkSettings* settings = gtk_settings_get_default();
   SanitizeIconThemeName();
   if (!GtkCheckVersion(4)) {
+    if (!g_orig_set_property) {
+      GObjectClass* gobject_class =
+          G_OBJECT_CLASS(g_type_class_ref(GTK_TYPE_SETTINGS));
+      g_orig_set_property = gobject_class->set_property;
+      gobject_class->set_property = GtkSettingsSetProperty;
+      g_type_class_unref(gobject_class);
+    }
+
     SanitizeKeyThemeName();
     connect(settings, "notify::gtk-key-theme-name",
             &GtkUi::OnKeyThemeNameChanged);
