@@ -55,8 +55,8 @@ class AppLaunchUtilsTest : public testing::Test {
     const AccountId account_id =
         AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
             "lala", policy::DeviceLocalAccountType::kWebKioskApp));
-    std::ignore = test_user_session_manager_->AddKioskWebAppUser(
-        account_id.GetUserEmail());
+    ASSERT_TRUE(test_user_session_manager_->AddKioskWebAppUser(
+        account_id.GetUserEmail()));
     test_user_session_manager_->LogIn(account_id);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

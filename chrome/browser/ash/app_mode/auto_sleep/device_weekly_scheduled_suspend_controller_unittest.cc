@@ -32,6 +32,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/test_user_session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,15 +64,15 @@ class DeviceWeeklyScheduledSuspendControllerTest
             TestingBrowserProcess::GetGlobal()->local_state());
 
     // Add all potential users before starting any session.
-    std::ignore = test_user_session_manager_->AddRegularUser(
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(
         AccountId::FromUserEmailGaiaId("user@example.com",
-                                       GaiaId("1234567890")));
-    std::ignore = test_user_session_manager_->AddPublicAccountUser(
+                                       GaiaId("1234567890"))));
+    ASSERT_TRUE(test_user_session_manager_->AddPublicAccountUser(
         policy::GenerateDeviceLocalAccountUserId(
-            "mgs", policy::DeviceLocalAccountType::kPublicSession));
-    std::ignore = test_user_session_manager_->AddKioskWebAppUser(
+            "mgs", policy::DeviceLocalAccountType::kPublicSession)));
+    ASSERT_TRUE(test_user_session_manager_->AddKioskWebAppUser(
         policy::GenerateDeviceLocalAccountUserId(
-            "kiosk", policy::DeviceLocalAccountType::kWebKioskApp));
+            "kiosk", policy::DeviceLocalAccountType::kWebKioskApp)));
 
     chromeos::PowerManagerClient::InitializeFake();
     InitController();
@@ -129,11 +130,13 @@ class DeviceWeeklyScheduledSuspendControllerTest
       }
     }
 
+    ASSERT_FALSE(account_id.empty());
     test_user_session_manager_->LogIn(account_id);
-    if (!user_manager::UserManager::Get()->GetActiveUser() ||
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId() !=
-            account_id) {
-      user_manager::UserManager::Get()->SwitchActiveUser(account_id);
+    if (!session_manager::SessionManager::Get()->GetActiveSession() ||
+        session_manager::SessionManager::Get()
+                ->GetActiveSession()
+                ->account_id() != account_id) {
+      session_manager::SessionManager::Get()->SwitchActiveSession(account_id);
     }
   }
 
