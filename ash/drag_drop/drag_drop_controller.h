@@ -206,8 +206,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::OnceClosure quit_closure_;
 
   // If non-null, a drag is active which required a capture window.
-  raw_ptr<DragDropCaptureDelegate, DanglingUntriaged> capture_delegate_ =
-      nullptr;
+  raw_ptr<DragDropCaptureDelegate> capture_delegate_ = nullptr;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;
@@ -226,8 +225,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::ObserverList<aura::client::DragDropClientObserver>::
       UncheckedAndDanglingUntriaged observers_;
 
-  raw_ptr<ToplevelWindowDragDelegate, DanglingUntriaged>
-      toplevel_window_drag_delegate_ = nullptr;
+  raw_ptr<ToplevelWindowDragDelegate> toplevel_window_drag_delegate_ = nullptr;
 
   bool allow_no_image_touch_drag_for_test_ = false;
 

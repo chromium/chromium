@@ -773,11 +773,11 @@ void DragDropController::Cleanup() {
   if (drag_window_ && drag_window_ != drag_source_window_)
     drag_window_->RemoveObserver(this);
   drag_window_ = nullptr;
+  capture_delegate_ = nullptr;
   drag_drop_completed_ = true;
   drag_data_.reset();
   allowed_operations_ = 0;
   touch_drag_drop_delegate_.reset();
-  capture_delegate_ = nullptr;
 }
 
 void DragDropController::CleanupPendingLongTap() {

@@ -135,6 +135,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   }
 
   void TearDown() override {
+    drag_drop_controller_->set_toplevel_window_drag_delegate(nullptr);
     extended_drag_source_.reset();
     extended_drag_source_delegate_.reset();
     data_source_.reset();
