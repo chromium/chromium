@@ -16,11 +16,17 @@ class SessionUiDelegate {
  public:
   virtual ~SessionUiDelegate() = default;
 
-  // Called when the session end has been requested via the UI.
+  // Requests that the session be ended. The UI may be deleted as part of this
+  // call but this will happen asynchronously.
   virtual void UiRequestEndSession() = 0;
 
-  // Called to end the active stream from the UI.
+  // Requests that the active stream be stopped. Must only be called if there
+  // is an attached initializing or transcribing.
   virtual void UiRequestEndActiveStream() = 0;
+
+  // Called to start a new stream from the UI. Must only be called if the
+  // session is inactive. Starts a new stream on the last used Target.
+  virtual void UiRequestStartStream() = 0;
 
   // Returns the current state of the dictation session.
   virtual SessionState GetState() const = 0;

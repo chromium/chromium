@@ -32,8 +32,6 @@ class DictationContextBrowserTest : public DictationBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   LoadTestExtensionInManualMode(profile());
 
   // This test page has a bit of text content.
@@ -43,11 +41,10 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
                                    DefaultInPageTargetId(web_contents()), "");
 
-  SessionController* controller = dictation_service().session_controller();
-  ASSERT_NE(controller, nullptr);
+  ASSERT_NE(session_controller(), nullptr);
 
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
-      controller->attached_stream_provider());
+      session_controller()->attached_stream_provider());
   ASSERT_NE(provider, nullptr);
 
   ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
@@ -72,8 +69,6 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   LoadTestExtensionInManualMode(profile());
 
   const GURL url = embedded_test_server()->GetURL("/simple.html");
@@ -84,11 +79,10 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
                                    DefaultInPageTargetId(web_contents()),
                                    "hello world");
 
-  SessionController* controller = dictation_service().session_controller();
-  ASSERT_NE(controller, nullptr);
+  ASSERT_NE(session_controller(), nullptr);
 
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
-      controller->attached_stream_provider());
+      session_controller()->attached_stream_provider());
   ASSERT_NE(provider, nullptr);
 
   ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
@@ -102,8 +96,6 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, InnerTextCaptured) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   LoadTestExtensionInManualMode(profile());
 
   const GURL url = embedded_test_server()->GetURL("/simple.html");
@@ -144,8 +136,6 @@ class DictationContextAsyncBrowserTest : public DictationContextBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DictationContextAsyncBrowserTest, AsyncContextCaptured) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   LoadTestExtensionInManualMode(profile());
 
   const GURL url = embedded_test_server()->GetURL("/simple.html");

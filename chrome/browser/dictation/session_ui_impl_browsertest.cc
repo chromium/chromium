@@ -110,4 +110,48 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       ToggleStartStopFromUi) {
+  // clang-format off
+  RunTestSequence(
+    // Open the session ui.
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Move to transcribing state
+    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    CheckResult(GetSessionState(), SessionState::kTranscribing),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::LabelButton::GetText, u"Done"),
+
+    // Click "Done".
+    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    CheckResult(GetSessionState(), SessionState::kInactive),
+
+    // The button should become "Start"; click it.
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::LabelButton::GetText, u"Start"),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::GetEnabled, true),
+    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+
+    // Ensure the button becomes "Done" again and a new stream was started.
+    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::LabelButton::GetText, u"Done"),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::GetEnabled, true),
+    CheckResult(HasAttachedStreamProvider(), true),
+
+    // Click "Done" to end the second stream.
+    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+    CheckResult(HasAttachedStreamProvider(), false)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation

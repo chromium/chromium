@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
@@ -55,6 +56,11 @@ class DictationInteractiveBrowserTestBase
 
  protected:
   base::WeakPtr<ListenerStreamProvider> last_started_provider_;
+
+ private:
+  void OnSessionStateChanged(SessionState state);
+
+  base::CallbackListSubscription session_state_subscription_;
 };
 
 }  // namespace dictation

@@ -78,8 +78,11 @@ void SessionUiImpl::OnToggleActiveStreamClicked() {
       controller_->UiRequestEndActiveStream();
       break;
     case SessionState::kInactive:
+      controller_->UiRequestStartStream();
+      break;
     case SessionState::kFinalizing:
-      NOTIMPLEMENTED();
+      // The toggle button should be disabled while finalizing.
+      NOTREACHED();
   }
 }
 

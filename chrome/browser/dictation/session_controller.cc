@@ -51,6 +51,8 @@ void SessionController::StartDictationStream(const TargetId& target_id,
       std::make_unique<Target>(target_id, selected_text));
   attached_stream_provider_ = std::move(stream_provider);
 
+  last_used_target_id_ = target_id;
+
   MoveToState(SessionState::kStreamInitializing);
 }
 
@@ -82,6 +84,19 @@ void SessionController::UiRequestEndSession() {
 
 void SessionController::UiRequestEndActiveStream() {
   EndDictationStream();
+}
+
+void SessionController::UiRequestStartStream() {
+  CHECK(!attached_stream_provider_);
+  CHECK_EQ(state_, SessionState::kInactive);
+
+  // A stream is always started when the session is created using an explicit
+  // target. Starting from UI can only happen after that.
+  CHECK(last_used_target_id_.has_value());
+
+  // TODO(b/528720407): We have no good way to get the selected_text from here.
+  // This will move to be collected with page context.
+  StartDictationStream(*last_used_target_id_, /*selected_text=*/"");
 }
 
 SessionState SessionController::GetState() const {

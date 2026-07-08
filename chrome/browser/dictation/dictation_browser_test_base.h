@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DICTATION_DICTATION_BROWSER_TEST_BASE_H_
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dictation/session_state.h"
 #include "chrome/test/base/platform_browser_test.h"
 
 class Profile;
@@ -17,6 +18,8 @@ class WebContents;
 namespace dictation {
 
 class DictationKeyedService;
+class ListenerStreamProvider;
+class SessionController;
 
 // Base class for browser tests with common settings and setup.
 class DictationBrowserTestBase : public PlatformBrowserTest {
@@ -31,6 +34,8 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   Profile* profile();
   content::WebContents* web_contents();
   DictationKeyedService& dictation_service();
+  SessionController* session_controller();
+  ListenerStreamProvider* attached_stream();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

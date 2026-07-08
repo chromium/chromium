@@ -6,6 +6,7 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_ui_impl.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,6 +60,15 @@ DictationInteractiveBrowserTestBase::StartSession() {
                                                    ->attached_stream_provider())
               ->GetWeakPtr();
 
+      // Register callback to update last_started_provider_ on subsequent
+      // starts.
+      session_state_subscription_ =
+          dictation_service()
+              .session_controller()
+              ->AddSessionStateChangedCallback(base::BindRepeating(
+                  &DictationInteractiveBrowserTestBase::OnSessionStateChanged,
+                  base::Unretained(this)));
+
       // A stream may not always be created (e.g. onboarding needs to be shown).
       if (last_started_provider_) {
         ExtensionWaitForStreamStart(
@@ -108,6 +118,18 @@ DictationInteractiveBrowserTestBase::HasAttachedStreamProvider() {
                    ->attached_stream_provider() != nullptr;
       },
       base::Unretained(this));
+}
+
+void DictationInteractiveBrowserTestBase::OnSessionStateChanged(
+    SessionState state) {
+  if (state == SessionState::kStreamInitializing) {
+    auto* controller = dictation_service().session_controller();
+    if (controller && controller->attached_stream_provider()) {
+      last_started_provider_ = static_cast<ListenerStreamProvider*>(
+                                   controller->attached_stream_provider())
+                                   ->GetWeakPtr();
+    }
+  }
 }
 
 }  // namespace dictation
