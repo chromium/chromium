@@ -252,18 +252,41 @@ public class SpannableAutocompleteEditTextModel
                 || code == KeyEvent.KEYCODE_DPAD_RIGHT;
     }
 
+    /**
+     * Translates specific keyboard combinations into standardized key events.
+     *
+     * @param event The original key event.
+     * @return The translated key event, or the original if no translation is needed.
+     */
+    private KeyEvent translateKeyEvent(final KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && event.isAltPressed()) {
+            int newMetaState = event.getMetaState() & ~KeyEvent.META_ALT_MASK;
+            return new KeyEvent(
+                    event.getDownTime(),
+                    event.getEventTime(),
+                    event.getAction(),
+                    KeyEvent.KEYCODE_FORWARD_DEL,
+                    event.getRepeatCount(),
+                    newMetaState);
+        }
+        return event;
+    }
+
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
         if (DEBUG) Log.i(TAG, "dispatchKeyEvent");
+
+        KeyEvent dispatchedEvent = translateKeyEvent(event);
+
         if (mInputConnection == null) {
-            return mDelegate.super_dispatchKeyEvent(event);
+            return mDelegate.super_dispatchKeyEvent(dispatchedEvent);
         }
 
         boolean retVal;
         mInputConnection.onBeginImeCommand();
-        if (hasAutocomplete() && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
-                    || event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+        if (hasAutocomplete() && dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            if (dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
+                    || dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_DEL) {
                 // The editor doesn't see the selected text so won't handle forward delete. Normal
                 // delete doesn't always work on the last character on hard keyboards, so handle it
                 // similarly.
@@ -271,7 +294,7 @@ public class SpannableAutocompleteEditTextModel
                 mLastEditWasTyping = false;
 
                 retVal = true;
-            } else if (cursorMovementCommitsAutocomplete(event)) {
+            } else if (cursorMovementCommitsAutocomplete(dispatchedEvent)) {
                 // These commands treat the autocomplete suggestion as a selection and then apply
                 // the cursor movement.
                 int currentPos = mCurrentState.getSelection().from;
@@ -283,8 +306,8 @@ public class SpannableAutocompleteEditTextModel
 
                 mInputConnection.commitAutocomplete();
                 mDelegate.setSelection(currentPos, totalLength);
-                retVal = mDelegate.super_dispatchKeyEvent(event);
-            } else if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
+                retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
+            } else if (dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_TAB) {
                 mInputConnection.commitAutocomplete();
                 retVal = true;
             } else {
@@ -292,16 +315,16 @@ public class SpannableAutocompleteEditTextModel
                 // AutocompleteMediator queries us via getTextWithAutocomplete() so it's included
                 // either way. Avoiding the extra commit eliminates a brief cursor flash at the end
                 // of the autocomplete suggestion.
-                retVal = mDelegate.super_dispatchKeyEvent(event);
+                retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
             }
         } else {
-            if (event.getAction() == KeyEvent.ACTION_DOWN
-                    && event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
+            if (dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN
+                    && dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
                 // Delete key when there's no autocomplete suggestion. Use the normal behavior but
                 // inhibit suggestions.
                 mLastEditWasTyping = false;
             }
-            retVal = mDelegate.super_dispatchKeyEvent(event);
+            retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
         }
 
         mInputConnection.onEndImeCommand();

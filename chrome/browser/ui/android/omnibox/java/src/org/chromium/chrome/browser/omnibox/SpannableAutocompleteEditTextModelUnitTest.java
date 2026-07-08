@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,6 +48,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     private SpannableAutocompleteEditTextModel mModel;
     private AutocompleteState mCurrentState;
     private AtomicInteger mImeCommandNestLevel;
+    private @Captor ArgumentCaptor<KeyEvent> mKeyEventCaptor;
 
     @Before
     public void setUp() {
@@ -188,6 +191,24 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         clearInvocations(mConnection, mDelegate);
         mModel.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
         assertEquals("goo", mCurrentState.getText());
+    }
+
+    @Test
+    public void dispatchKeyEvent_handleAltDel() {
+        mCurrentState.setUserText("goo");
+        mCurrentState.setAutocompleteText(null);
+        assertEquals("goo", mCurrentState.getText());
+
+        clearInvocations(mConnection, mDelegate);
+        var event =
+                new KeyEvent(
+                        0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_ALT_ON);
+        mModel.dispatchKeyEvent(event);
+
+        // Should delegate a FORWARD_DEL event.
+        verify(mDelegate).super_dispatchKeyEvent(mKeyEventCaptor.capture());
+        assertEquals(KeyEvent.KEYCODE_FORWARD_DEL, mKeyEventCaptor.getValue().getKeyCode());
+        assertEquals(0, mKeyEventCaptor.getValue().getMetaState());
     }
 
     @Test
