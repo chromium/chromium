@@ -248,6 +248,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Actor.EncryptedScreenshotUploadSuccess"
+    enum="BooleanSuccess" expires_after="2027-05-30">
+  <owner>weiguo@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records whether uploading an RFC 8188 encrypted viewport screenshot from the
+    Glic Web Client during actor actuation succeeded (valid file token returned)
+    or failed (null or oversized token returned).
+  </summary>
+</histogram>
+
 <histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
     expires_after="2026-11-29">
   <owner>dtapuska@google.com</owner>

@@ -7,6 +7,7 @@ import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, Captur
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
+import type {ExperimentalTriggeringClient} from './experimental_triggering/experimental_triggering_types.js';
 import type {SkillsClient, SkillsHost} from './skills/skills_types.js';
 import type {InterfaceDef, InterfaceDefMethods, ReplaceProperties} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
@@ -17,6 +18,7 @@ export type {
   ActorHost,
   AnnotationClient,
   AnnotationHost,
+  ExperimentalTriggeringClient,
   SkillsClient,
   SkillsHost,
 };
@@ -44,6 +46,8 @@ export const WebClientHostDef = defInterface({
         actorReceiver?: PendingReceiver<ActorClient>,
         skillsRemote?: PendingRemote<SkillsHost>,
         skillsReceiver?: PendingReceiver<SkillsClient>,
+        experimentalTriggeringReceiver?: PendingReceiver<
+                                          ExperimentalTriggeringClient>,
       }>(),
       histogram: {name: 'WebClientCreated', id: 1},
     },
@@ -721,15 +725,6 @@ export const WebClientDef = defInterface({
       name: 'invoke',
       request: defMessage<{
         options: InvokeOptionsPrivate,
-      }>(),
-    },
-    {
-      name: 'getExperimentalTriggeringUpdates',
-      request: defMessage<{
-        observationId: number,
-      }>(),
-      response: defMessage<{
-        success: boolean,
       }>(),
     },
     {

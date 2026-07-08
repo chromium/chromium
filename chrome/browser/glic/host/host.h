@@ -37,6 +37,7 @@ class GlicInstanceMetricsBackwardsCompatibility;
 
 class GlicPinCandidateProvider;
 class GlicSkillsManager;
+class GlicExperimentalTriggeringManager;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -128,6 +129,8 @@ class Host : public GlicSharingManagerProvider {
     virtual void CreateActorHandler(
         mojo::PendingReceiver<mojom::ActorHandler> receiver,
         mojo::PendingRemote<mojom::ActorClient> client) = 0;
+    virtual GlicExperimentalTriggeringManager*
+    GetExperimentalTriggeringManager() = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -165,6 +168,7 @@ class Host : public GlicSharingManagerProvider {
   Host& operator=(const Host&) = delete;
 
   Profile* profile() const { return profile_; }
+  GlicInstance* glic_instance() const { return glic_instance_; }
 
   void SetDelegate(EmbedderDelegate* delegate);
 
@@ -387,12 +391,6 @@ class Host : public GlicSharingManagerProvider {
   bool IsWebContentPresentAndMatches(content::RenderFrameHost* rfh);
 
   void NotifyActorTaskListRowClicked(int32_t task_id);
-
-  // Register a handler to observe experimental triggering related updates.
-  // The callback informs if the registration operations was successful or not.
-  virtual void GetExperimentalTriggeringUpdates(
-      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback);
 
 
   virtual void Invoke(mojom::InvokeOptionsPtr options,

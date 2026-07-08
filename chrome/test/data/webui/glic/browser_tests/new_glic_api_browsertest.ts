@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -1602,6 +1602,17 @@ class InitiallyNotResizableTest extends ApiTestFixtureBase {
   }
 }
 
+class ScreenshotTests extends ApiTestFixtureBase {
+  async testCaptureAndUploadEncryptedScreenshot() {
+    await runUntil(() => this.client.lastUploadedScreenshot !== null);
+    assertDefined(this.client.lastUploadedScreenshot);
+    assertTrue(this.client.lastUploadedScreenshot!.data.byteLength > 0);
+    assertEquals(
+        this.client.lastUploadedScreenshot!.encryptionScheme,
+        ScreenshotEncryptionScheme.RFC8291);
+  }
+}
+
 const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTests,
   AdditionalContextQueuedTest,
@@ -1610,6 +1621,7 @@ const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   InvokeTest,
   ApiTestFailsToInitialize,
   TriggeringUpdatesTest,
+  ScreenshotTests,
 ];
 
 

@@ -74,6 +74,17 @@ bool IsTabValidForSharing(tabs::TabInterface* tab) {
          std::ranges::contains(GetUrlAllowList(), url);
 }
 
+tabs::TabInterface* GetMostRecentlyActiveTab(
+    const std::vector<tabs::TabInterface*>& tabs) {
+  CHECK(!tabs.empty());
+  auto it = std::max_element(
+      tabs.begin(), tabs.end(),
+      [](const tabs::TabInterface* a, const tabs::TabInterface* b) {
+        return a->GetLastActiveTime() < b->GetLastActiveTime();
+      });
+  return *it;
+}
+
 GlicPinEvent GetEmptyPinEvent() {
   return GlicPinEvent(GlicPinTrigger::kUnknown, base::TimeTicks::Now());
 }

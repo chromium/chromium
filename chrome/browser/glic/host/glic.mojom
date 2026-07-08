@@ -1402,6 +1402,10 @@ interface WebClientHandler {
   CreateActorHandler(pending_receiver<ActorHandler> receiver,
                      pending_remote<ActorClient> client);
 
+  // Sets the experimental triggering client.
+  CreateExperimentalTriggeringClient(
+      pending_remote<ExperimentalTriggeringClient> client);
+
   // Creates the annotation handler.
   CreateAnnotationHandler(pending_receiver<AnnotationHandler> receiver);
 
@@ -2207,6 +2211,20 @@ interface ExperimentalTriggeringUpdatesHandler {
            SubscriberObservationType observation);
 };
 
+// Interface for experimental triggering messages sent from browser to web
+// client.
+interface ExperimentalTriggeringClient {
+  // Requests the web client to upload a screenshot of the target tab's
+  // web contents to remote storage.
+  UploadEncryptedScreenshot(Screenshot screenshot)
+      => (string? file_token);
+
+  // Register a handler to observe Glic updates.
+  GetExperimentalTriggeringUpdates(
+      pending_remote<ExperimentalTriggeringUpdatesHandler> handler)
+      => (bool success);
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
@@ -2309,11 +2327,6 @@ interface WebClient {
 
   // Invokes Glic with specific options. Expects a return to signal completion.
   Invoke(InvokeOptions options) => ();
-
-  // Register a handler to observe Glic updates.
-  GetExperimentalTriggeringUpdates(
-      pending_remote<ExperimentalTriggeringUpdatesHandler> handler)
-      => (bool success);
 };
 
 // @generate glic_api
@@ -2563,19 +2576,38 @@ interface CaptureRegionObserver {
 };
 
 // @generate glic_api
+// Specifies the encryption scheme used for the screenshot data.
+[Stable, Extensible]
+enum ScreenshotEncryptionScheme {
+  // Unknown or unrecognized scheme across version boundaries.
+  [Default] kUnknown = 0,
+  // Unencrypted screenshot data.
+  kNone = 1,
+  // Encrypted according to RFC 8291 (Web Push message encryption), combining an
+  // ephemeral ECDH P-256 public key share header with RFC 8188 record
+  // encryption.
+  kRfc8291 = 2,
+};
+
+// @generate glic_api
 // An encoded screenshot image and associated metadata.
 struct Screenshot {
   // Width and height of the image in pixels.
   uint32 width_pixels;
   uint32 height_pixels;
-  // Encoded image data. ArrayBuffer is transferable, so it should be copied
-  // more efficiently over postMessage.
+  // Encoded image data. If `encryption_scheme` is not `kNone`, this contains
+  // the encrypted ciphertext payload. ArrayBuffer is transferable, so it should
+  // be copied more efficiently over postMessage.
   // @glic_type ArrayBuffer
   array<uint8> data;
-  // The image encoding format represented as a MIME type.
+  // The unencrypted source image format represented as a MIME type (e.g.,
+  // "image/jpeg").
   string mime_type;
   // Image annotations for this screenshot.
   ImageOriginAnnotations origin_annotations;
+  // The encryption scheme applied to the image data in `data`.
+  // @glic_optional
+  ScreenshotEncryptionScheme encryption_scheme;
 };
 
 // @generate glic_api

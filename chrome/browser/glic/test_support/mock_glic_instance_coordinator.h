@@ -114,11 +114,6 @@ class MockGlicInstanceCoordinator
               (content::RenderFrameHost*),
               (override));
 
-  MOCK_METHOD(void,
-              GetExperimentalTriggeringUpdates,
-              (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,
-               base::OnceCallback<void(bool)>),
-              (override));
 
  private:
   GlicDelegatingSharingManager dummy_sharing_manager_;

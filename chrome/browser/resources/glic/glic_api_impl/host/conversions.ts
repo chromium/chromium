@@ -81,6 +81,7 @@ export function screenshotToClient(
     data: buffer,
     mimeType: screenshot.mimeType,
     originAnnotations: {},
+    encryptionScheme: enumToClient(screenshot.encryptionScheme),
   };
 }
 

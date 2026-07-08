@@ -56,11 +56,6 @@ class TestingGlicInstanceCoordinator
 
   void NotifyShowHide() { global_show_hide_subscriptions_.Notify(); }
 
-  void GetExperimentalTriggeringUpdates(
-      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback) override {
-    std::move(success_status_callback).Run(true);
-  }
 
  private:
   base::RepeatingClosureList global_show_hide_subscriptions_;

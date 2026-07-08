@@ -187,6 +187,12 @@ export function enumToClient(
   val: mojomGlic.ScreenshotCompressionQuality | null):
     glicApi.ScreenshotCompressionQuality | undefined;
 export function enumToClient(
+  val: mojomGlic.ScreenshotEncryptionScheme):
+    glicApi.ScreenshotEncryptionScheme;
+export function enumToClient(
+  val: mojomGlic.ScreenshotEncryptionScheme | null):
+    glicApi.ScreenshotEncryptionScheme | undefined;
+export function enumToClient(
   val: mojomGlic.ScreenshotImageFormat):
     glicApi.ScreenshotImageFormat;
 export function enumToClient(
@@ -436,6 +442,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.ScreenshotCompressionQuality | undefined):
     mojomGlic.ScreenshotCompressionQuality | null;
+export function enumFromClient(
+  val: glicApi.ScreenshotEncryptionScheme):
+    mojomGlic.ScreenshotEncryptionScheme;
+export function enumFromClient(
+  val: glicApi.ScreenshotEncryptionScheme | undefined):
+    mojomGlic.ScreenshotEncryptionScheme | null;
 export function enumFromClient(
   val: glicApi.ScreenshotImageFormat):
     mojomGlic.ScreenshotImageFormat;

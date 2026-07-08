@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
+import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {assertNever} from '../transport/messaging.js';
-import type {ResponseExtras} from '../transport/messaging.js';
 import {createBidirectionalPostMessageTransport} from '../transport/post_message_transport.js';
 import type {PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ERROR_CODEC, ErrorWithReasonImpl, newTransferableException, SubscriberObservationType, WebClientDef, WebClientHostDef, WebClientPinCandidatesObserverDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
+import {ERROR_CODEC, ErrorWithReasonImpl, newTransferableException, WebClientDef, WebClientHostDef, WebClientPinCandidatesObserverDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
@@ -160,50 +160,6 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
     }
   }
 
-  async getExperimentalTriggeringUpdates(
-      payload: {observationId: number},
-      _extras: ResponseExtras): Promise<{success: boolean}> {
-    const getUpdates = this.webClient.getExperimentalTriggeringUpdates;
-    if (!getUpdates) {
-      return {success: false};
-    }
-    const observable = await getUpdates.call(this.webClient);
-    if (!observable) {
-      return {success: false};
-    }
-    const subscriber = observable.subscribeObserver({
-      next: (update: ExperimentalTriggeringUpdate) => {
-        this.host.clientRemote.requestNoResponse(
-            'onExperimentalTriggeringUpdate', {
-              observationId: payload.observationId,
-              update,
-              observation: SubscriberObservationType.UPDATE,
-            });
-      },
-      complete: () => {
-        this.host.clientRemote.requestNoResponse(
-            'onExperimentalTriggeringUpdate', {
-              observationId: payload.observationId,
-              observation: SubscriberObservationType.COMPLETE,
-            });
-        if (subscriber) {
-          subscriber.unsubscribe();
-        }
-      },
-      error: (_err: unknown) => {
-        this.host.clientRemote.requestNoResponse(
-            'onExperimentalTriggeringUpdate', {
-              observationId: payload.observationId,
-              observation: SubscriberObservationType.ERROR,
-            });
-        if (subscriber) {
-          subscriber.unsubscribe();
-        }
-      },
-    });
-    return {success: true};
-  }
-
   notifyActuationOnWebSettingChanged(payload: {
     enabled: boolean,
   }) {
@@ -334,7 +290,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   readonly actorClient: GlicBrowserHostActor;
   readonly annotationClient: GlicBrowserHostAnnotation;
   readonly skillsClient: GlicBrowserHostSkills;
-
+  readonly experimentalTriggeringClient =
+      new GlicBrowserHostExperimentalTriggering();
   private chromeVersion?: ChromeVersion;
   private platform?: Platform;
   private formFactor?: FormFactor;
@@ -447,7 +404,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.skillsClient.initialize(
         response.initialState, this.router, response.skillsRemote,
         response.skillsReceiver);
-
+    this.experimentalTriggeringClient.initialize(
+        this.router, response.experimentalTriggeringReceiver, this.webClient,
+        this.clientRemote);
     const state = response.initialState;
     this.geminiEnterpriseSettings.assignAndSignal(
         state.geminiEnterpriseSettings ?? undefined);
@@ -562,6 +521,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   getChromeVersion() {
     return Promise.resolve(this.chromeVersion!);
+  }
+
+  experimentalTriggering() {
+    return this.experimentalTriggeringClient;
   }
 
   getPlatform(): Platform {

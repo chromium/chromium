@@ -9,7 +9,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from '../../browser_proxy.js';
-import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, SkillsClientReceiver, SkillsHandlerRemote, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, ExperimentalTriggeringClientReceiver, SkillsClientReceiver, SkillsHandlerRemote, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
@@ -21,6 +21,9 @@ import {ActorClientDef, ActorHostDef} from '../actor/actor_types.js';
 import {AnnotationHostMessageHandler} from '../annotation/annotation_host.js';
 import {AnnotationHostDef} from '../annotation/annotation_types.js';
 import type {AnnotationHost} from '../annotation/annotation_types.js';
+import {ExperimentalTriggeringClientImpl} from '../experimental_triggering/experimental_triggering_host.js';
+import {ExperimentalTriggeringClientDef} from '../experimental_triggering/experimental_triggering_types.js';
+import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import {SkillsClientImpl, SkillsHostMessageHandler} from '../skills/skills_host.js';
 import {SkillsClientDef, SkillsHostDef} from '../skills/skills_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
@@ -286,6 +289,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     actorReceiver?: PendingReceiver<ActorClient>,
     skillsRemote?: PendingRemote<SkillsHost>,
     skillsReceiver?: PendingReceiver<SkillsClient>,
+    experimentalTriggeringReceiver?: PendingReceiver<
+                                      ExperimentalTriggeringClient>,
   } {
     this.panelIsActive = initialState.panelIsActive;
 
@@ -329,11 +334,21 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
       skillsReceiver = receiverVal;
     }
 
+    const {remote: clientRemote, receiver: experimentalTriggeringReceiver} =
+        this.communicator.router.newPipeWithRemote(
+            ExperimentalTriggeringClientDef);
+    const experimentalTriggeringClientReceiver =
+        new ExperimentalTriggeringClientReceiver(
+            new ExperimentalTriggeringClientImpl(clientRemote, this));
+    this.handler.createExperimentalTriggeringClient(
+        experimentalTriggeringClientReceiver.$.bindNewPipeAndPassRemote());
+
     return {
       actorRemote,
       actorReceiver,
       skillsRemote,
       skillsReceiver,
+      experimentalTriggeringReceiver,
     };
   }
 

@@ -789,7 +789,9 @@ void GlicActorClientSession::ResumeActorTask(
             std::move(page_context.screenshot_result->screenshot_data),
             page_context.screenshot_result->mime_type,
             // TODO(b/380495633): Finalize and implement image annotations.
-            glic::mojom::ImageOriginAnnotations::New());
+            glic::mojom::ImageOriginAnnotations::New(),
+            /*encryption_scheme=*/
+            glic::mojom::ScreenshotEncryptionScheme::kNone);
 
         if (page_context.screenshot_info.has_value()) {
           glic_tab_context->screenshot_info =

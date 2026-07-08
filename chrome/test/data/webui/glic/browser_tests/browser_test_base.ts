@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind, Screenshot} from '/glic/glic_api/glic_api.js';
 import {ObservableValue, Subject, type Subscriber} from '/glic/observable.js';
 import {TaskQueue} from '/glic/task_queue.js';
 
@@ -176,6 +176,12 @@ export class WebClient implements GlicWebClient {
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
+    glicBrowserHost.experimentalTriggering?.()
+        ?.uploadEncryptedScreenshotRequests?.()
+        ?.subscribe((request) => {
+          this.lastUploadedScreenshot = request.screenshot;
+          request.uploadComplete(this.mockFileToken);
+        });
     this.initializedPromise.resolve();
   }
 
@@ -209,6 +215,14 @@ export class WebClient implements GlicWebClient {
   waitForInitialize(): Promise<void> {
     return this.initializedPromise.promise;
   }
+
+  lastUploadedScreenshot: Screenshot|null = null;
+  get lastUploadedScreenshotPayload(): Uint8Array|null {
+    return this.lastUploadedScreenshot ?
+        new Uint8Array(this.lastUploadedScreenshot.data) :
+        null;
+  }
+  mockFileToken: string|null = 'mock-file-token-12345';
 }
 
 export interface TestStepper {

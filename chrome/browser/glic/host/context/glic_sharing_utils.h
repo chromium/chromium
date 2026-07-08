@@ -36,6 +36,11 @@ bool IsTabValidForPinningInProfile(tabs::TabInterface* tab, Profile* profile);
 bool IsTabValidForSharing(content::WebContents* web_contents);
 bool IsTabValidForSharing(tabs::TabInterface* tab);
 
+// Returns the most recently active tab from the given list of tabs.
+// The list of tabs must not be empty.
+tabs::TabInterface* GetMostRecentlyActiveTab(
+    const std::vector<tabs::TabInterface*>& tabs);
+
 // Returns an empty pin event.
 GlicPinEvent GetEmptyPinEvent();
 

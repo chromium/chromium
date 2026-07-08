@@ -140,11 +140,6 @@ class GlicInstanceCoordinator {
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) = 0;
   virtual GlicInstance* GetActiveInstance() = 0;
-
-  // Registers a handler to observe experimental triggering related updates.
-  virtual void GetExperimentalTriggeringUpdates(
-      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback) = 0;
 };
 
 }  // namespace glic

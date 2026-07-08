@@ -183,7 +183,8 @@ void HandleFetchPageResult(
         std::move(page_context.screenshot_result->screenshot_data),
         page_context.screenshot_result->mime_type,
         // Implement image annotations (see b/380495633).
-        glic::mojom::ImageOriginAnnotations::New());
+        glic::mojom::ImageOriginAnnotations::New(),
+        /*encryption_scheme=*/glic::mojom::ScreenshotEncryptionScheme::kNone);
   }
 
   if (page_context.pdf_result) {

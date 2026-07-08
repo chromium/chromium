@@ -43,6 +43,7 @@
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -908,6 +909,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                   std::move(client));
   }
 
+  void CreateExperimentalTriggeringClient(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringClient> client)
+      override {
+    if (auto* manager =
+            host().instance_delegate().GetExperimentalTriggeringManager()) {
+      manager->Bind(std::move(client));
+    }
+  }
+
   void CreateAnnotationHandler(
       mojo::PendingReceiver<mojom::AnnotationHandler> receiver) override {
     if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
@@ -1578,13 +1588,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void Invoke(mojom::InvokeOptionsPtr options,
               base::OnceClosure callback) override {
     web_client_->Invoke(std::move(options), std::move(callback));
-  }
-
-  void GetExperimentalTriggeringUpdates(
-      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback) override {
-    web_client_->GetExperimentalTriggeringUpdates(
-        std::move(handler), std::move(success_status_callback));
   }
 
 

@@ -30,6 +30,7 @@ class TabInterface;
 namespace glic {
 
 class GlicActorTaskManager;
+class GlicExperimentalTriggeringManager;
 class Host;
 class GlicSharingManager;
 
@@ -82,12 +83,6 @@ class GlicInstance {
   // TODO(b/512866173): Look into migrating this usage to the invoke API.
   virtual void NotifyActorTaskListRowClicked(int32_t task_id) = 0;
 
-  // Register a handler to observe experimental triggering related updates.
-  // The callback informs if the registration operations was successful or not.
-  virtual void GetExperimentalTriggeringUpdates(
-      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback) = 0;
-
   // Gets the window size of the active embedder.
   virtual gfx::Size GetPanelSize() = 0;
 
@@ -117,6 +112,8 @@ class GlicInstance {
   virtual base::TimeDelta GetTimeSinceLastPromptSubmission() const = 0;
 
   virtual GlicActorTaskManager* GetActorTaskManager() = 0;
+  virtual GlicExperimentalTriggeringManager*
+  GetExperimentalTriggeringManager() = 0;
 
   // Returns true if the instance is currently performing an actuation task.
   virtual bool IsActuating() const = 0;

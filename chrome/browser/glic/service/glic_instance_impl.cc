@@ -20,6 +20,7 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
@@ -261,6 +262,9 @@ GlicInstanceImpl::GlicInstanceImpl(
         actor_task_manager_->AddActuatingChangedCallback(
             base::BindRepeating(&Host::OnActuatingChanged, host_.GetWeakPtr()));
   }
+  experimental_triggering_manager_ =
+      std::make_unique<GlicExperimentalTriggeringManager>(
+          this, &GetSharingManagerInternal());
 
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
@@ -829,13 +833,6 @@ void GlicInstanceImpl::NotifyActorTaskListRowClicked(int32_t task_id) {
   host_.NotifyActorTaskListRowClicked(task_id);
 }
 
-void GlicInstanceImpl::GetExperimentalTriggeringUpdates(
-    mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-    base::OnceCallback<void(bool)> success_status_callback) {
-  host_.GetExperimentalTriggeringUpdates(std::move(handler),
-                                         std::move(success_status_callback));
-}
-
 const InstanceId& GlicInstanceImpl::id() const {
   return id_;
 }
@@ -863,6 +860,11 @@ void GlicInstanceImpl::CancelTask() {
 
 GlicActorTaskManager* GlicInstanceImpl::GetActorTaskManager() {
   return actor_task_manager_.get();
+}
+
+GlicExperimentalTriggeringManager*
+GlicInstanceImpl::GetExperimentalTriggeringManager() {
+  return experimental_triggering_manager_.get();
 }
 
 GlicSharingManager* GlicInstanceImpl::GetSharingManager() {

@@ -187,6 +187,27 @@ export declare interface GlicWebClient {
   // GlicBrowserHost that return an Observable or ObservableValue instances.
 }
 
+/** Request object for uploading an encrypted screenshot of the active tab. */
+export declare interface ExperimentalTriggeringUploadScreenshotRequest {
+  /** The screenshot to upload. */
+  screenshot: Screenshot;
+  /** Client must call when upload has finished. */
+  uploadComplete(fileToken: string|null): void;
+}
+
+/**
+ * Interface providing experimental triggering capabilities from the browser
+ * host.
+ */
+export declare interface GlicExperimentalTriggeringBrowserHost {
+  /**
+   * Returns an Observable emitting requests when the browser triggers an
+   * encrypted screenshot capture and upload.
+   */
+  uploadEncryptedScreenshotRequests?
+      (): Observable<ExperimentalTriggeringUploadScreenshotRequest>;
+}
+
 /**
  * Provides functionality implemented by the browser to the Glic web client.
  * Most functions are optional.
@@ -194,6 +215,12 @@ export declare interface GlicWebClient {
 export declare interface GlicBrowserHost {
   /** Returns the precise Chrome's version. */
   getChromeVersion(): Promise<ChromeVersion>;
+
+  /**
+   * Returns the experimental triggering host interface, or undefined if
+   * experimental triggering is disabled.
+   */
+  experimentalTriggering?(): GlicExperimentalTriggeringBrowserHost;
 
   /** Return the platform glic is running on. */
   getPlatform?(): Platform;
@@ -2369,6 +2396,20 @@ export enum CaptureRegionErrorReason {
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Specifies the encryption scheme used for the screenshot data.
+export enum ScreenshotEncryptionScheme {
+  // Unknown or unrecognized scheme across version boundaries.
+  UNKNOWN = 0,
+  // Unencrypted screenshot data.
+  NONE = 1,
+  // Encrypted according to RFC 8291 (Web Push message encryption), combining an
+  // ephemeral ECDH P-256 public key share header with RFC 8188 record
+  // encryption.
+  RFC8291 = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 // Fields of interest from the Glic settings page.
 export enum SettingsPageField {
   // The OS hotkey configuration field.
@@ -3150,13 +3191,17 @@ export declare interface Screenshot {
   // Width and height of the image in pixels.
   widthPixels: number;
   heightPixels: number;
-  // Encoded image data. ArrayBuffer is transferable, so it should be copied
-  // more efficiently over postMessage.
+  // Encoded image data. If `encryption_scheme` is not `kNone`, this contains
+  // the encrypted ciphertext payload. ArrayBuffer is transferable, so it should
+  // be copied more efficiently over postMessage.
   data: ArrayBuffer;
-  // The image encoding format represented as a MIME type.
+  // The unencrypted source image format represented as a MIME type (e.g.,
+  // "image/jpeg").
   mimeType: string;
   // Image annotations for this screenshot.
   originAnnotations: ImageOriginAnnotations;
+  // The encryption scheme applied to the image data in `data`.
+  encryptionScheme?: ScreenshotEncryptionScheme;
 }
 
 ///////////////////////////////////////////////

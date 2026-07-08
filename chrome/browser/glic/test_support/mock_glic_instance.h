@@ -54,6 +54,10 @@ class MockGlicInstance : public GlicInstance {
               (),
               (const, override));
   MOCK_METHOD(GlicActorTaskManager*, GetActorTaskManager, (), (override));
+  MOCK_METHOD(GlicExperimentalTriggeringManager*,
+              GetExperimentalTriggeringManager,
+              (),
+              (override));
   MOCK_METHOD(bool, IsActuating, (), (const, override));
   MOCK_METHOD(void, CancelTask, (), (override));
 
@@ -63,11 +67,6 @@ class MockGlicInstance : public GlicInstance {
               (std::optional<tabs::TabInterface*>),
               (override));
 
-  MOCK_METHOD(void,
-              GetExperimentalTriggeringUpdates,
-              (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,
-               base::OnceCallback<void(bool)>),
-              (override));
   MOCK_METHOD(void,
               SendAdditionalContext,
               (mojom::AdditionalContextPtr),
