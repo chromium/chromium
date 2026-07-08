@@ -237,6 +237,17 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
   EXPECT_THAT(request, NotNull());
 }
 
+TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldCallRotateSharedKey) {
+  EXPECT_CALL(*delegate(), RotateSharedKey).WillOnce(InvokeWithoutArgs([]() {
+    return std::make_unique<TrustedVaultConnection::Request>();
+  }));
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      throttling_connection()->RotateSharedKey(
+          account_info(), trusted_vault_pb::RotateSharedKeyRequest(),
+          base::DoNothing());
+  EXPECT_THAT(request, NotNull());
+}
+
 }  // namespace
 
 }  // namespace trusted_vault

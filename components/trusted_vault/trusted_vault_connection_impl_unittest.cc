@@ -327,6 +327,23 @@ class TrustedVaultConnectionImplTest
         /*content=*/std::string());
   }
 
+  bool RespondToRotateSharedKeyRequest(net::HttpStatusCode response_http_code,
+                                       const std::string& response_content) {
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullRotateSharedKeyURLForTesting(kTestURL, security_domain()).spec(),
+        response_content, response_http_code);
+  }
+
+  bool RespondToRotateSharedKeyRequestWithNetworkError() {
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullRotateSharedKeyURLForTesting(kTestURL, security_domain()),
+        network::URLLoaderCompletionStatus(net::ERR_FAILED),
+        /*response_head=*/network::mojom::URLResponseHead::New(),
+        /*content=*/std::string());
+  }
+
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -335,7 +352,7 @@ class TrustedVaultConnectionImplTest
 
   const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2},
                                                                {1, 2, 3, 4}};
-  const GURL kTestURL = GURL("https://test.com/test");
+  const GURL kTestURL = GURL("https://test.com/test/");
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -1580,6 +1597,173 @@ TEST_P(TrustedVaultConnectionImplTest,
 
   // No requests should be sent to the network.
   EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeySuccess) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  request_proto.set_security_domain("test_security_domain");
+
+  int new_epoch = 123;
+  trusted_vault_pb::RotateSharedKeyResponse response_proto;
+  response_proto.set_new_epoch(new_epoch);
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  // Verify request sent.
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url, Eq(GetFullRotateSharedKeyURLForTesting(
+                                        kTestURL, security_domain())));
+
+  trusted_vault_pb::RotateSharedKeyRequest deserialized_body;
+  EXPECT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(resource_request)));
+  EXPECT_THAT(deserialized_body.security_domain(), Eq("test_security_domain"));
+
+  // Respond
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(
+      net::HTTP_OK, response_proto.SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kSuccess));
+  EXPECT_THAT(future.Get<1>(), Eq(new_epoch));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNetworkError) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  // Advance time to bypass retry logic.
+  task_environment().FastForwardBy(
+      TrustedVaultConnectionImpl::kMaxKeyRotationRetryDuration);
+
+  EXPECT_TRUE(RespondToRotateSharedKeyRequestWithNetworkError());
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kNetworkError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyBadRequest) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_BAD_REQUEST, ""));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kMembershipMismatch));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNotFound) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_NOT_FOUND, ""));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kEmptySecurityDomain));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyConflict) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_CONFLICT, ""));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kLocalDataObsolete));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInternalServerError) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(
+      RespondToRotateSharedKeyRequest(net::HTTP_INTERNAL_SERVER_ERROR, ""));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kOtherError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyParsingError) {
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_TRUE(
+      RespondToRotateSharedKeyRequest(net::HTTP_OK, "corrupted_proto_bytes"));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kOtherError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       RotateSharedKeyAccessTokenFetchingFailure) {
+  std::unique_ptr<TrustedVaultConnectionImpl> connection =
+      CreateConnectionWithAccessTokenError(
+          TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError);
+
+  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection->RotateSharedKey(CoreAccountInfo(), request_proto,
+                                  future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  // No requests should be sent to the network.
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+
+  EXPECT_THAT(
+      future.Get<0>(),
+      Eq(TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
 }
 
 }  // namespace

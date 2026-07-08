@@ -52,11 +52,6 @@ TEST(StandaloneTrustedVaultServerConstantsTest,
   EXPECT_THAT(
       GetDownloadGaiaPasswordPublicKeyURL(kTestUrl).spec(),
       Eq("https://example.com/v1:getCurrentGaiaPasswordEncryptionKeyData"));
-
-  const GURL kTestUrlNoSlash("https://example.com/v1");
-  EXPECT_THAT(
-      GetDownloadGaiaPasswordPublicKeyURL(kTestUrlNoSlash).spec(),
-      Eq("https://example.com/v1:getCurrentGaiaPasswordEncryptionKeyData"));
 }
 
 TEST(StandaloneTrustedVaultServerConstantsTest,

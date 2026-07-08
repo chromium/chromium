@@ -626,6 +626,56 @@ void ProcessDownloadGaiaPasswordPublicKeyResponse(
                           std::vector<uint8_t>(key_str.begin(), key_str.end()));
 }
 
+void ProcessRotateSharedKeyResponse(
+    TrustedVaultConnection::RotateSharedKeyCallback callback,
+    TrustedVaultRequest::HttpStatus http_status,
+    const std::string& response_body) {
+  switch (http_status) {
+    case TrustedVaultRequest::HttpStatus::kSuccess:
+      break;
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
+      std::move(callback).Run(TrustedVaultKeyRotationStatus::kNetworkError, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kOtherError:
+      std::move(callback).Run(TrustedVaultKeyRotationStatus::kOtherError, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+      std::move(callback).Run(
+          TrustedVaultKeyRotationStatus::kTransientAccessTokenFetchError, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+      std::move(callback).Run(
+          TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+      std::move(callback).Run(TrustedVaultKeyRotationStatus::
+                                  kPrimaryAccountChangeAccessTokenFetchError,
+                              0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+      std::move(callback).Run(
+          TrustedVaultKeyRotationStatus::kEmptySecurityDomain, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
+      std::move(callback).Run(
+          TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+      return;
+    case TrustedVaultRequest::HttpStatus::kConflict:
+      std::move(callback).Run(TrustedVaultKeyRotationStatus::kLocalDataObsolete,
+                              0);
+      return;
+  }
+
+  trusted_vault_pb::RotateSharedKeyResponse response;
+  if (!response.ParseFromString(response_body)) {
+    std::move(callback).Run(TrustedVaultKeyRotationStatus::kOtherError, 0);
+    return;
+  }
+  std::move(callback).Run(TrustedVaultKeyRotationStatus::kSuccess,
+                          response.new_epoch());
+}
+
 }  // namespace
 
 std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
@@ -753,6 +803,28 @@ TrustedVaultConnectionImpl::DownloadGaiaPasswordPublicKey(
       &ProcessDownloadGaiaPasswordPublicKeyResponse, std::move(callback)));
 
   return request;
+}
+
+std::unique_ptr<TrustedVaultConnection::Request>
+TrustedVaultConnectionImpl::RotateSharedKey(
+    const CoreAccountInfo& account_info,
+    const trusted_vault_pb::RotateSharedKeyRequest& request,
+    RotateSharedKeyCallback callback) {
+  auto http_request = std::make_unique<TrustedVaultRequest>(
+      security_domain_, account_info.account_id,
+      TrustedVaultRequest::HttpMethod::kPost,
+      GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain_),
+      /*serialized_request_proto=*/request.SerializeAsString(),
+      /*max_retry_duration=*/kMaxKeyRotationRetryDuration,
+      GetOrCreateURLLoaderFactory(), access_token_fetcher_->Clone(),
+      MakeFetchStatusCallback(
+          security_domain_,
+          TrustedVaultURLFetchReasonForUMA::kRotateSharedKey));
+
+  http_request->FetchAccessTokenAndSendRequest(
+      base::BindOnce(&ProcessRotateSharedKeyResponse, std::move(callback)));
+
+  return http_request;
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>

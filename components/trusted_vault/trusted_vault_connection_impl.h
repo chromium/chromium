@@ -36,6 +36,10 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   // retries in case of transient errors. Exposed for testing.
   static constexpr base::TimeDelta kMaxJoinSecurityDomainRetryDuration =
       base::Hours(1);
+  // Specifies how long RotateSharedKeyRequest could be delayed due to
+  // retries in case of transient errors. Exposed for testing.
+  static constexpr base::TimeDelta kMaxKeyRotationRetryDuration =
+      base::Seconds(10);
 
   TrustedVaultConnectionImpl(
       SecurityDomainId security_domain,
@@ -75,6 +79,11 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
       const CoreAccountInfo& account_info,
       DownloadGaiaPasswordPublicKeyCallback callback) override;
+
+  std::unique_ptr<Request> RotateSharedKey(
+      const CoreAccountInfo& account_info,
+      const trusted_vault_pb::RotateSharedKeyRequest& request,
+      RotateSharedKeyCallback callback) override;
 
   std::unique_ptr<TrustedVaultConnection::Request>
   DownloadAuthenticationFactorsRegistrationState(

@@ -41,6 +41,8 @@ GURL GetGetSecurityDomainURL(const GURL& server_url,
 GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain);
 GURL GetDownloadGaiaPasswordPublicKeyURL(const GURL& server_url);
+GURL GetRotateSharedKeyURL(const GURL& server_url,
+                           SecurityDomainId security_domain);
 
 // Computes full URL, including alternate proto param.
 GURL GetGetSecurityDomainMembersURLForTesting(
@@ -57,6 +59,8 @@ GURL GetFullGetSecurityDomainMemberURLForTesting(
 GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
                                            SecurityDomainId security_domain);
 GURL GetFullDownloadGaiaPasswordPublicKeyURLForTesting(const GURL& server_url);
+GURL GetFullRotateSharedKeyURLForTesting(const GURL& server_url,
+                                         SecurityDomainId security_domain);
 
 std::string GetSecurityDomainPath(SecurityDomainId domain);
 

@@ -65,11 +65,16 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
 
 GURL GetDownloadGaiaPasswordPublicKeyURL(const GURL& server_url) {
   std::string service_url_spec = server_url.spec();
-  if (service_url_spec.back() == '/') {
-    service_url_spec.pop_back();
-  }
+  CHECK(service_url_spec.back() == '/');
+  service_url_spec.pop_back();
   CHECK(!service_url_spec.empty());
   return GURL(service_url_spec + ":getCurrentGaiaPasswordEncryptionKeyData");
+}
+
+GURL GetRotateSharedKeyURL(const GURL& server_url,
+                           SecurityDomainId security_domain) {
+  return GURL(server_url.spec() + GetSecurityDomainPath(security_domain) +
+              ":rotateSharedKey");
 }
 
 GURL GetGetSecurityDomainMembersURLForTesting(
@@ -112,6 +117,13 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
 GURL GetFullDownloadGaiaPasswordPublicKeyURLForTesting(const GURL& server_url) {
   return net::AppendQueryParameter(
       GetDownloadGaiaPasswordPublicKeyURL(server_url),
+      kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
+}
+
+GURL GetFullRotateSharedKeyURLForTesting(const GURL& server_url,
+                                         SecurityDomainId security_domain) {
+  return net::AppendQueryParameter(
+      GetRotateSharedKeyURL(server_url, security_domain),
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 

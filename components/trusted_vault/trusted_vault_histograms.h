@@ -73,6 +73,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kRegisterGpmPin,
   kRegisterICloudKeychain,
   kDownloadGaiaPasswordPublicKey,
+  kRotateSharedKey,
 };
 
 // Used to provide UMA metric breakdowns.

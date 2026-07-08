@@ -310,6 +310,7 @@ chromium-metrics-reviews@google.com.
                  local password)"/>
     <variant name=".RegisterUnspecifiedAuthenticationFactor"
         summary="Registration of an authentication factor of unspecified type"/>
+    <variant name=".RotateSharedKey" summary="Rotation of the shared key"/>
   </token>
 </histogram>
 

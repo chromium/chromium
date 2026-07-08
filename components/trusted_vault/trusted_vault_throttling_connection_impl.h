@@ -64,6 +64,11 @@ class TrustedVaultThrottlingConnectionImpl
       const CoreAccountInfo& account_info,
       DownloadGaiaPasswordPublicKeyCallback callback) override;
 
+  std::unique_ptr<Request> RotateSharedKey(
+      const CoreAccountInfo& account_info,
+      const trusted_vault_pb::RotateSharedKeyRequest& request,
+      RotateSharedKeyCallback callback) override;
+
   std::unique_ptr<TrustedVaultConnection::Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
