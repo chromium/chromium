@@ -1033,6 +1033,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mEventDispatcher.updateRelevantEventTypes(
                     AccessibilityState.relevantEventTypesForCurrentServices());
 
+            // If we are disabling the cache for assistive technology users, clear the cache when
+            // an AT is activated.
+            if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache.getValue()
+                    && AccessibilityState.isAccessibilityToolPresent()) {
+                mNodeInfoCache.clear();
+            }
+
             // When no accessibility services are running, disable renderer accessibility and tear
             // down objects. If we have disabled then re-enabled the renderer accessibility multiple
             // times for this instance, return early and keep enabled to prevent further churn.
@@ -1325,8 +1332,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (WebContentsAccessibilityImplJni.get()
                     .populateAccessibilityNodeInfo(mNativeObj, info, virtualViewId)) {
                 // After successfully populating this node, add it to our cache then return.
-                if (!ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache
-                        .getValue()) {
+                // Cache is only disabled when accessibility tools are present, to preserve
+                // performance for the less correctness-oriented general user population.
+                if (!(ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheDisableCache.getValue()
+                        && AccessibilityState.isAccessibilityToolPresent())) {
                     mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
                 }
                 mHistogramRecorder.incrementNodeWasCreatedFromScratch();
