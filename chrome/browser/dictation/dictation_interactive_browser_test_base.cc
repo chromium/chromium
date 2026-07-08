@@ -51,8 +51,7 @@ DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::StartSession() {
   return Steps(Do([this] {
     dictation_service().StartSession(*browser(),
-                                     DefaultInPageTargetId(web_contents()),
-                                     /*selected_text=*/"");
+                                     DefaultInPageTargetId(web_contents()));
     if (dictation_service().session_controller()) {
       last_started_provider_ =
           static_cast<ListenerStreamProvider*>(dictation_service()

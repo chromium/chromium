@@ -36,8 +36,7 @@ void SessionController::Initialize() {
   ui_ = delegate_->CreateUi(*this);
 }
 
-void SessionController::StartDictationStream(const TargetId& target_id,
-                                             const std::string& selected_text) {
+void SessionController::StartDictationStream(const TargetId& target_id) {
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
@@ -47,8 +46,7 @@ void SessionController::StartDictationStream(const TargetId& target_id,
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
-  stream_provider->BindToTargetAndConnect(
-      std::make_unique<Target>(target_id, selected_text));
+  stream_provider->BindToTargetAndConnect(std::make_unique<Target>(target_id));
   attached_stream_provider_ = std::move(stream_provider);
 
   last_used_target_id_ = target_id;
@@ -94,9 +92,7 @@ void SessionController::UiRequestStartStream() {
   // target. Starting from UI can only happen after that.
   CHECK(last_used_target_id_.has_value());
 
-  // TODO(b/528720407): We have no good way to get the selected_text from here.
-  // This will move to be collected with page context.
-  StartDictationStream(*last_used_target_id_, /*selected_text=*/"");
+  StartDictationStream(*last_used_target_id_);
 }
 
 SessionState SessionController::GetState() const {

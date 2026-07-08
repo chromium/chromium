@@ -38,8 +38,7 @@ class OnboardingManager {
   // behavior in terms of preventing a session start but should return an error
   // state.
   bool ShowOnboardingIfNeeded(BrowserWindowInterface& window,
-                              const TargetId& target_id,
-                              const std::string& selected_text);
+                              const TargetId& target_id);
 
  private:
   void OnOnboardingCompleted();
@@ -53,7 +52,6 @@ class OnboardingManager {
 
   base::WeakPtr<BrowserWindowInterface> pending_window_;
   std::optional<TargetId> pending_target_id_;
-  std::string pending_selected_text_;
 
   base::WeakPtrFactory<OnboardingManager> weak_ptr_factory_{this};
 };

@@ -55,11 +55,7 @@ class SessionController : public SessionUiDelegate,
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this
   // method.
-  // TODO(b/528720407): Selected text is conceptually part of page context,
-  // it should be captured at the same time as other context. Remove from
-  // this interface.
-  void StartDictationStream(const TargetId& target_id,
-                            const std::string& selected_text);
+  void StartDictationStream(const TargetId& target_id);
 
   // Ends the current dictation stream and detaches the stream provider.
   void EndDictationStream();

@@ -24,12 +24,8 @@ struct TargetId {
 class Target {
  public:
   Target();
-  // TODO(b/528720407): Selected text is part of APC so we should be extracting
-  // it from APC at context-capture time. Remove it from the Target interface.
-  explicit Target(const TargetId& target_id, const std::string& selected_text);
+  explicit Target(const TargetId& target_id);
   virtual ~Target();
-
-  virtual const std::string& GetSelectedText() const;
 
   // Returns the RenderFrameHost associated with this target, or nullptr if it
   // no longer exists.
@@ -44,7 +40,6 @@ class Target {
  private:
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
-  const std::string selected_text_;
   TargetId target_id_;
 };
 

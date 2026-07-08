@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DICTATION_DICTATION_CONTEXT_FETCHER_H_
 #define CHROME_BROWSER_DICTATION_DICTATION_CONTEXT_FETCHER_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -31,7 +29,6 @@ class DictationContextFetcher {
  private:
   void OnPageContextFetched(
       GetContextCallback callback,
-      const std::string& editable_content,
       page_content_annotations::FetchPageContextResultCallbackArg result);
 
   base::WeakPtrFactory<DictationContextFetcher> weak_ptr_factory_{this};

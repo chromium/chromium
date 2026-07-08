@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   EXPECT_FALSE(dictation_service().ShouldShowContextMenuItem());
 
@@ -156,28 +156,6 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   StreamProvider* provider = session_controller()->attached_stream_provider();
   ASSERT_NE(provider, nullptr);
   ASSERT_NE(provider->GetTarget(), nullptr);
-  EXPECT_EQ(provider->GetTarget()->GetSelectedText(), "");
-}
-
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
-                       ExecuteContextMenuCommandWithSelectedText) {
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  params.selection_text = u"selected text";
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.Init();
-
-  ASSERT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_DICTATION));
-  ASSERT_TRUE(menu.IsItemEnabled(IDC_CONTENT_CONTEXT_DICTATION));
-
-  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_DICTATION, 0);
-
-  ASSERT_NE(session_controller(), nullptr);
-  StreamProvider* provider = session_controller()->attached_stream_provider();
-  ASSERT_NE(provider, nullptr);
-  ASSERT_NE(provider->GetTarget(), nullptr);
-  EXPECT_EQ(provider->GetTarget()->GetSelectedText(), "selected text");
 }
 
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
@@ -186,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartSessionAndReceiveTranscription) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -225,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        EndActiveStreamEntersFinalizingState) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -268,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        StartNewStreamWhileFinalizing) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -297,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a second stream while the first is finalizing. The controller should
   // immediately enter kStreamInitializing.
-  controller->StartDictationStream(DefaultInPageTargetId(web_contents()), "");
+  controller->StartDictationStream(DefaultInPageTargetId(web_contents()));
   EXPECT_EQ(controller->GetState(), SessionState::kStreamInitializing);
 
   // Wait for the stream to enter transcribing state.
@@ -317,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterComplete) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -347,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterFailed) {
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ASSERT_NE(controller, nullptr);
@@ -395,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   }
 
   dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                   DefaultInPageTargetId(web_contents()), "");
+                                   DefaultInPageTargetId(web_contents()));
 
   SessionController* controller = session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
@@ -450,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   // Start a new session and stream, commit some text, and stop.
   {
     dictation_service().StartSession(*GetBrowserWindowInterface(),
-                                     DefaultInPageTargetId(web_contents()), "");
+                                     DefaultInPageTargetId(web_contents()));
 
     ASSERT_TRUE(attached_stream());
     auto stream_id = attached_stream()->stream_id_for_testing();

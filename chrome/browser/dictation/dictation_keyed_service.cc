@@ -76,13 +76,11 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
 }
 
 void DictationKeyedService::StartSession(BrowserWindowInterface& window,
-                                         const TargetId& target_id,
-                                         const std::string& selected_text) {
+                                         const TargetId& target_id) {
   CHECK(IsEnabled());
   CHECK(!session_);
 
-  if (onboarding_manager_.ShowOnboardingIfNeeded(window, target_id,
-                                                 selected_text)) {
+  if (onboarding_manager_.ShowOnboardingIfNeeded(window, target_id)) {
     // If onboarding is shown, it will call StartSession again if needed.
     return;
   }
@@ -91,7 +89,7 @@ void DictationKeyedService::StartSession(BrowserWindowInterface& window,
 
   session_->controller_.Initialize();
 
-  session_->controller_.StartDictationStream(target_id, selected_text);
+  session_->controller_.StartDictationStream(target_id);
 }
 
 void DictationKeyedService::EndSession() {
@@ -105,9 +103,7 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
   return !session_;
 }
 
-void DictationKeyedService::ContextMenuHandler(
-    content::RenderFrameHost& rfh,
-    const std::u16string& selected_text) {
+void DictationKeyedService::ContextMenuHandler(content::RenderFrameHost& rfh) {
   // Policy could have changed to disabled while the context menu was open.
   if (!IsEnabled()) {
     return;
@@ -132,8 +128,7 @@ void DictationKeyedService::ContextMenuHandler(
 
   // TODO(crbug.com/525856380): Handle changes to the focused element. Identify
   // the targeted element for the dictation Target.
-  StartSession(*window, TargetId{rfh.GetWeakDocumentPtr()},
-               base::UTF16ToUTF8(selected_text));
+  StartSession(*window, TargetId{rfh.GetWeakDocumentPtr()});
 }
 
 bool DictationKeyedService::IsEnabled() const {

@@ -23,7 +23,6 @@ DictationMenuObserver::DictationMenuObserver(RenderViewContextMenuProxy* proxy)
 DictationMenuObserver::~DictationMenuObserver() = default;
 
 void DictationMenuObserver::InitMenu(const content::ContextMenuParams& params) {
-  selection_text_ = params.selection_text;
   DictationKeyedService* service = GetDictationService();
   if (service && service->ShouldShowContextMenuItem()) {
     CHECK(base::FeatureList::IsEnabled(kDictation));
@@ -51,7 +50,7 @@ void DictationMenuObserver::ExecuteCommand(int command_id) {
 
   DictationKeyedService* service = GetDictationService();
   if (service) {
-    service->ContextMenuHandler(*rfh, selection_text_);
+    service->ContextMenuHandler(*rfh);
   }
 }
 

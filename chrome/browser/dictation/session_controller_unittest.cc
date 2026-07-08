@@ -45,7 +45,7 @@ TEST_F(DictationSessionControllerTest, StartsInactive) {
 // Test that starting and stopping a stream moves the controller into the
 // appropriate state.
 TEST_F(DictationSessionControllerTest, StreamAffectsState) {
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
@@ -57,7 +57,6 @@ TEST_F(DictationSessionControllerTest, StreamAffectsState) {
 // Test that starting a stream initializes the stream provider and binds it to
 // the given target.
 TEST_F(DictationSessionControllerTest, StartStreamInitializesStreamProvider) {
-  std::string selected_text = "test_selection";
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
   MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
@@ -66,11 +65,8 @@ TEST_F(DictationSessionControllerTest, StartStreamInitializesStreamProvider) {
   // target.
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  EXPECT_CALL(*stream_provider_ptr, BindToTargetAndConnect(_))
-      .WillOnce([selected_text](std::unique_ptr<Target> passed_target) {
-        EXPECT_EQ(passed_target->GetSelectedText(), selected_text);
-      });
-  controller_->StartDictationStream(EmptyTargetId(), selected_text);
+  EXPECT_CALL(*stream_provider_ptr, BindToTargetAndConnect(_)).Times(1);
+  controller_->StartDictationStream(EmptyTargetId());
 }
 
 // Test that ending a stream notifies the stream provider to stop.
@@ -81,7 +77,7 @@ TEST_F(DictationSessionControllerTest, EndStream) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
 
   EXPECT_CALL(*stream_provider_ptr, Stop());
   controller_->EndDictationStream();
@@ -96,7 +92,7 @@ TEST_F(DictationSessionControllerTest, EndStreamDuringInitialization) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   ASSERT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   EXPECT_CALL(*stream_provider_ptr, Stop());
@@ -113,7 +109,7 @@ TEST_F(DictationSessionControllerTest, StateChangedCallback) {
       controller_->AddSessionStateChangedCallback(base::BindLambdaForTesting(
           [&](SessionState state) { states.push_back(state); }));
 
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   controller_->EndDictationStream();
 
   EXPECT_THAT(states, testing::ElementsAre(SessionState::kStreamInitializing,
@@ -129,7 +125,7 @@ TEST_F(DictationSessionControllerTest, StreamProviderStatePropagates) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // Transition to transcribing.
@@ -167,7 +163,7 @@ TEST_F(DictationSessionControllerTest, StreamProviderStatePropagatesFailure) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // Transition to transcribing.
@@ -207,7 +203,7 @@ TEST_F(DictationSessionControllerTest, FinalizeStreamToComplete) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // Transition to transcribing.
@@ -240,7 +236,7 @@ TEST_F(DictationSessionControllerTest, FinalizeStreamToFailed) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // Transition to transcribing.
@@ -272,7 +268,7 @@ TEST_F(DictationSessionControllerTest, StartNewStreamWhileFinalizing) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider_1)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // Transition to transcribing.
@@ -295,7 +291,7 @@ TEST_F(DictationSessionControllerTest, StartNewStreamWhileFinalizing) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider_2)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_EQ(controller_->attached_stream_provider(), stream_provider_2_ptr);
 
@@ -326,7 +322,7 @@ TEST_F(DictationSessionControllerTest, MultipleFinalizingStreams) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider_1)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_CALL(*stream_provider_1_ptr, Stop());
   controller_->EndDictationStream();
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
@@ -338,7 +334,7 @@ TEST_F(DictationSessionControllerTest, MultipleFinalizingStreams) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider_2)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_CALL(*stream_provider_2_ptr, Stop());
   controller_->EndDictationStream();
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
@@ -370,7 +366,7 @@ TEST_F(DictationSessionControllerTest, FinalizingStreamStateChangesIgnored) {
 
   EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
       .WillOnce(Return(std::move(mock_stream_provider)));
-  controller_->StartDictationStream(EmptyTargetId(), "");
+  controller_->StartDictationStream(EmptyTargetId());
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
 
   // End the stream. It should transition to kFinalizing.

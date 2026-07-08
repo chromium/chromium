@@ -22,10 +22,8 @@ OnboardingManager::OnboardingManager(DictationKeyedService& service,
 
 OnboardingManager::~OnboardingManager() = default;
 
-bool OnboardingManager::ShowOnboardingIfNeeded(
-    BrowserWindowInterface& window,
-    const TargetId& target_id,
-    const std::string& selected_text) {
+bool OnboardingManager::ShowOnboardingIfNeeded(BrowserWindowInterface& window,
+                                               const TargetId& target_id) {
   if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
     return false;
   }
@@ -44,7 +42,6 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
 
   pending_window_ = window.GetWeakPtr();
   pending_target_id_ = target_id;
-  pending_selected_text_ = selected_text;
 
   dialog_controller_ =
       std::make_unique<OnboardingDialogController>(*active_tab);
@@ -58,7 +55,6 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
     dialog_controller_.reset();
     pending_window_.reset();
     pending_target_id_.reset();
-    pending_selected_text_.clear();
     // TODO(b/527240600): Fails closed but this should report an error somehow.
   }
 
@@ -69,12 +65,10 @@ void OnboardingManager::OnOnboardingCompleted() {
   pref_service_->SetBoolean(prefs::kPrefDictationOnboardingCompleted, true);
   if (pending_window_) {
     CHECK(pending_target_id_);
-    service_->StartSession(*pending_window_, *pending_target_id_,
-                           pending_selected_text_);
+    service_->StartSession(*pending_window_, *pending_target_id_);
   }
   pending_window_.reset();
   pending_target_id_.reset();
-  pending_selected_text_.clear();
 }
 
 void OnboardingManager::OnDialogClosed() {

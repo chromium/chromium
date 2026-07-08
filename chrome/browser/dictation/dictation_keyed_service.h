@@ -60,16 +60,13 @@ class DictationKeyedService : public KeyedService,
   //
   // The new session will immediately start up a stream using the given
   // target_id.
-  void StartSession(BrowserWindowInterface& window,
-                    const TargetId& target_id,
-                    const std::string& selected_text = "");
+  void StartSession(BrowserWindowInterface& window, const TargetId& target_id);
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
 
   // Handles the context menu item click.
-  void ContextMenuHandler(content::RenderFrameHost& rfh,
-                          const std::u16string& selected_text);
+  void ContextMenuHandler(content::RenderFrameHost& rfh);
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {
