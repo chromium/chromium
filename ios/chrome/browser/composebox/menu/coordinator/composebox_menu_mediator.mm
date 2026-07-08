@@ -189,8 +189,7 @@
                      didTapModel:ComposeboxModelOption::kThinkingNoGenUI];
       break;
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
-      // TODO(crbug.com/531673376): Add a delegate call for shared tabs
-      // selection.
+      [self.delegate composeboxMenuMediatorDidRequestSharedTabs:self];
       break;
     case ComposeboxMenuItemType::kAttachmentTabs:
       [self.delegate composeboxMenuMediatorDidRequestTabSelection:self];
