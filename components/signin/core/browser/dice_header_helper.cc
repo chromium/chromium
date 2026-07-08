@@ -27,6 +27,7 @@
 namespace signin {
 
 const char kDiceProtocolVersion[] = "1";
+const char kDiceProtocolVersion2[] = "2";
 const char kGoogleSignoutResponseHeader[] = "Google-Accounts-SignOut";
 
 namespace {
@@ -440,7 +441,11 @@ std::string DiceHeaderHelper::BuildRequestHeader(
     bool sync_feature_enabled,
     const std::string& device_id) {
   std::vector<std::string> parts;
-  parts.push_back(base::StringPrintf("version=%s", kDiceProtocolVersion));
+  const char* version =
+      base::FeatureList::IsEnabled(switches::kDiceHeaderVersion2)
+          ? kDiceProtocolVersion2
+          : kDiceProtocolVersion;
+  parts.push_back(base::StringPrintf("version=%s", version));
   parts.push_back("client_id=" +
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   if (!device_id.empty()) {

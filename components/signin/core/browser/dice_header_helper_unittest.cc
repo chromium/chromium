@@ -1018,4 +1018,21 @@ TEST_F(
           kDiceProtocolVersion, client_id.c_str()));
 }
 
+TEST_F(DiceHeaderHelperTest,
+       AppendOrRemoveDiceRequestHeader_DiceHeaderVersion2Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kDiceHeaderVersion2);
+
+  account_consistency_ = AccountConsistencyMethod::kDice;
+  sync_enabled_ = false;
+
+  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+  ASSERT_FALSE(client_id.empty());
+  CheckDiceHeaderRequest(
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
+      base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
+                         "mode=all_accounts,signout_mode=show_confirmation",
+                         kDiceProtocolVersion2, client_id.c_str()));
+}
+
 }  // namespace signin

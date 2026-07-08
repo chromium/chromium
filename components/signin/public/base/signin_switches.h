@@ -248,6 +248,14 @@ extern const base::FeatureParam<std::string> kCrossDeviceSigninFromDesktopUrl;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Feature flag to send `version=2` in the `X-Chrome-ID-Consistency-Request`
+// header. This signals to Gaia that Chrome supports semicolon-separated (`';'`)
+// key=value pairs in the `X-Chrome-ID-Consistency-Response` header.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDiceHeaderVersion2);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Feature flag for the Linked Accounts request header support.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDiceLinkedAccounts);

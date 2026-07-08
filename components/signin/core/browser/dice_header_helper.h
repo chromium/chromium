@@ -21,6 +21,7 @@ namespace signin {
 
 // Version of the Dice protocol.
 extern const char kDiceProtocolVersion[];
+extern const char kDiceProtocolVersion2[];
 extern const char kGoogleSignoutResponseHeader[];
 
 // SigninHeaderHelper implementation managing the Dice header.
