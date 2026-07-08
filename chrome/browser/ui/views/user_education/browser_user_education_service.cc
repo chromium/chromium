@@ -953,10 +953,14 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHPdfGlicSummarizeFeature:
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForSnoozePromo(
+      FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHPdfGlicSummarizeFeature,
           pdf::PdfHelpBubbleHandlerFactory::kPdfGlicSummarizeElementId,
-          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT)
+          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW,
+          IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
           .SetBubbleTitleText(IDS_PDF_GLIC_SUMMARIZE_IPH_TITLE)
           .SetBubbleIcon(&vector_icons::kChatSparkIcon)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
