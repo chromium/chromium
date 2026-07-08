@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -18,8 +20,12 @@
 
 namespace multistep_filter {
 
-class MultistepFilterService;
+class AnnotationIndexClient;
+class FilterExtractor;
+class FilterStore;
+class FilterSuggestionGenerator;
 class MultistepFilterLogRouter;
+class MultistepFilterService;
 class MultistepFilterUiDelegate;
 
 // Controls the lifecycle of filter suggestions and annotations for a single
@@ -49,7 +55,9 @@ class FilterTabController {
   // delegate.
   FilterTabController(MultistepFilterService* service,
                       MultistepFilterLogRouter* log_router,
-                      base::WeakPtr<MultistepFilterUiDelegate> delegate);
+                      base::WeakPtr<MultistepFilterUiDelegate> delegate,
+                      FilterStore* filter_store,
+                      AnnotationIndexClient* annotation_client);
 
   FilterTabController(const FilterTabController&) = delete;
   FilterTabController& operator=(const FilterTabController&) = delete;
@@ -64,14 +72,25 @@ class FilterTabController {
  private:
   friend class FilterTabControllerTestApi;
 
+  void OnSupportedTasksFetched(
+      const FilterNavigationMetadata& metadata,
+      base::ScopedClosureRunner extraction_runner_fallback,
+      base::ScopedClosureRunner generation_runner_fallback,
+      std::vector<std::string> supported_task_types);
+
   void OnExtractionFinished(const FilterNavigationMetadata& metadata,
                             std::optional<FilterAnnotation> annotation);
   void OnSuggestionGenerated(std::optional<UrlFilterSuggestion> suggestion);
 
   const raw_ref<MultistepFilterService> service_;
+  const raw_ref<FilterStore> filter_store_;
+  const raw_ref<AnnotationIndexClient> annotation_client_;
   raw_ptr<MultistepFilterLogRouter> log_router_;
-  base::WeakPtr<MultistepFilterUiDelegate> delegate_;
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
+  base::WeakPtr<MultistepFilterUiDelegate> delegate_;
+
+  std::unique_ptr<FilterExtractor> filter_extractor_;
+  std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

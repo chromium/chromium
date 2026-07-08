@@ -28,6 +28,16 @@ class FilterTabControllerTestApi {
     controller_->observer_for_test_ = observer;
   }
 
+  void set_filter_extractor(std::unique_ptr<FilterExtractor> filter_extractor) {
+    controller_->filter_extractor_ = std::move(filter_extractor);
+  }
+
+  void set_filter_suggestion_generator(
+      std::unique_ptr<FilterSuggestionGenerator> filter_suggestion_generator) {
+    controller_->filter_suggestion_generator_ =
+        std::move(filter_suggestion_generator);
+  }
+
  private:
   const raw_ref<FilterTabController> controller_;
 };

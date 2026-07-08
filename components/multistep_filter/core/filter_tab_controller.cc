@@ -4,6 +4,7 @@
 
 #include "components/multistep_filter/core/filter_tab_controller.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -11,12 +12,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
+#include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
+#include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 
 namespace multistep_filter {
 
@@ -47,15 +52,47 @@ void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
   }
 }
 
+void LogAnnotationExtractionStarted(MultistepFilterLogRouter* log_router,
+                                    const FilterNavigationMetadata& metadata) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kAnnotationExtractionStarted,
+                       metadata.url.GetHost());
+}
+
+void LogSuggestionSuppressed(MultistepFilterLogRouter* log_router,
+                             const FilterNavigationMetadata& metadata,
+                             std::string_view reason) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kSuggestionSuppressed,
+                       metadata.url.GetHost())
+      << LogDetail{"reason", std::string(reason)};
+}
+
+void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
+                                    const FilterNavigationMetadata& metadata) {
+  MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                       LogEventType::kSuggestionGenerationStarted,
+                       metadata.url.GetHost());
+}
 }  // namespace
 
 FilterTabController::FilterTabController(
     MultistepFilterService* service,
     MultistepFilterLogRouter* log_router,
-    base::WeakPtr<MultistepFilterUiDelegate> delegate)
+    base::WeakPtr<MultistepFilterUiDelegate> delegate,
+    FilterStore* filter_store,
+    AnnotationIndexClient* annotation_client)
     : service_(CHECK_DEREF(service)),
+      filter_store_(CHECK_DEREF(filter_store)),
+      annotation_client_(CHECK_DEREF(annotation_client)),
       log_router_(log_router),
-      delegate_(delegate) {}
+      delegate_(delegate) {
+  DCHECK(delegate_);
+  filter_extractor_ = std::make_unique<FilterExtractor>(
+      *annotation_client_, *filter_store_, log_router_);
+  filter_suggestion_generator_ = std::make_unique<FilterSuggestionGenerator>(
+      *annotation_client_, *filter_store_, log_router_);
+}
 
 FilterTabController::~FilterTabController() = default;
 
@@ -65,10 +102,14 @@ void FilterTabController::OnNavigationFinished(
   // notified of pipeline completion (with std::nullopt results) even if the
   // navigation is determined to be ineligible and returns early. This is an
   // invariant that tests rely on to verify early abort paths without hanging.
-  base::ScopedClosureRunner extraction_runner(
+  //
+  // Exception: For same-url reloads (same_url_non_same_document), we explicitly
+  // release these runners because we want to preserve any existing suggestion
+  // rather than triggering the fallback cleanups.
+  base::ScopedClosureRunner extraction_runner_fallback(
       base::BindOnce(&FilterTabController::OnExtractionFinished,
                      weak_ptr_factory_.GetWeakPtr(), metadata, std::nullopt));
-  base::ScopedClosureRunner generation_runner(
+  base::ScopedClosureRunner generation_runner_fallback(
       base::BindOnce(&FilterTabController::OnSuggestionGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::nullopt));
 
@@ -80,40 +121,82 @@ void FilterTabController::OnNavigationFinished(
   }
 
   if (metadata.is_error_page_navigation) {
-    LogUrlEligibilityCheck(log_router_, metadata,
-                           /*eligible=*/false, "error_page");
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "error_page");
     return;
   }
 
   bool is_unsupported_scheme = !metadata.is_cryptographic_scheme &&
                                !metadata.is_http_allowed_for_testing;
   if (is_unsupported_scheme) {
-    LogUrlEligibilityCheck(log_router_, metadata,
-                           /*eligible=*/false, "non_cryptographic");
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "non_cryptographic");
     return;
   }
 
   if (metadata.url == metadata.prev_url &&
       !metadata.is_same_document_navigation) {
-    LogUrlEligibilityCheck(log_router_, metadata,
-                           /*eligible=*/false, "same_url_non_same_document");
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "same_url_non_same_document");
+    std::ignore = extraction_runner_fallback.Release();
+    std::ignore = generation_runner_fallback.Release();
     return;
   }
 
   if (!metadata.has_user_gesture) {
-    LogUrlEligibilityCheck(log_router_, metadata,
-                           /*eligible=*/false, "no_user_gesture");
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "no_user_gesture");
     return;
   }
 
   if (!service_->HasUserProvidedConsent(metadata.navigation_id,
                                         metadata.url.GetHost())) {
-    LogUrlEligibilityCheck(log_router_, metadata,
-                           /*eligible=*/false, "no_user_consent");
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "no_user_consent");
     return;
   }
 
-  LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/true);
+  annotation_client_->GetSupportedTasks(
+      metadata.url,
+      base::BindOnce(&FilterTabController::OnSupportedTasksFetched,
+                     weak_ptr_factory_.GetWeakPtr(), metadata,
+                     std::move(extraction_runner_fallback),
+                     std::move(generation_runner_fallback)),
+      metadata.navigation_id);
+}
+
+void FilterTabController::OnSupportedTasksFetched(
+    const FilterNavigationMetadata& metadata,
+    base::ScopedClosureRunner extraction_runner_fallback,
+    base::ScopedClosureRunner generation_runner_fallback,
+    std::vector<std::string> supported_task_types) {
+  if (supported_task_types.empty()) {
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "no_supported_tasks");
+    return;
+  }
+
+  LogAnnotationExtractionStarted(log_router_, metadata);
+  filter_extractor_->ExtractAnnotationFromUrl(
+      metadata.url,
+      base::BindOnce(&FilterTabController::OnExtractionFinished,
+                     weak_ptr_factory_.GetWeakPtr(), metadata),
+      metadata.navigation_id);
+  std::ignore = extraction_runner_fallback.Release();
+
+  if (metadata.was_filter_initiated_navigation) {
+    LogSuggestionSuppressed(log_router_, metadata,
+                            "filter_initiated_navigation");
+    return;
+  }
+
+  LogSuggestionGenerationStarted(log_router_, metadata);
+  filter_suggestion_generator_->GenerateSuggestion(
+      metadata.url, supported_task_types,
+      base::BindOnce(&FilterTabController::OnSuggestionGenerated,
+                     weak_ptr_factory_.GetWeakPtr()),
+      metadata.navigation_id);
+  std::ignore = generation_runner_fallback.Release();
 }
 
 void FilterTabController::OnSuggestionGenerated(
