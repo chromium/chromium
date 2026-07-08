@@ -402,8 +402,10 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
 
 std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
-  if (object.IsText() || !object.StyleRef().HasClipPath())
+  if (object.IsText() || !object.StyleRef().HasClipPath() ||
+      (!object.IsSVGChild() && !object.HasLayer())) {
     return std::nullopt;
+  }
 
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
