@@ -110,7 +110,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 
   if (base::FeatureList::IsEnabled(features::kIndigo)) {
     indigo_overlay_view_ = AddChildView(indigo::CreateIndigoOverlayView());
-    indigo_overlay_view_->InsertBeforeInFocusList(contents_view_);
   }
 
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {

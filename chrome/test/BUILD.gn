@@ -10068,7 +10068,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/glic",
       "//chrome/browser/glic:interactive_ui_tests",
       "//chrome/browser/glic/test_support",
-      "//chrome/browser/indigo:interactive_ui_tests",
       "//chrome/browser/skills:interactive_ui_tests",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",
@@ -10084,7 +10083,6 @@ if (!is_android && !is_chromeos_device) {
     data_deps += [
       "//chrome/browser/background/glic:interactive_ui_tests",
       "//chrome/browser/glic:interactive_ui_tests",
-      "//chrome/browser/indigo:interactive_ui_tests",
     ]
 
     sources += [ "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc" ]
