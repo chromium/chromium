@@ -7755,9 +7755,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
     <!-- Glic strings -->
-      <message name="IDS_GLIC_BUTTON_ENTRYPOINT_OPEN_GEMINI_LABEL" desc="Label on the 3-dot menu item used to open Gemini in Chrome.">
-        Open Gemini
-      </message>
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
       </message>
