@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +20,7 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service_delegate.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
@@ -1206,6 +1208,28 @@ INSTANTIATE_TEST_SUITE_P(
         {personal_context::proto::AtMemoryQueryResponse::
              QUERY_CLASSIFICATION_SENSITIVE,
          MemorySearchStatus::kUnsupportedQuery}}));
+
+// Tests that the query service uses the timeout specified by the feature
+// parameter.
+TEST_F(AtMemoryQueryServiceTest, Query_UsesTimeoutFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAtMemory,
+      {{features::kAutofillAtMemoryRequestTimeout.name, "10s"}});
+
+  EXPECT_CALL(
+      mock_service_,
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY, _,
+          Field(&personal_context::ContextMemoryRequestOptions::request_timeout,
+                base::Seconds(10)),
+          _));
+
+  auto service = std::make_unique<AtMemoryQueryService>(
+      std::make_unique<MockAtMemoryQueryServiceDelegate>(),
+      std::make_unique<FakeMemoryDataProvider>(), &mock_service_, "en-US");
+  service->Query(u"what is my name", base::DoNothing());
+}
 
 }  // namespace
 

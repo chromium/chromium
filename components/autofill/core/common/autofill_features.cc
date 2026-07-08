@@ -429,6 +429,12 @@ BASE_FEATURE_PARAM(std::string,
                    "at_memory_eligible_tiers",
                    "");
 
+// The timeout for `PersonalContextService` requests in `AtMemoryQueryService`.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAutofillAtMemoryRequestTimeout,
+                   &kAutofillAtMemory,
+                   base::Seconds(30));
+
 // Controls whether the Autosuggest nudging logic is used. If enabled, user are
 // encouraged to use the AtMemory feature.
 BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
