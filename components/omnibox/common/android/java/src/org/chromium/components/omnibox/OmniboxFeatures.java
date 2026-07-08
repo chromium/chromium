@@ -197,7 +197,9 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED);
 
     public static final CachedFlag sOmniboxListMenuContextMenu =
-            newFlag(OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU, FeatureState.DISABLED);
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU,
+                    FeatureState.ENABLED_IN_TEST);
 
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
