@@ -23,6 +23,8 @@
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_canvas.h"
@@ -131,6 +133,125 @@ gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
   }
 }
 
+bool IsGtk4Loaded() {
+  void* handle = dlopen("libgtk-4.so.1", RTLD_LAZY | RTLD_NOLOAD);
+  if (!handle) {
+    handle = dlopen("libgtk-4.so", RTLD_LAZY | RTLD_NOLOAD);
+  }
+  if (handle) {
+    dlclose(handle);
+    return true;
+  }
+  return false;
+}
+
+// Determines if running in a GTK-based desktop environment by inspecting the
+// same environment variables that Qt's QGenericUnixTheme uses.
+// This logic has been stable across Qt 5 and Qt 6 and is unlikely to change,
+// as doing so would break theme auto-detection across standard Unix desktop
+// environments.
+bool IsGtkDesktop(base::Environment* env) {
+  std::string xdg_desktop = env->GetVar("XDG_CURRENT_DESKTOP").value_or("");
+  if (!xdg_desktop.empty()) {
+    xdg_desktop = base::ToUpperASCII(xdg_desktop);
+    // Qt splits XDG_CURRENT_DESKTOP by ':' and checks if any part is one of
+    // the GTK-based environments: GNOME, X-CINNAMON, UNITY, MATE, XFCE, LXDE.
+    // PANTHEON and COSMIC are also checked as they are GTK-based or
+    // GNOME-derived.
+    for (const auto& part :
+         base::SplitStringPiece(xdg_desktop, ":", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      if (part == "GNOME" || part == "X-CINNAMON" || part == "CINNAMON" ||
+          part == "UNITY" || part == "MATE" || part == "XFCE" ||
+          part == "LXDE" || part == "PANTHEON" || part == "COSMIC") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Classic fallbacks used by Qt when XDG_CURRENT_DESKTOP is empty.
+  if (env->HasVar("GNOME_DESKTOP_SESSION_ID")) {
+    return true;
+  }
+
+  std::string desktop_session = env->GetVar("DESKTOP_SESSION").value_or("");
+  desktop_session = base::ToLowerASCII(desktop_session);
+  // Extract the basename of the desktop session if it's a path.
+  size_t last_slash = desktop_session.find_last_of('/');
+  if (last_slash != std::string::npos) {
+    desktop_session = desktop_session.substr(last_slash + 1);
+  }
+  return desktop_session == "gnome" || desktop_session == "mate" ||
+         desktop_session == "xfce" || desktop_session == "xubuntu" ||
+         desktop_session == "cinnamon" || desktop_session == "lxde" ||
+         desktop_session == "pantheon";
+}
+
+std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
+GetGtkQtCollisionPreventionOverrides() {
+  std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
+      env_overrides;
+  if (!IsGtk4Loaded()) {
+    return env_overrides;
+  }
+
+  auto env = base::Environment::Create();
+  const bool is_gtk_desktop = IsGtkDesktop(env.get());
+
+  auto platform_theme_opt = env->GetVar("QT_QPA_PLATFORMTHEME");
+  bool has_gtk_platform_theme = false;
+  if (platform_theme_opt.has_value()) {
+    const std::string& value = platform_theme_opt.value();
+    if (value == "gnome" || value == "gtk3" || value == "gtk2") {
+      has_gtk_platform_theme = true;
+    }
+  }
+
+  // If the platform theme is explicitly set to a clashing GTK-based theme,
+  // or if it is unset and the current desktop environment is GTK-based,
+  // override it to a custom non-existent theme to prevent loading GTK
+  // plugins.
+  if (has_gtk_platform_theme ||
+      (!platform_theme_opt.has_value() && is_gtk_desktop)) {
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "QT_QPA_PLATFORMTHEME", "chromium-fallback"));
+  }
+
+  // To prevent Qt's fallback/auto-detection logic from loading the GTK3
+  // platform theme plugin (e.g. if the explicitly set theme plugin like qt5ct
+  // is missing, or if overridden to "chromium-fallback"), unset the
+  // desktop environment variables during initialization if running on a
+  // GTK-based desktop or if a GTK-based platform theme was requested.
+  if (is_gtk_desktop || has_gtk_platform_theme) {
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "XDG_CURRENT_DESKTOP"));
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "DESKTOP_SESSION"));
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "GNOME_DESKTOP_SESSION_ID"));
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "KDE_FULL_SESSION"));
+  }
+
+  auto style_override_opt = env->GetVar("QT_STYLE_OVERRIDE");
+  if (style_override_opt.has_value()) {
+    const std::string& value = style_override_opt.value();
+    if (value == "gtk3" || value == "gtk2" || value == "gtk") {
+      env_overrides.push_back(
+          std::make_unique<base::ScopedEnvironmentVariableOverride>(
+              "QT_STYLE_OVERRIDE", "chromium-fallback"));
+    }
+  }
+
+  return env_overrides;
+}
+
 }  // namespace
 
 QtUi::QtUi(ui::LinuxUi* fallback_linux_ui)
@@ -175,6 +296,10 @@ bool QtUi::Initialize() {
   // crashes on certain device changes. See [3].
   // [3] https://crbug.com/396193145
   base::ScopedEnvironmentVariableOverride qt_xcb_no_xi2("QT_XCB_NO_XI2", "1");
+
+  // If Chrome is using GTK4, prevent QT from loading GTK3, otherwise
+  // the symbols from both versions will collide and crash the browser process.
+  auto env_overrides = GetGtkQtCollisionPreventionOverrides();
 
   // Set up command line.
   auto cmd_line = *base::CommandLine::ForCurrentProcess();
