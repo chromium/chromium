@@ -2938,7 +2938,7 @@ shown properly on the user-facing crash UI.
 <enum name="CrossDeviceSigninPromoShouldShowResult">
   <int value="0" label="CanShow"/>
   <int value="1" label="NotSignedIn"/>
-  <int value="2" label="HasOtherDevices"/>
+  <int value="2" label="HasMobileDevice"/>
   <int value="3" label="DataTypeNotEnabled"/>
   <int value="4" label="ShownLimitReached"/>
   <int value="5" label="CooldownActive"/>

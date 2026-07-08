@@ -346,8 +346,9 @@ class ProfileMenuViewTestBase {
             // clear this state.
             service->GetDeviceInfoTracker()->Add(
                 syncer::TestDeviceInfoBuilder(
-                    syncer::DeviceInfo::OsType::kLinux)
+                    syncer::DeviceInfo::OsType::kAndroid)
                     .WithGuid("remote_guid")
+                    .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
                     .WithLastUpdatedTimestamp(base::Time::Now())
                     .Build());
             return service;

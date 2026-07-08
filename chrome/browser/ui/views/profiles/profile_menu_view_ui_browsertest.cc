@@ -456,8 +456,10 @@ class ProfileMenuViewPixelTest
           // promo is not shown by default. Use `ClearAllSignedInDevices()` to
           // clear this state.
           service->GetDeviceInfoTracker()->Add(
-              syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+              syncer::TestDeviceInfoBuilder(
+                  syncer::DeviceInfo::OsType::kAndroid)
                   .WithGuid("remote_guid")
+                  .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
                   .WithLastUpdatedTimestamp(base::Time::Now())
                   .Build());
           return service;

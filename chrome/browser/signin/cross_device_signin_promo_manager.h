@@ -26,7 +26,7 @@ enum class CrossDeviceSigninPromoEntryPoint {
 enum class CrossDeviceSigninPromoShouldShowResult {
   kCanShow = 0,
   kNotSignedIn = 1,
-  kHasOtherDevices = 2,
+  kHasMobileDevice = 2,
   kDataTypeNotEnabled = 3,
   kShownLimitReached = 4,
   kCooldownActive = 5,
