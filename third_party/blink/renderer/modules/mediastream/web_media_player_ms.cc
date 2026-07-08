@@ -1324,11 +1324,12 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   has_first_frame_ = true;
-  OnTransformChanged(video_transform);
-  OnOpacityChanged(is_opaque);
 
   if (use_surface_layer_)
     ActivateSurfaceLayerForVideo(video_transform);
+
+  OnTransformChanged(video_transform);
+  OnOpacityChanged(is_opaque);
 
   SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
   SetReadyState(WebMediaPlayer::kReadyStateHaveEnoughData);
