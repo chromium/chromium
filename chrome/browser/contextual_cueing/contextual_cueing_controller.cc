@@ -87,7 +87,7 @@ namespace contextual_cueing {
 namespace {
 
 const char kHomepagePathRegex[] =
-    "(?i)(/(en\\/)?((index|default|home|homepage|main|welcome)(\\.[^/"
+    "(?i)(/((us/en|en)\\b/?)?((index|default|home|homepage|main|welcome)(\\.[^/"
     "?;]+)?)?)?";
 
 std::optional<CueTargetType> GetTargetType(

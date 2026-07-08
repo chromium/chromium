@@ -1387,6 +1387,27 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       HomePageNotEligible_NoTrailingSlash) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Simulate a new page load.
+  GURL homepage_url("https://activetab.com/us/en");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), homepage_url));
+  SimulateFilterPassed(homepage_url);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // Should not be shown.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kUrlNotEligible,
+                                      1);
+  VerifyProactiveCueDecision(ukm_recorder,
+                             ContextualCueingDecision::kUrlNotEligible);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        CueNotShowingBecauseSidePanelOpen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.activetab.com/abc"),
