@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("browser_actuator") {
+  public_deps = [ ":factory" ]
+}
+
+source_set("factory") {
+  sources = [
+    "browser_actuator_service_factory.cc",
+    "browser_actuator_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/browser_actuator/internal",
+    "//components/browser_actuator/public",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "browser_actuator_service_factory_unittest.cc" ]
+
+  deps = [
+    ":browser_actuator",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/browser_actuator/public",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

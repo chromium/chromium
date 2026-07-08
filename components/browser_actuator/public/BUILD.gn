@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("feature_list") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("public") {
+  sources = [
+    "browser_actuator_service.cc",
+    "browser_actuator_service.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [
+    ":feature_list",
+    "//components/keyed_service/core",
+  ]
+}

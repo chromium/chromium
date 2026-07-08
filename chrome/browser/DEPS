@@ -72,6 +72,7 @@ include_rules = [
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/breadcrumbs/core",
+  "+components/browser_actuator/public",
   "+components/browser_apis/bookmarks",
   "+components/browser_apis/browser_controls",
   "+components/browser_apis/tab_drag",
