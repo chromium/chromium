@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/dispatcher/dispatcher.h"
-#include "base/allocator/dispatcher/notification_data.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -39,17 +37,6 @@ namespace base {
 namespace {
 
 const char kExpiredHistogramName[] = "ExpiredHistogram";
-
-struct AllocationTracker {
-  void OnAllocation(
-      const base::allocator::dispatcher::AllocationNotificationData&
-          notification_data) {
-    ++allocation_count;
-  }
-  void OnFree(const base::allocator::dispatcher::FreeNotificationData&
-                  notification_data) {}
-  size_t allocation_count = 0;
-};
 
 // Test implementation of RecordHistogramChecker interface.
 class TestRecordHistogramChecker : public RecordHistogramChecker {
@@ -124,15 +111,6 @@ class HistogramTest : public testing::TestWithParam<bool> {
     // A simple wrapper around |GetCountAndBucketData| to make it visible for
     // testing.
     return histogram->GetCountAndBucketData();
-  }
-
-  // Use helper functions to access private members of Histogram.
-  SampleVectorBase* GetUnloggedSamples(Histogram* histogram) {
-    return histogram->unlogged_samples_.get();
-  }
-
-  SampleVectorBase* GetLoggedSamples(Histogram* histogram) {
-    return histogram->logged_samples_.get();
   }
 
   const bool use_persistent_histogram_allocator_;
@@ -352,33 +330,6 @@ TEST_P(HistogramTest, IsDefinitelyEmpty_SnapshotDelta) {
   histogram->Add(50);
   EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
   EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
-}
-
-// Check that the kDisableSingleSampleOptimizationFlag allocates the
-// appropriate storage and bypasses the single-sample optimization.
-TEST_P(HistogramTest, DisableSingleSampleOptimizationFlag) {
-  Histogram* sso_disabled_histogram =
-      static_cast<Histogram*>(Histogram::FactoryGet(
-          "DisabledSingleSampleHistogram", 1, 64, 8,
-          HistogramBase::kDisableSingleSampleOptimizationFlag));
-
-  // Verify that the counts array is allocated and has the correct size.
-  ASSERT_TRUE(GetUnloggedSamples(sso_disabled_histogram)->counts().has_value());
-  ASSERT_TRUE(GetLoggedSamples(sso_disabled_histogram)->counts().has_value());
-  EXPECT_EQ(GetUnloggedSamples(sso_disabled_histogram)->counts()->size(), 8u);
-  EXPECT_EQ(GetLoggedSamples(sso_disabled_histogram)->counts()->size(), 8u);
-
-  // Verify that memory is not allocated when more samples are added.
-  auto& dispatcher = base::allocator::dispatcher::Dispatcher::GetInstance();
-  AllocationTracker tracker;
-  dispatcher.InitializeForTesting(&tracker);
-
-  sso_disabled_histogram->Add(1);
-  sso_disabled_histogram->Add(2);
-  sso_disabled_histogram->Add(3);
-
-  dispatcher.ResetForTesting();
-  EXPECT_EQ(tracker.allocation_count, 0u);
 }
 
 TEST_P(HistogramTest, ExponentialRangesTest) {

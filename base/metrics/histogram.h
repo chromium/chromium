@@ -238,7 +238,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // HistogramBase implementation:
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
-  void SetFlags(int32_t flags) override;
   bool HasConstructionArguments(Sample32 expected_minimum,
                                 Sample32 expected_maximum,
                                 size_t expected_bucket_count) const override;

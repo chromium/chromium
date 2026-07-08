@@ -40,7 +40,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -292,17 +291,6 @@ HistogramBase* Histogram::Factory::Build() {
     return DummyHistogram::GetInstance();
   }
   return histogram;
-}
-
-// TODO(crbug.com/527037963) - Refactor Histogram so that histograms are created
-// with the correct flags and SampleVectorBase is fully initialized in
-// single-sample-disabled mode, instead of calling SetFlags after creation.
-void Histogram::SetFlags(int32_t flags) {
-  HistogramBase::SetFlags(flags);
-  if (flags & HistogramBase::kDisableSingleSampleOptimizationFlag) {
-    unlogged_samples_->DisableSingleSample(base::PassKey<Histogram>());
-    logged_samples_->DisableSingleSample(base::PassKey<Histogram>());
-  }
 }
 
 HistogramBase* Histogram::FactoryGet(std::string_view name,

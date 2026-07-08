@@ -102,12 +102,6 @@ class BASE_EXPORT HistogramBase {
     // Indicates that the histogram should be collected by PUMA, and its type is
     // PUMA for Regional Capabilities.
     kPumaRcTargetedHistogramFlag = 0x80,
-
-    // Indicates that single-sample optimization is disabled for this histogram.
-    // This is used for histograms logged on paths that cannot tolerate lazy
-    // memory allocation (e.g., lock metrics recording) and must have all memory
-    // allocated upfront during histogram creation.
-    kDisableSingleSampleOptimizationFlag = 0x100,
   };
 
   // Histogram data inconsistency types.
@@ -154,7 +148,7 @@ class BASE_EXPORT HistogramBase {
 
   // Operations with Flags enum.
   int32_t flags() const { return flags_.load(std::memory_order_relaxed); }
-  virtual void SetFlags(int32_t flags);
+  void SetFlags(int32_t flags);
   void ClearFlags(int32_t flags);
   bool HasFlags(int32_t flags) const;
 
