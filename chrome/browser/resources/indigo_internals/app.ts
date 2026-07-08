@@ -36,6 +36,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
       currentPromptKey_: {type: String},
       overridePrompt_: {type: String},
       integrationEnabled_: {type: Boolean},
+      skillId_: {type: String},
+      skillName_: {type: String},
     };
   }
 
@@ -48,6 +50,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
   protected accessor currentPromptKey_: string = '';
   protected accessor overridePrompt_: string = '';
   protected accessor integrationEnabled_: boolean = false;
+  protected accessor skillId_: string = '';
+  protected accessor skillName_: string = '';
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
@@ -68,6 +72,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
       this.currentPromptKey_ = info.currentKey;
       this.overridePrompt_ = info.overridePrompt;
       this.loadedPrompts_ = info.loadedPrompts;
+      this.skillId_ = info.skillId;
+      this.skillName_ = info.skillName;
     });
 
     this.listenerIds_ = [

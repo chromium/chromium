@@ -9,9 +9,12 @@
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
+#include "components/skills/public/skill.h"
+#include "components/skills/public/skills_service.h"
 
 namespace {
 
@@ -133,6 +136,17 @@ void IndigoInternalsPageHandler::GetGlicPromptInfo(
       base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
   info->current_key = features::kIndigoGlicPromptKey.Get();
   info->override_prompt = features::kIndigoGlicPrompt.Get();
+
+  info->skill_id = features::kIndigoGlicSkillId.Get();
+  if (!info->skill_id.empty()) {
+    if (auto* skills_service =
+            skills::SkillsServiceFactory::GetForProfile(profile_)) {
+      if (const skills::Skill* skill =
+              skills_service->GetSkillById(info->skill_id)) {
+        info->skill_name = skill->name;
+      }
+    }
+  }
 
   indigo::IndigoService* service =
       indigo::IndigoServiceFactory::GetForProfile(profile_);

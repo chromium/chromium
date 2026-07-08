@@ -51,6 +51,8 @@ struct GlicPromptInfo {
   bool integration_enabled;
   string current_key;
   string override_prompt;
+  string skill_id;
+  string skill_name;
   array<IndigoPrompt> loaded_prompts;
 };
 

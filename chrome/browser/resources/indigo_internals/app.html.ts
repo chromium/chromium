@@ -95,16 +95,28 @@ export function getHtml(this: IndigoInternalsAppElement) {
           ${this.getIntegrationStatusText_()}
         </span>
       </div>
-      <div class="status-item">
-        <span class="status-label">Active Prompt Key</span>
-        <span class="monospace-value">
-          ${this.currentPromptKey_ || 'N/A'}
-        </span>
-      </div>
-      <div class="status-item prompt-item">
-        <span class="status-label">Override Prompt</span>
-        <span class="prompt-value">${this.overridePrompt_ || 'N/A'}</span>
-      </div>
+      ${!this.skillName_ ? html`
+        <div class="status-item">
+          <span class="status-label">Active Prompt Key</span>
+          <span class="monospace-value">
+            ${this.currentPromptKey_ || 'N/A'}
+          </span>
+        </div>
+        <div class="status-item prompt-item">
+          <span class="status-label">Override Prompt</span>
+          <span class="prompt-value">${this.overridePrompt_ || 'N/A'}</span>
+        </div>
+      ` : ''}
+      ${this.skillId_ ? html`
+        <div class="status-item">
+          <span class="status-label">Skill ID</span>
+          <span class="monospace-value">${this.skillId_}</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Skill Name</span>
+          <span class="status-value">${this.skillName_ || 'Unresolved'}</span>
+        </div>
+      ` : ''}
     </div>
 
     <div class="card">
