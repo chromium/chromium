@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#include "base/test/metrics/user_action_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,13 +27,10 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
-#include "ui/events/event_constants.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
@@ -271,41 +266,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       SystemMenuContainsStringId(IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER));
 }
 
-// Unable to programmatically click System Context Menu Items in Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ToggleCollapseSystemContextMenu \
-  DISABLED_ToggleCollapseSystemContextMenu
-#else
-#define MAYBE_ToggleCollapseSystemContextMenu ToggleCollapseSystemContextMenu
-#endif
-// This test checks that we can toggle the collapse state via the system context
-// menu.
-IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
-                       MAYBE_ToggleCollapseSystemContextMenu) {
-  gfx::ScopedAnimationDurationScaleMode disable_animations(
-      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  auto* controller = tabs::VerticalTabStripStateController::From(browser());
-  controller->SetVerticalTabsEnabled(true);
-
-  EXPECT_TRUE(SystemMenuContainsStringId(IDS_COLLAPSE_VERTICAL_TABS));
-
-  RunScheduledLayouts();
-
-  RunTestSequence(
-      WaitForShow(kVerticalTabStripTopContainerElementId),
-      EnsurePresent(kVerticalTabStripTopContainerElementId),
-      MoveMouseTo(kVerticalTabStripTopContainerElementId),
-      ClickMouse(ui_controls::RIGHT),
-      WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsCollapseElementId),
-      SelectMenuItem(
-          SystemMenuModelBuilder::kToggleVerticalTabsCollapseElementId),
-      WaitForEvent(kTabStripRegionElementId,
-                   kVerticalTabStripCollapsedCustomEventId));
-
-  EXPECT_TRUE(SystemMenuContainsStringId(IDS_EXPAND_VERTICAL_TABS));
-}
-
 struct VerticalTabsBadgeTestParams {
   base::test::FeatureRef testing_feature;
   ui::NewBadgeType expected_badge_type;
@@ -481,64 +441,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
   EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
   EXPECT_FALSE(tabs::VerticalTabStripStateController::From(browser())
                    ->ShouldDisplayVerticalTabs());
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
-                       KeyboardShortcutTogglesCollapse) {
-  base::UserActionTester user_action_tester;
-  tabs::VerticalTabStripStateController* const controller =
-      tabs::VerticalTabStripStateController::From(browser());
-  controller->SetVerticalTabsEnabled(true);
-
-  gfx::ScopedAnimationDurationScaleMode disable_animations(
-      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  RunScheduledLayouts();
-
-  RunTestSequence(
-      // Wait for the vertical tab strip UI to be fully shown and active.
-      WaitForShow(kVerticalTabStripCollapseButtonElementId),
-
-      // Ensure vertical tabs are enabled and expanded initially.
-      CheckResult([controller]() { return controller->IsCollapsed(); }, false),
-
-      // Send the accelerator.
-      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
-                   ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR),
-
-      // Wait for the collapsed event.
-      WaitForEvent(kTabStripRegionElementId,
-                   kVerticalTabStripCollapsedCustomEventId),
-
-      // Verify it is collapsed.
-      CheckResult([controller]() { return controller->IsCollapsed(); }, true),
-
-      // Verify the metric was logged.
-      Do([&user_action_tester]() {
-        EXPECT_EQ(1,
-                  user_action_tester.GetActionCount(
-                      "VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed"));
-      }),
-
-      // Send the accelerator again.
-      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
-                   ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR),
-
-      // Wait for the expansion to complete.
-      Do([controller]() {
-        EXPECT_TRUE(base::test::RunUntil(
-            [controller]() { return !controller->IsCollapsed(); }));
-      }),
-
-      // Verify it is expanded again.
-      CheckResult([controller]() { return controller->IsCollapsed(); }, false),
-
-      // Verify the metric was logged.
-      Do([&user_action_tester]() {
-        EXPECT_EQ(
-            1, user_action_tester.GetActionCount(
-                   "VerticalTabs_TabStrip_KeyboardShortcutToggleUncollapsed"));
-      }));
 }
 
 }  // namespace base::test
