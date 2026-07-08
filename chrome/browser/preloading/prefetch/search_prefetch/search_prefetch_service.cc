@@ -845,16 +845,9 @@ bool SearchPrefetchService::OnNavigationLikely(
     }
   }();
 
-  base::TimeTicks prefetch_started_time_stamp = base::TimeTicks::Now();
-  bool was_prefetch_started =
-      MaybePrefetchURL(preload_url,
-                       /*navigation_prefetch=*/true, web_contents, predictor,
-                       should_ignore_saver_modes);
-  if (was_prefetch_started) {
-    UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.StartTimeV2.NavigationPrefetch",
-                        (base::TimeTicks::Now() - prefetch_started_time_stamp));
-  }
-  return was_prefetch_started;
+  return MaybePrefetchURL(preload_url,
+                          /*navigation_prefetch=*/true, web_contents, predictor,
+                          should_ignore_saver_modes);
 }
 
 void SearchPrefetchService::OnTemplateURLServiceChanged() {

@@ -200,16 +200,6 @@ chromium-metrics-reviews@google.com.
                results page."/>
 </variants>
 
-<variants name="NavigationPrefetchOnly">
-  <variant name="NavigationPrefetch"
-      summary="Recorded for prefetches where Chrome is relatively confident
-               an omnibox navigation is about to occur (i.e. the user
-               selected a search suggestion). These prefetches allow Chrome
-               to kickstart the request without waiting until before unload
-               handlers or other navigation pre-processing mechanisms in
-               Chrome."/>
-</variants>
-
 <variants name="OmniboxAutocompleteUpdateSlice">
   <variant name=""
       summary="This slice measures match changes for all updates, regardless
@@ -6013,22 +6003,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="PrefetchFallbackOrInitial" variants="PrefetchFallbackOrInitial"/>
   <token key="NavigationOrSuggestionPrefetch"
       variants="NavigationOrSuggestionPrefetch"/>
-</histogram>
-
-<histogram name="Omnibox.{SearchPrefetch}.StartTimeV2.{NavigationPrefetchOnly}"
-    units="ms" expires_after="2023-10-15">
-  <owner>ryansturm@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    {SearchPrefetch}
-
-    The amount of time it takes to start a prefetch request.
-
-    {NavigationPrefetchOnly}
-  </summary>
-  <token key="SearchPrefetch" variants="SearchPrefetch"/>
-  <token key="NavigationPrefetchOnly" variants="NavigationPrefetchOnly"/>
 </histogram>
 
 <histogram name="ShortcutsProvider.DatabaseSize" units="units"
