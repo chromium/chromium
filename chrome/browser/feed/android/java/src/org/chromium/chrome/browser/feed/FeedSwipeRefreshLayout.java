@@ -74,7 +74,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        instance.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+                        instance.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
                         instance.setContentDescription(
                                 activity.getResources()
                                         .getString(R.string.accessibility_swipe_refresh));
