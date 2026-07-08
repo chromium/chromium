@@ -303,3 +303,33 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
+                       DummyTaskCleanedUpOnDestruction) {
+  Profile* profile = browser()->profile();
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+
+  content::WebContents* originator_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(originator_contents);
+
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(originator_contents));
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+
+  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+                                    originator_contents->GetWeakPtr());
+
+  std::optional<actor::TaskId> dummy_task_id = delegate->GetDummyTaskId();
+  EXPECT_TRUE(dummy_task_id.has_value());
+
+  // Verify that the task actually exists in the service.
+  EXPECT_NE(nullptr, actor_service->GetTask(*dummy_task_id));
+
+  // Destroying the delegate should stop and clean up the dummy task.
+  delegate.reset();
+
+  // The task should no longer be active in the actor service.
+  EXPECT_EQ(nullptr, actor_service->GetTask(*dummy_task_id));
+}

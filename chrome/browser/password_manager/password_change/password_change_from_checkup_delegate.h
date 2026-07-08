@@ -69,6 +69,7 @@ class PasswordChangeFromCheckupDelegate {
   std::optional<actor::TaskId> GetVerificationTaskId() const {
     return verification_task_id_;
   }
+  std::optional<actor::TaskId> GetDummyTaskId() const { return dummy_task_id_; }
   std::u16string generated_password() const { return generated_password_; }
   bool has_saved_form_manager() const { return saved_form_manager_ != nullptr; }
 #endif
@@ -87,6 +88,7 @@ class PasswordChangeFromCheckupDelegate {
   void OnVerificationTimeout();
   void HandleMaybeSuccessfulPasswordChange();
   void InvokeVerificationFlow(std::string post_submission_prompt);
+  void StopDummyTask();
 
   base::WeakPtr<content::WebContents> originator_;
   raw_ptr<password_manager::PasswordManagerClient> client_;

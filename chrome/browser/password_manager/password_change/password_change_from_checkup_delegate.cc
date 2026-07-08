@@ -83,22 +83,6 @@ std::optional<actor::TaskId> CreateDummyTaskAndTiedTab(
   return dummy_task_id;
 }
 
-void RemoveActuationTabFromTask(std::optional<actor::TaskId> task_id,
-                                content::WebContents* web_contents) {
-  if (!task_id || !web_contents) {
-    return;
-  }
-  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  CHECK(actor_service);
-  tabs::TabInterface* actuation_tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  CHECK(actuation_tab);
-  actor::ActorTask* task = actor_service->GetTask(*task_id);
-  CHECK(task);
-  task->RemoveTab(actuation_tab->GetHandle());
-}
-
 std::string GetReachFormPrompt(const std::string& domain,
                                const std::string& username) {
 #if defined(IDR_APC_PROMPTS_JSON)
@@ -195,8 +179,9 @@ PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate(
     password_manager::PasswordManagerClient* client)
     : client_(client) {}
 
-PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() =
-    default;
+PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() {
+  StopDummyTask();
+}
 
 void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
     const password_manager::CredentialUIEntry& credential,
@@ -265,7 +250,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       logger->LogMessage(
           Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_START_FLOW);
     }
-    CreateDummyTaskAndTiedTab(glic_service, new_contents);
+    dummy_task_id_ = CreateDummyTaskAndTiedTab(glic_service, new_contents);
     actor_task_state_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
             &PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged,
@@ -331,6 +316,7 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
 
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
+    StopDummyTask();
     dummy_task_id_ = CreateDummyTaskAndTiedTab(GetGlicService(),
                                                actuation_web_contents_.get());
     form_waiter_ = ChangePasswordFormWaiter::Builder(
@@ -487,19 +473,23 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       glic_service->CloseAndShutdown(
           actuation_web_contents_->GetPrimaryMainFrame());
     }
+    StopDummyTask();
     HandleMaybeSuccessfulPasswordChange();
   }
 }
 
 void PasswordChangeFromCheckupDelegate::OnVerificationTimeout() {
-  if (!verification_task_created_) {
-    if (auto logger = GetLoggerIfAvailable(client_)) {
-      logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
-    }
-    actor_task_state_subscription_ = {};
-    RemoveActuationTabFromTask(dummy_task_id_, actuation_web_contents_.get());
-    HandleMaybeSuccessfulPasswordChange();
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
   }
+  actor_task_state_subscription_ = {};
+  glic::GlicKeyedService* glic_service = GetGlicService();
+  if (glic_service && actuation_web_contents_) {
+    glic_service->CloseAndShutdown(
+        actuation_web_contents_->GetPrimaryMainFrame());
+  }
+  StopDummyTask();
+  HandleMaybeSuccessfulPasswordChange();
 }
 
 void PasswordChangeFromCheckupDelegate::HandleMaybeSuccessfulPasswordChange() {
@@ -563,4 +553,22 @@ void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
       FROM_HERE, base::Seconds(90),
       base::BindOnce(&PasswordChangeFromCheckupDelegate::OnVerificationTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordChangeFromCheckupDelegate::StopDummyTask() {
+  if (!dummy_task_id_) {
+    return;
+  }
+
+  if (actuation_web_contents_) {
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+            actuation_web_contents_->GetBrowserContext()));
+    if (actor_service && actor_service->GetTask(*dummy_task_id_)) {
+      actor_service->StopTask(*dummy_task_id_,
+                              actor::ActorTask::StoppedReason::kTaskComplete);
+    }
+  }
+
+  dummy_task_id_ = std::nullopt;
 }
