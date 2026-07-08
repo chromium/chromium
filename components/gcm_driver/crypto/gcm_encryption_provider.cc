@@ -23,6 +23,7 @@
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/crypto/proto/gcm_encryption_data.pb.h"
+#include "components/gcm_driver/crypto/rfc8188_util.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 
@@ -360,50 +361,22 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
     return;
   }
 
-  // Creates a cryptographically secure salt of |salt_size| octets in size,
-  // and calculate the shared secret for the message.
-  std::string salt(16, '\0');
-  crypto::RandBytes(base::as_writable_byte_span(salt));
+  base::expected<std::string, Rfc8188EncryptionError> encrypted =
+      EncryptPayloadWithRfc8188(message, p256dh, auth_secret, *key);
 
-  std::string shared_secret;
-  if (!ComputeSharedP256Secret(*key, p256dh, &shared_secret)) {
-    DLOG(ERROR) << "Unable to calculate the shared secret.";
-    std::move(callback).Run(GCMEncryptionResult::INVALID_SHARED_SECRET,
-                            std::string());
+  if (!encrypted.has_value()) {
+    DLOG(ERROR) << "Unable to encrypt the outgoing GCM message: "
+                << static_cast<int>(encrypted.error());
+    GCMEncryptionResult error_result = GCMEncryptionResult::ENCRYPTION_FAILED;
+    if (encrypted.error() == Rfc8188EncryptionError::kKeyDerivationFailed) {
+      error_result = GCMEncryptionResult::INVALID_SHARED_SECRET;
+    }
+    std::move(callback).Run(error_result, std::string());
     return;
   }
 
-  size_t record_size;
-  std::string ciphertext;
-
-  GCMMessageCryptographer cryptographer(
-      GCMMessageCryptographer::Version::DRAFT_08);
-
-  std::string sender_public_key(
-      base::as_string_view(key->ToUncompressedX962Point()));
-  if (!cryptographer.Encrypt(p256dh, sender_public_key, shared_secret,
-                             auth_secret, salt, message, &record_size,
-                             &ciphertext)) {
-    DLOG(ERROR) << "Unable to encrypt the incoming data.";
-    std::move(callback).Run(GCMEncryptionResult::ENCRYPTION_FAILED,
-                            std::string());
-    return;
-  }
-
-  // Construct encryption header.
-  uint32_t rs = record_size;
-  std::string rs_str(sizeof(rs), 0u);
-  base::as_writable_byte_span(rs_str).copy_from(base::U32ToBigEndian(rs));
-
-  uint8_t key_length = sender_public_key.size();
-  std::string key_length_str(sizeof(key_length), 0u);
-  base::as_writable_byte_span(key_length_str)
-      .copy_from(base::U8ToBigEndian(key_length));
-
-  std::string payload = base::StrCat(
-      {salt, rs_str, key_length_str, sender_public_key, ciphertext});
   std::move(callback).Run(GCMEncryptionResult::ENCRYPTED_DRAFT_08,
-                          std::move(payload));
+                          std::move(encrypted.value()));
 }
 
 }  // namespace gcm

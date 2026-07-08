@@ -21,6 +21,8 @@ static_library("crypto") {
     "message_payload_parser.h",
     "p256_key_util.cc",
     "p256_key_util.h",
+    "rfc8188_util.cc",
+    "rfc8188_util.h",
   ]
 
   deps = [
@@ -59,6 +61,7 @@ source_set("unit_tests") {
     "gcm_message_cryptographer_unittest.cc",
     "message_payload_parser_unittest.cc",
     "p256_key_util_unittest.cc",
+    "rfc8188_util_unittest.cc",
   ]
 
   deps = [
