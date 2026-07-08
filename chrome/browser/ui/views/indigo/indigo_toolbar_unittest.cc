@@ -11,8 +11,12 @@
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
@@ -206,6 +210,68 @@ TEST_F(IndigoToolbarTest, ToolbarBounds) {
 
   // Should be hidden again
   EXPECT_FALSE(toolbar_view->GetVisible());
+}
+
+TEST_F(IndigoToolbarTest, Accessibility) {
+  MockIndigoToolbarDelegate delegate;
+  auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
+  toolbar->Show(overlay_view());
+  toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
+
+  views::View* toolbar_view = GetToolbarView();
+  ASSERT_NE(toolbar_view, nullptr);
+
+  auto verify_button_a11y = [&](ui::ElementIdentifier id,
+                                int name_id) -> views::Button* {
+    views::Button* button = GetButtonFromToolbar(toolbar_view, id);
+    EXPECT_NE(button, nullptr) << "Missing button: " << id.GetName();
+    if (!button) {
+      return nullptr;
+    }
+    ui::AXNodeData data;
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+    EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringUTF16(name_id));
+    return button;
+  };
+
+  ui::AXNodeData toolbar_data;
+  toolbar_view->GetViewAccessibility().GetAccessibleNodeData(&toolbar_data);
+  EXPECT_EQ(toolbar_data.role, ax::mojom::Role::kToolbar);
+  EXPECT_EQ(
+      toolbar_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringUTF16(IDS_INDIGO_TOOLBAR_CAPTION));
+
+  views::Button* expand_button = verify_button_a11y(
+      IndigoToolbar::kExpandButtonElementId, IDS_INDIGO_TOOLBAR_EXPAND);
+  ASSERT_NE(expand_button, nullptr);
+  verify_button_a11y(IndigoToolbar::kCloseButtonElementId, IDS_CLOSE);
+
+  ui::AXNodeData collapsed_data;
+  expand_button->GetViewAccessibility().GetAccessibleNodeData(&collapsed_data);
+  EXPECT_TRUE(collapsed_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(collapsed_data.HasState(ax::mojom::State::kExpanded));
+
+  views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
+  verify_button_a11y(IndigoToolbar::kExpandButtonElementId,
+                     IDS_INDIGO_TOOLBAR_COLLAPSE);
+
+  ui::AXNodeData expanded_data;
+  expand_button->GetViewAccessibility().GetAccessibleNodeData(&expanded_data);
+  EXPECT_TRUE(expanded_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(expanded_data.HasState(ax::mojom::State::kCollapsed));
+
+  verify_button_a11y(IndigoToolbar::kRegenerateButtonElementId,
+                     IDS_INDIGO_TOOLBAR_REGENERATE);
+  verify_button_a11y(IndigoToolbar::kReplacePhotoButtonElementId,
+                     IDS_INDIGO_TOOLBAR_REPLACE_ORIGINAL_PHOTO);
+  verify_button_a11y(IndigoToolbar::kDeletePhotoButtonElementId,
+                     IDS_INDIGO_TOOLBAR_DELETE_ORIGINAL_PHOTO);
+
+  // Collapse before hiding to prevent LSan compositor layer leaks.
+  views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
+  toolbar->Hide();
 }
 
 }  // namespace indigo
