@@ -76,9 +76,13 @@ class AutofillSuggestionDelegate {
                        password_manager::PasswordManagerDriver*>
   GetDriver_DoNotUse() = 0;
 
-  // Called when Autofill suggestions are shown. On Desktop, where the
-  // suggestions support sub-popups, only the root popup triggers this call.
-  virtual void OnSuggestionsShown(base::span<const Suggestion> suggestions) = 0;
+  // Called when Autofill `suggestions` are shown.
+  // `parent_suggestion_metadata` contains metadata about the parent suggestion
+  // serving as the anchor for the sub-popup (or its equivalent on mobile).
+  // It is `std::nullopt` if `suggestions` are showing at the root level.
+  virtual void OnSuggestionsShown(base::span<const Suggestion> suggestions,
+                                  base::optional_ref<const SuggestionMetadata>
+                                      parent_suggestion_metadata) = 0;
 
   // Called when Autofill suggestions are hidden. This may also get called if
   // the suggestions were never shown at all, e.g. because of insufficient

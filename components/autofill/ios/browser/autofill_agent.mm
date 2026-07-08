@@ -780,7 +780,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
   // TODO(crbug.com/363958046): Pass the actually shown suggestions instead of
   // `popup_suggestions`.
   if (delegate) {
-    delegate->OnSuggestionsShown(popup_suggestions);
+    delegate->OnSuggestionsShown(popup_suggestions, std::nullopt);
   }
 }
 

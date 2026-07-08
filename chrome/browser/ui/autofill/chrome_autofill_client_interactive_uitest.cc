@@ -57,7 +57,9 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager), client_(*autofill_client) {}
   ~TestAutofillExternalDelegate() override = default;
 
-  void OnSuggestionsShown(base::span<const Suggestion>) override {
+  void OnSuggestionsShown(
+      base::span<const Suggestion>,
+      base::optional_ref<const SuggestionMetadata>) override {
     ++show_counter_;
     ui_session_id_at_last_show_ =
         client_->GetSessionIdForCurrentAutofillSuggestions();

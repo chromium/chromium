@@ -194,7 +194,12 @@ PasswordManualFallbackFlow::GetDriver_DoNotUse() {
 }
 
 void PasswordManualFallbackFlow::OnSuggestionsShown(
-    base::span<const Suggestion> suggestions) {
+    base::span<const Suggestion> suggestions,
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
+  if (parent_suggestion_metadata.has_value()) {
+    // This event corresponds to a sub-popup - we can ignore it.
+    return;
+  }
   const PasswordForm* const form = password_form_cache_->GetPasswordForm(
       password_manager_driver_, field_id_.renderer_id);
   manual_fallback_metrics_recorder_->OnDidShowSuggestions(

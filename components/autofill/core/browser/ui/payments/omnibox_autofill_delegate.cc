@@ -282,7 +282,8 @@ OmniboxAutofillDelegate::GetDriver_DoNotUse() {
 }
 
 void OmniboxAutofillDelegate::OnSuggestionsShown(
-    base::span<const Suggestion> suggestions) {
+    base::span<const Suggestion> suggestions,
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
   // TODO(crbug.com/490214497): Implement when payment method suggestion list is
   // shown.
   NOTIMPLEMENTED();
@@ -372,10 +373,14 @@ void OmniboxAutofillDelegate::OnGetIntersectionObserverInfo(bool is_visible) {
   // Shows the "Autofill payment" chip and initializes the bubble.
   client_->GetPaymentsAutofillClient()->ShowOmniboxAutofillChip(
       std::move(suggestions),
-      base::BindRepeating(static_cast<void (OmniboxAutofillDelegate::*)(
-                              base::span<const Suggestion>)>(
-                              &OmniboxAutofillDelegate::OnSuggestionsShown),
-                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<OmniboxAutofillDelegate> delegate,
+             base::span<const Suggestion> suggestions) {
+            if (delegate) {
+              delegate->OnSuggestionsShown(suggestions, std::nullopt);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidSelectSuggestion,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidAcceptSuggestion,

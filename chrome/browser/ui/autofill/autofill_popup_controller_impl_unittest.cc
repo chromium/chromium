@@ -48,6 +48,7 @@ using ::testing::InSequence;
 using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::MockFunction;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -78,10 +79,14 @@ class AutofillPopupControllerImplTest
     // 2. Setup the bridge so the mock delegate executes real initialization
     // logic.
     EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown)
-        .WillOnce([&](base::span<const Suggestion> suggestions) {
+        .WillOnce([&](base::span<const Suggestion> suggestions,
+                      base::optional_ref<
+                          const AutofillSuggestionDelegate::SuggestionMetadata>
+                          parent_suggestion_metadata) {
           manager()
               .external_delegate()
-              .AutofillExternalDelegate::OnSuggestionsShown(suggestions);
+              .AutofillExternalDelegate::OnSuggestionsShown(
+                  suggestions, parent_suggestion_metadata);
         });
 
     // 3. Actually show the suggestions, which triggers the search session
@@ -387,8 +392,11 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       DelegateMethodsAreCalledOnlyByRootPopup) {
-  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown).Times(0);
+       OnSuggestionsHiddenIsCalledOnlyByRootPopup) {
+  // `OnSuggestionsShown` is also called by sub-popups, but they pass non-empty
+  // metadata.
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsShown(_, Ne(std::nullopt)));
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().suggestion_controller(manager()).OpenSubPopup(
@@ -401,6 +409,68 @@ TEST_F(AutofillPopupControllerImplTest,
               OnSuggestionsHidden(SuggestionHidingReason::kUserAborted));
   client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kUserAborted);
+}
+
+// Tests that the correct parent index is passed to the delegate for a level 1
+// sub-popup.
+TEST_F(AutofillPopupControllerImplTest,
+       OnSuggestionsShownPassesCorrectIndicesForSubPopup_Level1) {
+  // Set expectation on root view to return index 2 as the anchor.
+  EXPECT_CALL(*client().popup_view(), GetIndexOfSubPopupAnchorSuggestion)
+      .WillOnce(Return(2));
+
+  EXPECT_CALL(
+      manager().external_delegate(),
+      OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
+                                {.multi_index = {2}}))));
+
+  ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
+      client().suggestion_controller(manager()).OpenSubPopup(
+          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
+}
+
+// Tests that the correct parent indices are recursively passed to the delegate
+// for a level 2 sub-popup.
+TEST_F(AutofillPopupControllerImplTest,
+       OnSuggestionsShownPassesCorrectIndicesForSubPopup_Level2) {
+  NiceMock<MockAutofillPopupView> sub2_popup_view;
+
+  // Root view returns index 2 for sub1 anchor.
+  EXPECT_CALL(*client().popup_view(), GetIndexOfSubPopupAnchorSuggestion)
+      .WillRepeatedly(Return(2));
+
+  // Sub1 view returns index 1 for sub2 anchor.
+  EXPECT_CALL(*client().sub_popup_view(), GetIndexOfSubPopupAnchorSuggestion)
+      .WillOnce(Return(1));
+
+  // When sub1 opens sub2, it will call sub1_view->CreateSubPopupView.
+  // We mock it to return sub2_popup_view.
+  EXPECT_CALL(*client().sub_popup_view(), CreateSubPopupView)
+      .WillOnce(Return(sub2_popup_view.GetWeakPtr()));
+
+  {
+    InSequence s;
+    EXPECT_CALL(
+        manager().external_delegate(),
+        OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
+                                  {.multi_index = {2}}))));
+    EXPECT_CALL(
+        manager().external_delegate(),
+        OnSuggestionsShown(_, Eq(AutofillSuggestionDelegate::SuggestionMetadata(
+                                  {.multi_index = {2, 1}}))));
+  }
+
+  ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
+  ON_CALL(sub2_popup_view, Show).WillByDefault(Return(true));
+
+  base::WeakPtr<AutofillSuggestionController> sub1_controller =
+      client().suggestion_controller(manager()).OpenSubPopup(
+          {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
+
+  base::WeakPtr<AutofillSuggestionController> sub2_controller =
+      static_cast<AutofillPopupController*>(sub1_controller.get())
+          ->OpenSubPopup({0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 }
 
 TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {

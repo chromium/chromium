@@ -23,6 +23,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAreArray;
+using ::testing::Eq;
 
 class TestAtMemorySuggestionControllerAutofillClient
     : public TestContentAutofillClient {
@@ -88,8 +89,9 @@ TEST_F(AtMemorySuggestionControllerTest, ShowSuggestions) {
 
   EXPECT_CALL(client(),
               ShowAtMemoryBottomSheet(ElementsAreArray(suggestions), _));
-  EXPECT_CALL(manager().external_delegate(),
-              OnSuggestionsShown(ElementsAreArray(suggestions)));
+  EXPECT_CALL(
+      manager().external_delegate(),
+      OnSuggestionsShown(ElementsAreArray(suggestions), Eq(std::nullopt)));
 
   ShowSuggestions(manager(), suggestions);
 }

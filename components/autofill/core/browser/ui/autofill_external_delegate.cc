@@ -586,7 +586,12 @@ AutofillExternalDelegate::GetDriver_DoNotUse() {
 }
 
 void AutofillExternalDelegate::OnSuggestionsShown(
-    base::span<const Suggestion> suggestions) {
+    base::span<const Suggestion> suggestions,
+    base::optional_ref<const SuggestionMetadata> parent_suggestion_metadata) {
+  if (parent_suggestion_metadata.has_value()) {
+    return;
+  }
+
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK(suggestions.empty() ||
          GetFillingProductFromSuggestionType(suggestions[0].type) !=

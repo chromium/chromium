@@ -512,7 +512,7 @@ class AutofillExternalDelegateTest : public testing::Test,
         AutofillClient::SuggestionUiSessionId(1));
     // Simulate that the popup is displayed to set up the session and its
     // callbacks.
-    external_delegate().OnSuggestionsShown({});
+    external_delegate().OnSuggestionsShown({}, std::nullopt);
   }
 
   Matcher<const FormGlobalId&> HasQueriedFormId() {
@@ -978,7 +978,7 @@ TEST_F(AutofillExternalDelegateTest,
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
 
   std::vector<accessibility_annotator::MemorySearchResult> entries1;
   accessibility_annotator::MemorySearchResult entry(
@@ -1047,7 +1047,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
 
   auto mock_service =
       std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
@@ -1104,7 +1104,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
 
   auto mock_service =
       std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
@@ -1161,7 +1161,7 @@ TEST_F(AutofillExternalDelegateTest,
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
 
   auto mock_service =
       std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
@@ -1203,7 +1203,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
 
   auto mock_service =
       std::make_unique<testing::NiceMock<MockAtMemoryQueryService>>();
@@ -1530,7 +1530,7 @@ TEST_F(AutofillExternalDelegateTest, UpdateDataListWhileShowingPopup) {
 
   // This would normally get called from ShowAutofillSuggestions, but it is
   // mocked so we need to call OnSuggestionsShown ourselves.
-  external_delegate().OnSuggestionsShown(autofill_item);
+  external_delegate().OnSuggestionsShown(autofill_item, std::nullopt);
 
   // Update the current data list and ensure the popup is updated.
   data_list_items.emplace_back();
@@ -1622,7 +1622,7 @@ TEST_F(AutofillExternalDelegateTest,
       CreateAutofillSuggestion(SuggestionType::kSeparator),
       CreateAutofillSuggestion(SuggestionType::kManageCreditCard)};
 
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 }
 
 // Test that `BnplManager::OnCreditCardSuggestionsShown` will be called if the
@@ -1636,7 +1636,7 @@ TEST_F(AutofillExternalDelegateTest, BnplSuggestionsShownWithCreditCardEntry) {
       CreateAutofillSuggestion(SuggestionType::kSeparator),
       CreateAutofillSuggestion(SuggestionType::kManageCreditCard)};
 
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 }
 
 // Tests that when suggestions are hidden, the reason is correctly forwarded to
@@ -2369,7 +2369,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillSuggestionAvailability_Autofill) {
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kAutofillAvailable));
 
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 }
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
@@ -2387,7 +2387,7 @@ TEST_F(AutofillExternalDelegateTest,
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kAutofillAvailable));
 
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 }
 
 // Test that a11y autofill availability is set to `kAutocompleteAvailable` when
@@ -2406,7 +2406,7 @@ TEST_F(AutofillExternalDelegateTest,
           queried_field().global_id(),
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable));
 
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 }
 
 // Test that an accepted autofill suggestion will fill the form.
@@ -2438,7 +2438,7 @@ TEST_F(AutofillExternalDelegateTest,
   std::vector<Suggestion> suggestions = {CreateAutofillSuggestion(
       SuggestionType::kDevtoolsTestAddresses, u"Devtools")};
   OnSuggestionsReturned(queried_field(), suggestions);
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "Autofill.TestAddressesEvent",
       autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
@@ -3556,7 +3556,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionShown) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kScanCreditCard)};
   OnSuggestionsReturned(queried_field(), suggestions);
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 
   histogram.ExpectUniqueSample("Autofill.ScanCreditCardPrompt",
                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -3568,7 +3568,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionAccepted) {
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kScanCreditCard)};
   OnSuggestionsReturned(queried_field(), suggestions);
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kScanCreditCard),
@@ -3590,7 +3590,7 @@ TEST_F(AutofillExternalDelegateTest,
   std::vector<Suggestion> suggestions = {
       Suggestion(SuggestionType::kScanCreditCard)};
   OnSuggestionsReturned(queried_field(), suggestions);
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kCreditCardEntry),
@@ -3609,7 +3609,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionNotShown) {
   base::HistogramTester histogram;
   IssueOnQuery();
   OnSuggestionsReturned(queried_field(), {});
-  external_delegate().OnSuggestionsShown({});
+  external_delegate().OnSuggestionsShown({}, std::nullopt);
   histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
 }
 
@@ -3619,7 +3619,7 @@ TEST_F(AutofillExternalDelegateTest, AutocompleteShown_MetricsEmitted) {
   std::vector<Suggestion> suggestions = {CreateAutofillSuggestion(
       SuggestionType::kAutocompleteEntry, u"autocomplete")};
   OnSuggestionsReturned(queried_field(), suggestions);
-  external_delegate().OnSuggestionsShown(suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, std::nullopt);
   histogram.ExpectBucketCount("Autocomplete.Events3",
                               AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
                               1);

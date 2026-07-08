@@ -131,7 +131,7 @@ void AtMemorySuggestionController::Show(
     client->ShowAtMemoryBottomSheet(suggestions_, delegate_);
   }
   if (delegate_) {
-    delegate_->OnSuggestionsShown(suggestions_);
+    delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
   }
 }
 

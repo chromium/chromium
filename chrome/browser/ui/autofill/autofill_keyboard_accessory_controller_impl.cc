@@ -672,7 +672,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
       kIgnoreEarlyClicksOnSuggestionsDuration);
   // TODO(crbug.com/364165357): Use actually shown suggestions.
-  delegate_->OnSuggestionsShown(suggestions_);
+  delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
 }
 
 std::optional<AutofillSuggestionController::UiSessionId>

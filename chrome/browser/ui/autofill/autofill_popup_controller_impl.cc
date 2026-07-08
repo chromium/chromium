@@ -414,9 +414,13 @@ void AutofillPopupControllerImpl::Show(
           base::BindOnce(&AutofillSuggestionController::Hide, GetWeakPtr(),
                          SuggestionHidingReason::kFadeTimerExpired));
     }
-
-    delegate_->OnSuggestionsShown(non_filtered_suggestions_);
   }
+  delegate_->OnSuggestionsShown(
+      non_filtered_suggestions_,
+      IsRootPopup()
+          ? std::nullopt
+          : std::optional<AutofillSuggestionDelegate::SuggestionMetadata>(
+                {.multi_index = GetParentMultiRowIndex()}));
 
   if (autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
     AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
@@ -545,9 +549,18 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
 
+  std::vector<size_t> multi_row_index = GetParentMultiRowIndex();
+  multi_row_index.push_back(index);
+  delegate_->DidAcceptSuggestion(suggestion,
+                                 AutofillSuggestionDelegate::SuggestionMetadata{
+                                     .multi_index = std::move(multi_row_index),
+                                     .from_search_result = !!filter_});
+}
+
+std::vector<size_t> AutofillPopupControllerImpl::GetParentMultiRowIndex()
+    const {
   const int popup_level = GetPopupLevel();
-  std::vector<size_t> multi_row_index(popup_level + 1, 0);
-  multi_row_index.back() = index;
+  std::vector<size_t> multi_row_index(popup_level, 0);
   base::WeakPtr<AutofillPopupControllerImpl> controller =
       parent_controller_.value_or({});
   for (int i = popup_level - 1; i >= 0 && controller && controller->view_;
@@ -556,10 +569,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
         controller->view_->GetIndexOfSubPopupAnchorSuggestion().value_or(0);
     controller = controller->parent_controller_.value_or({});
   }
-  delegate_->DidAcceptSuggestion(suggestion,
-                                 AutofillSuggestionDelegate::SuggestionMetadata{
-                                     .multi_index = std::move(multi_row_index),
-                                     .from_search_result = !!filter_});
+  return multi_row_index;
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {

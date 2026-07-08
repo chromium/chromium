@@ -287,7 +287,7 @@ class PasswordManualFallbackFlowTest : public Test {
     // In production, suggestions cannot be accepted if not shown first.
     // Simulating showing them in tests is mandatory, otherwise a `CHECK` error
     // would occur while logging metrics.
-    flow().OnSuggestionsShown(base::span_from_ref(suggestion));
+    flow().OnSuggestionsShown(base::span_from_ref(suggestion), std::nullopt);
     flow().DidAcceptSuggestion(suggestion, metadata);
   }
 
@@ -1662,7 +1662,7 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
         "PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup",
         SuggestionAcceptedOnRootPopup(), 1);
   } else {
-    flow().OnSuggestionsShown(base::span_from_ref(suggestion));
+    flow().OnSuggestionsShown(base::span_from_ref(suggestion), std::nullopt);
     // Root popup acceptance metrics are only logged when suggestions are
     // accepted.
     histograms.ExpectTotalCount(
