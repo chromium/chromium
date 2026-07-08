@@ -786,7 +786,7 @@ void TableLayout::CalculateSize(
 void TableLayout::Resize(int delta) const {
   if (delta < 0) {
     // DistributeDelta() assumes resizable columns can equally be shrunk. That
-    // isn't desired when given a size smaller than the prefered. Instead the
+    // isn't desired when given a size smaller than the preferred. Instead the
     // columns need to be resized but bounded by the minimum. ResizeUsingMin()
     // does this.
     ResizeUsingMin(delta);
