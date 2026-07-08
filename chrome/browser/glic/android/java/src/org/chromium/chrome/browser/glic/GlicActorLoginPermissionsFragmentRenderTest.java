@@ -10,6 +10,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -108,12 +110,16 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.populatePermissions(getTestPermissions()));
         applyContainment(fragment);
 
-        // Wait for RecyclerView to perform a layout pass and attach child views.
+        // Wait for the view to be fully laid out and visible.
         CriteriaHelper.pollUiThread(
                 () -> {
+                    View view = fragment.getView();
+                    Criteria.checkThat(view, Matchers.notNullValue());
+                    Criteria.checkThat(view.getWidth(), Matchers.greaterThan(0));
                     RecyclerView recyclerView = fragment.getListView();
                     Criteria.checkThat(recyclerView, Matchers.notNullValue());
                     Criteria.checkThat(recyclerView.getChildCount(), Matchers.greaterThan(1));
+                    Criteria.checkThat(recyclerView.getWidth(), Matchers.greaterThan(0));
                 });
 
         mRenderTestRule.render(fragment.getView(), "glic_actor_login_permissions_fragment");
@@ -142,12 +148,16 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.populatePermissions(getTestPermissions()));
         applyContainment(fragment);
 
-        // Wait for RecyclerView to perform a layout pass and attach child views.
+        // Wait for the view to be fully laid out and visible.
         CriteriaHelper.pollUiThread(
                 () -> {
+                    View view = fragment.getView();
+                    Criteria.checkThat(view, Matchers.notNullValue());
+                    Criteria.checkThat(view.getWidth(), Matchers.greaterThan(0));
                     RecyclerView recyclerView = fragment.getListView();
                     Criteria.checkThat(recyclerView, Matchers.notNullValue());
                     Criteria.checkThat(recyclerView.getChildCount(), Matchers.greaterThan(1));
+                    Criteria.checkThat(recyclerView.getWidth(), Matchers.greaterThan(0));
                 });
 
         mRenderTestRule.render(fragment.getView(), "glic_actor_login_permissions_fragment_offline");
@@ -171,11 +181,16 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.populatePermissions(new ArrayList<>()));
         applyContainment(fragment);
 
+        // Wait for the view to be fully laid out and visible.
         CriteriaHelper.pollUiThread(
                 () -> {
+                    View view = fragment.getView();
+                    Criteria.checkThat(view, Matchers.notNullValue());
+                    Criteria.checkThat(view.getWidth(), Matchers.greaterThan(0));
                     RecyclerView recyclerView = fragment.getListView();
                     Criteria.checkThat(recyclerView, Matchers.notNullValue());
                     Criteria.checkThat(recyclerView.getChildCount(), Matchers.greaterThan(1));
+                    Criteria.checkThat(recyclerView.getWidth(), Matchers.greaterThan(0));
                 });
 
         mRenderTestRule.render(fragment.getView(), "glic_actor_login_permissions_fragment_empty");
@@ -202,11 +217,16 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> fragment.populatePermissions(getTestPermissions()));
         applyContainment(fragment);
 
+        // Wait for the view to be fully laid out and visible.
         CriteriaHelper.pollUiThread(
                 () -> {
+                    View view = fragment.getView();
+                    Criteria.checkThat(view, Matchers.notNullValue());
+                    Criteria.checkThat(view.getWidth(), Matchers.greaterThan(0));
                     RecyclerView recyclerView = fragment.getListView();
                     Criteria.checkThat(recyclerView, Matchers.notNullValue());
                     Criteria.checkThat(recyclerView.getChildCount(), Matchers.greaterThan(1));
+                    Criteria.checkThat(recyclerView.getWidth(), Matchers.greaterThan(0));
                 });
 
         mRenderTestRule.render(fragment.getView(), "glic_actor_login_permissions_fragment_managed");
@@ -220,6 +240,7 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
                             .applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
 
                     RecyclerView recyclerView = fragment.getListView();
+                    recyclerView.setItemAnimator(null); // Disable animation to reduce flakiness
                     ContainmentItemController controller =
                             new ContainmentItemController(mSettingsTestRule.getActivity());
                     ContainmentItemDecoration itemDecoration =
