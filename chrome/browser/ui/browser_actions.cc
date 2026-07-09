@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -2088,47 +2089,51 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             .Build());
   }
 
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                if (!bwi) {
-                  return;
-                }
-                auto* tab = bwi->GetActiveTabInterface();
-                if (!tab) {
-                  return;
-                }
-                auto* controller =
-                    indigo::IndigoPageActionController::From(tab);
-                if (controller) {
-                  auto entry_point = [&]() {
-                    auto raw_entry_point =
-                        static_cast<page_actions::PageActionEntryPoint>(
-                            context.GetProperty(
-                                page_actions::kPageActionEntryPointKey));
-                    switch (raw_entry_point) {
-                      case page_actions::PageActionEntryPoint::kSuggestionChip:
-                        return indigo::EntryPoint::kSuggestionChip;
-                      case page_actions::PageActionEntryPoint::kAnchoredMessage:
-                        return indigo::EntryPoint::kAnchoredMessage;
-                    }
-                    NOTREACHED();
-                  }();
-                  controller->InvokeAction(entry_point);
-                }
-              },
-              bwi))
-          .SetActionId(kActionIndigo)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_INDIGO_ENTRYPOINT_CHIP_TOOLTIP_TEXT))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? vector_icons::kCodeIcon
-                                                : vector_icons::kCodeOldIcon,
-              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-          .SetText(l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_CHIP_TEXT))
-          .Build());
+  if (base::FeatureList::IsEnabled(features::kIndigo)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  auto* tab = bwi->GetActiveTabInterface();
+                  if (!tab) {
+                    return;
+                  }
+                  auto* controller =
+                      indigo::IndigoPageActionController::From(tab);
+                  if (controller) {
+                    auto entry_point = [&]() {
+                      auto raw_entry_point =
+                          static_cast<page_actions::PageActionEntryPoint>(
+                              context.GetProperty(
+                                  page_actions::kPageActionEntryPointKey));
+                      switch (raw_entry_point) {
+                        case page_actions::PageActionEntryPoint::
+                            kSuggestionChip:
+                          return indigo::EntryPoint::kSuggestionChip;
+                        case page_actions::PageActionEntryPoint::
+                            kAnchoredMessage:
+                          return indigo::EntryPoint::kAnchoredMessage;
+                      }
+                      NOTREACHED();
+                    }();
+                    controller->InvokeAction(entry_point);
+                  }
+                },
+                bwi))
+            .SetActionId(kActionIndigo)
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_INDIGO_ENTRYPOINT_CHIP_TOOLTIP_TEXT))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                glic::GlicVectorIconManager::GetVectorIcon(
+                    IDR_GLIC_BUTTON_VECTOR_ICON),
+                ui::kColorSysOnSurface))
+            .SetText(l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_CHIP_TEXT))
+            .Build());
+  }
 
   if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
     root_action_item_->AddChild(
