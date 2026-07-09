@@ -24,3 +24,8 @@
 -keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class com.google.cardboard.sdk.** {
   native <methods>;
 }
+
+# Keep onClick handlers in QrCodeCaptureActivity, which are called via reflection.
+-keepclassmembers class com.google.cardboard.sdk.QrCodeCaptureActivity {
+  public void skipQrCodeCapture(android.view.View);
+}
