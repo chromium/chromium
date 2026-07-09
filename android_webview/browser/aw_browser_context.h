@@ -53,7 +53,10 @@ class InProgressDownloadManager;
 }
 
 namespace visitedlink {
+// TODO(crbug.com/517136103): Remove VisitedLinkWriter and only use
+// PartitionedVisitedLinkWriter
 class VisitedLinkWriter;
+class PartitionedVisitedLinkWriter;
 }
 
 namespace android_webview {
@@ -264,6 +267,7 @@ class AwBrowserContext : public content::BrowserContext,
 
  private:
   friend class AwBrowserContextIoThreadHandle;
+  friend class AwBrowserContextTest;
   void CreateUserPrefService();
   void MigrateLocalStatePrefs();
 
@@ -283,7 +287,11 @@ class AwBrowserContext : public content::BrowserContext,
 
   scoped_refptr<AwQuotaManagerBridge> quota_manager_bridge_;
 
+  // TODO(crbug.com/517136103): Remove VisitedLinkWriter and only use
+  // PartitionedVisitedLinkWriter
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
+  std::unique_ptr<visitedlink::PartitionedVisitedLinkWriter>
+      partitioned_visitedlink_writer_;
 
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;

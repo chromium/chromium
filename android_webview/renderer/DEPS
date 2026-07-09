@@ -20,6 +20,7 @@ include_rules = [
   "+components/security_interstitials/content/renderer",
   "+components/spellcheck/renderer",
   "+components/strings",
+  "+components/visitedlink/common",
   "+components/visitedlink/renderer",
 
   "+content/public/child",

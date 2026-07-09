@@ -783,6 +783,7 @@ test("android_webview_unittests") {
     "//components/safe_browsing/core/common",
     "//components/tracing:background_tracing_utils",
     "//components/variations",
+    "//components/visitedlink/browser",
     "//components/viz/service",
     "//components/webui/flags",
     "//content",

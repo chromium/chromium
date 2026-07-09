@@ -1404,7 +1404,11 @@ public final class ProductionSupportedFlagList {
                 "SimpleCachePrefetchExperiment2",
                 "Enables fixed-size prefetching of simple cache entry data during open."),
         Flag.baseFeature(
-                "QuicUseReadMultiple", "Utilizes recvmmsg over recvmsg for Quic UDP sockets.")
+                "QuicUseReadMultiple", "Utilizes recvmmsg over recvmsg for Quic UDP sockets."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_MIGRATE_VISITED_LINKS,
+                "Migrate WebView's visited links database to the new partitioned database structure"
+                        + " without performing actual partitioning."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

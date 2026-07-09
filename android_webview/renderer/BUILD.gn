@@ -52,6 +52,7 @@ source_set("renderer") {
     "//components/spellcheck:buildflags",
     "//components/spellcheck/renderer",
     "//components/strings",
+    "//components/visitedlink/common",
     "//components/visitedlink/renderer",
     "//content/public/child",
     "//content/public/common",

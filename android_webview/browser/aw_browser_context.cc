@@ -79,6 +79,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -161,9 +162,17 @@ AwBrowserContext::AwBrowserContext(std::string name,
 
   CreateUserPrefService();
 
-  visitedlink_writer_ =
-      std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
-  visitedlink_writer_->Init();
+  if (base::FeatureList::IsEnabled(features::kWebViewMigrateVisitedLinks)) {
+    partitioned_visitedlink_writer_ =
+        std::make_unique<visitedlink::PartitionedVisitedLinkWriter>(
+            this, this,
+            /*use_constant_salt=*/true);
+    partitioned_visitedlink_writer_->Init();
+  } else {
+    visitedlink_writer_ =
+        std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
+    visitedlink_writer_->Init();
+  }
 
   EnsureResourceContextInitialized();
   prefetch_manager_ = std::make_unique<AwPrefetchManager>(this);
@@ -345,8 +354,13 @@ std::vector<std::string> AwBrowserContext::GetAuthSchemes() {
 }
 
 void AwBrowserContext::AddVisitedURLs(const std::vector<GURL>& urls) {
-  DCHECK(visitedlink_writer_);
-  visitedlink_writer_->AddURLs(urls);
+  if (base::FeatureList::IsEnabled(features::kWebViewMigrateVisitedLinks)) {
+    CHECK(partitioned_visitedlink_writer_);
+    partitioned_visitedlink_writer_->AddPseudoPartitionedVisitedLinks(urls);
+  } else {
+    CHECK(visitedlink_writer_);
+    visitedlink_writer_->AddURLs(urls);
+  }
 }
 
 AwQuotaManagerBridge* AwBrowserContext::GetQuotaManagerBridge() {
@@ -519,8 +533,9 @@ void AwBrowserContext::RebuildTable(
 
 void AwBrowserContext::BuildVisitedLinkTable(
     const scoped_refptr<VisitedLinkEnumerator>& enumerator) {
-  // Partitioned visited link hashtables are not supported in Android WebView,
-  // so this initialization path is not used.
+  // Android WebView gets :visited links history from each individual WebView's
+  // WebChromeClient.getVisitedHistory rather than handling them at the
+  // BrowserContext level. Therefore this initialization path is not used.
   enumerator->OnVisitedLinkComplete(true);
 }
 

@@ -13,7 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
+#include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "mojo/core/embedder/embedder.h"
@@ -44,13 +47,27 @@ class AwBrowserContextTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Drain the message queue before destroying
-    // |test_content_client_initializer_|, otherwise a posted task may call
-    // content::GetNetworkConnectionTracker() after
-    // TestContentClientInitializer's destructor sets it to null.
-    base::RunLoop().RunUntilIdle();
+    // Flush the network service thread to ensure all pending NetworkContexts
+    // are fully destroyed before we delete TestContentClientInitializer
+    // (which owns NetworkConnectionTracker).
+    if (content::GetNetworkTaskRunner()) {
+      base::RunLoop run_loop;
+      content::GetNetworkTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+      run_loop.Run();
+    }
     delete test_content_client_initializer_;
     delete browser_process_;
+  }
+
+  visitedlink::VisitedLinkWriter* GetVisitedLinkWriter(
+      AwBrowserContext& context) {
+    return context.visitedlink_writer_.get();
+  }
+
+  visitedlink::PartitionedVisitedLinkWriter* GetPartitionedVisitedLinkWriter(
+      AwBrowserContext& context) {
+    return context.partitioned_visitedlink_writer_.get();
   }
 
   // Create the TestBrowserThreads.
@@ -91,8 +108,57 @@ TEST_F(AwBrowserContextTest, SetAllowedPrerenderingCount) {
   context.ClearAllowedPrerenderingCount(nullptr);
   EXPECT_EQ(context.AllowedPrerenderingCount(),
             kDefaultAllowedPrerenderingCount);
+}
 
-  base::RunLoop().RunUntilIdle();
+TEST_F(AwBrowserContextTest, MigrateVisitedLinksDisabled) {
+  // Default is disabled.
+  AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
+      base::FilePath(AwBrowserContextStore::kDefaultContextPath),
+      /*is_default=*/true);
+
+  EXPECT_TRUE(GetVisitedLinkWriter(context));
+  EXPECT_FALSE(GetPartitionedVisitedLinkWriter(context));
+
+  // Wait for the initial empty table build to complete.
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               run_loop.QuitClosure());
+  run_loop.Run();
+
+  GURL url("https://google.com");
+  context.AddVisitedURLs({url});
+
+  ASSERT_EQ(GetVisitedLinkWriter(context)->GetUsedCount(), 1);
+  ASSERT_TRUE(GetVisitedLinkWriter(context)->IsVisited(url));
+}
+
+TEST_F(AwBrowserContextTest, MigrateVisitedLinksEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebViewMigrateVisitedLinks);
+
+  AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
+      base::FilePath(AwBrowserContextStore::kDefaultContextPath),
+      /*is_default=*/true);
+
+  EXPECT_FALSE(GetVisitedLinkWriter(context));
+  EXPECT_TRUE(GetPartitionedVisitedLinkWriter(context));
+
+  GURL url("https://google.com");
+  context.AddVisitedURLs({url});
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_EQ(GetPartitionedVisitedLinkWriter(context)->GetUsedCount(), 1);
+
+  visitedlink::VisitedLinkCommon::Fingerprint expected_fp =
+      visitedlink::VisitedLinkCommon::ComputePseudoPartitionedFingerprint(
+          url.spec());
+  ASSERT_TRUE(GetPartitionedVisitedLinkWriter(context)->IsVisited(expected_fp));
 }
 
 }  // namespace android_webview
