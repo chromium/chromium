@@ -73,29 +73,26 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   void ClearEventListenerForXSLT();
 
   const AtomicString& getAttribute(const AtomicString& name) {
-    return GetAttributeValue(name.ToAsciiLower());
+    return GetAttributeValue(name);
   }
-  bool hasAttribute(const AtomicString& name) {
-    return HasAttribute(name.ToAsciiLower());
-  }
+
+  bool hasAttribute(const AtomicString& name);
   void setAttribute(const AtomicString& name,
                     const AtomicString& value,
                     ExceptionState& exception_state) {
     if (ValidateAttributeName(name, exception_state)) {
-      SetAttribute(name.ToAsciiLower(), value);
+      SetAttribute(name, value);
     }
   }
-  void removeAttribute(const AtomicString& name) {
-    RemoveAttribute(name.ToAsciiLower());
-  }
+  void removeAttribute(const AtomicString& name);
   void toggleAttribute(const AtomicString& name,
                        ExceptionState& exception_state) {
-    ToggleAttribute(name.ToAsciiLower(), std::nullopt, exception_state);
+    ToggleAttribute(name, std::nullopt, exception_state);
   }
   void toggleAttribute(const AtomicString& name,
                        bool force,
                        ExceptionState& exception_state) {
-    ToggleAttribute(name.ToAsciiLower(), force, exception_state);
+    ToggleAttribute(name, force, exception_state);
   }
   bool hasAttributes();
   Vector<AtomicString> getAttributeNames();
@@ -108,11 +105,8 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   String nodeName() const override;
   CharacterData* CloneWithData(Document&, const String&) const override;
 
-  AtomicString LowercaseIfNeeded(const AtomicString&) const;
   bool ValidateAttributeName(const AtomicString&, ExceptionState&) const;
-  bool HasAttribute(const AtomicString&);
   void SetAttribute(const AtomicString&, const AtomicString&);
-  void RemoveAttribute(const AtomicString&);
   void ToggleAttribute(const AtomicString&,
                        std::optional<bool> force,
                        ExceptionState&);

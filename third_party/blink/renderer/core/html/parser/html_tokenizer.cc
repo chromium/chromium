@@ -1136,20 +1136,20 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         ParseError();
         return EmitEndOfFile(source);
       } else if (cc == '-' || cc == '_' || IsAsciiAlphanumeric(cc)) {
-        token_.AppendToProcessingInstructionTarget(ToLowerCaseIfAlpha(cc));
-        temporary_buffer_.AddChar(cc);
+        token_.AppendToProcessingInstructionTarget(cc);
         HTML_CONSUME(kProcessingInstructionTargetState);
       } else {
         if (!(IsTokenizerWhitespace(cc) || cc == '>' || cc == '?') ||
             is_reserved()) {
           ParseError();
+          const HTMLToken::DataVector target_data =
+              token_.GetProcessingInstructionTarget();
           Reset();
           token_.BeginComment();
           token_.AppendToComment('?');
-          for (const UChar c : temporary_buffer_) {
+          for (const UChar c : target_data) {
             token_.AppendToComment(c);
           }
-          temporary_buffer_.clear();
           HTML_RECONSUME_IN(kContinueBogusCommentState);
         } else {
           HTML_RECONSUME_IN(kAfterProcessingInstructionTargetState);

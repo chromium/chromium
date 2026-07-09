@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] <?COMMENT?>
-  assert_equals: expected "#document\\n| <?COMMENT ?>\\n| <html>\\n|   <head>\\n|   <body>" but got "#document\\n| <?comment ?>\\n| <html>\\n|   <head>\\n|   <body>"
-[FAIL] <?COM--MENT?>
-  assert_equals: expected "#document\\n| <?COM--MENT ?>\\n| <html>\\n|   <head>\\n|   <body>" but got "#document\\n| <?com--ment ?>\\n| <html>\\n|   <head>\\n|   <body>"
-Harness: the test ran to completion.
-

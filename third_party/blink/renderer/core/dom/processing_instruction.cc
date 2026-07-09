@@ -190,7 +190,6 @@ bool ProcessingInstruction::ValidateAttributeName(
 const AtomicString& ProcessingInstruction::GetAttributeValue(
     const AtomicString& name,
     const AtomicString& default_value) {
-  DCHECK_EQ(name, name.ToAsciiLower());
   ProcessAttributesIfNeeded();
   for (const auto& pair : attributes_) {
     if (pair.key == name) {
@@ -200,8 +199,7 @@ const AtomicString& ProcessingInstruction::GetAttributeValue(
   return default_value;
 }
 
-bool ProcessingInstruction::HasAttribute(const AtomicString& name) {
-  DCHECK_EQ(name, name.ToAsciiLower());
+bool ProcessingInstruction::hasAttribute(const AtomicString& name) {
   ProcessAttributesIfNeeded();
   for (const auto& pair : attributes_) {
     if (pair.key == name) {
@@ -213,7 +211,6 @@ bool ProcessingInstruction::HasAttribute(const AtomicString& name) {
 
 void ProcessingInstruction::SetAttribute(const AtomicString& name,
                                          const AtomicString& value) {
-  DCHECK_EQ(name, name.ToAsciiLower());
   DCHECK(ValidateAttributeName(name, ASSERT_NO_EXCEPTION));
 
   ProcessAttributesIfNeeded();
@@ -228,8 +225,7 @@ void ProcessingInstruction::SetAttribute(const AtomicString& name,
   UpdateDataFromAttributes();
 }
 
-void ProcessingInstruction::RemoveAttribute(const AtomicString& name) {
-  DCHECK_EQ(name, name.ToAsciiLower());
+void ProcessingInstruction::removeAttribute(const AtomicString& name) {
   ProcessAttributesIfNeeded();
   const wtf_size_t size = attributes_.size();
   for (wtf_size_t i = 0; i < size; ++i) {
@@ -248,8 +244,7 @@ void ProcessingInstruction::ToggleAttribute(const AtomicString& name,
     return;
   }
 
-  DCHECK_EQ(name, name.ToAsciiLower());
-  const bool already_there = HasAttribute(name);
+  const bool already_there = hasAttribute(name);
   force = force.value_or(!already_there);
 
   if (*force) {
@@ -257,7 +252,7 @@ void ProcessingInstruction::ToggleAttribute(const AtomicString& name,
       SetAttribute(name, g_empty_atom);
     }
   } else {
-    RemoveAttribute(name);
+    removeAttribute(name);
   }
 }
 
