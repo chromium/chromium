@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -130,19 +131,29 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Test
     public void testOnPreviewClosed() {
-        boolean isImageSelected = false;
-        mCoordinator.onPreviewClosed(isImageSelected);
+        verifyOnPreviewClosed(/* isImageSelected= */ false, /* isDifferentTheme= */ false);
+        verifyOnPreviewClosed(/* isImageSelected= */ false, /* isDifferentTheme= */ true);
+        verifyOnPreviewClosed(/* isImageSelected= */ true, /* isDifferentTheme= */ false);
+        verifyOnPreviewClosed(/* isImageSelected= */ true, /* isDifferentTheme= */ true);
+    }
 
-        verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
-        verify(mDismissBottomSheet, never()).run();
-        verify(mMediator, never()).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
+    private void verifyOnPreviewClosed(boolean isImageSelected, boolean isDifferentTheme) {
+        clearInvocations(mBottomSheetDelegate);
+        clearInvocations(mDismissBottomSheet);
+        clearInvocations(mMediator);
 
-        isImageSelected = true;
-        mCoordinator.onPreviewClosed(isImageSelected);
+        mCoordinator.onPreviewClosed(isImageSelected, isDifferentTheme);
 
-        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mDismissBottomSheet).run();
-        verify(mMediator).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
+        if (isImageSelected) {
+            verify(mBottomSheetDelegate).onNewColorSelected(eq(isDifferentTheme));
+            verify(mDismissBottomSheet).run();
+            verify(mMediator).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
+        } else {
+            verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
+            verify(mDismissBottomSheet, never()).run();
+            verify(mMediator, never())
+                    .updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
+        }
     }
 
     @Test

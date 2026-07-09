@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,6 +55,7 @@ import org.chromium.ui.util.CommonOnLayoutChangeListeners;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /** Coordinator for managing the Upload Image Preview dialog. */
 @NullMarked
@@ -70,6 +71,18 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
     private @Nullable UploadImagePreviewLayout mPreviewLayout;
     private @Nullable CropImageView mCropImageView;
+
+    /** Callback interface for when the user interacts with the Upload Image Preview dialog. */
+    public interface UploadImagePreviewClickedCallback {
+        /**
+         * Called when the preview dialog is closed.
+         *
+         * @param isImageSelected Whether the user confirmed the image selection.
+         * @param isDifferentTheme Whether the selected image theme is different from the current
+         *     background theme.
+         */
+        void onPreviewClicked(boolean isImageSelected, boolean isDifferentTheme);
+    }
 
     /**
      * The type of user interactions with the Upload Image Preview dialog.
@@ -99,15 +112,15 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
      * @param profile The current user profile.
      * @param bitmap The bitmap to be previewed.
      * @param fileIdHash The ID hash of the image file.
-     * @param onBottomSheetClickedCallback The callback to be notified when a bottom sheet button is
-     *     clicked.
+     * @param uploadImagePreviewClickedCallback The callback to be notified when a bottom sheet
+     *     button is clicked.
      */
     public UploadImagePreviewCoordinator(
             Activity activity,
             Profile profile,
             Bitmap bitmap,
             @Nullable String fileIdHash,
-            Callback<Boolean> onBottomSheetClickedCallback) {
+            UploadImagePreviewClickedCallback uploadImagePreviewClickedCallback) {
         mPreviewPropertyModel = new PropertyModel(PREVIEW_KEYS);
         mActivity = activity;
         mPreviewLayout =
@@ -153,13 +166,15 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
-                    onSaveButtonClicked(bitmap, fileIdHash, onBottomSheetClickedCallback, mDialog);
+                    onSaveButtonClicked(
+                            bitmap, fileIdHash, uploadImagePreviewClickedCallback, mDialog);
                 });
 
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER,
                 v -> {
-                    onBottomSheetClickedCallback.onResult(false);
+                    uploadImagePreviewClickedCallback.onPreviewClicked(
+                            /* isImageSelected= */ false, /* isDifferentTheme= */ false);
                     mDialog.dismiss();
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.CANCEL);
@@ -348,7 +363,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
      *
      * @param bitmap The selected bitmap.
      * @param fileIdHash The ID hash of the image file.
-     * @param onBottomSheetClickedCallback The callback to be notified when a bottom sheet button is
+     * @param uploadImagePreviewClickedCallback The callback to be notified when a button is
      *     clicked.
      * @param dialog The current preview dialog.
      */
@@ -356,8 +371,11 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     void onSaveButtonClicked(
             Bitmap bitmap,
             @Nullable String fileIdHash,
-            Callback<Boolean> onBottomSheetClickedCallback,
+            UploadImagePreviewClickedCallback uploadImagePreviewClickedCallback,
             ChromeDialog dialog) {
+        NtpBackgroundDataBase currentBackgroundData =
+                NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
+
         assumeNonNull(mCropImageView);
         // 1. Gets the matrices (source of truth or calculated estimate)
         Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
@@ -380,6 +398,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                         /* primaryColor= */ null,
                         fileIdHash);
 
+        // #onBackgroundDataChanged() will pick the primary color for the uploadImageData to
+        // make it non-null.
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundDataChanged(mActivity, uploadImageData);
 
@@ -388,7 +408,11 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                 PreviewInteractionType.SAVE);
         recordPreviewInteractionsMetric();
 
-        onBottomSheetClickedCallback.onResult(true);
+        // Objects.equals(currentBackgroundData, uploadImageData) compares the primary color,
+        // the background image info etc. of the two data instances.
+        uploadImagePreviewClickedCallback.onPreviewClicked(
+                /* isImageSelected= */ true,
+                !Objects.equals(currentBackgroundData, uploadImageData));
         dialog.dismiss();
     }
 

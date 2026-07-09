@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowDialog;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -66,10 +66,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class UploadImagePreviewCoordinatorUnitTest {
     private static final String TEST_FILE_ID_HASH = "test_file_id_hash";
+    private static final Point PORTRAIT_POINT = new Point(1080, 1920);
+    private static final Point LANDSCAPE_POINT = new Point(2000, 1080);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Callback<Boolean> mOnClickedCallback;
+    @Mock
+    private UploadImagePreviewCoordinator.UploadImagePreviewClickedCallback mOnClickedCallback;
+
     @Mock private CropImageView mCropImageView;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Profile mProfile;
@@ -281,8 +285,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
         when(mCropImageView.getPortraitMatrix()).thenReturn(mPortraitMatrix);
         when(mCropImageView.getLandscapeMatrix()).thenReturn(mLandscapeMatrix);
 
-        when(mCropImageView.getPortraitWindowSize()).thenReturn(new Point(1080, 1920));
-        when(mCropImageView.getLandscapeWindowSize()).thenReturn(new Point(2000, 1080));
+        when(mCropImageView.getPortraitWindowSize()).thenReturn(PORTRAIT_POINT);
+        when(mCropImageView.getLandscapeWindowSize()).thenReturn(LANDSCAPE_POINT);
     }
 
     private void setupCropImageView_pinchToResize() {
@@ -339,7 +343,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
                         .exists());
 
         // Verifies the on clicked callback was invoked.
-        verify(mOnClickedCallback).onResult(eq(true));
+        verify(mOnClickedCallback).onPreviewClicked(eq(true), eq(true));
 
         // Verifies the bitmap is still present and was not set to null.
         assertEquals(
@@ -357,7 +361,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         mCancelButton.performClick();
 
         // Verifies the on clicked callback was invoked.
-        verify(mOnClickedCallback).onResult(eq(false));
+        verify(mOnClickedCallback).onPreviewClicked(eq(false), eq(false));
         assertFalse(
                 "The background image file should not have been saved.",
                 NtpCustomizationUtils.createUploadImageFileInDirForTesting(TEST_FILE_ID_HASH)
@@ -603,6 +607,16 @@ public class UploadImagePreviewCoordinatorUnitTest {
         testOnSaveButtonClickedImpl(/* hasFileIdHash= */ false);
     }
 
+    @Test
+    public void testOnSaveButtonClicked_SameUploadImage() {
+        testOnSaveButtonClicked_ExistingUploadImageImpl(/* isSameImage= */ true);
+    }
+
+    @Test
+    public void testOnSaveButtonClicked_DifferentUploadImage() {
+        testOnSaveButtonClicked_ExistingUploadImageImpl(/* isSameImage= */ false);
+    }
+
     /** Helper method that centralizes the Arrange/Act/Assert for window insets testing. */
     private void verifyWindowInsetsApplied(
             int topInset,
@@ -719,7 +733,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
             View saveButton = dialog.findViewById(R.id.save_button);
             saveButton.performClick();
 
-            verify(mOnClickedCallback).onResult(/* result= */ true);
+            verify(mOnClickedCallback).onPreviewClicked(eq(true), eq(true));
 
             ArgumentCaptor<NtpBackgroundDataBase> captor =
                     ArgumentCaptor.forClass(NtpBackgroundDataBase.class);
@@ -731,5 +745,30 @@ public class UploadImagePreviewCoordinatorUnitTest {
         } finally {
             NtpCustomizationConfigManager.setInstanceForTesting(null);
         }
+    }
+
+    private void testOnSaveButtonClicked_ExistingUploadImageImpl(boolean isSameImage) {
+        String currentFileIdHash = isSameImage ? TEST_FILE_ID_HASH : "other_file_id_hash";
+        NtpCustomizationConfigManager configManager = mock(NtpCustomizationConfigManager.class);
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        setupCropImageView();
+
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(
+                        mPortraitMatrix, mLandscapeMatrix, PORTRAIT_POINT, LANDSCAPE_POINT);
+        NtpBackgroundDataUploadImage currentUploadImage =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID_LOCAL,
+                        info,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        currentFileIdHash);
+        when(configManager.getNtpBackgroundData()).thenReturn(currentUploadImage);
+
+        mSaveButton.performClick();
+
+        verify(mOnClickedCallback)
+                .onPreviewClicked(
+                        eq(/* isImageSelected= */ true), eq(/* isDifferentColor= */ !isSameImage));
     }
 }
