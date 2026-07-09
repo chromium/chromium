@@ -5,6 +5,7 @@
 #include "components/skills/public/skills_features.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -22,6 +23,16 @@ class SkillsFeaturesTest : public testing::Test {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(SkillsFeaturesTest, IsSkillsEnabled_Default_PrefOn) {
+  prefs_->SetBoolean(prefs::kChromeSkillsEnabled, true);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(IsSkillsEnabled(prefs_.get()));
+#else
+  EXPECT_FALSE(IsSkillsEnabled(prefs_.get()));
+#endif
+}
 
 TEST_F(SkillsFeaturesTest, IsSkillsEnabled_FeatureOff_PrefOn) {
   feature_list_.InitAndDisableFeature(features::kSkillsEnabled);
