@@ -955,4 +955,29 @@ TEST_F(AccessibilityTest,
 }
 #endif  // AX_FAIL_FAST_BUILD()
 
+// Test that `PreviousLayoutObjectTextOnLine` handles `LayoutText` objects where
+// `IsInLayoutNGInlineFormattingContext()` is false without crashing on DCHECK.
+TEST_F(AccessibilityTest, ComputeNodesOnLineWithNonIfcText) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container">
+      <span id="target">Visible text</span>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+
+  Element* container = GetElementById("container");
+  Text* new_text = GetDocument().createTextNode("Unlaid out text ");
+  container->insertBefore(new_text, GetElementById("target"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  new_text->GetLayoutObject()->SetIsInLayoutNGInlineFormattingContext(false);
+
+  AXObject* target = GetAXObjectByElementId("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetLayoutObject());
+
+  cache.ComputeNodesOnLine(target->GetLayoutObject());
+}
+
 }  // namespace blink

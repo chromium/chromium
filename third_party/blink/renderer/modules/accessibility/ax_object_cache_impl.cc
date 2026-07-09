@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
@@ -752,6 +753,13 @@ LayoutObject* PreviousLayoutObjectTextOnLine(
   LayoutObject* previous = layout_object.PreviousInPreOrder(&block_flow);
   while (previous) {
     if (IsA<LayoutText>(previous)) {
+      if (!previous->IsInLayoutNGInlineFormattingContext() &&
+          RuntimeEnabledFeatures::
+              AccessibilityCheckIfcInPreviousTextOnLineEnabled()) {
+        // Avoid `MoveToIncludingCulledInline()` to fail.
+        previous = previous->PreviousInPreOrder(&block_flow);
+        continue;
+      }
       InlineCursor cursor;
       cursor.MoveToIncludingCulledInline(*previous);
       while (cursor) {
