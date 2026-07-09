@@ -4,6 +4,7 @@
 
 package org.chromium.ui.listmenu;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -286,6 +287,10 @@ public class BasicListMenu implements ListMenu {
                 View divider, Supplier<Boolean> showHairlinePrecondition) {
             mDivider = divider;
             mShowHairlinePrecondition = showHairlinePrecondition;
+            if (!mShowHairlinePrecondition.get()) {
+                mVisibility = GONE;
+                mDivider.setVisibility(GONE);
+            }
         }
 
         @Override
@@ -299,7 +304,9 @@ public class BasicListMenu implements ListMenu {
                         -firstChild.getTop()
                                 + (listView.getFirstVisiblePosition() * firstChild.getHeight());
                 int desiredVisibility =
-                        (mShowHairlinePrecondition.get() && listScrollY > 0) ? VISIBLE : INVISIBLE;
+                        mShowHairlinePrecondition.get()
+                                ? (listScrollY > 0 ? VISIBLE : INVISIBLE)
+                                : GONE;
                 if (desiredVisibility != mVisibility) {
                     mVisibility = desiredVisibility;
                     mDivider.setVisibility(desiredVisibility);

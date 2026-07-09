@@ -108,7 +108,7 @@ public class BrowserUiListMenuUnitTest {
         mContentView = Mockito.spy(setupListViewForSubmenuTesting());
         // Assert not showing before navigation
         View hairline = mView.findViewById(R.id.menu_header_bottom_hairline);
-        assertEquals(View.INVISIBLE, hairline.getVisibility());
+        assertEquals(View.GONE, hairline.getVisibility());
         // Navigate to submenu
         ListItem submenuParent = (ListItem) mContentView.getItemAtPosition(0);
         submenuParent.model.get(CLICK_LISTENER).onClick(mView);
@@ -153,11 +153,11 @@ public class BrowserUiListMenuUnitTest {
         ListView listView = setupListViewForSubmenuTesting();
         // Assert not showing before navigation
         View hairline = mView.findViewById(R.id.menu_header_bottom_hairline);
-        assertEquals(View.INVISIBLE, hairline.getVisibility());
+        assertEquals(View.GONE, hairline.getVisibility());
         // Don't navigate to submenu, so there's no fixed header.
         // Scroll and assert hairline is still not visible.
         listView.scrollListBy(1);
-        assertEquals(View.INVISIBLE, hairline.getVisibility());
+        assertEquals(View.GONE, hairline.getVisibility());
     }
 
     @Test
