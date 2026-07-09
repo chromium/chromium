@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -209,13 +210,17 @@ class OpenHostedFileWithAppBrowserBaseTest : public InProcessBrowserTest {
         false /* should_notify_initialized */);
   }
 
-  const storage::FileSystemURL CreateHostedFile(const std::string& file_name) {
+  const storage::FileSystemURL CreateHostedFile(
+      const std::string& file_name,
+      const GURL& hosted_url = GURL("https://docs.google.com/test-id")) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    if (!temp_dir_.IsValid()) {
+      EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    }
     const base::FilePath test_file_path = temp_dir_.GetPath().Append(file_name);
     EXPECT_TRUE(base::WriteFile(
         test_file_path,
-        base::StrCat({"{\"url\":\"", kTestHostedURL.spec(), "\"}"})));
+        base::StrCat({"{\"url\":\"", hosted_url.spec(), "\"}"})));
     return PathToFileSystemURL(test_file_path);
   }
 
@@ -231,12 +236,13 @@ class OpenHostedFileWithAppBrowserBaseTest : public InProcessBrowserTest {
   }
 
   void OpenURLAndExpectBrowserToBeOpened(
-      const storage::FileSystemURL& test_file_url) {
-    content::TestNavigationObserver navigation_observer(kTestHostedURL);
+      const storage::FileSystemURL& test_file_url,
+      const GURL& expected_url = GURL("https://docs.google.com/test-id")) {
+    content::TestNavigationObserver navigation_observer(expected_url);
     navigation_observer.StartWatchingNewWebContents();
     OpenFileWithAppOrBrowser(profile(), test_file_url, "view-in-browser");
     navigation_observer.Wait();
-    EXPECT_EQ(navigation_observer.last_navigation_url(), kTestHostedURL);
+    EXPECT_EQ(navigation_observer.last_navigation_url(), expected_url);
   }
 
   const blink::StorageKey kTestStorageKey =
@@ -298,6 +304,44 @@ IN_PROC_BROWSER_TEST_F(OpenHostedFileWithoutAppBrowserTest,
                        HostedDocWithoutApp) {
   const storage::FileSystemURL test_file_url = CreateHostedFile("form.gform");
   OpenURLAndExpectBrowserToBeOpened(test_file_url);
+}
+
+using OpenHostedFileUnsafeSchemeTest = OpenHostedFileWithAppBrowserBaseTest;
+
+IN_PROC_BROWSER_TEST_F(OpenHostedFileUnsafeSchemeTest,
+                       RejectJavascriptURLInGDoc) {
+  const GURL unsafe_url("javascript:alert(1)");
+  const storage::FileSystemURL test_file_url =
+      CreateHostedFile("unsafe.gdoc", unsafe_url);
+
+  // When the URL is not HTTP/HTTPS, it should fallback to opening the local
+  // file.
+  const GURL expected_url = net::FilePathToFileURL(test_file_url.path());
+  OpenURLAndExpectBrowserToBeOpened(test_file_url, expected_url);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenHostedFileUnsafeSchemeTest, RejectDataURLInGDoc) {
+  const GURL unsafe_url("data:text/html,<html></html>");
+  const storage::FileSystemURL test_file_url =
+      CreateHostedFile("unsafe.gsheet", unsafe_url);
+
+  const GURL expected_url = net::FilePathToFileURL(test_file_url.path());
+  OpenURLAndExpectBrowserToBeOpened(test_file_url, expected_url);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenHostedFileUnsafeSchemeTest,
+                       DirectRejectUnsafeScheme) {
+  base::FilePath file_path("/test/doc.gdoc");
+  GURL unsafe_url("javascript:alert(1)");
+  base::RunLoop run_loop;
+  base::MockCallback<LaunchAppCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(std::optional<apps::LaunchResult>(std::nullopt)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  EXPECT_FALSE(OpenHostedFileInNewTabOrApp(profile(), file_path,
+                                           mock_callback.Get(), unsafe_url));
+  run_loop.Run();
 }
 
 }  // namespace file_manager::util

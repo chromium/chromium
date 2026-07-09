@@ -111,7 +111,9 @@ std::optional<std::string> GetAppIdFromFilePath(
 // Note that an alternate url is a URL to open a hosted document.
 GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
   GURL url = drive::util::ReadUrlFromGDocFile(file_path);
-  if (url.is_empty()) {
+  // Ensure the parsed GURL is strictly a web-content scheme (http/https)
+  if (url.is_empty() || !url.SchemeIsHTTPOrHTTPS()) {
+    // Safe fallback: open the local placeholder file itself as a file:// URL
     url = net::FilePathToFileURL(file_path);
   }
   return url;
@@ -172,6 +174,12 @@ bool OpenHostedFileInNewTabOrApp(Profile* profile,
                                  LaunchAppCallback callback,
                                  const GURL& hosted_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!hosted_url.SchemeIsHTTPOrHTTPS() && !hosted_url.SchemeIsFile()) {
+    LOG(WARNING) << "Rejecting URI with scheme: " << hosted_url.scheme();
+    std::move(callback).Run(std::nullopt);
+    return false;
+  }
 
   std::optional<std::string> app_id =
       GetAppIdFromFilePath(hosted_url, file_path);
