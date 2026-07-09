@@ -684,6 +684,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         List<Tab> relatedTabs = getRelatedTabsForId(currentTabId);
         // This implicitly covers the isSolitaryChild check as well!
         if (relatedTabs == null || relatedTabs.size() <= 1) return false;
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
 
         boolean isFirstInGroup = currentTab.getId() == relatedTabs.get(0).getId();
         boolean isLastInGroup =
@@ -694,14 +695,65 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             // threshold.
             int downThreshold = viewHolder.itemView.getHeight() / 4;
             if (y > viewHolder.itemView.getTop() + downThreshold) {
+                // Check if the dragged tab is at the bottom of the RecyclerView viewport.
+                // Since this early return skips ItemTouchHelper's bounds scrolling logic,
+                // we manually track this to prevent list layout shifts later.
+                boolean isChildAtBottom = false;
+                if (layoutManager != null) {
+                    int maxBottom = layoutManager.getDecoratedBottom(viewHolder.itemView);
+                    if (maxBottom >= recyclerView.getHeight() - recyclerView.getPaddingBottom()) {
+                        isChildAtBottom = true;
+                    }
+                }
+
                 tabModel.getTabUngrouper().ungroupTabs(List.of(currentTab), true, false);
+
+                // If ungrouping pushes the new standalone tab off-screen at the bottom,
+                // instruct RecyclerView to scroll to it, keeping it pinned under the user's finger.
+                if (isChildAtBottom && layoutManager != null) {
+                    int childIndex = mModel.indexFromTabId(currentTab.getId());
+                    if (childIndex != TabModel.INVALID_TAB_INDEX) {
+                        layoutManager.scrollToPosition(childIndex);
+                    }
+                }
                 return true;
             }
         } else if (dy < 0 && isFirstInGroup) {
             // Dragging up requires crossing the group header which sits above the first tab.
             int upThreshold = viewHolder.itemView.getHeight() / 2;
             if (y < viewHolder.itemView.getTop() - upThreshold) {
+                // Check if the group header is abutting the top of the RecyclerView padding.
+                // Since this early return skips ItemTouchHelper's bounds scrolling logic,
+                // we manually track this so we can anchor the scroll to the new tab position.
+                boolean isHeaderAtTop = false;
+                if (layoutManager != null) {
+                    for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                        View child = recyclerView.getChildAt(i);
+                        // TODO(crbug.com/518307037): Use the TabModel directly instead.
+                        RecyclerView.ViewHolder childViewHolder =
+                                recyclerView.getChildViewHolder(child);
+                        if (childViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP
+                                && groupId.equals(getTabGroupId(childViewHolder))) {
+                            if (layoutManager.getDecoratedTop(child)
+                                    <= recyclerView.getPaddingTop()) {
+                                isHeaderAtTop = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+
                 tabModel.getTabUngrouper().ungroupTabs(List.of(currentTab), false, false);
+
+                // If ungrouping prepends the new tab natively off-screen at the top,
+                // manually scroll to the new tab. This forces the group header to visually shift
+                // down, rather than overlapping the new tab and causing an immediate re-grouping.
+                if (isHeaderAtTop && layoutManager != null) {
+                    int childIndex = mModel.indexFromTabId(currentTab.getId());
+                    if (childIndex != TabModel.INVALID_TAB_INDEX) {
+                        layoutManager.scrollToPosition(childIndex);
+                    }
+                }
                 return true;
             }
         }
