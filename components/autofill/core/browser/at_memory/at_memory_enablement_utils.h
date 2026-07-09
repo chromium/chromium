@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_ENABLEMENT_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_ENABLEMENT_UTILS_H_
 
+#include <string>
+
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
@@ -54,7 +56,8 @@ class AutofillOptimizationGuideDecider;
 [[nodiscard]] bool MayPerformAtMemoryAction(
     AtMemoryAction action,
     const AutofillClient& client,
-    base::optional_ref<const GURL> url = std::nullopt);
+    base::optional_ref<const GURL> url = std::nullopt,
+    std::string* debug_message = nullptr);
 
 [[nodiscard]] bool MayPerformAtMemoryAction(
     AtMemoryAction action,
@@ -65,7 +68,8 @@ class AutofillOptimizationGuideDecider;
     const PrefService* pref_service,
     const GoogleGroupsManager* google_groups_manager,
     AutofillOptimizationGuideDecider* decider,
-    base::optional_ref<const GURL> url = std::nullopt);
+    base::optional_ref<const GURL> url = std::nullopt,
+    std::string* debug_message = nullptr);
 
 // Returns whether the AtMemory feature is enabled.
 //
