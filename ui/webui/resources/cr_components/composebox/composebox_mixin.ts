@@ -250,10 +250,11 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('composeboxImageFileTypes').split(',');
         contextMenuOpened: boolean = false;
         hasCachedSubmittedTabsThisTurn: boolean = false;
-        keepMenuOpenOnTabSelectForRealbox: boolean =
-            this.contextManagementInComposeboxEnabled &&
-            getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
         eventTracker: EventTracker = new EventTracker();
+
+        get keepMenuOpenOnTabSelect(): boolean {
+          return false;
+        }
 
         accessor canSubmitFilesAndInput: boolean = true;
         accessor clearAllInputsWhenSubmittingQuery: boolean = false;
@@ -1264,9 +1265,7 @@ export const ComposeboxEmbedderMixin =
           // Conditionally keep menu open only if context management is enabled.
           // Otherwise, always keep menu open.
           if (this.contextManagementInComposeboxEnabled &&
-              ((this.composeboxSource === 'NewTabPage' &&
-                !this.keepMenuOpenOnTabSelectForRealbox) ||
-               (this.composeboxSource === 'Omnibox'))) {
+              !this.keepMenuOpenOnTabSelect) {
             return;
           }
           this.shareTabsFlyoutOpen = true;
@@ -2598,6 +2597,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   clearAllInputsWhenSubmittingQuery: boolean;
   hasCachedSubmittedTabsThisTurn: boolean;
   contextMenuOpened: boolean;
+  keepMenuOpenOnTabSelect: boolean;
   eventTracker: EventTracker;
   errorMessage: string;
   files: Map<UnguessableToken, ComposeboxFile>;
@@ -2695,6 +2695,7 @@ export interface ComposeboxEmbedderMixinInterface extends
     origin: TabUploadOrigin,
   }>): void;
   onContextMenuClosed(): Promise<void>;
+  keepMenuOpenForMultiSelection(): Promise<void>;
   onContextMenuOpened(): void;
   onRequestTabSuggestionsLoad(): void;
   onVoiceSearchButtonClick(): void;

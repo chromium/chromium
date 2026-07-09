@@ -15,6 +15,7 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 
+import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -82,6 +83,10 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   private eventTracker_: EventTracker = new EventTracker();
   protected dragAndDropHandler_: DragAndDropHandler;
   protected accessor expanding_: boolean = true;
+
+  override get keepMenuOpenOnTabSelect(): boolean {
+    return getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
+  }
 
   override getPageHandler(): PageHandlerRemote {
     return this.pageHandler_;
