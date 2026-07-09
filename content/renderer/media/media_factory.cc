@@ -488,7 +488,6 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id),
       RenderThreadImpl::current()->SharedMainThreadContextProvider(),
-      /*use_surface_layer=*/true,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
           .is_background_suspend_enabled,
       render_frame_->GetRenderFrameMediaPlaybackOptions()

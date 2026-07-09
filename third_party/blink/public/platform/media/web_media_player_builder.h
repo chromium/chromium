@@ -93,7 +93,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
           metrics_provider,
       CreateSurfaceLayerBridgeCB create_bridge_callback,
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      bool use_surface_layer_for_video,
       bool is_background_suspend_enabled,
       bool is_background_video_playback_enabled,
       bool is_background_video_track_optimization_supported,

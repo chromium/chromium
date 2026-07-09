@@ -36,7 +36,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/layers/video_layer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/audio/null_audio_sink.h"
 #include "media/base/audio_renderer_sink.h"
@@ -465,7 +464,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
         metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    bool use_surface_layer,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
@@ -498,7 +496,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       renderer_factory_selector_(std::move(renderer_factory_selector)),
       observer_(std::move(media_observer)),
       embedded_media_experience_enabled_(embedded_media_experience_enabled),
-      use_surface_layer_(use_surface_layer),
       create_bridge_callback_(std::move(create_bridge_callback)),
       request_routing_token_cb_(std::move(request_routing_token_cb)),
       media_metrics_provider_(std::move(metrics_provider)),
@@ -685,9 +682,6 @@ void WebMediaPlayerImpl::Shutdown() {
   client_->SetCcLayer(nullptr);
 
   client_->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
-
-  if (!surface_layer_for_video_enabled_ && video_layer_)
-    video_layer_->StopUsingProvider();
 
   // These hold Unretained(this), so must be destructed here.
   watch_time_reporter_.reset();
@@ -2174,16 +2168,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
         DisableOverlay();
     }
 
-    if (use_surface_layer_) {
-      ActivateSurfaceLayerForVideo();
-    } else {
-      DCHECK(!video_layer_);
-      video_layer_ = cc::VideoLayer::Create(
-          compositor_.get(),
-          pipeline_metadata_.video_decoder_config.video_transformation());
-      video_layer_->SetContentsOpaque(opaque_);
-      client_->SetCcLayer(video_layer_.get());
-    }
+    ActivateSurfaceLayerForVideo();
   }
 
   if (observer_)
@@ -2223,19 +2208,12 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
 }
 
 void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
-  // Note that we might or might not already be in VideoLayer mode.
   if (surface_layer_for_video_enabled_) {
     // Surface layer has already been activated.
     return;
   }
 
   surface_layer_for_video_enabled_ = true;
-
-  // If we're in VideoLayer mode, then get rid of the layer.
-  if (video_layer_) {
-    client_->SetCcLayer(nullptr);
-    video_layer_ = nullptr;
-  }
 
   bridge_ = std::move(create_bridge_callback_)
                 .Run(this, compositor_->GetUpdateSubmissionStateCallback());
@@ -2565,10 +2543,9 @@ void WebMediaPlayerImpl::OnVideoOpacityChange(bool opaque) {
   DCHECK_NE(ready_state_, WebMediaPlayer::kReadyStateHaveNothing);
 
   opaque_ = opaque;
-  if (!surface_layer_for_video_enabled_ && video_layer_)
-    video_layer_->SetContentsOpaque(opaque_);
-  else if (bridge_->GetCcLayer())
+  if (surface_layer_for_video_enabled_ && bridge_->GetCcLayer()) {
     bridge_->SetContentsOpaque(opaque_);
+  }
 }
 
 void WebMediaPlayerImpl::OnVideoFrameRateChange(std::optional<int> fps) {

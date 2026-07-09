@@ -92,7 +92,6 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
         metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    bool use_surface_layer,
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
@@ -113,8 +112,7 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
       std::move(request_routing_token_cb), std::move(media_observer),
       embedded_media_experience_enabled, std::move(metrics_provider),
       std::move(create_bridge_callback), std::move(raster_context_provider),
-      use_surface_layer, is_background_suspend_enabled,
-      is_background_video_playback_enabled,
+      is_background_suspend_enabled, is_background_video_playback_enabled,
       is_background_video_track_optimization_supported,
       std::move(demuxer_override), std::move(remote_interfaces));
 }
