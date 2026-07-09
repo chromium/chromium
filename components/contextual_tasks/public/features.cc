@@ -344,7 +344,7 @@ const base::FeatureParam<SmartTabSharingMegaplusStringOption>
     kSmartTabSharingMegaplusStringOption(
         &kContextualTasksContext,
         "ContextualTasksContextSmartTabSharingMegaplusStringOption",
-        SmartTabSharingMegaplusStringOption::kMegaplusV1,
+        SmartTabSharingMegaplusStringOption::kMegaplusV2,
         &kSmartTabSharingMegaplusOptions);
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
