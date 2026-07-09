@@ -483,8 +483,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                    ->ShouldDisplayVerticalTabs());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/532797333): Re-enable this test on Mac.
+#define MAYBE_KeyboardShortcutTogglesCollapse \
+  DISABLED_KeyboardShortcutTogglesCollapse
+#else
+#define MAYBE_KeyboardShortcutTogglesCollapse KeyboardShortcutTogglesCollapse
+#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
-                       KeyboardShortcutTogglesCollapse) {
+                       MAYBE_KeyboardShortcutTogglesCollapse) {
   base::UserActionTester user_action_tester;
   tabs::VerticalTabStripStateController* const controller =
       tabs::VerticalTabStripStateController::From(browser());
