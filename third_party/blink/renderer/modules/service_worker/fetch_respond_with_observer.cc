@@ -162,7 +162,7 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
     callback_->OnAborted();
     token_.reset();
   }
-  void Abort() override {
+  void Abort(ScriptValue reason) override {
     // A fetch() aborted via AbortSignal in the ServiceWorker will just look
     // like an ordinary failure to the page.
     // TODO(ricea): Should a fetch() on the page get an AbortError instead?

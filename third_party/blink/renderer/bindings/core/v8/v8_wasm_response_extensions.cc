@@ -434,7 +434,7 @@ class WasmDataLoaderClient final
 
   void DidFetchDataLoadedCustomFormat() override {}
   void DidFetchDataLoadFailed() override { NOTREACHED(); }
-  void Abort() override { loader_->AbortFromClient(); }
+  void Abort(ScriptValue reason) override { loader_->AbortFromClient(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(loader_);

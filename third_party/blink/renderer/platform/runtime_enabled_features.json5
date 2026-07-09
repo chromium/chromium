@@ -3293,6 +3293,13 @@
       name: "ForceReduceMotion",
     },
     {
+      // Flag for rolling out the standardized behavior where fetch calls are
+      // rejected with the reason provided to the abort controller, if one was
+      // provided. See crbug.com/502133195
+      name: "ForwardReasonToFetchBodyAbort",
+      status: "experimental",
+    },
+    {
       name: "FractionalScrollOffsets",
       base_feature: "none",
       public: true,
