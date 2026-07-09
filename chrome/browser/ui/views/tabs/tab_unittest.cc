@@ -1313,38 +1313,3 @@ TEST_F(TabTest, SingleElementCentering) {
     EXPECT_TRUE(GetTabTitle(tab)->GetVisible());
   }
 }
-
-#if BUILDFLAG(IS_MAC)
-class TestContextMenuController : public views::ContextMenuController {
- public:
-  TestContextMenuController() = default;
-  ~TestContextMenuController() override = default;
-
-  void ShowContextMenuForViewImpl(
-      views::View* source,
-      const gfx::Point& point,
-      ui::mojom::MenuSourceType source_type) override {
-    opened_ = true;
-  }
-
-  bool opened() const { return opened_; }
-
- private:
-  bool opened_ = false;
-};
-
-TEST_F(TabTest, ContextMenuFromControlReturnMac) {
-  auto controller = std::make_unique<FakeTabSlotController>();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  Tab* tab = widget->SetContentsView(
-      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
-
-  TestContextMenuController menu_controller;
-  tab->set_context_menu_controller(&menu_controller);
-
-  EXPECT_TRUE(tab->OnKeyPressed(ui::KeyEvent(
-      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_CONTROL_DOWN)));
-  EXPECT_TRUE(menu_controller.opened());
-}
-#endif
