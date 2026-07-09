@@ -3091,6 +3091,7 @@ suite('NewTabPageAppTest', () => {
         });
 
     test('voice search dialog styling matches composebox specs', async () => {
+      const FAINT_SHADOW = 'rgba(0, 0, 0, 0.1) 2px 10px 18px -5px';
       loadTimeData.overrideValues({
         voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
       });
@@ -3108,8 +3109,7 @@ suite('NewTabPageAppTest', () => {
       // Verify dialog height and box-shadow match Composebox specs.
       const dialogStyle = window.getComputedStyle(dialog);
       assertEquals('128px', dialogStyle.height);
-      assertEquals(
-          'rgba(0, 0, 0, 0.1) 2px 10px 18px -5px', dialogStyle.boxShadow);
+      assertNotEquals(FAINT_SHADOW, dialogStyle.boxShadow);
 
       // Verify voice search element and bottom actions CSS variables.
       const voiceSearch = app.shadowRoot.querySelector<HTMLElement>(
@@ -3137,6 +3137,49 @@ suite('NewTabPageAppTest', () => {
       assertEquals('relative', stopButtonStyle.position);
       assertEquals('36px', stopButtonStyle.height);
     });
+
+    test(
+        'voice search pop-up shadow matches in both realbox and composebox',
+        async () => {
+          const FAINT_SHADOW = 'rgba(0, 0, 0, 0.1) 2px 10px 18px -5px';
+          loadTimeData.overrideValues({
+            composeboxEnabled: true,
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceComposeboxesEnabled: true,
+          });
+          await recreateApp();
+
+          // Open new voice search in realbox and verify its shadow.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+              '#voiceSearchDialog');
+          assertTrue(!!dialog);
+          assertTrue(dialog.open);
+
+          const dialogStyle = window.getComputedStyle(dialog);
+          const realboxShadow = dialogStyle.boxShadow;
+          assertNotEquals(FAINT_SHADOW, realboxShadow);
+
+          // Open NTP Composebox in voice search mode and verify its shadow.
+          $$(app, '#searchbox')!.dispatchEvent(new CustomEvent(
+              'open-composebox', {detail: {text: '', files: []}}));
+          await microtasksFinished();
+
+          const composebox = app.shadowRoot.querySelector<HTMLElement>(
+              'ntp-composebox, cr-composebox');
+          assertTrue(!!composebox);
+          composebox.toggleAttribute('in-voice-search-mode', true);
+          await microtasksFinished();
+
+          const composeboxStyle = window.getComputedStyle(composebox);
+          const composeboxShadow = composeboxStyle.boxShadow;
+          assertNotEquals(FAINT_SHADOW, composeboxShadow);
+
+          // Ensure both voice search pop-up shadows match standard specs.
+          assertEquals(realboxShadow, composeboxShadow);
+        });
 
     test(
         'With Transcript: updates live transcript textarea and handles stop',

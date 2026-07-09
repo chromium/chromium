@@ -120,7 +120,7 @@ cr-composebox-submit::part(submit) {
  * add to shared styles.
  */
 :host([in-voice-search-mode]) {
-  box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
+  box-shadow: var(--cr-searchbox-shadow);
 }
 
 :host([in-voice-search-mode]) cr-composebox-input::part(cancel),

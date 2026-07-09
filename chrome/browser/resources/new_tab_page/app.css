@@ -424,7 +424,7 @@ ntp-lens-upload-dialog {
   background: var(--color-composebox-background);
   border: none;
   border-radius: 28px;
-  box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
+  box-shadow: var(--cr-searchbox-shadow);
   height: 128px;
   inset-inline-start: anchor(start);
   margin: 0;
