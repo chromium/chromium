@@ -30,13 +30,16 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/base/async_file_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/branding.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/ipc_constants.h"
@@ -95,7 +98,9 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
 
   // Notifies the daemon process and terminates the desktop session. Note that
   // `this` will be deleted during the call.
-  void TerminateSession();
+  void TerminateSession(ErrorCode error_code = ErrorCode::OK,
+                        const std::string& error_details = {},
+                        const SourceLocation& error_location = FROM_HERE);
 
   const std::string& client_id() const { return client_id_; }
 
@@ -183,20 +188,20 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
   }
 
   if (!IsSessionUsernameAllowed(info)) {
-    LOG(ERROR) << "User " << info.user_info->username
-               << " is not allowed for local login.";
-    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
-    // network process so that the client can see the correct error message.
-    TerminateSession();
+    TerminateSession(
+        ErrorCode::SESSION_REJECTED,
+        base::StringPrintf("User %s does not match the required username.",
+                           info.user_info->username),
+        FROM_HERE);
     return;
   }
 
   if (!IsLocalLoginAllowed(info.user_info->username)) {
-    LOG(ERROR) << "User " << info.user_info->username
-               << " is not allowed for local login.";
-    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
-    // network process so that the client can see the correct error message.
-    TerminateSession();
+    TerminateSession(
+        ErrorCode::SESSION_REJECTED,
+        base::StringPrintf("Local login for user %s is disallowed by PAM.",
+                           info.user_info->username),
+        FROM_HERE);
     return;
   }
 
@@ -226,11 +231,21 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
       this);
 }
 
-void DesktopSessionFactoryLinux::DesktopSessionLinux::TerminateSession() {
+void DesktopSessionFactoryLinux::DesktopSessionLinux::TerminateSession(
+    ErrorCode error_code,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!error_details.empty() || error_code != ErrorCode::OK) {
+    LOG(ERROR) << "Terminating session " << id()
+               << " (error code: " << ErrorCodeToString(error_code)
+               << "): " << error_details << " at " << error_location.ToString();
+  }
+
   // The daemon process will delete `this`.
-  daemon_process()->CloseDesktopSession(id());
+  daemon_process()->CloseDesktopSessionWithError(id(), error_code,
+                                                 error_details, error_location);
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::SetScreenResolution(
@@ -246,14 +261,14 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::ReconnectNetworkChannel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (options.required_username != required_username_) {
-    LOG(ERROR) << "Required username has changed.";
-    TerminateSession();
+    TerminateSession(ErrorCode::SESSION_REJECTED,
+                     "Required username has changed.", FROM_HERE);
     return;
   }
 
   if (options.client_id != client_id_) {
-    LOG(ERROR) << "Client ID has changed.";
-    TerminateSession();
+    TerminateSession(ErrorCode::SESSION_REJECTED, "Client ID has changed.",
+                     FROM_HERE);
     return;
   }
 
@@ -673,9 +688,8 @@ void DesktopSessionFactoryLinux::OnRemoteDisplayTerminated(
   // session may be nullptr if the desktop session has already been removed by
   // RemoveDesktopSession().
   if (session) {
-    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
-    // network process so that the client can see the correct error message.
-    session->TerminateSession();
+    session->TerminateSession(ErrorCode::SESSION_REJECTED,
+                              "Remote display terminated.", FROM_HERE);
   }
 }
 

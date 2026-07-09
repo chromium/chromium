@@ -330,6 +330,7 @@ source_set("platform_impls") {
     "//components/named_mojo_ipc_server",
     "//ipc",
     "//remoting/base",
+    "//remoting/base:errors",
     "//remoting/base:logging",
     "//remoting/host:client_session_control",
     "//remoting/host:clipboard",

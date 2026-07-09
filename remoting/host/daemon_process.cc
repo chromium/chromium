@@ -149,6 +149,14 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
 }
 
 void DaemonProcess::CloseDesktopSession(int terminal_id) {
+  CloseDesktopSessionWithError(terminal_id, ErrorCode::OK, {}, FROM_HERE);
+}
+
+void DaemonProcess::CloseDesktopSessionWithError(
+    int terminal_id,
+    ErrorCode error_code,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   // Validate the supplied terminal ID. An attempt to use a desktop session ID
@@ -168,7 +176,7 @@ void DaemonProcess::CloseDesktopSession(int terminal_id) {
   }
 
   // It is OK if the terminal ID wasn't found. There is a race between
-  // the network and daemon processes. Each frees its own recources first and
+  // the network and daemon processes. Each frees its own resources first and
   // notifies the other party if there was something to clean up.
   if (i == desktop_sessions_.end()) {
     return;
@@ -178,7 +186,8 @@ void DaemonProcess::CloseDesktopSession(int terminal_id) {
   desktop_sessions_.erase(i);
 
   VLOG(1) << "Daemon: closed desktop session " << terminal_id;
-  SendTerminalDisconnected(terminal_id);
+  SendTerminalDisconnected(terminal_id, error_code, error_details,
+                           error_location);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kEnablePeerConnectionProcessSwitch)) {
@@ -254,7 +263,8 @@ void DaemonProcess::CreateDesktopSession(
       DoCreateDesktopSession(terminal_id, *options);
   if (!session) {
     LOG(ERROR) << "Failed to create a desktop session.";
-    SendTerminalDisconnected(terminal_id);
+    SendTerminalDisconnected(terminal_id, ErrorCode::HOST_CONFIGURATION_ERROR,
+                             "Failed to create a desktop session.", FROM_HERE);
     return;
   }
 
@@ -367,9 +377,14 @@ bool DaemonProcess::OnDesktopSessionAgentAttached(
   return true;
 }
 
-void DaemonProcess::SendTerminalDisconnected(int terminal_id) {
+void DaemonProcess::SendTerminalDisconnected(
+    int terminal_id,
+    ErrorCode error_code,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
   if (desktop_session_connection_events_) {
-    desktop_session_connection_events_->OnTerminalDisconnected(terminal_id);
+    desktop_session_connection_events_->OnTerminalDisconnected(
+        terminal_id, error_code, error_details, error_location);
   }
 }
 

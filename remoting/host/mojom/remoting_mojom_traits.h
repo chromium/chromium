@@ -25,9 +25,14 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "remoting/base/buildflags.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/base/result.h"
 #include "remoting/base/source_location.h"
+#include "remoting/host/mojom/common.mojom-shared.h"
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
@@ -45,8 +50,11 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 namespace mojo {
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 template <>
 class StructTraits<remoting::mojom::DesktopCaptureOptionsDataView,
@@ -1289,148 +1297,150 @@ class StructTraits<remoting::mojom::TransportRouteDataView,
                    ::remoting::protocol::TransportRoute* out_transport_route);
 };
 
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
 template <>
-struct EnumTraits<remoting::mojom::ProtocolErrorCode,
-                  ::remoting::protocol::ErrorCode> {
+struct EnumTraits<remoting::mojom::ProtocolErrorCode, ::remoting::ErrorCode> {
   static remoting::mojom::ProtocolErrorCode ToMojom(
-      ::remoting::protocol::ErrorCode input) {
+      ::remoting::ErrorCode input) {
     switch (input) {
-      case ::remoting::protocol::ErrorCode::OK:
+      case ::remoting::ErrorCode::OK:
         return remoting::mojom::ProtocolErrorCode::kOk;
-      case ::remoting::protocol::ErrorCode::PEER_IS_OFFLINE:
+      case ::remoting::ErrorCode::PEER_IS_OFFLINE:
         return remoting::mojom::ProtocolErrorCode::kPeerIsOffline;
-      case ::remoting::protocol::ErrorCode::SESSION_REJECTED:
+      case ::remoting::ErrorCode::SESSION_REJECTED:
         return remoting::mojom::ProtocolErrorCode::kSessionRejected;
-      case ::remoting::protocol::ErrorCode::INCOMPATIBLE_PROTOCOL:
+      case ::remoting::ErrorCode::INCOMPATIBLE_PROTOCOL:
         return remoting::mojom::ProtocolErrorCode::kIncompatibleProtocol;
-      case ::remoting::protocol::ErrorCode::AUTHENTICATION_FAILED:
+      case ::remoting::ErrorCode::AUTHENTICATION_FAILED:
         return remoting::mojom::ProtocolErrorCode::kAuthenticationFailed;
-      case ::remoting::protocol::ErrorCode::INVALID_ACCOUNT:
+      case ::remoting::ErrorCode::INVALID_ACCOUNT:
         return remoting::mojom::ProtocolErrorCode::kInvalidAccount;
-      case ::remoting::protocol::ErrorCode::CHANNEL_CONNECTION_ERROR:
+      case ::remoting::ErrorCode::CHANNEL_CONNECTION_ERROR:
         return remoting::mojom::ProtocolErrorCode::kChannelConnectionError;
-      case ::remoting::protocol::ErrorCode::SIGNALING_ERROR:
+      case ::remoting::ErrorCode::SIGNALING_ERROR:
         return remoting::mojom::ProtocolErrorCode::kSignalingError;
-      case ::remoting::protocol::ErrorCode::SIGNALING_TIMEOUT:
+      case ::remoting::ErrorCode::SIGNALING_TIMEOUT:
         return remoting::mojom::ProtocolErrorCode::kSignalingTimeout;
-      case ::remoting::protocol::ErrorCode::HOST_OVERLOAD:
+      case ::remoting::ErrorCode::HOST_OVERLOAD:
         return remoting::mojom::ProtocolErrorCode::kHostOverload;
-      case ::remoting::protocol::ErrorCode::MAX_SESSION_LENGTH:
+      case ::remoting::ErrorCode::MAX_SESSION_LENGTH:
         return remoting::mojom::ProtocolErrorCode::kMaxSessionLength;
-      case ::remoting::protocol::ErrorCode::HOST_CONFIGURATION_ERROR:
+      case ::remoting::ErrorCode::HOST_CONFIGURATION_ERROR:
         return remoting::mojom::ProtocolErrorCode::kHostConfigurationError;
-      case ::remoting::protocol::ErrorCode::UNKNOWN_ERROR:
+      case ::remoting::ErrorCode::UNKNOWN_ERROR:
         return remoting::mojom::ProtocolErrorCode::kUnknownError;
-      case ::remoting::protocol::ErrorCode::ELEVATION_ERROR:
+      case ::remoting::ErrorCode::ELEVATION_ERROR:
         return remoting::mojom::ProtocolErrorCode::kElevationError;
-      case ::remoting::protocol::ErrorCode::HOST_CERTIFICATE_ERROR:
+      case ::remoting::ErrorCode::HOST_CERTIFICATE_ERROR:
         return remoting::mojom::ProtocolErrorCode::kHostCertificateError;
-      case ::remoting::protocol::ErrorCode::HOST_REGISTRATION_ERROR:
+      case ::remoting::ErrorCode::HOST_REGISTRATION_ERROR:
         return remoting::mojom::ProtocolErrorCode::kHostRegistrationError;
-      case ::remoting::protocol::ErrorCode::EXISTING_ADMIN_SESSION:
+      case ::remoting::ErrorCode::EXISTING_ADMIN_SESSION:
         return remoting::mojom::ProtocolErrorCode::kExistingAdminSession;
-      case ::remoting::protocol::ErrorCode::AUTHZ_POLICY_CHECK_FAILED:
+      case ::remoting::ErrorCode::AUTHZ_POLICY_CHECK_FAILED:
         return remoting::mojom::ProtocolErrorCode::kAuthzPolicyCheckFailed;
-      case ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY:
+      case ::remoting::ErrorCode::DISALLOWED_BY_POLICY:
         return remoting::mojom::ProtocolErrorCode::kDisallowedByPolicy;
-      case ::remoting::protocol::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
+      case ::remoting::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
         return remoting::mojom::ProtocolErrorCode::
             kLocationAuthzPolicyCheckFailed;
-      case ::remoting::protocol::ErrorCode::UNAUTHORIZED_ACCOUNT:
+      case ::remoting::ErrorCode::UNAUTHORIZED_ACCOUNT:
         return remoting::mojom::ProtocolErrorCode::kUnauthorizedAccount;
-      case ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
+      case ::remoting::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
         return remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed;
-      case ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD:
+      case ::remoting::ErrorCode::NO_COMMON_AUTH_METHOD:
         return remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod;
-      case ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
+      case ::remoting::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
         return remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported;
-      case ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED:
+      case ::remoting::ErrorCode::SESSION_POLICIES_CHANGED:
         return remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged;
-      case ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR:
+      case ::remoting::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR:
         return remoting::mojom::ProtocolErrorCode::
             kUnexpectedAuthenticatorError;
-      case ::remoting::protocol::ErrorCode::INVALID_STATE:
+      case ::remoting::ErrorCode::INVALID_STATE:
         return remoting::mojom::ProtocolErrorCode::kInvalidState;
-      case ::remoting::protocol::ErrorCode::INVALID_ARGUMENT:
+      case ::remoting::ErrorCode::INVALID_ARGUMENT:
         return remoting::mojom::ProtocolErrorCode::kInvalidArgument;
-      case ::remoting::protocol::ErrorCode::NETWORK_FAILURE:
+      case ::remoting::ErrorCode::NETWORK_FAILURE:
         return remoting::mojom::ProtocolErrorCode::kNetworkFailure;
-      case ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT:
+      case ::remoting::ErrorCode::OPERATION_TIMEOUT:
         return remoting::mojom::ProtocolErrorCode::kOperationTimeout;
     }
 
     NOTREACHED();
   }
 
-  static ::remoting::protocol::ErrorCode FromMojom(
+  static ::remoting::ErrorCode FromMojom(
       remoting::mojom::ProtocolErrorCode input) {
     switch (input) {
       case remoting::mojom::ProtocolErrorCode::kOk:
-        return ::remoting::protocol::ErrorCode::OK;
+        return ::remoting::ErrorCode::OK;
       case remoting::mojom::ProtocolErrorCode::kPeerIsOffline:
-        return ::remoting::protocol::ErrorCode::PEER_IS_OFFLINE;
+        return ::remoting::ErrorCode::PEER_IS_OFFLINE;
       case remoting::mojom::ProtocolErrorCode::kSessionRejected:
-        return ::remoting::protocol::ErrorCode::SESSION_REJECTED;
+        return ::remoting::ErrorCode::SESSION_REJECTED;
       case remoting::mojom::ProtocolErrorCode::kIncompatibleProtocol:
-        return ::remoting::protocol::ErrorCode::INCOMPATIBLE_PROTOCOL;
+        return ::remoting::ErrorCode::INCOMPATIBLE_PROTOCOL;
       case remoting::mojom::ProtocolErrorCode::kAuthenticationFailed:
-        return ::remoting::protocol::ErrorCode::AUTHENTICATION_FAILED;
+        return ::remoting::ErrorCode::AUTHENTICATION_FAILED;
       case remoting::mojom::ProtocolErrorCode::kInvalidAccount:
-        return ::remoting::protocol::ErrorCode::INVALID_ACCOUNT;
+        return ::remoting::ErrorCode::INVALID_ACCOUNT;
       case remoting::mojom::ProtocolErrorCode::kChannelConnectionError:
-        return ::remoting::protocol::ErrorCode::CHANNEL_CONNECTION_ERROR;
+        return ::remoting::ErrorCode::CHANNEL_CONNECTION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kSignalingError:
-        return ::remoting::protocol::ErrorCode::SIGNALING_ERROR;
+        return ::remoting::ErrorCode::SIGNALING_ERROR;
       case remoting::mojom::ProtocolErrorCode::kSignalingTimeout:
-        return ::remoting::protocol::ErrorCode::SIGNALING_TIMEOUT;
+        return ::remoting::ErrorCode::SIGNALING_TIMEOUT;
       case remoting::mojom::ProtocolErrorCode::kHostOverload:
-        return ::remoting::protocol::ErrorCode::HOST_OVERLOAD;
+        return ::remoting::ErrorCode::HOST_OVERLOAD;
       case remoting::mojom::ProtocolErrorCode::kMaxSessionLength:
-        return ::remoting::protocol::ErrorCode::MAX_SESSION_LENGTH;
+        return ::remoting::ErrorCode::MAX_SESSION_LENGTH;
       case remoting::mojom::ProtocolErrorCode::kHostConfigurationError:
-        return ::remoting::protocol::ErrorCode::HOST_CONFIGURATION_ERROR;
+        return ::remoting::ErrorCode::HOST_CONFIGURATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kUnknownError:
-        return ::remoting::protocol::ErrorCode::UNKNOWN_ERROR;
+        return ::remoting::ErrorCode::UNKNOWN_ERROR;
       case remoting::mojom::ProtocolErrorCode::kElevationError:
-        return ::remoting::protocol::ErrorCode::ELEVATION_ERROR;
+        return ::remoting::ErrorCode::ELEVATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kHostCertificateError:
-        return ::remoting::protocol::ErrorCode::HOST_CERTIFICATE_ERROR;
+        return ::remoting::ErrorCode::HOST_CERTIFICATE_ERROR;
       case remoting::mojom::ProtocolErrorCode::kHostRegistrationError:
-        return ::remoting::protocol::ErrorCode::HOST_REGISTRATION_ERROR;
+        return ::remoting::ErrorCode::HOST_REGISTRATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kExistingAdminSession:
-        return ::remoting::protocol::ErrorCode::EXISTING_ADMIN_SESSION;
+        return ::remoting::ErrorCode::EXISTING_ADMIN_SESSION;
       case remoting::mojom::ProtocolErrorCode::kAuthzPolicyCheckFailed:
-        return ::remoting::protocol::ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
+        return ::remoting::ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kDisallowedByPolicy:
-        return ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY;
+        return ::remoting::ErrorCode::DISALLOWED_BY_POLICY;
       case remoting::mojom::ProtocolErrorCode::kLocationAuthzPolicyCheckFailed:
-        return ::remoting::protocol::ErrorCode::
-            LOCATION_AUTHZ_POLICY_CHECK_FAILED;
+        return ::remoting::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kUnauthorizedAccount:
-        return ::remoting::protocol::ErrorCode::UNAUTHORIZED_ACCOUNT;
+        return ::remoting::ErrorCode::UNAUTHORIZED_ACCOUNT;
       case remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed:
-        return ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
+        return ::remoting::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod:
-        return ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
+        return ::remoting::ErrorCode::NO_COMMON_AUTH_METHOD;
       case remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported:
-        return ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
+        return ::remoting::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
       case remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged:
-        return ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
+        return ::remoting::ErrorCode::SESSION_POLICIES_CHANGED;
       case remoting::mojom::ProtocolErrorCode::kUnexpectedAuthenticatorError:
-        return ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
+        return ::remoting::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
       case remoting::mojom::ProtocolErrorCode::kInvalidState:
-        return ::remoting::protocol::ErrorCode::INVALID_STATE;
+        return ::remoting::ErrorCode::INVALID_STATE;
       case remoting::mojom::ProtocolErrorCode::kInvalidArgument:
-        return ::remoting::protocol::ErrorCode::INVALID_ARGUMENT;
+        return ::remoting::ErrorCode::INVALID_ARGUMENT;
       case remoting::mojom::ProtocolErrorCode::kNetworkFailure:
-        return ::remoting::protocol::ErrorCode::NETWORK_FAILURE;
+        return ::remoting::ErrorCode::NETWORK_FAILURE;
       case remoting::mojom::ProtocolErrorCode::kOperationTimeout:
-        return ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT;
+        return ::remoting::ErrorCode::OPERATION_TIMEOUT;
     }
 
     NOTREACHED();
   }
 };
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 template <>
 struct EnumTraits<remoting::mojom::VideoLayout_PixelType,
@@ -1537,6 +1547,8 @@ class StructTraits<remoting::mojom::VideoTrackLayoutDataView,
                    ::remoting::protocol::VideoTrackLayout* out_track);
 };
 
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
 template <>
 class StructTraits<remoting::mojom::SourceLocationDataView,
                    ::remoting::SourceLocation> {
@@ -1562,6 +1574,8 @@ class StructTraits<remoting::mojom::SourceLocationDataView,
   static bool Read(remoting::mojom::SourceLocationDataView data_view,
                    ::remoting::SourceLocation* out_source_info);
 };
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 template <>
 class StructTraits<remoting::mojom::FractionalCoordinateDataView,
@@ -1634,6 +1648,8 @@ class StructTraits<remoting::mojom::AudioSampleInfoDataView,
   static bool Read(remoting::mojom::AudioSampleInfoDataView data_view,
                    ::remoting::protocol::AudioSampleInfo* out_info);
 };
+
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace mojo
 

@@ -1172,4 +1172,24 @@ TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderFailed) {
   RunMainLoopUntilDone();
 }
 
+TEST_F(IpcDesktopEnvironmentTest, OnTerminalDisconnectedWithError) {
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
+  EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
+  input_injector_->Start(std::move(clipboard_stub));
+
+  setup_run_loop_->Run();
+
+  EXPECT_CALL(
+      client_session_control_,
+      DisconnectSession(ErrorCode::SESSION_REJECTED, "Test rejection", _))
+      .WillOnce(InvokeWithoutArgs(
+          this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+
+  desktop_environment_factory_->OnTerminalDisconnected(
+      terminal_id_, ErrorCode::SESSION_REJECTED, "Test rejection", FROM_HERE);
+
+  desktop_environment_factory_.reset();
+  DestroyDesktopProcess();
+}
+
 }  // namespace remoting

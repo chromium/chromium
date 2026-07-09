@@ -1,0 +1,51 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// This enum mirrors the remoting::ErrorCode enum.
+enum ProtocolErrorCode {
+  kOk = 0,
+  kPeerIsOffline = 1,
+  kSessionRejected = 2,
+  kIncompatibleProtocol = 3,
+  kAuthenticationFailed = 4,
+  kInvalidAccount = 5,
+  kChannelConnectionError = 6,
+  kSignalingError = 7,
+  kSignalingTimeout = 8,
+  kHostOverload = 9,
+  kMaxSessionLength = 10,
+  kHostConfigurationError = 11,
+  kUnknownError = 12,
+  kElevationError = 13,
+  kHostCertificateError = 14,
+  kHostRegistrationError = 15,
+  kExistingAdminSession = 16,
+  kAuthzPolicyCheckFailed = 17,
+  kDisallowedByPolicy = 18,
+  kLocationAuthzPolicyCheckFailed = 19,
+  kUnauthorizedAccount = 20,
+  kReauthzPolicyCheckFailed = 21,
+  kNoCommonAuthMethod = 22,
+  kLoginScreenNotSupported = 23,
+  kSessionPoliciesChanged = 24,
+  kUnexpectedAuthenticatorError = 25,
+  kInvalidState = 26,
+  kInvalidArgument = 27,
+  kNetworkFailure = 28,
+  kOperationTimeout = 29,
+};
+
+// This struct mirrors remoting::SourceLocation.
+// |function_name| and |file_name| are human-readable diagnostic strings and
+// must not be parsed programmatically to execute logic.
+struct SourceLocation {
+  // Function name where the error occurred, if available.
+  string? function_name;
+  // File name where the error occurred, if available.
+  string? file_name;
+  // Line number in the file where the error occurred.
+  int32 line_number;
+};

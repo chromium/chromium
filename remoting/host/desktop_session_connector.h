@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 
 namespace remoting {
@@ -67,7 +69,10 @@ class DesktopSessionConnector : public mojom::DesktopSessionConnectionEvents {
 
   // Notifies the network process that the daemon has disconnected the desktop
   // session from the associated desktop environment.
-  virtual void OnTerminalDisconnected(int terminal_id) = 0;
+  virtual void OnTerminalDisconnected(int terminal_id,
+                                      ErrorCode error_code,
+                                      const std::string& error_details,
+                                      const SourceLocation& error_location) = 0;
 #endif
 };
 

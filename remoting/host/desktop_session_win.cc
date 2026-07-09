@@ -578,13 +578,22 @@ void DesktopSessionWin::StopMonitoring() {
   OnSessionDetached();
 }
 
-void DesktopSessionWin::TerminateSession() {
+void DesktopSessionWin::TerminateSession(ErrorCode error_code,
+                                         const std::string& error_details,
+                                         const SourceLocation& error_location) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (!error_details.empty() || error_code != ErrorCode::OK) {
+    LOG(ERROR) << "Terminating session " << id()
+               << " (error code: " << ErrorCodeToString(error_code)
+               << "): " << error_details << " at " << error_location.ToString();
+  }
 
   StopMonitoring();
 
   // This call will delete |this| so it should be at the very end of the method.
-  daemon_process()->CloseDesktopSession(id());
+  daemon_process()->CloseDesktopSessionWithError(id(), error_code,
+                                                 error_details, error_location);
 }
 
 void DesktopSessionWin::OnChannelConnected(int32_t peer_pid) {
@@ -645,7 +654,8 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   }
 
   if (!result) {
-    TerminateSession();
+    TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                     "Failed to find trusted desktop binary.", FROM_HERE);
     return;
   }
 
@@ -665,7 +675,8 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
           io_task_runner_, std::move(target), /*launch_elevated=*/true,
           base::WideToUTF8(kDaemonIpcSecurityDescriptor)));
   if (!delegate->Initialize(session_id)) {
-    TerminateSession();
+    TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                     "Failed to initialize session delegate.", FROM_HERE);
     return;
   }
 

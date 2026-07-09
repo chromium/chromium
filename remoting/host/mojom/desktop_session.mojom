@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "remoting/host/mojom/common.mojom";
 import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/remote_security_key.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
@@ -677,47 +678,6 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the audio injector state has changed.
   OnMicrophoneControl(MicrophoneControl control);
-};
-
-// This enum mirrors the remoting::protocol::ErrorCode enum.
-enum ProtocolErrorCode {
-  kOk = 0,
-  kPeerIsOffline = 1,
-  kSessionRejected = 2,
-  kIncompatibleProtocol = 3,
-  kAuthenticationFailed = 4,
-  kInvalidAccount = 5,
-  kChannelConnectionError = 6,
-  kSignalingError = 7,
-  kSignalingTimeout = 8,
-  kHostOverload = 9,
-  kMaxSessionLength = 10,
-  kHostConfigurationError = 11,
-  kUnknownError = 12,
-  kElevationError = 13,
-  kHostCertificateError = 14,
-  kHostRegistrationError = 15,
-  kExistingAdminSession = 16,
-  kAuthzPolicyCheckFailed = 17,
-  kDisallowedByPolicy = 18,
-  kLocationAuthzPolicyCheckFailed = 19,
-  kUnauthorizedAccount = 20,
-  kReauthzPolicyCheckFailed = 21,
-  kNoCommonAuthMethod = 22,
-  kLoginScreenNotSupported = 23,
-  kSessionPoliciesChanged = 24,
-  kUnexpectedAuthenticatorError = 25,
-  kInvalidState = 26,
-  kInvalidArgument = 27,
-  kNetworkFailure = 28,
-  kOperationTimeout = 29,
-};
-
-// This struct mirrors remoting::SourceLocation.
-struct SourceLocation {
-  string? function_name;
-  string? file_name;
-  int32 line_number;
 };
 
 // Provides the desktop integration process with a mechanism for controlling the

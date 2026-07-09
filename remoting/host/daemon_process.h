@@ -21,6 +21,8 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
@@ -97,6 +99,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       int terminal_id,
       mojom::DesktopSessionOptionsPtr options) override;
   void CloseDesktopSession(int terminal_id) override;
+  void CloseDesktopSessionWithError(int terminal_id,
+                                    ErrorCode error_code,
+                                    const std::string& error_details,
+                                    const SourceLocation& error_location);
   void SetScreenResolution(int terminal_id,
                            const ScreenResolution& resolution) override;
 
@@ -174,7 +180,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       const std::string& serialized_config);
 
   // Virtual for testing.
-  virtual void SendTerminalDisconnected(int terminal_id);
+  virtual void SendTerminalDisconnected(int terminal_id,
+                                        ErrorCode error_code,
+                                        const std::string& error_details,
+                                        const SourceLocation& error_location);
 
   // Requests the network process to crash. Virtual for testing.
   virtual void DoCrashNetworkProcess(const base::Location& location);

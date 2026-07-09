@@ -152,6 +152,7 @@ source_set("common_headers") {
     "//base",
     "//ipc",
     "//remoting/base",
+    "//remoting/base:errors",
     "//remoting/host/base",
     "//remoting/host/mojom",
     "//remoting/protocol",

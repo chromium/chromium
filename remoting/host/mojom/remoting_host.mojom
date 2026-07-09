@@ -6,6 +6,7 @@ module remoting.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
 import "remoting/host/mojom/chromoting_host_services.mojom";
+import "remoting/host/mojom/common.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 
 // Provides a set of methods to allow the Daemon process to initialize and
@@ -47,7 +48,12 @@ interface RemotingHostControl {
 interface DesktopSessionConnectionEvents {
   // Notifies the network process that the daemon has disconnected the desktop
   // session from the associated desktop environment.
-  OnTerminalDisconnected(int32 terminal_id);
+  // |error_details| is a human-readable diagnostic string and must not be
+  // parsed programmatically to execute logic.
+  OnTerminalDisconnected(int32 terminal_id,
+                         ProtocolErrorCode error_code,
+                         string error_details,
+                         SourceLocation error_location);
 
   // Notifies the network process that |terminal_id| is now attached to
   // a desktop integration process. |desktop_pipe| is the client end of the

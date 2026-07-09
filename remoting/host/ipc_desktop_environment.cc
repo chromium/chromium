@@ -348,12 +348,17 @@ void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
   }
 }
 
-void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
+void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(
+    int terminal_id,
+    ErrorCode error_code,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
   if (!network_task_runner_->BelongsToCurrentThread()) {
     network_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&IpcDesktopEnvironmentFactory::OnTerminalDisconnected,
-                       base::Unretained(this), terminal_id));
+                       base::Unretained(this), terminal_id, error_code,
+                       error_details, error_location));
     return;
   }
 
@@ -365,8 +370,10 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
 
     if (desktop_session_proxy) {
       // Disconnect the client session.
-      desktop_session_proxy->DisconnectSession(
-          ErrorCode::OK, "Terminal disconnected.", FROM_HERE);
+      std::string details =
+          error_details.empty() ? "Terminal disconnected." : error_details;
+      desktop_session_proxy->DisconnectSession(error_code, details,
+                                               error_location);
     }
   }
 }

@@ -21,6 +21,8 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/desktop_session.h"
@@ -79,7 +81,13 @@ class MockDaemonProcess : public DaemonProcess {
               SendHostConfigToNetworkProcess,
               (const std::string&),
               (override));
-  MOCK_METHOD(void, SendTerminalDisconnected, (int terminal_id), (override));
+  MOCK_METHOD(void,
+              SendTerminalDisconnected,
+              (int terminal_id,
+               ErrorCode error_code,
+               const std::string& error_details,
+               const SourceLocation& error_location),
+              (override));
 
   // mojom::ChromotingHostServices implementation.
   MOCK_METHOD(void,
@@ -216,7 +224,7 @@ MATCHER_P(Message, type, "") {
 TEST_F(DaemonProcessTest, OpenClose) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
 
   StartDaemonProcess();
 
@@ -232,7 +240,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
 TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
 
   StartDaemonProcess();
 
@@ -250,7 +258,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   InSequence s;
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
-  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
 
   StartDaemonProcess();
 
@@ -316,7 +324,7 @@ TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
   EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, CreatePeerConnectionProcessLauncherDelegate(_))
       .WillOnce(testing::ReturnNull());
-  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_));
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
 
   StartDaemonProcess();
 

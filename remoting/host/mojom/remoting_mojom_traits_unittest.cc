@@ -12,8 +12,14 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "remoting/base/ipc_fifo_buffer.h"
+#include "remoting/base/buildflags.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/source_location.h"
+#include "remoting/host/mojom/common.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
@@ -24,13 +30,14 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "remoting/protocol/transport.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 namespace remoting {
 
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 namespace {
 
 struct DesktopCaptureOptionsParams {
@@ -241,12 +248,13 @@ INSTANTIATE_TEST_SUITE_P(RemotingMojomTraitsTest,
                                          AudioPacket::SAMPLING_RATE_44100,
                                          AudioPacket::SAMPLING_RATE_48000));
 
-class ProtocolErrorCodeTest
-    : public testing::TestWithParam<protocol::ErrorCode> {};
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
+class ProtocolErrorCodeTest : public testing::TestWithParam<ErrorCode> {};
 
 TEST_P(ProtocolErrorCodeTest, RoundTrip) {
-  protocol::ErrorCode input = GetParam();
-  protocol::ErrorCode output;
+  ErrorCode input = GetParam();
+  ErrorCode output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ProtocolErrorCode>(
       input, output));
   EXPECT_EQ(input, output);
@@ -255,38 +263,40 @@ TEST_P(ProtocolErrorCodeTest, RoundTrip) {
 INSTANTIATE_TEST_SUITE_P(
     RemotingMojomTraitsTest,
     ProtocolErrorCodeTest,
-    testing::Values(protocol::ErrorCode::OK,
-                    protocol::ErrorCode::PEER_IS_OFFLINE,
-                    protocol::ErrorCode::SESSION_REJECTED,
-                    protocol::ErrorCode::INCOMPATIBLE_PROTOCOL,
-                    protocol::ErrorCode::AUTHENTICATION_FAILED,
-                    protocol::ErrorCode::INVALID_ACCOUNT,
-                    protocol::ErrorCode::CHANNEL_CONNECTION_ERROR,
-                    protocol::ErrorCode::SIGNALING_ERROR,
-                    protocol::ErrorCode::SIGNALING_TIMEOUT,
-                    protocol::ErrorCode::HOST_OVERLOAD,
-                    protocol::ErrorCode::MAX_SESSION_LENGTH,
-                    protocol::ErrorCode::HOST_CONFIGURATION_ERROR,
-                    protocol::ErrorCode::UNKNOWN_ERROR,
-                    protocol::ErrorCode::ELEVATION_ERROR,
-                    protocol::ErrorCode::HOST_CERTIFICATE_ERROR,
-                    protocol::ErrorCode::HOST_REGISTRATION_ERROR,
-                    protocol::ErrorCode::EXISTING_ADMIN_SESSION,
-                    protocol::ErrorCode::AUTHZ_POLICY_CHECK_FAILED,
-                    protocol::ErrorCode::DISALLOWED_BY_POLICY,
-                    protocol::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED,
-                    protocol::ErrorCode::UNAUTHORIZED_ACCOUNT,
-                    protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED,
-                    protocol::ErrorCode::NO_COMMON_AUTH_METHOD,
-                    protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED,
-                    protocol::ErrorCode::SESSION_POLICIES_CHANGED,
-                    protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR,
-                    protocol::ErrorCode::INVALID_STATE,
-                    protocol::ErrorCode::INVALID_ARGUMENT,
-                    protocol::ErrorCode::NETWORK_FAILURE,
-                    protocol::ErrorCode::OPERATION_TIMEOUT));
+    testing::Values(ErrorCode::OK,
+                    ErrorCode::PEER_IS_OFFLINE,
+                    ErrorCode::SESSION_REJECTED,
+                    ErrorCode::INCOMPATIBLE_PROTOCOL,
+                    ErrorCode::AUTHENTICATION_FAILED,
+                    ErrorCode::INVALID_ACCOUNT,
+                    ErrorCode::CHANNEL_CONNECTION_ERROR,
+                    ErrorCode::SIGNALING_ERROR,
+                    ErrorCode::SIGNALING_TIMEOUT,
+                    ErrorCode::HOST_OVERLOAD,
+                    ErrorCode::MAX_SESSION_LENGTH,
+                    ErrorCode::HOST_CONFIGURATION_ERROR,
+                    ErrorCode::UNKNOWN_ERROR,
+                    ErrorCode::ELEVATION_ERROR,
+                    ErrorCode::HOST_CERTIFICATE_ERROR,
+                    ErrorCode::HOST_REGISTRATION_ERROR,
+                    ErrorCode::EXISTING_ADMIN_SESSION,
+                    ErrorCode::AUTHZ_POLICY_CHECK_FAILED,
+                    ErrorCode::DISALLOWED_BY_POLICY,
+                    ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED,
+                    ErrorCode::UNAUTHORIZED_ACCOUNT,
+                    ErrorCode::REAUTHZ_POLICY_CHECK_FAILED,
+                    ErrorCode::NO_COMMON_AUTH_METHOD,
+                    ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED,
+                    ErrorCode::SESSION_POLICIES_CHANGED,
+                    ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR,
+                    ErrorCode::INVALID_STATE,
+                    ErrorCode::INVALID_ARGUMENT,
+                    ErrorCode::NETWORK_FAILURE,
+                    ErrorCode::OPERATION_TIMEOUT));
 
 }  // namespace
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 TEST(RemotingMojomTraitsTest, DesktopRect) {
   webrtc::DesktopRect input = webrtc::DesktopRect::MakeLTRB(10, 20, 30, 40);
@@ -595,6 +605,8 @@ TEST(RemotingMojomTraitsTest, VideoTrackLayout) {
   EXPECT_EQ(input.display_name(), output.display_name());
 }
 
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
+
 TEST(RemotingMojomTraitsTest, SourceLocation) {
   SourceLocation input = SourceLocation::CreateWithBackingStoreForTesting(
       "test_func", "test_file.cc", 123);
@@ -606,6 +618,8 @@ TEST(RemotingMojomTraitsTest, SourceLocation) {
   EXPECT_STREQ(input.file_name(), output.file_name());
   EXPECT_EQ(input.line_number(), output.line_number());
 }
+
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 TEST(RemotingMojomTraitsTest, FractionalCoordinate) {
   protocol::FractionalCoordinate input;
@@ -782,5 +796,7 @@ TEST(RemotingMojomTraitsTest, IpcFifoBufferReader) {
   EXPECT_EQ(output->Read(read_data), 4u);
   EXPECT_EQ(read_data, data);
 }
+
+#endif  // BUILDFLAG(REMOTING_MULTI_PROCESS)
 
 }  // namespace remoting

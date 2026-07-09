@@ -18,6 +18,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_environment.h"
@@ -129,7 +131,10 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   void OnDesktopSessionAgentAttached(
       int terminal_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
-  void OnTerminalDisconnected(int terminal_id) override;
+  void OnTerminalDisconnected(int terminal_id,
+                              ErrorCode error_code,
+                              const std::string& error_details,
+                              const SourceLocation& error_location) override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void OnSessionServicesClientConnected(
       int terminal_id,
