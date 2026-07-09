@@ -54,9 +54,6 @@ bool IsValidSize(const gfx::Size& coded_size,
   return true;
 }
 
-BASE_FEATURE(kNativePixmapResourceUseCorrectColorSpace,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -500,23 +497,9 @@ NativePixmapFrameResource::CreateMappableSharedImageVideoFrame(
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to "
          "MappableSharedImage VideoFrame.";
-  auto si_format = VideoPixelFormatToSharedImageFormat(format());
-  if (!si_format.has_value()) {
-    DLOG(ERROR) << "Invalid format for creating mappable VideoFrame: "
-                << format();
-    return nullptr;
-  }
-  gfx::ColorSpace color_space_to_use = ColorSpace();
-  // Pass a default color space for mappable frame.
-  if (!color_space_to_use.IsValid() &&
-      base::FeatureList::IsEnabled(kNativePixmapResourceUseCorrectColorSpace)) {
-    color_space_to_use = si_format->is_multi_plane()
-                             ? gfx::ColorSpace::CreateREC709()
-                             : gfx::ColorSpace::CreateSRGB();
-  }
   // Creates a MappableSI-backed frame using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
-      CreateGpuMemoryBufferHandle(), format(), color_space_to_use, coded_size(),
+      CreateGpuMemoryBufferHandle(), format(), ColorSpace(), coded_size(),
       visible_rect(), natural_size(), timestamp(), *buffer_usage_, sii);
   if (!video_frame) {
     DLOGF(ERROR) << "Unable to create a VideoFrame";

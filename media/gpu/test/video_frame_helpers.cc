@@ -435,7 +435,7 @@ scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   // Create a mappable shared image.
   auto shared_image = test_sii->CreateSharedImage(
-      {*si_format, frame->coded_size(), frame->ColorSpace(),
+      {*si_format, frame->coded_size(), gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "VideoFrameTestHelpers"},
       gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
   if (!shared_image) {
