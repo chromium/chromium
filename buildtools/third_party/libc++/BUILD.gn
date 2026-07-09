@@ -17,6 +17,8 @@ config("config") {
   cflags = [
     "-fstrict-aliasing",
     "-Wundef",
+    "-Wno-pragma-clang-attribute",
+    "-Wno-ignored-attributes",
   ]
   if (is_win) {
     cflags += [
