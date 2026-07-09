@@ -359,6 +359,21 @@ struct NavigationTiming {
       ParentResourceTimingAccess.kDoNotReport;
 };
 
+// Contains both the redirect info and response head for a given redirect in the
+// array of redirects for a navigation. Both values must be set for a given
+// redirect.
+struct NavigationRedirectParams {
+  // Contains information about the redirect (such as the redirect response HTTP
+  // status code) as well as the fields in the request that will change for the
+  // next leg of the redirect chain. Maps to net::RedirectInfo in C++.
+  network.mojom.URLRequestRedirectInfo redirect_info;
+
+  // Contains the full network response details received for the redirect
+  // itself (such as headers, MIME type, load timings, connection info, and SSL
+  // status). Maps to net::URLResponseHead in C++.
+  network.mojom.URLResponseHead response_head;
+};
+
 // Sent with CommitNavigationParams and should only be set for main-frame
 // same-site navigations where we did a proactive BrowsingInstance swap and
 // we're reusing the old page's process. Needed to ensure that the previous
@@ -405,15 +420,20 @@ struct CommitNavigationParams {
   // Whether or not the user agent override string should be used.
   bool is_overriding_user_agent = false;
 
-  // Any redirect URLs that occurred before |url|. Useful for cross-process
-  // navigations; defaults to empty.
+  // The complete list of redirect URLs in chronological order that occurred
+  // during the lifecycle of this navigation. This includes both "prior"
+  // redirects (e.g. those that happened prior to starting this navigation
+  // request, if this is a cross-process navigation) as well as subsequent
+  // redirects. The last element is the URL prior to the current URL in
+  // CommonNavigationParams.
   array<url.mojom.Url> redirects;
 
-  // The ResourceResponseInfos received during redirects.
-  array<network.mojom.URLResponseHead> redirect_response;
-
-  // The RedirectInfos received during redirects.
-  array<network.mojom.URLRequestRedirectInfo> redirect_infos;
+  // The redirect infos and response heads received during redirects. This is
+  // only populated for redirects that occurred *after* the browser started this
+  // navigation request. It does not contain redirect params for prior redirects
+  // that happened before this NavigationRequest was created, and thus may be a
+  // different size than the |redirects| array.
+  array<NavigationRedirectParams> redirect_params;
 
   // The content type from the request headers for POST requests.
   string post_content_type;

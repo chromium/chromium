@@ -4727,11 +4727,11 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), override_user_agent, params.redirect_chain,
-          std::vector<network::mojom::URLResponseHeadPtr>(),
-          std::vector<net::RedirectInfo>(), params.post_content_type,
-          original_url_for_renderer, common_params->method,
-          params.can_load_local_resources, page_state_data,
-          entry->GetUniqueID(), entry->GetSubframeUniqueNames(node),
+          std::vector<blink::mojom::NavigationRedirectParamsPtr>(),
+          params.post_content_type, original_url_for_renderer,
+          common_params->method, params.can_load_local_resources,
+          page_state_data, entry->GetUniqueID(),
+          entry->GetSubframeUniqueNames(node),
           /*intended_as_new_entry=*/true,
           /*pending_history_list_index=*/-1,
           params.should_clear_history_list ? -1 : GetLastCommittedEntryIndex(),

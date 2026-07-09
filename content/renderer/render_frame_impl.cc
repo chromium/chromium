@@ -500,7 +500,7 @@ void FillNavigationParamsRequest(
   // We'll replay the redirects afterwards and will eventually arrive at the
   // final URL. For non-redirecting navigations, use the final URL to be
   // committed (as that is the same as the original URL).
-  const bool should_use_original_url = !commit_params.redirect_infos.empty() &&
+  const bool should_use_original_url = !commit_params.redirect_params.empty() &&
                                        !commit_params.original_url.is_empty();
   navigation_params->url =
       should_use_original_url ? commit_params.original_url : common_params.url;
@@ -1014,9 +1014,10 @@ void FillMiscNavigationParams(
   navigation_params->navigation_timings = BuildNavigationTimings(
       common_params.navigation_start, *commit_params.navigation_timing,
       common_params.input_start);
-  if (!commit_params.redirect_infos.empty()) {
+  if (!commit_params.redirect_params.empty()) {
     navigation_params->navigation_timings.critical_ch_restart =
-        commit_params.redirect_infos.back().critical_ch_restart_time;
+        commit_params.redirect_params.back()
+            ->redirect_info.critical_ch_restart_time;
   }
 
   navigation_params->is_user_activated =
@@ -3250,7 +3251,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   navigation_params->unreachable_url = error.url();
   if (base::FeatureList::IsEnabled(
           blink::features::kRemoveCommitRedirectUrlsArray)) {
-    if (commit_params->redirect_infos.size()) {
+    if (commit_params->redirect_params.size()) {
       navigation_params->pre_redirect_url_for_failed_navigations =
           common_params->url;
     } else {

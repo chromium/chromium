@@ -898,12 +898,15 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommit) {
   auto commit_params = request->commit_params().Clone();
   request->SanitizeRedirectsForCommit(commit_params);
 
-  // redirect_infos contains entries for B, C, and D, but not the starting URL.
+  // redirect_params contains entries for B, C, and D, but not the starting URL.
   // Ensure that the full URL for D is preserved.
-  EXPECT_EQ(3, commit_params->redirect_infos.size());
-  EXPECT_EQ(GURL("https://b.com"), commit_params->redirect_infos[0].new_url);
-  EXPECT_EQ(GURL("https://c.com"), commit_params->redirect_infos[1].new_url);
-  EXPECT_EQ(final_url, commit_params->redirect_infos[2].new_url);
+  EXPECT_EQ(3, commit_params->redirect_params.size());
+  EXPECT_EQ(GURL("https://b.com"),
+            commit_params->redirect_params[0]->redirect_info.new_url);
+  EXPECT_EQ(GURL("https://c.com"),
+            commit_params->redirect_params[1]->redirect_info.new_url);
+  EXPECT_EQ(final_url,
+            commit_params->redirect_params[2]->redirect_info.new_url);
 
   // In contrast, redirects contains A, B, and C (i.e., the starting URL but not
   // the final URL).
@@ -962,31 +965,31 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitRelativeLocation) {
 
   request->SanitizeRedirectsForCommit(commit_params);
 
-  EXPECT_EQ(4u, commit_params->redirect_response.size());
+  EXPECT_EQ(4u, commit_params->redirect_params.size());
 
   size_t iter = 0;
   std::optional<std::string_view> location;
 
   // 1. "Location: /foo" resolves to cross-origin URL. Should be sanitized to
   // origin.
-  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[0]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("https://a.com/", location.value());
 
   // 2. "Location: https://b.com/bar" is same-origin to final URL. Should be
   // left alone.
   iter = 0;
-  location = commit_params->redirect_response[1]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[1]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("https://b.com/bar", location.value());
 
   // 3. "Location: /baz" resolves to same-origin URL. Should be left alone as
   // relative URL.
   iter = 0;
-  location = commit_params->redirect_response[2]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[2]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("/baz", location.value());
 
@@ -1040,23 +1043,23 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitNonStandardRelative) {
 
   request->SanitizeRedirectsForCommit(commit_params);
 
-  EXPECT_EQ(3u, commit_params->redirect_response.size());
+  EXPECT_EQ(3u, commit_params->redirect_params.size());
 
   size_t iter = 0;
   std::optional<std::string_view> location;
 
   // 1. "Location: /foo" resolves to cross-origin URL. Should be sanitized to
   // origin.
-  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[0]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("chrome-foo://history/", location.value());
 
   // 2. "Location: chrome-foo://newtab/bar" is same-origin to final URL.
   // Should be left alone.
   iter = 0;
-  location = commit_params->redirect_response[1]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[1]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("chrome-foo://newtab/bar", location.value());
 
@@ -1099,7 +1102,7 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitHostlessNonStandard) {
 
   request->SanitizeRedirectsForCommit(commit_params);
 
-  EXPECT_EQ(2u, commit_params->redirect_response.size());
+  EXPECT_EQ(2u, commit_params->redirect_params.size());
 
   size_t iter = 0;
   std::optional<std::string_view> location;
@@ -1107,8 +1110,8 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitHostlessNonStandard) {
   // "Location: data:text/html,foo" resolves to cross-origin URL (since data:
   // has no origin). Should be sanitized to empty string because
   // GetOriginForSanitization returns empty!
-  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
-      &iter, "Location");
+  location = commit_params->redirect_params[0]
+                 ->response_head->headers->EnumerateHeader(&iter, "Location");
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ("", location.value());
 
@@ -1149,11 +1152,12 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitErrorPage) {
   EXPECT_EQ(GURL("https://a.com"), commit_params.redirects[0]);
   EXPECT_EQ(GURL("https://b.com"), commit_params.redirects[1]);
 
-  // redirect_infos contains entries for B and D.
+  // redirect_params contains entries for B and D.
   // The last entry (D) should NOT be sanitized.
-  EXPECT_EQ(2u, commit_params.redirect_infos.size());
-  EXPECT_EQ(GURL("https://b.com"), commit_params.redirect_infos[0].new_url);
-  EXPECT_EQ(final_url, commit_params.redirect_infos[1].new_url);
+  EXPECT_EQ(2u, commit_params.redirect_params.size());
+  EXPECT_EQ(GURL("https://b.com"),
+            commit_params.redirect_params[0]->redirect_info.new_url);
+  EXPECT_EQ(final_url, commit_params.redirect_params[1]->redirect_info.new_url);
 
   // The original navigation URL should be sanitized to origin when
   // kSanitizeOriginalUrlDuringNavigation is enabled.

@@ -496,12 +496,12 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
       network::mojom::URLResponseHead::New();
   network::mojom::URLResponseHeadPtr second_redirect_response =
       network::mojom::URLResponseHead::New();
-  commit_params->redirect_infos.push_back(first_redirect_info);
-  commit_params->redirect_infos.push_back(second_redirect_info);
-  commit_params->redirect_response.push_back(
-      std::move(first_redirect_response));
-  commit_params->redirect_response.push_back(
-      std::move(second_redirect_response));
+  commit_params->redirect_params.emplace_back(
+      blink::mojom::NavigationRedirectParams::New(
+          first_redirect_info, std::move(first_redirect_response)));
+  commit_params->redirect_params.emplace_back(
+      blink::mojom::NavigationRedirectParams::New(
+          second_redirect_info, std::move(second_redirect_response)));
   commit_params->redirects.push_back(first_redirect_url);
   commit_params->redirects.push_back(second_redirect_url);
 

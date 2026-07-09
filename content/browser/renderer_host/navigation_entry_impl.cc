@@ -1049,9 +1049,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), GetIsOverridingUserAgent(), redirects,
-          std::vector<network::mojom::URLResponseHeadPtr>(),
-          std::vector<net::RedirectInfo>(), std::string(),
-          original_url_for_renderer, original_method,
+          std::vector<blink::mojom::NavigationRedirectParamsPtr>(),
+          std::string(), original_url_for_renderer, original_method,
           GetCanLoadLocalResources(), frame_entry.page_state().ToEncodedData(),
           GetUniqueID(), subframe_unique_names, intended_as_new_entry,
           pending_index_to_send, current_index_to_send, current_length_to_send,

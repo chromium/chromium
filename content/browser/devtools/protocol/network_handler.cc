@@ -3403,9 +3403,9 @@ void NetworkHandler::NavigationRequestWillBeSent(
   const blink::mojom::CommitNavigationParams& commit_params =
       nav_request.commit_params();
   bool redirect_emitted_extra_info = false;
-  if (!commit_params.redirect_response.empty()) {
+  if (!commit_params.redirect_params.empty()) {
     const network::mojom::URLResponseHead& head =
-        *commit_params.redirect_response.back();
+        *commit_params.redirect_params.back()->response_head;
     network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
         network::ExtractDevToolsInfo(head);
     redirect_response =

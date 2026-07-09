@@ -632,8 +632,9 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
   // We'll replay the redirects afterwards and will eventually arrive at the
   // final URL. For non-redirecting navigations, use the final URL to be
   // committed (as that is the same as the original URL).
-  const bool should_use_original_url = !commit_params->redirect_infos.empty() &&
-                                       !commit_params->original_url.is_empty();
+  const bool should_use_original_url =
+      !commit_params->redirect_params.empty() &&
+      !commit_params->original_url.is_empty();
   const KURL original_url = should_use_original_url
                                 ? KURL(commit_params->original_url)
                                 : KURL(common_params->url);
@@ -644,7 +645,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
                                               : common_params->method,
       common_params->referrer->url, common_params->request_destination,
       is_main_frame ? net::HIGHEST : net::LOWEST, is_ad_frame);
-  size_t redirect_count = commit_params->redirect_response.size();
+  size_t redirect_count = commit_params->redirect_params.size();
 
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemoveCommitRedirectUrlsArray)) {
@@ -666,8 +667,9 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
   for (size_t i = 0; i < redirect_count; ++i) {
     WebNavigationParams::RedirectInfo& redirect =
         navigation_params->redirects[i];
-    auto& redirect_info = commit_params->redirect_infos[i];
-    auto& redirect_response = commit_params->redirect_response[i];
+    const auto& redirect_params = commit_params->redirect_params[i];
+    auto& redirect_info = redirect_params->redirect_info;
+    auto& redirect_response = redirect_params->response_head;
     redirect.redirect_response =
         WebURLResponse::Create(url, *redirect_response,
                                response_head->ssl_info.has_value(), request_id);

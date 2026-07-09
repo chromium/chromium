@@ -1429,9 +1429,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           // navigation.
           blink::StorageKey(), override_user_agent,
           /*redirects=*/std::vector<GURL>(),
-          /*redirect_response=*/
-          std::vector<network::mojom::URLResponseHeadPtr>(),
-          /*redirect_infos=*/std::vector<net::RedirectInfo>(),
+          /*redirect_params=*/
+          std::vector<blink::mojom::NavigationRedirectParamsPtr>(),
           /*post_content_type=*/std::string(), original_url,
           common_params->method,
           /*can_load_local_resources=*/false,
@@ -1604,9 +1603,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           // The correct storage key is computed right after creating the
           // NavigationRequest below.
           blink::StorageKey(), is_overriding_user_agent, redirects,
-          /*redirect_response=*/
-          std::vector<network::mojom::URLResponseHeadPtr>(),
-          /*redirect_infos=*/std::vector<net::RedirectInfo>(),
+          /*redirect_params=*/
+          std::vector<blink::mojom::NavigationRedirectParamsPtr>(),
           /*post_content_type=*/std::string(), original_url_for_renderer,
           /*original_method=*/method,
           /*can_load_local_resources=*/false,
@@ -3991,8 +3989,9 @@ void NavigationRequest::OnRequestRedirected(
   commit_params_->navigation_timing->redirect_end = base::TimeTicks::Now();
   commit_params_->navigation_timing->fetch_start = base::TimeTicks::Now();
 
-  commit_params_->redirect_response.push_back(response_head_.Clone());
-  commit_params_->redirect_infos.push_back(redirect_info);
+  commit_params_->redirect_params.emplace_back(
+      blink::mojom::NavigationRedirectParams::New(redirect_info,
+                                                  response_head_.Clone()));
 
   // TODO(rakina): This should use `GetTentativeOriginAtRequestTime()` instead
   // of the url from `common_params_`.
@@ -4032,7 +4031,7 @@ void NavigationRequest::OnRequestRedirected(
   // On redirects, the initial referrer is no longer correct, so it must
   // be updated.  (A parallel process updates the outgoing referrer in the
   // network stack.)
-  commit_params_->redirect_infos.back().new_referrer =
+  commit_params_->redirect_params.back()->redirect_info.new_referrer =
       common_params_->referrer->url.spec();
 
   // When the redirection happens, the cookie_change_listener_ should be
@@ -6325,7 +6324,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     // desired IsPrimary() status and the desired top-level frame that
     // `HandleTopicsEligibleResponse()` is interested in knowing.
     HandleTopicsEligibleResponse(
-        commit_params_->redirect_response.back().get()->parsed_headers,
+        commit_params_->redirect_params.back()->response_head->parsed_headers,
         url::Origin::Create(commit_params_->redirects.back()),
         *frame_tree_node_->current_frame_host(),
         browsing_topics::ApiCallerSource::kIframeAttribute);
@@ -6392,7 +6391,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     const url::Origin& source_origin =
         url::Origin::Create(commit_params_->redirects.back());
     const network::mojom::URLResponseHead* response_head =
-        commit_params_->redirect_response.back().get();
+        commit_params_->redirect_params.back()->response_head.get();
     ParseAndPersistAcceptCHForNavigation(
         source_origin, response_head->parsed_headers,
         response_head->headers.get(), browser_context, client_hints_delegate,
@@ -7323,10 +7322,6 @@ void NavigationRequest::CommitNavigation() {
         std::move(subresource_loader_params_.prefetched_signed_exchanges);
   }
 
-  // TODO(https://crbug.com/40095391): Convert to CHECK if it proves to be
-  // consistently upheld condition.
-  DUMP_WILL_BE_CHECK(commit_params->redirect_response.size() ==
-                     commit_params->redirect_infos.size());
   // Before sending the commit parameters to the renderer process, sanitize
   // the redirect URLs to avoid leaking potentially sensitive data into
   // processes which are cross-site. There is no dependency on the
@@ -8319,14 +8314,15 @@ void NavigationRequest::SanitizeRedirectsForCommit(
     redirect = redirect.DeprecatedGetOriginAsURL();
   }
 
-  // In the redirect_infos vector, the last entry is the URL we are going to
-  // commit after following all redirects. We should not be sanitizing it, as
+  // In the redirect_params vector, the last entry contains the URL we are going
+  // to commit after following all redirects. We should not be sanitizing it, as
   // we need to commit the real URL as part of the navigation.
-  if (!commit_params->redirect_infos.empty()) {
-    auto redirect_infos_span = base::span(commit_params->redirect_infos);
-    for (net::RedirectInfo& redirect :
-         redirect_infos_span.first(redirect_infos_span.size() - 1)) {
-      redirect.new_url = redirect.new_url.DeprecatedGetOriginAsURL();
+  if (!commit_params->redirect_params.empty()) {
+    auto redirect_params_span = base::span(commit_params->redirect_params);
+    for (blink::mojom::NavigationRedirectParamsPtr& redirect :
+         redirect_params_span.first(redirect_params_span.size() - 1)) {
+      redirect->redirect_info.new_url =
+          redirect->redirect_info.new_url.DeprecatedGetOriginAsURL();
     }
   }
 
@@ -8339,14 +8335,15 @@ void NavigationRequest::SanitizeRedirectsForCommit(
     // TODO(crbug.com/495463654): Consider if we need to handle cases that
     // inherit an origin (e.g. about:blank), or if we cross a CSP sandbox
     // boundary where the origin becomes unique/opaque.
-    for (size_t i = 0; i < commit_params->redirect_response.size(); ++i) {
-      auto& response_head = commit_params->redirect_response[i];
+    for (size_t i = 0; i < commit_params->redirect_params.size(); ++i) {
+      auto& response_head = commit_params->redirect_params[i]->response_head;
       if (!response_head || !response_head->headers ||
           !response_head->headers->HasHeader("Location")) {
         continue;
       }
 
-      const GURL& target_url = commit_params->redirect_infos[i].new_url;
+      const GURL& target_url =
+          commit_params->redirect_params[i]->redirect_info.new_url;
       const url::Origin target_origin = url::Origin::Create(target_url);
       if (!target_origin.IsSameOriginWith(final_origin)) {
         response_head->headers->SetHeader("Location",
