@@ -1425,10 +1425,7 @@ void RenderFrameHostManager::UnloadOldFrame(
                 "old_render_frame_host", old_render_frame_host,
                 "bfcache_eligibility",
                 bfcache_eligibility.flattened_reasons.ToString());
-    if (view_transition_commit_info.HasViewTransitionResources()) {
-      base::UmaHistogramBoolean("Navigation.ViewTransition.PerformsUnload",
-                                !can_store);
-    }
+
     if (can_store) {
       bool is_same_process =
           (old_render_frame_host->GetProcess() ==
