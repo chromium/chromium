@@ -1198,8 +1198,6 @@ chromium-metrics-reviews@google.com.
 
     <variant name="" summary="a single step"/>
     <variant name=".DefaultBrowser" summary="the default browser promo step"/>
-    <variant name=".DeviceSignalsDisclaimer"
-        summary="the device signals disclaimer step"/>
     <variant name=".FeatureShowcase" summary="the feature showcase step"/>
     <variant name=".FinishFlow" summary="the Finish flow step"/>
     <variant name=".FinishOrContinue" summary="the finish or continue step"/>

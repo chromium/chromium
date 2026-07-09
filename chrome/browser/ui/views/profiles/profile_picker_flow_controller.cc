@@ -13,8 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
-#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,13 +46,10 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/device_signals/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -893,64 +888,8 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
     return;
   }
 
-  ProfileManagementDisclaimerService* disclaimer_service =
-      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
-  if (disclaimer_service &&
-      disclaimer_service->IsDeviceSignalsDisclaimerRequired()) {
-    // Cleanup the step controller if already initialized.
-    if (IsStepInitialized(Step::kDeviceSignalsDisclaimer)) {
-      UnregisterStep(Step::kDeviceSignalsDisclaimer);
-    }
-
-    // Despite the name we can use these WebContents for our needs,
-    // there is nothing signout specific about them.
-    CreateSignedOutFlowWebContents(profile);
-
-    RegisterStep(
-        Step::kDeviceSignalsDisclaimer,
-        ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
-            host(), GetSignedOutFlowWebContents(),
-            base::BindOnce(
-                &ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult,
-                base::Unretained(this), profile, open_command_line_urls,
-                std::move(pick_profile_complete_callback))));
-
-    SwitchToStep(Step::kDeviceSignalsDisclaimer, /*reset_state=*/true);
-    return;
-  }
-
+  // TODO(b/512836948): Conditionally display the signals disclaimer dialog.
   profiles::OpenBrowserWindowForProfile(
       std::move(pick_profile_complete_callback), /*always_create=*/false,
       /*is_new_profile=*/false, open_command_line_urls, profile);
-}
-
-void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
-    Profile* profile,
-    bool open_command_line_urls,
-    base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
-    signin::DeviceSignalsDisclaimerResult result) {
-  switch (result) {
-    case signin::DeviceSignalsDisclaimerResult::kAccepted:
-      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile)
-          ->OnDeviceSignalsCollectionConsentGranted();
-
-      profiles::OpenBrowserWindowForProfile(
-          std::move(pick_profile_complete_callback), /*always_create=*/false,
-          /*is_new_profile=*/false, open_command_line_urls, profile);
-      break;
-    case signin::DeviceSignalsDisclaimerResult::kCanceled:
-      SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
-      UnregisterStep(Step::kDeviceSignalsDisclaimer);
-      if (pick_profile_complete_callback) {
-        std::move(pick_profile_complete_callback).Run(nullptr);
-      }
-      break;
-    case signin::DeviceSignalsDisclaimerResult::kDismissed:
-      // signin::DeviceSignalsDisclaimerResult::kDismissed is caused by the
-      // destruction of WebUI.
-      if (pick_profile_complete_callback) {
-        std::move(pick_profile_complete_callback).Run(nullptr);
-      }
-      break;
-  }
 }

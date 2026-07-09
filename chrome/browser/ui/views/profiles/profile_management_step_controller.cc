@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
@@ -28,14 +27,10 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace {
@@ -376,82 +371,6 @@ class SearchEngineChoiceStepController
   // The web contents in which we want to display the screen.
   raw_ptr<content::WebContents> web_contents_;
 };
-
-// Controls the enterprise signals disclaimer step. This step is shown for the
-// enterprise users who have a missing device signals collection consent.
-class DeviceSignalsDisclaimerStepController
-    : public ProfileManagementStepController {
- public:
-  DeviceSignalsDisclaimerStepController(
-      ProfilePickerWebContentsHost* host,
-      content::WebContents* web_contents,
-      base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback)
-      : ProfileManagementStepController(host),
-        web_contents_(web_contents),
-        callback_(std::move(callback)) {
-    CHECK(web_contents_);
-    CHECK(callback_);
-  }
-
-  ~DeviceSignalsDisclaimerStepController() override = default;
-
-  void Show(StepSwitchFinishedCallback step_shown_callback,
-            bool reset_state) override {
-    CHECK(reset_state);
-    CHECK(!step_shown_callback->is_null());
-
-    base::OnceClosure navigation_finished_closure =
-        base::BindOnce(std::move(step_shown_callback.value()), true)
-            .Then(base::BindOnce(
-                &DeviceSignalsDisclaimerStepController::OnLoadFinished,
-                weak_ptr_factory_.GetWeakPtr()));
-
-    host()->ShowScreen(web_contents_,
-                       GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-                       std::move(navigation_finished_closure));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
-  }
-
- private:
-  void OnLoadFinished() {
-    auto* managed_user_profile_notice_ui =
-        web_contents_->GetWebUI()
-            ->GetController()
-            ->GetAs<ManagedUserProfileNoticeUI>();
-    CHECK(managed_user_profile_notice_ui);
-    CHECK(callback_);
-
-    Profile* profile = Profile::FromWebUI(web_contents_->GetWebUI());
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    CHECK(identity_manager);
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByAccountId(
-            identity_manager->GetPrimaryAccountId(
-                signin::ConsentLevel::kSignin));
-
-    // If the account info is empty the disclaimer can still be shown,
-    // it is only used for the profile pic with a fallback available.
-    auto params = signin::EnterpriseProfileCreationDialogParams::
-        CreateForDeviceSignalsDisclaimer(account_info, std::move(callback_));
-    managed_user_profile_notice_ui->Initialize(
-        /*browser=*/nullptr,
-        ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
-        std::move(params));
-  }
-
-  // The web contents in which we want to display the screen.
-  raw_ptr<content::WebContents> web_contents_;
-
-  // Callback called when the user makes a choice on the dialog.
-  base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback_;
-
-  base::WeakPtrFactory<DeviceSignalsDisclaimerStepController> weak_ptr_factory_{
-      this};
-};
 }  // namespace
 
 // static
@@ -513,16 +432,6 @@ ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
     base::OnceClosure finish_flow_and_run_in_browser_callback) {
   return std::make_unique<FinishFlowAndRunInBrowserStepController>(
       host, std::move(finish_flow_and_run_in_browser_callback));
-}
-
-// static
-std::unique_ptr<ProfileManagementStepController>
-ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
-    ProfilePickerWebContentsHost* host,
-    content::WebContents* web_contents,
-    base::OnceCallback<void(signin::DeviceSignalsDisclaimerResult)> callback) {
-  return std::make_unique<DeviceSignalsDisclaimerStepController>(
-      host, web_contents, std::move(callback));
 }
 
 ProfileManagementStepController::ProfileManagementStepController(

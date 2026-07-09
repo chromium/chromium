@@ -124,7 +124,6 @@ bool IsPostIdentityStep(ProfileManagementFlowController::Step step) {
     case ProfileManagementFlowController::Step::kAccountSelection:
     case ProfileManagementFlowController::Step::kIntro:
     case ProfileManagementFlowController::Step::kReauth:
-    case ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer:
       return false;
     case ProfileManagementFlowController::Step::kDefaultBrowser:
     case ProfileManagementFlowController::Step::kSearchEngineChoice:

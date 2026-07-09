@@ -321,11 +321,11 @@ void ProfileManagementDisclaimerService::
       !IsSigninRegistration(*state_->access_point));
 }
 
-bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired()
-    const {
+void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
+    BrowserWindowInterface* browser) {
   if (!base::FeatureList::IsEnabled(
           policy::features::kDeviceSignalsBackfillDisclaimer)) {
-    return false;
+    return;
   }
 
   // Suppress the dialog if we force --no-first-run for testing
@@ -333,33 +333,24 @@ bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired()
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoFirstRun) &&
       !bypass_no_first_run_) {
-    return false;
-  }
-
-  // If the user has not accepted the account management yet,
-  // they will see this disclaimer as part of that process in the future.
-  if (!enterprise_util::UserAcceptedAccountManagement(&*profile_)) {
-    return false;
-  }
-
-  // If the permission was already obtained the dialog is not necessary.
-  if (profile_->GetPrefs()->GetBoolean(
-          device_signals::prefs::kDeviceSignalsPermanentConsentReceived)) {
-    return false;
-  }
-
-  return true;
-}
-
-void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
-    BrowserWindowInterface* browser) {
-  if (!IsDeviceSignalsDisclaimerRequired()) {
     return;
   }
 
   // The management notice dialog or this dialog are already open.
   if ((state_ && state_->profile_creation_controller) ||
       browser->GetFeatures().signin_view_controller()->ShowsModalDialog()) {
+    return;
+  }
+
+  // If the user has not accepted the account management yet,
+  // they will see this disclaimer as part of that process in the future.
+  if (!enterprise_util::UserAcceptedAccountManagement(&*profile_)) {
+    return;
+  }
+
+  // If the permission was already obtained the dialog is not necessary.
+  if (profile_->GetPrefs()->GetBoolean(
+          device_signals::prefs::kDeviceSignalsPermanentConsentReceived)) {
     return;
   }
 
@@ -382,7 +373,8 @@ void ProfileManagementDisclaimerService::HandleDeviceSignalsDisclaimerChoice(
     case signin::DeviceSignalsDisclaimerResult::kAccepted:
       // Close the dialog on all windows it was open and mark the permission as
       // granted.
-      OnDeviceSignalsCollectionConsentGranted();
+      profile_->GetPrefs()->SetBoolean(
+          device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
       for (const auto& browser :
            std::move(opened_device_signals_disclaimers_)) {
         if (browser) {
@@ -576,10 +568,4 @@ void ProfileManagementDisclaimerService::OnBrowserActivated(
       signin_metrics::AccessPoint::
           kEnterpriseManagementDisclaimerAfterBrowserFocus);
   MaybeShowEnterpriseManagementDisclaimer(account_id, access_point);
-}
-
-void ProfileManagementDisclaimerService::
-    OnDeviceSignalsCollectionConsentGranted() {
-  profile_->GetPrefs()->SetBoolean(
-      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
 }
