@@ -13812,6 +13812,21 @@
             ]
         }
     ],
+    "IOSBackendPromoServiceIntegration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSBackendPromoServiceIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBestOfAppFRE": [
         {
             "platforms": [
