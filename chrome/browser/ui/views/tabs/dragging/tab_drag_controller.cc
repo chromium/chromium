@@ -1540,6 +1540,24 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   const std::vector<tab_groups::TabGroupId> groups_to_move =
       attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
 
+  // If we are detaching from the source tabstrip, make sure the tab that was
+  // initially active is selected. This ensures that when the currently active
+  // dragged tab is removed, TabStripModel will fall back to activating the
+  // initially active tab, preventing a brief flash of an incorrect active tab.
+  if (attached_context_ == source_context_ &&
+      !initial_selection_model_.empty() &&
+      initial_selection_model_.active().has_value()) {
+    const int initial_active_index = initial_selection_model_.active().value();
+    if (attached_model->ContainsIndex(initial_active_index) &&
+        std::ranges::find(dragged_indices, initial_active_index) ==
+            dragged_indices.end()) {
+      ui::ListSelectionModel selection =
+          attached_model->selection_model().GetListSelectionModel();
+      selection.AddIndexToSelection(initial_active_index);
+      UpdateSelectionModel(attached_model, selection);
+    }
+  }
+
   std::vector<std::variant<std::unique_ptr<DetachedTab>,
                            std::unique_ptr<DetachedTabCollection>>>
       owned_tabs_and_collections =

@@ -2350,6 +2350,80 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
 
+class ActiveTabTracker : public TabStripModelObserver {
+ public:
+  explicit ActiveTabTracker(TabStripModel* model) : model_(model) {
+    model_->AddObserver(this);
+  }
+  ActiveTabTracker(const ActiveTabTracker&) = delete;
+  ActiveTabTracker& operator=(const ActiveTabTracker&) = delete;
+  ~ActiveTabTracker() override { model_->RemoveObserver(this); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (selection.active_tab_changed() && selection.new_contents) {
+      active_contents_.push_back(selection.new_contents);
+    }
+  }
+
+  bool WasActivated(content::WebContents* contents) const {
+    return std::ranges::find(active_contents_, contents) !=
+           active_contents_.end();
+  }
+
+ private:
+  std::vector<content::WebContents*> active_contents_;
+  raw_ptr<TabStripModel> model_;
+};
+
+// Verifies that dragging a background tab out to a new window does not
+// cause the adjacent background tab to briefly gain focus.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DetachBackgroundTab_NoFocusShift) {
+  // Create 3 tabs total (1 default + 2 new).
+  AddTabsAndResetBrowser(browser(), 2);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+
+  // Activate Tab 0 explicitly
+  model->ActivateTabAt(0);
+  EXPECT_EQ(0, model->active_index());
+
+  content::WebContents* tab2 = model->GetWebContentsAt(2);
+
+  ActiveTabTracker tracker(model);
+
+  int tab_1_width = tab_strip->tab_at(1)->width();
+
+  // Move to Tab 1 and drag it enough so that it detaches.
+  BrowserWindowInterface* const new_browser = DragTabForDetachAndNotify(
+      browser(),
+      base::BindOnce(&DetachToBrowserTabDragControllerTest::
+                         ReleaseInputAfterWindowDetached,
+                     base::Unretained(this), tab_1_width),
+      /*tab_index=*/1);
+  ASSERT_TRUE(new_browser);
+
+  // Should no longer be dragging.
+  ASSERT_FALSE(IsDragSessionActive(tab_strip));
+  ASSERT_FALSE(TabDragController::IsActive());
+
+  WaitForBrowserActivation(new_browser);
+  TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
+  EXPECT_FALSE(IsDragSessionActive(tab_strip2));
+
+  // Verify the new window has the dragged tab and the original has the other
+  // two.
+  EXPECT_EQ("1", IDString(new_browser->GetTabStripModel()));
+  EXPECT_EQ("0 2", IDString(browser()->GetTabStripModel()));
+
+  // The crucial check: Tab 2 should never have been activated in the original
+  // window.
+  EXPECT_FALSE(tracker.WasActivated(tab2));
+}
+
 // Tests that dragging a tab from a window, attaching it to another window, and
 // then detaching it again retains the original window's size.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
