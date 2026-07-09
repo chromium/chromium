@@ -136,7 +136,11 @@
 }
 
 @media (forced-colors: active) {
-  .tab-indicator {
+  .tab-indicator-background {
+    background: SelectedItem;
+  }
+
+  .selected .tab-indicator {
     background: SelectedItem;
   }
 }

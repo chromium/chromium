@@ -240,6 +240,12 @@ button {
   width: 100%;
 }
 
+@media (forced-colors: active) {
+  .clear-search-icon {
+    background-color: ButtonText;
+  }
+}
+
 :host([searching]) .blurb-container,
 :host([searching]) #promos {
   display: none;

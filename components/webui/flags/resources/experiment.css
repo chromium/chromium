@@ -16,6 +16,15 @@
   outline: none;
 }
 
+@media (forced-colors: active) {
+  :focus-visible {
+    /* Outline is needed for Windows HCM. Color of outline does not matter; it
+      * is overridden by the OS. */
+    box-shadow: none;
+    outline: 2px solid transparent;
+  }
+}
+
 .experiment {
   color: var(--secondary-color);
   line-height: 1.45;
@@ -57,6 +66,12 @@
   margin-inline-end: var(--end-margin);
   margin-inline-start: calc(-1 * var(--end-margin) - var(--diameter));
   width: var(--diameter);
+}
+
+@media (forced-colors: active) {
+  :host(:not([is-default_])) .experiment-name::before {
+    background-color: Highlight;
+  }
 }
 
 
