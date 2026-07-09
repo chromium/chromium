@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -10,22 +10,19 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 namespace {
 
-class WebAppStatusBarTest : public WebAppBrowserTestBase {
+class WebAppStatusBarTest : public base::test::WithFeatureOverride,
+                            public WebAppBrowserTestBase {
  public:
-  WebAppStatusBarTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kWebAppInstallDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  WebAppStatusBarTest()
+      : base::test::WithFeatureOverride(::features::kWebAppInstallDialog) {}
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
+IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, NoStatusBar) {
   NavigateViaLinkClickToURLAndWait(
       browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
@@ -34,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
   EXPECT_EQ(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
+IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
   NavigateViaLinkClickToURLAndWait(
       browser(),
       embedded_https_test_server().GetURL("/web_apps/display_browser.html"));
@@ -44,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
   EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
+IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, NoManifestHasStatusBar) {
   NavigateViaLinkClickToURLAndWait(browser(),
                                    embedded_https_test_server().GetURL(
                                        "/banners/no_manifest_test_page.html"));
@@ -54,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
   EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
+IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
   NavigateViaLinkClickToURLAndWait(
       browser(),
       embedded_https_test_server().GetURL("/web_apps/minimal_ui/basic.html"));
@@ -63,6 +60,8 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_LT(0u, app_browser->GetStatusBubblesForTesting().size());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppStatusBarTest);
 
 }  // namespace
 }  // namespace web_app
