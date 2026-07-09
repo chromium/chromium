@@ -1,6 +1,6 @@
 {
-  "version": "87.10",
-  "log_list_timestamp": "2026-07-06T13:37:14Z",
+  "version": "88.0",
+  "log_list_timestamp": "2026-07-09T13:37:54Z",
   "operators": [
     {
       "name": "Google",
@@ -8,22 +8,6 @@
         "google-ct-logs@googlegroups.com"
       ],
       "logs": [
-        {
-          "description": "Google 'Argon2026h1' log",
-          "log_id": "DleUvPOuqT4zGyyZB7P3kN+bwj1xMiXdIaklrGHFTiE=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEB/we6GOO/xwxivy4HhkrYFAAPo6e2nc346Wo2o2U+GvoPWSPJz91s/xrEvA3Bk9kWHUUXVZS5morFEzsgdHqPg==",
-          "url": "https://ct.googleapis.com/logs/us1/argon2026h1/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2024-09-30T22:19:27Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
         {
           "description": "Google 'Argon2026h2' log",
           "log_id": "1219ENGn9XfCx+lf1wC/+YLJM1pl4dCzAXMXwMjFaXc=",
@@ -54,22 +38,6 @@
           "temporal_interval": {
             "start_inclusive": "2027-01-01T00:00:00Z",
             "end_exclusive": "2027-07-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Google 'Xenon2026h1' log",
-          "log_id": "lpdkv1VYl633Q4doNwhCd+nwOtX2pPM2bkakPw/KqcY=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOh/Iu87VkEc0ysoBBCchHOIpPZK7kUXHWj6l1PIS5ujmQ7rze8I4r/wjigVW6wMKMMxjbNk8vvV7lLqU07+ITA==",
-          "url": "https://ct.googleapis.com/logs/eu1/xenon2026h1/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2024-09-30T22:19:27Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
           }
         },
         {
@@ -258,22 +226,6 @@
       ],
       "logs": [
         {
-          "description": "DigiCert 'Wyvern2026h1'",
-          "log_id": "ZBHEbKQS7KeJHKICLgC8q08oB9QeNSer6v7VA8l9zfA=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7Lw0OeKajbeZepHxBXJS2pOJXToHi5ntgKUW2nMhIOuGlofFxtkXum65TBNY1dGD+HrfHge8Fc3ASs0qMXEHVQ==",
-          "url": "https://wyvern.ct.digicert.com/2026h1/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2024-11-08T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "DigiCert 'Wyvern2026h2'",
           "log_id": "wjF+V0UZo0XufzjespBB68fCIVoiv3/Vta12mtkOUs0=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEenPbSvLeT+zhFBu+pqk8IbhFEs16iCaRIFb1STLDdWzL6XwTdTWcbOzxMTzB3puME5K3rT0PoZyPSM50JxgjmQ==",
@@ -319,22 +271,6 @@
           "temporal_interval": {
             "start_inclusive": "2027-07-01T00:00:00Z",
             "end_exclusive": "2028-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "DigiCert 'Sphinx2026h1'",
-          "log_id": "SZybad4dfOz8Nt7Nh2SmuFuvCoeAGdFVUvvp6ynd+MM=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEq4S++DyHokIlmmacritS51r5IRsZA6UH4kYLH4pefGyu/xl3huh7/O5rNk/yvMOeBQKaCAG1SSM1xNNQK1Hp9A==",
-          "url": "https://sphinx.ct.digicert.com/2026h1/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2024-11-08T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
           }
         },
         {
@@ -395,26 +331,6 @@
       ],
       "logs": [
         {
-          "description": "Sectigo 'Mammoth2026h1'",
-          "log_id": "JS+Uwisp6W6fQRpyBytpXFtS/5epDSVAu/zcUexN7gs=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnssMilHMiuILzoXmr00x2xtqTP2weWuZl8Bd+25FUB1iqsafm2sFPaKrK12Im1Ao4p5YpaX6+eP6FSXjFBMyxA==",
-          "url": "https://mammoth2026h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2025-09-18T17:20:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "N7bqzTXnPktVFG8/h3gi5pcuxCo+mfWyv+XlIIS4cEU=",
-                "tree_size": 65240567
-              }
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "Sectigo 'Mammoth2026h2'",
           "log_id": "lLHBirDQV8R74KwEDh8svI3DdXJ7yVHyClJhJoY7pzw=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7INh8te0u+TkO+vIY3WYz2GQYxQ9XyLfdLpQp1ibaX3mY4lt2ddRhD/4AtjI/8KXceV+J/VysY8kJ1cKDXTAtg==",
@@ -435,26 +351,6 @@
           }
         },
         {
-          "description": "Sectigo 'Sabre2026h1'",
-          "log_id": "VmzVo3a+g9/jQrZ1xJwjJJinabrDgsurSaOHfZqzLQE=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhCa8Nr3YjTyHnuAQr82U2de5UYA0fvdYXHPq6wmTuBB7kJx9x82WQ+1TbpUhRmdR8N62yZ6q4oBtziWBNNdqYA==",
-          "url": "https://sabre2026h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2025-09-18T17:20:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "ONxslVVBTXcSuBVlFOVDuNQoTCdDNLCRVHoHfNLMZfo=",
-                "tree_size": 88744201
-              }
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "Sectigo 'Sabre2026h2'",
           "log_id": "H1bRq5RwSkHdP+r99GmTVTAsFDG/5hNGCJ//rnldzC8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzjXK7DkHgtp3J4bk8n7F3Djym6mrjKfA7YMePmobwPCVVroyM0x1fAkH6eE+ZTVj8Em+ctGqna99CMS0jVk9cw==",
@@ -472,22 +368,6 @@
           "temporal_interval": {
             "start_inclusive": "2026-07-01T00:00:00Z",
             "end_exclusive": "2027-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Sectigo 'Elephant2026h1'",
-          "log_id": "0W6ppWgHfmY1oD83pd28A6U8QRIU1IgY9ekxsyPLlQQ=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEU0lqnPHoXuU9Fc9dJv1HQZCvssJfvxLsirwVQ/fkFyUqeu4inwPKikeT4DGyyWWH4NR/DCJa2bAumHrXJdAcaQ==",
-          "url": "https://elephant2026h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2025-07-22T01:33:20Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
           }
         },
         {
@@ -536,22 +416,6 @@
           "temporal_interval": {
             "start_inclusive": "2027-07-01T00:00:00Z",
             "end_exclusive": "2028-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Sectigo 'Tiger2026h1'",
-          "log_id": "FoMtq/CpJQ8P8DqlRf/Iv8gj0IdL9gQpJ/jnHzMT9fo=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE73eDJyszDbzsWcgI0nbtU0+y11gQWjNjS/RSO5P4hOSFE+pPrDCtfNPHe6dq7/XQYwOFt9Feb8TwQW+mqXN5xg==",
-          "url": "https://tiger2026h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2025-09-18T23:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
           }
         },
         {
@@ -849,23 +713,6 @@
       ],
       "tiled_logs": [
         {
-          "description": "Geomys 'Tuscolo2026h1'",
-          "log_id": "cX6V88I4im2x44RJPTHhWqliCHYtQgDgBQzQZ7WmYeI=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEflxzMg2Ajjg7h1+ZIvQ9LV6yFvdj6uRi9YbvtRnSCgS2SamkH56WcPRaBTRYARPDIr5JwLqgJAVA/NvDxdJXOw==",
-          "submission_url": "https://tuscolo2026h1.sunlight.geomys.org/",
-          "monitoring_url": "https://tuscolo2026h1.skylight.geomys.org/",
-          "mmd": 60,
-          "state": {
-            "usable": {
-              "timestamp": "2025-08-31T07:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "Geomys 'Tuscolo2026h2'",
           "log_id": "Rq+GPTs+5Z+ld96oJF02sNntIqIj9GF3QSKUUu6VUF8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaA6P0i7JTsd9XfzF1/76avRWA3XXI4NStsFO/aFtBp6SY7olDEMiPSFSxGzFQjKA1r9vgG/oFQwurlWMy9FQNw==",
@@ -943,23 +790,6 @@
       ],
       "tiled_logs": [
         {
-          "description": "IPng Networks 'Halloumi2026h1'",
-          "log_id": "fz035/iSPY5xZb6w0+q+5yoivkbAy4TEFtTkuYJky8I=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzdcnGwRjm2ZoA68JFZKfoM4cOPPG2fr0iR72p3XanznOlw57HJ9RlYRNt75gIMIKgB1r0dxY5Jojq1m8uobYjg==",
-          "submission_url": "https://halloumi2026h1.log.ct.ipng.ch/",
-          "monitoring_url": "https://halloumi2026h1.mon.ct.ipng.ch/",
-          "mmd": 60,
-          "state": {
-            "usable": {
-              "timestamp": "2025-12-17T18:30:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "IPng Networks 'Halloumi2026h2a'",
           "log_id": "JuNkblhpISO8ND9HJDWbN5LNJFqI2BXTkzP9mRirRyM=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiGh4zMsdukTgrdk9iPIwz9OfU9TQVi4Mxufpmnlrzv3ivJcxVhrST4XQSeQoF5LlFVIU6PL4IzrYl12BUWn9rQ==",
@@ -1008,23 +838,6 @@
           "temporal_interval": {
             "start_inclusive": "2027-07-01T00:00:00Z",
             "end_exclusive": "2028-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "IPng Networks 'Gouda2026h1'",
-          "log_id": "GoudaUpXmMiZoMqIvfSPwLRWYMzDYA0fcfRp/8fRrKM=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAER6wvqVwhf5isuCtwSfNjTOrqwZg0vZuIMP7xk8fPmJfaFZCte1ptQiqNhRMCtqIgJvDcJyjkGVI8i44vxL877A==",
-          "submission_url": "https://gouda2026h1.log.ct.ipng.ch/",
-          "monitoring_url": "https://gouda2026h1.mon.ct.ipng.ch/",
-          "mmd": 60,
-          "state": {
-            "usable": {
-              "timestamp": "2025-11-27T03:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2026-01-01T00:00:00Z",
-            "end_exclusive": "2026-07-01T00:00:00Z"
           }
         },
         {
