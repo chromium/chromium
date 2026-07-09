@@ -263,22 +263,42 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
             int toPos,
             int x,
             int y) {
-        // If this is a mouse input we don't want to force the auto-scroll behavior that happens
-        // inside the default super implementation. Early returning here will just cancel the drag.
-        if (mIsMouseInputSource) return;
+        // Early returning here will cancel the drag.
+        if (shouldBlockOnMoved()) return;
         super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
     }
 
     /**
-     * Calculates out-of-bounds scroll speeds during drag reordering. Suppresses all auto-scroll
-     * speed interpolation when input is from a mouse source.
+     * Returns whether to block {@link #onMoved} execution. Defaults to blocking for mouse input
+     * sources to preserve behavior for Grid Tab Switcher.
+     */
+    protected boolean shouldBlockOnMoved() {
+        // If this is a mouse input don't force the auto-scroll behavior that happens
+        // inside the default super onMoved() implementation.
+        return mIsMouseInputSource;
+    }
+
+    /**
+     * Returns whether out-of-bounds scrolling (edge scrolling) should be blocked during a drag. By
+     * default, this is blocked when the input source is a mouse (cursor) to avoid unwanted list
+     * movement. Subclasses can override this to customize scroll behavior.
+     *
+     * @return True if out-of-bounds scrolling should be disabled, false otherwise.
+     */
+    protected boolean shouldBlockOutOfBoundsScroll() {
+        return mIsMouseInputSource;
+    }
+
+    /**
+     * Calculates out-of-bounds scroll speeds during drag reordering. Delays or blocks interpolation
+     * if {@link #shouldBlockOutOfBoundsScroll()} returns true.
      *
      * @param recyclerView The active RecyclerView container.
      * @param viewSize The width or height of the scrollable view depending on orientation.
      * @param viewSizeOutOfBounds The amount of pixels dragged out of the bounds.
      * @param totalSize The total scrollable range size.
      * @param msSinceStartScroll Elapsed time since the scroll operation was initiated.
-     * @return The calculated scroll distance increment; 0 if mouse-input is active.
+     * @return The calculated scroll distance increment; 0 if out-of-bounds scrolling is blocked.
      */
     @Override
     public int interpolateOutOfBoundsScroll(
@@ -287,7 +307,7 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
             int viewSizeOutOfBounds,
             int totalSize,
             long msSinceStartScroll) {
-        if (mIsMouseInputSource) return 0;
+        if (shouldBlockOutOfBoundsScroll()) return 0;
 
         return super.interpolateOutOfBoundsScroll(
                 recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartScroll);

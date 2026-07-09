@@ -275,6 +275,16 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         return winner;
     }
 
+    @Override
+    protected boolean shouldBlockOutOfBoundsScroll() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldBlockOnMoved() {
+        return false;
+    }
+
     /**
      * Called when a tab is moved. Updates the underlying {@link TabModel} to reflect the
      * reordering.
