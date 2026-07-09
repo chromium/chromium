@@ -128,6 +128,15 @@ class PersonalContextServiceImplBrowserTest : public InProcessBrowserTest {
     return future.Take();
   }
 
+  FetchPiiEntitiesResult FetchPiiEntitiesAndWait(
+      const proto::FetchPiiEntitiesRequest& request) {
+    base::test::TestFuture<FetchPiiEntitiesResult> future;
+    ContextMemoryRequestOptions options;
+    personal_context_service_->FetchPiiEntities(request, options,
+                                                future.GetCallback());
+    return future.Take();
+  }
+
   void SetMockResponse(std::string_view value,
                        net::HttpStatusCode status = net::HTTP_OK) {
     proto::FetchContextResponse fetch_response;
@@ -141,6 +150,13 @@ class PersonalContextServiceImplBrowserTest : public InProcessBrowserTest {
     std::string response_string;
     fetch_response.SerializeToString(&response_string);
     SetRawMockResponse(response_string, status);
+  }
+
+  void SetMockPiiResponse(std::string_view server_request_id,
+                          net::HttpStatusCode status = net::HTTP_OK) {
+    proto::FetchPiiEntitiesResponse pii_response;
+    pii_response.set_server_request_id(server_request_id);
+    SetRawMockResponse(pii_response.SerializeAsString(), status);
   }
 
   void SetRawMockResponse(std::string_view body,
@@ -341,5 +357,79 @@ IN_PROC_BROWSER_TEST_F(PersonalContextServiceImplBrowserTest,
   FetchContextResult result2 = future2.Take();
   EXPECT_TRUE(result2.response.has_value());
 }
+
+// =============================================================================
+// UNMASKED PII ENTITIES TEST CASES
+// =============================================================================
+
+// Verify successful unmasked PII entities retrieval
+IN_PROC_BROWSER_TEST_F(PersonalContextServiceImplBrowserTest,
+                       PiiFetchEntitiesSuccess) {
+  SignIn("test@gmail.com");
+  SetMockPiiResponse("pii_test_id");
+
+  proto::FetchPiiEntitiesRequest request;
+  request.set_feature(proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL);
+  FetchPiiEntitiesResult result = FetchPiiEntitiesAndWait(request);
+
+  ASSERT_TRUE(result.response.has_value());
+  EXPECT_EQ(result.response.value().server_request_id(), "pii_test_id");
+
+  histogram_tester_.ExpectBucketCount(
+      "PersonalContext.FetchPiiEntities.Result.AmbientAutofill", true, 1);
+}
+
+// Verify PII query network connection failure handling
+IN_PROC_BROWSER_TEST_F(PersonalContextServiceImplBrowserTest,
+                       PiiFetchEntitiesFailure) {
+  SignIn("test@gmail.com");
+  SetNetworkFailure();
+
+  proto::FetchPiiEntitiesRequest request;
+  request.set_feature(proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL);
+  FetchPiiEntitiesResult result = FetchPiiEntitiesAndWait(request);
+
+  ASSERT_FALSE(result.response.has_value());
+  EXPECT_EQ(result.response.error().error(),
+            ContextMemoryError::ExecutionError::kGenericFailure);
+
+  histogram_tester_.ExpectBucketCount(
+      "PersonalContext.FetchPiiEntities.Result.AmbientAutofill", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PersonalContext.FetchPiiEntities.ErrorStatus.AmbientAutofill",
+      static_cast<int>(ContextMemoryError::ExecutionError::kGenericFailure), 1);
+}
+
+// Verify oldest PII execution is cancelled on query parallel limit breaches
+IN_PROC_BROWSER_TEST_F(PersonalContextServiceImplBrowserTest,
+                       PiiParallelRequestCancellation) {
+  SignIn("test@gmail.com");
+
+  proto::FetchPiiEntitiesResponse pii_response;
+  pii_response.set_server_request_id("pii_req_1");
+  SetMockPiiResponse(pii_response.server_request_id());
+
+  base::test::TestFuture<FetchPiiEntitiesResult> future1;
+  base::test::TestFuture<FetchPiiEntitiesResult> future2;
+  proto::FetchPiiEntitiesRequest request;
+  request.set_feature(proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL);
+  ContextMemoryRequestOptions options;
+
+  // Start Request 1
+  personal_context_service_->FetchPiiEntities(request, options,
+                                              future1.GetCallback());
+
+  // Start Request 2 (should cancel Request 1 because parallel limit is 1)
+  personal_context_service_->FetchPiiEntities(request, options,
+                                              future2.GetCallback());
+
+  FetchPiiEntitiesResult result1 = future1.Take();
+  ASSERT_FALSE(result1.response.has_value());
+  EXPECT_EQ(result1.response.error().error(),
+            ContextMemoryError::ExecutionError::kCancelled);
+  FetchPiiEntitiesResult result2 = future2.Take();
+  EXPECT_TRUE(result2.response.has_value());
+}
+
 }  // namespace
 }  // namespace personal_context
