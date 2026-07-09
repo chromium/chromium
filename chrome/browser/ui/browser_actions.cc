@@ -1214,6 +1214,63 @@ void BrowserActions::InitializeChromeMenuActions() {
             features::IsRoundedIconsEnabled() ? kTableChartIcon
                                               : kTaskManagerOldIcon)
             .Build());
+
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenTaskManager(
+                      bwi, task_manager::StartAction::kMoreTools);
+                },
+                bwi),
+            kActionTaskManagerAppMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+            features::IsRoundedIconsEnabled() ? kTableChartIcon
+                                              : kTaskManagerOldIcon,
+            /*is_pinnable=*/false)
+            .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenTaskManager(bwi,
+                                          task_manager::StartAction::kShortcut);
+                },
+                bwi),
+            kActionTaskManagerShortcut, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+            features::IsRoundedIconsEnabled() ? kTableChartIcon
+                                              : kTaskManagerOldIcon,
+            /*is_pinnable=*/false)
+            .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenTaskManager(
+                      bwi, task_manager::StartAction::kContextMenu);
+                },
+                bwi),
+            kActionTaskManagerContextMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+            features::IsRoundedIconsEnabled() ? kTableChartIcon
+                                              : kTaskManagerOldIcon,
+            /*is_pinnable=*/false)
+            .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::OpenTaskManager(bwi,
+                                          task_manager::StartAction::kMainMenu);
+                },
+                bwi),
+            kActionTaskManagerMainMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+            features::IsRoundedIconsEnabled() ? kTableChartIcon
+                                              : kTaskManagerOldIcon,
+            /*is_pinnable=*/false)
+            .Build());
   }
 
   root_action_item_->AddChild(

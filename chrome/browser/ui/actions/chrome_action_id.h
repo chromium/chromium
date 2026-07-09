@@ -491,6 +491,10 @@
   E(kActionQrCodeGenerator, IDC_QRCODE_GENERATOR) \
   E(kActionRouteMedia, IDC_ROUTE_MEDIA) \
   E(kActionTaskManager, IDC_TASK_MANAGER) \
+  E(kActionTaskManagerAppMenu, IDC_TASK_MANAGER_APP_MENU) \
+  E(kActionTaskManagerShortcut, IDC_TASK_MANAGER_SHORTCUT) \
+  E(kActionTaskManagerContextMenu, IDC_TASK_MANAGER_CONTEXT_MENU) \
+  E(kActionTaskManagerMainMenu, IDC_TASK_MANAGER_MAIN_MENU) \
   E(kActionDevTools, IDC_DEV_TOOLS) \
   E(kActionShowChromeLabs, IDC_SHOW_CHROME_LABS) \
   E(kActionSaveCreditCardForPage, IDC_SAVE_CREDIT_CARD_FOR_PAGE) \
