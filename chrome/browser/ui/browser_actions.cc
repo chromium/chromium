@@ -68,6 +68,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/actions_util.h"
@@ -245,17 +246,22 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
     actions::ActionId action_id,
     int title_id,
     int tooltip_id,
-    const gfx::VectorIcon& icon) {
-  return actions::ActionItem::Builder(callback)
-      .SetActionId(action_id)
-      .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-          l10n_util::GetStringUTF16(title_id)))
-      .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-          l10n_util::GetStringUTF16(tooltip_id)))
-      .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
-      .SetProperty(actions::kActionItemPinnableKey,
-                   std::underlying_type_t<actions::ActionPinnableState>(
-                       actions::ActionPinnableState::kPinnable));
+    const gfx::VectorIcon& icon,
+    bool is_pinnable = true) {
+  auto builder =
+      actions::ActionItem::Builder(callback)
+          .SetActionId(action_id)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(title_id)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(tooltip_id)))
+          .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
+  if (is_pinnable) {
+    builder.SetProperty(actions::kActionItemPinnableKey,
+                        std::underlying_type_t<actions::ActionPinnableState>(
+                            actions::ActionPinnableState::kPinnable));
+  }
+  return builder;
 }
 
 actions::StatefulImageActionItem::StatefulImageActionItemBuilder
@@ -3529,6 +3535,78 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowSearchTools)
+          .Build());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ShowSyncPassphraseDialogAndDecryptData(
+                    *bwi->GetBrowserForMigrationOnly());
+              },
+              bwi))
+          .SetActionId(kActionShowSyncPassphraseDialog)
+          .Build());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowPasswordCheck(bwi);
+              },
+              bwi))
+          .SetActionId(kActionSafetyHubShowPasswordCheckup)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowContactInfo(bwi);
+              },
+              bwi),
+          kActionShowContactInfo,
+          IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
+          IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kLocationOnIcon
+              : vector_icons::kLocationOnChromeRefreshOldIcon,
+          /*is_pinnable=*/false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowIdentityDocs(bwi);
+              },
+              bwi),
+          kActionShowIdentityDocs, IDS_IDENTITY_DOCS_SUBMENU_OPTION,
+          IDS_IDENTITY_DOCS_SUBMENU_OPTION,
+          features::IsRoundedIconsEnabled() ? vector_icons::kIdCardIcon
+                                            : vector_icons::kIdCardOldIcon,
+          /*is_pinnable=*/false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowTravel(bwi);
+              },
+              bwi),
+          kActionShowTravel, IDS_TRAVEL_SUBMENU_OPTION,
+          IDS_TRAVEL_SUBMENU_OPTION,
+          features::IsRoundedIconsEnabled() ? vector_icons::kTripIcon
+                                            : vector_icons::kTripOldIcon,
+          /*is_pinnable=*/false)
           .Build());
 
   root_action_item_->AddChild(

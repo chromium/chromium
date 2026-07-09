@@ -108,6 +108,7 @@
   E(kActionCloseProfile, IDC_CLOSE_PROFILE) \
   E(kActionManageGoogleAccount, IDC_MANAGE_GOOGLE_ACCOUNT) \
   E(kActionShowSyncSettings, IDC_SHOW_SYNC_SETTINGS) \
+  E(kActionShowSyncPassphraseDialog, IDC_SHOW_SYNC_PASSPHRASE_DIALOG) \
   E(kActionTurnOnSync, IDC_TURN_ON_SYNC) \
   E(kActionShowSigninWhenPaused, IDC_SHOW_SIGNIN_WHEN_PAUSED) \
   E(kActionOpenGuestProfile, IDC_OPEN_GUEST_PROFILE) \
@@ -170,6 +171,11 @@
   E(kActionShowAiModeOmniboxButton, IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) \
   E(kActionRecordReplay) \
   E(kActionShowSearchTools, IDC_SHOW_SEARCH_TOOLS) \
+  E(kActionSafetyHubShowPasswordCheckup, \
+    IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP) \
+  E(kActionShowContactInfo, IDC_SHOW_CONTACT_INFO) \
+  E(kActionShowIdentityDocs, IDC_SHOW_IDENTITY_DOCS) \
+  E(kActionShowTravel, IDC_SHOW_TRAVEL) \
   E(kActionCaretBrowsingToggle, IDC_CARET_BROWSING_TOGGLE) \
   E(kActionChromeTips, IDC_CHROME_TIPS) \
   E(kActionChromeWhatsNew, IDC_CHROME_WHATS_NEW) \
