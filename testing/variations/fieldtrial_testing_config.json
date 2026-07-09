@@ -24794,6 +24794,21 @@
             ]
         }
     ],
+    "UnexportableKeysSpareKeyPoolWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableUnexportableKeysSpareKeyPool"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
