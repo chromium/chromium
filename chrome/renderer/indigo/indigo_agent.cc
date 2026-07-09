@@ -168,7 +168,9 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
     auto result = blink::WebImageReplacement::CreateAndBindReceiver(element);
     if (!result.has_value()) {
       if (indigo_agent_ && is_primary) {
-        indigo_agent_->GetHost().ReportInvokeError();
+        indigo_agent_->GetHost().ReportInvokeError(
+            chrome::mojom::IndigoInvokeError::
+                kPrimaryImageReplacementCreationFailed);
       }
       isolate->ThrowException(v8::Exception::Error(
           gin::StringToV8(isolate, blink::WebString(result.error()).Utf8())));
@@ -183,7 +185,8 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
 
   void NotifyNoPrimaryImageFound() {
     if (indigo_agent_) {
-      indigo_agent_->GetHost().ReportInvokeError();
+      indigo_agent_->GetHost().ReportInvokeError(
+          chrome::mojom::IndigoInvokeError::kNoPrimaryImageFound);
     }
   }
 

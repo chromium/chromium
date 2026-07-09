@@ -41,6 +41,11 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Managed domain"/>
   <int value="13" label="Glic disabled for profile"/>
   <int value="14" label="Enterprise disallowed"/>
+  <int value="15" label="Primary image disconnected"/>
+  <int value="16" label="Empty primary image size"/>
+  <int value="17" label="Primary image too small"/>
+  <int value="18" label="No primary image found"/>
+  <int value="19" label="Primary image replacement creation failed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationResult) -->

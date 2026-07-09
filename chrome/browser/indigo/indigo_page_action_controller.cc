@@ -461,7 +461,11 @@ void IndigoPageActionController::ShowToolbar() {
   }
 }
 
-void IndigoPageActionController::ShowInvocationErrorToast() {
+void IndigoPageActionController::ShowInvocationErrorToast(
+    IndigoTransformationResult result) {
+  CHECK_NE(result, IndigoTransformationResult::kSuccess);
+  base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
+
   ToastController* toast_controller =
       ToastController::MaybeGetForTabInterface(&tab());
   if (toast_controller) {
@@ -785,7 +789,8 @@ void IndigoPageActionController::FrameSizeChanged(
 
   if (frame_size.IsEmpty()) {
     Reset(ResetType::kResetReplacementsAndContentScript);
-    ShowInvocationErrorToast();
+    ShowInvocationErrorToast(
+        IndigoTransformationResult::kEmptyPrimaryImageSize);
     return;
   }
 
@@ -796,7 +801,7 @@ void IndigoPageActionController::FrameSizeChanged(
   float width_dips = frame_size.width() / device_scale_factor;
   if (width_dips < kMinPrimaryImageWidthDips) {
     Reset(ResetType::kResetReplacementsAndContentScript);
-    ShowInvocationErrorToast();
+    ShowInvocationErrorToast(IndigoTransformationResult::kPrimaryImageTooSmall);
   }
 }
 

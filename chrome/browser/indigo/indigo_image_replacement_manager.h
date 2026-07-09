@@ -30,6 +30,7 @@ namespace indigo {
 
 class IndigoPageActionController;
 enum class ResetType;
+enum class IndigoTransformationResult;
 
 // An identifier used to group a set of related (primary and non-primary)
 // image replacements. This ID is currently shared with the Indigo component
@@ -93,7 +94,7 @@ class IndigoImageReplacementManager
   void CancelActiveRequest();
   void OnReceiverDisconnected();
   void Reset(ResetType reset_type);
-  void ShowErrorToast();
+  void ShowErrorToast(IndigoTransformationResult result);
 
   mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
       receivers_;

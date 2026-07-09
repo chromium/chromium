@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -514,6 +515,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   content::WebContents* web_contents = tab->GetContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
@@ -547,6 +549,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       ToastController::MaybeGetForTabInterface(tab);
   ASSERT_TRUE(toast_controller && toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.Result",
+      IndigoTransformationResult::kGenerateImageError, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -618,6 +624,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
@@ -658,6 +665,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       ToastController::MaybeGetForWebContents(web_contents);
   EXPECT_TRUE(toast_controller && toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.Result",
+      IndigoTransformationResult::kPrimaryImageDisconnected, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -1332,6 +1343,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
@@ -1342,7 +1354,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Simulate primary replacement creation failure by notifying the host
   // directly.
-  fake_agent->host()->ReportInvokeError();
+  fake_agent->host()->ReportInvokeError(
+      chrome::mojom::IndigoInvokeError::kPrimaryImageReplacementCreationFailed);
   // Verify that an error toast is displayed.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     ToastController* const toast_controller =
@@ -1353,6 +1366,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   ToastController* const toast_controller =
       ToastController::MaybeGetForWebContents(web_contents);
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.Result",
+      IndigoTransformationResult::kPrimaryImageReplacementCreationFailed, 1);
 }
 
 class IndigoImageReplacementManagerBrowserTestWithParam
@@ -1364,6 +1381,7 @@ IN_PROC_BROWSER_TEST_P(IndigoImageReplacementManagerBrowserTestWithParam,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
@@ -1409,6 +1427,12 @@ IN_PROC_BROWSER_TEST_P(IndigoImageReplacementManagerBrowserTestWithParam,
       ToastController::MaybeGetForTabInterface(tab);
   ASSERT_TRUE(toast_controller && toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+
+  IndigoTransformationResult expected_result =
+      GetParam().IsEmpty() ? IndigoTransformationResult::kEmptyPrimaryImageSize
+                           : IndigoTransformationResult::kPrimaryImageTooSmall;
+  histogram_tester.ExpectUniqueSample("Indigo.Transformation.Result",
+                                      expected_result, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

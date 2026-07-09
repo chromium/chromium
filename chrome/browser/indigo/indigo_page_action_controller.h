@@ -64,7 +64,12 @@ enum class IndigoTransformationResult {
   kManagedDomain = 12,
   kGlicDisabledForProfile = 13,
   kEnterpriseDisallowed = 14,
-  kMaxValue = kEnterpriseDisallowed,
+  kPrimaryImageDisconnected = 15,
+  kEmptyPrimaryImageSize = 16,
+  kPrimaryImageTooSmall = 17,
+  kNoPrimaryImageFound = 18,
+  kPrimaryImageReplacementCreationFailed = 19,
+  kMaxValue = kPrimaryImageReplacementCreationFailed,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
@@ -127,7 +132,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   }
 
   // Shows a toast notification informing the user that an error has occurred.
-  void ShowInvocationErrorToast();
+  // Note: `result` is only used for metrics purposes and doesn't affect the
+  // error toast displayed.
+  void ShowInvocationErrorToast(IndigoTransformationResult result);
 
   base::WeakPtr<IndigoPageActionController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

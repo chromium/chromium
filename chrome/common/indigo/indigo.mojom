@@ -9,6 +9,11 @@ import "third_party/blink/public/mojom/image_replacement/image_replacement.mojom
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+enum IndigoInvokeError {
+  kNoPrimaryImageFound = 0,
+  kPrimaryImageReplacementCreationFailed = 1,
+};
+
 // Renderer -> browser interface for Indigo. This exists on the main frame only.
 interface IndigoAgentHost {
   // Asks the browser to start an image replacement on the given element.
@@ -17,7 +22,7 @@ interface IndigoAgentHost {
       bool is_primary) => ();
 
   // Notifies the browser that an error occurred during invocation.
-  ReportInvokeError();
+  ReportInvokeError(IndigoInvokeError error);
 };
 
 // Browser -> renderer interface for Indigo. This exists on the main frame only.
