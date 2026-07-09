@@ -27236,6 +27236,21 @@
             ]
         }
     ],
+    "WebViewMultiProfileSkipDefaultProfile": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewMultiProfileSkipDefaultProfile"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewNoOp": [
         {
             "platforms": [

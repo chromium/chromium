@@ -1218,6 +1218,11 @@ public class WebViewChromiumAwInit {
     }
 
     public ProfileStore getProfileStore() {
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(
+                        AwFeatures.WEBVIEW_MULTI_PROFILE_SKIP_DEFAULT_PROFILE)) {
+            mShouldInitializeDefaultProfile = false;
+        }
         if (ProfileStore.requiresStartup()) {
             triggerAndWaitForChromiumStarted(CallSite.GET_PROFILE_STORE);
         }

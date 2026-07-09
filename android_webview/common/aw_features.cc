@@ -252,6 +252,11 @@ BASE_FEATURE(kWebViewMoveWorkToProviderInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewMoveWorkToProviderInitThreadPool,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, accessing multi-profile APIs skips automatic initialization
+// of the Default profile during startup.
+BASE_FEATURE(kWebViewMultiProfileSkipDefaultProfile,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the temporary cookie manager used before WebView startup is
 // bypassed. If WebView isn't already started up, calling
 // `CookieManager.getInstance()` will trigger WebView startup on the main looper

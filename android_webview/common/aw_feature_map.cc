@@ -61,6 +61,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewMoveWorkToProviderInit,
     &features::kWebViewMoveWorkToProviderInitThreadPool,
+    &features::kWebViewMultiProfileSkipDefaultProfile,
     &features::kWebViewNavigate,
     &features::kWebViewOptInToGmsBindServiceOptimization,
     &features::kWebViewPersistHttpServerProperties,

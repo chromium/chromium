@@ -182,6 +182,9 @@ public class WebViewCachedFlags {
                                             TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                                             DefaultState.DISABLED),
                                     Map.entry(
+                                            AwFeatures.WEBVIEW_MULTI_PROFILE_SKIP_DEFAULT_PROFILE,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
                                             AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER,
                                             DefaultState.DISABLED),
                                     Map.entry(
