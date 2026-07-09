@@ -257,8 +257,7 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
     auto* shadow_host_layout_object = node.OwnerShadowHost()->GetLayoutObject();
     // The shadow host's LayoutObject may be null, for example when the host
     // is a <slot> element with `display: contents`.
-    if (RuntimeEnabledFeatures::ComputeInlineContentsSafeRetargetEnabled() &&
-        !shadow_host_layout_object) {
+    if (!shadow_host_layout_object) {
       return TextOffsetMapping::InlineContents();
     }
     return CreateInlineContentsFromBlockFlow(*block_flow,
