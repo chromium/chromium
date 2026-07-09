@@ -39,7 +39,7 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
                       browser_widget_ = browser_view->GetWidget();
                       auto& registry =
                           UserEducationServiceFactory::GetForBrowserContext(
-                              browser()->profile())
+                              browser()->GetProfile())
                               ->help_bubble_factory_registry();
                       help_bubble_ =
                           registry.CreateHelpBubble(anchor, std::move(params));

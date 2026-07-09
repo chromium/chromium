@@ -234,7 +234,7 @@ class BrowserFeaturePromoControllerUiTestBase
 
   user_education::FeaturePromoController* promo_controller() const {
     return UserEducationServiceFactory::GetForBrowserContext(
-               browser()->profile())
+               browser()->GetProfile())
         ->GetFeaturePromoControllerForTesting();
   }
 
@@ -549,7 +549,7 @@ MATCHER_P(MatchesContext, expected, "Matches the expected context") {
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CustomActionCallbackInSecondWindow) {
   // Create a second browser.
-  Browser* const other = CreateBrowser(browser()->profile());
+  Browser* const other = CreateBrowser(browser()->GetProfile());
 
   // Hide the anchor element in the first browser.
   auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CustomActionCallbackInSecondWindowAfterFirstCloses) {
   // Create a second browser.
-  Browser* const other = CreateBrowser(browser()->profile());
+  Browser* const other = CreateBrowser(browser()->GetProfile());
 
   // Hide the anchor element in the first browser.
   auto* const app_menu_button = BrowserElementsViews::From(browser())->GetView(

@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(PrewarmedWebUINavigationTimelineBrowserTest,
 
   // 2) Create a new browser window. This should trigger pre-warming of the
   // toolbar WebUI.
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   Browser::Create(params);
 
   // Wait for the navigation to commit and record UKM.
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // perfectly.
   const std::string expected_metric = base::StrCat(
       {"InitialWebUI.NewWindow.AllSources.",
-       ProfileBrowserCollection::GetForProfile(browser()->profile())
+       ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                    ->GetSize() > 0
            ? "WithExistingWindow"
            : "WithoutExistingWindow",
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
 
   // Create a new browser window without actively showing/painting it yet.
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   Browser* new_browser = Browser::Create(params);
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
   base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
 
   // Create a new window.
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   Browser* new_browser = Browser::Create(params);
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
@@ -870,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Create a minimized browser window.
-  Browser::CreateParams params(browser()->profile(), true);
+  Browser::CreateParams params(browser()->GetProfile(), true);
   params.initial_show_state = ui::mojom::WindowShowState::kMinimized;
   Browser* new_browser = Browser::Create(params);
 

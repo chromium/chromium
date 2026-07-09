@@ -85,7 +85,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerImpl*>(
                UserEducationServiceFactory::GetForBrowserContext(
-                   browser()->profile())
+                   browser()->GetProfile())
                    ->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
@@ -224,7 +224,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return &UserEducationServiceFactory::GetForBrowserContext(
-                browser()->profile())
+                browser()->GetProfile())
                 ->tutorial_service();
   }
 

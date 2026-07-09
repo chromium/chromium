@@ -98,9 +98,10 @@ class SystemWebAppLinkCaptureBrowserTest
 
  protected:
   Browser* CreateIncognitoBrowser() {
-    Browser* incognito = Browser::Create(Browser::CreateParams(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-        true));
+    Browser* incognito = Browser::Create(
+        Browser::CreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true),
+                              true));
 
     auto* contents =
         chrome::AddSelectedTabWithURL(incognito, GURL(url::kAboutBlankURL),
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   observer.Wait();
 
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
       app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
   observer.Wait();
 
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
       app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       observer.Wait();
 
       ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-          browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+          browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
       ASSERT_TRUE(app_browser_delegate);
       Browser* app_browser =
           app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   observer.Wait();
 
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
       app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   observer.Wait();
 
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
       app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -327,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
   observer.Wait();
 
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+      browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
       app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       observer.Wait();
 
       ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-          browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+          browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
       ASSERT_TRUE(app_browser_delegate);
       Browser* app_browser =
           app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       observer.Wait();
 
       ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-          browser()->profile(), GetAppType(), ash::BrowserType::kApp);
+          browser()->GetProfile(), GetAppType(), ash::BrowserType::kApp);
       ASSERT_TRUE(app_browser_delegate);
       Browser* app_browser =
           app_browser_delegate->GetBrowser().GetBrowserForMigrationOnly();
@@ -485,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
   // We launch SWAs into the incognito profile's original profile.
   ash::BrowserDelegate* app_browser_delegate = FindSystemWebAppBrowser(
-      incognito_browser->profile()->GetOriginalProfile(), GetAppType(),
+      incognito_browser->GetProfile()->GetOriginalProfile(), GetAppType(),
       ash::BrowserType::kApp);
   ASSERT_TRUE(app_browser_delegate);
   Browser* app_browser =
@@ -850,12 +851,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   // Incognito WebContents don't have app IDs.
   // TODO(crbug.com/40723875): Decide what should happen with SWA URLs and
   // incognito windows.
-  if (!browser()->profile()->IsOffTheRecord()) {
+  if (!browser()->GetProfile()->IsOffTheRecord()) {
     // Verifies the tab has an associated tab helper for System App's
     // webapps::AppId.
     EXPECT_EQ(
         *web_app::WebAppTabHelper::GetAppId(web_contents),
-        *ash::GetAppIdForSystemWebApp(browser()->profile(), GetAppType()));
+        *ash::GetAppIdForSystemWebApp(browser()->GetProfile(), GetAppType()));
   }
 }
 

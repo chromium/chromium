@@ -120,7 +120,7 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
     }));
 
     // Wait for all installs to be completed, if in progress.
-    WebAppProvider::GetForWebApps(browser()->profile())
+    WebAppProvider::GetForWebApps(browser()->GetProfile())
         ->command_manager()
         .AwaitAllCommandsCompleteForTesting();
   }
@@ -357,7 +357,7 @@ class WebAppInstallFlowOptionsViewTest
   }
 
   void TearDownOnMainThread() override {
-    web_app::test::UninstallAllWebApps(browser()->profile());
+    web_app::test::UninstallAllWebApps(browser()->GetProfile());
     WebAppBrowserTestBase::TearDownOnMainThread();
   }
 

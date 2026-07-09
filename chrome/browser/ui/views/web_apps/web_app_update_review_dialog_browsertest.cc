@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
         }
       }));
   // Uninstalling the app will close the update dialog
-  web_app::test::UninstallWebApp(browser()->profile(), app_id_);
+  web_app::test::UninstallWebApp(browser()->GetProfile(), app_id_);
   run_loop.Run();
 
   EXPECT_FALSE(

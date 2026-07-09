@@ -102,7 +102,7 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
   delegate_ = delegate;
 
   auto view = std::make_unique<views::WebDialogView>(
-      browser()->profile(), delegate,
+      browser()->GetProfile(), delegate,
       std::make_unique<ChromeWebContentsHandler>());
   view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   gfx::NativeView parent_view =

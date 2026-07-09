@@ -546,7 +546,7 @@ void AppBrowserController::TriggerAppUpdateOrMigrationDialog(
     base::TimeTicks start_time) const {}
 
 bool AppBrowserController::IsPreventCloseEnabled() const {
-  auto* provider = WebAppProvider::GetForWebApps(browser()->profile());
+  auto* provider = WebAppProvider::GetForWebApps(browser()->GetProfile());
   if (!provider) {
     return false;
   }

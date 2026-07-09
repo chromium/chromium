@@ -185,8 +185,8 @@ class BrowserFeaturePromoControllerTestBase : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
-    auto* const service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+    auto* const service = UserEducationServiceFactory::GetForBrowserContext(
+        browser()->GetProfile());
     auto* const interface = BrowserUserEducationInterface::From(browser());
     controller_ = static_cast<user_education::FeaturePromoControllerImpl*>(
         service->GetFeaturePromoControllerForTesting());
@@ -207,7 +207,8 @@ class BrowserFeaturePromoControllerTestBase : public TestWithBrowserView {
     // Register placeholder tutorials and IPH journeys.
 
     auto* const user_education_service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+        UserEducationServiceFactory::GetForBrowserContext(
+            browser()->GetProfile());
 
     // Ensure that the new profile grace period has ended by default.
     auto& storage_service =
@@ -1396,7 +1397,7 @@ TEST_F(BrowserFeaturePromoControllerTrackerInitializedTest, StartsTutorial) {
 
   // We should be running the tutorial now.
   auto& tutorial_service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
   tutorial_service.CancelTutorialIfRunning();
@@ -2191,7 +2192,7 @@ class RequiredNotice {
  public:
   explicit RequiredNotice(Browser* browser)
       : controller_(UserEducationServiceFactory::GetForBrowserContext(
-                        browser->profile())
+                        browser->GetProfile())
                         ->product_messaging_controller()) {}
   RequiredNotice(const RequiredNotice&) = delete;
   void operator=(const RequiredNotice&) = delete;

@@ -253,7 +253,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   static user_education::FeaturePromoControllerImpl* GetPromoController(
       Browser* browser) {
     return static_cast<user_education::FeaturePromoControllerImpl*>(
-        UserEducationServiceFactory::GetForBrowserContext(browser->profile())
+        UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile())
             ->GetFeaturePromoControllerForTesting());
   }
 

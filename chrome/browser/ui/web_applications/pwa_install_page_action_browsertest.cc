@@ -235,7 +235,7 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
     app_banner_manager_ =
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents_);
     web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile()));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestInterceptor(
@@ -317,7 +317,7 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
 
   void UninstallWebApp(const webapps::AppId& app_id) {
     base::RunLoop run_loop;
-    web_app::WebAppProvider::GetForTest(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->GetProfile())
         ->scheduler()
         .RemoveUserUninstallableManagements(
             app_id, webapps::WebappUninstallSource::kAppMenu,
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   webapps::AppId app_id = StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Change launch container to open in tab.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->GetProfile())
       ->sync_bridge_unsafe()
       .SetAppUserDisplayModeForTesting(
           app_id, web_app::mojom::UserDisplayMode::kBrowser);
@@ -923,9 +923,9 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {
 // true and an ARC app listed as related.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        ListedRelatedAndroidAppInstalled) {
-  arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
+  arc::SetArcPlayStoreEnabledForProfile(browser()->GetProfile(), true);
   ArcAppListPrefs* arc_app_list_prefs =
-      ArcAppListPrefs::Get(browser()->profile());
+      ArcAppListPrefs::Get(browser()->GetProfile());
   auto app_instance =
       std::make_unique<arc::FakeAppInstance>(arc_app_list_prefs);
   arc_app_list_prefs->app_connection_holder()->SetInstance(app_instance.get());

@@ -86,13 +86,13 @@ class WebAppUninstallDialogViewBrowserTest
     : public web_app::WebAppBrowserTestBase {
  public:
   web_app::WebAppProvider* provider() {
-    return web_app::WebAppProvider::GetForTest(browser()->profile());
+    return web_app::WebAppProvider::GetForTest(browser()->GetProfile());
   }
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
-  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
@@ -120,9 +120,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionBeforeViewCreation) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
   Browser* app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
   chrome::CloseWindow(browser());
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Cancel) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::CANCEL);
-  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Accept) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION);
-  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
@@ -366,10 +366,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewHighDpiTest,
                        IconsDeletedStillWorks) {
   // Required so that file deletion (blocking) operations below work.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
 
   base::FilePath app_dir = web_app::GetManifestResourcesDirectoryForApp(
-      web_app::GetWebAppsRootDirectory(browser()->profile()), app_id);
+      web_app::GetWebAppsRootDirectory(browser()->GetProfile()), app_id);
   ASSERT_TRUE(base::DeletePathRecursively(app_dir));
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;

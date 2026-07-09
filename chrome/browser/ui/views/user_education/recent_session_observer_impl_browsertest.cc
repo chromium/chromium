@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(RecentSessionObserverImplBrowserTest,
       std::make_unique<testing::StrictMock<MockRecentSessionPolicy>>();
   auto& policy = *policy_ptr;
   const auto observer = std::make_unique<RecentSessionObserverImpl>(
-      *browser()->profile(), std::move(policy_ptr));
+      *browser()->GetProfile(), std::move(policy_ptr));
 
   RecentSessionData data;
 
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(RecentSessionObserverImplBrowserTest, SessionCallback) {
       std::make_unique<testing::StrictMock<MockRecentSessionPolicy>>();
   auto& policy = *policy_ptr;
   const auto observer = std::make_unique<RecentSessionObserverImpl>(
-      *browser()->profile(), std::move(policy_ptr));
+      *browser()->GetProfile(), std::move(policy_ptr));
   const auto subscription =
       observer->AddLowUsageSessionCallback(callback.Get());
 
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(RecentSessionObserverImplBrowserTest,
       std::make_unique<testing::StrictMock<MockRecentSessionPolicy>>();
   auto& policy = *policy_ptr;
   const auto observer = std::make_unique<RecentSessionObserverImpl>(
-      *browser()->profile(), std::move(policy_ptr));
+      *browser()->GetProfile(), std::move(policy_ptr));
 
   RecentSessionData data;
 

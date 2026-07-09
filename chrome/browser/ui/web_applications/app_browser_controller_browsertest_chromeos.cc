@@ -387,7 +387,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
   Browser* InstallAndLaunchMockApp() {
     test_system_web_app_installation_->WaitForAppInstall();
     Browser* app_browser = web_app::LaunchWebAppBrowser(
-        browser()->profile(), test_system_web_app_installation_->GetAppId());
+        browser()->GetProfile(), test_system_web_app_installation_->GetAppId());
     CHECK(content::NavigateToURL(
         app_browser->tab_strip_model()->GetActiveWebContents(),
         test_system_web_app_installation_->GetAppUrl()));

@@ -53,7 +53,7 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
     // Install a test policy provider which will mark the app as
     // force-installed.
     extensions::ExtensionSystem* extension_system =
-        extensions::ExtensionSystem::Get(browser()->profile());
+        extensions::ExtensionSystem::Get(browser()->GetProfile());
     extension_system->management_policy()->RegisterProvider(&policy_provider_);
   }
 

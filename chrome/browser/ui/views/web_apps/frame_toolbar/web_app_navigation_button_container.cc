@@ -72,7 +72,7 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
   const auto* app_controller = web_app::AppBrowserController::From(browser_);
   if (app_controller->HasReloadButton()) {
     reload_button_ = AddChildView(std::make_unique<ReloadButton>(
-        browser_->profile(), browser_->command_controller(),
+        browser_->GetProfile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));
     reload_button_->set_tag(IDC_RELOAD);
     ConfigureWebAppToolbarButton(reload_button_, toolbar_button_provider);

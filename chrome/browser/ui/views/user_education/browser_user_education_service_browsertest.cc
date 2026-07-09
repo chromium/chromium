@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
   // Fetch the tracker and ensure that it is properly initialized.
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   base::RunLoop run_loop;
   tracker->AddOnInitializedCallback(base::BindOnce(
       [](base::OnceClosure callback, bool success) {
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 
   // Get the associated feature promo registry.
   const user_education::FeaturePromoRegistry& registry =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->feature_promo_registry();
 
   std::vector<IPHFailure> failures;
@@ -531,8 +531,8 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 
   std::vector<TutorialFailure> failures;
 
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+  auto* const service = UserEducationServiceFactory::GetForBrowserContext(
+      browser()->GetProfile());
   const auto& registry = service->tutorial_registry();
   for (auto identifier : registry.GetTutorialIdentifiers()) {
     const auto* const description = registry.GetTutorialDescription(identifier);
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest, AutoConfigure) {
   auto* const tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   const auto& config = tracker->GetConfigurationForTesting()->GetFeatureConfig(
       feature_engagement::kIPHWebUiHelpBubbleTestFeature);
 
@@ -617,9 +617,9 @@ class BrowserUserEducationServiceNewBadgeBrowserTest
 
     // Make this seem like an old profile so we are not in the new profile
     // grace period.
-    auto& storage_service =
-        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
-            ->user_education_storage_service();
+    auto& storage_service = UserEducationServiceFactory::GetForBrowserContext(
+                                browser()->GetProfile())
+                                ->user_education_storage_service();
     storage_service.set_profile_creation_time_for_testing(
         storage_service.GetCurrentTime() - base::Days(365));
   }
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   EXPECT_EQ(GetParam(), user_education->MaybeShowNewBadgeFor(
                             user_education::features::kNewBadgeTestFeature));
   EXPECT_EQ(GetParam(), UserEducationService::MaybeShowNewBadge(
-                            browser()->profile(),
+                            browser()->GetProfile(),
                             user_education::features::kNewBadgeTestFeature));
 
   // Ensure that the feature can be marked as used.
@@ -649,14 +649,15 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
     user_education->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        browser()->profile(), user_education::features::kNewBadgeTestFeature);
+        browser()->GetProfile(),
+        user_education::features::kNewBadgeTestFeature);
   }
 
   // The badge should now be blocked.
   EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
-      browser()->profile(), user_education::features::kNewBadgeTestFeature));
+      browser()->GetProfile(), user_education::features::kNewBadgeTestFeature));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
@@ -667,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
-      incog->profile(), user_education::features::kNewBadgeTestFeature));
+      incog->GetProfile(), user_education::features::kNewBadgeTestFeature));
 
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
@@ -675,14 +676,15 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
     user_education->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        browser()->profile(), user_education::features::kNewBadgeTestFeature);
+        browser()->GetProfile(),
+        user_education::features::kNewBadgeTestFeature);
   }
 
   // The badge should still be blocked.
   EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
-      incog->profile(), user_education::features::kNewBadgeTestFeature));
+      incog->GetProfile(), user_education::features::kNewBadgeTestFeature));
 }
 
 // Tests for the presence or absence of the recent sessions logic based on
@@ -716,7 +718,7 @@ INSTANTIATE_TEST_SUITE_P(,
 IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceRecentSessionsTest,
                        RecentSessionTrackerDependsOnFlag) {
   auto* const result =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
           ->recent_session_tracker();
   EXPECT_EQ(GetParam(), result != nullptr);
 }

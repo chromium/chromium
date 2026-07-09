@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   // Navigate to a new tab.
-  content::WebContents::CreateParams params(browser()->profile());
+  content::WebContents::CreateParams params(browser()->GetProfile());
   browser()->tab_strip_model()->AppendWebContents(
       content::WebContents::Create(params), /*foreground=*/true);
 
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
-  content::WebContents::CreateParams params(browser()->profile());
+  content::WebContents::CreateParams params(browser()->GetProfile());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   web_contents->Close();

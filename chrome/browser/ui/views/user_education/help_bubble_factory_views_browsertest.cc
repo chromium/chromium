@@ -50,7 +50,7 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
 
   user_education::HelpBubbleFactoryRegistry* registry() {
     return &UserEducationServiceFactory::GetForBrowserContext(
-                browser()->profile())
+                browser()->GetProfile())
                 ->help_bubble_factory_registry();
   }
 

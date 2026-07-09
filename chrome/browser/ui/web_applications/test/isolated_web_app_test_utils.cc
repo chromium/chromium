@@ -179,7 +179,7 @@ IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
     const GURL& url,
     WindowOpenDisposition disposition) {
   auto new_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   window->tab_strip_model()->AppendWebContents(std::move(new_contents),
                                                /*foreground=*/true);
   return ui_test_utils::NavigateToURLWithDisposition(

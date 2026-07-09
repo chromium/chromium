@@ -32,7 +32,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
   apps::AppReadinessWaiter(profile(), app_id).Await();
 
   size_t num_browsers =
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize();
+      ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+          ->GetSize();
   const int num_tabs = browser()->tab_strip_model()->count();
   content::WebContents* initial_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -53,9 +54,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
 
   Browser* const app_browser = browser_created_observer.Wait();
   EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
-  EXPECT_EQ(
-      ++num_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(++num_browsers,
+            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                ->GetSize());
   EXPECT_NE(browser(), app_browser);
   EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
   EXPECT_EQ(start_url, app_browser->tab_strip_model()

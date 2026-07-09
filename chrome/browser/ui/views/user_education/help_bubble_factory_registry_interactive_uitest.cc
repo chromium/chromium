@@ -54,7 +54,7 @@ class HelpBubbleFactoryRegistryInteractiveUitest
 
   user_education::HelpBubbleFactoryRegistry* GetRegistry() {
     return &UserEducationServiceFactory::GetForBrowserContext(
-                browser()->profile())
+                browser()->GetProfile())
                 ->help_bubble_factory_registry();
   }
 };

@@ -137,7 +137,8 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
                        Browser& browser)
       : app_id_(app_id), callback_(std::move(callback)), browser_(browser) {
     install_manager_observation_.Observe(
-        &WebAppProvider::GetForWebApps(browser_->profile())->install_manager());
+        &WebAppProvider::GetForWebApps(browser_->GetProfile())
+             ->install_manager());
     browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey, true);
   }
   ~UpdateDialogDelegate() override {
@@ -264,7 +265,7 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
   // Some combination of changes should be existing if the update dialog needs
   // to be triggered.
   CHECK_GT(update.GetCombinationChangeIndex(), 0);
-  CHECK(AreWebAppsEnabled(browser->profile()));
+  CHECK(AreWebAppsEnabled(browser->GetProfile()));
   bool url_migration_only =
       (update.GetCombinationChangeIndex() == WebAppIdentityUpdate::kUrlChange);
 

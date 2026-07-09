@@ -40,7 +40,7 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
 
   UserEducationService* GetUserEducationService() {
     return UserEducationServiceFactory::GetForBrowserContext(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   auto DoSetup() {

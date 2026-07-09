@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebAppBrowserTest, NavigationsToOtherWebUIs) {
 
   // Check that new web contents belong to the same profile.
   BrowserWindowInterface* browser_window_interface =
-      ProfileBrowserCollection::GetForProfile(app.browser->profile())
+      ProfileBrowserCollection::GetForProfile(app.browser->GetProfile())
           ->FindTabbedBrowser(/*match_original_profiles=*/true);
   EXPECT_EQ(
       new_web_contents,

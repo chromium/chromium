@@ -327,15 +327,15 @@ bool WebAppNavigationBrowserTest::ExpectLinkClickNotCapturedIntoAppBrowser(
       browser->tab_strip_model()->GetActiveWebContents();
   int num_tabs = browser->tab_strip_model()->count();
   size_t num_browsers =
-      ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize();
+      ProfileBrowserCollection::GetForProfile(browser->GetProfile())->GetSize();
 
   ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(),
                    target_url, LinkTarget::SELF, rel);
 
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
-  EXPECT_EQ(
-      num_browsers,
-      ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize());
+  EXPECT_EQ(num_browsers,
+            ProfileBrowserCollection::GetForProfile(browser->GetProfile())
+                ->GetSize());
   EXPECT_EQ(browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   EXPECT_EQ(initial_tab, browser->tab_strip_model()->GetActiveWebContents());

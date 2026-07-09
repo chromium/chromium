@@ -34,7 +34,7 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
 
   user_education::ProductMessagingController& GetProductMessagingController() {
     return UserEducationServiceFactory::GetForBrowserContext(
-               browser()->profile())
+               browser()->GetProfile())
         ->product_messaging_controller();
   }
 

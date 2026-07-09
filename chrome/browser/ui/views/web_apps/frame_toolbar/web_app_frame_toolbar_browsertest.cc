@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   const GURL app_url = embedded_https_test_server().GetURL(
       "/web_apps/migration/migrate_from/no_migration_info.html");
   webapps::AppId app_id = web_app::InstallWebAppFromPage(browser(), app_url);
-  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  helper()->LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
@@ -689,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   const GURL app_url = embedded_https_test_server().GetURL(
       "/web_apps/migration/migrate_from/suggest.html");
   webapps::AppId app_id =
-      web_app::ForceInstallWebApp(browser()->profile(), app_url).value();
-  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::ForceInstallWebApp(browser()->GetProfile(), app_url).value();
+  helper()->LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
   EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
 
   // Install test Extension.
-  LoadTestPopUpExtension(browser()->profile());
+  LoadTestPopUpExtension(browser()->GetProfile());
 
   // There should be no visible Extensions icon.
   WebAppToolbarButtonContainer* toolbar_button_container =
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
   base::RunLoop run_loop;
   ExtensionsToolbarDesktop::SetOnVisibleCallbackForTesting(
       run_loop.QuitClosure());
-  LoadTestPopUpExtension(browser()->profile());
+  LoadTestPopUpExtension(browser()->GetProfile());
   run_loop.Run();
   EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
 
@@ -1993,7 +1993,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       web_app::AppBrowserController::From(helper()->browser_view()->browser());
   app_controller->ToggleWindowControlsOverlayEnabled(future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   // If there's no crash, the test has passed.
 }
 
@@ -2082,7 +2082,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
   EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
 
-  LoadTestPopUpExtension(browser()->profile());
+  LoadTestPopUpExtension(browser()->GetProfile());
 
   EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
 
@@ -2091,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   CloseBrowserSynchronously(helper()->app_browser());
 
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
@@ -2276,7 +2276,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Launch new window of same app and verify that WCO is enabled at launch
   BrowserView* browser_view_window2 = BrowserView::GetBrowserViewForBrowser(
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id));
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id));
   web_app::AppBrowserController* app_controller_window2 =
       web_app::AppBrowserController::From(browser_view_window2->browser());
   EXPECT_TRUE(app_controller_window2->IsWindowControlsOverlayEnabled());
@@ -3492,11 +3492,11 @@ class WebAppFrameToolbarBrowserTest_OriginText
 
   void InstallAndLaunchWebApp() {
     webapps::AppId app_id =
-        helper()->InstallWebApp(browser()->profile(), app_url());
+        helper()->InstallWebApp(browser()->GetProfile(), app_url());
     content::TestNavigationObserver navigation_observer(app_url());
     navigation_observer.StartWatchingNewWebContents();
     Browser* app_browser =
-        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+        web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     helper()->SetViewFromAppBrowser(app_browser);
 
     OriginTextVisibilityWaiter origin_text_waiter(
@@ -3688,7 +3688,7 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
 
   void SetUpOnMainThread() override {
     web_app::WebAppProvider* provider =
-        web_app::WebAppProvider::GetForTest(browser()->profile());
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile());
     web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
 
     auto origin_association_fetcher =
@@ -3754,11 +3754,11 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
     web_app_info->scope_extensions = {std::move(scope_extension)};
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+        browser()->GetProfile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(app_url());
     navigation_observer.StartWatchingNewWebContents();
     Browser* app_browser =
-        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+        web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     helper()->SetViewFromAppBrowser(app_browser);
 
     OriginTextVisibilityWaiter origin_text_waiter(
@@ -3920,7 +3920,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
   app_browser->GetWindow()->Close();
   browser_destroyed_observer.Wait();
 
-  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  helper()->LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   toolbar_right_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
 
@@ -3963,7 +3963,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest, AppRemoved) {
 
   // Verify the app has been removed from the web app registry.
   EXPECT_FALSE(
-      web_app::WebAppProvider::GetForWebApps(browser()->profile())
+      web_app::WebAppProvider::GetForWebApps(browser()->GetProfile())
           ->registrar_unsafe()
           .AppMatches(app_id,
                       web_app::WebAppFilter::IsAppEligibleForManifestUpdate()));
@@ -3980,10 +3980,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
   web_app_info->scope = app_url;
   web_app_info->title = u"preinstalled app";
   webapps::AppId app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info),
+      browser()->GetProfile(), std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
-  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  helper()->LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   WebAppToolbarButtonContainer* toolbar_right_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
@@ -4002,7 +4002,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url;
   web_app_info->title = u"test app";
-  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
                                                        std::move(web_app_info));
 
   // Reparent the web contents into an app window, so that it gets treated as

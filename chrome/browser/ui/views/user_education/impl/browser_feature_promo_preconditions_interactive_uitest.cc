@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(ActorNotActuatingActiveTabPreconditionUiTest,
           user_education::FeaturePromoResult::Success()),
       // Start actuating on the active tab.
       Do([this]() {
-        auto* service = actor::ActorKeyedService::Get(browser()->profile());
+        auto* service = actor::ActorKeyedService::Get(browser()->GetProfile());
         actor::TaskId task_id = service->CreateTask(
             actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
         auto* task = service->GetTask(task_id);
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(ActorNotActuatingActiveTabPreconditionUiTest,
       WaitForShow(kSecondTab),
       // Second tab is active, start actuating on first tab.
       Do([this]() {
-        auto* service = actor::ActorKeyedService::Get(browser()->profile());
+        auto* service = actor::ActorKeyedService::Get(browser()->GetProfile());
         actor::TaskId task_id = service->CreateTask(
             actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
         auto* task = service->GetTask(task_id);

@@ -97,7 +97,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 #if BUILDFLAG(IS_CHROMEOS)
     // Required to launch the OS Settings System Web App (SWA) during the test.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
 #endif
   }
@@ -142,8 +142,8 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
-    apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
+        browser()->GetProfile(), std::move(web_app_info));
+    apps::AppReadinessWaiter(browser()->GetProfile(), app_id).Await();
     return app_id;
   }
 
@@ -154,7 +154,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
         Steps(InstrumentNextTab(kAppPageId, AnyBrowser()), Do([this, app_id]() {
                 web_app::WebAppProvider* provider =
                     web_app::WebAppProvider::GetForLocalAppsUnchecked(
-                        browser()->profile());
+                        browser()->GetProfile());
                 provider->scheduler().LaunchAppWithCustomParams(
                     apps::AppLaunchParams(
                         app_id, apps::LaunchContainer::kLaunchContainerWindow,
@@ -200,7 +200,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
     auto steps = Steps(
         InstrumentNextTab(kStartPageId, AnyBrowser()), Do([this, app_id]() {
           WebAppProvider* provider =
-              WebAppProvider::GetForWebApps(browser()->profile());
+              WebAppProvider::GetForWebApps(browser()->GetProfile());
           CHECK(provider);
           provider->scheduler().LaunchApp(app_id, /*url=*/std::nullopt,
                                           base::DoNothing());
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownForNavigateExistingAppInTab) {
   webapps::AppId app_id = test::InstallWebApp(
-      browser()->profile(),
+      browser()->GetProfile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
           mojom::UserDisplayMode::kBrowser,
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHForAppInTabDisappearsOnNewTabOpen) {
   webapps::AppId app_id = test::InstallWebApp(
-      browser()->profile(),
+      browser()->GetProfile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
           mojom::UserDisplayMode::kBrowser,
