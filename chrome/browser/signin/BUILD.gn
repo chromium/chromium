@@ -745,61 +745,6 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/startup" ]
       }
     }
-
-    if (!enable_dice_support) {
-      sources += [ "mirror_browsertest.cc" ]
-      deps += [
-        "//chrome/browser:browser_process",
-        "//chrome/browser:chrome_content_browser_client",
-        "//chrome/common",
-        "//components/google/core/common",
-        "//components/prefs",
-        "//components/signin/core/browser",
-        "//components/signin/public/base",
-        "//services/network/public/cpp",
-      ]
-    }
-
-    if (enable_bound_session_credentials) {
-      sources += [
-        "bound_session_credentials/bound_session_cookie_refresh_service_impl_browsertest.cc",
-        "bound_session_oauth_multilogin_browsertest.cc",
-      ]
-      deps += [
-        "//chrome/browser:chrome_browser_main",
-        "//chrome/common",
-        "//components/content_settings/core/browser",
-        "//components/content_settings/core/common",
-        "//components/signin/core/browser:test_support",
-        "//components/unexportable_keys",
-        "//components/unexportable_keys:test_support",
-        "//services/network/public/cpp",
-        "//services/network/public/mojom",
-      ]
-    }
-
-    if (is_chromeos) {
-      sources += [
-        "chromeos_mirror_account_consistency_browsertest.cc",
-        "signin_ui_util_chromeos_browsertest.cc",
-      ]
-      deps += [
-        "//chrome/browser/ash/login:test_support",
-        "//chrome/browser/prefs",
-        "//chromeos/ash/components/account_manager",
-        "//components/account_id",
-        "//components/account_manager_core",
-        "//components/account_manager_core:test_support",
-        "//components/policy/core/common:common_constants",
-        "//components/signin/core/browser",
-        "//components/supervised_user/core/browser",
-        "//components/user_manager",
-      ]
-    }
-
-    # bound_session_cookie_refresh_service_impl_browsertest.cc:198 has a
-    # file-scope static with a non-trivial destructor.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
