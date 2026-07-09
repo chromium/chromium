@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.content.pm.PackageManager;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,7 +18,10 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionCallback;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,6 +69,40 @@ public class OffscreenRenderingManager {
                 new WindowAndroid(
                         ContextUtils.getApplicationContext(),
                         /* occlusionTrackingAllowed= */ false);
+        // Offscreen windows do not have an associated Activity, so they cannot support or
+        // request permissions. We set a dummy delegate that denies all permissions to avoid
+        // crashing when permission checks are performed during navigation.
+        mOffscreenWindow.setAndroidPermissionDelegate(
+                new AndroidPermissionDelegate() {
+                    @Override
+                    public boolean hasPermission(String permission) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean canRequestPermission(String permission) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isPermissionRevokedByPolicy(String permission) {
+                        return false;
+                    }
+
+                    @Override
+                    public void requestPermissions(
+                            String[] permissions, PermissionCallback callback) {
+                        int[] grantResults = new int[permissions.length];
+                        Arrays.fill(grantResults, PackageManager.PERMISSION_DENIED);
+                        callback.onRequestPermissionsResult(permissions, grantResults);
+                    }
+
+                    @Override
+                    public boolean handlePermissionResult(
+                            int requestCode, String[] permissions, int[] grantResults) {
+                        return false;
+                    }
+                });
 
         // Initialize native with an arbitrary size. It doesn't need to match the tab size
         // as long as we don't do readback from the root layer.
