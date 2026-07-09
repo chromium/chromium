@@ -32,7 +32,8 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
+#include "crypto/hpke.h"
+#include "crypto/keypair.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
@@ -467,51 +468,28 @@ TEST_F(FeedbackServiceTest, TestSendFeedbackWithVariationsBinary) {
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
 
   // Initialize Hpke private key.
-  bssl::ScopedEVP_HPKE_KEY base_key;
-  std::string decoded_hpke_private_key;
-  base::Base64Decode(kTestBase64HpkePrivateKey, &decoded_hpke_private_key);
-  std::vector<uint8_t> hpke_private_key;
-  hpke_private_key.assign(decoded_hpke_private_key.begin(),
-                          decoded_hpke_private_key.end());
-  ASSERT_TRUE(EVP_HPKE_KEY_init(/*key=*/base_key.get(),
-                                /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
-                                /*priv_key=*/hpke_private_key.data(),
-                                /*priv_key_len=*/hpke_private_key.size()));
+  std::optional<std::vector<uint8_t>> hpke_private_key =
+      base::Base64Decode(kTestBase64HpkePrivateKey);
+  const auto key = crypto::keypair::PrivateKey::FromX25519PrivateKey(
+      base::span<const uint8_t, 32>(*hpke_private_key));
 
   // Get the encrypted file.
   constexpr char kVariationsBinary[] = "variations.binary";
-  const FeedbackCommon::AttachedFile* variatons_binary =
+  const FeedbackCommon::AttachedFile* variations_binary =
       FindAttachment(kVariationsBinary, feedback_data_);
-  ASSERT_TRUE(variatons_binary);
-  std::vector<uint8_t> encrypted_data(variatons_binary->data.begin(),
-                                      variatons_binary->data.end());
+  ASSERT_TRUE(variations_binary);
+  std::vector<uint8_t> ciphertext(variations_binary->data.begin(),
+                                  variations_binary->data.end());
 
-  // Setup recipient context.
-  bssl::ScopedEVP_HPKE_CTX recipient_ctx;
-  ASSERT_TRUE(EVP_HPKE_CTX_setup_recipient(/*ctx=*/recipient_ctx.get(),
-                                           /*key=*/base_key.get(),
-                                           /*kdf=*/EVP_hpke_hkdf_sha256(),
-                                           /*aead=*/EVP_hpke_aes_256_gcm(),
-                                           /*enc=*/encrypted_data.data(),
-                                           /*enc_len=*/X25519_PUBLIC_VALUE_LEN,
-                                           /*info=*/nullptr,
-                                           /*info_len=*/0));
+  const crypto::hpke::HpkeParams kParams = {
+      .kem = crypto::hpke::KemType::kX25519HkdfSha256,
+      .kdf = crypto::hpke::KdfType::kHkdfSha256,
+      .aead = crypto::hpke::AeadType::kAes256Gcm,
+  };
 
-  // Decryption.
-  auto ciphertext =
-      base::span(encrypted_data).subspan<X25519_PUBLIC_VALUE_LEN>();
-  std::vector<uint8_t> plaintext(ciphertext.size());
-  size_t plaintext_len;
-  ASSERT_TRUE(EVP_HPKE_CTX_open(/*ctx=*/recipient_ctx.get(),
-                                /*out=*/plaintext.data(),
-                                /*out_len=*/&plaintext_len,
-                                /*max_out_len=*/plaintext.size(),
-                                /*in=*/ciphertext.data(),
-                                /*in_len=*/ciphertext.size(),
-                                /*ad=*/nullptr,
-                                /*ad_len=*/0));
-  plaintext.resize(plaintext_len);
-  std::string decrypted_string(plaintext.begin(), plaintext.end());
+  std::optional<std::vector<uint8_t>> plaintext =
+      crypto::hpke::Open(kParams, key, ciphertext, /*info=*/{}, /*ad=*/{});
+  std::string decrypted_string(plaintext->begin(), plaintext->end());
 
   // Final check.
   EXPECT_EQ(kTestCommandLineVariations, decrypted_string);
