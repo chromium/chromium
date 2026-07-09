@@ -286,6 +286,10 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       prefs::kIOSBWGPageContentSetting,
       base::BindRepeating(&GeminiBrowserAgent::OnPageContentPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kIOSGeminiLiveMicrophoneSetting,
+      base::BindRepeating(&GeminiBrowserAgent::OnMicrophonePrefChanged,
+                          base::Unretained(this)));
 
   bwg_gateway_ = ios::provider::CreateGeminiGateway();
 
@@ -782,6 +786,12 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
                                completionHandler:^(BOOL granted) {
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                    if (granted) {
+                                     browser_->GetProfile()
+                                         ->GetPrefs()
+                                         ->SetBoolean(
+                                             prefs::
+                                                 kIOSGeminiLiveMicrophoneSetting,
+                                             true);
                                      if (completion) {
                                        completion(YES);
                                      }
@@ -794,6 +804,11 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
       break;
     }
     case AVAuthorizationStatusAuthorized:
+      if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
+              prefs::kIOSGeminiLiveMicrophoneSetting)) {
+        ShowMicrophoneSettingsAlert(base_view_controller, completion);
+        break;
+      }
       if (completion) {
         completion(YES);
       }
@@ -2007,6 +2022,14 @@ void GeminiBrowserAgent::OnPageContentPrefChanged() {
   // Trigger UI update for the attachment chip.
   ios::provider::RequestUIChange(
       ios::provider::GeminiUIElementType::kContextAttachment);
+}
+
+void GeminiBrowserAgent::OnMicrophonePrefChanged() {
+  if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kIOSGeminiLiveMicrophoneSetting) &&
+      IsInGeminiLiveMode()) {
+    SwitchToChatModeOrDismiss(/*animated=*/true);
+  }
 }
 
 void GeminiBrowserAgent::OnPageContextGenerated(

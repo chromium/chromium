@@ -351,6 +351,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when the page content sharing preference changes.
   void OnPageContentPrefChanged();
 
+  // Called when the microphone preference changes.
+  void OnMicrophonePrefChanged();
+
   // Clears the set of attached tabs if it doesn't include the active web
   // state.
   void UpdateAttachedTabsForActiveWebState(web::WebState* active_web_state);
