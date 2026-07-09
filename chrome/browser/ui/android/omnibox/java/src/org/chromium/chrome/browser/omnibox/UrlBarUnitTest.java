@@ -799,6 +799,33 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void scrollDisplayText_clearsSelectionIfNeeded() {
+        mUrlBar.setText(SHORT_DOMAIN);
+        measureAndLayoutUrlBar();
+
+        // Case 1: Cursor at 0, no selection.
+        mUrlBar.setSelection(0);
+        clearInvocations(mUrlBar);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        verify(mUrlBar, never()).setSelection(anyInt());
+
+        // Case 2: Cursor at non-zero, no selection.
+        mUrlBar.setSelection(5);
+        clearInvocations(mUrlBar);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        verify(mUrlBar).setSelection(0);
+        assertEquals(0, mUrlBar.getSelectionStart());
+
+        // Case 3: Selection exists.
+        mUrlBar.setSelection(1, 3);
+        clearInvocations(mUrlBar);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, false);
+        verify(mUrlBar).setSelection(0);
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(0, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
     public void scrollWhenOriginChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);

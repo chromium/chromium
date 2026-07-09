@@ -1159,7 +1159,9 @@ public class UrlBar extends AutocompleteEditText {
         if (TextUtils.isEmpty(text)) scrollType = ScrollType.SCROLL_TO_BEGINNING;
 
         // Ensure any selection from the focus state is cleared.
-        setSelection(0);
+        if (getSelectionStart() != 0 || getSelectionEnd() != 0) {
+            setSelection(0);
+        }
 
         float currentTextSize = getTextSize();
         boolean currentIsRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
