@@ -88,7 +88,6 @@ void AtMemoryMetricsRecorder::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         parent_suggestion_metadata) {
-  // TODO(crbug.com/526885251): Add metrics for flyout menu.
   if (parent_suggestion_metadata.has_value()) {
     if (pending_log_entry_ &&
         !parent_suggestion_metadata->multi_index.empty()) {
