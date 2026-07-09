@@ -7,16 +7,18 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -371,7 +373,10 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     data_.append(net::GetDirectoryListingEntry(
         name, std::string(),
         entry.type == filesystem::mojom::FsFileType::DIRECTORY,
-        base::ByteCount(file_info.size), file_info.last_modified));
+        file_info.size >= 0 ? std::make_optional<base::ByteSize>(
+                                  base::as_unsigned(file_info.size))
+                            : std::nullopt,
+        file_info.last_modified));
 
     if (index < entries_.size() - 1)
       GetMetadata(index + 1);

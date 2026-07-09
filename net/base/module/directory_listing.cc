@@ -4,7 +4,9 @@
 
 #include "net/base/module/directory_listing.h"
 
-#include "base/byte_count.h"
+#include <optional>
+
+#include "base/byte_size.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -32,7 +34,7 @@ constexpr auto kByteStringsUnlocalized = std::to_array<const char*>({
     " PB",
 });
 
-std::string GetSizeString(base::ByteCount bytes) {
+std::string GetSizeString(base::ByteSize bytes) {
   double unit_amount = bytes.InBytesF();
   size_t dimension = 0;
   constexpr int kKilo = 1024;
@@ -74,7 +76,7 @@ std::string GetDirectoryListingHeader(const std::u16string& title) {
 std::string GetDirectoryListingEntry(const std::u16string& name,
                                      const std::string& raw_bytes,
                                      bool is_dir,
-                                     base::ByteCount size,
+                                     std::optional<base::ByteSize> size,
                                      base::Time modified) {
   std::string result;
   result.append("<script>addRow(");
@@ -93,13 +95,17 @@ std::string GetDirectoryListingEntry(const std::u16string& name,
     result.append(",0,");
   }
 
-  // Negative size means unknown or not applicable (e.g. directory).
-  result.append(base::NumberToString(size.InBytes()));
+  if (size) {
+    result.append(base::NumberToString(size->InBytes()));
+  } else {
+    // Negative size means unknown or not applicable (e.g. directory).
+    result.append("-1");
+  }
   result.append(",");
 
   std::string size_string;
-  if (size >= base::ByteCount(0)) {
-    size_string = GetSizeString(size);
+  if (size) {
+    size_string = GetSizeString(*size);
   }
   base::EscapeJSONString(size_string, /*put_in_quotes=*/true, &result);
   result.append(",");
@@ -129,7 +135,7 @@ std::string GetParentDirectoryLink() {
   return std::string("<script>onHasParentDirectory();</script>\n");
 }
 
-std::string GetSizeStringForTesting(base::ByteCount size) {
+std::string GetSizeStringForTesting(base::ByteSize size) {
   return GetSizeString(size);
 }
 

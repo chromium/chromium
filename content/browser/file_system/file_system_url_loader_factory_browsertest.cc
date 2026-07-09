@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -385,9 +386,10 @@ class FileSystemURLLoaderFactoryTest
     EXPECT_EQ(icu::UnicodeString(is_directory ? "1" : "0"),
               match.group(3, status));
     if (size >= 0) {
-      icu::UnicodeString size_string(
-          net::GetSizeStringForTesting(base::ByteCount(size)).c_str());
-      EXPECT_EQ(size_string, match.group(5, status));
+      const std::string size_string =
+          net::GetSizeStringForTesting(base::ByteSize(base::as_unsigned(size)));
+      EXPECT_EQ(icu::UnicodeString(size_string.c_str()),
+                match.group(5, status));
     }
 
     icu::UnicodeString date_ustr(match.group(7, status));

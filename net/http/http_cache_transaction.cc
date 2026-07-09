@@ -4,7 +4,6 @@
 
 #include "net/http/http_cache_transaction.h"
 
-#include "base/byte_count.h"
 #include "build/build_config.h"  // For IS_POSIX
 
 #if BUILDFLAG(IS_POSIX)

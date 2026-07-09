@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/byte_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"

@@ -5,12 +5,12 @@
 #include "content/browser/loader/file_url_loader_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -282,7 +282,9 @@ class FileURLDirectoryLoader
 #endif
       pending_data_.append(net::GetDirectoryListingEntry(
           filename.LossyDisplayName(), raw_bytes, data.info.IsDirectory(),
-          base::ByteCount(data.info.GetSize()),
+          data.info.GetSize() >= 0 ? std::make_optional<base::ByteSize>(
+                                         base::as_unsigned(data.info.GetSize()))
+                                   : std::nullopt,
           data.info.GetLastModifiedTime()));
     }
 
