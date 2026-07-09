@@ -92,7 +92,8 @@ class Host : public GlicSharingManagerProvider {
         const ::GURL& url,
         bool open_in_background,
         const std::optional<int32_t>& window_id,
-        glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
+        glic::mojom::WebClientHandler::CreateTabCallback callback,
+        bool show_side_panel = true) = 0;
 
     virtual void FetchZeroStateSuggestions(
         bool is_first_run,

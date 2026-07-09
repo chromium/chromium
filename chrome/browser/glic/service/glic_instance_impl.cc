@@ -652,7 +652,8 @@ void GlicInstanceImpl::CreateTab(
     const ::GURL& url,
     bool open_in_background,
     const std::optional<int32_t>& window_id,
-    glic::mojom::WebClientHandler::CreateTabCallback callback) {
+    glic::mojom::WebClientHandler::CreateTabCallback callback,
+    bool show_side_panel) {
   instance_metrics_.OnCreateTab();
   auto* active_embedder = GetActiveEmbedder();
   bool embedder_has_focus = active_embedder && active_embedder->HasFocus();
@@ -686,11 +687,14 @@ void GlicInstanceImpl::CreateTab(
     return;
   }
 
-  // If the floating UI is active and the feature flag is enabled, we only bind
-  // the tab instead of showing it to avoid closing the floating UI.
-  if (base::FeatureList::IsEnabled(
-          kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
-      IsDetached()) {
+  // If showing the side panel is not requested, we only bind the tab.
+  if (!show_side_panel) {
+    BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
+  } else if (base::FeatureList::IsEnabled(
+                 kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
+             IsDetached()) {
+    // If the floating UI is active and the feature flag is enabled, bind the
+    // tab and keep focus on the floating UI.
     BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
     if (embedder_has_focus) {
       GetActiveEmbedder()->Focus();

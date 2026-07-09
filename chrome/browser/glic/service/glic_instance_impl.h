@@ -220,11 +220,11 @@ class GlicInstanceImpl : public GlicInstance,
       DestructionCallback callback) override;
 
   // Host::InstanceDelegate:
-  void CreateTab(
-      const ::GURL& url,
-      bool open_in_background,
-      const std::optional<int32_t>& window_id,
-      glic::mojom::WebClientHandler::CreateTabCallback callback) override;
+  void CreateTab(const ::GURL& url,
+                 bool open_in_background,
+                 const std::optional<int32_t>& window_id,
+                 glic::mojom::WebClientHandler::CreateTabCallback callback,
+                 bool show_side_panel = true) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,
