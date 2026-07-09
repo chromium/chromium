@@ -703,9 +703,14 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   }
 }
 
-void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
-                                   const ShowOptions& options,
-                                   bool is_showing) {
+void GlicInstanceMetrics::OnToggle(
+    glic::mojom::InvocationSource source,
+    const ShowOptions& options,
+    bool is_showing,
+    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
+  if (invocation_tracker) {
+    invocation_tracker_ = std::move(invocation_tracker);
+  }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.ToggleSource", source);
@@ -886,6 +891,7 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
 void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
   is_client_ready_ = true;
   MaybeRecordOptInImpression();
+  LogEvent(GlicInstanceEvent::kClientReady);
 
   if (invocation_start_time_.is_null()) {
     return;
@@ -901,6 +907,11 @@ void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
 }
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event) {
+  if (invocation_tracker_) {
+    if (invocation_tracker_->OnEvent(event)) {
+      invocation_tracker_.reset();
+    }
+  }
   base::UmaHistogramEnumeration("Glic.Instance.EventCounts", event);
   if (initial_invocation_source_.has_value()) {
     base::UmaHistogramEnumeration(

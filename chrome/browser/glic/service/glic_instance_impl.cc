@@ -580,11 +580,14 @@ bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
           !entry.user_input_submitted_while_bound);
 }
 
-bool GlicInstanceImpl::Toggle(ShowOptions&& options,
-                              bool prevent_close,
-                              glic::mojom::InvocationSource source) {
+bool GlicInstanceImpl::Toggle(
+    ShowOptions&& options,
+    bool prevent_close,
+    glic::mojom::InvocationSource source,
+    std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker) {
   VLOG(1) << "Glic [InstanceImpl] Toggle, id=" << id_.value();
-  instance_metrics_.OnToggle(source, options, IsShowing());
+  instance_metrics_.OnToggle(source, options, IsShowing(),
+                             std::move(invocation_tracker));
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
   if (IsActiveEmbedder(key)) {

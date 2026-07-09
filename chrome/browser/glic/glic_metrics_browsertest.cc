@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +46,7 @@
 namespace glic {
 namespace {
 
-class GlicMetricsBrowserTest : public InProcessBrowserTest {
+class GlicMetricsBrowserTest : public GlicBrowserTest {
  public:
   GlicMetricsBrowserTest() : GlicMetricsBrowserTest({}, {}) {}
 
@@ -60,22 +61,17 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
                             extra_enabled_features.begin(),
                             extra_enabled_features.end());
 
-    glic_test_environment_ = std::make_unique<GlicTestEnvironment>(
-        GlicTestEnvironmentConfig{.fre_status = std::nullopt}, enabled_features,
-        extra_disabled_features);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(::switches::kGlicGuestURL, "about:blank");
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          extra_disabled_features);
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kNotStarted);
+    GlicBrowserTest::SetUpOnMainThread();
+    SetFRECompletion(PlatformBrowserTest::browser()->GetProfile(),
+                     prefs::FreStatus::kNotStarted);
   }
 
-  std::unique_ptr<GlicTestEnvironment> glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class GlicMetricsBrowserTestWithMessageFirstFre
@@ -97,10 +93,12 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
-  SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kNotStarted);
+  SetFRECompletion(PlatformBrowserTest::browser()->GetProfile(),
+                   prefs::FreStatus::kNotStarted);
 
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
@@ -113,16 +111,20 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
                        BackgroundCreation_FreShown_MessageFirstFreEnabled) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Create a background tab.
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  int initial_tab_count =
+      PlatformBrowserTest::browser()->tab_strip_model()->count();
+  chrome::AddTabAt(PlatformBrowserTest::browser(), GURL("about:blank"), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(PlatformBrowserTest::browser()->tab_strip_model()->count(),
+            initial_tab_count + 1);
 
   tabs::TabInterface* background_tab =
-      browser()->tab_strip_model()->GetTabAtIndex(initial_tab_count);
+      PlatformBrowserTest::browser()->tab_strip_model()->GetTabAtIndex(
+          initial_tab_count);
   ASSERT_TRUE(background_tab);
   ASSERT_FALSE(background_tab->IsActivated());
 
@@ -136,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 0);
 
   // 4. Activate the tab to reveal the side panel (and trigger FRE).
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count);
   ASSERT_TRUE(background_tab->IsActivated());
 
   // 5. Verify Glic.Fre.Shown IS logged then.
@@ -152,14 +155,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
   base::UserActionTester user_action_tester;
 
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
 
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed"), 1);
@@ -175,8 +180,9 @@ IN_PROC_BROWSER_TEST_F(
   base::UserActionTester user_action_tester;
 
   // Open the side panel
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.ToggleSource",
@@ -186,9 +192,22 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 1);
 
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.CUI.WindowEntryPointInvocation.Outcome",
+               GlicCuiOutcome::kSuccess) == 1;
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CUI.WindowEntryPointInvocation.Outcome", GlicCuiOutcome::kSuccess,
+      1);
+
   // Close the side panel
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.ToggleSource",
@@ -214,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the side panel. Since FRE is not completed and GlicMessageFirstFre is
   // enabled, this calls Invoke instead of normal Toggle.
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   // ToggleSource is NOT logged for the first call because it went through
@@ -231,8 +251,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close the side panel. Now that the panel is open, MaybeInvoke returns
   // false, and it proceeds to normal Toggle flow to close it.
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   // Now ToggleSource SHOULD be logged (1 sample).
@@ -246,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   const mojom::InvocationSource kSources[] = {
       mojom::InvocationSource::kTopChromeButton,
@@ -266,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
     base::UserActionTester user_action_tester;
     base::HistogramTester histogram_tester;
     GlicInvokeOptions options(
-        Target(*TabListInterface::From(browser())->GetActiveTab(),
+        Target(*TabListInterface::From(PlatformBrowserTest::browser())
+                    ->GetActiveTab(),
                NewConversation{}),
         source);
 
@@ -284,11 +306,12 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open the side panel first via ToggleUI.
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
@@ -297,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 2. Call Invoke with a NEW conversation.
   GlicInvokeOptions options(
-      Target(*TabListInterface::From(browser())->GetActiveTab(),
+      Target(*TabListInterface::From(PlatformBrowserTest::browser())
+                  ->GetActiveTab(),
              NewConversation{}),
       mojom::InvocationSource::kNavigationCapture);
 
@@ -319,14 +343,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open the side panel first via ToggleUI.
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
-  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+  auto* tab =
+      TabListInterface::From(PlatformBrowserTest::browser())->GetActiveTab();
   auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab);
   ASSERT_TRUE(coordinator);
   ASSERT_TRUE(base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
@@ -338,7 +364,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   // 2. Call Invoke with DefaultConversation (representing current
   // conversation).
   GlicInvokeOptions options(
-      Target(*TabListInterface::From(browser())->GetActiveTab(),
+      Target(*TabListInterface::From(PlatformBrowserTest::browser())
+                  ->GetActiveTab(),
              DefaultConversation{}),
       mojom::InvocationSource::kNavigationCapture);
 
@@ -352,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        ToggleAndOpenSourceMetrics_Floaty) {
   base::HistogramTester histogram_tester;
 
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // First toggle the UI to create the floaty instance.
   glic_service->instance_coordinator().Toggle(
@@ -380,11 +407,13 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, ZoomLevel_OnOpen) {
   base::HistogramTester histogram_tester;
 
   // Set zoom level for profile.
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicZoomLevel, 150);
+  PlatformBrowserTest::browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kGlicZoomLevel, 150);
 
   // Open the side panel.
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
+  GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile())
+      ->ToggleUI(PlatformBrowserTest::browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
   // Verify that Glic.ZoomLevel.OnOpen was logged with the correct value.
@@ -393,23 +422,29 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, ZoomLevel_OnOpen) {
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, BackgroundCreationThenReveal) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open Glic in active tab (Tab 1) to create an instance.
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
 
   // 2. Create a background tab (Tab 2).
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  int initial_tab_count =
+      PlatformBrowserTest::browser()->tab_strip_model()->count();
+  chrome::AddTabAt(PlatformBrowserTest::browser(), GURL("about:blank"), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(PlatformBrowserTest::browser()->tab_strip_model()->count(),
+            initial_tab_count + 1);
 
   tabs::TabInterface* background_tab =
-      browser()->tab_strip_model()->GetTabAtIndex(initial_tab_count);
+      PlatformBrowserTest::browser()->tab_strip_model()->GetTabAtIndex(
+          initial_tab_count);
   ASSERT_TRUE(background_tab);
   ASSERT_FALSE(background_tab->IsActivated());
 
@@ -428,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, BackgroundCreationThenReveal) {
                                      mojom::InvocationSource::kOsButton, 1);
 
   // 5. Activate the tab to reveal the side panel.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count);
   ASSERT_TRUE(background_tab->IsActivated());
 
   // 6. Verify OnOpen sample is recorded for Tab 2.
@@ -444,14 +480,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, BackgroundCreationThenReveal) {
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, TabSwitchingSuppressesOnOpen) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open Glic in active tab (Tab 1).
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
 
   auto* coordinator1 = GlicSidePanelCoordinator::GetForTab(tab1);
@@ -469,15 +507,20 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, TabSwitchingSuppressesOnOpen) {
                                       mojom::InvocationSource::kOsButton, 1);
 
   // 2. Create a background tab (Tab 2).
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  int initial_tab_count =
+      PlatformBrowserTest::browser()->tab_strip_model()->count();
+  chrome::AddTabAt(PlatformBrowserTest::browser(), GURL("about:blank"), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(PlatformBrowserTest::browser()->tab_strip_model()->count(),
+            initial_tab_count + 1);
 
   // 3. Switch to Tab 2. Tab 1's Glic should become inactive/hidden.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count);
 
   // 4. Switch back to Tab 1.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count - 1);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count - 1);
 
   // Wait for it to become visible again.
   ASSERT_TRUE(
@@ -493,11 +536,12 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, TabSwitchingSuppressesOnOpen) {
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        BackgroundCreationThenReveal_InvokeVariant) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open Glic in active tab (Tab 1) via Invoke.
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
   GlicInvokeOptions options1(Target(*tab1, NewConversation{}),
                              mojom::InvocationSource::kNavigationCapture);
@@ -512,12 +556,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
       mojom::InvocationSource::kNavigationCapture, 1);
 
   // 2. Create a background tab (Tab 2).
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  int initial_tab_count =
+      PlatformBrowserTest::browser()->tab_strip_model()->count();
+  chrome::AddTabAt(PlatformBrowserTest::browser(), GURL("about:blank"), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(PlatformBrowserTest::browser()->tab_strip_model()->count(),
+            initial_tab_count + 1);
 
   tabs::TabInterface* background_tab =
-      browser()->tab_strip_model()->GetTabAtIndex(initial_tab_count);
+      PlatformBrowserTest::browser()->tab_strip_model()->GetTabAtIndex(
+          initial_tab_count);
   ASSERT_TRUE(background_tab);
   ASSERT_FALSE(background_tab->IsActivated());
 
@@ -534,7 +582,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("Glic.Instance.SidePanel.OpenSource", 1);
 
   // 5. Activate the tab to reveal the side panel.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count);
   ASSERT_TRUE(background_tab->IsActivated());
 
   // 6. Verify OnOpen sample is recorded for Tab 2.
@@ -552,11 +601,12 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        TabSwitchingSuppressesOnOpen_InvokeVariant) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open Glic in active tab (Tab 1) via Invoke.
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
   GlicInvokeOptions options1(Target(*tab1, NewConversation{}),
                              mojom::InvocationSource::kNavigationCapture);
@@ -578,15 +628,20 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
 
   // 2. Create a background tab (Tab 2).
-  int initial_tab_count = browser()->tab_strip_model()->count();
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+  int initial_tab_count =
+      PlatformBrowserTest::browser()->tab_strip_model()->count();
+  chrome::AddTabAt(PlatformBrowserTest::browser(), GURL("about:blank"), -1,
+                   /*foreground=*/false);
+  ASSERT_EQ(PlatformBrowserTest::browser()->tab_strip_model()->count(),
+            initial_tab_count + 1);
 
   // 3. Switch to Tab 2. Tab 1's Glic should become inactive/hidden.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count);
 
   // 4. Switch back to Tab 1.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_count - 1);
+  PlatformBrowserTest::browser()->tab_strip_model()->ActivateTabAt(
+      initial_tab_count - 1);
 
   // Wait for it to become visible again.
   ASSERT_TRUE(
@@ -600,14 +655,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open side panel in active tab (Tab 1).
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
 
   auto* instance =
@@ -638,14 +695,16 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        FloatySwitchConversationLogsOnOpen) {
   base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
 
   // 1. Open side panel.
-  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
                          mojom::InvocationSource::kOsButton);
 
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  tabs::TabInterface* tab1 =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
 
   auto* instance =

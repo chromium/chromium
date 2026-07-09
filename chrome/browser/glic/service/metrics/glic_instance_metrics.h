@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
+#include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -51,109 +52,6 @@ class GlicSharingManagerInternal;
 struct ShowOptions;
 
 using SafeEmbedderKey = std::variant<tabs::TabHandle, FloatingEmbedderKey>;
-
-// This enumerates a set of possible lifecycle errors which are logged when the
-// sequence of received events was not expected.
-// LINT.IfChange(GlicInstanceMetricsError)
-enum class GlicInstanceMetricsError {
-  kResponseStartWithoutInput = 0,
-  kResponseStopWithoutInput = 1,
-  kResponseStartWhileHidingOrHidden = 2,
-  kInputSubmittedWhileResponseInProgress = 3,
-  kSidePanelOpenedWhileAlreadyOpen = 4,
-  kFloatyOpenedWhileAlreadyOpen = 5,
-  kInputSubmittedWhileHidden = 6,
-  kTabUnbindWithoutOpen = 7,
-  kSidePanelClosedWithoutOpen = 8,
-  kFloatyClosedWithoutOpen = 9,
-  kMaxValue = kFloatyClosedWithoutOpen,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceMetricsError)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// This enum should be kept in sync with GlicInstanceEvent in enums.xml. Each
-// value is recorded at most once per instance.
-
-// LINT.IfChange(GlicInstanceEvent)
-enum class GlicInstanceEvent {
-  kInstanceCreated = 0,
-  kWarmedInstanceCreated = 1,
-  kInstanceCreatedWithoutWarming = 2,
-  kInstancePromoted = 3,
-  kSidePanelShown = 4,
-  kFloatyShown = 5,
-  kDetachedToFloaty = 6,
-  kTabBound = 7,
-  kTabBoundViaDaisyChain = 8,
-  kDaisyChainFailed = 9,
-  kConversationSwitchedFromFloaty = 10,
-  kConversationSwitchedFromSidePanel = 11,
-  kConversationSwitchedToFloaty = 12,
-  kConversationSwitchedToSidePanel = 13,
-  kRegisterConversation = 14,
-  kInstanceHidden = 15,
-  kClose = 16,
-  kToggle = 17,
-  kBoundTabDestroyed = 18,
-  kCreateTab = 19,
-  kCreateTask = 20,
-  kPerformActions = 21,
-  kStopActorTask = 22,
-  kPauseActorTask = 23,
-  kResumeActorTask = 24,
-  kInterruptActorTask = 25,
-  kUninterruptActorTask = 26,
-  kWebUiStateUninitialized = 27,
-  kWebUiStateBeginLoad = 28,
-  kWebUiStateShowLoading = 29,
-  kWebUiStateHoldLoading = 30,
-  kWebUiStateFinishLoading = 31,
-  kWebUiStateError = 32,
-  kWebUiStateOffline = 33,
-  kWebUiStateUnavailable = 34,
-  kWebUiStateReady = 35,
-  kWebUiStateUnresponsive = 36,
-  kWebUiStateSignIn = 37,
-  kWebUiStateGuestError = 38,
-  kWebUiStateDisabledByAdmin = 39,
-  kUnbindEmbedder = 40,
-  kUserInputSubmitted = 41,
-  kContextRequested = 42,
-  kResponseStarted = 43,
-  kResponseStopped = 44,
-  kTurnCompleted = 45,
-  kReaction = 46,
-  kShown = 47,
-  kOpen = 48,
-  kWebUiStateWarmed = 49,
-  // kOpen2 = 50 - Only used in Canary M150
-  kWebUiStateLocationMismatch = 51,
-  kWebUiStateIneligibleAccount = 52,
-  kMaxValue = kWebUiStateIneligibleAccount,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SkillsInvokeFunnel)
-enum class SkillsInvokeFunnel {
-  kOpenedMenu = 0,
-  kInvokedSkill = 1,
-  kMaxValue = kInvokedSkill,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:SkillsInvokeFunnel)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SkillBuilderEvent)
-enum class SkillBuilderEvent {
-  kClickedPromoChip = 0,
-  kPromptGenerated = 1,
-  kClickedSaveAsSkill = 2,
-  kMaxValue = kClickedSaveAsSkill,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:SkillBuilderEvent)
 
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
@@ -259,7 +157,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when Toggle is called on the instance.
   void OnToggle(glic::mojom::InvocationSource source,
                 const ShowOptions& options,
-                bool is_showing);
+                bool is_showing,
+                std::unique_ptr<GlicWindowInvocationTracker>
+                    invocation_tracker = nullptr);
 
   // Called when the UI is shown and it was not already showing for this
   // instance.
@@ -451,6 +351,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   int zoom_change_count_ = 0;
 
   base::flat_set<SafeEmbedderKey> seen_embedders_;
+
+  std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker_;
 };
 
 }  // namespace glic

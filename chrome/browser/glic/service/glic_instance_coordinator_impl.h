@@ -245,10 +245,15 @@ class GlicInstanceCoordinatorImpl
                            const std::vector<tabs::TabInterface*>& tabs,
                            GlicPinTrigger pin_trigger);
 
-  void ToggleFloaty(bool prevent_close, glic::mojom::InvocationSource source);
-  void ToggleSidePanel(BrowserWindowInterface* browser,
-                       bool prevent_close,
-                       glic::mojom::InvocationSource source);
+  void ToggleFloaty(
+      bool prevent_close,
+      glic::mojom::InvocationSource source,
+      std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker);
+  void ToggleSidePanel(
+      BrowserWindowInterface* browser,
+      bool prevent_close,
+      glic::mojom::InvocationSource source,
+      std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker);
 
   void CloseFloaty(const CloseOptions& options = {});
 

@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -94,7 +95,7 @@ class GlicInstanceCoordinator {
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  virtual void Toggle(BrowserWindowInterface* bwi,
+  virtual void Toggle(BrowserWindowInterface* browser,
                       bool prevent_close,
                       mojom::InvocationSource source) = 0;
 

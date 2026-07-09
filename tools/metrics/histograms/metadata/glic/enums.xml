@@ -186,6 +186,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/auth_controller.h:GlicCookieSyncTrigger) -->
 
+<!-- LINT.IfChange(GlicCuiOutcome) -->
+
+<enum name="GlicCuiOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Cancel"/>
+  <int value="2" label="Abandoned (User closed UI before load)"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Failed Latency"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/public/glic_cui_tracker.h:GlicCuiOutcome) -->
+
 <!-- LINT.IfChange(GlicDaisyChainFirstAction) -->
 
 <enum name="GlicDaisyChainFirstAction">
@@ -525,9 +537,10 @@ chromium-metrics-reviews@google.com.
   <int value="50" label="(Obsolete) Open2"/>
   <int value="51" label="WebUI State Location Mismatch"/>
   <int value="52" label="WebUI State Ineligible Account"/>
+  <int value="53" label="Client Ready"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->
 
 <!-- LINT.IfChange(GlicInstanceMetricsError) -->
 
@@ -544,7 +557,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Floaty closed without open."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceMetricsError) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceMetricsError) -->
 
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
@@ -1293,7 +1306,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Clicked 'Save as a skill' chip"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:SkillBuilderEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:SkillBuilderEvent) -->
 
 <!-- LINT.IfChange(SkillsInvokeFunnel) -->
 
@@ -1302,7 +1315,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Invoked Skill"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:SkillsInvokeFunnel) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:SkillsInvokeFunnel) -->
 
 <!-- LINT.IfChange(SkillsWebClientEvent) -->
 

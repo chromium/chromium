@@ -579,6 +579,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CUI.WindowEntryPointInvocation.Latency{Outcome}"
+    units="ms" expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Records the latency of invoking the Glic window entry point {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="" summary="regardless of the outcome"/>
+    <variant name=".Abandoned"
+        summary="when the invocation was abandoned by the user explicitly
+                 closing the UI before it loaded"/>
+    <variant name=".Failed" summary="when the invocation failed"/>
+    <variant name=".FailedLatency"
+        summary="when the invocation succeeded but exceeded the latency
+                 threshold"/>
+    <variant name=".Success" summary="when the invocation succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.CUI.WindowEntryPointInvocation.Outcome"
+    enum="GlicCuiOutcome" expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Records the outcome of invoking the Glic window entry point.
+  </summary>
+</histogram>
+
 <histogram name="Glic.DragAndDrop.ContentType"
     enum="GlicDragAndDropContentType" expires_after="2027-05-01">
   <owner>birnie@google.com</owner>
@@ -2319,7 +2348,7 @@ chromium-metrics-reviews@google.com.
     enum="GlicPrivateApiStatusCodeHistogramValue" expires_after="2026-12-31">
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
-  <owner>chrome-glic@google.com</owner>
+  <owner>glic@google.com</owner>
   <summary>
     Records the detailed outcome of invoking the glic private prompt retrieval
     API. This tracks both successful and unsuccessful retrieval attempts,
@@ -2332,7 +2361,7 @@ chromium-metrics-reviews@google.com.
     name="Glic.ProfileEnablement.AnchoredDespiteEligibilityReason.{Suffix}"
     enum="GlicAnchoredDespiteEligibilityReason" expires_after="2027-06-30">
   <owner>birnie@google.com</owner>
-  <owner>chrome-glic@google.com</owner>
+  <owner>glic@google.com</owner>
   <summary>
     Logged when the Glic entry point remains anchored for an onboarded user
     despite the profile currently failing eligibility criteria. Records the
