@@ -262,6 +262,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     public void onActivityLaunched(DownloadMessageUiController.Delegate delegate) {
         if (mMessageUiController == null) {
             mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
+            // Initialize native download manager service so that resumption handler will be
+            // created.
+            getNativeDownloadManagerService();
         }
     }
 
