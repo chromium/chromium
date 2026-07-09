@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PermissionChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './permission_chip.css.js';
@@ -20,7 +20,9 @@ export interface PermissionChipElement {
   };
 }
 
-export class PermissionChipElement extends CrLitElement {
+const PermissionChipElementBase = HelpBubbleMixinLit(CrLitElement);
+
+export class PermissionChipElement extends PermissionChipElementBase {
   static get is() {
     return 'permission-chip';
   }
@@ -46,22 +48,13 @@ export class PermissionChipElement extends CrLitElement {
   protected accessor isFullyCollapsed_: boolean = true;
 
   private isTracking_: boolean = false;
-  private trackedElementManager_: TrackedElementManager;
-
-  constructor() {
-    super();
-    this.trackedElementManager_ = TrackedElementManager.getInstance();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.isTracking_) {
-      this.trackedElementManager_.stopTracking(this);
       this.isTracking_ = false;
+      // The HelpBubbleMixin's disconnected callback will unregister the
+      // bubbles.
     }
   }
 
@@ -121,24 +114,24 @@ export class PermissionChipElement extends CrLitElement {
   // Mojo messages prematurely and breaking unit tests (like Sync Enabled)
   // that assert 0 tracked elements before sync.
   private updateTracking_() {
+    const id = this.id === 'request-chip' ?
+        'PermissionChipView::kPermissionRequestChipElementId' :
+        'PermissionChipView::kIndicatorChipElementId';
     const shouldTrack = !!(this.chipState && this.chipState.isVisible);
     if (shouldTrack && !this.isTracking_) {
-      const id = this.id === 'request-chip' ?
-          'PermissionChipView::kPermissionRequestChipElementId' :
-          'PermissionChipView::kIndicatorChipElementId';
-      this.trackedElementManager_.startTracking(this, id, {
+      this.registerHelpBubble(id, this, {
         onHighlightChanged: (highlighted: boolean) => {
           // Manually toggle the DOM attribute to bypass Lit's asynchronous
           // update batching, ensuring the style updates synchronously.
           // TODO(crbug.com/502598627): Re-evaluate how big the visual flash
-          // problem is, and whether we really need to manually toggle it or if
-          // we can use a reflected Lit property.
+          // problem is, and whether we really need to manually toggle it or
+          // if we can use a reflected Lit property.
           this.toggleAttribute('anchor-highlighted', highlighted);
         },
       });
       this.isTracking_ = true;
     } else if (!shouldTrack && this.isTracking_) {
-      this.trackedElementManager_.stopTracking(this);
+      this.unregisterHelpBubble(id);
       this.isTracking_ = false;
     }
   }

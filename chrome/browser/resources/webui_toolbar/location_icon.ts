@@ -5,12 +5,12 @@
 import '/shared/icon_from_table.js';
 
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {LhsChipIdentifier, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
@@ -23,7 +23,9 @@ export interface LocationIconElement {
   };
 }
 
-export class LocationIconElement extends CrLitElement {
+const LocationIconElementBase = HelpBubbleMixinLit(CrLitElement);
+
+export class LocationIconElement extends LocationIconElementBase {
   static get is() {
     return 'location-icon';
   }
@@ -94,16 +96,9 @@ export class LocationIconElement extends CrLitElement {
   private activePointerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
 
-  private trackedElementManager_: TrackedElementManager;
-
-  constructor() {
-    super();
-    this.trackedElementManager_ = TrackedElementManager.getInstance();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
-    this.trackedElementManager_.startTracking(this, 'kLocationIconElementId', {
+    this.registerHelpBubble('kLocationIconElementId', this.$.container, {
       onHighlightChanged: (highlighted: boolean) => {
         // Manually toggle the DOM attribute to bypass Lit's asynchronous
         // update batching, ensuring the style updates synchronously without
@@ -115,7 +110,7 @@ export class LocationIconElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.trackedElementManager_.stopTracking(this);
+    this.unregisterHelpBubble('kLocationIconElementId');
     this.eventTracker_.removeAll();
   }
 
