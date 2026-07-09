@@ -116,4 +116,24 @@ found in the LICENSE file.
         <item name="android:windowEnterAnimation">@anim/fusebox_slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/fusebox_slide_out_down</item>
     </style>
+
+    <!-- AI Mode styles -->
+    <style name="AiModeChip" parent="TextButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/min_touch_target_size</item>
+        <item name="android:tooltipText">@string/starter_pack_ai_mode_action_hint</item>
+        <item name="android:contentDescription">@string/starter_pack_ai_mode_action_hint</item>
+        <item name="android:drawableStart">@drawable/search_spark_black_24dp</item>
+        <item name="android:drawableTint">@color/default_text_color_dark</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:text">@string/ai_mode_entrypoint_label</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="rippleCornerRadius">36dp</item>
+        <item name="android:foreground">@drawable/activation_chip_focus_ring</item>
+        <item name="buttonColor">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="buttonTextColor">@color/default_text_color_dark</item>
+    </style>
 </resources>

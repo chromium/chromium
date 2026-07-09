@@ -199,6 +199,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="locationBarActionButtonConstraintTopToTopOf">@null</item>
         <item name="locationBarActionButtonConstraintBottomToBottomOf">@null</item>
 
+        <!-- Search box action button dimensions. -->
+        <item name="searchBoxActionButtonMargin">0dp</item>
+
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width</item>
         <item name="closeButtonHeight">@dimen/close_button_height</item>
@@ -386,6 +389,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton.DesktopDensity</item>
         <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton.DesktopDensity</item>
+
+        <!-- Search box attributes -->
+        <item name="searchBoxActionButtonMargin">@dimen/ntp_search_box_action_button_margin</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DesktopDensity.TabStrip" parent="">

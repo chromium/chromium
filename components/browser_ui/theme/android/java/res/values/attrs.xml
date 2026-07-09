@@ -25,4 +25,6 @@ found in the LICENSE file.
 
   <attr name="glicTaskMenuEndIconWidth" format="dimension" />
   <attr name="glicTaskMenuMaxWidth" format="dimension" />
+
+  <attr name="searchBoxActionButtonMargin" format="dimension" />
 </resources>

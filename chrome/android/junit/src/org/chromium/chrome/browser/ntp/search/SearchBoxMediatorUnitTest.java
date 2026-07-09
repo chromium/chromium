@@ -602,6 +602,45 @@ public class SearchBoxMediatorUnitTest {
         userActionTester.tearDown();
     }
 
+    @Test
+    public void testUpdateAiChip_Show() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        ComposeplateUtils.setIsEnabledForTesting(true);
+
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        TemplateUrlServiceObserver observer = mTemplateUrlServiceObserverCaptor.getValue();
+
+        observer.onTemplateURLServiceChanged();
+
+        assertTrue(mPropertyModel.get(SearchBoxProperties.AI_CHIP_VISIBILITY));
+    }
+
+    @Test
+    public void testUpdateAiChip_Hide_NonDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        ComposeplateUtils.setIsEnabledForTesting(true);
+
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        TemplateUrlServiceObserver observer = mTemplateUrlServiceObserverCaptor.getValue();
+
+        observer.onTemplateURLServiceChanged();
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.AI_CHIP_VISIBILITY));
+    }
+
+    @Test
+    public void testUpdateAiChip_Hide_ComposeplateDisabled() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        ComposeplateUtils.setIsEnabledForTesting(false);
+
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        TemplateUrlServiceObserver observer = mTemplateUrlServiceObserverCaptor.getValue();
+
+        observer.onTemplateURLServiceChanged();
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.AI_CHIP_VISIBILITY));
+    }
+
     private void verifyApplyBackground(View view) {
         // Verifies that the background is set to color white.
         Drawable whiteBackground = view.getBackground();

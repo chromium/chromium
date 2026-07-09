@@ -160,4 +160,13 @@ public class SearchBoxViewBinderUnitTest {
         mSearchBoxLayout.mPlusButton.performClick();
         verify(mOnClickListener).onClick(mSearchBoxLayout.mPlusButton);
     }
+
+    @Test
+    public void testSetAiChipVisibility() {
+        mPropertyModel.set(SearchBoxProperties.AI_CHIP_VISIBILITY, true);
+        assertEquals(View.VISIBLE, mSearchBoxLayout.mAiChip.getVisibility());
+
+        mPropertyModel.set(SearchBoxProperties.AI_CHIP_VISIBILITY, false);
+        assertEquals(View.GONE, mSearchBoxLayout.mAiChip.getVisibility());
+    }
 }

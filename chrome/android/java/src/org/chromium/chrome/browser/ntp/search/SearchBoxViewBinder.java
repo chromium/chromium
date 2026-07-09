@@ -27,7 +27,10 @@ class SearchBoxViewBinder
     @Override
     public final void bind(
             PropertyModel model, SearchBoxContainerView view, PropertyKey propertyKey) {
-        if (SearchBoxProperties.ALPHA == propertyKey) {
+        if (SearchBoxProperties.AI_CHIP_VISIBILITY == propertyKey) {
+            view.mAiChip.setVisibility(
+                    model.get(SearchBoxProperties.AI_CHIP_VISIBILITY) ? View.VISIBLE : View.GONE);
+        } else if (SearchBoxProperties.ALPHA == propertyKey) {
             view.setAlpha(model.get(SearchBoxProperties.ALPHA));
         } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND == propertyKey) {
             view.applyWhiteBackground(model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));

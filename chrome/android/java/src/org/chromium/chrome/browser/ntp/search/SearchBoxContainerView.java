@@ -27,6 +27,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Provides the additional capabilities needed for the SearchBox container layout. */
 @NullMarked
@@ -36,6 +37,7 @@ public class SearchBoxContainerView extends LinearLayout {
     ImageView mVoiceSearchButton;
     ImageView mLensButton;
     ImageView mPlusButton;
+    ButtonCompat mAiChip;
 
     private @Nullable TouchDelegate mTouchDelegate;
     private @Nullable Rect mLastTouchDelegateRect;
@@ -54,6 +56,7 @@ public class SearchBoxContainerView extends LinearLayout {
         mVoiceSearchButton = findViewById(R.id.voice_search_button);
         mLensButton = findViewById(R.id.lens_camera_button);
         mPlusButton = findViewById(R.id.search_box_plus_button);
+        mAiChip = findViewById(R.id.search_box_ai_chip);
         mPlusButton.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     updateTouchDelegate();

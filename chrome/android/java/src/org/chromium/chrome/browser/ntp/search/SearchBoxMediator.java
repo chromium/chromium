@@ -92,6 +92,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, this::onPlusButtonClick);
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
 
+        updateAiChip();
         updateStartIcon();
     }
 
@@ -196,6 +197,7 @@ class SearchBoxMediator implements DestroyObserver {
 
     private void onTemplateURLServiceChanged() {
         updateStartIcon();
+        updateAiChip();
     }
 
     /** Called to set a drag listener for the search box. */
@@ -366,5 +368,12 @@ class SearchBoxMediator implements DestroyObserver {
 
         return !scrollDelegate.isChildVisibleAtPosition(0)
                 || scrollDelegate.getVerticalScrollOffset() > mView.getTop() + mTransitionEndOffset;
+    }
+
+    private void updateAiChip() {
+        boolean shouldShow =
+                OmniboxCapabilities.isDesktopPlatform()
+                        && ComposeplateUtils.isComposeplateEnabled(mProfile);
+        mModel.set(SearchBoxProperties.AI_CHIP_VISIBILITY, shouldShow);
     }
 }
