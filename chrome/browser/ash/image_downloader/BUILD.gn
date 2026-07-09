@@ -13,9 +13,9 @@ static_library("image_downloader") {
   public_deps = [ "//ash/public/cpp" ]
 
   deps = [
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//net",
     "//services/network/public/cpp",
