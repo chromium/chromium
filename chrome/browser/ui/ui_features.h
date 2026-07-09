@@ -23,8 +23,6 @@ BASE_DECLARE_FEATURE(kUseActionsForBrowserCommands);
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
-BASE_DECLARE_FEATURE(kChromeDarkNeutrals26);
-
 // Enables a compositor-driven rotation animation for the tab load throbber.
 BASE_DECLARE_FEATURE(kCompositorLoadingThrobber);
 

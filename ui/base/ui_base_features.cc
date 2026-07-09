@@ -514,6 +514,9 @@ BASE_FEATURE_PARAM(double, kBackgroundBlurBlurRadius, &kGlassFrame, 5.0);
 BASE_FEATURE(kRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Updates the default dark neutrals for the theme palette.
+BASE_FEATURE(kChromeDarkNeutrals26, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
   return base::mac::MacOSMajorVersion() >= 26 &&
