@@ -8,7 +8,6 @@
 #include <memory>
 #include <numeric>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -96,7 +95,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
   if (memory_size > 0) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && \
     defined(ARCH_CPU_64_BITS)
-    limits.max_blob_in_memory_space = base::GiB(2).InBytesUnsigned();
+    limits.max_blob_in_memory_space = base::GiBU(2).InBytes();
 #elif BUILDFLAG(IS_ANDROID)
     limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 100);
 #else

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -27,9 +27,11 @@ constexpr int kThresholdOfErrorsToStopEviction = 5;
 constexpr base::TimeDelta kHistogramReportInterval = base::Minutes(60);
 constexpr double kDiskSpaceShortageAllowanceRatio = 0.5;
 
-void UmaHistogramMbytes(const std::string& name, base::ByteCount sample) {
-  base::UmaHistogramCustomCounts(name, sample.InMiB(), 1, base::TiB(10).InMiB(),
-                                 100);
+// Use ByteSizeDelta since -1 is used as a sentinel. UMA will log negatives in
+// the 0 bucket.
+void UmaHistogramMbytes(const std::string& name, base::ByteSizeDelta sample) {
+  base::UmaHistogramCustomCounts(name, sample.InMiB(), 1,
+                                 base::TiBS(10).InMiB(), 100);
 }
 
 }  // namespace
@@ -70,11 +72,11 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
                           now - round_statistics_.start_time);
   UmaHistogramMbytes(
       "Quota.DiskspaceShortage",
-      base::ByteCount(round_statistics_.diskspace_shortage_at_round));
+      base::ByteSizeDelta(round_statistics_.diskspace_shortage_at_round));
   UmaHistogramMbytes(
       "Quota.EvictedBytesPerRound",
-      base::ByteCount(round_statistics_.usage_on_beginning_of_round -
-                      round_statistics_.usage_on_end_of_round));
+      base::ByteSizeDelta(round_statistics_.usage_on_beginning_of_round -
+                          round_statistics_.usage_on_end_of_round));
   base::UmaHistogramCounts1M("Quota.NumberOfEvictedBucketsPerRound",
                              round_statistics_.num_evicted_buckets);
 }
