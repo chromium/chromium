@@ -112,7 +112,8 @@ void RenderWidgetHostViewChildFrame::
   if (!selection_controller_client_)
     return;
 
-  auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
+  auto* root_view = view_for_touch_selection_client_manager_.get();
+  view_for_touch_selection_client_manager_.reset();
   if (root_view) {
     auto* manager = root_view->GetTouchSelectionControllerClientManager();
     if (manager) {
@@ -183,6 +184,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
           std::make_unique<TouchSelectionControllerClientChildFrame>(this,
                                                                      manager);
       manager->AddObserver(this);
+      view_for_touch_selection_client_manager_ = root_view->GetWeakPtr();
 
 #if BUILDFLAG(IS_ANDROID)
       auto* observer = root_view->GetTouchSelectionControllerInputObserver();

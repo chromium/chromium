@@ -371,6 +371,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   std::unique_ptr<TouchSelectionControllerClientChildFrame>
       selection_controller_client_;
 
+  // Weak pointer to the view which owns the
+  // TouchSelectionControllerClientManager that this object is registered with.
+  base::WeakPtr<RenderWidgetHostViewBase>
+      view_for_touch_selection_client_manager_;
+
   // If a new RWHVCF is created for a cross-origin navigation, the parent
   // will typically not notice and will not transmit a full complement of
   // properties.
