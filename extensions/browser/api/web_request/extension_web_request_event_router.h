@@ -255,6 +255,35 @@ class WebRequestEventRouter : public KeyedService {
                       int64_t service_worker_version_id,
                       std::unique_ptr<EventResponse> response);
 
+  // Called when a blocking listener for a given target context and
+  // parent event name (not a sub-event name) responds to a dispatched event.
+  // It does NOT resolve the target: resolution is signaled separately by
+  // `OnEventHandlingDone()`, because the context may have multiple listeners
+  // for the same parent event name. `extra_info_spec` holds the options the
+  // responding listener was registered with.
+  void OnEventHandledForTarget(content::BrowserContext* browser_context,
+                               const ExtensionId& extension_id,
+                               const std::string& event_name,
+                               uint64_t request_id,
+                               int render_process_id,
+                               int web_view_instance_id,
+                               int worker_thread_id,
+                               int64_t service_worker_version_id,
+                               int extra_info_spec,
+                               std::unique_ptr<EventResponse> response);
+
+  // Called when a renderer context has finished handling a blocking event
+  // for `request_id`, after all of its matching listeners have settled.
+  // Resolves the pending dispatch target identified by the context.
+  void OnEventHandlingDone(content::BrowserContext* browser_context,
+                           const ExtensionId& extension_id,
+                           const std::string& event_name,
+                           uint64_t request_id,
+                           int render_process_id,
+                           int web_view_instance_id,
+                           int worker_thread_id,
+                           int64_t service_worker_version_id);
+
   // Adds a listener to the given event. `event_name` specifies the event being
   // listened to. `sub_event_name` is an internal event uniquely generated in
   // the extension process to correspond to the given filter and

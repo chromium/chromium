@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -1731,6 +1732,36 @@ void WebRequestEventRouter::OnEventHandled(
     DecrementBlockCount(browser_context, extension_id, event_name, request_id,
                         std::move(response), listener->extra_info_spec);
   }
+}
+
+void WebRequestEventRouter::OnEventHandledForTarget(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    uint64_t request_id,
+    int render_process_id,
+    int web_view_instance_id,
+    int worker_thread_id,
+    int64_t service_worker_version_id,
+    int extra_info_spec,
+    std::unique_ptr<EventResponse> response) {
+  // TODO(crbug.com/494684626): per-context dispatch is not wired up yet;
+  // drop the report. The browser-side dispatch target tracking will land in
+  // a follow-up.
+}
+
+void WebRequestEventRouter::OnEventHandlingDone(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    uint64_t request_id,
+    int render_process_id,
+    int web_view_instance_id,
+    int worker_thread_id,
+    int64_t service_worker_version_id) {
+  // TODO(crbug.com/494684626): per-context dispatch is not wired up yet;
+  // drop the signal. The browser-side dispatch target tracking will land in
+  // a follow-up.
 }
 
 bool WebRequestEventRouter::AddEventListener(

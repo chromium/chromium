@@ -56,7 +56,26 @@
             "$ref": "webRequest.BlockingResponse",
             "optional": true,
             "name": "response"
+          },
+          {
+            "type": "array",
+            "optional": true,
+            "name": "extraInfoSpec",
+            "description": "For per-context dispatch, the extra information the responding listener was registered with. Legacy per-listener calls omit it: the subEventName identifies the listener and its registered spec.",
+            "items": {
+              "$ref": "AddEventListenerOptions"
+            }
           }
+        ]
+      },
+      {
+        "name": "eventHandlingDone",
+        "type": "function",
+        "description": "Used internally to signal that a renderer context has finished handling a per-context blocking webRequest event.",
+        "parameters": [
+          {"type": "string", "name": "eventName"},
+          {"type": "string", "name": "requestId"},
+          {"type": "integer", "name": "webViewInstanceId"}
         ]
       }
     ]

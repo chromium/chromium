@@ -460,16 +460,38 @@ class WebRequestInternalEventHandledFunction
   ~WebRequestInternalEventHandledFunction() override = default;
 
  private:
-  // Unblocks the network request. Use this function when handling incorrect
-  // requests from the extension that cannot be detected by the schema
-  // validator.
-  void OnError(const std::string& event_name,
-               const std::string& sub_event_name,
-               uint64_t request_id,
-               int render_process_id,
-               int web_view_instance_id,
-               std::unique_ptr<WebRequestEventRouter::EventResponse> response);
+  // Routes a blocking response to the matching `WebRequestEventRouter` method,
+  // based on the `WebRequestPerContextEventDispatch` feature:
+  // - If disabled, the legacy per-listener sub-event name identifies the
+  //   responding listener; this method routes to `OnEventHandled()`.
+  // - If enabled, the per-context parent event name is used; this method
+  //   routes to `OnEventHandledForTarget()`, carrying the responding
+  //   listener's `extra_info_spec`.
+  // Used both on the success path and to unblock the request when a response
+  // failed validation.
+  void RouteEventResponse(
+      const std::string& event_name,
+      const std::string& sub_event_name,
+      uint64_t request_id,
+      int render_process_id,
+      int web_view_instance_id,
+      int extra_info_spec,
+      std::unique_ptr<WebRequestEventRouter::EventResponse> response);
 
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class WebRequestInternalEventHandlingDoneFunction
+    : public WebRequestInternalFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webRequestInternal.eventHandlingDone",
+                             WEBREQUESTINTERNAL_EVENTHANDLINGDONE)
+
+ protected:
+  ~WebRequestInternalEventHandlingDoneFunction() override = default;
+
+ private:
   // ExtensionFunction:
   ResponseAction Run() override;
 };
