@@ -56,6 +56,7 @@ interface InternalContextualActionMenu {
   addTabContext_: (tabInfo: TabInfo) => void;
   deleteTabContext_: (uuid: string) => void;
   readonly closeMenuOnSelect: boolean;
+  reposition_: () => void;
 }
 
 function asInternal(element: ContextualActionMenuElement):
@@ -2878,6 +2879,74 @@ suite('ContextualActionMenu', () => {
 
       assertEquals(330, dialogRect.top);
     });
+
+    test(
+        'Does not clamp to scrolled viewport top when repositioning during scroll',
+        async () => {
+          const spacer = document.createElement('div');
+          spacer.style.height = '2000px';
+          document.body.appendChild(spacer);
+
+          window.scrollTo(0, 0);
+          assertEquals(0, window.scrollY);
+
+          Object.defineProperty(window, 'innerHeight', {
+            value: 600,
+            configurable: true,
+          });
+          Object.defineProperty(document.scrollingElement!, 'clientHeight', {
+            value: 600,
+            configurable: true,
+          });
+
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+            value: 100,
+            configurable: true,
+          });
+          Object.defineProperty(actionMenu.$.menu.getDialog(), 'offsetHeight', {
+            value: 100,
+            configurable: true,
+          });
+
+          let currentTop = 300;
+          let currentBottom = 330;
+          anchor.getBoundingClientRect = () => ({
+            bottom: currentBottom,
+            top: currentTop,
+            left: 100,
+            right: 200,
+            width: 100,
+            height: 30,
+            x: 100,
+            y: currentTop,
+          } as DOMRect);
+
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          const dialog = actionMenu.$.menu.getDialog();
+          assertEquals('330px', dialog.style.top);
+
+          // Scroll document down by 350px so anchor moves up above viewport top
+          // (-50px).
+          window.scrollTo(0, 350);
+          currentTop = -50;
+          currentBottom = -20;
+
+          // Trigger reposition_() (e.g. from layoutResizeObserver_ on layout
+          // change).
+          asInternal(actionMenu).reposition_();
+          await microtasksFinished();
+
+          // Verify dialog style.top in document coordinates remains 330px
+          // (attached to anchor) instead of being clamped to scrollTop + 16px
+          // (366px).
+          assertEquals('330px', dialog.style.top);
+
+          window.scrollTo(0, 0);
+          spacer.remove();
+          Reflect.deleteProperty(document.scrollingElement!, 'clientHeight');
+        });
   });
 
   suite('ShareTabsFlyoutBehaviors', () => {

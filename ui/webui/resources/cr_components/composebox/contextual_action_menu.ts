@@ -307,20 +307,12 @@ export class ContextualActionMenuElement extends
   }
 
   private onWindowBlur_ = this.close.bind(this);
-  private boundReposition_?: (e?: Event) => void;
   private layoutResizeObserver_?: ResizeObserver|null = null;
   private lastConfig_?: unknown;
 
-  private reposition_(e?: Event) {
+  private reposition_() {
     if (!this.anchor_ || !this.open || !this.lastConfig_) {
       return;
-    }
-    if (e && e.target instanceof Node) {
-      const flyout =
-          this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
-      if (flyout && (e.target === flyout || flyout.contains(e.target))) {
-        return;
-      }
     }
     const rect = this.anchor_.getBoundingClientRect();
     const height = rect.height;
@@ -331,10 +323,6 @@ export class ContextualActionMenuElement extends
 
     const config =
         Object.assign({}, this.lastConfig_ as Record<string, unknown>, {
-          minX: scrollLeft + VIEWPORT_BUFFER_PX,
-          minY: scrollTop + VIEWPORT_BUFFER_PX,
-          maxX: scrollLeft + doc.clientWidth - VIEWPORT_BUFFER_PX,
-          maxY: scrollTop + doc.clientHeight - VIEWPORT_BUFFER_PX,
           top: rect.top + scrollTop,
           left: rect.left + scrollLeft,
           height: height,
@@ -503,11 +491,6 @@ export class ContextualActionMenuElement extends
     this.$.menu.showAt(anchor, config);
     this.reposition_();
     window.addEventListener('blur', this.onWindowBlur_);
-
-    this.boundReposition_ =
-        this.boundReposition_ || this.reposition_.bind(this);
-    window.addEventListener(
-        'scroll', this.boundReposition_, {capture: true, passive: true});
 
     if (this.layoutResizeObserver_) {
       this.layoutResizeObserver_.disconnect();
@@ -1114,10 +1097,6 @@ export class ContextualActionMenuElement extends
 
   protected onMenuClose_() {
     window.removeEventListener('blur', this.onWindowBlur_);
-    if (this.boundReposition_) {
-      window.removeEventListener(
-          'scroll', this.boundReposition_, {capture: true});
-    }
     if (this.layoutResizeObserver_) {
       this.layoutResizeObserver_.disconnect();
       this.layoutResizeObserver_ = null;
