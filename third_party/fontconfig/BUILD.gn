@@ -27,7 +27,7 @@ if (use_bundled_fontconfig) {
 
     bindgen_flags = [
       "merge-extern-blocks",
-      "allowlist-item=(FcPattern.*|FcRange.*|FcCharSet.*|FcLangSetFromCharSet|FC_.*_OBJECT)",
+      "allowlist-item=(FcPattern.*|FcRange.*|FcCharSet.*|FcLangSetFromCharSet|FC_.*_OBJECT|FcGenericAliasGetClassification)",
       "blocklist-type=(FcCharSet|FcLangSet)",
       "raw-line=pub use fontconfig_bindings::FcCharSet; pub use fontconfig_bindings::FcLangSet;",
     ]
@@ -73,6 +73,7 @@ if (use_bundled_fontconfig) {
       "src",
       "include/",
       "include/fc-const/",
+      "include/fc-genericfamily/",
       "include/fc-lang/",
     ]
   }
@@ -96,12 +97,14 @@ if (use_bundled_fontconfig) {
       "src/src/fccfg.c",
       "src/src/fccharset.c",
       "src/src/fccompat.c",
+      "src/src/fcconffile.c",
       "src/src/fcdbg.c",
       "src/src/fcdefault.c",
       "src/src/fcdir.c",
       "src/src/fcfontations.c",
       "src/src/fcformat.c",
       "src/src/fcfs.c",
+      "src/src/fcgenericalias.c",
       "src/src/fchash.c",
       "src/src/fcinit.c",
       "src/src/fcint.h",

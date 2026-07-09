@@ -82,6 +82,10 @@ extern __typeof (FcConfigAppFontAddDir) FcConfigAppFontAddDir __attribute((alias
 extern __typeof (FcConfigAppFontClear) FcConfigAppFontClear __attribute((alias("IA__FcConfigAppFontClear"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigPreferAppFont
 extern __typeof (FcConfigPreferAppFont) FcConfigPreferAppFont __attribute((alias("IA__FcConfigPreferAppFont"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigSetWarningFlags
+extern __typeof (FcConfigSetWarningFlags) FcConfigSetWarningFlags __attribute((alias("IA__FcConfigSetWarningFlags"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigGetWarningFlags
+extern __typeof (FcConfigGetWarningFlags) FcConfigGetWarningFlags __attribute((alias("IA__FcConfigGetWarningFlags"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigSubstituteWithPat
 extern __typeof (FcConfigSubstituteWithPat) FcConfigSubstituteWithPat __attribute((alias("IA__FcConfigSubstituteWithPat"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigSubstitute

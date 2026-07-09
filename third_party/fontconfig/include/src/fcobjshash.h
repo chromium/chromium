@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.2.1 */
+/* ANSI-C code produced by gperf version 3.3 */
 /* Command-line: gperf --pic -m 100 --output-file src/fcobjshash.h src/fcobjshash.gperf  */
 /* Computed positions: -k'3,5' */
 
