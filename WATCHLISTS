@@ -1058,9 +1058,6 @@
                   '|components/policy/'\
                   '|docs/website/site/administrators/',
     },
-    'cros_commercial_policy_proto': {
-      'filepath': 'components/policy/proto/chrome_device_policy.proto',
-    },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/ash/policy/status_collector/'\
@@ -2975,7 +2972,6 @@
               'wry+watch-creator@chromium.org',],
     'cros_commercial_enrollment': ['asumaneev+watch@google.com'],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
-    'cros_commercial_policy_proto': ['vsavu+watch@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
