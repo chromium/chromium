@@ -4794,10 +4794,13 @@ const FeatureEntry::FeatureParam kGlassFrameEoH925[] = {
     {"BackgroundBlurOpacity", "0.925"}};
 const FeatureEntry::FeatureParam kGlassFrameEoH90[] = {
     {"BackgroundBlurOpacity", "0.90"}};
+const FeatureEntry::FeatureParam kDisableLiquidGlassEffect[] = {
+    {"UseLiquidGlassEffect", "false"}};
 const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
     {"expand-on-hover 5% glass", kGlassFrameEoH95, nullptr},
     {"expand-on-hover 7.5% glass", kGlassFrameEoH925, nullptr},
-    {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr}};
+    {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr},
+    {"disable liquid glass effect", kDisableLiquidGlassEffect, nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------

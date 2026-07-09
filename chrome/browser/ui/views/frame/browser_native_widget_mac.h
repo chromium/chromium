@@ -22,6 +22,9 @@ class BrowserWidget;
 class BrowserView;
 @class BrowserWindowTouchBarController;
 @class BrowserWindowTouchBarViewsDelegate;
+namespace tabs {
+class VerticalTabStripStateController;
+}  // namespace tabs
 
 ////////////////////////////////////////////////////////////////////////////////
 //  BrowserNativeWidgetMac is a NativeWidgetMac subclass that provides
@@ -94,6 +97,8 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
  private:
   bool IsBrowserWidgetEligible() const;
   void UpdateBackground(bool is_eligible);
+  void OnVerticalTabStripModeChanged(
+      tabs::VerticalTabStripStateController* controller);
 
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
@@ -102,7 +107,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   std::optional<ui::NativeTheme::PreferredColorScheme>
       last_preferred_color_scheme_;
   std::optional<SkColor> last_theme_color_;
-
+  base::CallbackListSubscription vertical_tab_subscription_;
   base::CallbackListSubscription glass_frame_service_subscription_;
 };
 
