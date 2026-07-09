@@ -118,10 +118,7 @@ class PopupBaseView::Widget : public views::Widget {
     // setups is not consistent). This is not required for regular autofill
     // popup use, but it makes certain attacks (those based on the popup being
     // obscured) less practical.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillPopupZOrderSecuritySurface)) {
-      params.z_order = ui::ZOrderLevel::kSecuritySurface;
-    }
+    params.z_order = ui::ZOrderLevel::kSecuritySurface;
 
     Init(std::move(params));
     AddObserver(popup_base_view());

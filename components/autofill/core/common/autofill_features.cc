@@ -806,16 +806,6 @@ BASE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap,
 BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/334909042): Remove after cleanup.
-// If the feature is enabled, the Autofill popup widget is initialized with
-// `Widget::InitParams::z_order` set to `ui::ZOrderLevel::kSecuritySurface`,
-// otherwise the `z_order` is not set and defined by the widget type (see
-// `Widget::InitParams::EffectiveZOrderLevel()`). This param makes the popup
-// display on top of all other windows, which potentially can negatively
-// affect their functionality.
-BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events.
