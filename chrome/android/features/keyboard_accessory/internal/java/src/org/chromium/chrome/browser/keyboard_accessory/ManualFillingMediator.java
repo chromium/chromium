@@ -414,6 +414,9 @@ class ManualFillingMediator
         mBackPressManager = null;
         mWindowAndroid = null;
         mActivity = null;
+        // The dialog holds the Activity as its Context; clear it to avoid leaking the Activity.
+        mActionConfirmationDialog = null;
+        mConfirmationDialogDismissHandler = null;
     }
 
     boolean onBackPressed() {
@@ -1322,6 +1325,10 @@ class ManualFillingMediator
 
     PropertyModel getModelForTesting() {
         return mModel;
+    }
+
+    ActionConfirmationDialog getActionConfirmationDialogForTesting() {
+        return mActionConfirmationDialog;
     }
 
     @VisibleForTesting

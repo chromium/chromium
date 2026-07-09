@@ -432,6 +432,15 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testDestroyClearsActionConfirmationDialog() {
+        assertThat(mMediator.getActionConfirmationDialogForTesting(), is(notNullValue()));
+
+        mController.destroy();
+
+        assertThat(mMediator.getActionConfirmationDialogForTesting(), is(nullValue()));
+    }
+
+    @Test
     public void testAddingNewTabIsAddedToAccessoryAndSheet() {
         // Clear any calls that happened during initialization:
         reset(mMockKeyboardAccessory);
