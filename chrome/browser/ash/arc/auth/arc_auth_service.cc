@@ -49,6 +49,8 @@
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -152,22 +154,26 @@ mojom::AccountInfoPtr CreateAccountInfo(bool is_enforced,
 }
 
 bool IsPrimaryGaiaAccount(const GaiaId& gaia_id) {
-  // |GetPrimaryUser| is fine because ARC is only available on the first
+  // |GetPrimarySession| is fine because ARC is only available on the first
   // (Primary) account that participates in multi-signin.
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
-  return user->GetAccountId().GetAccountType() == AccountType::GOOGLE &&
-         user->GetAccountId().GetGaiaId() == gaia_id;
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  DCHECK(primary_session);
+  return primary_session->account_id().GetAccountType() ==
+             AccountType::GOOGLE &&
+         primary_session->account_id().GetGaiaId() == gaia_id;
 }
 
 bool IsPrimaryOrDeviceLocalAccount(
     const signin::IdentityManager* identity_manager,
     const std::string& account_name) {
-  // |GetPrimaryUser| is fine because ARC is only available on the first
+  // |GetPrimarySession| is fine because ARC is only available on the first
   // (Primary) account that participates in multi-signin.
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  DCHECK(primary_session);
   const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
   DCHECK(user);
 
   // There is no Gaia user for device local accounts, but in this case there is

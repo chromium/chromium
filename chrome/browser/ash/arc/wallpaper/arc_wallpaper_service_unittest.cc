@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
@@ -28,10 +27,11 @@
 #include "chromeos/ash/experiences/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -60,8 +60,8 @@ class FailureImageDecoder : public arc::ArcWallpaperService::ImageDecoder {
 class ArcWallpaperServiceTest : public testing::Test {
  public:
   ArcWallpaperServiceTest()
-      : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
-        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {
+  }
 
   ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
   ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
@@ -69,10 +69,14 @@ class ArcWallpaperServiceTest : public testing::Test {
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     // User
-    fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user_manager::StubAccountId());
-    ASSERT_TRUE(fake_user_manager_->GetPrimaryUser());
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        user_manager::StubAccountId().GetUserEmail(), GaiaId("1234567890")));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
 
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
@@ -102,21 +106,22 @@ class ArcWallpaperServiceTest : public testing::Test {
         wallpaper_instance_.get());
     arc_service_manager_.set_browser_context(nullptr);
     wallpaper_instance_.reset();
+    service_ = nullptr;
 
-    wallpaper_controller_client_.reset();
     ash::SystemSaltGetter::Shutdown();
+    wallpaper_controller_client_.reset();
+    test_user_session_manager_.reset();
   }
 
  protected:
-  raw_ptr<arc::ArcWallpaperService, DanglingUntriaged> service_ = nullptr;
-  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
+  raw_ptr<arc::ArcWallpaperService> service_ = nullptr;
+  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;

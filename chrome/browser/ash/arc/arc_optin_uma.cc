@@ -20,7 +20,8 @@
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/auth.mojom.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -60,14 +61,16 @@ ArcEnabledState ComputeEnabledState(bool enabled, const Profile* profile) {
 }  // namespace
 
 void UpdateEnabledStateByUserTypeUMA() {
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  // Don't record UMA if there is no primary user.
-  if (!primary_user) {
+  auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  // Don't record UMA if there is no primary session.
+  if (!primary_session) {
     return;
   }
 
   const Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   // Don't record UMA if the primary user profile is not loaded.
   if (!profile) {
     return;
