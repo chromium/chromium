@@ -522,6 +522,9 @@
   <message name="IDS_GLIC_SELECTION_MENU_HIDE_FOR_SITE" desc="Label for the menu item to hide the selection widget on the current website.">
     Hide for this site
   </message>
+  <message name="IDS_GLIC_SELECTION_HIDDEN_FOR_SITE_TOAST_BODY" desc="Body text for the toast notification when the selection widget is hidden for a specific site.">
+    Hidden from this site
+  </message>
 
   <!-- Educational Tip -->
   <message name="IDS_EDUCATIONAL_TIP_GLIC_TITLE" desc="Title for the Glic educational tip card." formatter_data="android_java">

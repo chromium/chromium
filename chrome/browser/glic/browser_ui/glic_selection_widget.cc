@@ -441,9 +441,13 @@ class GlicSelectionContentsView : public views::View,
       SetPinned(initial_pinned_state);
     } else {
       auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
+      const gfx::VectorIcon& menu_icon =
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kKeyboardArrowDownIcon
+              : vector_icons::kCaretDownOldIcon;
       menu_btn_ =
           control_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              base::RepeatingClosure(), kMoreVertIcon, menu_tooltip));
+              base::RepeatingClosure(), menu_icon, menu_tooltip));
       menu_btn_->SetButtonController(
           std::make_unique<views::MenuButtonController>(
               menu_btn_,
@@ -458,7 +462,7 @@ class GlicSelectionContentsView : public views::View,
           views::LayoutProvider::Get()->GetInsetsMetric(
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
-          menu_btn_, kMoreVertIcon, kIconSize,
+          menu_btn_, menu_icon, kIconSize,
           views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
                             ui::kColorSysOnSurfaceVariant));

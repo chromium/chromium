@@ -32,6 +32,7 @@ class RenderFrameHost;
 }  // namespace content
 
 class BrowserWindowInterface;
+enum class ToastId;
 
 namespace optimization_guide {
 class PageContextEligibilityObserver;
@@ -121,6 +122,7 @@ class GlicSelectionObserver
   void OnCopyLink();
   void OnHideForThisSite();
   void OnSettings();
+  void ShowHiddenToast(ToastId toast_id);
 
   void CopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr);
 

@@ -43,6 +43,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/data_sharing/public/features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
@@ -681,4 +682,19 @@ void ToastService::RegisterToasts(
             .SetPersistOnNavigation()
             .Build());
   }
+  toast_registry_->RegisterToast(
+      ToastId::kGlicSelectionHiddenForSite,
+      ToastSpecification::Builder(
+          vector_icons::kVisibilityOffIcon,
+          IDS_GLIC_SELECTION_HIDDEN_FOR_SITE_TOAST_BODY)
+          .AddActionButton(IDS_MANAGE,
+                           base::BindRepeating(
+                               [](BrowserWindowInterface* window) {
+                                 chrome::ShowContentSettingsExceptions(
+                                     window,
+                                     ContentSettingsType::INLINE_CUE_MENU);
+                               },
+                               base::Unretained(browser_window_interface)))
+          .AddCloseButton()
+          .Build());
 }  // RegisterToasts() end.

@@ -824,6 +824,14 @@ void GlicSelectionObserver::OnHideForThisSite() {
   }
 
   DismissUI(/*keep_nudge=*/false);
+  ShowHiddenToast(ToastId::kGlicSelectionHiddenForSite);
+}
+
+void GlicSelectionObserver::ShowHiddenToast(ToastId toast_id) {
+  if (auto* toast_controller =
+          ToastController::MaybeGetForWebContents(web_contents())) {
+    toast_controller->MaybeShowToast(ToastParams(toast_id));
+  }
 }
 
 void GlicSelectionObserver::OnSettings() {

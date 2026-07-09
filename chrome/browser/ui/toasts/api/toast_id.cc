@@ -107,6 +107,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "DictationError";
     case ToastId::kDictationStopped:
       return "DictationStopped";
+    case ToastId::kGlicSelectionHiddenForSite:
+      return "GlicSelectionHiddenForSite";
   }
 
   NOTREACHED();

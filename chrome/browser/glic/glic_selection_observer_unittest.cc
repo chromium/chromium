@@ -18,6 +18,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/prefs/pref_service.h"
@@ -33,8 +35,8 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace tabs {
 class TestMockTabInterface : public MockTabInterface {
@@ -1107,6 +1109,29 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
   task_environment()->FastForwardBy(base::Milliseconds(300));
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"Test text signed in", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest, HideForThisSiteSetsBlockSetting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{features::kGlicSelectionEnableSiteSettings.name, "true"}});
+
+  GURL url("https://example.com");
+  NavigateAndCommit(url);
+  TestGlicSelectionObserver* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            settings_map->GetContentSetting(
+                url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
+
+  CallOnHideForThisSite();
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            settings_map->GetContentSetting(
+                url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
 }
 
 }  // namespace glic

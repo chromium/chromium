@@ -70,7 +70,8 @@ enum class ToastId {
   kEnterpriseCopyKeptInManagedChrome = 47,
   kDictationError = 48,
   kDictationStopped = 49,
-  kMaxValue = kDictationStopped,
+  kGlicSelectionHiddenForSite = 50,
+  kMaxValue = kGlicSelectionHiddenForSite,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
