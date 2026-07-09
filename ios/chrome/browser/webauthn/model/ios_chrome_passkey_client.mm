@@ -125,7 +125,13 @@
 IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   CHECK(web_state);
   web_state_ = web_state->GetWeakPtr();
-  profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+
+  // IOSChromePasskeyClient should behave exactly the same way in and out of
+  // incognito. In incognito mode, an interstitial is presented to the user
+  // before allowing assertion or registration requests, but the logic should
+  // always use the original profile.
+  profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+                 ->GetOriginalProfile();
 }
 
 IOSChromePasskeyClient::~IOSChromePasskeyClient() = default;
@@ -247,11 +253,9 @@ bool IOSChromePasskeyClient::IsGpmPasskeySavingEnabled() const {
       !prefs->GetBoolean(password_manager::prefs::kCredentialsEnablePasskeys)) {
     return false;
   }
-  // Use the original profile to check sync status, as the Incognito profile
-  // does not have a SyncService, but passkey saving in Incognito still saves
-  // to the user's account if they choose to proceed.
+
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_->GetOriginalProfile());
+      SyncServiceFactory::GetForProfile(profile_);
   if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
                            syncer::UserSelectableType::kPasswords)) {
     return false;
