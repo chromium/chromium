@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
@@ -18,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.base.ViewUtils;
 
 /** Implementation of {@link SidePanelContainerCoordinator}. */
@@ -71,6 +74,9 @@ final class SidePanelContainerCoordinatorImpl
     private @Nullable SidePanelDevFeatureImpl mSidePanelPureJavaDevFeature;
 
     private @Nullable SidePanelContent mCurrentContent;
+
+    /** {@link Runnable} for {@link #startReplacingPanelContent} to remove the old content View. */
+    private @Nullable Runnable mPendingReplaceRunnable;
 
     /**
      * Whether {@link #onWillAutoClose} is running.
@@ -192,12 +198,63 @@ final class SidePanelContainerCoordinatorImpl
         // TODO(crbug.com/513302000): assert the side panel is currently open.
         // TODO(crbug.com/513302000): assert the side panel isn't preparing for auto-restore/close.
 
+        if (mPendingReplaceRunnable != null) {
+            mPendingReplaceRunnable.run();
+            // Explicitly set to null for readability, though it is also handled
+            // internally by the runnable's run() method.
+            mPendingReplaceRunnable = null;
+        }
+
+        assert mCurrentContent != null : "no content to replace";
+        View oldView = mCurrentContent.mView;
         mCurrentContent = newContent;
 
-        // TODO(crbug.com/505895733): Delay removing the old View to prevent UI flickers.
-        mContainerView.removeAllViews();
-        mContainerView.addView(newContent.mView);
-        onPanelContentReplaced.run();
+        mContainerView.addView(newContent.mView, /* index= */ 0);
+
+        // We use a custom Runnable class with a `mRan` flag because ThinWebView's runOnNextFrame()
+        // does not support cancellation.
+        //
+        // If a new content replacement happens before the next frame renders, we must immediately
+        // run the pending runnable to clean up the old state. When the next frame eventually fires
+        // for that older replacement, its local `removeOldViewRunnable` will run again. The `mRan`
+        // guard flag prevents running the cleanup logic (and JNI callbacks) a second time.
+        //
+        // We also check `mPendingReplaceRunnable == this` before clearing the member variable. This
+        // is because `mPendingReplaceRunnable` always tracks the *latest* replacement request. If
+        // an older runnable runs (either immediately because it was superseded, or late because of
+        // the frame callback), it must not clear `mPendingReplaceRunnable` if a newer replacement
+        // is now pending.
+        Runnable removeOldViewRunnable =
+                new Runnable() {
+                    private boolean mRan;
+
+                    @Override
+                    public void run() {
+                        if (mRan) return;
+
+                        // Immediately set mRan to true to prevent re-entrancy.
+                        mRan = true;
+
+                        mContainerView.removeView(oldView);
+                        onPanelContentReplaced.run();
+
+                        // If the work is for the current runnable, clear the runnable.
+                        if (mPendingReplaceRunnable == this) {
+                            mPendingReplaceRunnable = null;
+                        }
+                    }
+                };
+
+        mPendingReplaceRunnable = removeOldViewRunnable;
+        ThinWebView thinWebView = findThinWebView(newContent.mView);
+        if (thinWebView == null || BuildConfig.IS_FOR_TEST) {
+            mPendingReplaceRunnable.run();
+            // Explicitly set to null for readability, though it is also handled
+            // internally by the runnable's run() method.
+            mPendingReplaceRunnable = null;
+        } else {
+            thinWebView.runOnNextFrame(removeOldViewRunnable);
+        }
     }
 
     @Override
@@ -410,5 +467,21 @@ final class SidePanelContainerCoordinatorImpl
     static void setHasContentToShowForTesting(boolean hasContentToShow) {
         sHasContentToShowForTesting = hasContentToShow;
         ResettersForTesting.register(() -> sHasContentToShowForTesting = null);
+    }
+
+    private @Nullable ThinWebView findThinWebView(View view) {
+        if (view instanceof ThinWebView) {
+            return (ThinWebView) view;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                ThinWebView child = findThinWebView(group.getChildAt(i));
+                if (child != null) {
+                    return child;
+                }
+            }
+        }
+        return null;
     }
 }
