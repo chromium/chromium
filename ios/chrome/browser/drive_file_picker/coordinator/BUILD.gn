@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//base",
     "//components/image_fetcher/core",
     "//components/signin/public/identity_manager/objc",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
